@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Setează Chrome ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
 <translation id="1504372625950710826">Chrome nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="1511320244449497906">Te-ai conectat și datele tale se sincronizează cu un cont gestionat de <ph name="DOMAIN" />, în care administratorul acestuia poate acum să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chrome.</translation>
+<translation id="1554731936187952550">Ai cea mai puternică securitate Chrome împotriva site-urilor dăunătoare</translation>
 <translation id="1682483655351012182">Sincronizează-ți datele din Chromium</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Acest cont și toate datele nesalvate vor fi eliminate din Chrome și din alte aplicații Google de pe acest dispozitiv.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Folosind Chrome, economisești timp, deoarece te conectează la conturi și pe web. Poți să adaugi sau să elimini conturi din Setări.</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3345341804167540816">Folosește Chrome oriunde</translation>
+<translation id="3503014945441706099">Obține și Navigare sigură îmbunătățită pentru acest profil Chrome</translation>
 <translation id="3522659714780527202">Activează sincronizarea ca să vezi toate filele tale deschise în Chrome</translation>
 <translation id="3533694711092285624">Nu există parole salvate. Chrome îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="3641179212828090796">Folosește parola salvată în Chrome pentru a te conecta mai rapid</translation>
@@ -137,6 +139,7 @@ De reținut
   • Dacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal.
 
   • Dacă activezi sincronizarea, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Beneficiezi de protecție de securitate standard pentru acest profil Chrome</translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 <translation id="9122931302567044771">Aceasta înseamnă că Chrome va solicita de fiecare dată versiunea pentru desktop a site-urilor.</translation>
 </translationbundle>

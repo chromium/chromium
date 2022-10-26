@@ -307,6 +307,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour prononcer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
+<translation id="2695132445805301912">Afficher les touches et clics</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. <ph name="KEYBOARD_NAME" /> sélectionné.</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -1123,6 +1124,7 @@ Nouvelle installation</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Développer la caméra</translation>
 <translation id="731589979057211264">Shelf Party est activé.</translation>
+<translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
 <translation id="735745346212279324">VPN déconnecté</translation>
@@ -1300,6 +1302,7 @@ Nouvelle installation</translation>
 <translation id="826107067893790409">Appuyez sur Entrée pour déverrouiller l'appareil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8270450402312105425">{0,plural, =1{Rétablir une version antérieure de l'appareil d'ici une heure}one{Rétablir une version antérieure de l'appareil d'ici # heure}other{Rétablir une version antérieure de l'appareil d'ici # heures}}</translation>
+<translation id="8277261673056602147">Mettre en surbrillance du texte à l'écran</translation>
 <translation id="8284362522226889623">Balayez l'écran vers la gauche avec quatre doigts pour passer au bureau précédent</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>

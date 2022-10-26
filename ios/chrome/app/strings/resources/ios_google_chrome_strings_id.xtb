@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Setel Chrome sebagai browser default untuk menyinkronkan tab, sandi, dan info pembayaran di semua perangkat Anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
 <translation id="1511320244449497906">Anda login dan menyinkronkan data dengan akun yang dikelola oleh <ph name="DOMAIN" />. Administrator domain ini kini dapat menyetel kebijakan pengguna khusus untuk akun tersebut yang dapat mengubah perilaku Chrome.</translation>
+<translation id="1554731936187952550">Anda memiliki keamanan terkuat Chrome terhadap situs berbahaya</translation>
 <translation id="1682483655351012182">Sinkronkan Data Chrome Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chrome dan Google app lainnya di perangkat ini.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome menghemat waktu Anda dengan membawa akun ke web. Anda dapat menambahkan atau menghapus akun di Setelan.</translation>
 <translation id="3282568296779691940">Login ke Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome di Mana Saja</translation>
+<translation id="3503014945441706099">Dapatkan juga Safe Browsing yang Disempurnakan untuk profil Chrome ini</translation>
 <translation id="3522659714780527202">Untuk melihat tab Chrome Anda dari perangkat lain, aktifkan sinkronisasi</translation>
 <translation id="3533694711092285624">Tidak ada sandi yang tersimpan. Chrome dapat memeriksa sandi Anda saat menyimpannya.</translation>
 <translation id="3641179212828090796">Gunakan sandi yang Anda simpan di Chrome untuk login lebih cepat</translation>
@@ -137,6 +139,7 @@ Hal-hal yang perlu dipertimbangkan:
   • Jika Chrome mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
 
   • Jika Anda mengaktifkan sinkronisasi, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Anda mendapatkan perlindungan keamanan standar untuk profil Chrome ini</translation>
 <translation id="9112744793181547300">Setel Chrome sebagai Default?</translation>
 <translation id="9122931302567044771">Artinya, Chrome akan selalu meminta situs desktop.</translation>
 </translationbundle>

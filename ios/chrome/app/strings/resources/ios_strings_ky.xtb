@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">Шайкештирилген маалыматыңызга каалаган убакта кирүү үчүн бул сиз экениңизди ырастаңыз</translation>
 <translation id="1870148520156231997">Сырсөздү көрсөтүү</translation>
 <translation id="1872096359983322073">Колчырак</translation>
+<translation id="1891796056033961979">Сакталган кыстармалар, сырсөздөр, параметрлер жана башкалар эми ушул экранда болот.</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1923342640370224680">Акыркы саатта</translation>
 <translation id="1930989359703290198">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">Бардык жашыруун өтмөктөрдү жабуу</translation>
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
+<translation id="3575234738189584619">Lens менен издөө</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
 <translation id="3595252146048399851">Эмнени шайкештирүү керек экенин ар дайым <ph name="BEGIN_LINK" />параметрлерден<ph name="END_LINK" /> тандай аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">Окулган деп белгилөө</translation>
 <translation id="4908869848243824489">Google сунуштары</translation>
 <translation id="4916679969857390442">Линза</translation>
+<translation id="4922154083994158612">Кошумча коопсуздук керекпи?</translation>
 <translation id="4930714375720679147">Күйгүзүү</translation>
 <translation id="4941089862236492464">Кечиресиз, бул нерсени бөлүшүп жатканда көйгөй келип чыкты.</translation>
 <translation id="4944543191714094452">Барактан табуу…</translation>
@@ -832,6 +835,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7435356471928173109">Администраторуңуз өчүрүп койду</translation>
 <translation id="7438481509621345350">Эми жаңы өтмөктү ачканда, <ph name="CHANNEL_NAME" /> окуяларын көрүп турасыз.</translation>
 <translation id="7454057999980797137">Өлкө/Округ</translation>
+<translation id="7459628154744868585">Мыктылап коргоо күйүк</translation>
 <translation id="7464701184726199289">Бул учурда шайкештештирилген дайындар бардык түзмөктөрдөн тазаланат. Сакталган сайт жөндөөлөрү өзгөрүлбөйт, андыктан, сайттарды адаттагыдай карай бересиз. <ph name="BEGIN_LINK" />Көбүрөөк маалымат алуу<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome'ду тандаңыз</translation>
 <translation id="7472734401283673885">Компаниянын аты</translation>
@@ -1024,6 +1028,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9037965129289936994">Түпкү бетин көрсөтүү</translation>
 <translation id="9039373489628511875">Өткөрүү жөндөмдүүлүгү</translation>
 <translation id="9055772144595778347">Кирүү мүмкүн эмес</translation>
+<translation id="9055960261314198756">Мыктылап коргоо өчүк</translation>
 <translation id="9057972802061533987">Жазылган жок. Бир жерден ката кетти.</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9068336935206019333">Chrome'до Жашыруун режимде ачуу</translation>

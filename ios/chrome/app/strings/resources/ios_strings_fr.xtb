@@ -119,6 +119,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1832848789136765277">Pour toujours avoir accès à vos données synchronisées, confirmez votre identité</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
+<translation id="1891796056033961979">Retrouvez, entre autres, sur cet écran vos favoris, mots de passe et paramètres enregistrés</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
 <translation id="1930989359703290198">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3533202363250687977">Fermer tous les onglets de navigation privée</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
+<translation id="3575234738189584619">Rechercher avec Lens</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
@@ -494,6 +496,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4904877109095351937">Marquer comme lues</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4916679969857390442">Loupe</translation>
+<translation id="4922154083994158612">Renforcer la sécurité ?</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4941089862236492464">Désolé, un problème est survenu lors du partage de l'élément.</translation>
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
@@ -833,6 +836,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7435356471928173109">Mode désactivé par votre administrateur</translation>
 <translation id="7438481509621345350">Vous verrez les stories de <ph name="CHANNEL_NAME" /> quand vous ouvrirez un nouvel onglet.</translation>
 <translation id="7454057999980797137">État/Comté</translation>
+<translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="7464701184726199289">Les données synchronisées seront effacées de tous les appareils. Les paramètres de site enregistrés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7472734401283673885">Nom de la société</translation>
@@ -1025,6 +1029,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9037965129289936994">Afficher l'original</translation>
 <translation id="9039373489628511875">Bande passante</translation>
 <translation id="9055772144595778347">Connexion impossible</translation>
+<translation id="9055960261314198756">La protection renforcée est désactivée</translation>
 <translation id="9057972802061533987">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9068336935206019333">Ouvrir en navigation privée Chrome</translation>

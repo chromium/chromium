@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Définissez Chrome par défaut pour synchroniser vos onglets, mots de passe et infos de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'est pas parvenu à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
 <translation id="1511320244449497906">Vous êtes connecté et synchronisez vos données avec un compte géré par <ph name="DOMAIN" /> sur lequel l'administrateur peut maintenant définir des règles relatives aux utilisateurs propres à ce compte et pouvant modifier le comportement de Chrome.</translation>
+<translation id="1554731936187952550">Vous disposez du plus haut niveau de sécurité de Chrome contre les sites dangereux</translation>
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3345341804167540816">Utilisez Chrome où que vous soyez</translation>
+<translation id="3503014945441706099">Profitez aussi sous ce profil Chrome de la navigation sécurisée avec protection renforcée</translation>
 <translation id="3522659714780527202">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, activez la synchronisation</translation>
 <translation id="3533694711092285624">Aucun mot de passe enregistré. Chrome ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="3641179212828090796">Utiliser le mot de passe que vous avez enregistré dans Chrome pour vous connecter plus vite</translation>
@@ -137,6 +139,7 @@
   • Si Chrome plante, les détails sur ce plantage peuvent contenir des infos personnelles.
 
   • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Vous disposez sous ce profil Chrome de la protection standard</translation>
 <translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>
 <translation id="9122931302567044771">Cela signifie que Chrome demandera la version pour ordinateur à chaque fois.</translation>
 </translationbundle>

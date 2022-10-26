@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="1511320244449497906">Prijavljeni ste i sinhronizujete podatke sa nalogom kojim upravlja <ph name="DOMAIN" />, pri čemu njegov administrator sada može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
+<translation id="1554731936187952550">Imate najjaču Chrome zaštitu od štetnih veb-sajtova</translation>
 <translation id="1682483655351012182">Sinhronizujte Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chrome-a i drugih Google aplikacija na ovom uređaju.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome vam štedi vreme tako što postavlja naloge na veb. Možete da dodajete ili uklanjate naloge u podešavanjima.</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3345341804167540816">Koristite Chrome svuda</translation>
+<translation id="3503014945441706099">Nabavite poboljšano bezbedno pregledanje i za ovaj Chrome profil</translation>
 <translation id="3522659714780527202">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, uključite sinhronizaciju</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može da proverava lozinke kada ih sačuvate.</translation>
 <translation id="3641179212828090796">Koristite lozinku koju ste sačuvali u Chrome-u radi bržeg prijavljivanja</translation>
@@ -135,6 +137,7 @@
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chrome-a se šalju Google-u, ali nisu povezane sa vama.
   • Ako Chrome otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
   • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Dobijate standardnu bezbednosnu zaštitu za ovaj Chrome profil</translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>
 </translationbundle>

@@ -894,6 +894,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1805967612549112634">Vahvista PIN-koodi</translation>
 <translation id="1806335016774576568">Vaihda toiseen avoimeen sovellukseen</translation>
 <translation id="1807246157184219062">Vaalea</translation>
+<translation id="1809201888580326312">Olet päättänyt olla tallentamatta näiden sivustojen ja sovellusten salasanoja</translation>
 <translation id="1809483812148634490">Google Playsta lataamasi sovellukset poistetaan tältä Chromebookilta.
     <ph name="LINE_BREAKS1" />
     Ostamasi sisältö, kuten elokuvat, TV-ohjelmat, musiikki, kirjat tai sovelluksen sisäiset ostokset, saatetaan poistaa samalla.
@@ -1810,6 +1811,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2620215283731032047">Tiedostoa (<ph name="FILE_NAME" />) ei voi ladata turvallisesti.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="262154978979441594">Kouluta Google Assistantin äänimalli</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Älä anna sivustojen määrittää protokollien käsittelypalveluita</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Tämä sivu käyttää kameraasi ja mikrofoniasi.</translation>
@@ -4955,6 +4957,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5612734644261457353">Salasanan vahvistaminen ei onnistunut vieläkään. Huomaa: Jos vaihdoit salasanasi äskettäin, uusi salasana otetaan käyttöön kirjauduttuasi ulos. Käytä tässä vanhaa salasanaasi.</translation>
 <translation id="5614190747811328134">Käyttäjäilmoitus</translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>
+<translation id="5616571005307953937">Vanhin</translation>
 <translation id="5616726534702877126">Varaa tilaa</translation>
 <translation id="561698261642843490">Sulje Firefox</translation>
 <translation id="5620540760831960151"><ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />,
@@ -5586,6 +5589,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6212168817037875041">Sulje näyttö</translation>
 <translation id="6212752530110374741">Lähetä linkki sähköpostitse</translation>
 <translation id="621470880408090483">Älä salli sivustojen yhdistää Bluetooth-laitteisiin</translation>
+<translation id="6216239400972191926">Hylätyt sivustot ja sovellukset</translation>
 <translation id="6216601812881225442">Säilö ei tue koon muuttamista. Jos haluat muuttaa sen tilan määrää, joka on varattu ennakkoon Linuxille, luo varmuuskopio ja palauta se sitten uuteen säilöön.</translation>
 <translation id="6216696360484424239">Kirjaudu sisään automaattisesti</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> on offline-tilassa. Muodosta internetyhteys ja yritä uudelleen.</translation>

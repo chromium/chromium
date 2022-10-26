@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Gosodwch Chrome fel eich porwr diofyn i gysoni'ch tabiau, eich cyfrineiriau, a'ch gwybodaeth talu ar eich holl ddyfeisiau</translation>
 <translation id="1504372625950710826">Ni allai Chrome wirio am ddiweddariadau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="1511320244449497906">Rydych wedi mewngofnodi ac yn cysoni'ch data â chyfrif a reolir gan <ph name="DOMAIN" /> lle gall ei weinyddwr bellach osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chrome.</translation>
+<translation id="1554731936187952550">Mae gennych ddiogelwch cryfaf Chrome yn erbyn gwefannau niweidiol</translation>
 <translation id="1682483655351012182">Cysoni eich Data Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chrome ac apiau Google eraill ar y ddyfais hon.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Mae Chrome yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3345341804167540816">Gallwch Ddefnyddio Chrome Ymhobman</translation>
+<translation id="3503014945441706099">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chrome hwn hefyd</translation>
 <translation id="3522659714780527202">I weld eich tabiau o ble bynnag rydych yn defnyddio Chrome, trowch gysoni ymlaen</translation>
 <translation id="3533694711092285624">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chrome wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="3641179212828090796">Defnyddiwch y cyfrinair a gadwyd gennych yn Chrome i fewngofnodi yn gyflymach</translation>
@@ -137,6 +139,7 @@ Pethau i'w hystyried:
   • Os bydd Chrome yn torri, gall manylion y toriad gynnwys rhywfaint o wybodaeth bersonol.
 
   • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Rydych yn cael amddiffyniad diogelwch safonol ar gyfer y proffil Chrome hwn</translation>
 <translation id="9112744793181547300">Gosod Chrome fel y porwr diofyn?</translation>
 <translation id="9122931302567044771">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
 </translationbundle>

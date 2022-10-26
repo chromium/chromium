@@ -890,6 +890,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1805967612549112634">Bekreft PIN-koden</translation>
 <translation id="1806335016774576568">Bytt til en annen åpen app</translation>
 <translation id="1807246157184219062">Lys</translation>
+<translation id="1809201888580326312">Du har valgt å ikke lagre passordene for disse nettstedene og appene</translation>
 <translation id="1809483812148634490">Apper du har lastet ned fra Google Play, blir slettet fra denne Chromebooken.
     <ph name="LINE_BREAKS1" />
     Det kan hende at innhold du har kjøpt (for eksempel filmer, TV-serier, musikk, bøker eller andre kjøp i apper), også slettes.
@@ -1805,6 +1806,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan ikke lastes ned sikkert.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Tren stemmemodellen for Google-assistenten</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Ikke tillat noen nettsteder å behandle protokoller</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Denne siden bruker kameraet og mikrofonen din.</translation>
@@ -2460,6 +2462,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3241680850019875542">Velg rotkatalogen til utvidelsen som skal pakkes. Hvis du vil oppdatere en utvidelse, velger du også den private nøkkelfilen.</translation>
 <translation id="3242289508736283383">Apper med manifest-attributtet «kiosk_only» må være installert i ChromeOS-kioskmodus</translation>
 <translation id="3242665648857227438">Denne profilen bruker proxy-innstillingene i ChromeOS.</translation>
+<translation id="3243017971870859287">lese serienumrene til ChromeOS Flex-enheten og -komponenter</translation>
 <translation id="3244294424315804309">Fortsett med å kutte lyden</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – nettverksfeil</translation>
 <translation id="3248902735035392926">Sikkerhet er viktig. Bruk et øyeblikk på å <ph name="BEGIN_LINK" />sjekke utvidelsene dine nå<ph name="END_LINK" /></translation>
@@ -2516,6 +2519,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3297105622164376095">Nettsteder som har lov til å vise påloggingsforespørsler fra tredjeparter</translation>
 <translation id="3297536526040732495">Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene</translation>
 <translation id="329838636886466101">Reparer</translation>
+<translation id="3298438307450647315">lese ChromeOS-enhetsinformasjon og -enhetsdata</translation>
 <translation id="3298789223962368867">Ugyldig nettadresse angitt.</translation>
 <translation id="32991397311664836">Enheter:</translation>
 <translation id="33022249435934718">GDI håndterer</translation>
@@ -2622,6 +2626,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3402255108239926910">Velg et brukerbilde</translation>
 <translation id="3402585168444815892">Registrerer i demomodus</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">lese ChromeOS Flex-enhetsinformasjon og -enhetsdata</translation>
 <translation id="3404065873681873169">Ingen passord er lagret for dette nettstedet</translation>
 <translation id="3405664148539009465">Tilpass skrifttyper</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4031,6 +4036,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4726710355753484204">Bruk Ctrl + Alt + lysstyrke opp for å zoome inn.
 Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4726710629007580002">Det kom advarsler under forsøket på å installere denne utvidelsen:</translation>
+<translation id="472738079453283624">Produkter</translation>
 <translation id="4727847987444062305">Administrert gjesteøkt</translation>
 <translation id="4728558894243024398">Plattform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Administratoren din<ph name="END_LINK" /> har slått av skanning etter skadelig programvare</translation>
@@ -4173,6 +4179,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="486635084936119914">Åpne visse filtyper automatisk når de lastes ned</translation>
 <translation id="4868281708609571334">Lær Google-assistenten å kjenne igjen stemmen til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Denne dialogboksen er ikke fokusert for øyeblikket. Trykk på Kommando + Shift + Tilvalg + A for å fokusere på denne dialogboksen.</translation>
+<translation id="4869170227080975044">lese ChromeOS-nettverksinformasjon</translation>
 <translation id="4870724079713069532">Du kan åpne og redigere støttede filer med denne appen i Filutforsker eller andre apper. For å styre hvilke filer som åpner denne appen som standard, gå til <ph name="BEGIN_LINK" />Windows-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Skriv inn passordet du fikk fra administratoren, for å få informasjon om oppsett</translation>
 <translation id="4870995365819149457">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og 1 app til.</translation>
@@ -4904,6 +4911,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5571066253365925590">Bluetooth er aktivert</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Tilpass profilen din</translation>
+<translation id="5572252023412311448">Vis nettstedsdetaljer for <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Du får bedre forslag i adressefeltet</translation>
 <translation id="5572851009514199876">Start og logg på Chrome, så Chrome kan sjekke om du har tillatelse til å gå til dette nettstedet.</translation>
 <translation id="557506220935336383">Se utvidelsestillatelser for andre nettsteder</translation>
@@ -4949,6 +4957,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5612734644261457353">Passordet ditt kunne fortsatt ikke bekreftes. Merk: Hvis du endret passordet ditt nylig, blir det nye passordet ditt tatt i bruk når du logger deg av. Du må bruke det gamle passordet her.</translation>
 <translation id="5614190747811328134">Brukerinformasjon</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
+<translation id="5616571005307953937">Eldste</translation>
 <translation id="5616726534702877126">Reservér størrelse</translation>
 <translation id="561698261642843490">Lukk Firefox</translation>
 <translation id="5620540760831960151">Denne listen påvirkes av <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5580,6 +5589,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6212168817037875041">Slå av skjermen</translation>
 <translation id="6212752530110374741">Send linken på e-post</translation>
 <translation id="621470880408090483">Ikke la nettsteder koble til Bluetooth-enheter</translation>
+<translation id="6216239400972191926">Avviste nettsteder og apper</translation>
 <translation id="6216601812881225442">Beholderen støtter ikke størrelsesendringer. For å justere mengden plass som er forhåndsallokert til Linux, sikkerhetskopiér disken og gjenopprett den deretter i en ny beholder.</translation>
 <translation id="6216696360484424239">Logg på automatisk</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> er uten nett. Koble til Internett og prøv på nytt.</translation>
@@ -6091,6 +6101,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6703212423117969852">Du kan prøve igjen senere i Chrome.</translation>
 <translation id="6703254819490889819">Gjenopprett sikkerhetskopien</translation>
 <translation id="6706210727756204531">Omfang</translation>
+<translation id="6707122714992751648">kjøre diagnostikktester for ChromeOS</translation>
 <translation id="6707389671160270963">SSL-klientsertifikat</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> og 1 fane til}other{<ph name="PAGE_TITLE" /> og # faner til}}</translation>
 <translation id="6709133671862442373">Nyheter</translation>
@@ -6269,6 +6280,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6860097299815761905">Innstillinger for proxy-tjener</translation>
 <translation id="6860427144121307915">Åpne i en fane</translation>
+<translation id="6861179941841598556">Flere handlinger for <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Nettsteder der alle utvidelser er tillatt</translation>
 <translation id="686366188661646310">Vil du slette passordet?</translation>
 <translation id="6865313869410766144">Skjemadata lagret med autofyll</translation>
@@ -6358,6 +6370,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
         <ph name="BREAK" />
         <ph name="BREAK" />
         Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
+<translation id="6949089178006131285">lese ChromeOS Flex-nettverksinformasjon</translation>
 <translation id="6949434160682548041">Passord (valgfritt)</translation>
 <translation id="6950627417367801484">Gjenopprett apper</translation>
 <translation id="6952242901357037157">Du kan også vise passord fra <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din her</translation>
@@ -7974,6 +7987,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8463001014623882202">Autorisasjonen mislyktes</translation>
 <translation id="846374874681391779">Nedlastingsraden</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> er slått av.</translation>
+<translation id="846399539692727039">kjøre diagnostikktester for ChromeOS Flex</translation>
 <translation id="8464132254133862871">Brukerkontoen er ikke kvalifisert for denne tjenesten.</translation>
 <translation id="8465252176946159372">Ikke gyldig</translation>
 <translation id="8465444703385715657">Du må gi tillatelse for at <ph name="PLUGIN_NAME" /> skal kunne kjøre</translation>
@@ -8120,6 +8134,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8624315169751085215">Kopier til utklippstavlen</translation>
 <translation id="8624354461147303341">Få rabatter</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">lese serienumrene til ChromeOS-enheten og -komponenter</translation>
 <translation id="862542460444371744">&amp;Utvidelser</translation>
 <translation id="8625663000550647058">Nettsteder som ikke har lov til å bruke mikrofonen din</translation>
 <translation id="8625916342247441948">Ikke la nettsteder koble til HID-enheter</translation>

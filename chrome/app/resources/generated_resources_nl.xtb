@@ -884,6 +884,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1805967612549112634">Pincode bevestigen</translation>
 <translation id="1806335016774576568">Overschakelen naar een andere geopende app</translation>
 <translation id="1807246157184219062">Licht</translation>
+<translation id="1809201888580326312">Je wilt wachtwoorden voor deze sites en apps niet opslaan</translation>
 <translation id="1809483812148634490">Apps die je hebt gedownload via Google Play worden van deze Chromebook verwijderd.
     <ph name="LINE_BREAKS1" />
     De content die je hebt gekocht, zoals films, tv-programma's, muziek, boeken of andere in-app aankopen, worden mogelijk ook verwijderd.
@@ -1796,6 +1797,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload.</translation>
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="262154978979441594">Spraakmodel van de Google Assistent trainen</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Niet toestaan dat sites protocollen verwerken</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Deze pagina heeft toegang tot je camera en microfoon.</translation>
@@ -4941,6 +4943,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5612734644261457353">Je wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: als je je wachtwoord onlangs hebt gewijzigd, wordt je nieuwe wachtwoord doorgevoerd zodra je uitlogt. Gebruik hier het oude wachtwoord.</translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
+<translation id="5616571005307953937">Oudste</translation>
 <translation id="5616726534702877126">Schijfgrootte reserveren</translation>
 <translation id="561698261642843490">Firefox sluiten</translation>
 <translation id="5620540760831960151">Deze lijst wordt beïnvloed door <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
@@ -5568,6 +5571,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6212168817037875041">Scherm uitzetten</translation>
 <translation id="6212752530110374741">Link e-mailen</translation>
 <translation id="621470880408090483">Niet toestaan dat sites verbinding maken met bluetooth-apparaten</translation>
+<translation id="6216239400972191926">Geweigerde sites en apps</translation>
 <translation id="6216601812881225442">Je container ondersteunt het aanpassen van de schijfgrootte niet. Als je de hoeveelheid ruimte wilt aanpassen die vooraf is toegewezen aan Linux, maak je een back-up en zet je deze terug in een nieuwe container.</translation>
 <translation id="6216696360484424239">Automatisch inloggen</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> is offline. Maak verbinding met internet en probeer het opnieuw.</translation>

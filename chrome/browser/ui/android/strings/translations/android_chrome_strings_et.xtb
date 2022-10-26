@@ -235,7 +235,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2276231040576210443">Jaotises <ph name="BEGIN_LINK1" />Seaded<ph name="END_LINK1" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Kas soovite avada rakenduse <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Arveldusaadress</translation>
 <translation id="228704530595896923">Jagamisvalikute loend.</translation>
 <translation id="230115972905494466">Ühilduvaid seadmeid ei leitud</translation>
@@ -947,7 +946,6 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 <translation id="6192907950379606605">Piltide kirjelduste saamine</translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6196315980958524839">Paroolid salvestatakse Google'i paroolihaldurisse selles seadmes</translation>
-<translation id="620197886010707372">Kas soovite avada rakenduse <ph name="APPNAME" /> Google Playga?</translation>
 <translation id="6202812185118613467">Sünkroonimise alustamiseks logige uuesti sisse</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>

@@ -651,6 +651,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğunda arxivdən çıxarılır</translation>
 <translation id="6499681088828539489">Paylaşılmış şəbəkələr üçün proksiləri qadağan edin</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> faylın kopyalanması administrator siyasəti əsasında bloklanıb</translation>
 <translation id="6509122719576673235">Norveç</translation>
 <translation id="6528513914570774834">Bu cihazdakı digər istifadəçilərin şəbəkədən istifadə etmələrinə icazə verin</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> sinxronizasiya olunur...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">Bu fayl növü dəstəklənmir. ChromeOS'də faylların açılması barədə <ph name="BEGIN_LINK_HELP" />ətraflı məlumat<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> element kopyalanır...</translation>
 <translation id="7375951387215729722">Fayllar <ph name="COLUMN_NAME" /> üzrə artan sıra ilə çeşidlənib.</translation>
+<translation id="7377161162143020057">Bu faylın kopyalanması administrator siyasəti əsasında bloklanıb</translation>
 <translation id="7402503521691663770">ChromeOS Flex cihazları</translation>
 <translation id="7408870451288633753">Çex</translation>
 <translation id="7417453074306512035">Efiop klaviaturası</translation>

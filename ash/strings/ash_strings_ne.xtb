@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">गेमहरू</translation>
 <translation id="2678852583403169292">'सेलेक्ट टु स्पिक' सुविधाको मेनु</translation>
 <translation id="2689613560355655046">डेस्क ८</translation>
+<translation id="2695132445805301912">किबोर्डको सर्टकट र क्लिकको सङ्ख्या देखाइयोस्</translation>
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">किबोर्डका सेटिङ देखाउनुहोस् <ph name="KEYBOARD_NAME" /> चयन गरिएको छ।</translation>
 <translation id="2700493154570097719">आफ्नो किबोर्ड सेट गर्नुहोस्‌</translation>
@@ -1124,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="731589979057211264">सेल्फ पार्टी अन छ।</translation>
+<translation id="7340731148882810149">स्वतः क्लिक गर्ने सुविधाको मेनु</translation>
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> का लागि अनलक गर्न Enter थिच्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8270450402312105425">{0,plural, =1{एक घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{# घन्टाभित्र यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
+<translation id="8277261673056602147">स्क्रिनमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="8284362522226889623">अघिल्लो डेस्कमा जान टचप्याडमा चारवटा औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>

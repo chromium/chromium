@@ -898,6 +898,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1805967612549112634">Potrdite kodo PIN</translation>
 <translation id="1806335016774576568">Preklop na drugo odprto aplikacijo</translation>
 <translation id="1807246157184219062">Svetlo</translation>
+<translation id="1809201888580326312">Izbrali ste, da ne želite shraniti gesel za ta spletna mesta in aplikacije.</translation>
 <translation id="1809483812148634490">Aplikacije, ki ste jih prenesli iz Googla Play, bodo izbrisane iz tega Chromebooka.
     <ph name="LINE_BREAKS1" />
     Kupljena vsebina, na primer filmi, TV-oddaje, glasba, knjige ali drugi nakupi v aplikacijah, bo morda tudi izbrisana.
@@ -1814,6 +1815,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2620215283731032047">Datoteke <ph name="FILE_NAME" /> ni mogoče varno prenesti.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Usposabljanje glasovnega modela za Pomočnika Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Ne dovoli nobenemu spletnemu mestu obravnave protokolov</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Ta stran dostopa do kamere in mikrofona.</translation>
@@ -4963,6 +4965,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5612734644261457353">Vašega gesla še ni bilo mogoče preveriti. Opomba: Če ste v zadnjem času spremenili geslo, bo novo geslo začelo veljati, ko se odjavite. Tu uporabite starega.</translation>
 <translation id="5614190747811328134">Uporabniško obvestilo</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
+<translation id="5616571005307953937">Najstarejši</translation>
 <translation id="5616726534702877126">Rezerviraj velikost</translation>
 <translation id="561698261642843490">Zapiranje Firefoxa</translation>
 <translation id="5620540760831960151">Na ta seznam vplivajo <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5595,6 +5598,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6212168817037875041">Izklop zaslona</translation>
 <translation id="6212752530110374741">Pošlji povezavo po e-pošti</translation>
 <translation id="621470880408090483">Spletnim mestom ni dovoljeno povezovanje z napravami Bluetooth.</translation>
+<translation id="6216239400972191926">Zavrnjena spletna mesta in aplikacije</translation>
 <translation id="6216601812881225442">Vsebnik ne podpira spreminjanja velikosti. Če želite prilagoditi količino prostora, ki je vnaprej dodeljen Linuxu, ustvarite varnostno kopijo in jo nato obnovite v novem vsebniku.</translation>
 <translation id="6216696360484424239">Samodejna prijava</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> nima povezave. Povežite se v internet in poskusite znova.</translation>

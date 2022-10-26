@@ -119,6 +119,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="1870148520156231997">Parolu Göstərin</translation>
 <translation id="1872096359983322073">Fənər</translation>
+<translation id="1891796056033961979">Yadda saxladığınız əlfəcinlər, parollar, ayarlar və s. bu ekrandan əlçatandır.</translation>
 <translation id="1911619930368729126">Google Diskə yükləyin</translation>
 <translation id="1923342640370224680">Son Saat</translation>
 <translation id="1930989359703290198">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir. İcazə verilməyən hesablar gizlədilib. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3533202363250687977">Bütün Gizli Tabları bağlayın</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3551320343578183772">Paneli qapadın</translation>
+<translation id="3575234738189584619">Linza ilə axtarış edin</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
 <translation id="3588820906588687999">Şəkli Yeni Paneldə Açın</translation>
 <translation id="3595252146048399851">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
@@ -494,6 +496,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="4904877109095351937">Oxunmuş Kimi Qeyd Edin</translation>
 <translation id="4908869848243824489">Google Təkliflər</translation>
 <translation id="4916679969857390442">Obyektiv</translation>
+<translation id="4922154083994158612">Daha Çox Güvənlik İstəyirsiniz?</translation>
 <translation id="4930714375720679147">Aktiv Edin</translation>
 <translation id="4941089862236492464">Üzr istəyirik, elementi paylaşarkən problem baş verdi.</translation>
 <translation id="4944543191714094452">Səhifədə tapın…</translation>
@@ -832,6 +835,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7435356471928173109">Administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="7438481509621345350">İndi yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="7454057999980797137">Ştat/Ölkə</translation>
+<translation id="7459628154744868585">Qabaqcıl Qoruma Aktivdir</translation>
 <translation id="7464701184726199289">Bu, bütün cihazlardan sinxronizasiya olunmuş datanı silir. Yadda saxlanmış sayt ayarları silinməyəcək və axtarış təcrübənizə təsir edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome seçin</translation>
 <translation id="7472734401283673885">Şirkətin Adı</translation>
@@ -1024,6 +1028,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9037965129289936994">Orijinalı Göstərin</translation>
 <translation id="9039373489628511875">Ötürmə qabiliyyəti</translation>
 <translation id="9055772144595778347">Daxil ola bilmir</translation>
+<translation id="9055960261314198756">Qabaqcıl Qoruma Deaktivdir</translation>
 <translation id="9057972802061533987">İzləmək olmur. Xəta oldu.</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>
 <translation id="9068336935206019333">Chrome Anonim rejimində açın</translation>

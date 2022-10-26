@@ -119,6 +119,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1832848789136765277">Bevestig dat jij het bent zodat je altijd toegang hebt tot je synchronisatiegegevens</translation>
 <translation id="1870148520156231997">Wachtwoord bekijken</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
+<translation id="1891796056033961979">Je opgeslagen bookmarks, wachtwoorden, instellingen en meer zijn beschikbaar via dit scherm.</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
 <translation id="1923342640370224680">Afgelopen uur</translation>
 <translation id="1930989359703290198">Je organisatie vereist dat je alleen met bepaalde accounts inlogt. Niet-toegestane accounts zijn verborgen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3533202363250687977">Alle incognitotabbladen sluiten</translation>
 <translation id="3533436815740441613">Nieuw tabblad</translation>
 <translation id="3551320343578183772">Tabblad sluiten</translation>
+<translation id="3575234738189584619">Zoeken met Lens</translation>
 <translation id="3581564640715911333">Aanbieden pagina's in andere talen te vertalen</translation>
 <translation id="3588820906588687999">Afbeelding openen op nieuw tabblad</translation>
 <translation id="3595252146048399851">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
@@ -494,6 +496,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4904877109095351937">Markeren als gelezen</translation>
 <translation id="4908869848243824489">Discover van Google</translation>
 <translation id="4916679969857390442">Lens</translation>
+<translation id="4922154083994158612">Sterkere beveiliging?</translation>
 <translation id="4930714375720679147">Aanzetten</translation>
 <translation id="4941089862236492464">Er is een probleem opgetreden bij het delen van je item.</translation>
 <translation id="4944543191714094452">Zoeken op pagina…</translation>
@@ -832,6 +835,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7435356471928173109">Uitgezet door je beheerder</translation>
 <translation id="7438481509621345350">Je ziet nu artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="7454057999980797137">Provincie</translation>
+<translation id="7459628154744868585">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="7464701184726199289">Hiermee worden gesynchroniseerde gegevens van alle apparaten gewist. Opgeslagen site-instellingen worden niet verwijderd en kunnen je browsegedrag weerspiegelen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Selecteer Chrome</translation>
 <translation id="7472734401283673885">Bedrijfsnaam</translation>
@@ -1024,6 +1028,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9037965129289936994">Origineel bekijken</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9055772144595778347">Kan niet inloggen</translation>
+<translation id="9055960261314198756">Geoptimaliseerde beveiliging staat uit</translation>
 <translation id="9057972802061533987">Volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9068336935206019333">Openen in Chrome-incognitomodus</translation>

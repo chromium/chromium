@@ -235,7 +235,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2276231040576210443">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="2276696007612801991">Logg på Google-kontoen din for å sjekke passordene dine</translation>
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Vil du åpne appen for <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
 <translation id="228704530595896923">Liste over delingsalternativer.</translation>
 <translation id="230115972905494466">Fant ingen kompatible enheter</translation>
@@ -947,7 +946,6 @@ Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjenge
 <translation id="6192907950379606605">Få bildebeskrivelser</translation>
 <translation id="6193448654517602979">Velg faner</translation>
 <translation id="6196315980958524839">Passord lagres i Google Passordlagring på denne enheten</translation>
-<translation id="620197886010707372">Vil du åpne appen for <ph name="APPNAME" /> med Google Play?</translation>
 <translation id="6202812185118613467">Logg på igjen for å starte synkroniseringen</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>

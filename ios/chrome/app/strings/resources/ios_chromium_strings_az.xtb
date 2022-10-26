@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="1722370509450468186">Parolunuz Hesabınızda (<ph name="EMAIL" />) saxlanacaq.</translation>
 <translation id="1736662517232558588">Təmizlənmiş Chromium datası</translation>
+<translation id="177102542580335555">Bu Chromium profili üçün standart qoruma əldə edirsiniz</translation>
 <translation id="1838412507805038478">Chromium təsdiq edir ki, <ph name="ISSUER" /> bu veb saytı sertifikatlaşdırıb.</translation>
 <translation id="1843424232666537147">Chromium 'un funksiyaları internet datanızı idarə etməyə və veb səhifələri tez yükləməyə kömək edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Chromium'dan maksimum yararlanmaq üçün daxil olun.</translation>
 <translation id="4555020257205549924">Bu funksiya aktiv olduqda, Chromium Google Tərcümədən istifadə edərək başqa dillərdə yazılmış səhifələri tərcümə etməyi təklif edəcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chromium'u istifadə edə bilərsiniz.</translation>
+<translation id="4633738821577273991">Bu Chromium profili üçün də Qabaqcıl Güvənli Baxış əldə edin</translation>
 <translation id="4654936625574199632">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_LINK" />İdarə edin<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium skanerini aktiv edin</translation>
 <translation id="4736424910885271643">Hesabınız <ph name="HOSTED_DOMAIN" /> tərəfindən idarə edildiyinə görə Chromium datanız bu cihazdan silinəcək</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Chromium datası bu cihazdan silinsin?</translation>
 <translation id="8240981428553046115">Chromium güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="8308172444429103994">Chromium ipucu. Klaviaturanın yuxarı hissəsində saxlanmış parolunuzu seçməklə daha sürətli daxil olun.</translation>
+<translation id="8409374867500149834">Zərərli vebsaytlara qarşı Chromium'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
 <translation id="858114650497379505">Parol Menecerində saxladığınız parolları iPhone'dakı digər tətbiqlərdə istifadə edə bilərsiniz.</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="865600487977764604">Daxil olduğunuzda Chromium'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>

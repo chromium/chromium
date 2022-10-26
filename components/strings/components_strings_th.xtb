@@ -1129,7 +1129,6 @@
 <translation id="3890664840433101773">เพิ่มอีเมล</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3901925938762663762">บัตรหมดอายุ</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ต้องการเล่นเนื้อหาที่ได้รับความคุ้มครอง ข้อมูลประจำตัวของอุปกรณ์จะได้รับการยืนยันโดย Google และเว็บไซต์นี้อาจเข้าถึงข้อมูลดังกล่าว</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1536,7 +1535,6 @@
 <translation id="4950898438188848926">ปุ่มเปลี่ยนแท็บ โปรดกด Enter เพื่อเปลี่ยนไปยังแท็บที่เปิดอยู่ <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">การทำงาน</translation>
 <translation id="4953689047182316270">ตอบสนองต่อเหตุการณ์การเข้าถึงพิเศษ</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">ขยายรายการ</translation>
 <translation id="4964505745997821360">ประกันสุขภาพ</translation>
 <translation id="4968522289500246572">แอปนี้ออกแบบมาสำหรับอุปกรณ์เคลื่อนที่และอาจไม่เหมาะกับการปรับขนาด แอปอาจเกิดปัญหาหรือรีสตาร์ท</translation>
@@ -1719,7 +1717,6 @@
 <translation id="5379027395132364855">ปุ่มสร้างงานนำเสนอ กด Enter เพื่อสร้างงานนำเสนอใหม่ใน Google สไลด์อย่างรวดเร็ว</translation>
 <translation id="5385857628869214740">อารมณ์ขัน</translation>
 <translation id="5386426401304769735">กลุ่มใบรับรองสำหรับเว็บไซต์นี้มีใบรับรองที่ลงนามโดยใช้ SHA-1</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">เย็บขอบด้านขวา</translation>
 <translation id="5398772614898833570">บล็อกโฆษณา</translation>
 <translation id="5400836586163650660">สีเทา</translation>
@@ -2428,7 +2425,6 @@
 <translation id="733923710415886693">ไม่มีการเปิดเผยใบรับรองของเซิร์ฟเวอร์ผ่านความโปร่งใสของใบรับรอง</translation>
 <translation id="7341357280245177602">ยานพาหนะมือสอง</translation>
 <translation id="7346048084945669753">เป็นพาร์ทเนอร์:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">อนุญาตจนกว่าคุณจะปิดแท็บนี้</translation>
 <translation id="7352651011704765696">มีข้อผิดพลาดเกิดขึ้น</translation>
 <translation id="7353601530677266744">บรรทัดคำสั่ง </translation>

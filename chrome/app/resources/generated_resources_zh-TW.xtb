@@ -2414,6 +2414,7 @@
 <translation id="3197453258332670132">按一下滑鼠右鍵或長按畫面，即可查看所選文字的相關資訊</translation>
 <translation id="3199127022143353223">伺服器</translation>
 <translation id="3200061262156232574">購物車內商品</translation>
+<translation id="3201237270673604992">Z 到 A</translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">分頁音訊已關閉。</translation>
@@ -3733,6 +3734,7 @@
 <translation id="4460014764210899310">取消分組</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
+<translation id="4465649939134800363">排序選項</translation>
 <translation id="4466839823729730432">在此查看回憶集錦</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
@@ -6236,6 +6238,7 @@
 <translation id="6843264316370513305">網路偵錯</translation>
 <translation id="6843423766595476978">Ok Google 設定完成</translation>
 <translation id="6845038076637626672">最大化開啟</translation>
+<translation id="6845231585063669905">A 到 Z</translation>
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」要求使用「<ph name="PRINTER_NAME" />」列印「<ph name="FILE_NAME" />」。</translation>
 <translation id="6847125920277401289">釋出空間以便繼續操作</translation>
 <translation id="6848388270925200958">目前你有一些卡片只能在這部裝置上使用</translation>
@@ -7386,6 +7389,7 @@
 <translation id="7939073735115504773">按一下這項擴充功能的圖示即可讀取及變更 <ph name="HOST" /></translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
 <translation id="7939412583708276221">保留</translation>
+<translation id="7940265372707990269">按「<ph name="SORT_TYPE" />」排序</translation>
 <translation id="7941179291434537290">網路共用完備性：</translation>
 <translation id="7942349550061667556">紅色</translation>
 <translation id="7943368935008348579">下載 PDF</translation>

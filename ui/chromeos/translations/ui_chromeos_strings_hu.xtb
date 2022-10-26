@@ -653,6 +653,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> kicsomagolása ide: <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Proxyk letiltása a megosztott hálózatoknál</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> fájl másolását rendszergazdai házirend tiltja</translation>
 <translation id="6509122719576673235">norvég</translation>
 <translation id="6528513914570774834">Engedélyezi a hálózat használatát az eszköz többi felhasználója számára</translation>
 <translation id="653019979737152879">A(z) <ph name="FILE_NAME" /> szinkronizálása…</translation>
@@ -755,6 +756,7 @@
 <translation id="7357762654218998920">Ez a fájltípus nem támogatott. <ph name="BEGIN_LINK_HELP" />További információ<ph name="END_LINK_HELP" /> a fájlok ChromeOS-en való megnyitásáról.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elem másolása…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> szerint rendezett, csökkenő sorrendben lévő fájllista.</translation>
+<translation id="7377161162143020057">A fájl másolását rendszergazdai házirend tiltja</translation>
 <translation id="7402503521691663770">ChromeOS Flex-eszközök</translation>
 <translation id="7408870451288633753">cseh</translation>
 <translation id="7417453074306512035">Etióp billentyűzet</translation>

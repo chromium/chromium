@@ -652,6 +652,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ही <ph name="FOLDER_NAME" /> मध्ये एक्स्ट्रॅक्ट करत आहे</translation>
 <translation id="6499681088828539489">शेअर केलेल्या नेटवर्कसाठी प्रॉक्सींना अनुमती देऊ नका</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> फाइल कॉपी करणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे</translation>
 <translation id="6509122719576673235">नॉर्वेजियन</translation>
 <translation id="6528513914570774834">या डिव्हाइसच्या इतर वापरकर्त्यांना हे नेटवर्क वापरण्याची परवानगी द्या</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> संकालित करत आहे...</translation>
@@ -754,6 +755,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7357762654218998920">या फाइल प्रकाराला सपोर्ट नाही. ChromeOS वर फाइल उघडण्याविषयी <ph name="BEGIN_LINK_HELP" />अधिक जाणून घ्या<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> आयटम कॉपी करत आहे...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> नुसार उतरत्या क्रमाने क्रमवारी लावलेली फाइल सूची.</translation>
+<translation id="7377161162143020057">ही फाइल कॉपी करणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे</translation>
 <translation id="7402503521691663770">ChromeOS Flex डिव्हाइस</translation>
 <translation id="7408870451288633753">झेक</translation>
 <translation id="7417453074306512035">इथिओपिक कीबोर्ड</translation>

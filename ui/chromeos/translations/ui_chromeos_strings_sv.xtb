@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="649877868557234318">Extraherar <ph name="FILE_NAME" /> till <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Tillåt inte proxyservrar för delade nätverk</translation>
+<translation id="6503285896705205014">Möjligheten att kopiera <ph name="COUNT" /> filer blockeras av administratörspolicyn</translation>
 <translation id="6509122719576673235">norska</translation>
 <translation id="6528513914570774834">Tillåt att andra användare på den här enheten kan använda det här nätverket</translation>
 <translation id="653019979737152879">Synkroniserar <ph name="FILE_NAME" /> ...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Den här filtypen stöds inte. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> objekt kopieras ...</translation>
 <translation id="7375951387215729722">Fillistan har sorterats efter <ph name="COLUMN_NAME" /> i fallande ordning.</translation>
+<translation id="7377161162143020057">Möjligheten att kopiera den här filen blockeras av administratörspolicyn</translation>
 <translation id="7402503521691663770">ChromeOS Flex-enheter</translation>
 <translation id="7408870451288633753">tjeckiska</translation>
 <translation id="7417453074306512035">Tangentbord för etiopiska</translation>

@@ -653,6 +653,7 @@
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> uitpakken naar <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Proxy's voor gedeelde netwerken niet toestaan</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> bestanden kopiëren is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="6509122719576673235">Noors</translation>
 <translation id="6528513914570774834">Andere gebruikers van dit apparaat toestaan om dit netwerk te gebruiken</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> synchroniseren...</translation>
@@ -755,6 +756,7 @@
 <translation id="7357762654218998920">Dit bestandstype wordt niet ondersteund. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> items kopiëren...</translation>
 <translation id="7375951387215729722">Lijst met bestanden gesorteerd op <ph name="COLUMN_NAME" /> in aflopende volgorde.</translation>
+<translation id="7377161162143020057">Dit bestand kopiëren is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="7402503521691663770">Chrome OS Flex-apparaten</translation>
 <translation id="7408870451288633753">Tsjechië</translation>
 <translation id="7417453074306512035">Ethiopisch toetsenbord</translation>

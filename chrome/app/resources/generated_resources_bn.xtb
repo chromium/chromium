@@ -896,6 +896,7 @@
 <translation id="1805967612549112634">পিন নিশ্চিত করুন</translation>
 <translation id="1806335016774576568">অন্য কোনও খোলা অ্যাপে যান</translation>
 <translation id="1807246157184219062">আলো</translation>
+<translation id="1809201888580326312">এই সাইট এবং অ্যাপগুলির জন্য আপনি পাসওয়ার্ড সেভ না করার সিদ্ধান্ত নিয়েছেন</translation>
 <translation id="1809483812148634490">Google Play থেকে ডাউনলোড করা অ্যাপ এই Chromebook থেকে মুছে ফেলা হবে।
     <ph name="LINE_BREAKS1" />
     সিনেমা, টিভি শো, মিউজিক, বই, বা অন্যান্য অ্যাপ-মধ্যস্থ কেনাকাটার মতো কন্টেন্ট হয়ত মুছে ফেলা হতে পারে।
@@ -1537,7 +1538,7 @@
 <translation id="2352810082280059586">লক স্ক্রিন নোটগুলি নিজে থেকেই <ph name="LOCK_SCREEN_APP_NAME" /> এ সেভ হয়ে যায়। সবথেকে সাম্প্রতিক নোটটি লক স্ক্রিনে রয়ে যায়।</translation>
 <translation id="2353297238722298836">ক্যামেরা এবং মাইক্রোফোন ব্যবহারে অনুমতি দেওয়া হয়েছে</translation>
 <translation id="2355314311311231464">প্রভিশনিং করা যায়নি কারণ আপনার অ্যাকাউন্টের বিবরণ পুনরুদ্ধার করা সম্ভব হয়নি। আবার চেষ্টা করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
-<translation id="2355477091455974894">পাওয়ার সেভার বিকল্প</translation>
+<translation id="2355477091455974894">এনার্জি সেভার বিকল্প</translation>
 <translation id="2355604387869345912">ইনস্ট্যান্ট টিথারিং চালু করুন</translation>
 <translation id="2356070529366658676">জিজ্ঞাসা করুন</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" />-কে সরান</translation>
@@ -1812,6 +1813,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ফাইলটি নিরাপদে ডাউনলোড করা যাচ্ছে না।</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="262154978979441594">Google Assistant-এর ভয়েস মডেলকে প্রশিক্ষণ দিন</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">প্রোটোকল পরিচালনার জন্য কোনও সাইটকে মঞ্জুরি দেবেন না</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">এই পৃষ্ঠাটি আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস করছে৷</translation>
@@ -4961,6 +4963,7 @@
 <translation id="5612734644261457353">দুঃখিত, আপনার পাসওয়ার্ড এখনো পর্যন্ত যাচাই করা যায়নি৷ দ্রষ্টব্য: আপনি যদি সম্প্রতি আপনার পাসওয়ার্ড পরিবর্তন করে থাকেন, তাহলে আপনি সাইন-আউট করার পর আপনার নতুন পাসওয়ার্ড প্রয়োগ করা হবে, অনুগ্রহ করে এখানে পুরনো পাসওয়ার্ড ব্যবহার করুন৷</translation>
 <translation id="5614190747811328134">ব্যবহারকারী বিজ্ঞপ্তি</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
+<translation id="5616571005307953937">সবচেয়ে পুরনো</translation>
 <translation id="5616726534702877126">ডিস্কের সাইজ রিজার্ভ করুন</translation>
 <translation id="561698261642843490">Firefox বন্ধ করুন</translation>
 <translation id="5620540760831960151">এই তালিকাতে <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5594,6 +5597,7 @@
 <translation id="6212168817037875041">ডিসপ্লে বন্ধ করুন</translation>
 <translation id="6212752530110374741">ইমেল লিঙ্ক</translation>
 <translation id="621470880408090483">সাইটগুলিকে ব্লুটুথ ডিভাইস কানেক্ট করতে দেয় না</translation>
+<translation id="6216239400972191926">সাইট এবং অ্যাপ বাতিল করা হয়েছে</translation>
 <translation id="6216601812881225442">আপনার কন্টেনার রিসাইজ করা যায় না। Linux-এ আগে থেকে বরাদ্দ করা জায়গার পরিমাণ অ্যাডজাস্ট করতে, ব্যাক-আপ নিয়ে নতুন কন্টেনারে ফিরিয়ে আনুন।</translation>
 <translation id="6216696360484424239">অটোমেটিক সাইন-ইন হয়ে যাবে</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> অফলাইন আছে৷ ইন্টারনেটে কানেক্ট করে আবার চেষ্টা করুন৷</translation>
@@ -5680,6 +5684,7 @@
 <translation id="6295855836753816081">সংরক্ষণ করা হচ্ছে...</translation>
 <translation id="629730747756840877">অ্যাকাউন্ট</translation>
 <translation id="6298962879096096191">Android অ্যাপ ইনস্টল করতে Google Play ব্যবহার করুন</translation>
+<translation id="6300125580697461004">পাওয়ার সেভার সম্পর্কে মতামত পাঠান</translation>
 <translation id="6300177430812514606">ডেটা পাওয়া বা পাঠানো শেষ করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="630065524203833229">ব&amp;ন্ধ</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> অটোমেটিক কনফিগার করা যাচ্ছে না। প্রিন্টারের উন্নত বিবরণ উল্লেখ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -5880,6 +5885,7 @@
 <translation id="6494327278868541139">উন্নত সুরক্ষা সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6494445798847293442">কোনো শংসাকরণ কর্তৃপক্ষ নয়</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{এই ডেটায় সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে}=1{এই ফাইলে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে}one{এই ফাইলগুলিতে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে}other{এই ফাইলগুলিতে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে}}</translation>
+<translation id="6497548114956205206">পাওয়ার সেভার সম্পর্কে আরও জানুন</translation>
 <translation id="6497784818439587832">স্ক্রিনে কোনও আইটেম বড় বা ছোট করে দেখার জন্য ডিসপ্লে সাইজ পরিবর্তন করা</translation>
 <translation id="6497789971060331894">মাউস উল্টো দিকে স্ক্রল করা</translation>
 <translation id="6498249116389603658">&amp;আপনার সব ভাষা</translation>
@@ -6934,7 +6940,7 @@
 <translation id="7495778526395737099">আপনার পুরানো পাসওয়ার্ড ভুলে গেছেন?</translation>
 <translation id="7497981768003291373">আপনার সাম্প্রতিক কোনও ক্যাপচার করা WebRTC টেক্সট লগ নেই।</translation>
 <translation id="7501957181231305652">অথবা</translation>
-<translation id="7502220299952823578">"সব সময় এইসব সাইট অ্যাক্টিভ রাখুন" তালিকায় যোগ করুন</translation>
+<translation id="7502220299952823578">"এইসব সাইট সব সময় অ্যাক্টিভ রাখুন" তালিকায় যোগ করুন</translation>
 <translation id="7503191893372251637">Netscape সার্টিফিকেটের প্রকার</translation>
 <translation id="7503985202154027481">আপনার এই সাইটে যাওয়ার রেকর্ড নিরাপত্তা কীয়ে সেভ করা থাকবে।</translation>
 <translation id="750509436279396091">ডাউনলোড ফোল্ডার খুলুন</translation>
@@ -7439,6 +7445,7 @@
 <translation id="7955177647836564772">Smart Lock চালু থাকা অবস্থায় আপনার ফোন যদি আনলক থাকে, তাহলে আপনাকে পাসওয়ার্ড বা পিন লিখতে হবে না</translation>
 <translation id="7956373551960864128">আপনার সেভ করা প্রিন্টার</translation>
 <translation id="7957074856830851026">ডিভাইসের তথ্য দেখুন, যেমন এর সিরিয়াল নম্বর বা অ্যাসেট আইডি</translation>
+<translation id="7957186326898555886">মেমরি সেভার সম্পর্কে মতামত পাঠান</translation>
 <translation id="7959074893852789871">ফাইলটিতে একাধিক শংসাপত্র রয়েছে, এর মধ্যে কয়েকটি আমদানি করা হয়নি:</translation>
 <translation id="7959665254555683862">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
@@ -7860,6 +7867,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />১টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}one{<ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}other{<ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}}</translation>
 <translation id="8342221978608739536">ব্যবহার করিনি</translation>
+<translation id="8342399870062010251">মেমরি সেভার সম্পর্কে আরও জানুন</translation>
 <translation id="8342861492835240085">একটি সংগ্রহ বেছে নিন</translation>
 <translation id="8345848587667658367">আপনি এখন আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি এবং অ্যাপ দেখতে পারেন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
@@ -8068,6 +8076,7 @@
 <translation id="8549316893834449916">আপনার Chromebook-এ সাইন-ইন করার জন্য আপনার Google অ্যাকাউন্ট ব্যবহার করুন - সেই একই অ্যাকাউন্ট যা আপনি Gmail, Drive, YouTube এবং Google-এর আরও পরিষেবায় ব্যবহার করেন।</translation>
 <translation id="8551388862522347954">লাইসেন্সগুলি</translation>
 <translation id="8551588720239073785">তারিখ ও সময়ের সেটিংস</translation>
+<translation id="8552102814346875916">"সব সময় এইসব সাইট অ্যাক্টিভ রাখুন" তালিকায় সেভ করুন</translation>
 <translation id="8553342806078037065">অন্যান্য ব্যক্তিদের পরিচালনা করুন</translation>
 <translation id="8554899698005018844">কোনও ভাষা নেই</translation>
 <translation id="855604308879080518">এই Chromebook-এ বিভিন্ন USB ডিভাইস অ্যাক্সেস করতে Android অ্যাপে অনুমতি দিন। প্রত্যেকবার USB ডিভাইস প্লাগ-ইন করার সময় অনুমতির জন্য অনুরোধ করা হবে। তবে আলাদা Android অ্যাপের ক্ষেত্রে অতিরিক্ত অনুমতি নিতে হবে।</translation>

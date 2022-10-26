@@ -235,7 +235,6 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="2276231040576210443">Neyin senkronize edileceğini istediğiniz zaman <ph name="BEGIN_LINK1" />ayarlardan<ph name="END_LINK1" /> seçebilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="2276696007612801991">Şifrelerinizi kontrol etmek için Google hesabınızda oturum açın</translation>
 <translation id="2278052315791335171">Bu şifre silindiğinde <ph name="SITE" /> üzerindeki hesabınız silinmez</translation>
-<translation id="2279146068164892489"><ph name="APPNAME" /> uygulaması açılsın mı?</translation>
 <translation id="2286841657746966508">Fatura adresi</translation>
 <translation id="228704530595896923">Paylaşım seçenekleri listesi.</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
@@ -947,7 +946,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6192907950379606605">Resim açıklaması al</translation>
 <translation id="6193448654517602979">Sekmeleri seçin</translation>
 <translation id="6196315980958524839">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir</translation>
-<translation id="620197886010707372"><ph name="APPNAME" /> uygulaması Google Play ile açılsın mı?</translation>
 <translation id="6202812185118613467">Senkronizasyonu başlatmak için tekrar oturum açın</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> değil misiniz?</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>

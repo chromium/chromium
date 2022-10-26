@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1511320244449497906">Du är inloggad på och synkroniserar din data med ett konto som hanteras av <ph name="DOMAIN" />. Administratören kan nu ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chrome fungerar.</translation>
+<translation id="1554731936187952550">Du har den starkaste säkerheten i Chrome mot skadliga webbplatser</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Det här kontot och data som inte har sparats tas bort från Chrome och andra Google-appar på den här enheten.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Med Chrome sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3345341804167540816">Använd Chrome överallt</translation>
+<translation id="3503014945441706099">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="3522659714780527202">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="3533694711092285624">Det finns inga sparade lösenord. Chrome kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="3641179212828090796">Logga in snabbare med lösenordet du sparade i Chrome</translation>
@@ -135,6 +137,7 @@ Tänk på detta:
 <ph name="BEGIN_INDENT" />  • Information om hur du använder Chrome skickas till Google men kopplas inte till dig.
   • Om Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen.
   • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Du får standardsäkerhetsskydd för den här Chromium-profilen</translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 <translation id="9122931302567044771">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chrome.</translation>
 </translationbundle>

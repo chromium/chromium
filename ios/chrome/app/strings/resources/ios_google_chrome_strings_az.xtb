@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Tablar, parollar və ödəniş məlumatlarınızı bütün cihazlarınızda sinxronlaşdırmaq üçün defolt olaraq Chrome'u ayarlayın</translation>
 <translation id="1504372625950710826">Chrome güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="1511320244449497906"><ph name="DOMAIN" /> tərəfindən idarə olunan hesaba daxil olmusunuz və onunla datanızı sinxronizasiya edirsiniz. Bu hesabın administratoru indi Chrome'un davranışını dəyişə biləcək həmin hesaba xas istifadəçi siyasətlərini ayarlaya bilər.</translation>
+<translation id="1554731936187952550">Zərərli vebsaytlara qarşı Chrome'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
 <translation id="1682483655351012182">Chrome Datasını Sinxronizasiya Edin</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Bu hesab və bütün saxlanmamış data Chrome'dan və bu cihazdakı digər Google tətbiqlərindən silinəcək.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome hesablarınızı vebə gətirməklə vaxtınıza qənaət edir. Hesabları Ayarlar bölməsindən əlavə edə və ya silə bilərsiniz.</translation>
 <translation id="3282568296779691940">Chrome'a daxil olun</translation>
 <translation id="3345341804167540816">Chrome'u Hər yerdə İstifadə edin</translation>
+<translation id="3503014945441706099">Bu Chrome profili üçün də Qabaqcıl Güvənli Baxış əldə edin</translation>
 <translation id="3522659714780527202">Chrome istifadə etdiyiniz hər yerdən tabları görmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="3533694711092285624">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Chrome onları yoxlaya bilər.</translation>
 <translation id="3641179212828090796">Sürətli daxil olmaq üçün Chrome'da saxladığınız paroldan istifadə edin</translation>
@@ -137,6 +139,7 @@ Bunları nəzərə alın:
   • Chrome xəta ilə üzləşərsə, xəta haqqında təfərrüatlar bəzi şəxsi məlumatları ehtiva edə bilər.
 
   • Sinxronizasiyanı aktiv etsəniz, göstəricilərə ziyarət etdiyiniz keçidlər haqqında məlumat da daxil ola bilər.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Bu Chrome profili üçün standart qoruma əldə edirsiniz</translation>
 <translation id="9112744793181547300">Chrome defolt olaraq ayarlansın?</translation>
 <translation id="9122931302567044771">Yəni, Chrome hər dəfə mobil saytı tələb edəcək.</translation>
 </translationbundle>

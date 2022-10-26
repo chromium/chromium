@@ -307,6 +307,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2673968385134502798">Spel</translation>
 <translation id="2678852583403169292">Textuppläsningsmeny</translation>
 <translation id="2689613560355655046">Skrivbord 8</translation>
+<translation id="2695132445805301912">Visa knappar och klick</translation>
 <translation id="2695305337569143674">webb</translation>
 <translation id="2697697418792422688">Visa tangentbordsinställningar. <ph name="KEYBOARD_NAME" /> har markerats.</translation>
 <translation id="2700493154570097719">Ställ in tangentbord</translation>
@@ -1124,6 +1125,7 @@ Nyligen installerad</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Utöka kameran</translation>
 <translation id="731589979057211264">Shelf Party är på.</translation>
+<translation id="7340731148882810149">Meny för automatiska klick</translation>
 <translation id="7346909386216857016">Ok, jag förstår</translation>
 <translation id="7348093485538360975">Skärmtangentbord</translation>
 <translation id="735745346212279324">VPN frånkopplat</translation>
@@ -1301,6 +1303,7 @@ Nyligen installerad</translation>
 <translation id="826107067893790409">Tryck på Retur för att låsa upp för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8270450402312105425">{0,plural, =1{Byt till en tidigare version av enheten inom en timme}other{Byt till en tidigare version av enheten inom # timmar}}</translation>
+<translation id="8277261673056602147">Markera text på skärmen</translation>
 <translation id="8284362522226889623">Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>

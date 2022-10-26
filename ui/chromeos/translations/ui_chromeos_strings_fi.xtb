@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> puretaan tänne: <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Estä välityspalvelimien käyttö jaetuissa verkoissa</translation>
+<translation id="6503285896705205014">Järjestelmänvalvojakäytäntö on estänyt <ph name="COUNT" /> tiedoston kopioimisen</translation>
 <translation id="6509122719576673235">norja</translation>
 <translation id="6528513914570774834">Anna muiden laitteen käyttäjien käyttää tätä verkkoa</translation>
 <translation id="653019979737152879">Synkronoidaan kohdetta <ph name="FILE_NAME" />…</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Tätä tiedostotyyppiä ei tueta. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>
 <translation id="7359359531237882347">Kopioidaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="7375951387215729722">Tiedostoluettelo lajiteltu laskevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
+<translation id="7377161162143020057">Järjestelmänvalvojakäytäntö on estänyt tämän tiedoston kopioimisen</translation>
 <translation id="7402503521691663770">ChromeOS Flex ‑laitteet</translation>
 <translation id="7408870451288633753">tšekki</translation>
 <translation id="7417453074306512035">Etiopialainen näppäimistö</translation>

@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="1511320244449497906">Sua conta está conectada e seus dados estão sendo sincronizados com uma conta gerenciada por <ph name="DOMAIN" />, onde o administrador pode definir políticas do usuário específicas para a conta que podem mudar o comportamento do Chrome.</translation>
+<translation id="1554731936187952550">Você tem a segurança reforçada do Chrome contra sites perigosos</translation>
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">O Chrome permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3345341804167540816">Usar o Chrome em qualquer lugar</translation>
+<translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para ver suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3641179212828090796">Use a senha salva no Chrome para fazer login com mais rapidez</translation>
@@ -137,6 +139,7 @@ Considerações:
   • Se o Chrome falhar, os detalhes sobre a falha poderão incluir algumas informações pessoais.
 
   • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Você está usando a proteção padrão neste perfil do Chrome</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 </translationbundle>

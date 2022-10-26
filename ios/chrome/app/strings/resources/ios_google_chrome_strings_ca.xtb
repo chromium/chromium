@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Configura Chrome com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
 <translation id="1504372625950710826">Chrome no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="1511320244449497906">Tens la sessió iniciada i sincronitzes les teves dades amb un compte gestionat per <ph name="DOMAIN" />. L'administrador d'aquest compte ara pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
+<translation id="1554731936187952550">Tens la seguretat més efectiva de Chrome contra llocs web perillosos</translation>
 <translation id="1682483655351012182">Sincronitza les dades de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Per ajudar-te a estalviar temps, Chrome connecta els teus comptes al web. Pots afegir o suprimir comptes a Configuració.</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3345341804167540816">Utilitzeu Chrome a tot arreu</translation>
+<translation id="3503014945441706099">Obtén també Navegació segura millorada per a aquest perfil de Chrome</translation>
 <translation id="3522659714780527202">Per veure les pestanyes des de tots els llocs on facis servir Chrome, activa la sincronització</translation>
 <translation id="3533694711092285624">No hi ha cap contrasenya desada. Chrome pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="3641179212828090796">Utilitza la contrasenya que has desat a Chrome per iniciar la sessió més ràpidament</translation>
@@ -135,6 +137,7 @@ Aspectes que cal tenir en compte:
 <ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu.
   • Si Chrome falla, els detalls sobre el bloqueig poden incloure informació personal.
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Tindràs protecció de seguretat estàndard per a aquest perfil de Chrome</translation>
 <translation id="9112744793181547300">Vols establir Chrome com a predeterminat?</translation>
 <translation id="9122931302567044771">Això vol dir que Chrome sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
 </translationbundle>

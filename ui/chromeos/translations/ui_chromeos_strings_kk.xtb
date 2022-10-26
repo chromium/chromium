@@ -650,6 +650,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші:<ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына көшірілуде</translation>
 <translation id="6499681088828539489">Ортақ желіге прокси-серверлерді пайдаланбау</translation>
+<translation id="6503285896705205014">Әкімші саясаты <ph name="COUNT" /> файлды көшіруге тыйым салған.</translation>
 <translation id="6509122719576673235">норвег</translation>
 <translation id="6528513914570774834">Бұл құрылғының басқа пайдаланушыларына осы желіні пайдалануға рұқсат ету</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрондалуда…</translation>
@@ -752,6 +753,7 @@
 <translation id="7357762654218998920">Мұндай файл түріне қолдау көрсетілмейді. ChromeOS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ ақпарат алыңыз<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> элемент көшірілуде…</translation>
 <translation id="7375951387215729722">Файлдар тізімі <ph name="COLUMN_NAME" /> бойынша кему ретімен сұрыпталды.</translation>
+<translation id="7377161162143020057">Әкімші саясаты бұл файлды көшіруге тыйым салған.</translation>
 <translation id="7402503521691663770">ChromeOS Flex құрылғылары</translation>
 <translation id="7408870451288633753">Чех</translation>
 <translation id="7417453074306512035">Эфиоп пернетақтасы</translation>

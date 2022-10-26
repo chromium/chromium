@@ -2421,6 +2421,7 @@ Pretende pará-lo?</translation>
 <translation id="3197453258332670132">Ao clicar com o botão direito do rato ou ao manter o botão premido, apresenta informações para a sua seleção de texto</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">No seu carrinho de compras</translation>
+<translation id="3201237270673604992">Z a A</translation>
 <translation id="3201422919974259695">Os dispositivos USB disponíveis são apresentados aqui.</translation>
 <translation id="3202131003361292969">Caminho</translation>
 <translation id="3202173864863109533">O som deste separador foi desativado.</translation>
@@ -3744,6 +3745,7 @@ Pretende pará-lo?</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465236939126352372">Limite de tempo de <ph name="TIME" /> definido para a app <ph name="APP_NAME" />.</translation>
+<translation id="4465649939134800363">Opções de ordenação</translation>
 <translation id="4466839823729730432">Veja as suas memórias aqui</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar ficheiros em <ph name="FOLDERNAME" /></translation>
@@ -6257,6 +6259,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6843264316370513305">Depuração de rede</translation>
 <translation id="6843423766595476978">O OK Google está pronto</translation>
 <translation id="6845038076637626672">Abrir Maximizada</translation>
+<translation id="6845231585063669905">A a Z</translation>
 <translation id="6846178040388691741">A extensão "<ph name="EXTENSION_NAME" />" pretende imprimir o ficheiro <ph name="FILE_NAME" /> com a impressora <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Liberte espaço para continuar</translation>
 <translation id="6848388270925200958">De momento, tem alguns cartões que apenas podem ser utilizados neste dispositivo.</translation>
@@ -7411,6 +7414,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7939073735115504773">Clique no ícone desta extensão para ler e alterar <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Gerir certificados do dispositivo</translation>
 <translation id="7939412583708276221">Manter na mesma</translation>
+<translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>

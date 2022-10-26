@@ -117,8 +117,10 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1815941218935345331">Šifra</translation>
 <translation id="1820259098641718022">Dodato je na listu za čitanje</translation>
 <translation id="1832848789136765277">Da biste bili sigurni da uvek možete da pristupate sinhronizovanim podacima, potvrdite da ste to vi</translation>
+<translation id="1857751338515529195">Idite na sledeću karticu</translation>
 <translation id="1870148520156231997">Prikažite lozinku</translation>
 <translation id="1872096359983322073">Blic</translation>
+<translation id="1891796056033961979">Sačuvani obeleživači, lozinke, podešavanja i drugo su dostupni na ovom ekranu.</translation>
 <translation id="1911619930368729126">Otpremi u Google disk</translation>
 <translation id="1923342640370224680">Prethodni sat</translation>
 <translation id="1930989359703290198">Organizacija vam dozvoljava da se prijavite samo pomoću određenih naloga. Nalozi koji nisu dozvoljeni su skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2139867232736819575">Potražite tekst koji ste kopirali</translation>
 <translation id="214201757571129614">Prijavite se…</translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
+<translation id="2150175299852799498">Chrome za mobilne uređaje</translation>
 <translation id="2155145621546387786">Deli Chrome</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2178545675770638239">Izaberite lozinku</translation>
@@ -225,6 +228,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2783054063075604403">Unable to Create Link (Pravljenje linka nije uspelo)</translation>
 <translation id="2786701870377699570">Pretražujte kartice na sinhronizovanim uređajima</translation>
 <translation id="2800683595868705743">Izađi iz prebacivača kartica</translation>
+<translation id="2812727400746650635">Idi na prethodnu karticu</translation>
 <translation id="2815198996063984598">2. Dodirnite Podrazumevana aplikacija za pregledanje</translation>
 <translation id="2820289420301699633">Administrator ima kontrolu nad Chrome-om i može da pristupa njegovim podacima</translation>
 <translation id="2830972654601096923">Upravljajte adresama...</translation>
@@ -327,6 +331,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3533202363250687977">Zatvori sve kartice bez arhiviranja</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
+<translation id="3575234738189584619">Pretražujte pomoću Objektiva</translation>
 <translation id="3581564640715911333">Ponudi prevod stranica na drugim jezicima</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
 <translation id="3595252146048399851">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
@@ -448,6 +453,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4630540211544979320">Prevodi stranice</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
 <translation id="4636930964841734540">Informacije</translation>
+<translation id="4649294145748405669">Chrome je brži, bezbedniji i prilagođen vama. Preuzmite ga ovde.</translation>
 <translation id="4650125387981512669">Nastavi kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Ova funkcija se uključuje kada se prijavite na Google nalog.</translation>
 <translation id="4659667755519643272">Uđi u prebacivač kartica</translation>
@@ -494,6 +500,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4904877109095351937">Označi kao pročitano</translation>
 <translation id="4908869848243824489">Google Discover</translation>
 <translation id="4916679969857390442">Objektiv</translation>
+<translation id="4922154083994158612">Više bezbednosti?</translation>
 <translation id="4930714375720679147">Uključi</translation>
 <translation id="4941089862236492464">Žao nam je, došlo je do problema pri deljenju stavke.</translation>
 <translation id="4944543191714094452">Pronađi na stranici…</translation>
@@ -615,6 +622,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5913600720976431809">Opcije za prevod stranice</translation>
 <translation id="5938160824633642847">Uređaj je skoro pun. Oslobodite prostor i probajte ponovo.</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da čuvate slike u fototeci.</translation>
+<translation id="5949969988218625680">Prikaži istoriju</translation>
 <translation id="5951816930277761335">Delite link</translation>
 <translation id="5955891643922670672">Pregledate oflajn verziju</translation>
 <translation id="5957613098218939406">Još opcija</translation>
@@ -695,6 +703,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 Podaci su šifrovani pomoću pristupne fraze za sinhronizaciju <ph name="TIME" />. Unesite je da biste započeli sinhronizaciju.</translation>
 <translation id="6418346271604475326">Priprema PDF datoteke</translation>
 <translation id="6434591244308415567">Došlo je do greške. Probajte ponovo kasnije.</translation>
+<translation id="6435817889602303010">Ponovno otvori poslednju zatvorenu karticu</translation>
 <translation id="6439338047467462846">Sve je dozvoljeno</translation>
 <translation id="6445051938772793705">Zemlja</translation>
 <translation id="6445981559479772097">Poruka je poslata.</translation>
@@ -832,6 +841,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7435356471928173109">Isključio je administrator</translation>
 <translation id="7438481509621345350">Sada ćete videti priče sa <ph name="CHANNEL_NAME" /> kada otvorite novu karticu.</translation>
 <translation id="7454057999980797137">Država/zemlja</translation>
+<translation id="7459628154744868585">Poboljšana zaštita je uključena</translation>
 <translation id="7464701184726199289">Ovo će obrisati sinhronizovane podatke sa svih uređaja. Nećemo izbrisati sačuvana podešavanja sajtova i ona mogu da odražavaju vaše navike pri pregledanju. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Izaberite Chrome</translation>
 <translation id="7472734401283673885">Naziv kompanije</translation>
@@ -860,6 +870,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7726702057919861819">Meni → Istorija → Obriši podatke pregledanja</translation>
 <translation id="7741325291586284254">Nova stranica na kartici bez arhiviranja</translation>
+<translation id="7743314735291715910">Otvori lokaciju…</translation>
 <translation id="7756478488453921771">Meni → Podešavanja → Načini plaćanja</translation>
 <translation id="7765158879357617694">Premesti</translation>
 <translation id="7772032839648071052">Potvrdi pristupnu frazu</translation>
@@ -1024,6 +1035,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="9037965129289936994">Prikaži original</translation>
 <translation id="9039373489628511875">Propusni opseg</translation>
 <translation id="9055772144595778347">Prijavljivanje nije uspelo</translation>
+<translation id="9055960261314198756">Poboljšana zaštita je isključena</translation>
 <translation id="9057972802061533987">Praćenje nije uspelo. Došlo je do greške.</translation>
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="9068336935206019333">Otvori u Chrome režimu bez arhiviranja</translation>

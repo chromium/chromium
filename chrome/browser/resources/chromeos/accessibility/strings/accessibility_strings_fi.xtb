@@ -327,6 +327,7 @@
 <translation id="309749186376891736">Siirrä kohdistinta</translation>
 <translation id="3103579948980282461">Keskitumma punavioletti</translation>
 <translation id="3104705064753753826">ilm.ikk.</translation>
+<translation id="3105857328626674463">korosta edellinen sana</translation>
 <translation id="3109724472072898302">Tiivistetty</translation>
 <translation id="311015743332597320">Pyyhkäise oikealle neljällä sormella</translation>
 <translation id="3112457281078985179">Käynnistä tai sulje ChromeVox painamalla Control + Alt + Z.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">Edellinen käyty linkki</translation>
 <translation id="3241638166094654466">Kunkin rivin solut:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">siirrä loppuun</translation>
 <translation id="3260949043575829030">Edellinen samanlainen kohde</translation>
 <translation id="3270069636408109001">Ei seuraavia taulukoita</translation>
 <translation id="3273791280096244679">Tallenna tunniste</translation>
@@ -947,6 +949,7 @@
 <translation id="743783356331413498">Esimerkki</translation>
 <translation id="7439060726180460871">Hakemisto</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">korosta seuraava sana</translation>
 <translation id="7465123027577412805">Käytetäänkö luonnollista ääntä?</translation>
 <translation id="7491962110804786152">sarkain</translation>
 <translation id="7492497529767769458">Siirry seuraavaan osioon. Näitä ovat esimerkiksi tila-alue ja Käynnistysohjelma.</translation>

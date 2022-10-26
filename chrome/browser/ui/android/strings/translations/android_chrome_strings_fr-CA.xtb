@@ -235,7 +235,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2276231040576210443">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Ouvrir l'application pour <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="228704530595896923">Liste d'options de partage.</translation>
 <translation id="230115972905494466">Aucun appareil compatible trouvé</translation>
@@ -947,7 +946,6 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
 <translation id="6196315980958524839">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe Google sur cet appareil</translation>
-<translation id="620197886010707372">Ouvrir l'application pour <ph name="APPNAME" /> avec Google Play?</translation>
 <translation id="6202812185118613467">Reconnectez-vous pour lancer la synchronisation</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>

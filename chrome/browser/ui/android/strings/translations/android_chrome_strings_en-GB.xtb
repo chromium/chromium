@@ -235,7 +235,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2276231040576210443">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />. Google may personalise Search and other services based on your history.</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Open app for <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">List of sharing options.</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
@@ -947,7 +946,6 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6192907950379606605">Get image descriptions</translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
-<translation id="620197886010707372">Open app for <ph name="APPNAME" /> with Google Play?</translation>
 <translation id="6202812185118613467">Sign back in to start sync</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>

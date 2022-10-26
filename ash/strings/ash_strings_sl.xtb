@@ -307,6 +307,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2678852583403169292">Meni »Izberite in poslušajte«</translation>
 <translation id="2689613560355655046">Namizje 8</translation>
+<translation id="2695132445805301912">Prikaži tipke in klike</translation>
 <translation id="2695305337569143674">splet</translation>
 <translation id="2697697418792422688">Prikaz nastavitev tipkovnice. Izbrana je ta tipkovnica: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Nastavitev tipkovnice</translation>
@@ -1124,6 +1125,7 @@ Nova namestitev</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Razširi fotoaparat</translation>
 <translation id="731589979057211264">Shelf Party je vklopljen.</translation>
+<translation id="7340731148882810149">Meni za samodejne klike</translation>
 <translation id="7346909386216857016">V redu, razumem</translation>
 <translation id="7348093485538360975">Zaslonska tipkovnica</translation>
 <translation id="735745346212279324">Povezava z navideznim zasebnim omrežjem je prekinjena</translation>
@@ -1301,6 +1303,7 @@ Nova namestitev</translation>
 <translation id="826107067893790409">Pritisnite Enter, če želite odkleniti za uporabnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8270450402312105425">{0,plural, =1{Spremenite napravo na prejšnjo različico v eni uri}one{Spremenite napravo na prejšnjo različico v # uri}two{Spremenite napravo na prejšnjo različico v # urah}few{Spremenite napravo na prejšnjo različico v # urah}other{Spremenite napravo na prejšnjo različico v # urah}}</translation>
+<translation id="8277261673056602147">Označevanje besedila na zaslonu</translation>
 <translation id="8284362522226889623">Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnje namizje.</translation>
 <translation id="828708037801473432">Izklopljeno</translation>
 <translation id="8297006494302853456">Šibek</translation>

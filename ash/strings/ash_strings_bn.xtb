@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">গেম</translation>
 <translation id="2678852583403169292">"বাছুন ও শুনুন" মেনু</translation>
 <translation id="2689613560355655046">ডেস্ক ৮</translation>
+<translation id="2695132445805301912">কী এবং ক্লিক দেখান</translation>
 <translation id="2695305337569143674">ওয়েব</translation>
 <translation id="2697697418792422688">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="2700493154570097719">আপনার কীবোর্ড সেট করুন</translation>
@@ -1124,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">ক্যামেরা সামনে আনুন</translation>
 <translation id="731589979057211264">শেল্ফ পার্টি চালু আছে।</translation>
+<translation id="7340731148882810149">অটোমেটিক ক্লিক মেনু</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> আনলক করতে এন্টার বোতামে প্রেস করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8270450402312105425">{0,plural, =1{১ ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}one{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}other{# ঘণ্টার মধ্যে ডিভাইসটি আগের ভার্সনে ফিরিয়ে নিয়ে যান}}</translation>
+<translation id="8277261673056602147">আপনার স্ক্রিনে টেক্সট হাইলাইট করুন</translation>
 <translation id="8284362522226889623">পূর্ববর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>

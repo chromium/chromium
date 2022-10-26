@@ -652,6 +652,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ನಿಂದ <ph name="FOLDER_NAME" /> ಗೆ ಬೇರ್ಪಡಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6499681088828539489">ಹಂಚಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಪ್ರಾಕ್ಸಿಗಳನ್ನು ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="6503285896705205014">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ <ph name="COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6509122719576673235">ನಾರ್ವೆಜಿಯನ್</translation>
 <translation id="6528513914570774834">ಈ ನೆಟ್‌ವರ್ಕ್ ಬಳಸಲು, ಈ ಸಾಧನದ ಇತರ ಬಳಕೆದಾರರಿಗೆ ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ಸಿಂಕ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">ಈ ಫೈಲ್ ಪ್ರಕಾರ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ. ChromeOS ನಲ್ಲಿ ಫೈಲ್‌ನಲ್ಲಿ ತೆರೆಯುವ ಕುರಿತು <ph name="BEGIN_LINK_HELP" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ನಕಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7375951387215729722">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು <ph name="COLUMN_NAME" /> ಪ್ರಕಾರವಾಗಿ ಮೇಲಿನಿಂದ ಕೆಳಗೆ ಕ್ರಮದಲ್ಲಿ ವಿಂಗಡಿಸಲಾಗಿದೆ.</translation>
+<translation id="7377161162143020057">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ ಈ ಫೈಲ್ ಅನ್ನು ನಕಲಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7402503521691663770">ChromeOS Flex ಸಾಧನಗಳು</translation>
 <translation id="7408870451288633753">ಝೆಕ್</translation>
 <translation id="7417453074306512035">ಇಥಿಯೋಪಿಕ್ ಕೀಬೋರ್ಡ್</translation>

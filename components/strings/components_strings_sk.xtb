@@ -1126,7 +1126,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3890664840433101773">Pridanie e-mailu</translation>
 <translation id="3897092660631435901">Ponuka</translation>
 <translation id="3901925938762663762">Platnosť karty vypršala</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chce prehrať chránený obsah. Google overí totožnosť vášho zariadenia a tento web k nej môže získať prístup.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1533,7 +1532,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4950898438188848926">Tlačidlo na prepnutie karty, stlačením klávesa Enter prepnete na otvorenú kartu, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Akcie</translation>
 <translation id="4953689047182316270">Reagovať na udalosti dostupnosti</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Rozbaliť zoznam</translation>
 <translation id="4964505745997821360">Zdravotné poistenie</translation>
 <translation id="4968522289500246572">Táto aplikácia je určená pre mobilné zariadenia a jej veľkosť sa nemusí náležite zmeniť. Môžu sa v nej vyskytnúť problémy alebo sa môže reštartovať.</translation>
@@ -1716,7 +1714,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5379027395132364855">Tlačidlo na vytvorenie novej prezentácie, stlačením klávesa Enter vytvoríte rýchlym spôsobom novú prezentáciu Google v Prezentáciách</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5386426401304769735">Reťazec certifikátu pre tento web obsahuje certifikát podpísaný pomocou funkcie SHA-1.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Zošiť hrebeňovou väzbou vpravo</translation>
 <translation id="5398772614898833570">Reklamy sú blokované</translation>
 <translation id="5400836586163650660">Sivá</translation>
@@ -2308,6 +2305,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Úroveň lupy</translation>
 <translation id="7016992613359344582">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné.</translation>
+<translation id="7023162328967545559">Upozornenie správcu</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7030436163253143341">Certifikát je neplatný</translation>
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>
@@ -2423,7 +2421,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="733923710415886693">Certifikát servera nebol zverejnený prostredníctvom pravidla transparentnosti certifikátov.</translation>
 <translation id="7341357280245177602">Jazdené vozidlá</translation>
 <translation id="7346048084945669753">Je pridružený/-á</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Povolené, kým túto kartu nezavriete</translation>
 <translation id="7352651011704765696">Vyskytla sa chyba</translation>
 <translation id="7353601530677266744">Príkazový riadok</translation>
@@ -2495,6 +2492,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7489473601138133813">Kariérne zdroje a plánovanie</translation>
 <translation id="7495528107193238112">Tento obsah je blokovaný. Kontaktujte vlastníka webu a požiadajte ho odstránenie daného problému.</translation>
 <translation id="7497998058912824456">Tlačidlo na vytvorenie dokumentu, stlačením klávesa Enter vytvoríte rýchlym spôsobom nový dokument Google</translation>
+<translation id="7501663406926337752">Web, ktorý chcete otvoriť, nahlásila vaša organizácia</translation>
 <translation id="7501853161948120656">Vzdelávacie zdroje</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />neuloží<ph name="END_EMPHASIS" /> the nasledujúce informácie:
           <ph name="BEGIN_LIST" />
@@ -2741,6 +2739,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8094917007353911263">Sieť, ktorú používate, môže vyžadovať, aby ste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Neplatné karty boli odstránené</translation>
+<translation id="8100666323495101203">Vaša organizácia identifikovala <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ako web, ktorý možno porušuje pravidlá. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Akademické konferencie a publikácie</translation>
 <translation id="8103161714697287722">Spôsob platby</translation>
 <translation id="8103643211515685474">Aj tak vytlačiť</translation>

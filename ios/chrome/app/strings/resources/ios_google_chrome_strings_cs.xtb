@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Nastavte si Chrome jako výchozí prohlížeč a karty, hesla a platební údaje se budou synchronizovat na všechna vaše zařízení</translation>
 <translation id="1504372625950710826">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="1511320244449497906">Jste přihlášeni a synchronizujete data pomocí účtu spravovaného v doméně <ph name="DOMAIN" />, jejíž administrátor nyní může v tomto konkrétním účtu nastavit zásady pro uživatele, které mohou chování prohlížeče Chrome změnit.</translation>
+<translation id="1554731936187952550">Máte nejsilnější zabezpečení prohlížeče Chrome proti škodlivým webům</translation>
 <translation id="1682483655351012182">Synchronizovat data prohlížeče Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Tento účet a všechna neuložená data budou z Chromu a z ostatních aplikací v tomto zařízení odstraněny.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome vám šetří čas tím, že vaše účty přenáší na web. Účty můžete přidat nebo odstranit v Nastavení.</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3345341804167540816">Používejte Chrome všude</translation>
+<translation id="3503014945441706099">Zapněte pro tento profil prohlížeče Chrome také Vylepšené Bezpečné prohlížení</translation>
 <translation id="3522659714780527202">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, zapněte synchronizaci</translation>
 <translation id="3533694711092285624">Nemáte žádná uložená hesla. Chrome může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="3641179212828090796">Přihlaste se rychleji s použitím hesla, které jste uložili v prohlížeči Chrome</translation>
@@ -137,6 +139,7 @@ Co je třeba zvážit:
   • Pokud Chrome spadne, podrobnosti o selhání mohou zahrnovat některé osobní údaje.
 
   • Pokud zapnete synchronizaci, mohou metriky zahrnovat také informace o navštívených adresách URL.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">V tomto profilu prohlížeče Chrome používáte standardní bezpečnostní ochranu</translation>
 <translation id="9112744793181547300">Nastavit Chrome jako výchozí prohlížeč?</translation>
 <translation id="9122931302567044771">To znamená, že Chrome bude pokaždé odesílat požadavek na web pro počítač.</translation>
 </translationbundle>

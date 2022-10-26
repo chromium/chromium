@@ -894,6 +894,7 @@
 <translation id="1805967612549112634">पिन निश्चित करा</translation>
 <translation id="1806335016774576568">दुसर्‍या उघड्या अ‍ॅपवर स्विच करा</translation>
 <translation id="1807246157184219062">फिकट</translation>
+<translation id="1809201888580326312">तुम्ही या साइट आणि ॲप्ससाठी पासवर्ड सेव्ह करू नका, असे निवडले आहे</translation>
 <translation id="1809483812148634490">तुम्ही Google Play वरून डाउनलोड केलेली अ‍ॅप्स या Chromebook वरून हटवली जातील.
     <ph name="LINE_BREAKS1" />
     चित्रपट, टीव्ही शो, संगीत, पुस्तके यांसारखा तुम्ही खरेदी केलेला आशय किंवा इतर अ‍ॅपमधील खरेदीदेखील हटवली जाऊ शकते.
@@ -1810,6 +1811,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही.</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="262154978979441594">Google Assistant व्हॉइस मॉडेलला प्रशिक्षण द्या</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">कोणत्याही साइटला प्रोटोकॉल हाताळण्याची परवानगी देऊ नका</translation>
 <translation id="262373406453641243">कोलमॅक</translation>
 <translation id="2624142942574147739">हे पृष्‍ठ आपल्या कॅमेरा आणि मायक्रोफोनवर प्रवेश करत आहे.</translation>
@@ -4956,6 +4958,7 @@
 <translation id="5612734644261457353">सॉरी, तुमच्या पासवर्डची पडताळणी होऊ शकली नाही. टिप: तुम्ही अलीकडेच तुमचा पासवर्ड बदलला असल्यास, एकदा तुम्ही साइन आउट केल्यानंतर तुमचा नवीन पासवर्ड लागू केला जाईल, कृपया येथे जुना पासवर्ड वापरा.</translation>
 <translation id="5614190747811328134">वापरकर्ता सूचना</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
+<translation id="5616571005307953937">सर्वात जुने</translation>
 <translation id="5616726534702877126">आकार आरक्षित करा</translation>
 <translation id="561698261642843490">Firefox बंद करा</translation>
 <translation id="5620540760831960151">या सूचीवर <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5588,6 +5591,7 @@
 <translation id="6212168817037875041">डिस्प्ले बंद करा</translation>
 <translation id="6212752530110374741">ईमेल लिंक</translation>
 <translation id="621470880408090483">साइटना ब्लूटूथ डिव्‍हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
+<translation id="6216239400972191926">नाकारलेल्या साइट आणि अ‍ॅप्स</translation>
 <translation id="6216601812881225442">तुमचा कंटेनर आकार बदलण्यास सपोर्ट करत नाही. Linux ला आधीच दिलेल्या जागेचे प्रमाण अ‍ॅडजस्ट करण्यासाठी, बॅकअप घ्या आणि त्यानंतर नवीन कंटेनरमध्ये रिस्टोअर करा.</translation>
 <translation id="6216696360484424239">आपोआप साइन इन करा</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ऑफलाइन आहे. इंटरनेटशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>

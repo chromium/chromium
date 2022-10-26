@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> wird in <ph name="FOLDER_NAME" /> extrahiert</translation>
 <translation id="6499681088828539489">Keine Proxys für freigegebene Netzwerke zulassen</translation>
+<translation id="6503285896705205014">Die Administratorrichtlinie blockiert das Kopieren von <ph name="COUNT" /> Dateien</translation>
 <translation id="6509122719576673235">Norwegisch</translation>
 <translation id="6528513914570774834">Anderen Nutzern des Geräts erlauben, dieses Netzwerk zu verwenden</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> wird synchronisiert...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Dieser Dateityp wird nicht unterstützt. <ph name="BEGIN_LINK_HELP" />Weitere Informationen zum Öffnen von Dateien unter Chrome OS<ph name="END_LINK_HELP" /></translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> Elemente werden kopiert...</translation>
 <translation id="7375951387215729722">Die Dateiliste wurde in absteigender Reihenfolge nach "<ph name="COLUMN_NAME" />" sortiert.</translation>
+<translation id="7377161162143020057">Die Administratorrichtlinie blockiert das Kopieren dieser Datei</translation>
 <translation id="7402503521691663770">Chrome OS Flex-Geräte</translation>
 <translation id="7408870451288633753">Tschechisch</translation>
 <translation id="7417453074306512035">Äthiopische Tastatur</translation>

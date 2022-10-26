@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">მონაცემები Chromium-ის სინქრონიზაციიდან</translation>
 <translation id="1722370509450468186">თქვენი პაროლი თქვენს ანგარიშში (<ph name="EMAIL" />) შეინახება.</translation>
 <translation id="1736662517232558588">Chromium-ის მონაცემები გასუფთავდა</translation>
+<translation id="177102542580335555">თქვენ სარგებლობთ უსაფრთხოების სტანდარტული საშუალებებით Chromium-ის ამ პროფილში</translation>
 <translation id="1838412507805038478">Chromium-მა დაადასტურა, რომ ამ ვებსაიტის სერტიფიკატის გამცემია <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium-ის ფუნქციების საშუალებით შეგიძლიათ მართოთ ინტერნეტ-მონაცემები და ვებგვერდების ჩატვირთვის სისწრაფე.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით სისტემაში.</translation>
 <translation id="4555020257205549924">ამ ფუნქციის ჩართვის შემთხვევაში, Chromium შემოგთავაზებთ სხვა ენებზე შედგენილი გვერდების თარგმნას Google Translate-ით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">ამიერიდან შეგიძლიათ გამოიყენოთ Chromium, როცა შეტყობინებებში, დოკუმენტებში ან სხვა აპებში ბმულებს ეხებით.</translation>
+<translation id="4633738821577273991">ისარგებლეთ გაძლიერებული Safe Browsing-ით Chromium-ის ამ პროფილშიც.</translation>
 <translation id="4654936625574199632">ამ აპის გაუმჯობესების მიზნით, Chromium უგზავნის Google-ს მოხმარებისა და ავარიულად გათიშვის ანგარიშებს. <ph name="BEGIN_LINK" />მართვა<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium სკანერის ჩართვა</translation>
 <translation id="4736424910885271643">თქვენს ანგარიშს მართავს <ph name="HOSTED_DOMAIN" />, ამიტომ ამ მოწყობილობიდან გასუფთავდება თქვენი Chromium მონაცემები</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">გასუფთავდეს თქვენი Chromium მონაცემები ამ მოწყობილობიდან?</translation>
 <translation id="8240981428553046115">Chromium-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>
 <translation id="8308172444429103994">Chromium-ის მინიშნება. შედით სისტემაში უფრო სწრაფად — აირჩიეთ თქვენი შენახული პაროლი კლავიატურის ზედა ნაწილში.</translation>
+<translation id="8409374867500149834">თქვენ სარგებლობთ Chromium-ის ყველაზე ძლიერი დაცვით სახიფათო ვებსაიტებისგან</translation>
 <translation id="858114650497379505">თქვენს მიერ პაროლების მმართველში შენახული პაროლების გამოყენება შეგიძლიათ სხვა აპებში თქვენს iPhone-ზე.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="865600487977764604">უზრუნველყოფს თქვენს უსაფრთხოებას Chromium-სა და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ.</translation>

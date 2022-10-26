@@ -119,6 +119,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe de poche</translation>
+<translation id="1891796056033961979">Vos favoris, mots de passe et paramètres enregistrés, et bien plus encore sont accessibles à partir de cet écran.</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
 <translation id="1923342640370224680">Dernière heure</translation>
 <translation id="1930989359703290198">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3533202363250687977">Fermer les onglets de navigation privée</translation>
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
+<translation id="3575234738189584619">Rechercher avec Lentille</translation>
 <translation id="3581564640715911333">Proposer des traductions de pages dans d'autres langues</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="3595252146048399851">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
@@ -494,6 +496,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4904877109095351937">Marquer comme lu</translation>
 <translation id="4908869848243824489">Découvertes par Google</translation>
 <translation id="4916679969857390442">Objectif</translation>
+<translation id="4922154083994158612">Plus de sécurité?</translation>
 <translation id="4930714375720679147">Activer</translation>
 <translation id="4941089862236492464">Un problème s'est produit lors du partage de votre élément.</translation>
 <translation id="4944543191714094452">Rechercher dans la page…</translation>
@@ -832,6 +835,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7438481509621345350">Vous verrez maintenant des articles de <ph name="CHANNEL_NAME" /> lorsque vous ouvrez un nouvel onglet.</translation>
 <translation id="7454057999980797137">État / Comté</translation>
+<translation id="7459628154744868585">La protection renforcée est activée</translation>
 <translation id="7464701184726199289">Les données synchronisées seront supprimées de tous les appareils. Les paramètres de site sauvegardés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Sélectionnez Chrome</translation>
 <translation id="7472734401283673885">Nom d'entreprise</translation>
@@ -1024,6 +1028,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9037965129289936994">Afficher la version d'origine</translation>
 <translation id="9039373489628511875">Bande passante</translation>
 <translation id="9055772144595778347">Connexion impossible</translation>
+<translation id="9055960261314198756">La protection renforcée est désactivée</translation>
 <translation id="9057972802061533987">L'abonnement a échoué. Un problème est survenu.</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9068336935206019333">Ouvrir dans Chrome en navigation privée</translation>

@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="649877868557234318">Razširjanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Ne dovoli proxyjev za omrežja v skupni rabi</translation>
+<translation id="6503285896705205014">Kopiranje <ph name="COUNT" /> datotek(-e) blokira skrbniški pravilnik.</translation>
 <translation id="6509122719576673235">norveščina</translation>
 <translation id="6528513914570774834">Omogoči drugim uporabnikom te naprave uporabo tega omrežja</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> – sinhroniziranje ...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Ta vrsta datoteke ni podprta. <ph name="BEGIN_LINK_HELP" />Preberite več<ph name="END_LINK_HELP" /> o odpiranju datotek v sistemu Chrome OS.</translation>
 <translation id="7359359531237882347">Kopiranje toliko elementov: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="7375951387215729722">Seznam datotek, razvrščen glede na <ph name="COLUMN_NAME" />, v padajočem vrstnem redu.</translation>
+<translation id="7377161162143020057">Kopiranje te datoteke blokira skrbniški pravilnik.</translation>
 <translation id="7402503521691663770">Naprave ChromeOS Flex</translation>
 <translation id="7408870451288633753">češčina</translation>
 <translation id="7417453074306512035">Tipkovnica za etiopščino</translation>

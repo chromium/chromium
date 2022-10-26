@@ -1220,7 +1220,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2168397434410358693">Demora de inactividad con alimentación de CA</translation>
 <translation id="217013996107840632">Parámetros de la línea de comandos para cambiar del navegador alternativo</translation>
 <translation id="2170233653554726857">Habilitar optimización de WPAD</translation>
-<translation id="2171952274731262470">Retrasos y acciones que se deben tomar cuando el dispositivo esté inactivo y funcionando con batería.</translation>
 <translation id="2175353308236295184">Objeto de configuración JSON específico de la app con un conjunto de pares clave-valor, p. ej., '"managedConfiguration": { "key1": value1, "key2": value2 }'. Las claves se definen en el manifiesto de la app.</translation>
 <translation id="2176115444876446233">Impide que los usuarios registren el rendimiento de todo el sistema</translation>
 <translation id="2177696016354404697">Inhabilitar siempre la pantalla de privacidad</translation>
@@ -2431,15 +2430,6 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="3264793472749429012">Codificación del proveedor de búsqueda predeterminado</translation>
 <translation id="3273221114520206906">Configuración de JavaScript predeterminada</translation>
 <translation id="3278042410658310805">Inhabilitar los comentarios por voz en la pantalla de acceso y permitir que el usuario los habilite temporalmente</translation>
-<translation id="3282240846541032181">Esta política permite que los administradores especifiquen apps que funcionan como controladores predeterminados para las respectivas extensiones de archivo en <ph name="PRODUCT_OS_NAME" /> que los usuarios no pueden cambiar.
-      Para todas las extensiones de archivo que no se especifiquen en la política, los usuarios pueden establecer sus propios controladores predeterminados con respecto al flujo de trabajo habitual.
-
-      Especifica las apps de Chrome por su ID, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, y las apps web por la URL que se usa en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
-
-      Ten en cuenta que las apps DEBEN declararse como controladores para las extensiones de archivo especificadas en el manifiesto para que ese elemento de la política tenga efecto (es decir, la política NO extiende las capacidades existentes de la app).
-
-      Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar controladores predeterminados según la lógica interna.
-      </translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas para el usuario. Si inhabilitas esta política, el usuario no verá estas recomendaciones. Si la habilitas o no la estableces, el usuario verá las recomendaciones de contenido multimedia.</translation>
 <translation id="3284094172359247914">Controla el uso de la API de WebUSB</translation>
 <translation id="3286159327013237833">Habilitar el clic automático en la pantalla de acceso</translation>
@@ -3758,7 +3748,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario las modifique</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
 <translation id="4632566332417930481">No permitir el uso de las Herramientas para desarrolladores en extensiones instaladas por una política empresarial; permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
-<translation id="4635284822166984665">La hora a la que el dispositivo comenzará a cargarse (según la zona horaria local del dispositivo).</translation>
 <translation id="4636354638176939375">Inhabilitar la creación de usuarios supervisados</translation>
 <translation id="4646626362889216307">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
 
@@ -4336,7 +4325,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
           Si la estableces, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función de resaltar el cursor estará inicialmente inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
-<translation id="5279539586558702228">La hora a la que el dispositivo funcionará con corriente alterna (según la zona horaria local del dispositivo).</translation>
 <translation id="5283457834853986457">Inhabilitar el buscador de complementos (obsoleto)</translation>
 <translation id="5286579716704722323">Permitir que los usuarios hagan clic para omitir páginas de advertencia de SSL</translation>
 <translation id="5288772341821359899">Si se establece la política, el intervalo de puertos UDP que usa WebRTC está restringido al intervalo de puertos especificado (extremos incluidos).
@@ -5169,11 +5157,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6181618732396778048">No permite que ningún sitio solicite acceso de escritura a archivos ni directorios</translation>
 <translation id="6181783961196084973">El valor del botón de activación de la recopilación de actividades en apps. Si lo estableces como verdadero, se enviará al servidor la información de la actividad del usuario en apps para que se muestre en la app de <ph name="PRODUCT_NAME" /> del hijo y del padre o la madre. Si lo estableces como falso, seguirá activa la función de Límites de tiempo por app, pero no se enviarán datos al servidor y, por lo tanto, tampoco se mostrarán en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182563940865917569">Permitir que Chrome reproduzca contenido multimedia de forma automática</translation>
-<translation id="6183327369896253878">Si estableces la política, se determinarán los identificadores de apps que el <ph name="PRODUCT_OS_NAME" /> mostrará como apps fijas en la barra del Selector; los usuarios no podrán cambiarlos.
-
-      Especifica las apps de Chrome por ID, como pjkljhegncpnkpknbcohdijeoejaedia; las apps para Android por nombre de paquete, como com.google.android.gm; y las aplicaciones web por la URL utilizada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como https://google.com/maps.
-
-      Si no estableces la política, los usuarios podrán cambiar la lista de apps fijas en el Selector.</translation>
 <translation id="6184385589352532028">No habilitar la API de Desk para el control de terceros de ChromeOS</translation>
 <translation id="6190367314942602985">Enviar la información de identificación del usuario</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La string de entrada debe ser una string válida de un código hexadecimal de color que coincida con el formato "#RRGGBB".
@@ -6612,7 +6595,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si no estableces la política o estableces una lista vacía, no habrá modos de desbloqueo rápido disponibles para los dispositivos administrados.</translation>
 <translation id="754176366378585605">Controlar el uso de la API de File Handling</translation>
-<translation id="7543109906499122922">La hora a la que el dispositivo comenzará a funcionar con la batería (según la zona horaria local del dispositivo).</translation>
 <translation id="7544392541165889987">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras heredadas que estén conectadas a la máquina. Cuando utilicen sus Cuentas de Google, los usuarios podrán activar el proxy de impresión en nube mediante la autenticación.
 
       Si inhabilitas la política, los usuarios no podrán activar el proxy, y la máquina no podrá compartir sus impresoras con <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -6929,7 +6911,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
       Determina la ID de la extensión que se debe utilizar como protector de pantalla en la página de acceso. La extensión debe formar parte del AppPack configurado para este dominio a través de la política DeviceAppPack.</translation>
 <translation id="7882890448959833986">Eliminar la advertencia de SO incompatible</translation>
 <translation id="788480874436328004">Inhabilitar el guardado de contraseñas en el administrador de contraseñas</translation>
-<translation id="7887379840451099426">Solo se puede aplicar la configuración de administración de la energía cuando el dispositivo esté funcionando con batería.</translation>
 <translation id="7891884447851425349">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda utilizado en una búsqueda predeterminada. La URL debe incluir la string <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario.
 
       Puedes especificar la URL de búsqueda de Google de la siguiente manera: <ph name="GOOGLE_SEARCH_URL" />.</translation>

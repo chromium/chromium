@@ -891,6 +891,7 @@
 <translation id="1805967612549112634">Потвърждаване на ПИН кода</translation>
 <translation id="1806335016774576568">Превключване към друго отворено приложение</translation>
 <translation id="1807246157184219062">Светло</translation>
+<translation id="1809201888580326312">Избрахте да не запазвате паролите за тези сайтове и приложения</translation>
 <translation id="1809483812148634490">Приложенията, които сте изтеглили от Google Play, ще бъдат изтрити от този Chromebook.
     <ph name="LINE_BREAKS1" />
     Купеното от вас съдържание, като например филми, телевизионни предавания, музика, книги или други покупки в приложения, може също да бъде изтрито.
@@ -1807,6 +1808,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> не може да се изтегли по сигурен начин.</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="262154978979441594">Обучаване на гласовия модел на Google Асистент</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" />)</translation>
 <translation id="26224892172169984">Забраняване на сайтовете да обработват протоколи</translation>
 <translation id="262373406453641243">Коулмак</translation>
 <translation id="2624142942574147739">Тази страница осъществява достъп до камерата и микрофона ви.</translation>
@@ -2429,6 +2431,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3197453258332670132">Показване на сродна информация за избрания от вас текст посредством кликване с десния бутон или продължително натискане</translation>
 <translation id="3199127022143353223">Сървъри</translation>
 <translation id="3200061262156232574">В пазарската ви кошница</translation>
+<translation id="3201237270673604992">Я – A</translation>
 <translation id="3201422919974259695">Наличните USB устройства ще се показват тук.</translation>
 <translation id="3202131003361292969">Път</translation>
 <translation id="3202173864863109533">Звукът на този раздел е спрян.</translation>
@@ -3750,6 +3753,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
 <translation id="4465236939126352372">За <ph name="APP_NAME" /> е зададено ограничение от <ph name="TIME" /></translation>
+<translation id="4465649939134800363">Опции за сортиране</translation>
 <translation id="4466839823729730432">Вижте спомените си тук</translation>
 <translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да редактира файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
@@ -4956,6 +4960,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5612734644261457353">За съжаление паролата ви пак не можа да бъде потвърдена. Забележка: Ако наскоро сте я променили, новата ще се приложи, щом излезете от профила си. Моля, използвайте старата парола тук.</translation>
 <translation id="5614190747811328134">Известие за потребителя</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
+<translation id="5616571005307953937">най-стари</translation>
 <translation id="5616726534702877126">Запазване на място</translation>
 <translation id="561698261642843490">Затваряне на Firefox</translation>
 <translation id="5620540760831960151">Върху този списък влияят <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5588,6 +5593,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6212168817037875041">Изключване на екрана</translation>
 <translation id="6212752530110374741">Изпращане на връзката по имейл</translation>
 <translation id="621470880408090483">Да не се разрешава на сайтовете да се свързват с устройства с Bluetooth</translation>
+<translation id="6216239400972191926">Отхвърлени сайтове и приложения</translation>
 <translation id="6216601812881225442">Контейнерът ви не поддържа преоразмеряване. За да промените обема на пространството, предварително заделено за Linux, създайте резервно копие и след това възстановете в нов контейнер.</translation>
 <translation id="6216696360484424239">Автоматично влизане</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> е офлайн. Свържете се с интернет и опитайте отново</translation>
@@ -6258,6 +6264,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6843264316370513305">Отстраняване на грешки в мрежата</translation>
 <translation id="6843423766595476978">Настроихте Ok Google</translation>
 <translation id="6845038076637626672">Отваряне с увеличен изглед</translation>
+<translation id="6845231585063669905">А – Я</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />“ иска да отпечата <ph name="FILE_NAME" /> с помощта на <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Освободете място, за да продължите</translation>
 <translation id="6848388270925200958">В момента имате някои карти, които могат да се използват само на това устройство</translation>
@@ -7410,6 +7417,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7939073735115504773">Кликнете върху иконата на това разширение, за да четете и променяте <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Управление на сертификатите на устройството</translation>
 <translation id="7939412583708276221">Запазване въпреки това</translation>
+<translation id="7940265372707990269">Сортиране по: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Готовност за тетъринг:</translation>
 <translation id="7942349550061667556">червено</translation>
 <translation id="7943368935008348579">Изтегляне на PDF файловете</translation>

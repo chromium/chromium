@@ -1204,7 +1204,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2168397434410358693">Inaktivitätsverzögerung im Netzbetrieb</translation>
 <translation id="217013996107840632">Befehlszeilenparameter für den Wechsel vom alternativen Browser.</translation>
 <translation id="2170233653554726857">WPAD-Optimierung aktivieren</translation>
-<translation id="2171952274731262470">Verzögerungen und Aktionen, die ausgeführt werden sollen, wenn das Gerät im Akkubetrieb inaktiv ist</translation>
 <translation id="2175353308236295184">App-spezifisches JSON-Konfigurationsobjekt mit einem Satz von Schlüssel/Wert-Paaren, z. B. „"managedConfiguration": { "schlüssel1": wert1, "schlüssel2": wert2 }“. Die Schlüssel sind im App-Manifest definiert.</translation>
 <translation id="2176115444876446233">Nutzer daran hindern, eine systemweite Leistungs-Trace zu erfassen.</translation>
 <translation id="2177696016354404697">Privatsphärefunktion immer deaktivieren</translation>
@@ -2410,15 +2409,6 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3264793472749429012">Standardsuchmaschinen-Codierungen</translation>
 <translation id="3273221114520206906">JavaScript-Standardeinstellung</translation>
 <translation id="3278042410658310805">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, es vorübergehend zu aktivieren</translation>
-<translation id="3282240846541032181">Mit dieser Richtlinie können Administratoren Apps festlegen, die als Standard-Handler für die einzelnen Dateierweiterungen unter <ph name="PRODUCT_OS_NAME" /> dienen und von Nutzern nicht geändert werden können.
-      Für alle Dateiendungen, die in der Richtlinie nicht angegeben sind, können Nutzer hinsichtlich des üblichen Workflows eigene Standardeinstellungen festlegen.
-
-      Chrome-Apps werden mit ihrer ID angegeben, z. B. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, und Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
-
-      Beachte, dass Apps im Manifest für angegebene Dateierweiterungen als Datei-Handler deklariert werden MÜSSEN, damit dieses Richtlinienelement wirksam wird (die Richtlinie erweitert also NICHT vorhandene App-Funktionen).
-
-      Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> gemäß der internen Logik Standard-Handler selbst festlegen.
-      </translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
 <translation id="3286159327013237833">„Automatischer Klick“ auf dem Anmeldebildschirm aktivieren</translation>
@@ -2849,7 +2839,7 @@ Aktiviert die Autofill-Funktion von <ph name="PRODUCT_NAME" /> und ermöglicht e
 
 Wenn du diese Einstellung deaktivierst, können Nutzer die Autofill-Funktion nicht verwenden.
 
-Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst entscheiden, ob er „Automatisches Ausfüllen“ nutzen möchte. Er kann dann entsprechende Profile konfigurieren und die Funktion nach eigenem Ermessen aktivieren und deaktivieren.</translation>
+Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst entscheiden, ob er „Autofill“ nutzen möchte. Er kann dann entsprechende Profile konfigurieren und die Funktion nach eigenem Ermessen aktivieren und deaktivieren.</translation>
 <translation id="3733014427925403568">Wochentag des Intervalls.</translation>
 <translation id="3736879847913515635">"Person hinzufügen" im Nutzermanager aktivieren</translation>
 <translation id="3749259744154402564">Nicht unterstützt</translation>
@@ -3696,7 +3686,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="4632566332417930481">Nutzung der Entwicklertools für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, nicht zulassen und Nutzung der Entwicklertools in anderen Kontexten zulassen</translation>
-<translation id="4635284822166984665">Zeitpunkt, an dem der Ladevorgang beginnt, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="4636354638176939375">Erstellung von betreuten Nutzern deaktivieren</translation>
 <translation id="4646626362889216307">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene. Dabei werden die Schlüssel des Wörterbuchs auf der ersten Ebene aus jeder Quelle zusammengeführt. Der Schlüssel aus der Quelle mit der höchsten Priorität hat Vorrang.
 
@@ -4265,7 +4254,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
-<translation id="5279539586558702228">Zeitpunkt, an dem das Gerät in den Netzbetrieb wechselt, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="5283457834853986457">Plug-in-Suchfunktion deaktivieren (eingestellt)</translation>
 <translation id="5286579716704722323">Nutzern erlauben, SSL-Warnseiten zu schließen</translation>
 <translation id="5288772341821359899">Wenn die Richtlinie konfiguriert ist, wird der von WebRTC verwendete UDP-Port-Bereich auf den festgelegten Portintervall, einschließlich der Endpunkte, beschränkt.
@@ -5078,11 +5066,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6181618732396778048">Websites nicht erlauben, um Schreibzugriff auf Dateien und Verzeichnisse zu bitten</translation>
 <translation id="6181783961196084973">Wert der Schaltfläche zum Umschalten der App-Aktivitätserfassung. Wenn diese Option auf „true“ gesetzt ist, werden die App-Aktivitäten von Nutzern an den Server gesendet, damit sie in der <ph name="PRODUCT_NAME" />-App des Kindes und des Elternteils angezeigt werden können. Ist sie auf „false“ gesetzt, funktionieren App-spezifische Zeitlimits zwar weiterhin, es werden jedoch keine Daten an den Server gesendet, sodass sie nicht in <ph name="PRODUCT_NAME" /> angezeigt werden können.</translation>
 <translation id="6182563940865917569">Automatische Wiedergabe von Medien in Chrome zulassen</translation>
-<translation id="6183327369896253878">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die in <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcher-Leiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
-
-      Chrome-Apps werden mit ihrer ID angegeben, z. B. "pjkljhegncpnkpknbcohdijeoejaedia", Android-Apps mit ihrem Paketnamen, z. B. "com.google.android.gm", und Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. "https://google.com/maps".
-
-      Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinnten Apps ändern.</translation>
 <translation id="6184385589352532028">Desk API für die ChromeOS-Steuerung durch Drittanbieter nicht aktivieren</translation>
 <translation id="6190367314942602985">Personenbezogene Daten erfassen</translation>
 <translation id="6191963383731098056">Mit dieser Richtlinie können Administratoren die Farbe des Designs von <ph name="PRODUCT_NAME" /> konfigurieren. Der Eingabestring muss ein gültiger Hex-Farbcode mit dem Format „#RRGGBB“ sein.
@@ -6492,7 +6475,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 
       Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine Modi für das schnelle Entsperren zur Verfügung.</translation>
 <translation id="754176366378585605">Verwendung der File Handling API steuern</translation>
-<translation id="7543109906499122922">Zeitpunkt, an dem das Gerät in den Akkubetrieb wechselt, angegeben in der lokalen Zeit des Geräts.</translation>
 <translation id="7544392541165889987">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, kann <ph name="PRODUCT_NAME" /> als Proxy zwischen <ph name="CLOUD_PRINT_NAME" /> und älteren Druckern fungieren, die an den Computer angeschlossen sind. Nutzer können den Cloud Print-Proxy durch die Authentifizierung mit ihrem Google-Konto aktivieren.
 
       Ist die Richtlinie deaktiviert, können Nutzer den Proxy nicht aktivieren und die Drucker des Computers können nicht für <ph name="CLOUD_PRINT_NAME" /> freigegeben werden.</translation>
@@ -6803,7 +6785,6 @@ werden abgelehnt.</translation>
       Bestimmt die ID der Erweiterung, die als Bildschirmschoner auf der Anmeldeseite verwendet werden soll. Die Erweiterung muss Teil des App-Pakets sein, das in der DeviceAppPack-Richtlinie für diese Domain konfiguriert wurde.</translation>
 <translation id="7882890448959833986">Warnung für nicht unterstützte Betriebssysteme unterdrücken</translation>
 <translation id="788480874436328004">Speichern von Passwörtern im Passwortmanager deaktivieren</translation>
-<translation id="7887379840451099426">Einstellungen für die Energieverwaltung, die nur im Akkubetrieb gelten</translation>
 <translation id="7891884447851425349">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" />" die URL der Standardsuchmaschine an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Du kannst die Such-URL von Google so angeben: <ph name="GOOGLE_SEARCH_URL" />.</translation>

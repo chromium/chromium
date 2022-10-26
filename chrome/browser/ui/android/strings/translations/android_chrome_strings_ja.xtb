@@ -235,7 +235,6 @@
 <translation id="2276231040576210443">同期する項目はいつでも [<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
-<translation id="2279146068164892489"><ph name="APPNAME" /> 用のアプリを開きますか？</translation>
 <translation id="2286841657746966508">請求先住所</translation>
 <translation id="228704530595896923">共有オプションのリストです。</translation>
 <translation id="230115972905494466">対応デバイスが見つかりませんでした</translation>
@@ -947,7 +946,6 @@
 <translation id="6192907950379606605">画像の説明文を取得する</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6196315980958524839">パスワードは、このデバイスの Google パスワード マネージャーに保存されます</translation>
-<translation id="620197886010707372"><ph name="APPNAME" /> 用のアプリを Google Play で開きますか？</translation>
 <translation id="6202812185118613467">同期を開始するには、もう一度ログインしてください</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>

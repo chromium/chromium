@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">თამაშები</translation>
 <translation id="2678852583403169292">წარმოსათქმელად მონიშვნის მენიუ</translation>
 <translation id="2689613560355655046">სამუშაო მაგიდა 8</translation>
+<translation id="2695132445805301912">კლავიშებისა და დაწკაპუნებების ჩვენება</translation>
 <translation id="2695305337569143674">ვები</translation>
 <translation id="2697697418792422688">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">დააყენეთ კლავიატურა</translation>
@@ -1124,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">კამერის გაფართოება</translation>
 <translation id="731589979057211264">Shelf Party ჩართულია.</translation>
+<translation id="7340731148882810149">ავტომატური დაწკაპუნებების მენიუ</translation>
 <translation id="7346909386216857016">კარგი, გასაგებია</translation>
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />-ისთვის განსაბლოკად დააჭირეთ „Enter“-ზე</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8270450402312105425">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი საათის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # საათის განმავლობაში}}</translation>
+<translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
 <translation id="8284362522226889623">წინა სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარცხნივ ოთხი თითით</translation>
 <translation id="828708037801473432">გამორთვა</translation>
 <translation id="8297006494302853456">სუსტი</translation>

@@ -1218,7 +1218,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="2168397434410358693">Délai d'inactivité (secteur)</translation>
 <translation id="217013996107840632">Paramètres de ligne de commande pour basculer vers Chrome à partir du navigateur secondaire.</translation>
 <translation id="2170233653554726857">Activer l'optimisation WPAD</translation>
-<translation id="2171952274731262470">Délais et actions à effectuer en cas d'inactivité de l'utilisateur quand l'appareil fonctionne sur batterie.</translation>
 <translation id="2175353308236295184">Objet de configuration JSON propre à l'appli avec un ensemble de paires clé-valeur tel que : "managedConfiguration": { "key1": value1, "key2": value2 }. Les clés sont définies dans le fichier manifeste de l'appli.</translation>
 <translation id="2176115444876446233">Empêcher les utilisateurs de collecter une trace des performances au niveau du système.</translation>
 <translation id="2177696016354404697">Toujours désactiver l'écran de confidentialité</translation>
@@ -2426,15 +2425,6 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3264793472749429012">Codages du moteur de recherche par défaut</translation>
 <translation id="3273221114520206906">Paramètre JavaScript par défaut</translation>
 <translation id="3278042410658310805">Désactiver les commentaires audio sur l'écran de connexion et autoriser l'utilisateur à les activer temporairement</translation>
-<translation id="3282240846541032181">Cette règle permet aux administrateurs de spécifier des applis qui agissent en tant que gestionnaires par défaut pour les extensions de fichier correspondantes dans <ph name="PRODUCT_OS_NAME" /> que les utilisateurs ne peuvent pas modifier.
-      Pour toutes les extensions de fichier non spécifiées dans la règle, les utilisateurs sont libres de définir leurs propres valeurs par défaut par rapport au workflow habituel.
-
-      Spécifiez les applis Chrome par leur ID (par exemple <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />) et les applis Web par l'URL utilisée dans <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (par exemple <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />).
-
-      Notez que les applis DOIVENT se déclarer comme gestionnaires de fichiers pour les extensions de fichier spécifiées dans le fichier manifeste afin que cet élément de règle prenne effet (autrement dit, la règle n'étend PAS les fonctionnalités existantes des applis).
-
-      Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélectionner des gestionnaires par défaut en fonction de la logique interne.
-      </translation>
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
@@ -3730,7 +3720,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="46321462262887935">Considérer les touches supérieures comme des touches de fonction, mais autoriser l'utilisateur à modifier ce paramètre</translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
 <translation id="4632566332417930481">Interdire l'utilisation des outils pour les développeurs avec les extensions installées par la stratégie d'entreprise, mais autoriser l'utilisation des outils pour les développeurs dans les autres cas</translation>
-<translation id="4635284822166984665">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à se recharger.</translation>
 <translation id="4636354638176939375">Désactiver la création d'utilisateurs supervisés</translation>
 <translation id="4646626362889216307">Cette règle permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes. Cette fusion concerne les clés de premier niveau du dictionnaire provenant de chaque source. La clé qui prévaut est celle dont la source présente la plus haute priorité.
 
@@ -4300,7 +4289,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, la mise en surbrillance du curseur est initialement désactivée, mais les utilisateurs peuvent l'activer à tout moment.</translation>
-<translation id="5279539586558702228">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à fonctionner sur secteur.</translation>
 <translation id="5283457834853986457">Désactiver l'outil de recherche de plug-ins (obsolète)</translation>
 <translation id="5286579716704722323">Autoriser les utilisateurs à passer les pages d'avertissement SSL</translation>
 <translation id="5288772341821359899">Si cette règle est définie, la portée du port UDP utilisé par WebRTC est restreinte à l'intervalle de port spécifié (points de terminaison inclus).
@@ -5134,11 +5122,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6181618732396778048">Interdire à tous les sites de demander l'accès en écriture aux fichiers et répertoires</translation>
 <translation id="6181783961196084973">Valeur du paramètre de collecte de l'activité dans les applis. Si la règle est définie sur "True", l'activité de l'utilisateur dans les applications est transmise au serveur afin d'être affichée dans l'appli <ph name="PRODUCT_NAME" /> utilisée par l'enfant et les parents. Si la règle est définie sur "False", les limites de temps spécifiques à chaque application sont quand même applicables, mais aucune donnée n'est transmise au serveur ni affichée dans <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182563940865917569">Autoriser Chrome à lire automatiquement le contenu multimédia</translation>
-<translation id="6183327369896253878">Permet de définir quels identifiants d'application <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applications épinglées dans la barre du Lanceur d'applications. Notez que les utilisateurs ne peuvent pas les modifier.
-
-      Spécifiez les applications Chrome par leur ID (par exemple, pjkljhegncpnkpknbcohdijeoejaedia) les applications Android par leur nom de package (par exemple, com.google.android.gm) et les applications Web par l'URL utilisée dans <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (par exemple, https://google.com/maps).
-
-      Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la liste des applications épinglées dans le Lanceur d'applications.</translation>
 <translation id="6184385589352532028">Ne pas activer l'API Desk pour le contrôle ChromeOS tiers</translation>
 <translation id="6190367314942602985">Enregistrer les informations d'identification de l'utilisateur</translation>
 <translation id="6191963383731098056">Cette règle permet aux administrateurs de configurer la couleur du thème de <ph name="PRODUCT_NAME" />. La chaîne saisie doit être une couleur hexadécimale valide, comme "#RRGGBB".
@@ -6565,7 +6548,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Si cette règle n'est pas configurée ou qu'aucun mode de déverrouillage rapide ne figure dans la liste, aucun de ces modes n'est disponible pour les appareils gérés.</translation>
 <translation id="754176366378585605">Contrôler l'utilisation de l'API File Handling</translation>
-<translation id="7543109906499122922">Heure (interprétée dans le fuseau horaire local de l'appareil) à laquelle l'appareil commencera à fonctionner sur batterie.</translation>
 <translation id="7544392541165889987">Si cette règle est activée, ou si elle n'est pas définie, <ph name="PRODUCT_NAME" /> joue le rôle de proxy entre <ph name="CLOUD_PRINT_NAME" /> et les anciennes imprimantes connectées à la machine. Les utilisateurs peuvent activer le proxy d'impression sur le cloud en s'authentifiant à l'aide de leur compte Google.
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas activer le proxy et la machine ne peut pas partager ses imprimantes avec <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -6879,7 +6861,6 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
        Détermine l'identifiant de l'extension à utiliser comme économiseur d'écran sur l'écran de connexion. L'extension doit faire partie de l'AppPack configuré pour ce domaine via la règle DeviceAppPack.</translation>
 <translation id="7882890448959833986">Supprimer l'avertissement relatif au système d'exploitation non compatible</translation>
 <translation id="788480874436328004">Désactiver l'enregistrement des mots de passe avec le Gestionnaire de mots de passe</translation>
-<translation id="7887379840451099426">Paramètres de gestion de l'alimentation applicables uniquement si l'appareil fonctionne sur batterie.</translation>
 <translation id="7891884447851425349">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche utilisé lors d'une recherche par défaut. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SEARCH_URL" />.</translation>

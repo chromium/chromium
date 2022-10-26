@@ -651,6 +651,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />-এ <ph name="FILE_NAME" /> এক্সট্যাক্ট করা হচ্ছে</translation>
 <translation id="6499681088828539489">শেয়ার করা নেটওয়ার্কগুলির জন্য প্রক্সির অনুমতি দেবেন না</translation>
+<translation id="6503285896705205014">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী <ph name="COUNT" />টি ফাইল কপি করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="6509122719576673235">নরওয়েয়ীয়</translation>
 <translation id="6528513914570774834">এই ডিভাইসের অন্যান্য ব্যবহারকারীদের এই নেটওয়ার্ক ব্যবহার করতে দিন</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> সিঙ্ক হচ্ছে...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">এই ধরনের ফাইল ব্যবহার করা যায় না। ChromeOS-এ ফাইল খোলা সম্পর্কে <ph name="BEGIN_LINK_HELP" />আরও জানুন<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হচ্ছে…</translation>
 <translation id="7375951387215729722">ফাইলের তালিকা <ph name="COLUMN_NAME" />-এর মানের উপর নির্ভর করে বড় থেকে ছোট ক্রমানুযায়ী সাজানো আছে।</translation>
+<translation id="7377161162143020057">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল কপি করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="7402503521691663770">ChromeOS Flex ডিভাইস</translation>
 <translation id="7408870451288633753">চেক ভাষা</translation>
 <translation id="7417453074306512035">ইথিওপিক কীবোর্ড</translation>

@@ -120,6 +120,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1857751338515529195">Ves a la pestanya següent</translation>
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
 <translation id="1872096359983322073">Llanterna</translation>
+<translation id="1891796056033961979">Les adreces d'interès, les contrasenyes, la configuració i altres dades desades estan disponibles en aquesta pantalla.</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
 <translation id="1923342640370224680">Darrera hora</translation>
 <translation id="1930989359703290198">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos estan amagats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -330,6 +331,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3533202363250687977">Tanca totes les pestanyes d'incògnit</translation>
 <translation id="3533436815740441613">Pestanya nova</translation>
 <translation id="3551320343578183772">Tanca la pestanya</translation>
+<translation id="3575234738189584619">Cerca amb Lens</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
 <translation id="3595252146048399851">Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
@@ -498,6 +500,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4904877109095351937">Marca com a llegit</translation>
 <translation id="4908869848243824489">Discover de Google</translation>
 <translation id="4916679969857390442">Objectiu</translation>
+<translation id="4922154083994158612">Més seguretat?</translation>
 <translation id="4930714375720679147">Activa</translation>
 <translation id="4941089862236492464">S'ha produït un problema en compartir el vostre element.</translation>
 <translation id="4944543191714094452">Cerca a la pàgina…</translation>
@@ -838,6 +841,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>
 <translation id="7438481509621345350">Quan obris una pestanya nova, ara veuràs històries de: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7454057999980797137">Província</translation>
+<translation id="7459628154744868585">La funció Protecció millorada està activada</translation>
 <translation id="7464701184726199289">S'esborraran les dades sincronitzades de tots els dispositius. La configuració desada del lloc no se suprimirà i és possible que reflecteixi els vostres hàbits de navegació. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7472734401283673885">Nom de l'empresa</translation>
@@ -1031,6 +1035,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>
 <translation id="9055772144595778347">No es pot iniciar la sessió</translation>
+<translation id="9055960261314198756">La funció Protecció millorada està desactivada</translation>
 <translation id="9057972802061533987">No es pot seguir. S'ha produït un error.</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9068336935206019333">Obre en mode d'incògnit a Chrome</translation>

@@ -78,6 +78,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1175875016430184367">Drei Heftklammern rechts</translation>
 <translation id="1177802847690410663">Webbrowser</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="1178821169867863726">12 × 16 Zoll</translation>
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1186201132766001848">Passwörter prüfen</translation>
 <translation id="1195558154361252544">Benachrichtigungen werden automatisch für alle Websites blockiert, außer für diejenigen, die du zulässt</translation>
@@ -318,6 +319,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1717494416764505390">Ablage 3</translation>
 <translation id="1718029547804390981">Das Dokument kann aufgrund seiner Größe nicht mit Anmerkungen versehen werden</translation>
 <translation id="1719434663396780149">Du wirst über Preisnachlässe informiert. Das lässt sich in den <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> ändern.</translation>
+<translation id="1719838434204287058">24 × 30 Zoll</translation>
 <translation id="1720941539803966190">Anleitung schließen</translation>
 <translation id="1721424275792716183">* Pflichtfeld</translation>
 <translation id="1725591448053514783">Umschlag You 6</translation>
@@ -392,6 +394,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1916770123977586577">Lade diese Seite neu, um die aktualisierten Einstellungen für diese Website zu übernehmen</translation>
 <translation id="1919345977826869612">Werbung</translation>
 <translation id="1919367280705858090">Hilfe bei bestimmten Fehlermeldungen</translation>
+<translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Keine}=1{1 Website}other{# Websites}}</translation>
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1927439593081478069">Schaltfläche zum Ausführen des Chrome-Sicherheitschecks – drücke die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
@@ -399,6 +402,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1939175642807587452">Darf nachfragen, wenn sie Benachrichtigungen senden möchte</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du könntest den Zugriff auf das Konto deines Unternehmens verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
+<translation id="1946849748901605102">12 × 15 Zoll</translation>
 <translation id="1947454675006758438">Heftklammer oben rechts</translation>
 <translation id="1956486093533522234">Dein Gerät finden, sichern oder löschen</translation>
 <translation id="1958218078413065209">Dein Highscore ist <ph name="SCORE" />.</translation>
@@ -421,6 +425,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2003775180883135320">Vierfache Lochung oben</translation>
 <translation id="201174227998721785">Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen verwalten</translation>
 <translation id="2019607688127825327">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – drücke die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
+<translation id="202224654587969958">12 × 19 Zoll</translation>
 <translation id="2025115093177348061">Augmented Reality</translation>
 <translation id="2025186561304664664">Proxy ist auf automatische Konfiguration eingestellt.</translation>
 <translation id="2025891858974379949">Unsichere Inhalte</translation>
@@ -476,6 +481,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2153609454945889823">Google Play-Dienste für AR installieren?</translation>
 <translation id="2154054054215849342">Die Synchronisierung ist für deine Domain nicht verfügbar</translation>
 <translation id="2154484045852737596">Karte bearbeiten</translation>
+<translation id="2155260325161282517">5 × 7 Zoll</translation>
 <translation id="2157640075051554492">Preisbenachrichtigungen</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162510787844374618">Bank wird kontaktiert…</translation>
@@ -493,6 +499,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="219906046732893612">Heimwerken</translation>
 <translation id="2202020181578195191">Gib ein gültiges Ablaufjahr ein</translation>
 <translation id="22081806969704220">Fach 3</translation>
+<translation id="2210794033760923560">Bericht hochladen</translation>
 <translation id="2212735316055980242">Richtlinie nicht gefunden</translation>
 <translation id="2213606439339815911">Einträge werden abgerufen...</translation>
 <translation id="2213612003795704869">Seite wird gedruckt</translation>
@@ -507,6 +514,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2230458221926704099">Behebe den Verbindungsfehler mithilfe der <ph name="BEGIN_LINK" />Diagnose-App<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
 <translation id="2241693394036365668">Datei heruntergeladen</translation>
+<translation id="2246264294482514010">10 × 12 Zoll</translation>
 <translation id="2248949050832152960">WebAuthn verwenden</translation>
 <translation id="2250931979407627383">Mehrere Heftklammern links</translation>
 <translation id="225207911366869382">Dieser Wert für die Richtlinie ist veraltet.</translation>
@@ -673,6 +681,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2679714844901977852">Du kannst deine Karten- und Abrechnungsinformationen in deinem Google-Konto „<ph name="USER_EMAIL" />“ speichern, um schneller und sicherer zu bezahlen</translation>
 <translation id="2687555958734450033">Beste Anordnung</translation>
+<translation id="2688186765492306706">500 × 760 mm</translation>
 <translation id="2688969097326701645">Ja, weiter</translation>
 <translation id="2691924980723297736">Sicherheitswarnung</translation>
 <translation id="2692131511336778528">Science-Fiction &amp; Fantasy</translation>
@@ -682,7 +691,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2704283930420550640">Wert stimmt nicht mit dem Format überein.</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2705137772291741111">Die (im Cache) gespeicherte Kopie dieser Website war nicht lesbar.</translation>
-<translation id="2709516037105925701">Automatisches Ausfüllen</translation>
+<translation id="2709516037105925701">Autofill</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Eingabetaste, um Zahlungen und Kreditkartendaten in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="271663710482723385">Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| drücken</translation>
@@ -718,8 +727,10 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2835170189407361413">Formular leeren</translation>
 <translation id="2839032553903800133">Benachrichtigungen blockiert</translation>
 <translation id="2839501879576190149">Warnung: Gefälschte Website</translation>
+<translation id="2851291081585704741">Du bist offline</translation>
 <translation id="2854764410992194509">Internetanbieter (ISPs)</translation>
 <translation id="2856444702002559011">Hacker könnten versuchen, deine Daten von <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> zu stehlen, zum Beispiel Passwörter, Nachrichten oder Kreditkartendaten. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2858134430383535011">200 × 300 mm</translation>
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
 <translation id="287596039013813457">Freundlich</translation>
 <translation id="28761159517501904">Filme</translation>
@@ -865,6 +876,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3249845759089040423">Cool</translation>
 <translation id="3250640885957938546">Werbung und Marketing</translation>
 <translation id="3252266817569339921">Französisch</translation>
+<translation id="3254301855501243548">18 × 22 Zoll</translation>
 <translation id="3256863843508922226">Ruhestand und Rente</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
 <translation id="3261488570342242926">Informationen zu virtuellen Karten</translation>
@@ -883,12 +895,14 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3293642807462928945">Weitere Informationen zur "<ph name="POLICY_NAME" />"-Richtlinie</translation>
 <translation id="3295444047715739395">Passwörter in den Chrome-Einstellungen ansehen und verwalten</translation>
 <translation id="3299098170013242198">Windows Hello ist zum Ausfüllen von Passwörtern aktiviert</translation>
+<translation id="3303176609391916566">30 × 42 Zoll</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3304073249511302126">Bluetooth-Suche</translation>
 <translation id="33073482541490531">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="3308006649705061278">Organisationseinheit (OU)</translation>
 <translation id="3308738399950580893">Anzeigen</translation>
 <translation id="3320021301628644560">Rechnungsadresse hinzufügen</translation>
+<translation id="3324687287337751929">4 × 6 Zoll</translation>
 <translation id="3324983252691184275">Purpur</translation>
 <translation id="3329013043687509092">Sättigung</translation>
 <translation id="3333762389743153920">Virtuelle Karte wird nicht unterstützt</translation>
@@ -964,6 +978,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3512163584740124171">Diese Richtlinie wird ignoriert, da eine andere Richtlinie aus derselben Richtliniengruppe eine höhere Priorität hat.</translation>
 <translation id="35172538073169599">Schaltfläche zum Verwalten von Adressen – drücke die Eingabetaste, um Adressen in den Chrome-Einstellungen hinzuzufügen und zu verwalten</translation>
 <translation id="3518941727116570328">Handhabung mehrerer Objekte</translation>
+<translation id="3525130752944427905">10 × 14 Zoll</translation>
 <translation id="3528171143076753409">Serverzertifikat ist nicht vertrauenswürdig.</translation>
 <translation id="3528485271872257980">Dunkelbraun</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Mindestens 1 Eintrag auf synchronisierten Geräten}=1{1 Eintrag (und weitere auf synchronisierten Geräten)}other{# Einträge (und weitere auf synchronisierten Geräten)}}</translation>
@@ -972,12 +987,15 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3532844647053365774"><ph name="HOST" /> möchte dein Mikrofon verwenden</translation>
 <translation id="3533328374079021623">Ablage 5</translation>
 <translation id="3542768452570884558">Link in neuem Fenster öffnen</translation>
+<translation id="3547746132308051926">20 × 24 Zoll</translation>
 <translation id="3550112004925580947">Gastgewerbe</translation>
 <translation id="3552297013052089404">Schriftart Sans-Serif</translation>
 <translation id="3558573058928565255">Tageszeit</translation>
 <translation id="3560824484345057728">Ähnliche Websites ansehen</translation>
 <translation id="3566021033012934673">Dies ist keine sichere Verbindung</translation>
+<translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3567778190852720481">Registrierung mit Unternehmenskonto nicht möglich (Unternehmenskonto ist nicht berechtigt).</translation>
+<translation id="3567901620846335314">100 × 150 mm</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Für diese Website zulassen</translation>
 <translation id="3576616784287504635">Hinweis einer in <ph name="SITE" /> eingebetteten Seite</translation>
@@ -993,6 +1011,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}=1{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert ungefähr einen Tag, einer neuen Gruppe beizutreten.}other{Du kannst deine Gruppe jederzeit zurücksetzen. Es dauert {NUM_DAYS} Tage, einer neuen Gruppe beizutreten.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">App durch Administrator blockiert</translation>
+<translation id="3605899229568538311">5 × 5 Zoll</translation>
 <translation id="3608932978122581043">Einzugsausrichtung</translation>
 <translation id="3611317423880285981">Haushaltsbedarf</translation>
 <translation id="3611395257124510155">Virtuelle Karte für <ph name="CARD_IDENTIFIER" /></translation>
@@ -1083,6 +1102,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3807366285948165054">X-Verschiebung des Bilds</translation>
 <translation id="3807873520724684969">Schädliche Inhalte blockiert.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
+<translation id="3815434930383843058">8 × 12 Zoll</translation>
 <translation id="3816482573645936981">Wert (ersetzt)</translation>
 <translation id="3823402221513322552">Dein Browser wird von <ph name="BROWSER_DOMAIN" /> verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Falls du einen Proxyserver verwendest...</translation>
@@ -1108,7 +1128,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3890664840433101773">E-Mail-Adresse hinzufügen</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">Die Karte ist abgelaufen.</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> möchte geschützten Inhalt abspielen. Die Identität deines Geräts wird von Google überprüft, weshalb möglicherweise ein Zugriff durch diese Website erfolgt.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
@@ -1122,6 +1141,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Keine gespeicherten Zahlungsmethoden</translation>
 <translation id="3950820424414687140">Anmelden</translation>
+<translation id="3958057596965527988">4 × 4 Zoll</translation>
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963721102035795474">Lesemodus</translation>
@@ -1165,6 +1185,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4087296516249690906">Termin erstellen – drücke die Eingabetaste, um schnell einen neuen Termin in Google Kalender zu erstellen</translation>
 <translation id="4088981014127559358">Seite 1 – Y-Verschiebung des Bilds</translation>
 <translation id="4089152113577680600">Fach 14</translation>
+<translation id="4096237801206588987">11 × 15 Zoll</translation>
 <translation id="4097288585054919042">Benachrichtigungen deaktivieren</translation>
 <translation id="4098354747657067197">Bei der aufgerufenen Website besteht Phishing-Verdacht!</translation>
 <translation id="4099048595830172239">Gemäß Administratorrichtlinie wird nicht empfohlen, deinen Bildschirm mit <ph name="APPLICATION_TITLE" /> zu teilen, wenn vertrauliche Inhalte zu sehen sind:</translation>
@@ -1409,6 +1430,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4704732901923281920">Biologie</translation>
 <translation id="4708268264240856090">Die Verbindung wurde unterbrochen</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
+<translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows-Netzwerkdiagnose ausführen<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4724144314178270921">Darf nachfragen, wenn sie auf Text und Bilder in meiner Zwischenablage zugreifen möchte</translation>
@@ -1446,6 +1468,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4789704664580239421">Preisnachlässe werden in der Übersicht offener Tabs eingeblendet</translation>
 <translation id="4791134497475588553">Installierte Linux-Apps und wann sie zuletzt verwendet wurden</translation>
 <translation id="4792686369684665359">Die Angaben, die du senden möchtest, sind nicht sicher</translation>
+<translation id="4793219378458250238">11 × 12 Zoll</translation>
 <translation id="4796594887379589189">Konto-ID des Auftrags</translation>
 <translation id="4798078619018708837">Gib das Ablaufdatum und die Kartenprüfnummer (CVC) für <ph name="CREDIT_CARD" /> ein, um deine Kartendetails zu aktualisieren. Nach erfolgter Bestätigung werden die Kartendetails deines Google-Kontos an diese Website weitergegeben.</translation>
 <translation id="4798269756263412078">Du wirst bei einem Preisnachlass auf einer beliebigen Website benachrichtigt. Die Benachrichtigungen werden an deine E-Mail-Adresse gesendet.</translation>
@@ -1482,6 +1505,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4879491255372875719">Automatisch (Standard)</translation>
 <translation id="4880827082731008257">Im Verlauf suchen</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="4881808915112408168">24 × 31,5 Zoll</translation>
 <translation id="4885256590493466218">An der Kasse mit <ph name="CARD_DETAIL" /> zahlen</translation>
 <translation id="4887406273302438710">Passwörter mit Windows Hello schützen</translation>
 <translation id="4888600795924685526">Fremdsprachenunterricht</translation>
@@ -1510,7 +1534,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4950898438188848926">Schaltfläche zum Wechseln von Tabs, Eingabetaste drücken, um zum offenen Tab "<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />" zu wechseln</translation>
 <translation id="495170559598752135">Aktionen</translation>
 <translation id="4953689047182316270">Auf Bedienungshilfen reagieren</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Liste einblenden</translation>
 <translation id="4964505745997821360">Krankenversicherung</translation>
 <translation id="4968522289500246572">Diese App wurde für Mobilgeräte entwickelt. Ihre Größe kann deshalb eventuell nicht richtig angepasst werden. Außerdem können Probleme auftreten und sie wird möglicherweise neu gestartet.</translation>
@@ -1534,6 +1557,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5017554619425969104">Von dir kopierter Text</translation>
 <translation id="5017828934289857214">Später erinnern</translation>
 <translation id="5018422839182700155">Diese Seite kann nicht geöffnet werden</translation>
+<translation id="5018802455907704660">16 × 20 Zoll</translation>
 <translation id="5019198164206649151">Sicherungsspeicher ist fehlerhaft.</translation>
 <translation id="5020776957610079374">Weltmusik</translation>
 <translation id="5021557570875267742">Preise mit Chrome beobachten</translation>
@@ -1575,6 +1599,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5109892411553231226">Zahlungsmethoden verwalten</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Fach 18</translation>
+<translation id="511431458895937675">DSC-Foto</translation>
 <translation id="5114987907971894280">Virtual Reality</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Eingeschränkte verwaltete Gastsitzung überschreiben</translation>
@@ -1636,6 +1661,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5254043433801397071">Druckinhalte optimieren</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Trotzdem aufnehmen</translation>
+<translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu kopieren}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu kopieren}}</translation>
 <translation id="5266128565379329178">Bindung oben</translation>
 <translation id="5269225904387178860">Vierfache Lochung unten</translation>
@@ -1690,7 +1716,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5379027395132364855">Schaltfläche „Präsentation erstellen“ – drücke die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5386426401304769735">Die Zertifikatskette für diese Website enthält ein Zertifikat mit SHA-1-Signatur.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Mehrere Heftklammern rechts</translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
@@ -1732,6 +1757,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5510481203689988000">Dies kann in den Cookie-Einstellungen festgelegt werden.</translation>
 <translation id="5510766032865166053">Eventuell wurde sie verschoben oder gelöscht.</translation>
 <translation id="5513528801833998679">Geräteanmeldung verwenden</translation>
+<translation id="5515388687005870733">55 × 85 mm</translation>
 <translation id="5518670652865028077">Kunst und Unterhaltung</translation>
 <translation id="5519516356611866228">Mit meinen Änderungen</translation>
 <translation id="5523118979700054094">Richtlinienname</translation>
@@ -1748,6 +1774,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5541086400771735334">Ablage 7</translation>
 <translation id="5541546772353173584">E-Mail-Adresse hinzufügen</translation>
 <translation id="5545756402275714221">Artikel für mich</translation>
+<translation id="5551890439174915351">100 × 200 mm</translation>
 <translation id="5552137475244467770">Chrome prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5560088892362098740">Ablaufdatum</translation>
@@ -1757,6 +1784,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5565871407246142825">Kreditkarten</translation>
 <translation id="5570825185877910964">Konto schützen</translation>
 <translation id="5571083550517324815">Diese Abholadresse wird nicht unterstützt. Bitte wähle eine andere Adresse aus.</translation>
+<translation id="5572434905385510939">22 × 28 Zoll</translation>
 <translation id="557886905979275351">Rasiermesser und -apparate</translation>
 <translation id="5580958916614886209">Prüfe den Ablaufmonat und versuche es dann erneut</translation>
 <translation id="558420943003240152">Passwörter und Passkeys verwalten</translation>
@@ -1765,6 +1793,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5587987780934666589">Plattformnutzer</translation>
 <translation id="5593349413089863479">Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="5595485650161345191">Adresse bearbeiten</translation>
+<translation id="5596939519753369075">2 × 3,5 Zoll</translation>
 <translation id="5598944008576757369">Zahlungsmethode auswählen</translation>
 <translation id="560412284261940334">Verwaltung wird nicht unterstützt.</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -1905,6 +1934,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5995727681868049093">Daten, Datenschutz- und Sicherheits­einstellungen in deinem Google-Konto verwalten</translation>
 <translation id="5997247540087773573">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Google Passwortmanager, das Passwort jetzt zu ändern und deine gespeicherten Passwörter zu prüfen.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> Ergebnisse für "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6006365096047131769">3 × 5 Zoll</translation>
 <translation id="6006484371116297560">Klassisch</translation>
 <translation id="6008122969617370890">N-zu-1-Reihenfolge</translation>
 <translation id="6008256403891681546">JCB</translation>
@@ -1946,6 +1976,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6087312102907839798">Ähnliche Suchanfragen</translation>
 <translation id="6094273045989040137">Anmerkung hinzufügen</translation>
 <translation id="6094290315941448991">Die Administratorrichtlinie blockiert die Bildschirmaufzeichnung, wenn vertrauliche Inhalte sichtbar sind</translation>
+<translation id="6099269767116481177">22 × 29,5 Zoll</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Website erstellen</translation>
 <translation id="6106989379647458772">Die Webseite unter <ph name="PAGE" /> ist möglicherweise vorübergehend nicht verfügbar oder ist jetzt unter einer neuen Webadresse aufrufbar.</translation>
@@ -1978,6 +2009,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6194209731893739467">Alle beobachteten Produkte hier ansehen</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
+<translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6203231073485539293">Bitte überprüfe deine Internetverbindung.</translation>
 <translation id="6218753634732582820">Adresse aus Chromium entfernen?</translation>
 <translation id="622039917539443112">Parallele Faltung</translation>
@@ -2062,6 +2094,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6427730057873428458">Fensterfaltung</translation>
 <translation id="6428450836711225518">Telefonnummer bestätigen</translation>
 <translation id="643051589346665201">Google-Passwort ändern</translation>
+<translation id="6431119592588449664">Bericht hochgeladen</translation>
 <translation id="6433490469411711332">Kontaktdaten bearbeiten</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> hat die Verbindung abgelehnt.</translation>
 <translation id="6433797564277305076">Mithilfe der Geräteentsperrung kannst du deine Karten ab sofort schneller bestätigen</translation>
@@ -2104,6 +2137,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6549443526281184652">Kostüme</translation>
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="6556866813142980365">Wiederholen</translation>
+<translation id="6557715786897013164">14 × 17 Zoll</translation>
 <translation id="6569060085658103619">Dies ist eine Erweiterungsseite</translation>
 <translation id="6569366777234823130">Dramen</translation>
 <translation id="6573200754375280815">Doppelte Lochung rechts</translation>
@@ -2133,6 +2167,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6646269444027925224">{COUNT,plural, =0{Keine}=1{1 Website (Anmeldung in Google-Konto bleibt erhalten)}other{# Websites (Anmeldung in Google-Konto bleibt erhalten)}}</translation>
 <translation id="6648459603387803038">Dein Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.</translation>
 <translation id="6648524591329069940">Schriftart Serif</translation>
+<translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Verwaltet von:</translation>
 <translation id="6652101503459149953">Windows Hello verwenden</translation>
 <translation id="6657585470893396449">Passwort</translation>
@@ -2200,6 +2235,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6828866289116430505">Genetik</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6833752742582340615">Du kannst deine Karten- und Abrechnungsinformationen in deinem Google-Konto speichern, um schnell und sicher zu bezahlen</translation>
+<translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6846340164947227603">Virtuelle Kartennummer verwenden...</translation>
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6857776781123259569">Passwörter verwalten…</translation>
@@ -2258,6 +2294,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6972629891077993081">HID-Geräte</translation>
 <translation id="6973656660372572881">Sowohl feste Proxyserver als auch eine PAC-Skript-URL sind festgelegt.</translation>
 <translation id="6973932557599545801">Ich kann dir leider nicht helfen. Bitte fahre alleine fort.</translation>
+<translation id="6973988895180423160">3,5 × 5 Zoll</translation>
 <translation id="6978236010531171013">Trotzdem freigeben</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Stummschalten (Standard)</translation>
@@ -2386,7 +2423,6 @@ Weitere Details:
 <translation id="733923710415886693">Das Serverzertifikat wurde nicht über die Zertifikatstransparenz offengelegt.</translation>
 <translation id="7341357280245177602">Gebrauchtwagen</translation>
 <translation id="7346048084945669753">Ist zugehörig:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Zugelassen, bis du diesen Tab schließt</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten.</translation>
 <translation id="7353601530677266744">Befehlszeile</translation>
@@ -2408,6 +2444,7 @@ Weitere Details:
 <translation id="7378627244592794276">Nein</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7378877318020334501">Comedy-Fernsehserien</translation>
+<translation id="7380398842872229465">10 × 15 Zoll</translation>
 <translation id="738439098860678026">Früherziehung</translation>
 <translation id="7386364858855961704">Nicht zutreffend</translation>
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
@@ -2446,6 +2483,7 @@ Weitere Details:
 <translation id="7460618730930299168">Die Filmvorführung entspricht nicht deiner Auswahl. Möchtest du fortfahren?</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
 <translation id="7463075493919226237">Australian Football</translation>
+<translation id="7465963048299965912">10 × 13 Zoll</translation>
 <translation id="7469935732330206581">Dieses Formular ist nicht sicher</translation>
 <translation id="7473891865547856676">Nein danke</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
@@ -2660,6 +2698,7 @@ Weitere Details:
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Passwort verwalten</translation>
+<translation id="8009843239480947060">10 × 11 Zoll</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Diese Karte und die entsprechende Rechnungsadresse werden gespeichert. Du kannst sie nutzen, wenn du in <ph name="USER_EMAIL" /> angemeldet bist.}other{Diese Karten und die entsprechenden Rechnungsadressen werden gespeichert. Du kannst sie nutzen, wenn du in <ph name="USER_EMAIL" /> angemeldet bist.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Unbefugte Dritte auf dieser Website versuchen unter Umständen auf betrügerische Weise, dich zur Installation von Software zu bewegen oder dir personenbezogene Daten zu entlocken, zum Beispiel Passwörter, Telefonnummern oder Kreditkartendaten.</translation>
@@ -2696,6 +2735,7 @@ Weitere Details:
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8090403583893450254">Größe 20</translation>
 <translation id="8091372947890762290">Aktivierung auf dem Server steht noch aus.</translation>
+<translation id="8092254339843485299">6 × 8 Zoll</translation>
 <translation id="8092774999298748321">Dunkelviolett</translation>
 <translation id="8094917007353911263">Unter Umständen erfordert das von dir verwendete Netzwerk, dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
 <translation id="809898108652741896">A6</translation>
@@ -2727,9 +2767,11 @@ Weitere Details:
 <translation id="8201077131113104583">Ungültige Update-URL für Erweiterung mit der ID "<ph name="EXTENSION_ID" />"</translation>
 <translation id="8202097416529803614">Zusammenfassung der Bestellung</translation>
 <translation id="8202370299023114387">Konflikt</translation>
+<translation id="8208363704094329105">300 × 400 mm</translation>
 <translation id="8210604850413485128">Webhosting</translation>
 <translation id="8211406090763984747">Verbindung ist sicher</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
+<translation id="8216640997712497593">14 × 18 Zoll</translation>
 <translation id="8217240300496046857">Websites können keine Cookies verwenden, die deine Browserdaten über mehrere Websites hinweg erfassen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="8217748145574471584">Personalwesen</translation>
 <translation id="8218327578424803826">Zugewiesener Standort: </translation>
@@ -2801,6 +2843,7 @@ Weitere Details:
 <translation id="8380941800586852976">Schädlich</translation>
 <translation id="8381674639488873545">Diese Kosten können einmalig oder wiederkehrend sein und sind vielleicht nicht klar zu erkennen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Die Administratorrichtlinie blockiert das Teilen von <ph name="ORIGIN_NAME" /> mit <ph name="VM_NAME" /></translation>
+<translation id="8396522675989118466">Dies ist der <ph name="NUMBER_OF_DIGITS" />-stellige Code auf der <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Mein Telefon finden</translation>
 <translation id="8405579342203358118">In den Chrome-Einstellungen verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="8409413588194360210">Zahlungs-Handler</translation>
@@ -2810,6 +2853,7 @@ Weitere Details:
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" />, <ph name="SECOND_LABEL" />, <ph name="THIRD_LABEL" /></translation>
+<translation id="8427848540066057481">500 × 750 mm</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8428634594422941299">Ok</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um deine Cookie-Einstellungen in den Chrome-Einstellungen zu verwalten</translation>
@@ -2821,11 +2865,13 @@ Weitere Details:
 <translation id="8443613539889492016">Rap und Hip-Hop</translation>
 <translation id="8444543005280733648">Computernetzwerke</translation>
 <translation id="8446884382197647889">Weitere Informationen</translation>
+<translation id="8449155699563577224">17 × 24 Zoll</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 Kreditkarte}other{# Kreditkarten}}</translation>
 <translation id="8468358362970107653">Umschlag C3</translation>
+<translation id="8473626140772740486">300 × 450 mm</translation>
 <translation id="8473863474539038330">Adressen</translation>
 <translation id="8474910779563686872">Entwicklerdetails anzeigen</translation>
 <translation id="8479754468255770962">Heftklammer unten links</translation>
@@ -2874,9 +2920,12 @@ Weitere Details:
 <translation id="8623885649813806493">Keine übereinstimmenden Passwörter. Alle gespeicherten Passwörter anzeigen.</translation>
 <translation id="8624354461147303341">Rabatte sichern</translation>
 <translation id="8625384913736129811">Diese Karte für dieses Gerät speichern</translation>
+<translation id="8634957317623797170">54 × 86 mm</translation>
 <translation id="8637577059508742477">Dein Profil und dein Browser werden von <ph name="DOMAIN" /> verwaltet</translation>
 <translation id="8643409044755049933">Umschlag Kaku 3</translation>
+<translation id="8647287295490773273">210 × 330 mm</translation>
 <translation id="865032292777205197">Bewegungssensoren</translation>
+<translation id="8654126188050905496">55 × 91 mm</translation>
 <translation id="8663226718884576429">Bestellübersicht, <ph name="TOTAL_LABEL" />, weitere Details</translation>
 <translation id="8666678546361132282">Englisch</translation>
 <translation id="867224526087042813">Signatur</translation>
@@ -2908,6 +2957,7 @@ Weitere Details:
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731544501227493793">Schaltfläche „Passwörter verwalten“ – drücke die Eingabetaste, um Passwörter in den Chrome-Einstellungen abzurufen und zu verwalten</translation>
 <translation id="8734529307927223492">Dein <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet</translation>
+<translation id="8736059027199600831">30 × 40 Zoll</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um ein neues Inkognitofenster zu öffnen und privat zu surfen</translation>
 <translation id="8737685506611670901"><ph name="PROTOCOL" />-Links anstelle von <ph name="REPLACED_HANDLER_TITLE" /> öffnen</translation>
 <translation id="8738058698779197622">Zum Aufbau einer sicheren Verbindung muss die Uhrzeit richtig eingestellt sein. Der Grund hierfür ist, dass Websites sich mithilfe von Zertifikaten identifizieren, die nur für einen bestimmten Zeitraum gelten. Da die Uhrzeit deines Geräts falsch ist, kann Chromium diese Zertifikate nicht bestätigen.</translation>
@@ -2945,6 +2995,7 @@ Weitere Details:
 <translation id="8834380158646307944">Schaltfläche „Inkognitofenster schließen“ – drücke die Eingabetaste, um alle geöffneten Inkognitofenster zu schließen</translation>
 <translation id="883848425547221593">Andere Lesezeichen</translation>
 <translation id="884264119367021077">Versandadresse</translation>
+<translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">Kein Sperrmechanismus gefunden.</translation>
 <translation id="8849262850971482943">Verwende für zusätzliche Sicherheit deine virtuelle Karte</translation>
 <translation id="8852567725116633427">Klein- und Kleinstwagen</translation>
@@ -3113,6 +3164,7 @@ Weitere Details:
 <translation id="969892804517981540">Offizieller Build</translation>
 <translation id="973773823069644502">Lieferadresse hinzufügen</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Eintrag}other{# Einträge}}</translation>
+<translation id="976522784004777030">5 × 8 Zoll</translation>
 <translation id="977502174772294970">Hochzeiten</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="982885543310356857">Oldtimer</translation>

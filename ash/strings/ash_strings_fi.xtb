@@ -307,6 +307,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2673968385134502798">Pelit</translation>
 <translation id="2678852583403169292">Teksti puhuttuna ‑valikko</translation>
 <translation id="2689613560355655046">Työpöytä 8</translation>
+<translation id="2695132445805301912">Näytä näppäimet ja klikkaukset</translation>
 <translation id="2695305337569143674">verkko</translation>
 <translation id="2697697418792422688">Näytä näppäimistöasetukset. <ph name="KEYBOARD_NAME" /> valittiin.</translation>
 <translation id="2700493154570097719">Määritä näppäimistö</translation>
@@ -1124,6 +1125,7 @@ Uusi asennus</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Laajenna kameran näkymää</translation>
 <translation id="731589979057211264">Hyllyryhmä on päällä.</translation>
+<translation id="7340731148882810149">Automaattisten klikkausten valikko</translation>
 <translation id="7346909386216857016">Selvä</translation>
 <translation id="7348093485538360975">Näyttönäppäimistö</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
@@ -1301,6 +1303,7 @@ Uusi asennus</translation>
 <translation id="826107067893790409">Avaa painamalla Enter: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8270450402312105425">{0,plural, =1{Päivitä laite aiempaan versioon tunnin kuluessa}other{Päivitä laite aiempaan versioon # tunnin kuluessa}}</translation>
+<translation id="8277261673056602147">Korosta tekstiä näytöllä</translation>
 <translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>

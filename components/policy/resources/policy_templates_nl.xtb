@@ -1216,7 +1216,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2168397434410358693">Inactieve vertraging wanneer op netstroom wordt gewerkt</translation>
 <translation id="217013996107840632">Opdrachtregelparameters voor overschakeling vanaf de alternatieve browser.</translation>
 <translation id="2170233653554726857">WPAD-optimalisatie aanzetten</translation>
-<translation id="2171952274731262470">Vertragingen en acties die moeten worden ondernomen als het apparaat inactief is en op de batterij werkt</translation>
 <translation id="2175353308236295184">App-specifiek json-configuratieobject met een reeks sleutel-waardeparen, bijvoorbeeld '"managedConfiguration": { "key1": value1, "key2": value2 }'. De sleutels worden gedefinieerd in het app-manifest.</translation>
 <translation id="2176115444876446233">Voorkomen dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="2177696016354404697">Het privacyscherm altijd uitzetten</translation>
@@ -2399,15 +2398,6 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3264793472749429012">Coderingen voor standaardzoekprovider</translation>
 <translation id="3273221114520206906">Standaardinstelling voor JavaScript</translation>
 <translation id="3278042410658310805">Gesproken feedback op het inlogscherm uitzetten en de gebruiker toestaan dit tijdelijk aan te zetten</translation>
-<translation id="3282240846541032181">Met dit beleid kunnen beheerders apps opgeven die fungeren als standaardhandlers voor de betreffende bestandsextensies op <ph name="PRODUCT_OS_NAME" /> en die gebruikers niet kunnen wijzigen.
-      Voor alle bestandsextensies die niet in het beleid zijn opgegeven, kunnen gebruikers hun eigen standaardwaarden instellen met betrekking tot de gebruikelijke workflow.
-
-      Geef Chrome-apps op basis van hun ID op, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, en web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
-
-      Houd er rekening mee dat apps zichzelf MOETEN definiëren als bestandshandlers voor de gespecificeerde bestandsextensies in het manifest. Zo niet, dan kan dat beleidsitem niet worden toegepast (dat wil zeggen dat het beleid de bestaande app-mogelijkheden NIET uitbreidt).
-
-      Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandlers selecteren op basis van de interne logica.
-      </translation>
 <translation id="328347261792478720">De browser toont standaard media-aanbevelingen die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid niet toepast, ziet de gebruiker deze aanbevelingen niet. Als je dit beleid toepast of niet instelt, ziet de gebruiker de media-aanbevelingen.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
 <translation id="3286159327013237833">Automatisch klikken op het inlogscherm aanzetten</translation>
@@ -3689,7 +3679,6 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="46321462262887935">Toetsen op de bovenste rij gebruiken als functietoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
 <translation id="4632566332417930481">Gebruik van hulpprogramma's voor ontwikkelaars uitzetten voor extensies die zijn geïnstalleerd op basis van het bedrijfsbeleid, maar toestaan in andere contexten</translation>
-<translation id="4635284822166984665">Tijd wanneer het apparaat begint met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="4636354638176939375">Gebruikers met beperkte rechten maken uitzetten</translation>
 <translation id="4646626362889216307">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
 
@@ -4261,7 +4250,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als je dit beleid niet instelt, staat cursormarkering in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
-<translation id="5279539586558702228">Tijd wanneer het apparaat netvoeding gaat gebruiken, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="5283457834853986457">Plug-inzoeker uitzetten (beëindigd)</translation>
 <translation id="5286579716704722323">Toestaan dat gebruikers doorklikken bij SSL-waarschuwingspagina's</translation>
 <translation id="5288772341821359899">Als het beleid is ingesteld, wordt het door WebRTC gebruikte UDP-poortbereik beperkt tot het opgegeven poortinterval (inclusief eindpunten).
@@ -5083,11 +5071,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6181618732396778048">Geen sites toestemming geven om schrijftoegang tot bestanden en directory's te vragen</translation>
 <translation id="6181783961196084973">De waarde van de schakelaar voor de verzameling van app-activiteit. Als de schakelaar is ingesteld op True, wordt app-activiteit gerapporteerd aan de server zodat het te zien is in de <ph name="PRODUCT_NAME" />-app van het kind en de ouder. Als ingesteld op False, werkt de functie voor tijdslimieten per app nog steeds, maar worden er geen gegevens gerapporteerd aan de server en getoond in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182563940865917569">Toestaan dat Chrome media automatisch afspeelt</translation>
-<translation id="6183327369896253878">Als je het beleid instelt, wordt bepaald welke app-ID's <ph name="PRODUCT_OS_NAME" /> toont als vastgezette apps in de Launcher-balk en kunnen deze niet worden gewijzigd door gebruikers.
-
-      Voer Chrome-apps in op basis van ID, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; en web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps.
-
-      Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps in de Launcher wijzigen.</translation>
 <translation id="6184385589352532028">Desk API niet aanzetten voor ChromeOS-beheer door derden</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
 <translation id="6191963383731098056">Met dit beleid kunnen beheerders de kleur voor het thema van <ph name="PRODUCT_NAME" /> instellen. Je moet een geldige hexadecimale kleur opgeven in de vorm van een tekenreeks met de indeling #RRGGBB.
@@ -6509,7 +6492,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen standen voor snel ontgrendelen beschikbaar voor beheerde apparaten.</translation>
 <translation id="754176366378585605">Gebruik van de File Handling API beheren</translation>
-<translation id="7543109906499122922">Tijd wanneer het apparaat de batterij gaat gebruiken, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="7544392541165889987">Als je het beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> werken als proxy tussen <ph name="CLOUD_PRINT_NAME" /> en verouderde printers die zijn aangesloten op de machine. Met hun Google-account kunnen gebruikers de proxy voor de cloudprinter aanzetten door zich te verifiëren.
 
       Als je het beleid niet toepast, kunnen gebruikers de proxy niet aanzetten en kan de machine geen printers delen met <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -6821,7 +6803,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Hiermee bepaal je de ID van de extensie die moet worden gebruikt als schermbeveiliging voor het inlogvenster. De extensie moet onderdeel zijn van het AppPack dat is geconfigureerd voor dit domein via het beleid DeviceAppPack.</translation>
 <translation id="7882890448959833986">De waarschuwing voor een niet-ondersteund besturingssysteem negeren</translation>
 <translation id="788480874436328004">Opslag van wachtwoorden met de Wachtwoordmanager uitzetten</translation>
-<translation id="7887379840451099426">Instellingen voor energiebeheer die alleen van toepassing zijn als er op de batterij wordt gewerkt</translation>
 <translation id="7891884447851425349">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die tijdens een standaard zoekopdracht wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker.
 
       Je kunt de zoek-URL van Google opgeven als: <ph name="GOOGLE_SEARCH_URL" />.</translation>

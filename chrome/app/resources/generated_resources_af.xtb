@@ -2468,6 +2468,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3241680850019875542">Kies die wortelgids vir die uitbreiding om te pak. Om 'n uitbreiding op te dateer, kies ook die private sleutel om te hergebruik.</translation>
 <translation id="3242289508736283383">Program met "net_kiosk"-manifeseienskap moet in Chrome-bedryfstelsel se kioskmodus geïnstalleer word</translation>
 <translation id="3242665648857227438">Hierdie profiel gebruik Chrome-bedryfstelsel se instaanbedienerinstellings.</translation>
+<translation id="3243017971870859287">Lees ChromeOS Flex-toestel- en -komponentreeksnommers</translation>
 <translation id="3244294424315804309">Hou aan om klank te demp</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netwerkfout</translation>
 <translation id="3248902735035392926">Veiligheid is belangrik. Vat 'n oomblik om <ph name="BEGIN_LINK" />jou uitbreidings nou na te gaan<ph name="END_LINK" /></translation>
@@ -2524,6 +2525,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3297105622164376095">Word toegelaat om derdeparty-aanmeldporboodskappe te wys</translation>
 <translation id="3297536526040732495">Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm</translation>
 <translation id="329838636886466101">Herstel</translation>
+<translation id="3298438307450647315">Lees Chrome-toestelinligting en -toesteldata</translation>
 <translation id="3298789223962368867">Ongeldige URL ingevoer.</translation>
 <translation id="32991397311664836">Toestelle:</translation>
 <translation id="33022249435934718">GDI-handvatsels</translation>
@@ -2630,6 +2632,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3402255108239926910">Kies 'n avatar</translation>
 <translation id="3402585168444815892">Skryf tans in by demonstrasiemodus</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Lees ChromeOS Flex-toestelinligting en -toesteldata</translation>
 <translation id="3404065873681873169">Geen wagwoorde is vir hierdie werf gestoor nie</translation>
 <translation id="3405664148539009465">Pasmaak lettertipes</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4184,6 +4187,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="486635084936119914">Maak sekere lêertipes outomaties oop nadat dit afgelaai is</translation>
 <translation id="4868281708609571334">Leer Google Assistent om <ph name="SUPERVISED_USER_NAME" /> se stem te herken</translation>
 <translation id="4868284252360267853">Hierdie dialoog is nie tans gefokus nie. Druk Command-Shift-Option A om hierdie dialoog te fokus.</translation>
+<translation id="4869170227080975044">Lees ChromeOS-netwerkinligting</translation>
 <translation id="4870724079713069532">Jy kan met hierdie program gesteunde lêers uit die Verkenner of ander programme oopmaak en wysig. Gaan na <ph name="BEGIN_LINK" />Windows-instellings<ph name="END_LINK" /> om te beheer watter lêers hierdie program by verstek oopmaak.</translation>
 <translation id="4870758487381879312">Voer wagwoord wat deur admin goedgekeur is in om opstellinginligting te kry</translation>
 <translation id="4870995365819149457">Sommige gesteunde skakels sal steeds in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> en 1 ander program oopmaak.</translation>
@@ -4916,6 +4920,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5571066253365925590">Bluetooth geaktiveer</translation>
 <translation id="5571092938913434726">Globale mediakontroles</translation>
 <translation id="5571832155627049070">Pasmaak jou profiel</translation>
+<translation id="5572252023412311448">Wys werfbesonderhede vir <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Jy sal verbeterde voorstelle in die adresbalk kry</translation>
 <translation id="5572851009514199876">Begin asseblief deur by Chrome aan te meld sodat Chrome kan kyk of jy toegelaat word om na hierdie werf te gaan.</translation>
 <translation id="557506220935336383">Sien uitbreidingtoestemmings vir ander werwe</translation>
@@ -6106,6 +6111,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6703212423117969852">Jy kan later in Chrome weer probeer.</translation>
 <translation id="6703254819490889819">Laai rugsteun terug</translation>
 <translation id="6706210727756204531">Omvang</translation>
+<translation id="6707122714992751648">Laat loop diagnostiese toetse vir ChromeOS</translation>
 <translation id="6707389671160270963">SSL-kliëntsertifikaat</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> en 1 ander oortjie}other{<ph name="PAGE_TITLE" /> en # ander oortjies}}</translation>
 <translation id="6709133671862442373">Nuus</translation>
@@ -6284,6 +6290,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Instaanbedienerinstellings …</translation>
 <translation id="6860427144121307915">Maak in 'n oortjie oop</translation>
+<translation id="6861179941841598556">Meer handelinge vir <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Alle uitbreidings word toegelaat</translation>
 <translation id="686366188661646310">Vee wagwoord uit?</translation>
 <translation id="6865313869410766144">Vul vormdata outomaties in</translation>
@@ -6373,6 +6380,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
         <ph name="BREAK" />
         <ph name="BREAK" />
         Jy kan instellings deur die kaartkieslys bestuur, of meer opsies sien in Pasmaak Chrome.</translation>
+<translation id="6949089178006131285">Lees ChromeOS Flex-netwerkinligting</translation>
 <translation id="6949434160682548041">Wagwoord (opsioneel)</translation>
 <translation id="6950627417367801484">Laai programme terug</translation>
 <translation id="6952242901357037157">Jy kan ook wagwoorde van jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /> af hier wys</translation>
@@ -7988,6 +7996,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8463001014623882202">Kon nie magtig nie</translation>
 <translation id="846374874681391779">Aflaaibalk</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> is gedeaktiveer.</translation>
+<translation id="846399539692727039">Laat loop diagnostiese toetse vir ChromeOS Flex</translation>
 <translation id="8464132254133862871">Die gebruikerrekening is nie geskik vir die diens nie.</translation>
 <translation id="8465252176946159372">Nie geldig nie</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> het jou toestemming nodig om te werk</translation>
@@ -8134,6 +8143,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8624315169751085215">Kopieer na knipbord</translation>
 <translation id="8624354461147303341">Kry afslag</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Lees Chrome-toestel- en komponentreeksnommers</translation>
 <translation id="862542460444371744">Uitbreidings</translation>
 <translation id="8625663000550647058">Mag nie jou mikrofoon gebruik nie</translation>
 <translation id="8625916342247441948">Moenie werwe toelaat om aan HID-toestelle te koppel nie</translation>

@@ -1130,7 +1130,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3890664840433101773">Magdagdag ng email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Na-expire na ang card</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Gusto ng <ph name="URL" /> na mag-play ng pinoprotektahang content. Ive-verify ng Google ang pagkakakilanlan ng iyong device, at maaari itong i-access ng site na ito.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1537,7 +1536,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4950898438188848926">Button sa paglipat ng tab, pindutin ang Enter para lumipat sa nakabukas na tab, na <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Mga Pagkilos</translation>
 <translation id="4953689047182316270">Tumugon sa Mga Kaganapan ng Pagiging Accessible</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Palawakin ang listahan</translation>
 <translation id="4964505745997821360">Insurance sa kalusugan</translation>
 <translation id="4968522289500246572">Idinisenyo ang app na ito para sa mobile at posibleng hindi ma-resize nang maayos. Posibleng makaranas ng mga isyu o mag-restart ang app.</translation>
@@ -1720,7 +1718,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5379027395132364855">Button na gumawa ng presentation, pindutin ang Enter para gumawa ng bagong Google presentation sa Slides nang mabilis</translation>
 <translation id="5385857628869214740">Katatawanan</translation>
 <translation id="5386426401304769735">Naglalaman ang chain ng certificate para sa site na ito ng certificate na naka-sign gamit ang SHA-1.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Edge stitch right</translation>
 <translation id="5398772614898833570">Na-block ang mga ad</translation>
 <translation id="5400836586163650660">Grey</translation>
@@ -2313,6 +2310,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Antas ng pag-zoom</translation>
 <translation id="7016992613359344582">Ang mga singil na ito ay maaaring isang beses lang o umuulit at maaaring hindi mo mapansin.</translation>
+<translation id="7023162328967545559">Babala ng admin</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7030436163253143341">Hindi valid ang certificate</translation>
 <translation id="7031646650991750659">Aling mga Google Play app ang na-install mo</translation>
@@ -2428,7 +2426,6 @@ Mga karagdagang detalye:
 <translation id="733923710415886693">Ang certificate ng server ay hindi inihayag sa pamamagitan ng Transparency ng Certificate.</translation>
 <translation id="7341357280245177602">Mga gamit nang sasakyan</translation>
 <translation id="7346048084945669753">Naka-affiliate:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Pinapayagan hanggang sa isara mo ang tab na ito</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7353601530677266744">Command Line</translation>
@@ -2500,6 +2497,7 @@ Mga karagdagang detalye:
 <translation id="7489473601138133813">Mga resource at pagpaplano sa trabaho</translation>
 <translation id="7495528107193238112">Naka-block ang content na ito. Makipag-ugnayan sa may-ari ng site para maayos ang isyu.</translation>
 <translation id="7497998058912824456">Button na Gumawa ng doc, pindutin ang Enter para gumawa ng bagong Google Doc nang mabilis</translation>
+<translation id="7501663406926337752">Na-flag ng iyong organisasyon ang pupuntahang site</translation>
 <translation id="7501853161948120656">Mga resource na pang-edukasyon</translation>
 <translation id="7506488012654002225"><ph name="BEGIN_EMPHASIS" />Hindi ise-save<ph name="END_EMPHASIS" /> ng Chromium ang sumusunod na impormasyon:
           <ph name="BEGIN_LIST" />
@@ -2746,6 +2744,7 @@ Mga karagdagang detalye:
 <translation id="8094917007353911263">Maaaring hilingin ng network na ginagamit mo na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Naalis na ang mga invalid na card</translation>
+<translation id="8100666323495101203">Natukoy ng iyong organisasyon ang <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> bilang site na posibleng lumabag ng patakaran <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Mga akademikong kumperensya at lathalain</translation>
 <translation id="8103161714697287722">Paraan ng Pagbabayad</translation>
 <translation id="8103643211515685474">I-print pa rin</translation>

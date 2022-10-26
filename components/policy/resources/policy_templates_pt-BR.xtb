@@ -1218,7 +1218,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
 <translation id="2170233653554726857">Ativar otimização WPAD</translation>
-<translation id="2171952274731262470">Atrasos e ações a serem tomadas quando o dispositivo estiver inativo e funcionando com energia da bateria.</translation>
 <translation id="2175353308236295184">Objeto de configuração JSON específico do app com um conjunto de pares de chave-valor, por exemplo, '"managedConfiguration": { "key1": value1, "key2": value2 }'. As chaves são definidas no manifesto do app.</translation>
 <translation id="2176115444876446233">Impede que os usuários coletem o rastreamento de desempenho do sistema.</translation>
 <translation id="2177696016354404697">Sempre desativar a tela de privacidade</translation>
@@ -2430,15 +2429,6 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3264793472749429012">Codificações do provedor de pesquisa padrão</translation>
 <translation id="3273221114520206906">Configuração padrão do JavaScript</translation>
 <translation id="3278042410658310805">Desativar a resposta falada na tela de login e permitir que o usuário a ative temporariamente</translation>
-<translation id="3282240846541032181">Esta política permite que os administradores especifiquem apps que funcionam como gerenciadores padrão das respectivas extensões de arquivo no <ph name="PRODUCT_OS_NAME" /> que os usuários não podem mudar.
-      Para todas as extensões de arquivo não especificadas na política, os usuários podem definir os próprios padrões do fluxo de trabalho comum.
-
-      Especifique apps do Chrome pelos IDs deles (como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />) e apps da Web pelo URL usado na <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />).
-
-      Os apps PRECISAM ser declarados no manifesto como gerenciadores de extensões de arquivo especificadas para que o item da política entre em vigor. A política NÃO amplia os recursos existentes do app.
-
-      Caso a política seja deixada sem definição, é possível que o <ph name="PRODUCT_OS_NAME" /> selecione gerenciadores padrão de acordo com a lógica interna.
-      </translation>
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
 <translation id="3284094172359247914">Controla o uso da API WebUSB</translation>
 <translation id="3286159327013237833">Ativar o clique automático na tela de login</translation>
@@ -3754,7 +3744,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
-<translation id="4635284822166984665">Horário em que o carregamento do dispositivo será iniciado, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="4636354638176939375">Desativar a criação de usuários supervisionados</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
@@ -4326,7 +4315,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o destaque de cursor ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="5279539586558702228">Horário em que o dispositivo funcionará usando energia de corrente alternada, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="5283457834853986457">Desativar o localizador de plug-ins (uso suspenso)</translation>
 <translation id="5286579716704722323">Permitir que os usuários ignorem páginas de aviso SSL</translation>
 <translation id="5288772341821359899">Se a política for configurada, o alcance da porta UDP usado por WebRTC será restrito ao intervalo de porta especificado (endpoints inclusos).
@@ -5158,11 +5146,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6181618732396778048">Não permitir que qualquer site solicite acesso de gravação de arquivos ou diretórios</translation>
 <translation id="6181783961196084973">O valor da alternância da coleta de atividade em apps. Se ele for definido como verdadeiro, a atividade em apps será enviada ao servidor para ser exibida no app <ph name="PRODUCT_NAME" /> da criança e do pai/mãe. Se definido como falso o recurso de limites de tempo por app ainda funcionará, mas nenhum dado será enviado ao servidor ou exibido no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182563940865917569">Permitir que o Chrome inicie mídia automaticamente</translation>
-<translation id="6183327369896253878">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e os usuários não podem mudá-los.
-
-      Especifique apps do Chrome pelos IDs deles (como pjkljhegncpnkpknbcohdijeoejaedia), apps Android pelos nomes de pacote deles (como com.google.android.gm) e apps da Web pelo URL usado em <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como https://google.com/maps).
-
-      Se a política não for definida, os usuários poderão mudar a lista de apps fixados no acesso rápido.</translation>
 <translation id="6184385589352532028">Não ativar a API Desk para o controle do Chrome OS de terceiros</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
 <translation id="6191963383731098056">Esta política permite que os administradores configurem a cor do tema do <ph name="PRODUCT_NAME" />. Para isso, a string de entrada precisa ser de uma cor hexadecimal válida compatível com o formato "#RRGGBB".
@@ -6596,7 +6579,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados.</translation>
 <translation id="754176366378585605">Controlar o uso da API File Handling</translation>
-<translation id="7543109906499122922">Horário em que o dispositivo começará a usar energia da bateria, interpretado no fuso horário local do dispositivo.</translation>
 <translation id="7544392541165889987">Se a política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá atuar como um proxy entre o <ph name="CLOUD_PRINT_NAME" /> e impressoras legadas conectadas à máquina. Os usuários podem ativar o proxy de impressão na nuvem por autenticação usando a Conta do Google deles.
 
       Se a política for desativada, os usuários não poderão ativar o proxy e a máquina não poderá compartilhar as impressoras com o <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -6913,7 +6895,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Determina a identificação da extensão a ser usada como protetor de tela na tela de login. A extensão deve ser parte do AppPack configurado para este domínio por meio da política DeviceAppPack.</translation>
 <translation id="7882890448959833986">Remover o aviso de SO não compatível</translation>
 <translation id="788480874436328004">Desativar o salvamento de senhas no gerenciador de senhas</translation>
-<translation id="7887379840451099426">Configurações de gerenciamento de energia aplicáveis apenas quando em funcionamento com energia da bateria.</translation>
 <translation id="7891884447851425349">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> especificará o URL do mecanismo de pesquisa usado na pesquisa padrão. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário.
 
       É possível especificar o URL de pesquisa do Google como: <ph name="GOOGLE_SEARCH_URL" />.</translation>

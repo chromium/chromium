@@ -885,6 +885,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1805967612549112634">Confirmă codul PIN</translation>
 <translation id="1806335016774576568">Comută la altă aplicație deschisă</translation>
 <translation id="1807246157184219062">Luminos</translation>
+<translation id="1809201888580326312">Ai ales să nu salvezi parolele pentru aceste site-uri și aplicații</translation>
 <translation id="1809483812148634490">Aplicațiile pe care le-ai descărcat de pe Google Play vor fi șterse de pe acest Chromebook.
     <ph name="LINE_BREAKS1" />
     Este posibil să se șteargă și conținutul achiziționat, cum ar fi filmele, serialele, cântecele, cărțile sau alte achiziții în aplicație.
@@ -1797,6 +1798,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> nu se poate descărca în siguranță.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Creează un model vocal pentru Asistentul Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Nu permite site-urilor să gestioneze protocoale</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Această pagină vă accesează camera și microfonul.</translation>
@@ -4025,6 +4027,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4726710355753484204">Folosește Ctrl + Alt + tasta de creștere a luminozității pentru a mări.
 Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</translation>
 <translation id="4726710629007580002">Au existat avertismente la încercarea de instalare a acestei extensii:</translation>
+<translation id="472738079453283624">Produse</translation>
 <translation id="4727847987444062305">Sesiune pentru invitați gestionată</translation>
 <translation id="4728558894243024398">Platformă</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Administratorul<ph name="END_LINK" /> a dezactivat verificarea privind software-ul dăunător</translation>
@@ -4944,6 +4947,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5612734644261457353">Ne pare rău, parola dvs. tot nu a putut fi confirmată. Notă: dacă v-ați schimbat recent parola, aceasta se va aplica după ce vă deconectați. Vă rugăm să utilizați aici parola veche.</translation>
 <translation id="5614190747811328134">Notificare pentru utilizator</translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
+<translation id="5616571005307953937">Cea mai veche</translation>
 <translation id="5616726534702877126">Rezervă o dimensiune</translation>
 <translation id="561698261642843490">Închide Firefox</translation>
 <translation id="5620540760831960151">Lista este afectată de <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5575,6 +5579,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6212168817037875041">Dezactivează ecranul</translation>
 <translation id="6212752530110374741">Trimite linkul prin e-mail</translation>
 <translation id="621470880408090483">Nu permite site-urilor să se conecteze la dispozitive Bluetooth</translation>
+<translation id="6216239400972191926">Site-uri și aplicații refuzate</translation>
 <translation id="6216601812881225442">Containerul nu acceptă redimensionarea. Pentru a ajusta spațiul alocat în avans pentru Linux, fă-i backup și restabilește-l într-un container nou.</translation>
 <translation id="6216696360484424239">Conectează-te în mod automat</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> este offline. Conectează-te la internet și încearcă din nou.</translation>

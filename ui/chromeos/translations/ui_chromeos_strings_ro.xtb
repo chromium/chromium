@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Spaniolă</translation>
 <translation id="5438282218546237410">Nu există rezultate pentru <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Parolă nevalidă</translation>
+<translation id="5459064203055649751">Fișierul cu numele <ph name="FILENAME" /> există deja. Vrei să-l înlocuiești cu cel pe care îl muți?</translation>
 <translation id="5463231940765244860">Introdu</translation>
 <translation id="5469868506864199649">Italiană</translation>
 <translation id="5473333559083690127">Reintrodu noul cod PIN</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, detalii</translation>
 <translation id="649877868557234318">Se extrage <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Nu permite proxy-uri pentru rețelele utilizate în comun</translation>
+<translation id="6503285896705205014">Copierea a <ph name="COUNT" /> fișiere este blocată de politica implementată de administrator</translation>
 <translation id="6509122719576673235">Norvegiană</translation>
 <translation id="6528513914570774834">Permite altor utilizatori ai dispozitivului să folosească această rețea</translation>
 <translation id="653019979737152879">Se sincronizează <ph name="FILE_NAME" />...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Acest tip de fișier nu este acceptat. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="7359359531237882347">Se copiază <ph name="NUMBER_OF_ITEMS" /> elemente.</translation>
 <translation id="7375951387215729722">Lista de fișiere este sortată după coloana <ph name="COLUMN_NAME" /> în ordine descrescătoare.</translation>
+<translation id="7377161162143020057">Copierea acestui fișier este blocată de politica implementată de administrator</translation>
 <translation id="7402503521691663770">Dispozitive cu sistemul de operare Chrome Flex</translation>
 <translation id="7408870451288633753">Cehă</translation>
 <translation id="7417453074306512035">Tastatură etiopiană</translation>

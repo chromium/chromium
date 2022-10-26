@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, info</translation>
 <translation id="649877868557234318">Pakker <ph name="FILE_NAME" /> ud i <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Tillad ikke proxyer på delte netværk</translation>
+<translation id="6503285896705205014">Administratorpolitikken tillader ikke, at du kopierer <ph name="COUNT" /> filer</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>
 <translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" />...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Denne filtype understøttes ikke. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="7375951387215729722">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i faldende rækkefølge.</translation>
+<translation id="7377161162143020057">Administratorpolitikken tillader ikke, at du kopierer denne fil</translation>
 <translation id="7402503521691663770">ChromeOS Flex-enheder</translation>
 <translation id="7408870451288633753">Tjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>

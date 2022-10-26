@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" /> 폴더로 <ph name="FILE_NAME" /> 추출 중</translation>
 <translation id="6499681088828539489">공유 네트워크에서 프록시 허용 안함</translation>
+<translation id="6503285896705205014">관리자 정책에 의해 파일 <ph name="COUNT" />개의 복사가 차단되었습니다.</translation>
 <translation id="6509122719576673235">노르웨이어</translation>
 <translation id="6528513914570774834">이 기기의 다른 사용자가 이 네트워크를 사용하도록 허용</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />을(를) 동기화하는 중...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">지원되지 않는 파일 형식입니다. ChromeOS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347">항목 <ph name="NUMBER_OF_ITEMS" />개 복사 중...</translation>
 <translation id="7375951387215729722">파일 목록이 <ph name="COLUMN_NAME" /> 기준 내림차순으로 정렬되어 있습니다.</translation>
+<translation id="7377161162143020057">관리자 정책에 의해 이 파일의 복사가 차단되었습니다.</translation>
 <translation id="7402503521691663770">ChromeOS Flex 기기</translation>
 <translation id="7408870451288633753">체코어</translation>
 <translation id="7417453074306512035">에티오피아어 키보드</translation>

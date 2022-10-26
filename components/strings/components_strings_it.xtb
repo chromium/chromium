@@ -1127,7 +1127,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3890664840433101773">Aggiungi email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carta è scaduta</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chiede di riprodurre contenuti protetti. Google verificherà l'identità del tuo dispositivo e questo sito potrebbe avervi accesso.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1534,7 +1533,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4950898438188848926">Pulsante per cambiare scheda, premi INVIO per passare alla scheda aperta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Azioni</translation>
 <translation id="4953689047182316270">Rispondi agli eventi di accessibilità</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Espandi elenco</translation>
 <translation id="4964505745997821360">Assicurazione sanitaria</translation>
 <translation id="4968522289500246572">Questa app è stata progettata per dispositivi mobili e il relativo ridimensionamento potrebbe non avvenire correttamente. L'app potrebbe riavviarsi o presentare problemi.</translation>
@@ -1717,7 +1715,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5379027395132364855">Pulsante Crea presentazione, premi Invio per creare rapidamente una nuova presentazione Google in Presentazioni</translation>
 <translation id="5385857628869214740">Umorismo</translation>
 <translation id="5386426401304769735">Il certificato di questo sito contiene un certificato che è stato firmato utilizzando SHA-1.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Impuntura a destra</translation>
 <translation id="5398772614898833570">Annunci bloccati</translation>
 <translation id="5400836586163650660">Grigio</translation>
@@ -2309,6 +2306,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Livello di zoom</translation>
 <translation id="7016992613359344582">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente.</translation>
+<translation id="7023162328967545559">Avviso dell'amministratore</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7030436163253143341">ll certificato non è valido</translation>
 <translation id="7031646650991750659">Le app Google Play che hai installato</translation>
@@ -2424,7 +2422,6 @@ Ulteriori dettagli:
 <translation id="733923710415886693">Il certificato del server non è stato reso pubblico tramite Certificate Transparency.</translation>
 <translation id="7341357280245177602">Veicoli usati</translation>
 <translation id="7346048084945669753">Con affiliazione:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Consentita fino alla chiusura di questa scheda</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7353601530677266744">Riga di comando</translation>
@@ -2496,6 +2493,7 @@ Ulteriori dettagli:
 <translation id="7489473601138133813">Pianificazione carriera e risorse</translation>
 <translation id="7495528107193238112">Questi contenuti sono bloccati. Contatta il proprietario del sito per risolvere il problema.</translation>
 <translation id="7497998058912824456">Pulsante Crea documento, premi Invio per creare rapidamente un nuovo documento Google</translation>
+<translation id="7501663406926337752">Il sito che stai per visitare è stato segnalato dalla tua organizzazione</translation>
 <translation id="7501853161948120656">Risorse didattiche</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />non salverà<ph name="END_EMPHASIS" /> le seguenti informazioni:
         <ph name="BEGIN_LIST" />
@@ -2742,6 +2740,7 @@ Ulteriori dettagli:
 <translation id="8094917007353911263">La rete in uso potrebbe richiedere la visita della pagina <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Le carte non valide sono state rimosse</translation>
+<translation id="8100666323495101203">La tua organizzazione ha identificato <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> come un sito che potrebbe violare un criterio. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Conferenze e pubblicazioni accademiche</translation>
 <translation id="8103161714697287722">Metodo di pagamento</translation>
 <translation id="8103643211515685474">Stampa comunque</translation>

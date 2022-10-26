@@ -2420,6 +2420,7 @@
 <translation id="3197453258332670132">เมื่อคลิกขวาหรือกดค้าง ระบบจะแสดงข้อมูลเกี่ยวกับข้อความที่คุณเลือก</translation>
 <translation id="3199127022143353223">เซิร์ฟเวอร์</translation>
 <translation id="3200061262156232574">ในรถเข็นช็อปปิ้ง</translation>
+<translation id="3201237270673604992">ฮ ถึง ก</translation>
 <translation id="3201422919974259695">อุปกรณ์ USB ที่ใช้ได้จะปรากฏที่นี่</translation>
 <translation id="3202131003361292969">เส้นทาง</translation>
 <translation id="3202173864863109533">กำลังปิดเสียงของแท็บนี้อยู่</translation>
@@ -3743,6 +3744,7 @@
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
 <translation id="4465236939126352372">จำกัดเวลาการใช้ <ph name="APP_NAME" /> ไว้ที่ <ph name="TIME" /></translation>
+<translation id="4465649939134800363">ตัวเลือกการจัดเรียง</translation>
 <translation id="4466839823729730432">ดูความทรงจำของคุณที่นี่</translation>
 <translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> แก้ไขไฟล์ใน <ph name="FOLDERNAME" /> ได้</translation>
@@ -6252,6 +6254,7 @@
 <translation id="6843264316370513305">การแก้ไขข้อบกพร่องของเครือข่าย</translation>
 <translation id="6843423766595476978">Ok Google พร้อมใช้งานแล้ว</translation>
 <translation id="6845038076637626672">เปิดแบบเต็มหน้าจอ</translation>
+<translation id="6845231585063669905">ก ถึง ฮ</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" ต้องการพิมพ์ <ph name="FILE_NAME" /> โดยใช้ <ph name="PRINTER_NAME" /></translation>
 <translation id="6847125920277401289">เพิ่มพื้นที่ว่างเพื่อดำเนินการต่อ</translation>
 <translation id="6848388270925200958">ขณะนี้คุณมีบัตรบางใบที่ใช้ได้ในอุปกรณ์นี้เท่านั้น</translation>
@@ -7406,6 +7409,7 @@
 <translation id="7939073735115504773">คลิกไอคอนของส่วนขยายนี้เพื่ออ่านและเปลี่ยนแปลง <ph name="HOST" /></translation>
 <translation id="7939328347457537652">จัดการใบรับรองอุปกรณ์</translation>
 <translation id="7939412583708276221">เก็บเอาไว้ ไม่ว่าอย่างไรก็ตาม</translation>
+<translation id="7940265372707990269">จัดเรียงตาม <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ความพร้อมดำเนินการของการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ:</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943368935008348579">ดาวน์โหลด PDF</translation>

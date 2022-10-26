@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Diurus oleh Pentadbir anda, Butiran</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Jangan benarkan proksi untuk rangkaian kongsi</translation>
+<translation id="6503285896705205014">Penyalinan <ph name="COUNT" /> fail disekat oleh dasar pentadbir</translation>
 <translation id="6509122719576673235">Bahasa Norway</translation>
 <translation id="6528513914570774834">Benarkan pengguna lain peranti ini untuk menggunakan rangkaian ini</translation>
 <translation id="653019979737152879">Menyegerakkan <ph name="FILE_NAME" />...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Jenis fail ini tidak disokong. <ph name="BEGIN_LINK_HELP" />Ketahui Lebih Lanjut<ph name="END_LINK_HELP" /> tentang membuka fail pada Chrome OS.</translation>
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Senarai fail diisih mengikut <ph name="COLUMN_NAME" /> dalam tertib menurun.</translation>
+<translation id="7377161162143020057">Penyalinan fail ini disekat oleh dasar pentadbir</translation>
 <translation id="7402503521691663770">Peranti Chrome OS Flex</translation>
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Papan kekunci bahasa Ethiopia</translation>

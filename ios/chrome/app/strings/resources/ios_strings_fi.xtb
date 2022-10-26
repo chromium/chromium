@@ -119,6 +119,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1832848789136765277">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy synkronoituun dataasi</translation>
 <translation id="1870148520156231997">Näytä salasana</translation>
 <translation id="1872096359983322073">Taskulamppu</translation>
+<translation id="1891796056033961979">Esimerkiksi tallentamasi kirjanmerkit, salasanat ja asetukset löytyvät nyt tältä näytöltä.</translation>
 <translation id="1911619930368729126">Lähetä Google Driveen</translation>
 <translation id="1923342640370224680">Viimeinen tunti</translation>
 <translation id="1930989359703290198">Organisaatiosi sallii sinun kirjautua sisään vain tietyillä tileillä. Kielletyt tilit on piilotettu. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3533202363250687977">Sulje kaikki incognito-välilehdet</translation>
 <translation id="3533436815740441613">Uusi välilehti</translation>
 <translation id="3551320343578183772">Sulje välilehti</translation>
+<translation id="3575234738189584619">Hae Lensilla</translation>
 <translation id="3581564640715911333">Tarjoudu kääntämään vierailla kielillä kirjoitettuja sivuja</translation>
 <translation id="3588820906588687999">Avaa kuva uudessa välilehdessä</translation>
 <translation id="3595252146048399851">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
@@ -494,6 +496,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="4904877109095351937">Merkitse luetuksi</translation>
 <translation id="4908869848243824489">Google Discover</translation>
 <translation id="4916679969857390442">Linssi</translation>
+<translation id="4922154083994158612">Parempi tietoturva?</translation>
 <translation id="4930714375720679147">Ota käyttöön</translation>
 <translation id="4941089862236492464">Virhe jaettaessa kohdetta.</translation>
 <translation id="4944543191714094452">Hae sivulta…</translation>
@@ -832,6 +835,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7435356471928173109">Järjestelmänvalvojasi on ottanut tämän pois päältä</translation>
 <translation id="7438481509621345350">Näet nyt tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7454057999980797137">Alue/maa</translation>
+<translation id="7459628154744868585">Parannettu suojaus on päällä</translation>
 <translation id="7464701184726199289">Synkronoidut tiedot poistetaan kaikilta laitteilta. Tallennettuja sivustoasetuksia ei poisteta, ja ne saattavat sisältää tietoa selaustavoistasi. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Valitse Chrome</translation>
 <translation id="7472734401283673885">Yrityksen nimi</translation>
@@ -1024,6 +1028,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9037965129289936994">Näytä alkuperäinen</translation>
 <translation id="9039373489628511875">Kaistanleveys</translation>
 <translation id="9055772144595778347">Kirjaut. epäonnistui</translation>
+<translation id="9055960261314198756">Parannettu suojaus on pois päältä</translation>
 <translation id="9057972802061533987">Ei voi seurata. Jotain meni pieleen.</translation>
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9068336935206019333">Avaa Chromen incognito-tilassa</translation>

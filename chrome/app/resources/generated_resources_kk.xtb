@@ -877,6 +877,7 @@
 <translation id="1805967612549112634">PIN кодын қайта енгізіңіз</translation>
 <translation id="1806335016774576568">Басқа ашық қолданбаға ауысу</translation>
 <translation id="1807246157184219062">Ашық</translation>
+<translation id="1809201888580326312">Бұл сайттар мен қолданбалар үшін құпия сөздерді сақтамау таңдалған.</translation>
 <translation id="1809483812148634490">Google Play дүкенінен жүктеп алынған қолданбалар бұл Chromebook құрылғысынан жойылады.
     <ph name="LINE_BREAKS1" />
     Фильмдер, телешоулар, музыка, кітаптар сияқты мазмұндар не басқа да қолданба арқылы сатып алынғандар жойылуы мүмкін.
@@ -1514,7 +1515,7 @@
 <translation id="2352810082280059586">Экран құлпы жөніндегі ескертпелері автоматты түрде <ph name="LOCK_SCREEN_APP_NAME" /> қолданбасына сақталған. Ең соңғы ескертпе құлып экранында берілген.</translation>
 <translation id="2353297238722298836">Камера мен микрофонды пайдалануға рұқсат берілген</translation>
 <translation id="2355314311311231464">Инициализация сәтсіз аяқталды, себебі аккаунт деректерін шығарып алу мүмкін болмады. Қайталап көріңіз. Қате коды: <ph name="ERROR_CODE" />.</translation>
-<translation id="2355477091455974894">Қуат үнемдеу нұсқалары</translation>
+<translation id="2355477091455974894">Қуат үнемдеу опциялары</translation>
 <translation id="2355604387869345912">Жылдам тетерингті қосу</translation>
 <translation id="2356070529366658676">Сұрау</translation>
 <translation id="2357330829548294574">Пайдаланушыны (<ph name="USER_NAME" />) өшіру</translation>
@@ -1787,6 +1788,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> файлын қауіпсіз жүктеп алу мүмкін емес.</translation>
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="262154978979441594">Google Assistant-ке дауыс үлгісін үйрету</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Сайттарға протоколдарды өңдеуге рұқсат бермеу</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Бұл бет сіздің камераңыз бен микрофоныңызды пайдаланады.</translation>
@@ -4925,6 +4927,7 @@
 <translation id="5612734644261457353">Кешіріңіз, құпия сөзіңізді растау мүмкін болмады. Ескертпе: жақында құпия сөзіңізді өзгерткен болсаңыз, жаңа құпия сөзіңіз жүйеден шыққаннан кейін қолданылады, бұл жерде ескі құпия сөзіңізді пайдаланыңыз.</translation>
 <translation id="5614190747811328134">Пайдаланушы хабарламасы</translation>
 <translation id="5614553682702429503">Құпия сөз сақталсын ба?</translation>
+<translation id="5616571005307953937">Ең ескі</translation>
 <translation id="5616726534702877126">Орын сақтау</translation>
 <translation id="561698261642843490">Firefox браузерін жабу</translation>
 <translation id="5620540760831960151">Бұл тізімге <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> және <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> әсер етеді.</translation>
@@ -5548,6 +5551,7 @@
 <translation id="6212168817037875041">Дисплейді өшіру</translation>
 <translation id="6212752530110374741">Электрондық пошта сілтемесі</translation>
 <translation id="621470880408090483">Сайттардың Bluetooth құрылғыларына қосылуына рұқсат бермеу</translation>
+<translation id="6216239400972191926">Құпия сөздер сақталмайтын сайттар мен қолданбалар</translation>
 <translation id="6216601812881225442">Контейнердің өлшемін өзгерту мүмкін емес. Linux жүйесіне алдын ала орналастырылған бос орынның көлемін реттеу үшін оның сақтық көшірмесін жасап, жаңа контейнерде қалпына келтіріңіз.</translation>
 <translation id="6216696360484424239">Автоматты түрде кіру</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> офлайн режимде тұр. Интернетке қосылып, қайталап көріңіз.</translation>

@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
+<translation id="1891796056033961979">Запазените ви отметки, пароли, настройки и др. са налице на този екран.</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1923342640370224680">Последният час</translation>
 <translation id="1930989359703290198">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">Затв. на разделите „инкогнито“</translation>
 <translation id="3533436815740441613">Нов раздел</translation>
 <translation id="3551320343578183772">Затваряне на раздела</translation>
+<translation id="3575234738189584619">Търсене с Обектив</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
 <translation id="3595252146048399851">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">Означаване като прочетено</translation>
 <translation id="4908869848243824489">Discover от Google</translation>
 <translation id="4916679969857390442">Лупа</translation>
+<translation id="4922154083994158612">Искате по-високо ниво на сигурност?</translation>
 <translation id="4930714375720679147">Включване</translation>
 <translation id="4941089862236492464">При споделянето на елемента възникна проблем.</translation>
 <translation id="4944543191714094452">Търсене в страницата…</translation>
@@ -832,6 +835,7 @@
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
 <translation id="7438481509621345350">Когато отворите нов раздел, вече ще виждате материали от <ph name="CHANNEL_NAME" />.</translation>
 <translation id="7454057999980797137">Щат/държава</translation>
+<translation id="7459628154744868585">Режимът за подобрена защита е включен</translation>
 <translation id="7464701184726199289">Синхронизираните данни ще се изчистят от всички устройства. Запазените настройки за сайтове няма да бъдат изтрити и може да отразяват навиците ви при сърфиране. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Изберете Chrome.</translation>
 <translation id="7472734401283673885">Име на фирмата</translation>
@@ -1024,6 +1028,7 @@
 <translation id="9037965129289936994">Показване на оригинала</translation>
 <translation id="9039373489628511875">Капацитет</translation>
 <translation id="9055772144595778347">Не може да се влезе</translation>
+<translation id="9055960261314198756">Режимът за подобрена защита е изключен</translation>
 <translation id="9057972802061533987">Следенето не е възможно. Нещо се обърка.</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9068336935206019333">Отваряне в режим „инкогнито“ в Chrome</translation>

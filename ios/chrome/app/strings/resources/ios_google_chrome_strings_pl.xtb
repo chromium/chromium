@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="1504372625950710826">Chrome nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="1511320244449497906">Jesteś zalogowany(-a) i synchronizujesz dane z kontem zarządzanym przez <ph name="DOMAIN" />. Administrator może teraz ustawiać specjalnie dla tego konta zasady dotyczące użytkowników, które mogą zmieniać działanie Chrome.</translation>
+<translation id="1554731936187952550">Korzystasz z najlepszych zabezpieczeń Chrome przed szkodliwymi stronami</translation>
 <translation id="1682483655351012182">Synchronizuj dane Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">To konto razem z wszelkimi niezapisanymi danymi zostanie usunięte z Chrome i innych aplikacji Google na tym urządzeniu.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome oszczędza Twój czas, zapisując konta w internecie. Konta możesz dodawać i usuwać w Ustawieniach.</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3345341804167540816">Korzystaj z Chrome w dowolnym miejscu</translation>
+<translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>
 <translation id="3522659714780527202">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, włącz synchronizację</translation>
 <translation id="3533694711092285624">Brak zapisanych haseł. Chrome może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="3641179212828090796">Użyj hasła zapisanego w Chrome, aby szybciej się zalogować</translation>
@@ -137,6 +139,7 @@ Pamiętaj, że:
   • Jeśli Chrome ulegnie awarii, szczegółowe informacje o problemie mogą zawierać niektóre dane osobowe.
 
   • Jeśli włączysz synchronizację, dane mogą też zawierać informacje o adresach URL, które odwiedzasz.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Na tym profilu Chrome korzystasz ze standardowej ochrony</translation>
 <translation id="9112744793181547300">Ustawić Chrome jako domyślną przeglądarkę?</translation>
 <translation id="9122931302567044771">Oznacza to, że Chrome będzie za każdym razem wyświetlać witrynę w wersji na komputery.</translation>
 </translationbundle>

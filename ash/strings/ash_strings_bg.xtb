@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">Игри</translation>
 <translation id="2678852583403169292">Меню на „Прочитане на глас“</translation>
 <translation id="2689613560355655046">Работен кът 8</translation>
+<translation id="2695132445805301912">Показване на клавишите и кликванията</translation>
 <translation id="2695305337569143674">мрежа</translation>
 <translation id="2697697418792422688">Показване на настройките на клавиатурата. Избрахте <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Задайте клавиатура</translation>
@@ -1124,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Разгъване на камерата</translation>
 <translation id="731589979057211264">Режимът Shelf Party е включен.</translation>
+<translation id="7340731148882810149">Меню за автоматични кликвания</translation>
 <translation id="7346909386216857016">Добре, разбрах</translation>
 <translation id="7348093485538360975">Екранна клавиатура</translation>
 <translation id="735745346212279324">Връзката с виртуалната частна мрежа (VPN) е прекъсната</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409">Натиснете Enter за отключване за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8270450402312105425">{0,plural, =1{Връщане на устройството към предишна версия в рамките на един час}other{Връщане на устройството към предишна версия в рамките на # часа}}</translation>
+<translation id="8277261673056602147">Открояване на текста на екрана</translation>
 <translation id="8284362522226889623">Прекарайте четири пръста наляво, за да превключите към предишния работен кът</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>

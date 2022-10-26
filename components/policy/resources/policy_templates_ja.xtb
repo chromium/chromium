@@ -1172,7 +1172,6 @@
 <translation id="2168397434410358693">アイドル状態になるまでの時間（AC 電源での実行時）</translation>
 <translation id="217013996107840632">代替ブラウザからの切り替えに使用するコマンドライン パラメータです。</translation>
 <translation id="2170233653554726857">WPAD 最適化を有効にする</translation>
-<translation id="2171952274731262470">バッテリーでの使用中、デバイスがアイドル状態になってからの待機時間とその後に行うアクション</translation>
 <translation id="2175353308236295184">一連の Key-Value ペアを指定したアプリ固有の JSON 設定オブジェクトです（例: '"managedConfiguration": { "key1": value1, "key2": value2 }）。キーはアプリのマニフェストで定義されます。</translation>
 <translation id="2176115444876446233">ユーザーにシステム全体のパフォーマンス トレースの収集を許可しない</translation>
 <translation id="2177696016354404697">プライバシー画面を常に無効にする</translation>
@@ -2253,15 +2252,6 @@
       <ph name="PRODUCT_NAME" /> が正常に終了しなかった場合（ブラウザや OS がクラッシュした場合など）は、次回プロファイルが読み込まれたときに閲覧データが削除されます。</translation>
 <translation id="3264793472749429012">デフォルトの検索プロバイダのエンコード</translation>
 <translation id="3273221114520206906">デフォルトのJavaScript 設定</translation>
-<translation id="3282240846541032181">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で各ファイル拡張子のデフォルト ハンドラとして動作するアプリを指定できます。ユーザーはこの動作を変更できません。
-      このポリシーで指定されていないファイル拡張子については、ユーザーが通常のワークフローに合わせて独自のデフォルトをすべて設定できます。
-
-      Chrome アプリの場合は ID（<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" /> など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" /> など）を指定します。
-
-      なお、ポリシーの項目を機能させるには、マニフェストで該当のファイル拡張子に対してアプリをファイル ハンドラとして宣言する必要があります（このポリシーは既存のアプリ機能を拡張するものではありません）。
-
-      ポリシーを未設定のままにした場合、<ph name="PRODUCT_OS_NAME" /> は内部ロジックに沿ってデフォルト ハンドラを選択します。
-      </translation>
 <translation id="328347261792478720">デフォルトでは、ブラウザはユーザーに合わせてパーソナライズされたおすすめメディアを表示します。このポリシーを無効に設定すると、ユーザーに対するおすすめは表示されません。このポリシーを有効にするか、未設定のままにすると、おすすめメディアがユーザーに表示されます。</translation>
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
 <translation id="3286159327013237833">ログイン画面で自動クリックを有効にする</translation>
@@ -3534,7 +3524,6 @@
 <translation id="46321462262887935">最上段のキーをファンクション キーとして使用するが、ユーザーによる変更を許可する</translation>
 <translation id="4632343302005518762">リストで指定したコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
 <translation id="4632566332417930481">企業ポリシーによってインストールされた拡張機能でのデベロッパー ツールの使用を禁止し、その他の状況におけるデベロッパー ツールの使用を許可する</translation>
-<translation id="4635284822166984665">デバイスの充電を開始する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="4636354638176939375">監視対象ユーザーを作成できないようにする</translation>
 <translation id="4646626362889216307">このポリシーでは、選択したポリシーのソースが異なる場合に、これらのポリシーを同じスコープとレベルで統合できるようにします。この統合は各ソースの辞書の第 1 レベルのキーで行われ、優先度の最も高いソースのキーが優先されます。
 
@@ -4052,7 +4041,6 @@
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを設定しない場合、カーソルによるハイライト表示は初期設定ではログイン画面で無効ですが、ユーザーはいつでも有効にできます。</translation>
-<translation id="5279539586558702228">デバイスで交流電流を使用する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="5283457834853986457">プラグイン ファインダーを無効にする（サポート終了）</translation>
 <translation id="5286579716704722323">ユーザーが SSL に関する警告ページをクリックしてスキップできるようにする</translation>
 <translation id="5288772341821359899">ポリシーが設定されている場合、WebRTC が使用する UDP ポートの範囲は指定されたポートの間隔（エンドポイントも含む）に制限されます。
@@ -4838,7 +4826,6 @@
 <translation id="6181618732396778048">どのサイトにもファイルとディレクトリへの書き込みアクセスの要求を許可しない</translation>
 <translation id="6181783961196084973">アプリのアクティビティを収集するかどうかの切り替え値です。true に設定した場合、ユーザーによるアプリのアクティビティ レポートがサーバーに送信され、お子様と保護者の <ph name="PRODUCT_NAME" /> アプリに表示されます。false に設定した場合、アプリごとの利用時間の上限は引き続き有効ですが、レポートデータはサーバーに送信されず、<ph name="PRODUCT_NAME" /> にも表示されません。</translation>
 <translation id="6182563940865917569">Chrome にメディアの自動再生を許可する</translation>
-<translation id="6183327369896253878">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でランチャーバーに表示されるアプリケーション ID が固定され、ユーザーが変更できなくなります。Chrome アプリの場合は ID（「pjkljhegncpnkpknbcohdijeoejaedia」など）、Android アプリの場合はパッケージ名（「com.google.android.gm」など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（「https://google.com/maps」など）を指定します。このポリシーが未設定の場合、ユーザーはランチャーの固定アプリのリストを変更できます。</translation>
 <translation id="6184385589352532028">サードパーティの ChromeOS 制御機能に対して Desk API を有効にしない</translation>
 <translation id="6190367314942602985">ユーザー識別情報に関するレポートを作成</translation>
 <translation id="6191963383731098056">このポリシーにより、管理者は <ph name="PRODUCT_NAME" /> のテーマの色を設定できます。入力する文字列は「#RRGGBB」の形式に沿った有効な 16 進数色コードである必要があります。
@@ -6200,7 +6187,6 @@
 
       このポリシーを設定しないか空白のリストに設定した場合、管理対象デバイスでロックのクイック解除モードは使用できません。</translation>
 <translation id="754176366378585605">File Handling API の使用を管理する</translation>
-<translation id="7543109906499122922">デバイスでバッテリーでの使用を開始する時間（デバイスのローカル タイムゾーン）です。</translation>
 <translation id="7544392541165889987">このポリシーを有効に設定するか未設定のままにした場合、<ph name="CLOUD_PRINT_NAME" /> と、パソコンに接続している従来のプリンタとの間で、<ph name="PRODUCT_NAME" /> がプロキシとして動作できるようになります。ユーザーは、Google アカウントでの認証によってクラウド プリント プロキシを有効にできます。
 
       このポリシーを無効に設定した場合、ユーザーはプロキシを有効にできず、パソコンでプリンタを <ph name="CLOUD_PRINT_NAME" /> と共有できません。</translation>
@@ -6490,7 +6476,6 @@
       ログイン画面のスクリーンセーバーとして使用する拡張機能の ID を指定します。拡張機能は、DeviceAppPack ポリシーを使用してこのドメインに設定されている AppPack のものである必要があります。</translation>
 <translation id="7882890448959833986">サポート外の OS の警告を表示しない</translation>
 <translation id="788480874436328004">パスワード マネージャーを使用したパスワードの保存を無効にする</translation>
-<translation id="7887379840451099426">バッテリーでの使用中にのみ適用する電源管理設定</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> では、デフォルトの検索に使用する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
 
       Google の検索 URL は次のように指定できます。<ph name="GOOGLE_SEARCH_URL" /></translation>

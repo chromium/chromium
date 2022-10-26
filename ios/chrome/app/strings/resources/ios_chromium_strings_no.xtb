@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Data fra Chromium-synkronisering</translation>
 <translation id="1722370509450468186">Passordet blir lagret i kontoen din (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Slettet Chromium-data</translation>
+<translation id="177102542580335555">Du får standard sikkerhetsbeskyttelse for denne Chromium-profilen</translation>
 <translation id="1838412507805038478">Chromium har bekreftet at sertifikatet for dette nettstedet er utstedt av <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium har funksjoner som hjelper deg med å administrere Internett-dataene dine og hvor fort du kan laste inn nettsider.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nå kan du bruke Chromium hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
+<translation id="4633738821577273991">Få Safe Browsing med økt beskyttelse for denne Chromium-profilen også</translation>
 <translation id="4654936625574199632">For å bidra til å gjøre appen bedre sender Chrome bruks- og programstopprapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Slå på Chromium-skanneren</translation>
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="8308172444429103994">Chromium-tips. Logg på raskere ved å velge det lagrede passordet ditt øverst på tastaturet.</translation>
+<translation id="8409374867500149834">Du har den sterkeste sikkerheten i Chromium mot skadelige nettsteder</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>

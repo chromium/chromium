@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> се извлича в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="6499681088828539489">Забраняване на прокси сървърите за споделените мрежи</translation>
+<translation id="6503285896705205014">Копирането на <ph name="COUNT" /> файла е блокирано чрез администраторско правило</translation>
 <translation id="6509122719576673235">норвежки</translation>
 <translation id="6528513914570774834">Разрешаване на другите потребители на устройството да използват тази мрежа</translation>
 <translation id="653019979737152879">„<ph name="FILE_NAME" />“ се синхронизира...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Този файлов тип не се поддържа. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> елемента се копират...</translation>
 <translation id="7375951387215729722">Списъкът с файлове е сортиран в низходящ ред по <ph name="COLUMN_NAME" />.</translation>
+<translation id="7377161162143020057">Копирането на този файл е блокирано чрез администраторско правило</translation>
 <translation id="7402503521691663770">Устройства с ChromeOS Flex</translation>
 <translation id="7408870451288633753">Чешки</translation>
 <translation id="7417453074306512035">Етиопска клавиатура</translation>

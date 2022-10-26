@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">ဂိမ်းများ</translation>
 <translation id="2678852583403169292">စကားပြောရွေးရန် မီနူး</translation>
 <translation id="2689613560355655046">မျက်နှာပြင်နေရာ ၈</translation>
+<translation id="2695132445805301912">ကီးနှင့် ကလစ်နှိပ်ခြင်းများပြပါ</translation>
 <translation id="2695305337569143674">ဝဘ်</translation>
 <translation id="2697697418792422688">ကီးဘုတ်ဆက်တင်များ ပြပါ။ <ph name="KEYBOARD_NAME" /> ရွေးထားသည်။</translation>
 <translation id="2700493154570097719">သင်၏ ကီးဘုတ်ကို သတ်မှတ်ပါ</translation>
@@ -1124,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">ကင်မရာခလုတ် ချဲ့ရန်</translation>
 <translation id="731589979057211264">Shelf Party ဖွင့်ထားသည်။</translation>
+<translation id="7340731148882810149">အလိုအလျောက်နှိပ်ခြင်း မီနူး</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">ဖန်သားပြင်လက်ကွက်</translation>
 <translation id="735745346212279324">VPN ချိတ်ဆက်မှု ဖြတ်ခဲ့</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> ကိုဖွင့်ရန် Enter နှိပ်ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8270450402312105425">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ တစ်နာရီအတွင်း ပြောင်းပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # နာရီအတွင်း ပြောင်းပါ}}</translation>
+<translation id="8277261673056602147">သင့်ဖန်သားပြင်ပေါ်ရှိ စာသားကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="8284362522226889623">ယခင်မျက်နှာပြင်နေရာသို့ ပြောင်းရန် လက်လေးချောင်းဖြင့် ဘယ်သို့ပွတ်ဆွဲပါ</translation>
 <translation id="828708037801473432">ပိတ်ရန်</translation>
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>

@@ -235,7 +235,6 @@
 <translation id="2276231040576210443">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
 <translation id="2276696007612801991">ลงชื่อเข้าใช้บัญชี Google เพื่อตรวจสอบรหัสผ่าน</translation>
 <translation id="2278052315791335171">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="SITE" /></translation>
-<translation id="2279146068164892489">เปิดแอปสำหรับ <ph name="APPNAME" /> ไหม</translation>
 <translation id="2286841657746966508">ที่อยู่สำหรับเรียกเก็บเงิน</translation>
 <translation id="228704530595896923">รายการตัวเลือกการแชร์</translation>
 <translation id="230115972905494466">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
@@ -947,7 +946,6 @@
 <translation id="6192907950379606605">รับคำอธิบายรูปภาพ</translation>
 <translation id="6193448654517602979">เลือกแท็บ</translation>
 <translation id="6196315980958524839">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านของ Google ในอุปกรณ์นี้</translation>
-<translation id="620197886010707372">เปิดแอปสำหรับ <ph name="APPNAME" /> ใน Google Play ไหม</translation>
 <translation id="6202812185118613467">ลงชื่อเข้าใช้อีกครั้งเพื่อเริ่มซิงค์</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ไม่ใช่บัญชีที่ฉันจะใช้</translation>
 <translation id="6211386937064921208">แสดงตัวอย่างหน้าเว็บนี้</translation>

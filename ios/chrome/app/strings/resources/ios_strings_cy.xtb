@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="1870148520156231997">Datgelu'r Cyfrinair</translation>
 <translation id="1872096359983322073">Tortsh</translation>
+<translation id="1891796056033961979">Mae eich nodau tudalen, cyfrineiriau, gosodiadau a rhagor sydd wedi'u cadw ar gael o'r sgrîn hon.</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
 <translation id="1923342640370224680">Awr Ddiwethaf</translation>
 <translation id="1930989359703290198">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig. Mae cyfrifon na chaniateir yn cael eu cuddio. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3533202363250687977">Cau Pob Tab Anhysbys</translation>
 <translation id="3533436815740441613">Tab Newydd</translation>
 <translation id="3551320343578183772">Cau'r Tab</translation>
+<translation id="3575234738189584619">Chwilio gyda Lens</translation>
 <translation id="3581564640715911333">Cynnig cyfieithu tudalennau mewn ieithoedd eraill</translation>
 <translation id="3588820906588687999">Agor y Llun Mewn Tab Newydd</translation>
 <translation id="3595252146048399851">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
@@ -494,6 +496,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4904877109095351937">Marcio fel wedi'i Ddarllen</translation>
 <translation id="4908869848243824489">Darganfod gan Google</translation>
 <translation id="4916679969857390442">Lens</translation>
+<translation id="4922154083994158612">Rhagor o Ddiogelwch?</translation>
 <translation id="4930714375720679147">Troi Ymlaen</translation>
 <translation id="4941089862236492464">Mae'n ddrwg gennym, bu problem wrth rannu eich eitem.</translation>
 <translation id="4944543191714094452">Chwilio'r Dudalen…</translation>
@@ -832,6 +835,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7435356471928173109">Wedi'i ddiffodd gan eich gweinyddwr</translation>
 <translation id="7438481509621345350">Nawr byddwch yn gweld straeon o <ph name="CHANNEL_NAME" /> pan fyddwch yn agor tab newydd.</translation>
 <translation id="7454057999980797137">Talaith / Sir</translation>
+<translation id="7459628154744868585">Mae Gwell Amddiffyniad wedi'i droi ymlaen</translation>
 <translation id="7464701184726199289">Mae hyn yn clirio data sydd wedi'u cysoni o bob dyfais. Ni fydd gosodiadau gwefan sydd wedi'u cadw yn cael eu dileu ac mae'n bosib y byddant yn adlewyrchu eich arferion pori. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Dewiswch Chrome</translation>
 <translation id="7472734401283673885">Enw Cwmni</translation>
@@ -1024,6 +1028,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="9037965129289936994">Dangos y Gwreiddiol</translation>
 <translation id="9039373489628511875">Lled band</translation>
 <translation id="9055772144595778347">Methu â mewngofnodi</translation>
+<translation id="9055960261314198756">Mae Gwell Amddiffyniad wedi'i ddiffodd</translation>
 <translation id="9057972802061533987">Methu â dilyn. Aeth rhywbeth o'i le.</translation>
 <translation id="9065203028668620118">Golygu</translation>
 <translation id="9068336935206019333">Agor yn y modd Anhysbys Chrome</translation>

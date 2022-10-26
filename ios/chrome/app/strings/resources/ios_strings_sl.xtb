@@ -119,6 +119,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1832848789136765277">Če želite poskrbeti, da boste vedno lahko dostopali do sinhroniziranih podatkov, potrdite, da ste to vi.</translation>
 <translation id="1870148520156231997">Razkrijte geslo</translation>
 <translation id="1872096359983322073">Svetilka</translation>
+<translation id="1891796056033961979">Vaši shranjeni zaznamki, gesla, nastavitve in drugo so na voljo na tem zaslonu.</translation>
 <translation id="1911619930368729126">Prenos v Google Drive</translation>
 <translation id="1923342640370224680">Zadnja ura</translation>
 <translation id="1930989359703290198">Organizacija dovoli prijavo samo z nekaterimi računi. Nedovoljeni računi so skriti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3533202363250687977">Zapri vse anonimne zavihke</translation>
 <translation id="3533436815740441613">Nov zavihek</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
+<translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
 <translation id="3595252146048399851">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
@@ -494,6 +496,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4904877109095351937">Označi kot prebrano</translation>
 <translation id="4908869848243824489">Googlovo Odkrivanje</translation>
 <translation id="4916679969857390442">Lupa</translation>
+<translation id="4922154083994158612">Več varnosti?</translation>
 <translation id="4930714375720679147">Vklop</translation>
 <translation id="4941089862236492464">Težava pri deljenju elementa z drugimi.</translation>
 <translation id="4944543191714094452">Najdi na strani …</translation>
@@ -832,6 +835,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7435356471928173109">Izklopil skrbnik</translation>
 <translation id="7438481509621345350">Poslej bodo prikazane novice s spletnega mesta <ph name="CHANNEL_NAME" />, ko boste odprli nov zavihek.</translation>
 <translation id="7454057999980797137">Regija</translation>
+<translation id="7459628154744868585">Izboljšana zaščita je vklopljena</translation>
 <translation id="7464701184726199289">S tem bodo sinhronizirani podatki izbrisani iz vseh naprav. Shranjene nastavitve spletnih mest ne bodo izbrisane in morda odražajo vaše brskalne navade. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Izberite Chrome.</translation>
 <translation id="7472734401283673885">Ime podjetja</translation>
@@ -1024,6 +1028,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9037965129289936994">Pokaži izvirno besedilo</translation>
 <translation id="9039373489628511875">Pasovna širina</translation>
 <translation id="9055772144595778347">Prijava ni mogoča</translation>
+<translation id="9055960261314198756">Izboljšana zaščita je izklopljena</translation>
 <translation id="9057972802061533987">Ni mogoče spremljati. Prišlo je do napake.</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9068336935206019333">Odpri v anonimnem oknu v Chromu</translation>

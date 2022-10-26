@@ -1110,7 +1110,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3890664840433101773">Añadir correo electrónico</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3901925938762663762">La tarjeta ha caducado</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> solicita reproducir contenido protegido. Google verificará la identidad de tu dispositivo y el sitio web podrá consultarla.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1125,7 +1124,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3949870428812919180">No hay ningún método de pago guardado</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3961148744525529027">La hoja del controlador de pagos está abierta en media pantalla</translation>
-<translation id="3962859241508114581">Pista anterior</translation>
+<translation id="3962859241508114581">Canción anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3963837677003247395">¿Quieres continuar de forma manual?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio web }other{De # sitios }}</translation>
@@ -1512,7 +1511,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4950898438188848926">Botón de cambio de pestaña; pulsa Intro para cambiar a la pestaña abierta, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4953689047182316270">Responder a eventos de accesibilidad</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="4964505745997821360">Seguro médico</translation>
 <translation id="4968522289500246572">Esta aplicación se ha diseñado para móviles y es posible que su tamaño no se cambie correctamente. Puede que la aplicación dé problemas o se reinicie.</translation>
@@ -1692,7 +1690,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5379027395132364855">Botón de crear presentación, pulsa Intro para crear una nueva Presentación de Google rápidamente</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5386426401304769735">La cadena de certificados de este sitio web contiene un certificado firmado con SHA-1.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Grapado en el borde derecho</translation>
 <translation id="5398772614898833570">Anuncios bloqueados</translation>
 <translation id="5400836586163650660">Gris</translation>
@@ -2388,7 +2385,6 @@ Más información:
 <translation id="733923710415886693">El certificado del servidor no se ha revelado a través de la Transparencia en los Certificados.</translation>
 <translation id="7341357280245177602">Vehículos usados</translation>
 <translation id="7346048084945669753">Se ha afiliado:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Permitido hasta que cierres esta pestaña</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
 <translation id="7353601530677266744">Línea de comandos</translation>

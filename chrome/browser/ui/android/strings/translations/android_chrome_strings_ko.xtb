@@ -235,7 +235,6 @@
 <translation id="2276231040576210443">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
-<translation id="2279146068164892489"><ph name="APPNAME" /> 앱을 여시겠습니까?</translation>
 <translation id="2286841657746966508">결제주소</translation>
 <translation id="228704530595896923">공유 옵션 목록입니다.</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
@@ -947,7 +946,6 @@
 <translation id="6192907950379606605">이미지 설명 보기</translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6196315980958524839">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
-<translation id="620197886010707372">Google Play에서 <ph name="APPNAME" /> 앱을 여시겠습니까?</translation>
 <translation id="6202812185118613467">동기화를 시작하려면 다시 로그인하세요.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>

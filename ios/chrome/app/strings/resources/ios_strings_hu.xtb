@@ -120,6 +120,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1857751338515529195">Ugrás a következő lapra</translation>
 <translation id="1870148520156231997">Jelszó megjelenítése</translation>
 <translation id="1872096359983322073">Vaku</translation>
+<translation id="1891796056033961979">Mentett könyvjelzőihez, jelszavaihoz, beállításaihoz és még sok máshoz erről a képernyőről férhet hozzá</translation>
 <translation id="1911619930368729126">Feltöltés Google Drive-ba</translation>
 <translation id="1923342640370224680">Az elmúlt óra</translation>
 <translation id="1930989359703290198">Szervezete csak bizonyos fiókokkal engedélyezi a bejelentkezést. A nem engedélyezett fiókokat elrejti a rendszer. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -330,6 +331,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3533202363250687977">Összes inkognitó lap bezárása</translation>
 <translation id="3533436815740441613">Új lap</translation>
 <translation id="3551320343578183772">Lap bezárása</translation>
+<translation id="3575234738189584619">Keresés a Lens segítségével</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
 <translation id="3595252146048399851">A <ph name="BEGIN_LINK" />beállítások<ph name="END_LINK" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
@@ -498,6 +500,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="4904877109095351937">Megjelölés olvasottként</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4916679969857390442">Lencse</translation>
+<translation id="4922154083994158612">Nagyobb biztonságot szeretne?</translation>
 <translation id="4930714375720679147">Bekapcsolás</translation>
 <translation id="4941089862236492464">Sajnos hiba történt az elem megosztásakor.</translation>
 <translation id="4944543191714094452">Keresés az oldalon…</translation>
@@ -838,6 +841,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7435356471928173109">A rendszergazda kikapcsolta</translation>
 <translation id="7438481509621345350">Új lap megnyitásakor látni fogja a(z) <ph name="CHANNEL_NAME" /> webhely történeteit.</translation>
 <translation id="7454057999980797137">Állam/megye</translation>
+<translation id="7459628154744868585">A Speciális védelem be van kapcsolva</translation>
 <translation id="7464701184726199289">Az összes eszközről törli a szinkronizált adatokat. A mentett webhelybeállítások nem törlődnek, és tájékozódási alapul szolgálhatnak böngészési szokásait illetően. <ph name="BEGIN_LINK" />További információ.<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Válassza ki a Chrome böngészőt.</translation>
 <translation id="7472734401283673885">Vállalat neve</translation>
@@ -1031,6 +1035,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9037965129289936994">Eredeti megjelenítése</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
 <translation id="9055772144595778347">Sikertelen bejelentkezés</translation>
+<translation id="9055960261314198756">A Speciális védelem ki van kapcsolva</translation>
 <translation id="9057972802061533987">Nem lehetséges a követés. Hiba történt.</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9068336935206019333">Megnyitás a Chrome inkognitó módjában</translation>

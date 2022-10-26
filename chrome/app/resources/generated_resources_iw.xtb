@@ -1519,6 +1519,7 @@
 <translation id="2352810082280059586">הערות שנכתבות כשמסך הנעילה פועל נשמרות באופן אוטומטי ב-<ph name="LOCK_SCREEN_APP_NAME" />. ההערה האחרונה שכתבת תמשיך להופיע במסך הנעילה.</translation>
 <translation id="2353297238722298836">ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
 <translation id="2355314311311231464">הקצאת המשאבים נכשלה מאחר שלא ניתן היה לאחזר את פרטי החשבון שלך. יש לנסות שוב. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
+<translation id="2355477091455974894">אפשרויות לחיסכון באנרגיה</translation>
 <translation id="2355604387869345912">הפעלת שיתוף אינטרנט מיידי בין מכשירים</translation>
 <translation id="2356070529366658676">לשאול</translation>
 <translation id="2357330829548294574">הסרה של <ph name="USER_NAME" /></translation>
@@ -6860,6 +6861,7 @@
 <translation id="7495778526395737099">שכחת את הסיסמה הקודמת?</translation>
 <translation id="7497981768003291373">‏אין לך יומני טקסט של WebRTC שתועדו לאחרונה.</translation>
 <translation id="7501957181231305652">או</translation>
+<translation id="7502220299952823578">הוספה לרשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="7503191893372251637">‏סוג אישור Netscape</translation>
 <translation id="7503985202154027481">תיעוד של ביקורך באתר יישמר במפתח האבטחה שלך.</translation>
 <translation id="750509436279396091">פתיחת תיקיית ההורדות</translation>

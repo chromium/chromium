@@ -885,6 +885,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1805967612549112634">Confirmez le NIP</translation>
 <translation id="1806335016774576568">Passer à une autre application ouverte</translation>
 <translation id="1807246157184219062">Clair</translation>
+<translation id="1809201888580326312">Vous avez choisi de ne pas enregistrer de mots de passe pour ces sites et ces applications</translation>
 <translation id="1809483812148634490">Les applications que vous avez téléchargées à partir de Google Play seront supprimées de ce Chromebook.
     <ph name="LINE_BREAKS1" />
     Les contenus que vous avez achetés, comme les films, les émissions, la musique, les livres ou autres achats au moyen de l'application, peuvent également être supprimés.
@@ -1798,6 +1799,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire.</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="262154978979441594">Former le modèle vocal pour l'Assistant Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Interdire à tous les sites de gérer les protocoles</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Cette page accède à votre caméra et à votre microphone.</translation>
@@ -4945,6 +4947,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5612734644261457353">Désolés, nous ne pouvons toujours pas valider votre mot de passe. Remarque : si vous l'avez modifié dernièrement, votre nouveau mot de passe ne sera mis à jour qu'une fois que vous vous serez déconnecté. Veuillez donc utiliser votre ancien mot de passe.</translation>
 <translation id="5614190747811328134">Avis pour les utilisateurs</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe?</translation>
+<translation id="5616571005307953937">Le plus ancien</translation>
 <translation id="5616726534702877126">Réserver l'espace</translation>
 <translation id="561698261642843490">Fermer Firefox</translation>
 <translation id="5620540760831960151">Cette liste est soumise aux politiques <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5576,6 +5579,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6212168817037875041">Désactiver l'écran</translation>
 <translation id="6212752530110374741">Envoyer le lien par courriel</translation>
 <translation id="621470880408090483">Ne pas autoriser les sites à se connecter à des appareils Bluetooth</translation>
+<translation id="6216239400972191926">Applications et sites refusés</translation>
 <translation id="6216601812881225442">Votre conteneur ne prend pas en charge le redimensionnement. Pour modifier la quantité d'espace allouée à Linux, sauvegardez votre disque et restaurez-le dans un nouveau conteneur.</translation>
 <translation id="6216696360484424239">Se connecter automatiquement</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> est hors connexion. Connectez-vous à Internet et réessayez.</translation>

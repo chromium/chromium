@@ -876,6 +876,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1805967612549112634">PIN bestätigen</translation>
 <translation id="1806335016774576568">Zu einer anderen geöffneten App wechseln</translation>
 <translation id="1807246157184219062">Hell</translation>
+<translation id="1809201888580326312">Du möchtest für diese Websites und Apps keine Passwörter speichern</translation>
 <translation id="1809483812148634490">Die bei Google Play heruntergeladenen Apps werden von diesem Chromebook gelöscht.
     <ph name="LINE_BREAKS1" />
     Von dir gekaufte Inhalte, wie Filme, TV-Sendungen, Musik, Bücher oder andere In-App-Käufe, werden eventuell ebenfalls gelöscht.
@@ -1785,6 +1786,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kann nicht sicher heruntergeladen werden.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Sprachmodell von Google Assistant trainieren</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Verarbeitung von Protokollen für keine Website zulassen</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Diese Seite greift auf Kamera und Mikrofon zu.</translation>
@@ -1873,7 +1875,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2705736684557713153">Scrolle auf dem Bildschirm nach unten und aktiviere die Option „Instant Tethering“, wenn diese angezeigt wird. Falls nicht, brauchst du nichts weiter zu tun.</translation>
 <translation id="2707024448553392710">Komponente wird heruntergeladen.</translation>
 <translation id="270921614578699633">Durchschnitt bilden</translation>
-<translation id="2709516037105925701">Automatisches Ausfüllen</translation>
+<translation id="2709516037105925701">Autofill</translation>
 <translation id="2710101514844343743">Nutzungsdaten &amp; Fehlerberichte</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2711073837061989559">Tests</translation>
@@ -2511,6 +2513,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3308852433423051161">Google Assistant wird geladen...</translation>
 <translation id="3309330461362844500">Zertifikatsprofil-ID</translation>
 <translation id="3311445899360743395">Daten, die dieser App zugewiesen sind, werden möglicherweise von diesem Gerät entfernt.</translation>
+<translation id="3312470654018965389">Der Linux-Container wird konfiguriert</translation>
 <translation id="3312883087018430408">Wenn du auf einer bestimmten Website oder in einem bestimmten Bereich von Chrome suchen möchtest, gib das Kürzel in die Adressleiste ein und drücke die von dir bevorzugte Tastenkombination. Möchtest du z. B. nur in deinen Lesezeichen suchen, gib „@bookmarks“ ein und drücke die Tabulator- oder Leertaste.</translation>
 <translation id="3313622045786997898">Wert für Zertifikatsignatur</translation>
 <translation id="3313950410573257029">Verbindung prüfen</translation>
@@ -4924,6 +4927,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5612734644261457353">Dein Passwort konnte leider immer noch nicht bestätigt werden. Hinweis: Falls du dein Passwort kürzlich geändert hast, wird dein neues Passwort übernommen, sobald du dich abmeldest. Verwende hier das alte Passwort.</translation>
 <translation id="5614190747811328134">Nutzerhinweis</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
+<translation id="5616571005307953937">älteste</translation>
 <translation id="5616726534702877126">Speicherplatz reservieren</translation>
 <translation id="561698261642843490">Firefox schließen</translation>
 <translation id="5620540760831960151">Die Richtlinien <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> wirken sich auf diese Liste aus</translation>
@@ -5548,6 +5552,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6212168817037875041">Display deaktivieren</translation>
 <translation id="6212752530110374741">Link per E-Mail versenden</translation>
 <translation id="621470880408090483">Websites dürfen keine Verbindung mit Bluetooth-Geräten herstellen</translation>
+<translation id="6216239400972191926">Abgelehnte Websites und Apps</translation>
 <translation id="6216601812881225442">Dein Container unterstützt keine Größenanpassung. Wenn du den Speicherplatz anpassen möchtest, der Linux zugewiesen wurde, mache eine Sicherungskopie und stelle ihn in einem neuen Container wieder her.</translation>
 <translation id="6216696360484424239">Automatisch anmelden</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ist offline. Stelle eine Internetverbindung her und versuche es noch einmal.</translation>

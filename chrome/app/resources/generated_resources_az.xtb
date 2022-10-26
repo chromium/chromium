@@ -880,6 +880,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1805967612549112634">PIN kodu təsdiq edin</translation>
 <translation id="1806335016774576568">Başqa bir açıq tətbiqə dəyişin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
+<translation id="1809201888580326312">Bu sayt və tətbiqlər üçün parolları yadda saxlamamağı seçmisiniz</translation>
 <translation id="1809483812148634490">Google Play'dən endirdiyiniz tətbiqlər bu Chromebook'dan silinəcək.
     <ph name="LINE_BREAKS1" />
     Satın aldığınız film, TV şou, musiqi, kitab kimi məzmunlar və digər tətbiqdaxili alışlar da silinə bilər.
@@ -1795,6 +1796,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> faylını təhlükəsiz şəkildə endirmək mümkün deyil.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Google Assistentə səs modelini tanımağı öyrədin</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Heç bir sayta protokollarla işləməyə icazə verməyin</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Bu səhifə kameranıza və mikrofonunuza daxil olur.</translation>
@@ -4940,6 +4942,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5612734644261457353">Üzr istəyirik, parolunuz hələ də doğrulana bilməyib. Qeyd: əgər parolunuzu son vaxtlar dəyimisinizsə, hesabdan çıxan kimi yeni parolunuz tətbiq olunacaq, lütfən, köhnə parolu burada işlədin.</translation>
 <translation id="5614190747811328134">İstifadəçi bildirişi</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
+<translation id="5616571005307953937">Ən köhnə</translation>
 <translation id="5616726534702877126">Rezerv ölçüsü</translation>
 <translation id="561698261642843490">Firefox'u bağlayın</translation>
 <translation id="5620540760831960151">Bu siyahıya təsir edən siyasətlər: <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5569,6 +5572,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6212168817037875041">Ekranı deaktiv edin</translation>
 <translation id="6212752530110374741">E-poçt Linki</translation>
 <translation id="621470880408090483">Saytlara Bluetooth cihazlarına qoşulmaq icazəsi verməyin</translation>
+<translation id="6216239400972191926">Rədd edilən sayt və tətbiqlər</translation>
 <translation id="6216601812881225442">Konteyneriniz ölçüsünün dəyişilməsini dəstəkləmir. Linux üçün əvvəlcədən ayrılmış boş yerin həcmini tənzimləmək üçün ehtiyat nüsxəsini çıxarın və sonra yeni bir konteynerə bərpa edin.</translation>
 <translation id="6216696360484424239">Avtomatik daxil olun</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> oflayndır. İnternetə qoşulun və yenidən cəhd edin.</translation>

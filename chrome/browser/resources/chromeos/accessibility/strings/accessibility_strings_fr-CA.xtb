@@ -327,6 +327,7 @@
 <translation id="309749186376891736">Déplacer le curseur</translation>
 <translation id="3103579948980282461">Rouge-violet moyen</translation>
 <translation id="3104705064753753826">boîte de dialogue d'alerte</translation>
+<translation id="3105857328626674463">surligne le mot précédent</translation>
 <translation id="3109724472072898302">Réduit</translation>
 <translation id="311015743332597320">Balayez quatre doigts vers la droite</translation>
 <translation id="3112457281078985179">Pour activer ou désactiver ChromeVox, utilisez Ctrl + Alt + Z.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">Lien suivi précédent</translation>
 <translation id="3241638166094654466">Cellules dans chaque ligne :</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" /> : <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">va à la fin</translation>
 <translation id="3260949043575829030">Élément similaire précédent</translation>
 <translation id="3270069636408109001">Aucun tableau suivant</translation>
 <translation id="3273791280096244679">Étiquette Enregistrer</translation>
@@ -947,6 +949,7 @@
 <translation id="743783356331413498">Exemple</translation>
 <translation id="7439060726180460871">Répertoire</translation>
 <translation id="744163271241493234">mot de passe</translation>
+<translation id="7443479558101073378">surligne le mot suivant</translation>
 <translation id="7465123027577412805">Utiliser une voix naturelle?</translation>
 <translation id="7491962110804786152">Tabulation</translation>
 <translation id="7492497529767769458">Passer à la section suivante. Par exemple, la barre d'état et le lanceur.</translation>

@@ -119,6 +119,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
 <translation id="1870148520156231997">Visa lösenord</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
+<translation id="1891796056033961979">På den här skärmen visas dina sparade bokmärken, lösenord, inställningar och annat.</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
 <translation id="1923342640370224680">Senaste timmen</translation>
 <translation id="1930989359703290198">Organisationen tillåter endast inloggning med vissa konton. Konton som inte tillåts är dolda. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3533202363250687977">Stäng alla inkognitoflikar</translation>
 <translation id="3533436815740441613">Ny flik</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
+<translation id="3575234738189584619">Sök med Lens</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
 <translation id="3595252146048399851">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
@@ -494,6 +496,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="4904877109095351937">Markera som läst</translation>
 <translation id="4908869848243824489">Förslag från Google</translation>
 <translation id="4916679969857390442">Lins</translation>
+<translation id="4922154083994158612">Vill du ha bättre säkerhet?</translation>
 <translation id="4930714375720679147">Aktivera</translation>
 <translation id="4941089862236492464">Det gick inte att dela objektet.</translation>
 <translation id="4944543191714094452">Hitta på sida …</translation>
@@ -832,6 +835,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7438481509621345350">Nu visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="7454057999980797137">Delstat/county</translation>
+<translation id="7459628154744868585">Utökat skydd är aktiverat</translation>
 <translation id="7464701184726199289">Inställningarna rensar synkroniserad data från alla enheter. Sparade webbplatsinställningar raderas inte och kan visa dina surfvanor. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Välj Chrome</translation>
 <translation id="7472734401283673885">Företagets namn</translation>
@@ -1024,6 +1028,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9037965129289936994">Visa original</translation>
 <translation id="9039373489628511875">Bandbredd</translation>
 <translation id="9055772144595778347">Kan inte logga in</translation>
+<translation id="9055960261314198756">Utökat skydd är inaktiverat</translation>
 <translation id="9057972802061533987">Det gick inte att börja följa detta. Något gick fel.</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9068336935206019333">Öppna i Chromes inkognitoläge</translation>

@@ -651,6 +651,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Чоо-жайы</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> папкасына чыгарылууда</translation>
 <translation id="6499681088828539489">Бөлүшүлгөн тармактардын проксилерине тыюу салуу</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> файлды көчүрүү аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="6509122719576673235">Норвежче</translation>
 <translation id="6528513914570774834">Бул түзмөктү колдонгон кишилерге ушул тармакты колдонууга уруксат берилсин</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />… шайкештештирилүүдө</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">Бул файл түрү колдоого алынбайт. Файлдарды ChromeOS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> файл көчүрүлүүдө…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> тилкесиндеги файлдардын тизмеси кичирейген ыраатта иреттелди.</translation>
+<translation id="7377161162143020057">Бул файлды көчүрүү аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="7402503521691663770">ChromeOS Flex түзмөктөрү</translation>
 <translation id="7408870451288633753">Чехче</translation>
 <translation id="7417453074306512035">Эфиопчо баскычтоп</translation>

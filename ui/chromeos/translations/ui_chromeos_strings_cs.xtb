@@ -531,6 +531,7 @@
 <translation id="5428105026674456456">španělština</translation>
 <translation id="5438282218546237410">Pro dotaz <ph name="SEARCH_TERM" /> nebyly nalezeny žádné výsledky.</translation>
 <translation id="5449551289610225147">Neplatné heslo</translation>
+<translation id="5459064203055649751">Soubor s názvem <ph name="FILENAME" /> už existuje. Chcete ho nahradit tím, který právě přesouváte?</translation>
 <translation id="5463231940765244860">Zadat</translation>
 <translation id="5469868506864199649">italština</translation>
 <translation id="5473333559083690127">Znovu zadejte nový PIN</translation>
@@ -651,6 +652,7 @@
 <translation id="6495925982925244349">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
 <translation id="649877868557234318">Rozbalování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Zakázat servery proxy u sdílených sítí</translation>
+<translation id="6503285896705205014">Kopírování souborů (<ph name="COUNT" />) je blokováno zásadami administrátora</translation>
 <translation id="6509122719576673235">norština</translation>
 <translation id="6528513914570774834">Povolit ostatním uživatelům tohoto zařízení používat tuto síť</translation>
 <translation id="653019979737152879">Synchronizace souboru <ph name="FILE_NAME" />...</translation>
@@ -753,6 +755,7 @@
 <translation id="7357762654218998920">Tento typ souboru není podporován. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="7359359531237882347">Kopírování <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="7375951387215729722">Seznam souborů seřazený sestupně podle sloupce <ph name="COLUMN_NAME" />.</translation>
+<translation id="7377161162143020057">Zkopírováni tohoto souboru je blokováno zásadami administrátora</translation>
 <translation id="7402503521691663770">Zařízení se systémem ChromeOS Flex</translation>
 <translation id="7408870451288633753">čeština</translation>
 <translation id="7417453074306512035">Etiopská klávesnice</translation>

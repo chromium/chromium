@@ -1214,7 +1214,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2168397434410358693">Ritardo inattività in caso di utilizzo di CA</translation>
 <translation id="217013996107840632">Parametri della riga di comando per cambiare il browser alternativo.</translation>
 <translation id="2170233653554726857">Attiva ottimizzazione WPAD</translation>
-<translation id="2171952274731262470">Ritardi e azioni da compiere quando il dispositivo è inattivo durante l'utilizzo della batteria.</translation>
 <translation id="2175353308236295184">Oggetto di configurazione JSON specifico dell'app con una serie di coppie chiave-valore, ad esempio '"managedConfiguration": { "key1": value1, "key2": value2 }'. Le chiavi sono definite nel file manifest dell'app.</translation>
 <translation id="2176115444876446233">Gli utenti non possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="2177696016354404697">Disattiva sempre la Schermata privata</translation>
@@ -2398,15 +2397,6 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
 <translation id="3278042410658310805">Disattiva la funzione di lettura vocale nella schermata di accesso e consenti all'utente di attivarla temporaneamente</translation>
-<translation id="3282240846541032181">Questo criterio consente agli amministratori di specificare le app che fungono da gestori predefiniti per le rispettive estensioni dei file su <ph name="PRODUCT_OS_NAME" /> che gli utenti non possono modificare.
-      Per tutte le estensioni dei file non specificate nel criterio, gli utenti sono liberi di impostare le loro impostazioni predefinite nel rispetto del normale flusso di lavoro.
-
-      Specifica le app di Chrome tramite il relativo ID, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, e le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, come <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
-
-      Tieni presente che le app DEVONO dichiararsi come gestori di file per le estensioni specificate nel file manifest affinché l'elemento del criterio abbia effetto (ossia il criterio NON estende le funzionalità di app esistenti).
-
-      Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezionare gestori predefiniti in base alla logica interna.
-      </translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3286159327013237833">Attiva i clic automatici nella schermata di accesso</translation>
@@ -3703,7 +3693,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
 <translation id="4632566332417930481">Non consentire l'utilizzo degli Strumenti per sviluppatori per le estensioni installate in base a norme aziendali; consenti l'utilizzo degli Strumenti per sviluppatori in altri contesti</translation>
-<translation id="4635284822166984665">L'ora in cui iniziare la ricarica del dispositivo, nel fuso orario locale del dispositivo.</translation>
 <translation id="4636354638176939375">Disattiva la creazione di utenti supervisionati</translation>
 <translation id="4646626362889216307">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di primo livello del dizionario di ogni origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
 
@@ -4281,7 +4270,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente l'evidenziazione del cursore è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
-<translation id="5279539586558702228">L'ora in cui il dispositivo userà la corrente alternata, nel fuso orario locale del dispositivo.</translation>
 <translation id="5283457834853986457">Disattiva la ricerca dei plug-in (ritirata)</translation>
 <translation id="5286579716704722323">Consenti il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="5288772341821359899">Se la norma viene impostata, l'intervallo di porte UDP utilizzato da WebRTC viene limitato all'intervallo di porte specificato (endpoint inclusi).
@@ -5103,11 +5091,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6181618732396778048">Non consentire a nessun sito di richiedere l'accesso di scrittura di file e directory</translation>
 <translation id="6181783961196084973">Il valore dell'opzione di attivazione/disattivazione della raccolta di attività nelle app. Se il criterio viene impostato su vero, l'attività nelle app dell'utente verrà segnalata al server per poter essere visualizzata nell'app <ph name="PRODUCT_NAME" /> del figlio e del genitore. Se il criterio viene impostato su falso, la funzionalità Limiti di utilizzo per app rimarrà disponibile, ma non verranno segnalati dati al server, che quindi non verranno visualizzati in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182563940865917569">Consenti a Chrome di riprodurre automaticamente i contenuti multimediali</translation>
-<translation id="6183327369896253878">La configurazione del criterio consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app bloccate nella barra Avvio app e gli utenti non possono modificarli.
-
-      Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia, le app Android tramite il relativo nome del pacchetto, come com.google.android.gm, e le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, come https://google.com/maps.
-
-      Se il criterio non è configurato, gli utenti possono modificare l'elenco di app bloccate in Avvio app.</translation>
 <translation id="6184385589352532028">Non attivare l'API Desk per il controllo di ChromeOS da terze parti</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6191963383731098056">Questo criterio consente agli amministratori di configurare il colore del tema di <ph name="PRODUCT_NAME" />. La stringa di input deve essere una stringa di colore esadecimale valido corrispondente al formato "#RRGGBB".
@@ -6538,7 +6521,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non saranno disponibili modalità di sblocco rapido per i dispositivi gestiti.</translation>
 <translation id="754176366378585605">Controlla l'utilizzo dell'API File Handling</translation>
-<translation id="7543109906499122922">L'ora in cui il dispositivo inizierà a usare la batteria, nel fuso orario locale del dispositivo.</translation>
 <translation id="7544392541165889987">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> può agire da proxy tra <ph name="CLOUD_PRINT_NAME" /> e le precedenti stampanti collegate al computer. Gli utenti possono attivare il proxy Cloud Print tramite l'autenticazione usando il proprio Account Google.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono attivare il proxy e il computer non può condividere le stampanti con <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -6851,7 +6833,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Consente di stabilire l'ID dell'estensione da utilizzare come salvaschermo nella schermata di accesso. L'estensione deve far parte dell'AppPack configurato per il dominio tramite la norma DeviceAppPack.</translation>
 <translation id="7882890448959833986">Elimina l'avviso di sistema operativo non supportato</translation>
 <translation id="788480874436328004">Disattiva il salvataggio delle password utilizzando Gestore delle password</translation>
-<translation id="7887379840451099426">Le impostazioni di gestione dell'alimentazione applicabili soltanto quando viene usata la batteria.</translation>
 <translation id="7891884447851425349">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato durante una ricerca predefinita. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SEARCH_URL" />.</translation>

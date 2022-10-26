@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Angi Chrome som standard for å synkronisere fanene, passordene og betalingsopplysningene dine på alle enhetene dine</translation>
 <translation id="1504372625950710826">Chrome kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
 <translation id="1511320244449497906">Du er pålogget og synkroniserer dataene dine med en konto som er administrert av <ph name="DOMAIN" />, hvor administratoren nå kan angi brukerinnstillinger spesifikt for denne kontoen for å endre virkemåten til Chrome.</translation>
+<translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3345341804167540816">Bruk Chrome overalt</translation>
+<translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="3641179212828090796">Bruk passordet du har lagret i Chrome, for å logge på raskere</translation>
@@ -137,6 +139,7 @@ Dette bør du tenke over:
   • Hvis Chrome krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
 
   • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Du får standard sikkerhetsbeskyttelse for denne Chrome-profilen</translation>
 <translation id="9112744793181547300">Vil du angi Chrome som standard?</translation>
 <translation id="9122931302567044771">Dette betyr at Chrome kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 </translationbundle>

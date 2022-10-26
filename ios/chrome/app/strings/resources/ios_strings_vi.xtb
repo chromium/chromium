@@ -117,6 +117,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1815941218935345331">Mật mã</translation>
 <translation id="1820259098641718022">Đã thêm vào Danh sách đọc</translation>
 <translation id="1832848789136765277">Hãy xác minh danh tính để đảm bảo bạn luôn có thể truy cập vào dữ liệu đã đồng bộ</translation>
+<translation id="1857751338515529195">Chuyển sang thẻ tiếp theo</translation>
 <translation id="1870148520156231997">Hiện mật khẩu</translation>
 <translation id="1872096359983322073">Đèn pin</translation>
 <translation id="1891796056033961979">Dấu trang, mật khẩu, chế độ cài đặt đã lưu và các nội dung khác đều có trên màn hình này.</translation>
@@ -147,6 +148,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="2139867232736819575">Tìm kiếm văn bản bạn đã sao chép</translation>
 <translation id="214201757571129614">Đăng nhập…</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
+<translation id="2150175299852799498">Chrome dành cho thiết bị di động</translation>
 <translation id="2155145621546387786">Chia sẻ Chrome</translation>
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="2178545675770638239">Chọn mật khẩu</translation>
@@ -226,6 +228,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2783054063075604403">Không thể tạo đường liên kết</translation>
 <translation id="2786701870377699570">Tìm kiếm thẻ trên các thiết bị đã đồng bộ hoá</translation>
 <translation id="2800683595868705743">Rời khỏi Trình chuyển đổi thẻ</translation>
+<translation id="2812727400746650635">Quay về thẻ trước</translation>
 <translation id="2815198996063984598">2. Nhấn vào Ứng dụng trình duyệt mặc định</translation>
 <translation id="2820289420301699633">Quản trị viên của bạn có quyền kiểm soát Chrome và có thể truy cập dữ liệu của Chrome</translation>
 <translation id="2830972654601096923">Quản lý địa chỉ...</translation>
@@ -450,6 +453,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="4630540211544979320">Dịch trang</translation>
 <translation id="4634124774493850572">Sử dụng mật khẩu</translation>
 <translation id="4636930964841734540">Thông tin</translation>
+<translation id="4649294145748405669">Chrome nay nhanh hơn, an toàn hơn và được xây dựng riêng cho bạn. Tải xuống tại đây.</translation>
 <translation id="4650125387981512669">Tiếp tục bằng tên <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật.</translation>
 <translation id="4659667755519643272">Vào Trình chuyển đổi thẻ</translation>
@@ -618,6 +622,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5913600720976431809">Các tùy chọn dịch trang</translation>
 <translation id="5938160824633642847">Thiết bị của bạn gần hết không gian lưu trữ. Hãy giải phóng dung lượng và thử lại.</translation>
 <translation id="5948291296578561264">Điều này cho phép bạn lưu ảnh vào thư viện ảnh của mình.</translation>
+<translation id="5949969988218625680">Hiện nhật ký</translation>
 <translation id="5951816930277761335">Chia sẻ đường liên kết</translation>
 <translation id="5955891643922670672">Đang xem phiên bản ngoại tuyến</translation>
 <translation id="5957613098218939406">Tùy chọn khác</translation>
@@ -698,6 +703,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng bộ hóa của bạn vào <ph name="TIME" />. Nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6418346271604475326">Đang chuẩn bị PDF</translation>
 <translation id="6434591244308415567">Đã xảy ra lỗi. Hãy thử lại sau.</translation>
+<translation id="6435817889602303010">Mở lại thẻ đóng gần đây nhất</translation>
 <translation id="6439338047467462846">Cho phép tất cả</translation>
 <translation id="6445051938772793705">Quốc gia</translation>
 <translation id="6445981559479772097">Đã gửi tin nhắn.</translation>
@@ -864,6 +870,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7720410380936703141">THỬ LẠI</translation>
 <translation id="7726702057919861819">Trình đơn → Nhật ký → Xoá dữ liệu duyệt web</translation>
 <translation id="7741325291586284254">Trang Thẻ ẩn danh mới</translation>
+<translation id="7743314735291715910">Mở vị trí…</translation>
 <translation id="7756478488453921771">Trình đơn → Cài đặt → Phương thức thanh toán</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>

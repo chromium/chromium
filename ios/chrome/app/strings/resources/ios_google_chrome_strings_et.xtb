@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Määrake Chrome vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="1504372625950710826">Chrome ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
 <translation id="1511320244449497906">Olete sisse logitud ja andmed sünkroonitakse kontoga, mida haldab <ph name="DOMAIN" />, kus selle administraator saab nüüd määrata konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
+<translation id="1554731936187952550">Teil on Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="1682483655351012182">Chrome'i andmete sünkroonimine</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">See konto ja kõik salvestamata andmed eemaldatakse Chrome'ist ja muudest selles seadmes olevatest Google'i rakendustest.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome säästab aega, tuues teie kontod veebi. Saate kontosid lisada või eemaldada menüüs Seaded.</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3345341804167540816">Chrome'i kasutamine kõikjal</translation>
+<translation id="3503014945441706099">Hankige ka sellele Chrome'i profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="3522659714780527202">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, lülitage sisse sünkroonimine</translation>
 <translation id="3533694711092285624">Salvestatud paroole ei ole. Chrome saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="3641179212828090796">Kasutage Chrome'i salvestatud parooli, et kiiremini sisse logida</translation>
@@ -137,6 +139,7 @@ Olulised aspektid
   • Kui Chrome jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada.
 
   • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Saate selle Chrome'i profiili jaoks standardse turvakaitse</translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="9122931302567044771">See tähendab, et Chrome taotleb iga kord töölauasaiti.</translation>
 </translationbundle>

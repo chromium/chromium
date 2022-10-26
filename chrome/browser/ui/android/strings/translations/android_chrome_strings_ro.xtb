@@ -235,7 +235,6 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="2276231040576210443">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK1" />setări<ph name="END_LINK1" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="2276696007612801991">Conectează-te la contul Google pentru a verifica parolele</translation>
 <translation id="2278052315791335171">Prin ștergerea acestei parole, nu va fi șters și contul de pe <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Deschizi aplicația pentru <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Adresa de facturare</translation>
 <translation id="228704530595896923">Lista cu opțiuni de permitere a accesului.</translation>
 <translation id="230115972905494466">Nu s-au găsit dispozitive compatibile</translation>
@@ -947,7 +946,6 @@ Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt dis
 <translation id="6192907950379606605">Generează descrieri imagine</translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6196315980958524839">Parolele sunt salvate în Managerul de parole Google pe acest dispozitiv</translation>
-<translation id="620197886010707372">Deschizi aplicația pentru <ph name="APPNAME" /> cu Google Play?</translation>
 <translation id="6202812185118613467">Conectează-te din nou pentru a începe sincronizarea</translation>
 <translation id="6210748933810148297">Nu ești <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previzualizare a paginii</translation>

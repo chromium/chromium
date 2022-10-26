@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">Játékok</translation>
 <translation id="2678852583403169292">Felolvasás menü</translation>
 <translation id="2689613560355655046">8. asztal</translation>
+<translation id="2695132445805301912">Billentyűk és kattintások megjelenítése</translation>
 <translation id="2695305337569143674">böngésző</translation>
 <translation id="2697697418792422688">Billentyűzetbeállítások megjelenítése. <ph name="KEYBOARD_NAME" /> kiválasztva.</translation>
 <translation id="2700493154570097719">Billentyűzetet beállítása</translation>
@@ -1125,6 +1126,7 @@ Frissen telepítve</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Kamera kibontása</translation>
 <translation id="731589979057211264">A Shelf Party mód be van kapcsolva.</translation>
+<translation id="7340731148882810149">Automatikus kattintások menü</translation>
 <translation id="7346909386216857016">Rendben, értem</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
 <translation id="735745346212279324">A VPN nincs csatlakoztatva</translation>
@@ -1302,6 +1304,7 @@ Frissen telepítve</translation>
 <translation id="826107067893790409">Nyomja meg az Enter billentyűt a következő fiók számára való feloldáshoz: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8270450402312105425">{0,plural, =1{Eszköz módosítása az előző verzióra egy órán belül}other{Eszköz módosítása az előző verzióra # órán belül}}</translation>
+<translation id="8277261673056602147">A képernyőn lévő szöveg kiemelése</translation>
 <translation id="8284362522226889623">Csúsztasson balra négy ujjal az előző asztalra váltáshoz</translation>
 <translation id="828708037801473432">Ki</translation>
 <translation id="8297006494302853456">Gyenge</translation>

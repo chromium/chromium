@@ -327,6 +327,7 @@
 <translation id="309749186376891736">კურსორის გადაადგილება</translation>
 <translation id="3103579948980282461">ზომიერი მოიისფრო წითელი</translation>
 <translation id="3104705064753753826">გაფრთხილების დიალოგი</translation>
+<translation id="3105857328626674463">წინა სიტყვის გამოყოფა</translation>
 <translation id="3109724472072898302">აკეცილი</translation>
 <translation id="311015743332597320">ოთხი თითით გადაფურცვლა მარჯვნივ</translation>
 <translation id="3112457281078985179">ChromeVox-ის ჩასართავად ან გამოსართავად, გამოიყენეთ კლავიშთა კომბინაცია: Control + Alt + Z.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">წინა მონახულებული ბმული</translation>
 <translation id="3241638166094654466">უჯრედების რაოდენობა თითოეულ ხაზზე:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">ბოლოში გადატანა</translation>
 <translation id="3260949043575829030">წინა მსგავსი ერთეული</translation>
 <translation id="3270069636408109001">შემდეგი ცხრილი არ არის</translation>
 <translation id="3273791280096244679">ლეიბლის შენახვა</translation>
@@ -946,6 +948,7 @@
 <translation id="743783356331413498">მაგალითი</translation>
 <translation id="7439060726180460871">დირექტორია</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">შემდეგი სიტყვის გამოყოფა</translation>
 <translation id="7465123027577412805">გსურთ, გამოიყენოთ ბუნებრივი ხმა?</translation>
 <translation id="7491962110804786152">ჩანართი</translation>
 <translation id="7492497529767769458">შემდეგ სექციაზე გადასვლა. მაგალითად, სტატუსის პანელზე და გამშვებზე.</translation>

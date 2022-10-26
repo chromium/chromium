@@ -307,6 +307,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2673968385134502798">Spill</translation>
 <translation id="2678852583403169292">Tekstopplesing-menyen</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
+<translation id="2695132445805301912">Vis taster og klikk</translation>
 <translation id="2695305337569143674">nett</translation>
 <translation id="2697697418792422688">Vis tastaturinnstillinger. <ph name="KEYBOARD_NAME" /> er valgt.</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
@@ -1124,6 +1125,7 @@ Nylig installert</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
 <translation id="731589979057211264">Hyllegruppen er på.</translation>
+<translation id="7340731148882810149">Automatisk klikk-meny</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
@@ -1301,6 +1303,7 @@ Nylig installert</translation>
 <translation id="826107067893790409">Trykk på Enter for å låse opp for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8270450402312105425">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en time}other{Nedgrader enheten til en tidligere versjon innen # timer}}</translation>
+<translation id="8277261673056602147">Marker tekst på skjermen</translation>
 <translation id="8284362522226889623">Sveip til venstre med fire fingre for å bytte til forrige skrivebord</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svakt</translation>

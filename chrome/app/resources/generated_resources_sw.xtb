@@ -892,6 +892,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1805967612549112634">Thibitisha PIN</translation>
 <translation id="1806335016774576568">Badilisha utumie programu nyingine iliyofunguliwa</translation>
 <translation id="1807246157184219062">Mwangaza</translation>
+<translation id="1809201888580326312">Umechagua kutohifadhi manenosiri ya tovuti na programu hizi</translation>
 <translation id="1809483812148634490">Programu ambazo umepakua kutoka Google Play zitafutwa kwenye Chromebook hii.
     <ph name="LINE_BREAKS1" />
 Huenda pia ikafuta maudhui ambayo umenunua kama vile filamu, vipindi vya televisheni, muziki, vitabu au ununuzi mwingine wa ndani ya programu.
@@ -1808,6 +1809,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> haiwezi kupakuliwa kwa usalama.</translation>
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="262154978979441594">Ifunze programu ya Mratibu wa Google muundo wa sauti</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Usiruhusu tovuti yoyote kushughulikia itifaki</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Ukurasa huu unafikia kamera na maikrofoni yako.</translation>
@@ -4954,6 +4956,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5612734644261457353">Samahani, bado nenosiri lako halikuweza kuthibitishwa. Kumbuka: ikiwa ulibadilisha nenosiri lako hivi karibuni, nenosiri lako jipya litaanza kutumika pindi tu utakapoondoka, tafadhali tumia nenosiri jipya hapa.</translation>
 <translation id="5614190747811328134">Arifa ya Mtumiaji</translation>
 <translation id="5614553682702429503">Ungependa kuhifadhi nenosiri?</translation>
+<translation id="5616571005307953937">La zamani zaidi</translation>
 <translation id="5616726534702877126">Hifadhi nafasi</translation>
 <translation id="561698261642843490">Funga Firefox</translation>
 <translation id="5620540760831960151">Orodha hii inaathiriwa na <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5585,6 +5588,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6212168817037875041">Izime skrini</translation>
 <translation id="6212752530110374741">Kiungo cha Barua pepe</translation>
 <translation id="621470880408090483">Usiruhusu tovuti ziunganishe kwenye vifaa vyenye Bluetooth</translation>
+<translation id="6216239400972191926">Tovuti na programu zilizokataliwa</translation>
 <translation id="6216601812881225442">Huwezi kubadilisha ukubwa wa metadata yako. Ili urekebishe kiasi cha nafasi iliyotengwa mapema kwa ajili ya Linux, hifadhi nakala ya data iliyomo kisha urejeshe kwenye metadata mpya.</translation>
 <translation id="6216696360484424239">Ingia kiotomatiki</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> iko nje ya mtandao. Unganisha kwenye Intaneti kisha ujaribu tena.</translation>

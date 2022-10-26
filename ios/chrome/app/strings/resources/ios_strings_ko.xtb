@@ -117,8 +117,10 @@
 <translation id="1815941218935345331">비밀번호</translation>
 <translation id="1820259098641718022">읽기 목록에 추가됨</translation>
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
+<translation id="1857751338515529195">다음 탭으로 이동</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
+<translation id="1891796056033961979">이 화면에서 저장된 북마크, 비밀번호, 설정 등을 사용할 수 있습니다.</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1930989359703290198">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
 <translation id="214201757571129614">로그인…</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
+<translation id="2150175299852799498">Chrome 모바일</translation>
 <translation id="2155145621546387786">Chrome 공유</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2178545675770638239">비밀번호 선택</translation>
@@ -225,6 +228,7 @@
 <translation id="2783054063075604403">링크를 만들 수 없음</translation>
 <translation id="2786701870377699570">동기화된 기기에서 탭 검색</translation>
 <translation id="2800683595868705743">탭 전환 종료</translation>
+<translation id="2812727400746650635">이전 탭으로 이동</translation>
 <translation id="2815198996063984598">2. 기본 브라우저 앱 탭하기</translation>
 <translation id="2820289420301699633">관리자가 Chrome을 제어하고 Chrome 데이터에 액세스할 수 있습니다.</translation>
 <translation id="2830972654601096923">주소 관리...</translation>
@@ -327,6 +331,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3533202363250687977">모든 시크릿 탭 닫기</translation>
 <translation id="3533436815740441613">새 탭</translation>
 <translation id="3551320343578183772">탭 닫기</translation>
+<translation id="3575234738189584619">렌즈로 검색</translation>
 <translation id="3581564640715911333">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="3588820906588687999">새 탭에서 이미지 열기</translation>
 <translation id="3595252146048399851">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
@@ -448,6 +453,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4630540211544979320">페이지 번역</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4636930964841734540">정보</translation>
+<translation id="4649294145748405669">Chrome은 빠르고 안전하며 개인이 원하는 대로 맞춤설정을 할 수 있습니다. 여기에서 다운로드하세요.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> 계정으로 로그인</translation>
 <translation id="4659126640776004816">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
 <translation id="4659667755519643272">탭 전환 실행</translation>
@@ -494,6 +500,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4904877109095351937">읽음으로 표시</translation>
 <translation id="4908869848243824489">Google 디스커버</translation>
 <translation id="4916679969857390442">렌즈</translation>
+<translation id="4922154083994158612">보안을 강화하시겠습니까?</translation>
 <translation id="4930714375720679147">사용 설정</translation>
 <translation id="4941089862236492464">죄송합니다. 항목을 공유하는 중에 문제가 발생했습니다.</translation>
 <translation id="4944543191714094452">페이지에서 찾기…</translation>
@@ -615,6 +622,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5913600720976431809">페이지 번역 옵션</translation>
 <translation id="5938160824633642847">기기의 저장용량이 거의 가득 찼습니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="5948291296578561264">이렇게 하면 사진 라이브러리에 사진을 저장할 수 있습니다.</translation>
+<translation id="5949969988218625680">방문 기록 표시</translation>
 <translation id="5951816930277761335">링크 공유</translation>
 <translation id="5955891643922670672">오프라인 버전 보는 중</translation>
 <translation id="5957613098218939406">옵션 더보기</translation>
@@ -695,6 +703,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <ph name="TIME" />에 동기화 암호로 데이터가 암호화되었습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="6418346271604475326">PDF 준비 중</translation>
 <translation id="6434591244308415567">오류가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
+<translation id="6435817889602303010">마지막으로 닫은 탭 다시 열기</translation>
 <translation id="6439338047467462846">모두 허용</translation>
 <translation id="6445051938772793705">국가</translation>
 <translation id="6445981559479772097">메시지가 전송되었습니다.</translation>
@@ -832,6 +841,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7435356471928173109">관리자가 사용 중지했습니다.</translation>
 <translation id="7438481509621345350">이제 새 탭을 열 때 <ph name="CHANNEL_NAME" /> 스토리가 표시됩니다</translation>
 <translation id="7454057999980797137">도/군</translation>
+<translation id="7459628154744868585">향상된 보호 모드 사용 중</translation>
 <translation id="7464701184726199289">모든 기기에서 동기화된 데이터가 삭제됩니다. 저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome 선택하기</translation>
 <translation id="7472734401283673885">회사명</translation>
@@ -860,6 +870,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7720410380936703141">다시 시도</translation>
 <translation id="7726702057919861819">메뉴 → 방문 기록 → 인터넷 사용 기록 삭제</translation>
 <translation id="7741325291586284254">새 시크릿 탭 페이지</translation>
+<translation id="7743314735291715910">위치 열기…</translation>
 <translation id="7756478488453921771">메뉴 → 설정 → 결제 수단</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7772032839648071052">암호 확인</translation>
@@ -1024,6 +1035,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9037965129289936994">원본 보기</translation>
 <translation id="9039373489628511875">대역폭</translation>
 <translation id="9055772144595778347">로그인할 수 없음</translation>
+<translation id="9055960261314198756">향상된 보호 모드 사용 중지됨</translation>
 <translation id="9057972802061533987">팔로우할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9068336935206019333">Chrome 시크릿 모드에서 열기</translation>

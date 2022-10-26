@@ -356,6 +356,7 @@
 <translation id="1803351196216024260">ማይክሮፎንዎን ለመጠቀም መጠየቅ ይችላል</translation>
 <translation id="1807246157184219062">ብርሃን</translation>
 <translation id="1807528111851433570">የመጀመሪያ ሉህ</translation>
+<translation id="181000283860817563">በብዙ ጣቢያዎች ዙሪያ ያሉትን ዋጋዎች ይከታተሉ</translation>
 <translation id="1812527064848182527">የመሬት ገጽታ</translation>
 <translation id="1813414402673211292">የአሰሳ ውሂብ አስወግድ</translation>
 <translation id="182139138257690338">ራስ-ሰር ውርዶች</translation>
@@ -1108,7 +1109,6 @@
 <translation id="3890664840433101773">ኢሜይል ያክሉ</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3901925938762663762">ካርዱ አገልግሎት ጊዜው አብቅቷል</translation>
-<translation id="3906600011954732550">B5-ተጨማሪ</translation>
 <translation id="3906954721959377182">ጡባዊ</translation>
 <translation id="3909477809443608991"><ph name="URL" /> የተጠበቀ ይዘትን ማጫወት ይፈልጋል። የመሣሪያዎ ማንነት በGoogle የሚረጋገጥ ሲሆን በዚህ ጣቢያ ሊደረስበት ይችላል።</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1510,7 +1510,6 @@
 <translation id="4950898438188848926">የትር መቀየሪያ አዝራር፣ ወደ ክፍቱ ትር <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> ለመቀየር Enterን ይጫኑ</translation>
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4953689047182316270">ለተደራሽነት ክስተቶች ምላሽ መስጠት</translation>
-<translation id="4955242332710481440">A5-ተጨማሪ</translation>
 <translation id="4958444002117714549">ዝርዝሩን ዘርጋ</translation>
 <translation id="4964505745997821360">የጤና መድህን</translation>
 <translation id="4968522289500246572">ይህ መተግበሪያ ለሞባይል የተነደፈ ነው፣ እና በጥሩ ሁኔታ መጠን ላይቀይር ይችላል። መተግበሪያው ችግሮች ሊያጋጥሙት ወይም ዳግም ሊነሳ ይችላል።</translation>
@@ -1690,7 +1689,6 @@
 <translation id="5379027395132364855">የዝግጅት አቀራረብ አዝራርን ይፍጠሩ፣ በስላይዶች ውስጥ አዲስ የGoogle የዝግጅት አቀራረብ ለመፍጠር አስገባን ይጫኑ</translation>
 <translation id="5385857628869214740">አስቂኝ</translation>
 <translation id="5386426401304769735">የዚህ ጣቢያ የዕውቅና ማረጋገጫ ሰንሰለቱ SHA-1 በመጠቀም የተፈረመ የዕውቅና ማረጋገጫን ያካትታል።</translation>
-<translation id="538659543871111977">A4-ትር</translation>
 <translation id="5396631636586785122">ቀኝ ጫፍን ስፋ</translation>
 <translation id="5398772614898833570">ማስታወቂያዎች ታግደዋል</translation>
 <translation id="5400836586163650660">ግራጫ</translation>
@@ -2386,7 +2384,6 @@
 <translation id="733923710415886693">የአገልጋዩ የእውቅና ማረጋገጫ በእውቅና ማረጋገጫ ግልጽነት በኩል አልተገለጸም።</translation>
 <translation id="7341357280245177602">ያገለገሉ ተሽከርካሪዎች</translation>
 <translation id="7346048084945669753">ከዚህ ጋር ግንኙነት አለው፦</translation>
-<translation id="7349430561505560861">A4-ተጨማሪ</translation>
 <translation id="7349921148288539306">ይህንን ትር እስኪዘጉ ድረስ ይፈቀዳል</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="7353601530677266744">የትእዛዝ መስመር</translation>

@@ -8,7 +8,7 @@
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="1511320244449497906">Prijavljeni ste na račun i sinhronizirate podatke s računom kojim upravlja domena <ph name="DOMAIN" /> čiji administrator sada može postaviti korisnička pravila posebno za taj račun koja mogu promijeniti ponašanje Chromea.</translation>
-<translation id="1554731936187952550">Imate najjaču Chromeovu zaštitu od štetnih web-lokacija</translation>
+<translation id="1554731936187952550">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>
 <translation id="1682483655351012182">Sinhroniziraj Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
@@ -40,7 +40,7 @@
 <translation id="3196546062792660320">Chrome vam štedi vrijeme povezivanjem vaših računa s webom. Možete dodati ili ukloniti račune u Postavkama.</translation>
 <translation id="3282568296779691940">Prijava na Chrome</translation>
 <translation id="3345341804167540816">Koristite Chrome svugdje</translation>
-<translation id="3503014945441706099">Nabavite poboljšano sigurno pregledavanje i za ovaj profil u Chromeu</translation>
+<translation id="3503014945441706099">Preuzmite i poboljšano Sigurno pregledanje za ovaj Chrome profil</translation>
 <translation id="3522659714780527202">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, uključite sinhronizaciju</translation>
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="3641179212828090796">Koristite lozinku koju ste sačuvali u Chromeu da se brže prijavite</translation>
@@ -137,7 +137,7 @@ Stvari za razmatranje:
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama.
   • Ako dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije.
   • Ako uključite sinhronizaciju, pokazatelji također mogu uključivati informacije o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Imate standardnu zaštitu sigurnosti za ovaj profil u Chromeu</translation>
+<translation id="9103442491611662960">Za ovaj Chrome profil dobijate standardnu sigurnosnu zaštitu</translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
 </translationbundle>

@@ -896,6 +896,7 @@
 <translation id="1805967612549112634">ਪਿੰਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="1806335016774576568">ਕਿਸੇ ਹੋਰ ਖੁੱਲ੍ਹੀ ਐਪ 'ਤੇ ਜਾਓ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
+<translation id="1809201888580326312">ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਲਈ ਪਾਸਵਰਡਾਂ ਨੂੰ ਰੱਖਿਅਤ ਨਾ ਕਰਨ ਦੀ ਚੋਣ ਕੀਤੀ ਹੈ</translation>
 <translation id="1809483812148634490">ਤੁਹਾਡੇ ਵੱਲੋਂ Google Play ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਐਪਾਂ ਇਸ Chromebook ਤੋਂ ਮਿਟਾ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ।
     <ph name="LINE_BREAKS1" />
     ਤੁਹਾਡੇ ਵੱਲੋਂ ਖਰੀਦੀ ਸਮੱਗਰੀ ਜਿਵੇਂ ਫ਼ਿਲਮਾਂ, ਟੀਵੀ ਸ਼ੋਅ, ਸੰਗੀਤ, ਕਿਤਾਬਾਂ, ਜਾਂ ਹੋਰ ਐਪ-ਅੰਦਰ ਖਰੀਦਾਂ ਵੀ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।
@@ -1812,6 +1813,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="262154978979441594">Google Assistant ਅਵਾਜ਼ੀ ਮਾਡਲ ਨੂੰ ਸਿਖਲਾਈ ਦਿਓ</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">ਕਿਸੇ ਵੀ ਸਾਈਟ ਨੂੰ ਪ੍ਰੋਟੋਕੋਲ ਹੈਂਡਲ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੱਕ ਪਹੁੰਚ ਰਿਹਾ ਹੈ।</translation>
@@ -4959,6 +4961,7 @@
 <translation id="5612734644261457353">ਮਾਫ਼ ਕਰਨਾ, ਅਜੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ: ਜੇਕਰ ਤੁਸੀਂ ਹੁਣੇ ਹੀ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਤੁਹਾਡੇ ਸਾਈਨ ਆਉਟ ਕਰਨ ਤੋਂ ਬਾਅਦ ਲਾਗੂ ਹੋਵੇਗਾ, ਕਿਰਪਾ ਕਰਕੇ ਇੱਥੇ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ।</translation>
 <translation id="5614190747811328134">ਵਰਤੋਂਕਾਰ ਨੋਟਿਸ</translation>
 <translation id="5614553682702429503">ਕੀ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
+<translation id="5616571005307953937">ਸਭ ਤੋਂ ਪੁਰਾਣਾ</translation>
 <translation id="5616726534702877126">ਆਕਾਰ ਰਾਖਵਾਂ ਕਰੋ</translation>
 <translation id="561698261642843490">Firefox ਬੰਦ ਕਰੋ</translation>
 <translation id="5620540760831960151">ਇਹ ਸੂਚੀ <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5590,6 +5593,7 @@
 <translation id="6212168817037875041">ਡਿਸਪਲੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="6212752530110374741">ਲਿੰਕ ਈਮੇਲ ਕਰੋ</translation>
 <translation id="621470880408090483">ਸਾਈਟਾਂ ਨੂੰ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
+<translation id="6216239400972191926">ਅਸਵੀਕਾਰ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ</translation>
 <translation id="6216601812881225442">ਤੁਹਾਡਾ ਕੰਟੇਨਰ ਆਕਾਰ ਬਦਲਣ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। Linux ਲਈ ਪਹਿਲਾਂ-ਨਿਰਧਾਰਿਤ ਕੀਤੀ ਜਗ੍ਹਾ ਦੀ ਮਾਤਰਾ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਲਈ, ਬੈਕਅੱਪ ਲਓ ਅਤੇ ਫਿਰ ਕਿਸੇ ਨਵੇਂ ਕੰਟੇਨਰ ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕਰੋ।</translation>
 <translation id="6216696360484424239">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ਆਫ਼ਲਾਈਨ ਹੈ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -5676,6 +5680,7 @@
 <translation id="6295855836753816081">ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="629730747756840877">ਖਾਤਾ</translation>
 <translation id="6298962879096096191">Android ਐਪਾਂ ਸਥਾਪਤ ਕਰਨ ਲਈ Google Play ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
+<translation id="6300125580697461004">ਊਰਜਾ ਸੇਵਰ ਬਾਰੇ ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="6300177430812514606">ਡਾਟਾ ਭੇਜਣ ਜਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="630065524203833229">ਬਾ&amp;ਹਰ ਜਾਓ</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸੰਰੂਪਣ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਉੱਨਤ ਪ੍ਰਿੰਟਰ ਵੇਰਵੇ ਨਿਰਧਾਰਤ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
@@ -5876,6 +5881,7 @@
 <translation id="6494327278868541139">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="6494445798847293442">ਇੱਕ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਥਾਰਿਟੀ ਨਹੀਂ</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{ਇਸ ਡਾਟੇ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ}=1{ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ}other{ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ}}</translation>
+<translation id="6497548114956205206">ਊਰਜਾ ਸੇਵਰ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6497784818439587832">ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਆਈਟਮਾਂ ਨੂੰ ਛੋਟਾ ਜਾਂ ਵੱਡਾ ਕਰਨ ਲਈ ਡਿਸਪਲੇ ਦਾ ਆਕਾਰ ਬਦਲੋ</translation>
 <translation id="6497789971060331894">ਮਾਊਸ ਦੀ ਉਲਟ ਸਕ੍ਰੋਲਿੰਗ</translation>
 <translation id="6498249116389603658">&amp;ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਭਾਸ਼ਾਵਾਂ</translation>
@@ -7436,6 +7442,7 @@
 <translation id="7955177647836564772">ਜੇ Smart Lock ਚਾਲੂ ਹੈ ਅਤੇ ਤੁਹਾਡਾ ਫ਼ੋਨ ਅਣਲਾਕ ਹੈ, ਤਾਂ ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਜਾਂ ਪਿੰਨ ਦਾਖਲ ਕਰਨ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ</translation>
 <translation id="7956373551960864128">ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤੇ ਪ੍ਰਿੰਟਰ</translation>
 <translation id="7957074856830851026">ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ ਦੇਖੋ, ਜਿਵੇਂ ਕਿ ਇਸਦਾ ਸੀਰੀਅਲ ਨੰਬਰ ਜਾਂ ਸੰਪਤੀ ਆਈਡੀ</translation>
+<translation id="7957186326898555886">ਮੈਮੋਰੀ ਸੇਵਰ ਬਾਰੇ ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="7959074893852789871">ਫਾਈਲ ਵਿੱਚ ਮਲਟੀਪਲ ਸਰਟੀਫਿਕੇਟਸ ਸਨ, ਜਿਹਨਾਂ ਵਿੱਚੋਂ ਕੁਝ ਆਯਾਤ ਨਹੀਂ ਕੀਤੇ ਗਏ ਸਨ:</translation>
 <translation id="7959665254555683862">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="7961015016161918242">ਕਦੇ ਨਹੀਂ</translation>
@@ -7856,6 +7863,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{ਹਾਲ ਹੀ ਵਿੱਚ ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਵਾਲੀ <ph name="BEGIN_BOLD" />1 ਸਾਈਟ<ph name="END_BOLD" /> ਦੀ ਸਮੀਖਿਆ ਕਰੋ}one{ਹਾਲ ਹੀ ਵਿੱਚ ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਵਾਲੀ <ph name="BEGIN_BOLD" />{NUM_SITES} ਸਾਈਟ<ph name="END_BOLD" /> ਦੀ ਸਮੀਖਿਆ ਕਰੋ}other{ਹਾਲ ਹੀ ਵਿੱਚ ਬਹੁਤ ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਵਾਲੀਆਂ <ph name="BEGIN_BOLD" />{NUM_SITES} ਸਾਈਟਾਂ<ph name="END_BOLD" /> ਦੀ ਸਮੀਖਿਆ ਕਰੋ}}</translation>
 <translation id="8342221978608739536">ਕੋਸ਼ਿਸ਼ ਨਹੀਂ ਕੀਤੀ</translation>
+<translation id="8342399870062010251">ਮੈਮੋਰੀ ਸੇਵਰ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8342861492835240085">ਕੋਈ ਸੰਗ੍ਰਹਿ ਚੁਣੋ</translation>
 <translation id="8345848587667658367">ਤੁਸੀਂ ਹੁਣ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ, ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="8347227221149377169">ਪ੍ਰਿੰਟ ਜੌਬਾਂ</translation>
@@ -8064,6 +8072,7 @@
 <translation id="8549316893834449916">ਤੁਸੀਂ ਆਪਣੀ Chromebook ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ Google ਖਾਤੇ ਦੀ ਵਰਤੋਂ ਕਰੋਗੇ - ਓਹੀ ਖਾਤਾ ਜਿਸਦੀ ਵਰਤੋਂ ਤੁਸੀਂ Gmail, Drive, YouTube ਅਤੇ ਹੋਰਾਂ ਲਈ ਕਰਦੇ ਹੋ।</translation>
 <translation id="8551388862522347954">ਲਸੰਸ</translation>
 <translation id="8551588720239073785">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਸੈਟਿੰਗਾਂ</translation>
+<translation id="8552102814346875916">"ਇਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਹਮੇਸ਼ਾਂ ਕਿਰਿਆਸ਼ੀਲ ਰੱਖੋ" ਸੂਚੀ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="8553342806078037065">ਹੋਰਾਂ ਲੋਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8554899698005018844">ਕੋਈ ਭਾਸ਼ਾ ਨਹੀਂ</translation>
 <translation id="855604308879080518">Android ਐਪ ਨੂੰ ਇਸ Chromebook 'ਤੇ USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਰ ਵਾਰ USB ਡੀਵਾਈਸ ਪਲੱਗ-ਇਨ ਕਰਨ ਸਮੇਂ ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾਵੇਗੀ। ਵਿਅਕਤੀਗਤ Android ਐਪਾਂ ਵਧੀਕ ਇਜਾਜ਼ਤਾਂ ਮੰਗਣਗੀਆਂ।</translation>

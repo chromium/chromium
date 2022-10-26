@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="1870148520156231997">পাসওয়ার্ড দেখুন</translation>
 <translation id="1872096359983322073">টর্চ</translation>
+<translation id="1891796056033961979">আপনার সেভ করা বুকমার্ক, পাসওয়ার্ড, সেটিংস এবং আরও অনেক কিছু এই স্ক্রিন থেকে পাওয়া যাবে।</translation>
 <translation id="1911619930368729126">Google ড্রাইভে আপলোড করুন</translation>
 <translation id="1923342640370224680">শেষ ঘণ্টা</translation>
 <translation id="1930989359703290198">আপনার সংস্থা শুধু কিছু নির্দিষ্ট অ্যাকাউন্ট ব্যবহার করে আপনাকে সাইন-ইন করার অনুমতি দিয়েছে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="3533436815740441613">নতুন ট্যাব খুলুন</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
+<translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">পঠিত হিসেবে চিহ্নিত করুন</translation>
 <translation id="4908869848243824489">Google-এর ডিসকভার</translation>
 <translation id="4916679969857390442">লেন্স</translation>
+<translation id="4922154083994158612">আরও নিরাপত্তা?</translation>
 <translation id="4930714375720679147">চালু করুন</translation>
 <translation id="4941089862236492464">দুঃখিত, আপনার জিনিস শেয়ার করার সময় একটা সমস্যা ছিল।</translation>
 <translation id="4944543191714094452">পৃষ্ঠাতে খুঁজুন…</translation>
@@ -833,6 +836,7 @@
 <translation id="7435356471928173109">আপনার অ্যাডমিনিস্ট্রেটর বন্ধ করে দিয়েছে</translation>
 <translation id="7438481509621345350">এখন আপনি নতুন কোনও ট্যাব খুললেই, <ph name="CHANNEL_NAME" /> থেকে স্টোরি পড়তে পারবেন।</translation>
 <translation id="7454057999980797137">রাজ্য / দেশ</translation>
+<translation id="7459628154744868585">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="7464701184726199289">এটি সব ডিভাইস থেকে সিঙ্ক হওয়া ডেটা সাফ করবে। সংরক্ষিত সাইটের সেটিংস মোছা হবে না এবং আপনার ব্রাউজিং অভ্যাস প্রতিফলিত হতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">৩. Chrome বেছে নিন</translation>
 <translation id="7472734401283673885">কোম্পানির নাম:</translation>
@@ -1025,6 +1029,7 @@
 <translation id="9037965129289936994">প্রকৃত রূপ দেখান</translation>
 <translation id="9039373489628511875">ব্যান্ডউইথ</translation>
 <translation id="9055772144595778347">সাইন-ইন করা যাচ্ছে না</translation>
+<translation id="9055960261314198756">"উন্নত সুরক্ষা" ফিচার বন্ধ করা আছে</translation>
 <translation id="9057972802061533987">ফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9068336935206019333">Chrome ছদ্মবেশী ট্যাবে খুলুন</translation>

@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Angiv Chrome som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="1504372625950710826">Chrome kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="1511320244449497906">Du er logget ind og synkroniserer dine data med en konto, der administreres af <ph name="DOMAIN" />, hvor kontoens administrator nu kan konfigurere brugerpolitikker, der er specifikke for den pågældende konto, og som kan ændre Chromes adfærd.</translation>
+<translation id="1554731936187952550">Du har Chromes stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Denne konto og data, som ikke er gemt, fjernes fra Chrome og andre Google-apps på denne enhed.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Med Chrome sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3345341804167540816">Brug Chrome overalt</translation>
+<translation id="3503014945441706099">Få også Udvidet beskyttet browsing til denne Chrome-profil</translation>
 <translation id="3522659714780527202">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chrome</translation>
 <translation id="3533694711092285624">Der er ingen gemte adgangskoder. Chrome kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="3641179212828090796">Brug den adgangskode, du har gemt i Chrome, for at logge hurtigere ind.</translation>
@@ -137,6 +139,7 @@ Ting, du skal overveje:
   • Hvis Chrome oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger.
 
   • Hvis du aktiverer synkronisering, kan metrics også omfatte oplysninger om de webadresser, du besøger.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Du får standardbeskyttelse til denne Chrome-profil</translation>
 <translation id="9112744793181547300">Vil du angive Chrome som standard?</translation>
 <translation id="9122931302567044771">Det betyder, at Chrome anmoder om computerwebsitet hver gang.</translation>
 </translationbundle>

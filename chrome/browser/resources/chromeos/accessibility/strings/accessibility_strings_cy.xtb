@@ -327,6 +327,7 @@
 <translation id="309749186376891736">Symudwch y cyrchwr</translation>
 <translation id="3103579948980282461">Coch Fioled Canolig</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
+<translation id="3105857328626674463">amlygu'r gair blaenorol</translation>
 <translation id="3109724472072898302">Wedi'i grebachu</translation>
 <translation id="311015743332597320">Sweipiwch i'r dde gyda phedwar bys</translation>
 <translation id="3112457281078985179">Er mwyn troi ChromeVox ymlaen neu ei ddiffodd, defnyddiwch Control+Alt+Z.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">Dolen yr ymwelwyd â hi flaenorol</translation>
 <translation id="3241638166094654466">Celloedd ym mhob llinell:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">symud i'r diwedd</translation>
 <translation id="3260949043575829030">Eitem debyg flaenorol</translation>
 <translation id="3270069636408109001">Dim tabl nesaf</translation>
 <translation id="3273791280096244679">Cadw'r label</translation>
@@ -947,6 +949,7 @@
 <translation id="743783356331413498">Enghraifft</translation>
 <translation id="7439060726180460871">Cyfeiriadur</translation>
 <translation id="744163271241493234">golygu cyfrinair</translation>
+<translation id="7443479558101073378">amlygu'r gair nesaf</translation>
 <translation id="7465123027577412805">Defnyddio llais naturiol?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Symud i'r adran nesaf. Ymhlith yr enghreifftiau mae'r Hambwrdd Statws a'r Lansiwr.</translation>

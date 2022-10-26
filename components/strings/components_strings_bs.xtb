@@ -499,7 +499,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="219906046732893612">Uređenje doma</translation>
 <translation id="2202020181578195191">Unesite važeću godinu isteka</translation>
 <translation id="22081806969704220">Ladica 3</translation>
-<translation id="2210794033760923560">Prijenos izvješća</translation>
+<translation id="2210794033760923560">Otpremi izvještaj</translation>
 <translation id="2212735316055980242">Pravilo nije pronađeno</translation>
 <translation id="2213606439339815911">Dohvaćanje unosa...</translation>
 <translation id="2213612003795704869">Stranica je odštampana</translation>
@@ -727,7 +727,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2835170189407361413">Obriši polja obrasca</translation>
 <translation id="2839032553903800133">Obavještenja su blokirana</translation>
 <translation id="2839501879576190149">Web lokacija koja slijedi je lažna</translation>
-<translation id="2851291081585704741">Niste povezani s internetom</translation>
+<translation id="2851291081585704741">Offline ste</translation>
 <translation id="2854764410992194509">Pružaoci internet usluga (ISP)</translation>
 <translation id="2856444702002559011">Moguće je da napadači pokušavaju ukrasti vaše podatke s web lokacije <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (naprimjer, lozinke, poruke ili kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
@@ -1130,7 +1130,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3890664840433101773">Dodajte adresu e-pošte</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3901925938762663762">Kartica je istekla</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">URL <ph name="URL" /> želi reproducirati zaštićeni sadržaj. Identitet vašeg uređaja će potvrditi Google i ova web lokacija mu može pristupiti.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1537,7 +1536,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4950898438188848926">Dugme za promjenu kartice; pritisnite Enter da se prebacite na otvorenu karticu, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953689047182316270">Odgovori na događaje vezane za pristupačnost</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Proširi popis</translation>
 <translation id="4964505745997821360">Zdravstveno osiguranje</translation>
 <translation id="4968522289500246572">Ova aplikacija je dizajnirana za mobilne uređaje i možda neće dobro promijeniti veličinu. Aplikacija može naići na probleme ili se ponovo pokrenuti.</translation>
@@ -1720,7 +1718,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5379027395132364855">Dugme Kreiraj prezentaciju, pritisnite Enter da brzo kreirate novu Google prezentaciju u Prezentacijama</translation>
 <translation id="5385857628869214740">Humor</translation>
 <translation id="5386426401304769735">Lanac potvrda za ovu web lokaciju sadrži potvrdu koja je izdata koristeći SHA-1.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Uvez desnog ruba</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
@@ -2099,7 +2096,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6427730057873428458">Presavijanje</translation>
 <translation id="6428450836711225518">Potvrdite broj telefona</translation>
 <translation id="643051589346665201">Promijeni Google lozinku</translation>
-<translation id="6431119592588449664">Izvješće je preneseno</translation>
+<translation id="6431119592588449664">Izvještaj je otpremljen</translation>
 <translation id="6433490469411711332">Uređivanje podataka za kontakt</translation>
 <translation id="6433595998831338502">Host računar <ph name="HOST_NAME" /> je odbio povezivanje.</translation>
 <translation id="6433797564277305076">Potvrdite kartice brže koristeći otključavanja uređaja od sada</translation>
@@ -2429,7 +2426,6 @@ Dodatni detalji:
 <translation id="733923710415886693">Potvrda servera nije otkrivena korištenjem pravila o transparentnosti potvrde.</translation>
 <translation id="7341357280245177602">Polovna vozila</translation>
 <translation id="7346048084945669753">Korisnik je povezan:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Dozvoljeno je dok ne zatvorite ovu karticu</translation>
 <translation id="7352651011704765696">Nešto nije uredu</translation>
 <translation id="7353601530677266744">Komandna linija</translation>
@@ -2852,7 +2848,7 @@ Dodatni detalji:
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8381674639488873545">Ti troškovi mogu biti jednokratni ili ponavljajući te također mogu biti diskretni. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Dijeljenje sa <ph name="ORIGIN_NAME" /> na <ph name="VM_NAME" /> je blokirano pravilom administratora</translation>
-<translation id="8396522675989118466">To je <ph name="NUMBER_OF_DIGITS" />-znamenkasti kôd koji se nalazi ovdje: <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8396522675989118466">Ovo je <ph name="NUMBER_OF_DIGITS" />-cifreni kôd na kartici <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398790343843005537">Pronađite svoj telefon</translation>
 <translation id="8405579342203358118">Upravljajte time koje informacije sinhronizirate u postavkama Chromea</translation>
 <translation id="8409413588194360210">obrađivači plaćanja</translation>

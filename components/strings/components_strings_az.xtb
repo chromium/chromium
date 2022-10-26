@@ -78,6 +78,7 @@
 <translation id="1175875016430184367">Sağdan üçlü ştapel vurun</translation>
 <translation id="1177802847690410663">Veb brauzerlər</translation>
 <translation id="1178581264944972037">Durdurun</translation>
+<translation id="1178821169867863726">12 x 16 düym</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1186201132766001848">Parolları yoxlayın</translation>
 <translation id="1195558154361252544">İcazə verdiklərinizdən başqa bütün saytlarda bildirişlər blok edilib</translation>
@@ -318,6 +319,7 @@
 <translation id="1717494416764505390">Poçt qutusu 3</translation>
 <translation id="1718029547804390981">Sənəd annotasiya üçün çox böyükdür</translation>
 <translation id="1719434663396780149">Qiymət endirimi xəbərdarlıqları aktivdir. Bunu <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> bölməsində dəyişə bilərsiniz.</translation>
+<translation id="1719838434204287058">24 x 30 düym</translation>
 <translation id="1720941539803966190">Dərsliyi bağlayın</translation>
 <translation id="1721424275792716183">* Sahə tələb olunur</translation>
 <translation id="1725591448053514783">Zərf You 6</translation>
@@ -392,6 +394,7 @@
 <translation id="1916770123977586577">Yenilənən ayarları bu sayta tətbiq etmək üçün səhifəni təkrar yükləyin</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
 <translation id="1919367280705858090">Spesifik xəta mesajı ilə bağlı yardım əldə edin</translation>
+<translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Yoxdur}=1{1 sayt}other{# sayt}}</translation>
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1927439593081478069">Chrome Təhlükəsizlik Yoxlanışını İcra Edin düyməsi, Chrome ayarlarında Təhlükəsizlik Yoxlanışını icra etmək üçün Enter düyməsinə basın</translation>
@@ -399,6 +402,7 @@
 <translation id="1939175642807587452">Saytlar bildirişlər göndərmək üçün icazə istəyə bilər</translation>
 <translation id="1943994668912612445">Dizayn</translation>
 <translation id="1945968466830820669">Təşkilat hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chromium parollarınızı indi dəyişməyi məsləhət görür.</translation>
+<translation id="1946849748901605102">12 x 15 düym</translation>
 <translation id="1947454675006758438">Yuxarı sağ tərəfdən ştapel vurun</translation>
 <translation id="1956486093533522234">Cihazınızı tapın, qoruyun və ya silin</translation>
 <translation id="1958218078413065209">Ən yüksək xalınız: <ph name="SCORE" />.</translation>
@@ -421,6 +425,7 @@
 <translation id="2003775180883135320">Yuxarıdan dördlü deşik açın</translation>
 <translation id="201174227998721785">Chrome ayarlarında saytlarda saxlanılan icazələri və datanı idarə edin</translation>
 <translation id="2019607688127825327">"Əlçatımlılıq ayarlarını idarə edin" düyməsi, Enter düyməsinə basaraq Chrome ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
+<translation id="202224654587969958">12 x 19 düym</translation>
 <translation id="2025115093177348061">Artırılmış reallıq</translation>
 <translation id="2025186561304664664">Proksi avtomatik konfiqurasiyaya ayarlandı.</translation>
 <translation id="2025891858974379949">Təhlükəli məzmun</translation>
@@ -476,6 +481,7 @@
 <translation id="2153609454945889823">Google Play AR Xidmətləri quraşdırılsın?</translation>
 <translation id="2154054054215849342">Sinxronlaşma domeniniz üçün əlçatan deyil</translation>
 <translation id="2154484045852737596">Kartı redaktə edin</translation>
+<translation id="2155260325161282517">5 x 7 düym</translation>
 <translation id="2157640075051554492">Qiymət izləmə bildirişləri</translation>
 <translation id="2161656808144014275">Mətn</translation>
 <translation id="2162510787844374618">Bankınızla əlaqə saxlanılır...</translation>
@@ -493,6 +499,7 @@
 <translation id="219906046732893612">Ev yeniləməsi</translation>
 <translation id="2202020181578195191">Düzgün bitmə ili daxil edin</translation>
 <translation id="22081806969704220">Qab 3</translation>
+<translation id="2210794033760923560">Hesabatı yükləyin</translation>
 <translation id="2212735316055980242">Siyasət tapılmadı</translation>
 <translation id="2213606439339815911">Daxil etmələr əldə edilir...</translation>
 <translation id="2213612003795704869">Səhifə çap olunub</translation>
@@ -507,6 +514,7 @@
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />Diaqnostika tətbiqini<ph name="END_LINK" /> istifadə edərək bağlantınızı həll edin</translation>
 <translation id="2239100178324503013">İndi göndərin</translation>
 <translation id="2241693394036365668">Fayl endirilir</translation>
+<translation id="2246264294482514010">10 x 12 düym</translation>
 <translation id="2248949050832152960">WebAuthn işlədin</translation>
 <translation id="2250931979407627383">Soldan kənarını tikin</translation>
 <translation id="225207911366869382">Bu dəyər bu qayda üçün köhnəlib.</translation>
@@ -673,6 +681,7 @@
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2679714844901977852">Təhlükəsiz və sürətli ödəniş üçün kartınızı və faktura məlumatınızı Google Hesabınızda (<ph name="USER_EMAIL" />) saxlayın</translation>
 <translation id="2687555958734450033">Ən uyğun</translation>
+<translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Bəli, davam edin</translation>
 <translation id="2691924980723297736">Təhlükəsizlik xəbərdarlığı</translation>
 <translation id="2692131511336778528">Elmi fantastika və fentezi</translation>
@@ -718,8 +727,10 @@
 <translation id="2835170189407361413">Formanı təmizləyin</translation>
 <translation id="2839032553903800133">Bildirişlər blok edilib</translation>
 <translation id="2839501879576190149">İrəlidə saxta sayt</translation>
+<translation id="2851291081585704741">Oflaynsınız</translation>
 <translation id="2854764410992194509">İnternet provayderləri (ISP)</translation>
 <translation id="2856444702002559011">Hücumçular <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saytından məlumat (məsələn, parol, mesaj və ya kredit kartları) oğurlamağa çalışa bilərlər. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Bu sayt inadçı və ya aldadıcı reklamlar göstərir.</translation>
 <translation id="287596039013813457">Dost</translation>
 <translation id="28761159517501904">Film</translation>
@@ -863,6 +874,7 @@
 <translation id="3249845759089040423">Modern</translation>
 <translation id="3250640885957938546">Reklam və marketinq</translation>
 <translation id="3252266817569339921">Fransız</translation>
+<translation id="3254301855501243548">18 x 22 düym</translation>
 <translation id="3256863843508922226">Təqaüdə çıxma və pensiya</translation>
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Calendar'da cəld yeni tədbir yaradın</translation>
 <translation id="3261488570342242926">Virtual kartlar barədə məlumat</translation>
@@ -881,12 +893,14 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> siyasəti haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3295444047715739395">Parollarınıza Chrome ayarlarında baxın və idarə edin</translation>
 <translation id="3299098170013242198">Windows Hello parolları daxil etmək üçün aktivdir</translation>
+<translation id="3303176609391916566">30 x 42 düym</translation>
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
 <translation id="3304073249511302126">bluetooth skanlaması</translation>
 <translation id="33073482541490531">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Parol Meneceri bu parolu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="3308006649705061278">Təşkilati Birlik (OU)</translation>
 <translation id="3308738399950580893">reklamlar</translation>
 <translation id="3320021301628644560">Və faktura ünvanı</translation>
+<translation id="3324687287337751929">4 x 6 düym</translation>
 <translation id="3324983252691184275">Tünd-qırmızı</translation>
 <translation id="3329013043687509092">Saturasiya</translation>
 <translation id="3333762389743153920">Virtual kart üçün uyğun deyil</translation>
@@ -962,6 +976,7 @@
 <translation id="3512163584740124171">Eyni siyasət qrupundan olan digər siyasət üstünlük təşkil etdiyinə görə bu siyasət iqnor edilir.</translation>
 <translation id="35172538073169599">"Ünvanları idarə edin" düyməsi,Chrome ayarlarında ünvanlar əlavə etmək və idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="3518941727116570328">Çoxsaylı obyektin idarə edilməsi</translation>
+<translation id="3525130752944427905">10 x 14 düym</translation>
 <translation id="3528171143076753409">Server sertifikatı etibarlı deyil.</translation>
 <translation id="3528485271872257980">Tünd-qəhvəyi</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Sinxronizasiya olunmuş cihazlarda ən az 1 element}=1{1 element (sinxronizasiya olunmuş cihazlarda daha çox)}other{# element (sinxronizasiya olunmuş cihazlarda daha çox)}}</translation>
@@ -970,12 +985,15 @@
 <translation id="3532844647053365774"><ph name="HOST" /> mikrofonunuzu istifadə etmək istəyir</translation>
 <translation id="3533328374079021623">Poçt qutusu 5</translation>
 <translation id="3542768452570884558">Keçidi Yeni Pəncərədə açın</translation>
+<translation id="3547746132308051926">20 x 24 düym</translation>
 <translation id="3550112004925580947">Qonaqlama sənayesi</translation>
 <translation id="3552297013052089404">Sans-serif şrifti</translation>
 <translation id="3558573058928565255">Gündüz vaxtı</translation>
 <translation id="3560824484345057728">Əlaqədar saytlara baxın</translation>
 <translation id="3566021033012934673">Bağlantınız məxfi deyil</translation>
+<translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3567778190852720481">Müəssisə hesabı ilə qeydiyyatdan keçmək olmur (müəssisə hesabı uyğun deyil).</translation>
+<translation id="3567901620846335314">100 x 150 mm</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Bu sayt üçün icazə verin</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> daxilində yerləşdirilmiş səhifə deyir:</translation>
@@ -991,6 +1009,7 @@
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Qrupunuzu istənilən vaxt sıfırlaya bilərsiniz. Yeni bir qrupa qoşulmaq təxminən bir gün çəkir.}=1{Qrupunuzu istənilən vaxt sıfırlaya bilərsiniz. Yeni bir qrupa qoşulmaq təxminən bir gün çəkir.}other{Qrupunuzu istənilən vaxt sıfırlaya bilərsiniz. Yeni bir qrupa qoşulmaq təxminən {NUM_DAYS} gün çəkir.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Tətbiq admin tərəfindən bloklanıb</translation>
+<translation id="3605899229568538311">5 x 5 düym</translation>
 <translation id="3608932978122581043">İstiqaməti tənzimləyin</translation>
 <translation id="3611317423880285981">Məişət ləvazimatları</translation>
 <translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> üçün virtual kart</translation>
@@ -1081,6 +1100,7 @@
 <translation id="3807366285948165054">Şəklin X oxu üzrə yerdəyişməsi</translation>
 <translation id="3807873520724684969">Zərərli kontent blok edildi.</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
+<translation id="3815434930383843058">8 x 12 düym</translation>
 <translation id="3816482573645936981">Dəyər (əvəz edilib)</translation>
 <translation id="3823402221513322552">Brauzeriniz <ph name="BROWSER_DOMAIN" /> tərəfindən, profiliniz isə <ph name="PROFILE_DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="382518646247711829">Əgər proksi server istifadə edirsinizsə...</translation>
@@ -1106,7 +1126,6 @@
 <translation id="3890664840433101773">E-poçt ünvanı əlavə edin</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3901925938762663762">Kartın vaxtı bitib.</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Planşet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> qorunan kontenti oxutmaq istəyir. Cihazın kimliyi Google tərəfindən doğrulanacaq və bu sayt cihaza daxil ola biləcək.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1120,6 +1139,7 @@
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
 <translation id="3949870428812919180">Yadda saxlanmış ödəniş metodu yoxdur</translation>
 <translation id="3950820424414687140">Giriş</translation>
+<translation id="3958057596965527988">4 x 4 düym</translation>
 <translation id="3961148744525529027">Ödəniş səhifəsi yarım açıqdır</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3963721102035795474">Oxu Rejimi</translation>
@@ -1163,6 +1183,7 @@
 <translation id="4087296516249690906">"Tədbir yaradın" düyməsi, Enter düyməsinə basaraq Google Calendar'da cəld yeni tədbir yaradın</translation>
 <translation id="4088981014127559358">Şəklin 1-ci tərəfinin Y oxu üzrə yerdəyişməsi</translation>
 <translation id="4089152113577680600">Qab 14</translation>
+<translation id="4096237801206588987">11 x 15 düym</translation>
 <translation id="4097288585054919042">Bildirişləri deaktiv edin</translation>
 <translation id="4098354747657067197">Qabaqda aldadıcı site</translation>
 <translation id="4099048595830172239">Administrator siyasəti məxfi kontent görünəndə ekranınızı <ph name="APPLICATION_TITLE" /> ilə paylaşmağı tövsiyə etmir:</translation>
@@ -1407,6 +1428,7 @@
 <translation id="4704732901923281920">Bioloji elmlər</translation>
 <translation id="4708268264240856090">Bağlantınız kəsildi</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
+<translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> üçün parol</translation>
 <translation id="4724144314178270921">Saytlar mübadilə buferinizdəki mətn və şəkilləri görmək üçün icazə istəyə bilər</translation>
@@ -1444,6 +1466,7 @@
 <translation id="4789704664580239421">Qiymət endirimi xəbərdarlıqları açıq tablarınızda görünəcək</translation>
 <translation id="4791134497475588553">Quraşdırılan Linux tətbiqləri və ən son istifadə edildikləri vaxtlar</translation>
 <translation id="4792686369684665359">Təqdim etmək üzrə olduğunuz məlumat güvənli deyil</translation>
+<translation id="4793219378458250238">11 x 12 düym</translation>
 <translation id="4796594887379589189">İş hesabı ID'si</translation>
 <translation id="4798078619018708837">Kart məlumatlarını yeniləmək üçün <ph name="CREDIT_CARD" /> kartının bitmə tarixini və CVC-ni daxil edin. Təsdiqlədikdən sonra Google Hesabındakı kart məlumatları bu saytda paylaşılacaq.</translation>
 <translation id="4798269756263412078">Hər hansı bir saytda qiymət enərsə, bildiriş alın Xəbərdarlıqlar e-poçtunuza göndəriləcək.</translation>
@@ -1480,6 +1503,7 @@
 <translation id="4879491255372875719">Avtomatik (defolt)</translation>
 <translation id="4880827082731008257">Axtarış tarixçəsi</translation>
 <translation id="4881695831933465202">Açın</translation>
+<translation id="4881808915112408168">24 x 31,5 düym</translation>
 <translation id="4885256590493466218">Ödəniş zamanı <ph name="CARD_DETAIL" /> ilə ödəyin</translation>
 <translation id="4887406273302438710">Parolları Windows Hello ilə qoruyun</translation>
 <translation id="4888600795924685526">Xarici dil təhsili</translation>
@@ -1508,7 +1532,6 @@
 <translation id="4950898438188848926">Keçid düyməsinə klikləyin, açıq <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> tabına keçmək üçün "Daxil olun" düyməsinə basın</translation>
 <translation id="495170559598752135">Fəaliyyətlər</translation>
 <translation id="4953689047182316270">Əlçatımlılıq Tədbirlərinə cavab vermək</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Siyahını genişləndirin</translation>
 <translation id="4964505745997821360">Sağlamlıq sığortası</translation>
 <translation id="4968522289500246572">Bu tətbiq mobil cihaz üçün nəzərdə tutulmuşdur və ölçüsü hər cihaz üçün uyğun olmaya bilər. Tətbiq problemlərlə qarşılaşa bilər və ya yenidən başladıla bilər.</translation>
@@ -1532,6 +1555,7 @@
 <translation id="5017554619425969104">Kopyalanmış mətn</translation>
 <translation id="5017828934289857214">Sonra xatırladın</translation>
 <translation id="5018422839182700155">Bu səhifəni açmaq olmur</translation>
+<translation id="5018802455907704660">16 x 20 düym</translation>
 <translation id="5019198164206649151">Yedəkləmə yaddaşı it günündədir</translation>
 <translation id="5020776957610079374">Dünya musiqisi</translation>
 <translation id="5021557570875267742">Chrome ilə qiymətləri izləyin</translation>
@@ -1573,6 +1597,7 @@
 <translation id="5109892411553231226">Ödəniş Metodlarını idarə edin</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">Qab 18</translation>
+<translation id="511431458895937675">DSC Foto</translation>
 <translation id="5114987907971894280">virtual reallıq</translation>
 <translation id="5115216390227830982">Avropa-Edp</translation>
 <translation id="5115232566827194440">Məhdud idarə olunan qonaq sessiyasının əvəzlənməsi</translation>
@@ -1634,6 +1659,7 @@
 <translation id="5254043433801397071">Çap məzmununu optimallaşdırın</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Yenə də çəkiliş edilsin</translation>
+<translation id="5255833070095767006">350 x 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administrator siyasəti bu faylı <ph name="DESTINATION_NAME" /> bölməsinə kopyalamağı tövsiyə etmir}other{Administrator siyasəti bu faylları <ph name="DESTINATION_NAME" /> bölməsinə kopyalamağı tövsiyə etmir}}</translation>
 <translation id="5266128565379329178">Yuxarıdan uclarını qovuşdurun</translation>
 <translation id="5269225904387178860">Aşağıdan dördlü deşik açın</translation>
@@ -1688,7 +1714,6 @@
 <translation id="5379027395132364855">"Təqdimat yaradın" düyməsi, Enter düyməsinə basaraq Slaydda cəld yeni Google təqdimatı yaradın</translation>
 <translation id="5385857628869214740">Yumor</translation>
 <translation id="5386426401304769735">Bu saytın sertifikat zənciri SHA-1 istifadə edərək imzalanmış sertifikatdan ibarətdir.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">Sağdan kənarını tikin</translation>
 <translation id="5398772614898833570">Reklamlar blok edildi</translation>
 <translation id="5400836586163650660">Boz</translation>
@@ -1730,6 +1755,7 @@
 <translation id="5510481203689988000">Bu ayar Kuki ayarlarında idarə edilir.</translation>
 <translation id="5510766032865166053">Köçürülmüş və ya silinmiş ola bilər.</translation>
 <translation id="5513528801833998679">Cihaz girişindən istifadə edin</translation>
+<translation id="5515388687005870733">55 x 85 mm</translation>
 <translation id="5518670652865028077">İncəsənət və əyləncə</translation>
 <translation id="5519516356611866228">Dəyişikliklərlə</translation>
 <translation id="5523118979700054094">Siyasət adı</translation>
@@ -1746,6 +1772,7 @@
 <translation id="5541086400771735334">Poçt qutusu 7</translation>
 <translation id="5541546772353173584">E-poçt Əlavə Edin</translation>
 <translation id="5545756402275714221">Sizin üçün təklif edilən məqalələr</translation>
+<translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Chrome müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="5560088892362098740">Bitmə Tarixi</translation>
@@ -1755,6 +1782,7 @@
 <translation id="5565871407246142825">Kredit kartları</translation>
 <translation id="5570825185877910964">Hesabınızı qoruyun</translation>
 <translation id="5571083550517324815">Bu ünvandan götürmək mümkün deyil. Başqa ünvan seçin.</translation>
+<translation id="5572434905385510939">22 x 28 düym</translation>
 <translation id="557886905979275351">Ülgüclər və təraş aparatları</translation>
 <translation id="5580958916614886209">Bitmə ayını yoxlayın və yenidən cəhd edin</translation>
 <translation id="558420943003240152">Parolları və şifrələri idarə edin…</translation>
@@ -1763,6 +1791,7 @@
 <translation id="5587987780934666589">Platforma istifadəçisi</translation>
 <translation id="5593349413089863479">Bağlantı tam güvənli deyil</translation>
 <translation id="5595485650161345191">Ünvana düzəliş edin</translation>
+<translation id="5596939519753369075">2 x 3,5 düym</translation>
 <translation id="5598944008576757369">Ödəniş Üsulu seçin</translation>
 <translation id="560412284261940334">İdarəetmə dəstəklənmir</translation>
 <translation id="5605670050355397069">Qeyd Kitabçası</translation>
@@ -1903,6 +1932,7 @@
 <translation id="5995727681868049093">Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
 <translation id="5997247540087773573">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri onu indi dəyişməyi və sonra yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
+<translation id="6006365096047131769">3 x 5 düym</translation>
 <translation id="6006484371116297560">Klassik</translation>
 <translation id="6008122969617370890">N-1 sırası</translation>
 <translation id="6008256403891681546">JCB</translation>
@@ -1944,6 +1974,7 @@
 <translation id="6087312102907839798">Əlaqəli axtarışlar</translation>
 <translation id="6094273045989040137">Annotasiya</translation>
 <translation id="6094290315941448991">Administrator siyasəti məxfi məzmun görünəndə ekranın yazılmasını deaktiv edir</translation>
+<translation id="6099269767116481177">22 x 29,5 düym</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Sayt yaradın</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> veb səhifəsi müvəqqəti işləməyə bilər və ya yeni veb ünvana köçürülmüş ola bilər.</translation>
@@ -1976,6 +2007,7 @@
 <translation id="6194209731893739467">Bütün izlənən məhsulları burada görə bilərsiniz</translation>
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
+<translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6203231073485539293">İnternet bağlantısını yoxlayın</translation>
 <translation id="6218753634732582820">Ünvan Chromium'dan silinsin?</translation>
 <translation id="622039917539443112">Paralel qatlayın</translation>
@@ -2060,6 +2092,7 @@
 <translation id="6427730057873428458">Qapı şəklində qatlayın</translation>
 <translation id="6428450836711225518">Telefon nömrənizi doğrulayın</translation>
 <translation id="643051589346665201">Google parolunu dəyişin</translation>
+<translation id="6431119592588449664">Hesabat yüklənib</translation>
 <translation id="6433490469411711332">Kontakt məlumatını redaktə edin</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> qoşulmaq istəmədi.</translation>
 <translation id="6433797564277305076">Bundan sonra cihazın kiliddən çıxarılmasından istifadə edərək kartlarınızı daha sürətli təsdiqləyin</translation>
@@ -2102,6 +2135,7 @@
 <translation id="6549443526281184652">Kostyumlar</translation>
 <translation id="6554732001434021288">Son ziyarət <ph name="NUM_DAYS" /> gün əvvəl olub</translation>
 <translation id="6556866813142980365">Yenidən edin</translation>
+<translation id="6557715786897013164">14 x 17 düym</translation>
 <translation id="6569060085658103619">Artırma səhifəsinə baxırsınız</translation>
 <translation id="6569366777234823130">Dram filmləri</translation>
 <translation id="6573200754375280815">Sağdan qoşa deşik açın</translation>
@@ -2131,6 +2165,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{Yoxdur}=1{1 saytdan (Google Hesabınızdan çıxmayacaqsınız)}other{ # saytdan (Google Hesabınızdan çıxmayacaqsınız)}}</translation>
 <translation id="6648459603387803038">Administrator brauzer quraşdırmasını uzaqdan dəyişə bilər. Bu cihazdakı fəaliyyət Chrome'dan kənarda da idarə edilə bilər.</translation>
 <translation id="6648524591329069940">Serif Şrifti</translation>
+<translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">İdarə edən:</translation>
 <translation id="6652101503459149953">Windows Hello işlədin</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -2198,6 +2233,7 @@
 <translation id="6828866289116430505">Genetika</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6833752742582340615">Təhlükəsiz və sürətli ödəniş üçün kartınızı və faktura məlumatınızı Google Hesabınızda saxlayın</translation>
+<translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6846340164947227603">Virtual kart nömrəsini istifadə edin:</translation>
 <translation id="6852204201400771460">Tətbiq yenidən yüklənilsin?</translation>
 <translation id="6857776781123259569">Parolları idarə edin...</translation>
@@ -2256,6 +2292,7 @@
 <translation id="6972629891077993081">HID cihazları</translation>
 <translation id="6973656660372572881">Fiskə edilmiş proksi serverlər və .pac skript URL-lər göstərilib.</translation>
 <translation id="6973932557599545801">Artıq kömək edə bilmirəm, özünüz davam edin.</translation>
+<translation id="6973988895180423160">3,5 x 5 düym</translation>
 <translation id="6978236010531171013">İstənilən halda paylaşın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
@@ -2384,7 +2421,6 @@
 <translation id="733923710415886693">Serverin sertifikatı Sertifikat Şəffaflığı vasitəsi ilə aşkarlanmayıb.</translation>
 <translation id="7341357280245177602">İkinci əl avtomobillər</translation>
 <translation id="7346048084945669753">Qoşulub:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Siz bu tabı bağlayanadək icazə verilir</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
 <translation id="7353601530677266744">Əmr sahəsi</translation>
@@ -2406,6 +2442,7 @@
 <translation id="7378627244592794276">Xeyr</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7378877318020334501">TV komediyaları</translation>
+<translation id="7380398842872229465">10 x 15 düym</translation>
 <translation id="738439098860678026">Erkən uşaqlıq təhsili</translation>
 <translation id="7386364858855961704">Tətbiq olunmur</translation>
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dəqiqə ərzində yenidən başladılacaq}other{Cihazınız # dəqiqə ərzində yenidən başladılacaq}}</translation>
@@ -2444,6 +2481,7 @@
 <translation id="7460618730930299168">Göstərilənlər seçdiklərinizdən fərqlidir. Davam edilsin?</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="7463075493919226237">Avstraliya futbolu</translation>
+<translation id="7465963048299965912">10 x 13 düym</translation>
 <translation id="7469935732330206581">Forma güvənli deyil</translation>
 <translation id="7473891865547856676">Yox</translation>
 <translation id="7481312909269577407">İrəli</translation>
@@ -2658,6 +2696,7 @@
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8009225694047762179">Parolları İdarə edin</translation>
+<translation id="8009843239480947060">10 x 11 düym</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Bu kart və faktura ünvanı yadda saxlanacaq. <ph name="USER_EMAIL" /> hesabına daxil olduqda bundan istifadə edə bilməyəcəksiniz.}other{Bu kartlar və faktura ünvanları yadda saxlanacaq. <ph name="USER_EMAIL" /> hesabına daxil olduqda bunlardan istifadə edə bilməyəcəksiniz.}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Bu saytdakı hücumçular Sizi proqram təminatı endirmək və ya şəxsi məlumatları aşkarlamaq kimi təhlükəli işləri görməyə (məsələn, parollar, telefon nömrələri və ya kredit kartları) sövq edə bilər</translation>
@@ -2694,6 +2733,7 @@
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8090403583893450254">Ölçü 20</translation>
 <translation id="8091372947890762290">Aktivləşdirmə serverdə gözlənilir</translation>
+<translation id="8092254339843485299">6 x 8 düym</translation>
 <translation id="8092774999298748321">Tünd-bənövşəyi</translation>
 <translation id="8094917007353911263">İşlətdiyiniz şəbəkə buraya girməyinizi tələb edə bilər: <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
@@ -2725,9 +2765,11 @@
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" identifikasiyalı artırma üçün güncəllənmə linki yanlışdır</translation>
 <translation id="8202097416529803614">Sifariş xülasəsi</translation>
 <translation id="8202370299023114387">Ziddiyət</translation>
+<translation id="8208363704094329105">300 x 400 mm</translation>
 <translation id="8210604850413485128">Veb hostinq</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
+<translation id="8216640997712497593">14 x 18 düym</translation>
 <translation id="8217240300496046857">Saytlar vebdə sizi izləyən kukilərdən istifadə edə bilmir. Bəzi saytlarda funksiyalar işləməyə bilər.</translation>
 <translation id="8217748145574471584">İnsan resursları</translation>
 <translation id="8218327578424803826">Ayrılmış yer:</translation>
@@ -2799,6 +2841,7 @@
 <translation id="8380941800586852976">Təhlükəli</translation>
 <translation id="8381674639488873545">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Eyni zamanda görünməyə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> mənbəyindən <ph name="VM_NAME" /> məkanına paylaşım etmək administrator siyasətinə əsasən bloklanıb</translation>
+<translation id="8396522675989118466">Bu, <ph name="SIDE_OF_CARD" /> hissəsindəki <ph name="NUMBER_OF_DIGITS" /> rəqəmli koddur</translation>
 <translation id="8398790343843005537">Telefonunuzu tapın</translation>
 <translation id="8405579342203358118">Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə edin</translation>
 <translation id="8409413588194360210">ödəniş emalçıları</translation>
@@ -2808,6 +2851,7 @@
 Əlavə məlumat:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
+<translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8428634594422941299">Anladım</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında kuki tərcihlərinizi idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
@@ -2819,11 +2863,13 @@
 <translation id="8443613539889492016">Rep və hip-hop</translation>
 <translation id="8444543005280733648">Kompüter şəbəkələri</translation>
 <translation id="8446884382197647889">Ətraflı Məlumat</translation>
+<translation id="8449155699563577224">17 x 24 düym</translation>
 <translation id="8449836157089738489">Hamısını yeni tab qrupunda açın</translation>
 <translation id="8457125768502047971">Qeyri-müəyyən</translation>
 <translation id="8461694314515752532">Sinxronizasiya parolunuz ilə sinxronizasiya edilmiş datanı şifrələyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredit kartı}other{# kredit kartı}}</translation>
 <translation id="8468358362970107653">Zərf C3</translation>
+<translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="8474910779563686872">Tərtibatçı detallarını göstərin</translation>
 <translation id="8479754468255770962">Aşağı soldan ştapel vurun</translation>
@@ -2871,9 +2917,12 @@
 <translation id="8623885649813806493">Uyğun parol yoxdur. Yadda saxlanmış bütün parolları göstərin.</translation>
 <translation id="8624354461147303341">Endirim əldə edin</translation>
 <translation id="8625384913736129811">Bu Kartı Bu Cihazda yadda saxlayın</translation>
+<translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637577059508742477">Profiliniz və brauzeriniz <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="8643409044755049933">Zərf Kaku 3</translation>
+<translation id="8647287295490773273">210 x 330 mm</translation>
 <translation id="865032292777205197">hərəkət sensorları</translation>
+<translation id="8654126188050905496">55 x 91 mm</translation>
 <translation id="8663226718884576429">Sifarişin Yekunu, <ph name="TOTAL_LABEL" />, Daha Çox Məlumat</translation>
 <translation id="8666678546361132282">Ingilis</translation>
 <translation id="867224526087042813">İmza</translation>
@@ -2905,6 +2954,7 @@
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8731544501227493793">"Parolları idarə edin" düyməsi, Chrome ayarlarında parollarınıza baxmaq və idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> cihazınız <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
+<translation id="8736059027199600831">30 x 40 düym</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq yeni Anonim pəncərə açın və gizli baxış keçirin</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="8738058698779197622">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Chromium bu sertifikatları doğrulaya bilmir.</translation>
@@ -2942,6 +2992,7 @@
 <translation id="8834380158646307944">"Anonim pəncərələri bağlayın" düyməsi, Enter düyməsinə basaraq hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="883848425547221593">Digər Əlfəcinlər</translation>
 <translation id="884264119367021077">Göndərmə ünvanı</translation>
+<translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Ləğv etmə mexanizmi tapılmadı.</translation>
 <translation id="8849262850971482943">Əlavə təhlükəsizlik üçün virtual kartınızdan istifadə edin</translation>
 <translation id="8852567725116633427">Mikro avtomobillər və subkompaktlar</translation>
@@ -3109,6 +3160,7 @@
 <translation id="969892804517981540">Rəsmi Quruluş</translation>
 <translation id="973773823069644502">Çatdırılma Ünvanı əlavə edin</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Yoxdur}=1{1 element}other{# element}}</translation>
+<translation id="976522784004777030">5 x 8 düym</translation>
 <translation id="977502174772294970">Toy mərasimləri</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="982885543310356857">Klassik avtomobillər</translation>

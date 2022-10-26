@@ -2469,6 +2469,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3241680850019875542">Piliin ang pinagmulang direktoryo ng extension sa pack. Upang mai-update ang extension, piliin rin ang file ng private na key na muling gagamitin.</translation>
 <translation id="3242289508736283383">Naka-install dapat sa kiosk mode ng ChromeOS ang app na may 'kiosk_only' na manifest attribute</translation>
 <translation id="3242665648857227438">Gumagamit ang profile na ito ng mga setting ng proxy ng ChromeOS.</translation>
+<translation id="3243017971870859287">Basahin ang mga serial number ng ChromeOS Flex device at bahagi</translation>
 <translation id="3244294424315804309">Patuloy na i-mute ang tunog</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Error sa network</translation>
 <translation id="3248902735035392926">Mahalaga ang kaligtasan. Maglaan ng ilang sandali at <ph name="BEGIN_LINK" />tingnan ang iyong mga extension ngayon<ph name="END_LINK" /></translation>
@@ -2525,6 +2526,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3297105622164376095">Pinapayagang magpakita ng mga third-party na prompt sa pag-sign in</translation>
 <translation id="3297536526040732495">Pansamantalang nili-link ang data na ito sa iyong Google Account kapag naka-sign in ka, para maprotektahan ka sa lahat ng Google app</translation>
 <translation id="329838636886466101">Ayusin</translation>
+<translation id="3298438307450647315">Basahin ang impormasyon ng device at data ng device ng ChromeOS</translation>
 <translation id="3298789223962368867">Di-wastong URL ang ipinasok.</translation>
 <translation id="32991397311664836">Mga Device:</translation>
 <translation id="33022249435934718">Mga GDI Handle</translation>
@@ -2631,6 +2633,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3402255108239926910">Pumili ng avatar</translation>
 <translation id="3402585168444815892">Ine-enroll sa Demo Mode</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Basahin ang impormasyon ng device at data ng device ng ChromeOS Flex</translation>
 <translation id="3404065873681873169">Walang naka-save na password para sa site na ito</translation>
 <translation id="3405664148539009465">I-customize ang mga font</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4043,6 +4046,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4726710355753484204">Gamitin ang Ctrl + Alt + Dagdagan ang Liwanag para mag-zoom in.
 Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4726710629007580002">Nagkaroon ng mga babala noong sinusubukang i-install ang extension na ito:</translation>
+<translation id="472738079453283624">Mga Produkto</translation>
 <translation id="4727847987444062305">Pinapamahalaang session ng bisita</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4728570203948182358">Na-off ng <ph name="BEGIN_LINK" />iyong administrator<ph name="END_LINK" /> ang pagsusuri para sa mapaminsalang software</translation>
@@ -4185,6 +4189,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="486635084936119914">Awtomatikong buksan ang ilang partikular na uri ng file pagkatapos ma-download</translation>
 <translation id="4868281708609571334">Turuan ang Google Assistant na makilala ang boses ni <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Kasalukuyang hindi naka-focus ang dialog na ito. Pindutin ang Command-Shift-Option A para i-focus ang dialog na ito.</translation>
+<translation id="4869170227080975044">Basahin ang impormasyon ng network ng ChromeOS</translation>
 <translation id="4870724079713069532">Magagawa mong magbukas at mag-edit ng mga sinusuportahang file mula sa File Explorer o iba pang app gamit ang app na ito. Para kontrolin kung aling mga file ang magbubukas sa app na ito bilang default, pumunta sa <ph name="BEGIN_LINK" />Mga setting ng Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Ilagay ang password na ibinigay ng admin para makuha ang impormasyon sa pag-configure</translation>
 <translation id="4870995365819149457">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, at 1 pang app.</translation>
@@ -4917,6 +4922,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5571066253365925590">Pinapagana ang Bluetooth</translation>
 <translation id="5571092938913434726">Mga Kontrol ng Pangkalahatang Media</translation>
 <translation id="5571832155627049070">I-customize ang iyong profile</translation>
+<translation id="5572252023412311448">Ipakita ang mga detalye ng site para sa <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Makakakuha ka ng mas magagandang suhestyon sa address bar</translation>
 <translation id="5572851009514199876">Magsimula at mag-sign in sa Chrome upang masuri ng Chrome kung pinapayagan kang i-access ang site na ito.</translation>
 <translation id="557506220935336383">Tingnan ang mga pahintulot sa extension para sa iba pang site</translation>
@@ -6108,6 +6114,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6703212423117969852">Puwede mong subukan ulit sa ibang pagkakataon sa Chrome.</translation>
 <translation id="6703254819490889819">I-restore ang backup</translation>
 <translation id="6706210727756204531">Saklaw</translation>
+<translation id="6707122714992751648">Magpatakbo ng mga diagnostic test ng ChromeOS</translation>
 <translation id="6707389671160270963">SSL Client Certificate</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> at 1 Pang Tab}one{<ph name="PAGE_TITLE" /> at # Pang Tab}other{<ph name="PAGE_TITLE" /> at # Pang Tab}}</translation>
 <translation id="6709133671862442373">Balita</translation>
@@ -6286,6 +6293,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
 <translation id="6860097299815761905">Mga setting ng proxy...</translation>
 <translation id="6860427144121307915">Buksan sa isang Tab</translation>
+<translation id="6861179941841598556">Higit pang pagkilos para sa <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Pinapayagan ang lahat ng extension</translation>
 <translation id="686366188661646310">I-delete ang password?</translation>
 <translation id="6865313869410766144">Data ng form ng autofill</translation>
@@ -6375,6 +6383,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
+<translation id="6949089178006131285">Basahin ang impormasyon ng network ng ChromeOS Flex</translation>
 <translation id="6949434160682548041">Password (opsyonal)</translation>
 <translation id="6950627417367801484">I-restore ang mga app</translation>
 <translation id="6952242901357037157">Maipapakita mo rin ang mga password mula sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> dito</translation>
@@ -7992,6 +8001,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8463001014623882202">Hindi Nabigyan ng Pahintulot</translation>
 <translation id="846374874681391779">Bar ng mga download</translation>
 <translation id="8463955938112983119">Na-disable ang <ph name="PLUGIN_NAME" />.</translation>
+<translation id="846399539692727039">Magpatakbo ng mga diagnostic test ng ChromeOS Flex</translation>
 <translation id="8464132254133862871">Hindi karapat-dapat para sa serbisyo ang user account na ito.</translation>
 <translation id="8465252176946159372">Hindi wasto</translation>
 <translation id="8465444703385715657">Kailangan ng <ph name="PLUGIN_NAME" /> ng iyong pahintulot upang tumakbo</translation>
@@ -8138,6 +8148,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8624315169751085215">Kopyahin sa Clipboard</translation>
 <translation id="8624354461147303341">Makakuha ng mga diskwento</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Basahin ang mga serial number ng ChromeOS device at bahagi</translation>
 <translation id="862542460444371744">&amp;Mga Extension</translation>
 <translation id="8625663000550647058">Hindi pinapayagang gamitin ang iyong mikropono</translation>
 <translation id="8625916342247441948">Huwag payagan ang mga site na kumonekta sa mga HID device</translation>

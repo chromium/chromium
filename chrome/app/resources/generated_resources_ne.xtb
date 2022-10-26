@@ -881,6 +881,7 @@
 <translation id="1805967612549112634">PIN पुष्टि गर्नुहोस्</translation>
 <translation id="1806335016774576568">खुला रहेको अर्को एप प्रयोग गर्नुहोस्</translation>
 <translation id="1807246157184219062">हल्का</translation>
+<translation id="1809201888580326312">तपाईंले यी साइट तथा एपहरूको पासवर्ड सेभ नगर्ने विकल्प रोज्नुभएको छ</translation>
 <translation id="1809483812148634490">तपाईंले Google Play बाट डाउनलोड गर्नुभएका एपहरू यस Chromebook बाट मेटिने छन्।
     <ph name="LINE_BREAKS1" />
     चलचित्र, टिभी सो, सङ्गीत, पुस्तक वा एप भित्र खरिद गरिएका अन्य कुराहरूलगायत तपाईंले खरिद गर्नुभएका सामग्री पनि मेटिन सक्छ।
@@ -1793,6 +1794,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> सुरक्षित रूपमा डाउनलोड गर्न सकिएन।</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="262154978979441594">Google सहायकको आवाजको मोडेललाई आफ्नो आवाज चिन्न सिकाउनुहोस्</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">कुनै पनि साइटलाई प्रोटोकलहरू ह्यान्डल गर्न अनुमति नदिनुहोस्</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">यो पृष्ठले तपाईंको क्यामेरा र माइक्रोफोनको पहुँच गरिरहेको छ।</translation>
@@ -2416,6 +2418,7 @@
 <translation id="3197453258332670132">दायाँ क्लिक गर्दा वा केही बेरसम्म थिच्दा मैले चयन गरेका पाठसँग सम्बन्धित जानकारी देखाइयोस्</translation>
 <translation id="3199127022143353223">सर्भरहरू</translation>
 <translation id="3200061262156232574">तपाईंको सपिङ कार्टमा भएका</translation>
+<translation id="3201237270673604992">Z देखि A का क्रममा</translation>
 <translation id="3201422919974259695">उपलब्ध USB यन्त्रहरू यहाँ देखिने छन्।</translation>
 <translation id="3202131003361292969">पथ</translation>
 <translation id="3202173864863109533">यस ट्याबको अडियो म्युट गरिएको छ।</translation>
@@ -3735,6 +3738,7 @@
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>
 <translation id="4462159676511157176">अनुकुल नाम सर्भरहरू</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> का हकमा <ph name="TIME" /> समय सीमा सेट गरिएको छ</translation>
+<translation id="4465649939134800363">विकल्पहरू क्रमबद्ध गर्नुहोस्</translation>
 <translation id="4466839823729730432">आफ्ना स्मरणमाहरू यहाँ हेर्नुहोस्</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा फाइल सम्पादन गर्न सक्ने छ</translation>
@@ -4940,6 +4944,7 @@
 <translation id="5612734644261457353">माफ गर्नुहोस्, तपाइँको पासवर्ड अझै पनि रुजू गर्न सकिएन। नोट: यदि तपाइँले हालै तपाइँको पासवर्ड परिवर्तन गर्नुभएको छ भने, तपाइँले साइन आउट गरे पछि तपाइँको नयाँ पासवर्ड लागू हुनेछ, कृपया पुरानो पासवर्ड यहाँ प्रयोग गर्नुहोस्।</translation>
 <translation id="5614190747811328134">प्रयोगकर्त सूचना</translation>
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
+<translation id="5616571005307953937">सबैभन्दा पुरानो</translation>
 <translation id="5616726534702877126">आकार रिजर्भ गर्नुहोस्</translation>
 <translation id="561698261642843490">Firefox बन्द गर्नुहोस्</translation>
 <translation id="5620540760831960151"><ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5570,6 +5575,7 @@
 <translation id="6212168817037875041">प्रदर्शन निष्क्रिय पार्नुहोस्</translation>
 <translation id="6212752530110374741">लिंक भएको इमेल पठाउनुहोस्</translation>
 <translation id="621470880408090483">साइटहरूलाई ब्लुटुथ चल्ने यन्त्रमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>
+<translation id="6216239400972191926">ब्लक गरिएका साइट तथा एपहरू</translation>
 <translation id="6216601812881225442">तपाईंको कन्टेनरको आकार बदल्न मिल्दैन। Linux लाई पहिले नै छुट्याइएको खाली ठाउँ थपघट गर्न ब्याक अप गर्नुहोस् र त्यसपछि उक्त ब्याकअपलाई नयाँ कन्टेनरमा रिस्टोर गर्नुहोस्।</translation>
 <translation id="6216696360484424239">स्वतः साइन इन गर्नुहोस्</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> अफलाइन छ। इन्टरनेटमा जडान गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -5656,6 +5662,7 @@
 <translation id="6295855836753816081">सुरक्षित गर्दै...</translation>
 <translation id="629730747756840877">खाता</translation>
 <translation id="6298962879096096191">Android का अनुप्रयोगहरूको स्थापना गर्न Google Play को प्रयोग गर्नुहोस्</translation>
+<translation id="6300125580697461004">इनर्जी सेभर मोडका बारेमा प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="6300177430812514606">डेटा पठाउने वा प्राप्त गर्ने कार्य पूरा गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="630065524203833229">बा&amp;हिर निस्कनुहोस्</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> स्वतः कन्फिगर गर्न सकिएन। कृपया प्रिन्टरका उन्नत विवरणहरू तोक्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -5856,6 +5863,7 @@
 <translation id="6494327278868541139">परिष्कृत सुरक्षासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकारी होइन</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{यो डेटामा संवेदनशील वा खतरनाक सामग्री छ}=1{यो फाइलमा संवेदनशील वा खतरनाक सामग्री छ}other{यी फाइलहरूमा संवेदनशील वा खतरनाक सामग्री छ}}</translation>
+<translation id="6497548114956205206">इनर्जी सेभर मोडका बारेमा थप जान्नुहोस्</translation>
 <translation id="6497784818439587832">स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो बनाउन डिस्प्लेको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="6497789971060331894">माउस विपरीत दिशामा स्क्रोल गर्ने कार्य</translation>
 <translation id="6498249116389603658">&amp;तपाईँका सबै भाषाहरू</translation>
@@ -6238,6 +6246,7 @@
 <translation id="6843264316370513305">नेटवर्कको डिबग प्रक्रिया</translation>
 <translation id="6843423766595476978">Ok Google नामक सेवा पूर्ण रूपमा तयार छ</translation>
 <translation id="6845038076637626672">ठूलि बनाइएकोलाई खोल्नुहोस्</translation>
+<translation id="6845231585063669905">A देखि Z का क्रममा</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" <ph name="PRINTER_NAME" /> प्रयोग गरी <ph name="FILE_NAME" /> प्रिन्ट गर्न चाहन्छ।</translation>
 <translation id="6847125920277401289">जारी राख्न ठाउँ खाली गर्नुहोस्</translation>
 <translation id="6848388270925200958">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने केही कार्डहरू छन्</translation>
@@ -7390,6 +7399,7 @@
 <translation id="7939073735115504773"><ph name="HOST" /> रिड गर्न तथा बदल्न यो एक्स्टेन्सनको आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="7939328347457537652">डिभाइसका प्रमाणपत्रहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7939412583708276221">जसो भएता पनि राख्नुहोस्</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> का आधारमा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="7941179291434537290">टेदरिङको उपलब्धता:</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7943368935008348579">PDF फाइलहरू डाउनलोड गरियोस्</translation>
@@ -7414,6 +7424,7 @@
 <translation id="7955177647836564772">Smart Lock अन छ र तपाईंको फोन अनलक गरिएको छ भने तपाईंले कुनै पनि पासवर्ड वा PIN हालिराख्नु पर्दैन</translation>
 <translation id="7956373551960864128">तपाईंले सुरक्षित गर्नुभएका प्रिन्टरहरू</translation>
 <translation id="7957074856830851026">क्रम सङ्ख्या वा एसेट ID जस्ता यन्त्रसम्बन्धी जानकारी हेर्नुहोस्</translation>
+<translation id="7957186326898555886">मेमोरी सेभर मोडका बारेमा प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="7959074893852789871">त्यस फाइलमा धेरै प्रमाणपत्रहरू सम्मिलित थिए:</translation>
 <translation id="7959665254555683862">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
@@ -7834,6 +7845,7 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{हालसालै थुप्रै सूचनाहरू पठाएको <ph name="BEGIN_BOLD" />१ साइट<ph name="END_BOLD" /> को समीक्षा गर्नुहोस्}other{हालसालै थुप्रै सूचनाहरू पठाएका <ph name="BEGIN_BOLD" />{NUM_SITES} वटा साइट<ph name="END_BOLD" /> को समीक्षा गर्नुहोस्}}</translation>
 <translation id="8342221978608739536">हेरेकै छुइनँ</translation>
+<translation id="8342399870062010251">मेमोरी सेभर मोडका बारेमा थप जान्नुहोस्</translation>
 <translation id="8342861492835240085">सङ्ग्रह चयन गर्नुहोस्</translation>
 <translation id="8345848587667658367">तपाईं अब आफ्नो फोनका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्न सक्नुहुन्छ</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
@@ -8042,6 +8054,7 @@
 <translation id="8549316893834449916">तपाईंले आफ्नो Chromebook मा साइन इन गर्न आफूले Gmail, Drive, YouTube तथा अन्य एपहरूमा प्रयोग गरेकै Google खाता प्रयोग गर्नु पर्ने हुन्छ।</translation>
 <translation id="8551388862522347954">लाइसेन्सहरू</translation>
 <translation id="8551588720239073785">मिति र समयसम्बन्धी सेटिङ</translation>
+<translation id="8552102814346875916">"यी साइटहरू सधैँ सक्रिय राखियोस्" नामक सूचीमा सेभ गर्नुहोस्</translation>
 <translation id="8553342806078037065">अन्य व्यक्तिहरूलाई व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8554899698005018844">कुनै पनि भाषा छैन</translation>
 <translation id="855604308879080518">Android एपहरूलाई यो Chromebook मा भएका USB डिभाइसहरू प्रयोग गर्न दिनुहोस्। तपाईंले हरेक पटक कुनै USB डिभाइस छिराउँदा तपाईंसँग अनुमति मागिने छ। प्रत्येक Android एपहरूले अतिरिक्त अनुमति माग्ने छन्।</translation>

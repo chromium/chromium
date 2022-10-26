@@ -327,6 +327,7 @@
 <translation id="309749186376891736">Перемещение курсора</translation>
 <translation id="3103579948980282461">Умеренный фиолетово-красный</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
+<translation id="3105857328626674463">выделить предыдущее слово</translation>
 <translation id="3109724472072898302">Свернуто</translation>
 <translation id="311015743332597320">Проведите четырьмя пальцами вправо</translation>
 <translation id="3112457281078985179">Чтобы включить или отключить ChromeVox, нажмите CTRL + ALT + Z.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">Перейти к предыдущей открытой ссылке</translation>
 <translation id="3241638166094654466">Ячеек в каждой строке:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">переместить курсор в конец</translation>
 <translation id="3260949043575829030">Предыдущий похожий объект</translation>
 <translation id="3270069636408109001">Следующей таблицы нет</translation>
 <translation id="3273791280096244679">Сохранить метку</translation>
@@ -946,6 +948,7 @@
 <translation id="743783356331413498">Пример</translation>
 <translation id="7439060726180460871">Каталог</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">выделить следующее слово</translation>
 <translation id="7465123027577412805">Использовать естественный голос?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Перейти к следующему разделу, например к панели состояния или запуска.</translation>

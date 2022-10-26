@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
 <translation id="649877868557234318">Извлечение <ph name="FILE_NAME" /> в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="6499681088828539489">Не использовать прокси-серверы для общих сетей</translation>
+<translation id="6503285896705205014">Администратор запретил копировать файлы (<ph name="COUNT" />).</translation>
 <translation id="6509122719576673235">Норвежский</translation>
 <translation id="6528513914570774834">Предоставить другим пользователям устройства доступ к этой сети</translation>
 <translation id="653019979737152879">Синхронизация файла "<ph name="FILE_NAME" />"…</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Этот тип файла не поддерживается. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
 <translation id="7359359531237882347">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="7375951387215729722">Данные в столбце "<ph name="COLUMN_NAME" />" отсортированы по убыванию.</translation>
+<translation id="7377161162143020057">Администратор запретил копировать этот файл.</translation>
 <translation id="7402503521691663770">Устройства с Chrome OS Flex</translation>
 <translation id="7408870451288633753">Чешский</translation>
 <translation id="7417453074306512035">Эфиопская раскладка</translation>

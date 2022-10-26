@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Aseta Chrome oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="1504372625950710826">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
 <translation id="1511320244449497906">Olet kirjautunut sisään ja dataasi synkronoidaan <ph name="DOMAIN" />-osoitteen hallinnoimalle tilille. Sen järjestelmänvalvoja voi nyt asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen käyttäytymistä.</translation>
+<translation id="1554731936187952550">Käytössäsi on Chromen vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="1682483655351012182">Chrome-datan synkronointi</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Tämä tili ja kaikki tallentamaton data poistetaan Chromesta ja muista Google-sovelluksista tällä laitteella.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome säästää aikaasi tuomalla tilisi verkkoon. Voit lisätä tai poistaa tilejä asetuksissa.</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3345341804167540816">Käytä Chromea missä tahansa</translation>
+<translation id="3503014945441706099">Lisää Parannettu selaussuoja myös tälle Chrome-profiilille</translation>
 <translation id="3522659714780527202">Laita synkronointi päälle, niin voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="3533694711092285624">Ei tallennettuja salasanoja. Chrome voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="3641179212828090796">Kirjaudu nopeammin sisään Chromeen tallentamallasi salasanalla</translation>
@@ -135,6 +137,7 @@ Huomioitavaa:
 <ph name="BEGIN_INDENT" />  • Chromen käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun
   • Chromen kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja
   • Jos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Tällä Chrome-profiililla on perustason suojaus</translation>
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>
 <translation id="9122931302567044771">Tämä tarkoittaa, että Chrome pyytää aina tietokonesivustoa.</translation>
 </translationbundle>

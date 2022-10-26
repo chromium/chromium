@@ -651,6 +651,7 @@
 <translation id="6495925982925244349">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Rheolir gan eich Gweinyddwr, Manylion</translation>
 <translation id="649877868557234318">Yn echdynnu <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Gwrthod dirprwy weinyddion ar gyfer rhwydweithiau cyffredin</translation>
+<translation id="6503285896705205014">Mae copïo <ph name="COUNT" /> ffeil wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="6509122719576673235">Norwyeg</translation>
 <translation id="6528513914570774834">Caniatáu i ddefnyddwyr eraill y ddyfais hon ddefnyddio'r rhwydwaith hwn</translation>
 <translation id="653019979737152879">Wrthi'n cysoni <ph name="FILE_NAME" />...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">Ni chefnogir y math hwn o ffeil. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /> am agor ffeiliau ar ChromeOS.</translation>
 <translation id="7359359531237882347">Wrthi'n copïo <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="7375951387215729722">Mae rhestr ffeiliau wedi'i threfnu yn ôl <ph name="COLUMN_NAME" /> mewn trefn ddisgynnol.</translation>
+<translation id="7377161162143020057">Mae copïo'r ffeil hon wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="7402503521691663770">Dyfeisiau ChromeOS Flex</translation>
 <translation id="7408870451288633753">Tsieceg</translation>
 <translation id="7417453074306512035">Bysellfwrdd Ethiopeg</translation>

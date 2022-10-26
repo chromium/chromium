@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">шпански</translation>
 <translation id="5438282218546237410">Нема резултата за термин <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Неважећа лозинка</translation>
+<translation id="5459064203055649751">Фајл <ph name="FILENAME" /> већ постоји. Желите ли да га замените оним који премештате?</translation>
 <translation id="5463231940765244860">Унеси</translation>
 <translation id="5469868506864199649">италијански</translation>
 <translation id="5473333559083690127">Поново унесите нови PIN</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, управља администратор, детаљи</translation>
 <translation id="649877868557234318">Издваја се <ph name="FILE_NAME" /> у <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Онемогућавање проксија за дељене мреже</translation>
+<translation id="6503285896705205014">Смернице администратора блокирају копирање фајлова (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволите другим корисницима овог уређаја да користе ову мрежу</translation>
 <translation id="653019979737152879">Синхронизује се <ph name="FILE_NAME" />...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Овај тип фајла није подржан. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="7359359531237882347">Копирају се ставке (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Листа датотека је сортирана по опадајућем редоследу по критеријуму <ph name="COLUMN_NAME" />.</translation>
+<translation id="7377161162143020057">Смернице администратора блокирају копирање овог фајла</translation>
 <translation id="7402503521691663770">Chrome OS Flex уређаји</translation>
 <translation id="7408870451288633753">чешки</translation>
 <translation id="7417453074306512035">Етиопљанска тастатура</translation>

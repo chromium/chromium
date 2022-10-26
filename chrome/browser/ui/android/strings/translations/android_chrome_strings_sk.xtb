@@ -235,7 +235,6 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="2276231040576210443">Položky, ktoré chcete synchronizovať, môžete kedykoľvek vybrať v <ph name="BEGIN_LINK1" />nastaveniach<ph name="END_LINK1" />. Google môže prispôsobiť Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="2276696007612801991">Ak si chcete skontrolovať heslá, prihláste sa do svojho účtu Google</translation>
 <translation id="2278052315791335171">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Chcete otvoriť aplikáciu <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Fakturačná adresa</translation>
 <translation id="228704530595896923">Zoznam možností zdieľania.</translation>
 <translation id="230115972905494466">Nenašli sa žiadne kompatibilné zariadenia</translation>
@@ -947,7 +946,6 @@ Skúšobné obdobia technológií Privacy Sandbox sú stále v aktívnom vývoj
 <translation id="6192907950379606605">Získať popisy obrázkov</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196315980958524839">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
-<translation id="620197886010707372">Chcete otvoriť aplikáciu pre aplikáciu <ph name="APPNAME" /> pomocou služby Google Play?</translation>
 <translation id="6202812185118613467">Ak chcete spustiť synchronizáciu, znova sa prihláste</translation>
 <translation id="6210748933810148297">Nie som <ph name="EMAIL" /></translation>
 <translation id="6211386937064921208">Je zobrazená ukážka tejto stránky</translation>

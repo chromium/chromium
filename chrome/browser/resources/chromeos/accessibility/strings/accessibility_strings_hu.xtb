@@ -327,6 +327,7 @@
 <translation id="309749186376891736">Kurzor mozgatása</translation>
 <translation id="3103579948980282461">Közepes lilásvörös</translation>
 <translation id="3104705064753753826">riaszt pnl</translation>
+<translation id="3105857328626674463">az előző szó kiemelése</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
 <translation id="311015743332597320">Csúsztasson négy ujjal jobbra</translation>
 <translation id="3112457281078985179">A ChromeVox be- vagy kikapcsolásához használja a Control + Alt + Z billentyűparancsot.</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">Előző felkeresett link</translation>
 <translation id="3241638166094654466">Az egyes sorokban található cellák száma:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">áthelyezés a végére</translation>
 <translation id="3260949043575829030">Előző hasonló elem</translation>
 <translation id="3270069636408109001">Nincs következő táblázat</translation>
 <translation id="3273791280096244679">Címke mentése</translation>
@@ -946,6 +948,7 @@
 <translation id="743783356331413498">Példa</translation>
 <translation id="7439060726180460871">Címtár</translation>
 <translation id="744163271241493234">jelszóbevitel</translation>
+<translation id="7443479558101073378">a következő szó kiemelése</translation>
 <translation id="7465123027577412805">Természetes hangot használ?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Ugrás a következő szakaszra. A példákban szerepel az Állapotsor és az Indító.</translation>

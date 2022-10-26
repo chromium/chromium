@@ -651,6 +651,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara ateratzen</translation>
 <translation id="6499681088828539489">Ez baimendu proxyak sare partekatuetan</translation>
+<translation id="6503285896705205014">Administratzailearen gidalerroek ez dute uzten <ph name="COUNT" /> fitxategi kopiatzen</translation>
 <translation id="6509122719576673235">Norvegiarra</translation>
 <translation id="6528513914570774834">Baimendu sare hau erabiltzea gailu hau darabiltenei</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> sinkronizatzen…</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">Fitxategi mota hau ez da bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatzen…</translation>
 <translation id="7375951387215729722">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, beherantz ordenatuta.</translation>
+<translation id="7377161162143020057">Administratzailearen gidalerroek ez dute uzten fitxategia kopiatzen</translation>
 <translation id="7402503521691663770">ChromeOS Flex-eko gailuak</translation>
 <translation id="7408870451288633753">Txekiarra</translation>
 <translation id="7417453074306512035">Teklatu etiopiarra</translation>

@@ -235,7 +235,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2276231040576210443">Sempre pots anar a la <ph name="BEGIN_LINK1" />configuració<ph name="END_LINK1" /> per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="2276696007612801991">Inicia la sessió al teu Compte de Google per comprovar les contrasenyes</translation>
 <translation id="2278052315791335171">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="SITE" /></translation>
-<translation id="2279146068164892489">Vols obrir l'aplicació per a <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Adreça de facturació</translation>
 <translation id="228704530595896923">Llista d'opcions de compartició.</translation>
 <translation id="230115972905494466">No s'ha trobat cap dispositiu compatible</translation>
@@ -947,7 +946,6 @@ Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan dispon
 <translation id="6192907950379606605">Obtén descripcions d'imatges</translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6196315980958524839">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu</translation>
-<translation id="620197886010707372">Vols obrir l'aplicació per a <ph name="APPNAME" /> amb Google Play?</translation>
 <translation id="6202812185118613467">Torna a iniciar la sessió per començar la sincronització</translation>
 <translation id="6210748933810148297">No ets <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Es previsualitza aquesta pàgina</translation>

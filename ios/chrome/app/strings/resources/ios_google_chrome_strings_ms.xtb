@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Tetapkan Chrome sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="1511320244449497906">Anda telah log masuk dan menyegerakkan data anda dengan akaun yang diurus oleh <ph name="DOMAIN" />. Kini pentadbirnya boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chrome.</translation>
+<translation id="1554731936187952550">Anda mempunyai keselamatan terkuat Chrome terhadap laman web berbahaya</translation>
 <translation id="1682483655351012182">Segerakkan Data Chrome Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chrome dan apl Google yang lain pada peranti ini.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome menjimatkan masa anda dengan membawa akaun anda ke web. Anda boleh menambahkan atau mengalih keluar akaun dalam Tetapan.</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3345341804167540816">Gunakan Chrome Everywhere</translation>
+<translation id="3503014945441706099">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chrome ini</translation>
 <translation id="3522659714780527202">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chrome, hidupkan penyegerakan</translation>
 <translation id="3533694711092285624">Tiada kata laluan yang disimpan. Chrome boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="3641179212828090796">Gunakan kata laluan yang anda simpan dalam Chrome untuk log masuk dengan lebih pantas</translation>
@@ -137,6 +139,7 @@ Perkara yang perlu dipertimbangkan:
   • Jika Chrome ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
 
   • Jika anda menghidupkan penyegerakan, metrik juga mungkin merangkumi maklumat tentang URL yang anda lawati.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Anda mendapat perlindungan keselamatan standard untuk profil Chrome ini</translation>
 <translation id="9112744793181547300">Tetapkan Chrome sebagai Penyemak Imbas Lalai?</translation>
 <translation id="9122931302567044771">Ini bermakna Chrome akan meminta laman desktop setiap masa.</translation>
 </translationbundle>

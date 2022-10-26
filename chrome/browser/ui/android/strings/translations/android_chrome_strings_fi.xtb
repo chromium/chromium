@@ -235,7 +235,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2276231040576210443">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK1" />asetuksista<ph name="END_LINK1" />. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="2276696007612801991">Kirjaudu Google-tilillesi tarkistaaksesi salasanasi</translation>
 <translation id="2278052315791335171">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta</translation>
-<translation id="2279146068164892489">Avataanko <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Laskutusosoite</translation>
 <translation id="228704530595896923">Jakamisvaihtoehtojen lista.</translation>
 <translation id="230115972905494466">Yhteensopivia laitteita ei löytynyt.</translation>
@@ -947,7 +946,6 @@ Privacy Sandbox ‑kokeiluja kehitetään yhä aktiivisesti, ja ne ovat saatavil
 <translation id="6192907950379606605">Muodosta kuvaselitykset</translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6196315980958524839">Salasanat tallennetaan Google Salasanoihin tällä laitteella</translation>
-<translation id="620197886010707372">Avataanko <ph name="APPNAME" /> Google Playlla?</translation>
 <translation id="6202812185118613467">Kirjaudu takaisin sisään, jotta voit aloittaa synkronoinnin</translation>
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>

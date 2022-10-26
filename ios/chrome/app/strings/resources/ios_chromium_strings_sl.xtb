@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Podatki iz sinhronizacije za Chromium</translation>
 <translation id="1722370509450468186">Geslo bo shranjeno v računu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Podatki Chromiuma so izbrisani</translation>
+<translation id="177102542580335555">V tem profilu za Chromium uporabljate standardno varnostno zaščito.</translation>
 <translation id="1838412507805038478">Chromium je preveril, ali je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="1843424232666537147">Chromium ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Prijavite se, če želite čim bolje izkoristiti Chromium.</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
+<translation id="4633738821577273991">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromiumu.</translation>
 <translation id="4654936625574199632">Zaradi izboljšanja aplikacije Chromium Googlu pošlje poročila o uporabi in zrušitvah. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Vklopite optični bralnik Chromium</translation>
 <translation id="4736424910885271643">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromiumu izbrisani iz te naprave.</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Ali želite izbrisati podatke v Chromiumu iz te naprave?</translation>
 <translation id="8240981428553046115">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="8308172444429103994">Nasvet za Chromium. Hitreje se prijavite tako, da na vrhu tipkovnice izberete shranjeno geslo.</translation>
+<translation id="8409374867500149834">Uporabljate Chromiumovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
 <translation id="858114650497379505">Gesla, ki ste jih shranili v upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="865600487977764604">Skrbi za vašo varnost v Chromiumu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>

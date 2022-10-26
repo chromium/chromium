@@ -651,6 +651,7 @@
 <translation id="6495925982925244349">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਵੇਰਵੇ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ਨੂੰ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਐਕਸਟਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6499681088828539489">ਸਾਂਝੇ ਕੀਤੇ ਨੈੱਟਵਰਕਾਂ ਲਈ ਪ੍ਰੌਕਸੀਆਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਨਾ ਦਿਓ</translation>
+<translation id="6503285896705205014">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ <ph name="COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਾਪੀ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6509122719576673235">ਨਾਰਵੇਜੀਅਨ</translation>
 <translation id="6528513914570774834">ਇਸ ਡੀਵਾਈਸ ਦੇ ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਇਸ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ਨੂੰ ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">ਇਹ ਫ਼ਾਈਲ ਦੀ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ChromeOS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ਮੁਤਾਬਕ ਘੱਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤੀ ਫ਼ਾਈਲ ਸੂਚੀ।</translation>
+<translation id="7377161162143020057">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="7402503521691663770">ChromeOS Flex ਡੀਵਾਈਸ</translation>
 <translation id="7408870451288633753">ਚੈੱਕ</translation>
 <translation id="7417453074306512035">ਐਥੀਓਪਿਕ ਕੀ-ਬੋਰਡ</translation>

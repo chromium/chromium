@@ -894,6 +894,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1805967612549112634">Qinisekisa i-PIN</translation>
 <translation id="1806335016774576568">Shintshela kolunye uhlelo lokusebenza oluvuliwe</translation>
 <translation id="1807246157184219062">Okukhanyayo</translation>
+<translation id="1809201888580326312">Ukhethe ukulondoloza amaphasiwedi alawa masayithi nama-app</translation>
 <translation id="1809483812148634490">Izinhlelo zokusebenza ozilande ku-Google Play zizosuswa kusuka kule Chromebook.
     <ph name="LINE_BREAKS1" />
     Okuqukethwe okuthengile okufana nama-movie, izinhlelo ze-TV, umculo, amabhuku, noma okunye ukuthenga ngaphakathi nohlelo nakho kungasuswa.
@@ -1812,6 +1813,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2620215283731032047"><ph name="FILE_NAME" />ayikwazi ukulandwa ngokuvikelekile.</translation>
 <translation id="2620436844016719705">Isistimu</translation>
 <translation id="262154978979441594">Qeqesha Umsizi we-Google ngemodeli yezwi</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Ungavumeli noma yiliphi isayithi ukuthi liphathe amaphrothokholi</translation>
 <translation id="262373406453641243">I-Colemak</translation>
 <translation id="2624142942574147739">Leli khasi lifinyelela kukhamela yakho nemakrofoni.</translation>
@@ -4961,6 +4963,7 @@ Ungabela amaswishi amaningi kulesi senzo.</translation>
 <translation id="5612734644261457353">Uxolo, iphasiwedi yakho namanje ayikwazanga ukuqinisekiswa. Yazi: Uma uguqule iphasiwedi kamuva nje, iphasiwedi yakho entsha izosetshenziswa ngemuva kokuthi uphume ngemvume, sicela usebenzise iphasiwedi endala lapha.</translation>
 <translation id="5614190747811328134">Isaziso somsebenzisi</translation>
 <translation id="5614553682702429503">Londoloza iphasiwedi?</translation>
+<translation id="5616571005307953937">Okudala kunakho konke</translation>
 <translation id="5616726534702877126">Gcina usayizi</translation>
 <translation id="561698261642843490">Vala i-Firefox</translation>
 <translation id="5620540760831960151">Lolu hlu luthonywa i-<ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5593,6 +5596,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6212168817037875041">Vala isiboniso</translation>
 <translation id="6212752530110374741">Thumela nge-imeyili isixhumanisi</translation>
 <translation id="621470880408090483">Ungavumeli amasayithi ukuba axhume kumadivayisi we-Bluetooth</translation>
+<translation id="6216239400972191926">Yenqaba amasayithi nama-app</translation>
 <translation id="6216601812881225442">Isiqukathi sakho asikusekeli ukushintshwa usayizi. Ukuze ulungise inani lezikhala ezabelwa kusengaphambili ku-Linux, yenza ikhophi yasenqolobaneni bese ukubuyisela kusiqukathi esisha.</translation>
 <translation id="6216696360484424239">Ngena ngemvume ngokuzenzakalelayo</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ayixhumekile ku-inthanethi. Xhuma ku-inthanethi bese uyazama futhi.</translation>
@@ -5880,7 +5884,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="6494327278868541139">Bonisa imininingwane yokuvikeleka okuthuthukisiwe</translation>
 <translation id="6494445798847293442">Akulona Igunya Lokuqinisekisa</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Le datha inokuqukethwe okuzwelayo noma okuyingozi}=1{Leli fayela linokuqukethwe okuzwelayo noma okuyingozi}one{Lawa mafayela anokuqukethwe okuzwelayo noma okuyingozi}other{Lawa mafayela anokuqukethwe okuzwelayo noma okuyingozi}}</translation>
-<translation id="6497548114956205206">Buyekeza ekusetshenzisweni komkhawulokudonsa olungisiwe</translation>
+<translation id="6497548114956205206">Funda kabanzi mayelana nesilondolozi samandla</translation>
 <translation id="6497784818439587832">Shintsha usayizi wokubonisa ukuze wenze izinto esikrinini sakho zibe zincane noma zibe zinkulu</translation>
 <translation id="6497789971060331894">Ukuskrola ngokuphendukezela igundane</translation>
 <translation id="6498249116389603658">&amp;Zonke izilimi zakho</translation>

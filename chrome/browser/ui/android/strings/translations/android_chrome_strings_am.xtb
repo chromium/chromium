@@ -235,7 +235,6 @@
 <translation id="2276231040576210443">በማንኛውም ጊዜ ምን እንደሚያሰምሩ በ<ph name="BEGIN_LINK1" />ቅንብሮች<ph name="END_LINK1" /> ውስጥ መምረጥ ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመስረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ያላብሳል።</translation>
 <translation id="2276696007612801991">የይለፍ ቃላትዎን ለመፈተሽ ወደ Google መለያዎ ይግቡ</translation>
 <translation id="2278052315791335171">ይህን የይለፍ ቃል መሰረዝ <ph name="SITE" /> ላይ መለያዎን አይሰርዘውም</translation>
-<translation id="2279146068164892489">የ<ph name="APPNAME" /> መተግበሪያ ይከፈት?</translation>
 <translation id="2286841657746966508">የመላኪያ አድራሻ</translation>
 <translation id="228704530595896923">የማጋሪያ አማራጮች ዝርዝር።</translation>
 <translation id="230115972905494466">ምንም ተኳሃኝ መሣሪያዎች አልተገኙም</translation>
@@ -947,7 +946,6 @@
 <translation id="6192907950379606605">የምስል መግለጫዎችን ያግኙ</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6196315980958524839">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ባለው የGoogle የይለፍ ቃል አስተዳዳሪ ላይ ነው</translation>
-<translation id="620197886010707372">የ<ph name="APPNAME" /> መተግበሪያ በGoogle Play ይከፈት?</translation>
 <translation id="6202812185118613467">ስምረትን ለማስጀመር መልሰው በመለያ ይግቡ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> አይደለም?</translation>
 <translation id="6211386937064921208">ይህን ገጽ በቅድመ-ዕይታ በማሳየት ላይ</translation>
@@ -1377,6 +1375,7 @@
 <translation id="8387617938027387193">እርስዎን መሆንዎን ያረጋግጡ</translation>
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8394720698884623075">በChrome ላይ የተከማቹ ድህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል</translation>
+<translation id="8402673309244746971">ወደ በመከተል ላይ ሂድ</translation>
 <translation id="8410695015584479363">ዋጋዎችን ተከታተል</translation>
 <translation id="8413126021676339697">ሙሉ ታሪክ አሳይ</translation>
 <translation id="8414396119627470038">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> በመለያ ይግቡ</translation>

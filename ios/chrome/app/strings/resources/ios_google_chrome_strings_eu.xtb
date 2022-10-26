@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Ezarri Chrome arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="1511320244449497906">Saioa hasita daukazu, eta <ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin sinkronizatzen dituzu datuak. Orain, kontu horretarako erabiltzaile-gidalerro zehatzak ezar ditzake domeinu horren administratzaileak, eta gidalerro horiek Chrome-ren portaera alda dezakete.</translation>
+<translation id="1554731936187952550">Chrome-ren segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="1682483655351012182">Sinkronizatu Chrome-ko datuak</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik eta gailuko Google-ren beste aplikazio batzuetatik.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome-rekin denbora aurrezten duzu kontuak sarera eramanda. Kontuak gehi edo ken ditzakezu Ezarpenak atalean.</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3345341804167540816">Erabili Chrome edonon</translation>
+<translation id="3503014945441706099">Lortu Arakatze seguru hobetua Chrome-ko profil honetan ere</translation>
 <translation id="3522659714780527202">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, aktibatu sinkronizazioa</translation>
 <translation id="3533694711092285624">Ez dago pasahitzik gordeta. Chrome-k pasahitzak egiazta ditzake gorde ondoren.</translation>
 <translation id="3641179212828090796">Erabili Chrome-n gordeta daukazun pasahitza saioa bizkorrago hasteko</translation>
@@ -135,6 +137,7 @@ Kontuan hartu beharrekoak:
 <ph name="BEGIN_INDENT" />  • Chrome-ren erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
   • Chrome-k huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
   • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Babes estandarra darabilzu Chrome-ko profil honetan</translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>
 <translation id="9122931302567044771">Ondorioz, Chrome-k beti eskatuko du ordenagailuetarako webgunea.</translation>
 </translationbundle>

@@ -117,8 +117,10 @@
 <translation id="1815941218935345331">ಪಾಸ್‌ಕೋಡ್</translation>
 <translation id="1820259098641718022">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="1832848789136765277">ನಿಮ್ಮ ಸಿಂಕ್ ಡೇಟಾವನ್ನು ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಲು, ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
+<translation id="1857751338515529195">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="1870148520156231997">ಪಾಸ್‌ವರ್ಡ್‌ ತೋರಿಸಿ</translation>
 <translation id="1872096359983322073">ಟಾರ್ಚ್</translation>
+<translation id="1891796056033961979">ಉಳಿಸಲಾದ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳು ಈ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
 <translation id="1911619930368729126">Google ಡ್ರೈವ್‌ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="1923342640370224680">ಕೊನೆಯ ಗಂಟೆ</translation>
 <translation id="1930989359703290198">ಕೆಲವು ಖಾತೆಗಳ ಮೂಲಕ ಮಾತ್ರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿ ನೀಡುತ್ತದೆ. ಅನುಮತಿಸದ ಖಾತೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@
 <translation id="2139867232736819575">ನೀವು ನಕಲಿಸಿದ ಪಠ್ಯವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="214201757571129614">ಸೈನ್ ಇನ್…</translation>
 <translation id="2149973817440762519">ಬುಕ್‌ಮಾರ್ಕ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="2150175299852799498">ಮೊಬೈಲ್‌ಗಾಗಿ Chrome</translation>
 <translation id="2155145621546387786">Chrome ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
 <translation id="2178545675770638239">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -225,6 +228,7 @@
 <translation id="2783054063075604403">ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="2786701870377699570">ಸಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಾದ್ಯಂತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="2800683595868705743">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ತ್ಯಜಿಸಿ</translation>
+<translation id="2812727400746650635">ಹಿಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="2815198996063984598">2. ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2820289420301699633">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು Chrome ಮೇಲೆ ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದಿದ್ದಾರೆ ಮತ್ತು ಅದರ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು</translation>
 <translation id="2830972654601096923">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
@@ -327,6 +331,7 @@
 <translation id="3533202363250687977">ಎಲ್ಲಾ ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="3533436815740441613">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="3551320343578183772">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="3575234738189584619">Lens ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3581564640715911333">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="3588820906588687999">ಚಿತ್ರವನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3595252146048399851">ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಯಾವಾಗ ಬೇಕಾದರೂ ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು. Google, ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ, Search ಮತ್ತು ಇತರ ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಬಹುದು.</translation>
@@ -448,6 +453,7 @@
 <translation id="4630540211544979320">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
+<translation id="4649294145748405669">Chrome ವೇಗವಾಗಿದೆ, ಸುರಕ್ಷಿತವಾಗಿದೆ, ನಿಮ್ಮದಾಗಿದೆ. ಇಲ್ಲಿ ಅದನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4659126640776004816">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ವೈಶಿಷ್ಟ್ಯವು ಆನ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="4659667755519643272">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ನಮೂದಿಸಿ</translation>
@@ -494,6 +500,7 @@
 <translation id="4904877109095351937">ಓದಿದೆ ಎಂಬಂತೆ ಗುರುತಿಸಿ</translation>
 <translation id="4908869848243824489">Google ನಿಂದ Discover</translation>
 <translation id="4916679969857390442">ಲೆನ್ಸ್</translation>
+<translation id="4922154083994158612">ಹೆಚ್ಚಿನ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="4930714375720679147">ಆನ್ ಮಾಡಿ</translation>
 <translation id="4941089862236492464">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಐಟಂ ಅನ್ನು ಹಂಚುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ.</translation>
 <translation id="4944543191714094452">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ…</translation>
@@ -615,6 +622,7 @@
 <translation id="5913600720976431809">ಪುಟವನ್ನು ಅನುವಾದಿಸಲು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5938160824633642847">ನಿಮ್ಮ ಸಾಧನ ಬಹುತೇಕ ಭರ್ತಿಯಾಗಿದೆ. ಸ್ಥಳಾವಕಾಶ ಮುಕ್ತಗೊಳಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5948291296578561264">ನಿಮ್ಮ ಫೋಟೋ ಲೈಬ್ರರಿಗೆ ಫೋಟೋಗಳನ್ನು ಉಳಿಸಲು ಇದು ನಿಮ್ಮನ್ನು ಅನುಮತಿಸುತ್ತದೆ.</translation>
+<translation id="5949969988218625680">ಇತಿಹಾಸವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5951816930277761335">ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5955891643922670672">ಆಫ್‌ಲೈನ್ ಆವೃತ್ತಿ ಅನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5957613098218939406">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
@@ -695,6 +703,7 @@
 ನಿಮ್ಮ ಡೇಟಾವನ್ನು <ph name="TIME" /> ರಂದು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="6418346271604475326">PDF ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6434591244308415567">ಒಂದು ದೋಷ ಸಂಭವಿಸಿದೆ. ಆನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="6435817889602303010">ಕೊನೆಯದಾಗಿ ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮರುತೆರೆಯಿರಿ</translation>
 <translation id="6439338047467462846">ಎಲ್ಲವನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="6445051938772793705">ರಾಜ್ಯ</translation>
 <translation id="6445981559479772097">ಸಂದೇಶ ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
@@ -832,6 +841,7 @@
 <translation id="7435356471928173109">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="7438481509621345350">ನೀವು ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆದಾಗ, ನಿಮಗೆ <ph name="CHANNEL_NAME" /> ನಲ್ಲಿ ಸ್ಟೋರಿಗಳು ಕಾಣಿಸುತ್ತವೆ.</translation>
 <translation id="7454057999980797137">ರಾಜ್ಯ / ಕೌಂಟಿ</translation>
+<translation id="7459628154744868585">ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="7464701184726199289">ಇದು ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿನ ಸಿಂಕ್‌ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ. ಉಳಿಸಲಾದ ಸೈಟ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಹವ್ಯಾಸಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7472734401283673885">ಕಂಪನಿ ಹೆಸರು</translation>
@@ -860,6 +870,7 @@
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7726702057919861819">ಮೆನು → ಇತಿಹಾಸ → ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="7741325291586284254">ಹೊಸ ಅದೃಶ್ಯ ಟ್ಯಾಬ್ ಪುಟ</translation>
+<translation id="7743314735291715910">ಸ್ಥಳವನ್ನು ತೆರೆಯಿರಿ…</translation>
 <translation id="7756478488453921771">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -1024,6 +1035,7 @@
 <translation id="9037965129289936994">ಮೂಲವನ್ನು ತೋರಿಸು</translation>
 <translation id="9039373489628511875">ಬ್ಯಾಂಡ್‌ವಿಡ್ತ್</translation>
 <translation id="9055772144595778347">ಸೈನ್ ಇನ್ ಆಗಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="9055960261314198756">ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="9057972802061533987">ಫಾಲೋ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9068336935206019333">Chrome ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ತೆರಯಬೇಕೆ?</translation>

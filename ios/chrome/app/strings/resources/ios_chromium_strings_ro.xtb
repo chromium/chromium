@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
 <translation id="1722370509450468186">Parola va fi salvată în contul tău (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Datele Chromium au fost șterse</translation>
+<translation id="177102542580335555">Beneficiezi de protecție de securitate standard pentru acest profil Chromium</translation>
 <translation id="1838412507805038478">Chromium s-a asigurat că certificatul acestui site a fost emis de <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Conectează-te pentru a profita din plin de Chromium.</translation>
 <translation id="4555020257205549924">Când această funcție este activată, Chromium se va oferi să traducă paginile scrise în alte limbi utilizând Google Traducere. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
+<translation id="4633738821577273991">Obține și Navigare sigură îmbunătățită pentru acest profil Chromium</translation>
 <translation id="4654936625574199632">Pentru a contribui la îmbunătățirea aplicației, Chromium trimite la Google statistici de utilizare și rapoarte de blocare. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
 <translation id="4736424910885271643">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="8308172444429103994">Sfat pentru Chromium. Conectează-te mai rapid selectând parola salvată în partea de sus a tastaturii.</translation>
+<translation id="8409374867500149834">Ai cea mai puternică securitate Chromium împotriva site-urilor dăunătoare</translation>
 <translation id="858114650497379505">Poți folosi parolele salvate în Managerul de parole în alte aplicații de pe iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="865600487977764604">Te protejează în Chromium și poate fi folosit pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>

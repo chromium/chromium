@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Stel Chrome in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="1504372625950710826">Chrome kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="1511320244449497906">Je bent ingelogd en synchroniseert je gegevens met een account dat wordt beheerd door <ph name="DOMAIN" />. De beheerder kan nu specifiek gebruikersbeleid voor dat account instellen om het gedrag van Chrome te wijzigen.</translation>
+<translation id="1554731936187952550">Je hebt de krachtigste beveiliging van Chrome tegen schadelijke websites</translation>
 <translation id="1682483655351012182">Je Chrome-gegevens synchroniseren</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3345341804167540816">Chrome overal gebruiken</translation>
+<translation id="3503014945441706099">Gebruik ook de uitgebreide versie van Safe Browsing voor dit Chrome-profiel</translation>
 <translation id="3522659714780527202">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="3533694711092285624">Geen opgeslagen wachtwoorden. Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen.</translation>
 <translation id="3641179212828090796">Gebruik het wachtwoord dat je hebt opgeslagen in Chrome om sneller in te loggen</translation>
@@ -137,6 +139,7 @@ Aandachtspunten:
   • Als Chrome crasht, kunnen details over de crash bepaalde persoonlijke informatie bevatten.
 
   • Als je synchronisatie aanzet, kunnen statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Je krijgt standaardbeveiliging voor dit Chrome-profiel</translation>
 <translation id="9112744793181547300">Chrome instellen als standaard?</translation>
 <translation id="9122931302567044771">Dit betekent dat Chrome altijd de desktopsite opvraagt.</translation>
 </translationbundle>

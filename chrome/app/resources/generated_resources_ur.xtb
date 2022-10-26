@@ -884,6 +884,7 @@
 <translation id="1805967612549112634">‏‫PIN کی توثیق کریں</translation>
 <translation id="1806335016774576568">دوسری کھلی ایپ پرسوئچ کریں</translation>
 <translation id="1807246157184219062">روشنی</translation>
+<translation id="1809201888580326312">آپ نے ان سائٹس اور ایپس کے لیے پاس ورڈز محفوظ نہ کرنے کو منتخب کیا ہے</translation>
 <translation id="1809483812148634490">‏Google Play سے آپ کی ڈاؤن لوڈ کردہ ایپس کو اس Chromebook سے حذف کر دیا جائے گا۔
       <ph name="LINE_BREAKS1" />
       موویز، ٹی وی شوز، موسیقی، کتابوں جیسا آپ کا خریدا ہوا مواد یا دیگر درون ایپ خریداریوں کو بھی حذف کیا جا سکتا ہے۔
@@ -1523,7 +1524,7 @@
 <translation id="2352810082280059586">مقفل اسکرین کے نوٹس خودکار طور پر <ph name="LOCK_SCREEN_APP_NAME" /> میں محفوظ ہوتے ہیں۔ آپ کا حالیہ ترین نوٹ مقفل اسکرین پر باقی رہے گا۔</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
 <translation id="2355314311311231464">فراہمی ناکام ہو گئی کیوں کہ آپ کے اکاؤنٹ کی تفصیلات بازیافت نہیں کی جا سکیں۔ براہ کرم دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
-<translation id="2355477091455974894">توانائی بچانے کے اختیارات</translation>
+<translation id="2355477091455974894">انرجی سیور کے اختیارات</translation>
 <translation id="2355604387869345912">فوری ٹیدرنگ آن کریں</translation>
 <translation id="2356070529366658676">پوچھیں</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ہٹائیں</translation>
@@ -1798,6 +1799,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا ہے۔</translation>
 <translation id="2620436844016719705">سسٹم</translation>
 <translation id="262154978979441594">‏Google اسسٹنٹ صوتی ماڈل کی تربیت کریں</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">کسی سائٹ کو پروٹوکولز ہینڈل کرنے کی اجازت نہ دیں</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">یہ صفحہ آپ کے کیمرے اور مائیکروفون تک رسائی حاصل کر رہا ہے۔</translation>
@@ -2453,6 +2455,7 @@
 <translation id="3241680850019875542">پیک کرنے کیلئے ایکسٹینشن کی روٹ ڈائریکٹری منتخب کریں۔ ایک ایکسٹینشن کو اپ ڈیٹ کرنے کیلئے، دوبارہ استعمال کرنے کیلئے نجی کلیدی فائل بھی منتخب کریں۔</translation>
 <translation id="3242289508736283383">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا ChromeOS کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
 <translation id="3242665648857227438">‏یہ پروفائل ChromeOS کی پراکسی ترتیبات کا استعمال کرتی ہے۔</translation>
+<translation id="3243017971870859287">‏ChromeOS Flex آلہ اور جزو کے نمبر شمار پڑھیں</translation>
 <translation id="3244294424315804309">آواز بند کرنا جاری رکھیں</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - نیٹ ورک کی خرابی</translation>
 <translation id="3248902735035392926">حفاظتی معاملات۔ کچھ وقت نکالیں اور ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کریں<ph name="END_LINK" /></translation>
@@ -2509,6 +2512,7 @@
 <translation id="3297105622164376095">فریق ثالث کے سائن ان پرامپٹس دکھانے کی اجازت ہے</translation>
 <translation id="3297536526040732495">‏Google ایپس پر آپ کی حفاظت کرنے کے لیے آپ کے سائن ان ہونے پر آپ کے Google اکاؤنٹ سے اس ڈیٹا کو عارضی طور پر لنک کرتا ہے</translation>
 <translation id="329838636886466101">درست کریں</translation>
+<translation id="3298438307450647315">‏Chrome OS آلے کی معلومات اور آلے کا ڈیٹا پڑھیں</translation>
 <translation id="3298789223962368867">‏غلط URL درج کیا گیا۔</translation>
 <translation id="32991397311664836">آلات:</translation>
 <translation id="33022249435934718">‏GDI ہینڈلز</translation>
@@ -2615,6 +2619,7 @@
 <translation id="3402255108239926910">ایک اوتار منتخب کریں</translation>
 <translation id="3402585168444815892">ڈیمو موڈ میں اندراج کیا جا رہا ہے</translation>
 <translation id="340282674066624">‎<ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" />‎</translation>
+<translation id="3403071741485135898">‏ChromeOS Flex آلے کی معلومات اور آلے کا ڈیٹا پڑھیں</translation>
 <translation id="3404065873681873169">اس سائٹ کے لیے کوئی پاس ورڈ محفوظ نہیں ہے</translation>
 <translation id="3405664148539009465">فونٹس کو حسب ضرورت بنائیں</translation>
 <translation id="3405763860805964263">…</translation>
@@ -4168,6 +4173,7 @@
 <translation id="486635084936119914">ڈاؤن لوڈ کرنے کے بعد مخصوص فائل کی قسموں کو کھولیں</translation>
 <translation id="4868281708609571334">‏Google اسسٹنٹ کو <ph name="SUPERVISED_USER_NAME" /> کی آواز کی شناخت کرنا سکھائیں</translation>
 <translation id="4868284252360267853">‏فی الحال اس ڈائیلاگ پر فوکس نہیں کیا گیا۔ اس ڈائیلاگ پر فوکس کرنے کے لیے Command-Shift-Option A دبائیں۔</translation>
+<translation id="4869170227080975044">‏ChromeOS نیٹ ورک کی معلومات پڑھیں</translation>
 <translation id="4870724079713069532">‏آپ اس ایپ کے ساتھ File Explorer یا دیگر ایپس سے تعاون یافتہ فائلز کو کھول اور ان میں ترمیم کر سکتے ہیں۔ جو فائلز بطور ڈیفالٹ اس ایپ میں کھلتی ہیں انہیں کنٹرول کرنے کے لیے، <ph name="BEGIN_LINK" />ونڈوز کی ترتیبات<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="4870758487381879312">کنفیگریشن کی معلومات حاصل کرنے کیلئے منتظم کی طرف سے فراہم کردہ پاس ورڈ درج کریں</translation>
 <translation id="4870995365819149457">کچھ تعاون یافتہ لنکس اب بھی <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" /> اور 1 دیگر ایپ میں کھلیں گے۔</translation>
@@ -4899,6 +4905,7 @@
 <translation id="5571066253365925590">بلوٹوتھ فعال ہے</translation>
 <translation id="5571092938913434726">گلوبل میڈیا کنٹرولز</translation>
 <translation id="5571832155627049070">اپنی پروفائل حسب ضرورت بنائیں</translation>
+<translation id="5572252023412311448"><ph name="SITE_GROUP" /> کے لیے سائٹ کی تفصیلات دکھائیں</translation>
 <translation id="5572648434713976849">آپ کو ایڈریس بار میں بہتر کردہ تجاویز حاصل ہوں گی</translation>
 <translation id="5572851009514199876">‏براہ کرم شروع کریں اور Chrome میں سائن ان کریں تاکہ Chrome یہ چیک کر سکے کہ آیا آپ کو اس سائٹ تک رسائی کی اجازت ہے۔</translation>
 <translation id="557506220935336383">دیگر سائٹس کے لیے ایکسٹینشن کی اجازتیں دیکھیں</translation>
@@ -4944,6 +4951,7 @@
 <translation id="5612734644261457353">معذرت، آپ کے پاس ورڈ کی اب بھی توثیق نہیں کی جا سکی۔ نوٹ: اگر آپ نے اپنا پاس ورڈ حال ہی میں تبدیل کیا تو آپ کا نیا پاس ورڈ آپ کے سائن آؤٹ کرنے پر لاگو کیا جائے گا، براہ کرم یہاں پرانا پاس ورڈ استعمال کریں۔</translation>
 <translation id="5614190747811328134">صارف نوٹس</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
+<translation id="5616571005307953937">سب سے پرانا</translation>
 <translation id="5616726534702877126">سائز ریزرو کریں</translation>
 <translation id="561698261642843490">‏Firefox بند کریں</translation>
 <translation id="5620540760831960151">‏یہ فہرست <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5575,6 +5583,7 @@
 <translation id="6212168817037875041">ڈسپلے آف کریں</translation>
 <translation id="6212752530110374741">ای میل کا لنک</translation>
 <translation id="621470880408090483">سائٹس کو بلوٹوتھ آلات سے منسلک ہونے کی اجازت نہ دیں</translation>
+<translation id="6216239400972191926">مسترد کردہ سائٹس اور اپپس</translation>
 <translation id="6216601812881225442">‏آپ کا کنٹینر سائز تبدیل کرنے کو سپورٹ نہیں کرتا ہے۔ Linux کے لیے پہلے سے مختص کی گئی جگہ کی مقدار کو ایڈجسٹ کرنے کے لیے بیک اپ لیں اور اسے نئے کنٹینر میں بحال کریں۔</translation>
 <translation id="6216696360484424239">خود کار طور پر سائن ان کریں</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> آف لائن ہے۔ انٹرنیٹ سے منسلک کر کے دوبارہ کوشش کریں۔</translation>
@@ -6086,6 +6095,7 @@
 <translation id="6703212423117969852">‏آپ بعد میں Chrome میں دوبارہ کوشش کر سکتے ہیں۔</translation>
 <translation id="6703254819490889819">بیک اپ سے بحال کریں</translation>
 <translation id="6706210727756204531">دائرۂ کار</translation>
+<translation id="6707122714992751648">‏ChromeOS تشخیصی ٹیسٹس چلائیں</translation>
 <translation id="6707389671160270963">‏SSL کلائنٹ سرٹیفکیٹ</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> اور 1 دیگر ٹیب}other{<ph name="PAGE_TITLE" /> اور # دیگر ٹیبز}}</translation>
 <translation id="6709133671862442373">خبریں</translation>
@@ -6264,6 +6274,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
 <translation id="6860097299815761905">پراکسی کی ترتیبات…</translation>
 <translation id="6860427144121307915">ایک ٹیب میں کھولیں</translation>
+<translation id="6861179941841598556"><ph name="PROFILE_NAME" /> کے لیے مزید کارروائیاں</translation>
 <translation id="6863496016067551393">سبھی ایکسٹینشنز کی اجازت ہے</translation>
 <translation id="686366188661646310">پاس ورڈ حذف کریں؟</translation>
 <translation id="6865313869410766144">آٹو فل فارم ڈیٹا</translation>
@@ -6353,6 +6364,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا حسب ضرورت Chrome میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
+<translation id="6949089178006131285">‏ChromeOS Flex نیٹ ورک کی معلومات پڑھیں</translation>
 <translation id="6949434160682548041">پاس ورڈ (اختیاری)</translation>
 <translation id="6950627417367801484">ایپس بحال کریں</translation>
 <translation id="6952242901357037157">‏آپ اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> سے یہاں پاس ورڈز کو بھی دکھا سکتے ہیں</translation>
@@ -7968,6 +7980,7 @@
 <translation id="8463001014623882202">اجازت دہندگی ناکام ہو گئی</translation>
 <translation id="846374874681391779">ڈاؤن لوڈز بار</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> غیر فعال ہے۔</translation>
+<translation id="846399539692727039">‏ChromeOS Flex تشخیصی ٹیسٹس چلائیں</translation>
 <translation id="8464132254133862871">یہ صارف اکاؤنٹ سروس کیلئے اہل نہیں ہے۔</translation>
 <translation id="8465252176946159372">درست نہیں ہے</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> کو چلنے کیلئے آپ کی اجازت درکار ہے</translation>
@@ -8114,6 +8127,7 @@
 <translation id="8624315169751085215">کلپ بورڈ میں کاپی کریں</translation>
 <translation id="8624354461147303341">رعایتیں حاصل کریں</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">‏ChromeOS آلہ اور جزو کے نمبر شمار پڑھیں</translation>
 <translation id="862542460444371744">&amp;ایکسٹینشنز</translation>
 <translation id="8625663000550647058">آپ کے مائیکروفون کو استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="8625916342247441948">‏سائٹس کو HID آلات سے منسلک ہونے کی اجازت نہ دیں</translation>

@@ -1198,7 +1198,6 @@
 <translation id="2168397434410358693">在 AC 供電環境下執行時的閒置延遲時間</translation>
 <translation id="217013996107840632">從替代瀏覽器切換到 Chrome 所使用的指令列參數。</translation>
 <translation id="2170233653554726857">啟用 WPAD 最佳化功能</translation>
-<translation id="2171952274731262470">使用電池供電的裝置閒置時，系統採取的動作和延遲管理電源行動</translation>
 <translation id="2175353308236295184">應用程式專屬的 JSON 設定物件及一個鍵/值組合，例如「"managedConfiguration": { "key1": value1, "key2": value2 }」。應用程式資訊清單會定義這些鍵。</translation>
 <translation id="2176115444876446233">禁止使用者收集整個系統的效能追蹤記錄。</translation>
 <translation id="2177696016354404697">一律停用隱私保護功能</translation>
@@ -2379,15 +2378,6 @@
 <translation id="3264793472749429012">預設搜尋引擎編碼</translation>
 <translation id="3273221114520206906">預設 JavaScript 設定</translation>
 <translation id="3278042410658310805">在登入畫面上停用互動朗讀功能，並允許使用者暫時啟用</translation>
-<translation id="3282240846541032181">這項政策可讓管理員針對 <ph name="PRODUCT_OS_NAME" /> 上的各個副檔名，指定對應的應用程式做為預設處理常式，而使用者無法變更這項設定。
-      凡是不在這項政策中指定的副檔名，使用者都能按照一般工作流程自行設定預設值。
-
-      使用 ID (例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />) 指定 Chrome 應用程式，並透過「<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />」中使用的網址 (例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />) 來指定網頁應用程式。
-
-      請注意，應用程式「必須」在資訊清單中宣告自身為特定副檔名的處理常式，才能讓該政策項目生效 (也就是該政策「不會」擴充現有的應用程式功能)。
-
-      如果未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會根據內部邏輯選取預設處理常式。
-      </translation>
 <translation id="328347261792478720">在預設狀態下，瀏覽器會根據使用者顯示個人化的媒體推薦內容。如果將這項政策設為停用，瀏覽器會向使用者隱藏這類推薦內容。如果將這項政策設為啟用或不設定，瀏覽器會向使用者顯示媒體推薦內容。</translation>
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3286159327013237833">在登入畫面上啟用自動點選功能</translation>
@@ -3647,7 +3637,6 @@
 <translation id="46321462262887935">將最上排按鍵設為功能鍵，但允許使用者變更</translation>
 <translation id="4632343302005518762">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理下列內容類型</translation>
 <translation id="4632566332417930481">禁止在由企業政策安裝的擴充功能中使用開發人員工具，允許在其他情況下使用開發人員工具</translation>
-<translation id="4635284822166984665">裝置開始充電的時間 (根據裝置當地時區)。</translation>
 <translation id="4636354638176939375">停用受監管使用者的建立功能</translation>
 <translation id="4646626362889216307">當所選政策的來源不同，但具有相同的範圍和層級時，就可以設定這項政策來合併所選的政策。
 
@@ -4218,7 +4207,6 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用游標醒目提示功能，但使用者隨時可以啟用。</translation>
-<translation id="5279539586558702228">裝置使用交流電源供電的時間 (根據裝置當地時區)。</translation>
 <translation id="5283457834853986457">停用外掛程式尋找工具 (已淘汰)</translation>
 <translation id="5286579716704722323">允許使用者點閱安全資料傳輸層警告網頁</translation>
 <translation id="5288772341821359899">如果設定這項政策，系統會將 WebRTC 所使用的 UDP 連接埠範圍限於指定的連接埠區間 (包括端點)。
@@ -5017,11 +5005,6 @@
 <translation id="6181618732396778048">不允許任何網站要求檔案和目錄的寫入權限。</translation>
 <translation id="6181783961196084973">用於切換應用程式活動收集功能的值。如果設為 True，系統會將使用者的應用程式活動回報給伺服器，以便在兒童和家長的 <ph name="PRODUCT_NAME" /> 應用程式中顯示這些資訊。如果設為 False，個別應用程式的時間限制功能仍可正常運作，但系統不會將任何資料回報給伺服器，因此 <ph name="PRODUCT_NAME" /> 也不會顯示相關資訊。</translation>
 <translation id="6182563940865917569">允許 Chrome 自動播放媒體</translation>
-<translation id="6183327369896253878">你可以透過這項政策修正 <ph name="PRODUCT_OS_NAME" />在啟動器列中顯示為固定應用程式的應用程式 ID，且使用者無法進行變更。
-
-      請透過應用程式 ID 來指定 Chrome 應用程式 (例如 pjkljhegncpnkpknbcohdijeoejaedia)；透過應用程式套件名稱來指定 Android 應用程式 (例如 com.google.android.gm)；透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 中使用的應用程式網址來指定網頁應用程式 (例如 https://google.com/maps)。
-
-      如果不設定這項政策，使用者將可變更啟動器中的固定應用程式清單。</translation>
 <translation id="6184385589352532028">不要為第三方 ChromeOS 控制選項啟用 Desk API</translation>
 <translation id="6190367314942602985">回報使用者身分識別資訊</translation>
 <translation id="6191963383731098056">管理員可以透過這項政策設定 <ph name="PRODUCT_NAME" /> 主題的顏色。輸入的字串應為有效的十六進位顏色字串，格式為「#RRGGBB」。
@@ -6432,7 +6415,6 @@
 
       如果不設定這項政策或設為空白清單，受管理的裝置將無法使用任何快速解鎖模式。</translation>
 <translation id="754176366378585605">控管 File Handling API 使用權限</translation>
-<translation id="7543109906499122922">裝置開始使用電池供電的時間 (根據裝置當地時區)。</translation>
 <translation id="7544392541165889987">如果啟用這項政策或不去設定它，<ph name="PRODUCT_NAME" /> 將成為 <ph name="CLOUD_PRINT_NAME" />和連接到電腦的舊款印表機之間的 Proxy。使用者可透過 Google 帳戶驗證來啟用雲端列印 Proxy。
 
       如果停用這項政策，則使用者無法啟用 Proxy，電腦也無法與 <ph name="CLOUD_PRINT_NAME" />共用印表機。</translation>
@@ -6735,7 +6717,6 @@
       決定使用擴充程式 ID 當做登入畫面的螢幕保護程式。該擴充功能必須屬於你透過 DeviceAppPack 政策為這個網域設定的 AppPack。</translation>
 <translation id="7882890448959833986">偵測到不支援的作業系統時不顯示警告</translation>
 <translation id="788480874436328004">禁止使用密碼管理員儲存密碼</translation>
-<translation id="7887379840451099426">只有在裝置使用電池供電時才適用的電源管理設定</translation>
 <translation id="7891884447851425349">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 政策來指定在進行預設搜尋時所使用的搜尋引擎網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 
       你可以將 Google 的搜尋網址指定為：<ph name="GOOGLE_SEARCH_URL" />。</translation>

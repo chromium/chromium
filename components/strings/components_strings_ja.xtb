@@ -1108,7 +1108,6 @@
 <translation id="3890664840433101773">メールを追加</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3901925938762663762">カードの有効期限が切れています</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909477809443608991"><ph name="URL" /> が保護されたコンテンツの再生を要求しています。デバイスの認証情報が Google によって確認され、このサイトによる認証情報へのアクセスが許可されます。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1508,7 +1507,6 @@
 <translation id="4950898438188848926">タブの切り替えボタンです。Enter キーを押すと開いているタブ「<ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" />」に切り替わります</translation>
 <translation id="495170559598752135">操作</translation>
 <translation id="4953689047182316270">ユーザー補助機能のイベントへの応答</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
 <translation id="4964505745997821360">健康保険</translation>
 <translation id="4968522289500246572">このアプリはモバイル向けに設計されているため、適切にサイズ変更されない可能性があります。アプリに問題が生じたり、再起動したりすることがあります。</translation>
@@ -1687,7 +1685,6 @@
 <translation id="5379027395132364855">[プレゼンテーションを作成] ボタンです。Enter キーを押すと、スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="5385857628869214740">ユーモア</translation>
 <translation id="5386426401304769735">このサイトの証明書チェーンには SHA-1 を使って署名された証明書が含まれています。</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">端綴じ（右）</translation>
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
@@ -2381,7 +2378,6 @@
 <translation id="733923710415886693">サーバーの証明書は、証明書の透明性ポリシーを介して公開されていません。</translation>
 <translation id="7341357280245177602">中古車</translation>
 <translation id="7346048084945669753">組織内のユーザーか:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">このタブを開いている間のみ許可</translation>
 <translation id="7352651011704765696">問題が発生しました</translation>
 <translation id="7353601530677266744">コマンドライン</translation>

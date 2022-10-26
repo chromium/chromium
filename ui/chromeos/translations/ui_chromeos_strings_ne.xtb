@@ -651,6 +651,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
 <translation id="6499681088828539489">साझा नेटवर्कहरूमा प्रोक्सीलाई अनुमति नदिनुहोस्</translation>
+<translation id="6503285896705205014">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल कपी गर्न पाइँदैन</translation>
 <translation id="6509122719576673235">नर्वेयन</translation>
 <translation id="6528513914570774834">यस डिभाइसका अन्य प्रयोगकर्ताहरूलाई यो नेटवर्क प्रयोग गर्न दिनुहोस्</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> लाई समक्रमण गर्दै...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">यो प्रकारको फाइल प्रयोग गर्न मिल्दैन। ChromeOS मा फाइल खोल्ने तरिकाका बारेमा <ph name="BEGIN_LINK_HELP" />थप जान्नुहोस्<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू प्रतिलिपि गर्दै...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> का आधारमा घट्दो क्रममा क्रमबद्ध गरिएको फाइलको सूची।</translation>
+<translation id="7377161162143020057">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल कपी गर्न पाइँदैन</translation>
 <translation id="7402503521691663770">ChromeOS Flex चल्ने डिभाइसहरू</translation>
 <translation id="7408870451288633753">चेक</translation>
 <translation id="7417453074306512035">इथियोपिक किबोर्ड</translation>

@@ -117,8 +117,10 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1815941218935345331">Kod laluan</translation>
 <translation id="1820259098641718022">Ditambahkan pada Senarai Bacaan</translation>
 <translation id="1832848789136765277">Untuk memastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa, sahkan itu anda</translation>
+<translation id="1857751338515529195">Pergi ke Tab Seterusnya</translation>
 <translation id="1870148520156231997">Dedahkan Kata Laluan</translation>
 <translation id="1872096359983322073">Lampu suluh</translation>
+<translation id="1891796056033961979">Penanda halaman, kata laluan, tetapan anda dan pelbagai lagi yang disimpan tersedia pada skrin ini.</translation>
 <translation id="1911619930368729126">Muat naik ke Google Drive</translation>
 <translation id="1923342640370224680">Jam Terakhir</translation>
 <translation id="1930989359703290198">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -146,6 +148,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2139867232736819575">Cari Teks yang Anda Salin</translation>
 <translation id="214201757571129614">Log Masuk…</translation>
 <translation id="2149973817440762519">Edit Penanda Halaman</translation>
+<translation id="2150175299852799498">Chrome untuk Mudah Alih</translation>
 <translation id="2155145621546387786">Kongsi Chrome</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2178545675770638239">Pilih Kata Laluan</translation>
@@ -225,6 +228,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2783054063075604403">Tidak Dapat Membuat Pautan</translation>
 <translation id="2786701870377699570">Cari Tab Pada Semua Peranti Disegerakkan</translation>
 <translation id="2800683595868705743">Tinggalkan Penukar Tab</translation>
+<translation id="2812727400746650635">Pergi ke Tab Sebelumnya</translation>
 <translation id="2815198996063984598">2. Ketik Apl Penyemak Imbas Lalai</translation>
 <translation id="2820289420301699633">Pentadbir anda boleh mengawal Chrome dan dapat mengakses data penyemak imbas itu</translation>
 <translation id="2830972654601096923">Urus Alamat...</translation>
@@ -327,6 +331,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3533202363250687977">Tutup Semua Tab Inkognito</translation>
 <translation id="3533436815740441613">Tab Baharu</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
+<translation id="3575234738189584619">Cari dengan Lens</translation>
 <translation id="3581564640715911333">Tawaran untuk menterjemah halaman dalam bahasa lain</translation>
 <translation id="3588820906588687999">Buka Imej dalam Tab Baharu</translation>
 <translation id="3595252146048399851">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa. Google mungkin memeribadikan Carian dan perkhidmatan lain berdasarkan sejarah anda.</translation>
@@ -448,6 +453,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4630540211544979320">Terjemah Halaman</translation>
 <translation id="4634124774493850572">Gunakan kata laluan</translation>
 <translation id="4636930964841734540">Maklumat</translation>
+<translation id="4649294145748405669">Chrome lebih pantas, lebih selamat, pilihan anda. Muat turun sambungan di sini.</translation>
 <translation id="4650125387981512669">Teruskan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Apabila anda log masuk ke Akaun Google anda, ciri ini akan dihidupkan.</translation>
 <translation id="4659667755519643272">Masuk ke Penukar Tab</translation>
@@ -494,6 +500,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4904877109095351937">Tandakan Dibaca</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4916679969857390442">Lensa</translation>
+<translation id="4922154083994158612">Lagi Keselamatan?</translation>
 <translation id="4930714375720679147">Hidupkan</translation>
 <translation id="4941089862236492464">Maaf, terdapat masalah mengongsi item anda.</translation>
 <translation id="4944543191714094452">Cari dalam Halaman…</translation>
@@ -615,6 +622,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5913600720976431809">Pilihan untuk Menterjemah halaman</translation>
 <translation id="5938160824633642847">Peranti anda hampir penuh. Kosongkan ruang dan cuba lagi.</translation>
 <translation id="5948291296578561264">Tindakan ini membolehkan anda menyimpan foto pada pustaka foto anda.</translation>
+<translation id="5949969988218625680">Tunjukkan Sejarah</translation>
 <translation id="5951816930277761335">Kongsi Pautan</translation>
 <translation id="5955891643922670672">Melihat Versi Luar Talian</translation>
 <translation id="5957613098218939406">Lebih Banyak Pilihan</translation>
@@ -695,6 +703,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 Data anda disulitkan dengan ungkapan laluan segerak anda pada <ph name="TIME" />. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="6418346271604475326">Menyediakan PDF</translation>
 <translation id="6434591244308415567">Ralat telah berlaku. Cuba sebentar lagi.</translation>
+<translation id="6435817889602303010">Buka Semula Tab Terakhir Ditutup</translation>
 <translation id="6439338047467462846">Benarkan Semua</translation>
 <translation id="6445051938772793705">Negara</translation>
 <translation id="6445981559479772097">Mesej dihantar.</translation>
@@ -832,6 +841,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7435356471928173109">Dimatikan oleh pentadbir anda</translation>
 <translation id="7438481509621345350">Kini anda akan melihat cerita daripada <ph name="CHANNEL_NAME" /> apabila anda membuka tab baharu.</translation>
 <translation id="7454057999980797137">Negeri / Daerah</translation>
+<translation id="7459628154744868585">Perlindungan Dipertingkat Dihidupkan</translation>
 <translation id="7464701184726199289">Tetapan ini akan menghapuskan data yang disegerakkan daripada semua peranti. Tetapan tapak yang disimpan tidak akan dipadamkan dan mungkin mencerminkan tabiat semak imbas anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Pilih Chrome</translation>
 <translation id="7472734401283673885">Nama Syarikat</translation>
@@ -860,6 +870,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7720410380936703141">CUBA LAGI</translation>
 <translation id="7726702057919861819">Menu → Sejarah → Kosongkan Data Semakan Imbas</translation>
 <translation id="7741325291586284254">Halaman Tab Inkognito Baharu</translation>
+<translation id="7743314735291715910">Buka Lokasi…</translation>
 <translation id="7756478488453921771">Menu → Tetapan → Kaedah Pembayaran</translation>
 <translation id="7765158879357617694">Alih</translation>
 <translation id="7772032839648071052">Sahkan frasa laluan</translation>
@@ -1024,6 +1035,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="9037965129289936994">Tunjukkan Yang Asal</translation>
 <translation id="9039373489628511875">Lebar Jalur</translation>
 <translation id="9055772144595778347">Tidak Boleh Log Masuk</translation>
+<translation id="9055960261314198756">Perlindungan Dipertingkat Dimatikan</translation>
 <translation id="9057972802061533987">Tidak dapat mengikuti. Ralat telah berlaku.</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9068336935206019333">Buka dalam Inkognito Chrome</translation>

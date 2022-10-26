@@ -652,6 +652,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, വിശദാംശങ്ങൾ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> എന്നത് <ph name="FOLDER_NAME" /> എന്നതിലേക്ക് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="6499681088828539489">പങ്കിട്ട നെറ്റ്‌വർക്കുകൾക്ക് പ്രോക്‌സികൾ അനുവദിക്കാതിരിക്കുക</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> ഫയലുകൾ പകർത്തുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6509122719576673235">നോര്‍വീജിയന്‍</translation>
 <translation id="6528513914570774834">ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാൻ ഉപകരണത്തിലെ മറ്റ് ഉപയോക്താക്കളെ അനുവദിക്കുക</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> എന്നത് സമന്വയിപ്പിക്കുന്നു...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">ഈ ഫയൽ തരം പിന്തുണയ്ക്കുന്നില്ല. ChromeOS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തുന്നു...</translation>
 <translation id="7375951387215729722">അവരോഹണ ക്രമത്തിൽ <ph name="COLUMN_NAME" /> അടുക്കിയ ഫയൽ ലിസ്‌റ്റ്.</translation>
+<translation id="7377161162143020057">ഈ ഫയൽ പകർത്തുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7402503521691663770">ChromeOS Flex ഉപകരണങ്ങൾ</translation>
 <translation id="7408870451288633753">ചെക്ക്</translation>
 <translation id="7417453074306512035">എത്യോപിക് കീബോർഡ്</translation>

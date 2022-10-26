@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Chromium 동기화 데이터</translation>
 <translation id="1722370509450468186">비밀번호가 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
+<translation id="177102542580335555">이 Chromium 프로필에는 표준 보안 보호 조치를 사용하고 있습니다.</translation>
 <translation id="1838412507805038478">Chromium이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">로그인하여 Chromium의 모든 기능을 이용하세요</translation>
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
+<translation id="4633738821577273991">이 Chromium 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>
 <translation id="4654936625574199632">앱 개선을 위해 Chromium에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium 스캐너 사용</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">기기에서 Chromium 데이터를 삭제하시겠습니까?</translation>
 <translation id="8240981428553046115">Chromium에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="8308172444429103994">Chromium 도움말입니다. 키보드 상단에서 저장된 비밀번호를 선택하여 더 빠르게 로그인하세요.</translation>
+<translation id="8409374867500149834">유해한 웹사이트에 대한 Chromium의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
 <translation id="858114650497379505">비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="865600487977764604">로그인 상태일 때 Chromium에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>

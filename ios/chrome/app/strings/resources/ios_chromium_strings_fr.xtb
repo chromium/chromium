@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Données issues de la synchronisation Chromium</translation>
 <translation id="1722370509450468186">Votre mot de passe sera enregistré dans votre compte (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Données de Chromium effacées</translation>
+<translation id="177102542580335555">Vous disposez sous ce profil Chromium de la protection standard</translation>
 <translation id="1838412507805038478">Chromium a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium dispose de fonctionnalités qui vous permettent de gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chromium.</translation>
+<translation id="4633738821577273991">Profitez aussi sous ce profil Chromium de la navigation sécurisée avec protection renforcée</translation>
 <translation id="4654936625574199632">Pour améliorer l'appli, Chromium envoie des données de plantage et d'utilisation à Google. <ph name="BEGIN_LINK" />Gérer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activer le lecteur Chromium</translation>
 <translation id="4736424910885271643">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront effacées de cet appareil</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
 <translation id="8240981428553046115">Chromium n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="8308172444429103994">Astuce Chrome. Connectez-vous plus rapidement en sélectionnant votre mot de passe enregistré en haut du clavier.</translation>
+<translation id="8409374867500149834">Vous disposez du plus haut niveau de sécurité de Chromium contre les sites dangereux</translation>
 <translation id="858114650497379505">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe dans d'autres applis sur votre iPhone.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="865600487977764604">Vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applis Google lorsque vous êtes connecté.</translation>

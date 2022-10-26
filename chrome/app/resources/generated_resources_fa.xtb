@@ -893,6 +893,7 @@
 <translation id="1805967612549112634">تأیید پین</translation>
 <translation id="1806335016774576568">رفتن به برنامه باز دیگر</translation>
 <translation id="1807246157184219062">روشن</translation>
+<translation id="1809201888580326312">انتخاب کرده‌اید گذرواژه‌های این سایت‌ها و برنامه‌ها ذخیره نشوند</translation>
 <translation id="1809483812148634490">‏برنامه‌هایی که از Google Play بارگیری کردید، از این Chromebook حذف می‌شوند.
     <ph name="LINE_BREAKS1" />
     محتوایی که خریداری کرده‌اید (مثل فیلم، نمایش تلویزیونی، موسیقی، کتاب، یا خریدهای درون‌برنامه دیگر) نیز ممکن است حذف شوند.
@@ -1808,6 +1809,7 @@
 <translation id="2620215283731032047">نمی‌توان <ph name="FILE_NAME" /> را به‌طور ایمن بارگیری کرد.</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="262154978979441594">‏آموزش مدل صوتی «دستیار Google»</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">به هیچ سایتی برای کنترل پروتکل ها اجازه داده نشود</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">این صفحه به دوربین و میکروفون شما دسترسی دارد.</translation>
@@ -4956,6 +4958,7 @@
 <translation id="5612734644261457353">متأسفیم، تأیید گذرواژه شما همچنان امکان‌پذیر نیست. اگر به‌تازگی گذرواژه خود را تغییر داده‌اید، گذرواژه جدید شما هنگامی‌که از سیستم خارج شدید، اعمال می‌شود؛ لطفاً اینجا از گذرواژه قدیمی خود استفاده کنید.</translation>
 <translation id="5614190747811328134">اعلامیه کاربر</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
+<translation id="5616571005307953937">قدیمی‌ترین</translation>
 <translation id="5616726534702877126">اختصاص حجم دیسک</translation>
 <translation id="561698261642843490">‏بستن Firefox</translation>
 <translation id="5620540760831960151">‏این فهرست از <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5587,6 +5590,7 @@
 <translation id="6212168817037875041">خاموش کردن نمایشگر</translation>
 <translation id="6212752530110374741">پیوند ایمیل</translation>
 <translation id="621470880408090483">به سایت‌ها اجازه داده نشود به دستگاه‌های بلوتوث متصل شوند</translation>
+<translation id="6216239400972191926">سایت‌ها و برنامه‌های ردشده</translation>
 <translation id="6216601812881225442">‏محتوی شما از تغییر اندازه پشتیبانی نمی‌کند. برای تنظیم مقدار فضایی که ازقبل به Linux اختصاص داده شده است، پشتیبان‌گیری کنید و سپس در محتوی جدیدی بازیابی کنید.</translation>
 <translation id="6216696360484424239">ورود به سیستم به‌طور خودکار</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> آفلاین است. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
@@ -5673,6 +5677,7 @@
 <translation id="6295855836753816081">در حال ذخیره کردن...</translation>
 <translation id="629730747756840877">حساب</translation>
 <translation id="6298962879096096191">‏برای نصب برنامه‌های Android از Google Play‌ استفاده کنید</translation>
+<translation id="6300125580697461004">ارسال بازخورد درباره بهینه‌سازی انرژی</translation>
 <translation id="6300177430812514606">اجازه ندارد ارسال و دریافت داده را به‌پایان برساند</translation>
 <translation id="630065524203833229">&amp;خروج</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> به‌طور خودکار پیکربندی نشد. لطفاً جزئیات پیشرفته چاپگر را مشخص کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -5873,6 +5878,7 @@
 <translation id="6494327278868541139">نمایش جزئیات محافظت بهبودیافته</translation>
 <translation id="6494445798847293442">یک ارائه‌دهنده مجوز نیست</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{این داده محتوای حساس یا خطرناک دارد}=1{این فایل محتوای حساس یا خطرناک دارد}one{این فایل‌ها محتوای حساس یا خطرناک دارند}other{این فایل‌ها محتوای حساس یا خطرناک دارند}}</translation>
+<translation id="6497548114956205206">درباره بهینه‌سازی انرژی بیشتر بدانید</translation>
 <translation id="6497784818439587832">تغییر اندازه نمایش برای کوچک‌تر کردن یا بزرگ‌تر کردن موارد روی صفحه‌نمایش</translation>
 <translation id="6497789971060331894">پیمایش معکوس موشواره</translation>
 <translation id="6498249116389603658">&amp;همه زبان‌های شما</translation>
@@ -7432,6 +7438,7 @@
 <translation id="7955177647836564772">‏اگر Smart Lock روشن باشد و قفل تلفنتان باز باشد، لازم نیست گذرواژه یا پین را وارد کنید</translation>
 <translation id="7956373551960864128">چاپگرهای ذخیره‌شده شما</translation>
 <translation id="7957074856830851026">دیدن اطلاعات دستگاه، مانند شماره سریال یا شناسه دارایی آن</translation>
+<translation id="7957186326898555886">ارسال بازخورد درباره بهینه‌سازی حافظه</translation>
 <translation id="7959074893852789871">این فایل دارای چندین مجوز است، برخی از آن‌ها وارد نشده‌اند:</translation>
 <translation id="7959665254555683862">برگه ناشناس جدید</translation>
 <translation id="7961015016161918242">هرگز</translation>
@@ -7853,6 +7860,7 @@
 <translation id="8340547030807793004">کنش‌های بیشتر برای <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{مرور <ph name="BEGIN_BOLD" />سایتی<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
+<translation id="8342399870062010251">درباره بهینه‌سازی حافظه بیشتر بدانید</translation>
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
 <translation id="8345848587667658367">اکنون می‌توانید عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
@@ -8061,6 +8069,7 @@
 <translation id="8549316893834449916">‏برای ورود به سیستم در Chromebook از «حساب Google» استفاده خواهید کرد – همان حسابی که برای Gmail،‏ Drive، ‏YouTube، و غیره از آن استفاده می‌کنید.</translation>
 <translation id="8551388862522347954">مجوزها</translation>
 <translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>
+<translation id="8552102814346875916">ذخیره در فهرست «این سایت‌ها همیشه فعال نگه داشته شود»</translation>
 <translation id="8553342806078037065">مدیریت افراد دیگر</translation>
 <translation id="8554899698005018844">زبانی موجود نیست</translation>
 <translation id="855604308879080518">‏به برنامه‌های Android اجازه دهید به دستگاه‌های USB در این Chromebook دسترسی داشته باشند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های جانبی درخواست خواهند کرد.</translation>

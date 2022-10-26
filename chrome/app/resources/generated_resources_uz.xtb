@@ -2422,6 +2422,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3197453258332670132">Oʻng klik yoki biroz bosib turilsa, belgilangan matn uchun aloqador axborot chiqariladi</translation>
 <translation id="3199127022143353223">Serverlar</translation>
 <translation id="3200061262156232574">Xarid qutingizda</translation>
+<translation id="3201237270673604992">Z–A</translation>
 <translation id="3201422919974259695">Mavjud USB qurilmalar bu yerda chiqadi.</translation>
 <translation id="3202131003361292969">Fayl yo‘lagi</translation>
 <translation id="3202173864863109533">Bu ichki oyna ovozi o‘chirib qo‘yilgan</translation>
@@ -3742,6 +3743,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4460014764210899310">Guruhni bekor qilish</translation>
 <translation id="4462159676511157176">Boshqa nom serverlari</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> uchun <ph name="TIME" /> cheklov oʻrnatildi</translation>
+<translation id="4465649939134800363">Saralash</translation>
 <translation id="4466839823729730432">Xotiralaringizni shu yerda koʻring</translation>
 <translation id="4469324811108161144">Eslatmalar <ph name="CHARACTER_LIMIT" /> ta belgidan oshmasin.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi fayllarni tahrirlay oladi</translation>
@@ -6251,6 +6253,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6843264316370513305">Tarmoq xatolarini aniqlash</translation>
 <translation id="6843423766595476978">“Ok Google” sozlandi</translation>
 <translation id="6845038076637626672">Yoyib ochish</translation>
+<translation id="6845231585063669905">A–Z</translation>
 <translation id="6846178040388691741">“<ph name="EXTENSION_NAME" />” kengaytmasi <ph name="FILE_NAME" /> faylini <ph name="PRINTER_NAME" /> printerida chop etmoqchi.</translation>
 <translation id="6847125920277401289">Davom etish uchun xotiradan joy oching</translation>
 <translation id="6848388270925200958">Hozir bu qurilmada kartalardan faqat bir nechtasini ishlatish mumkin</translation>
@@ -7402,6 +7405,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7939073735115504773"><ph name="HOST" /> saytida oʻqish va yozish uchun kengaytma belgisini bosing</translation>
 <translation id="7939328347457537652">Qurilma sertifikatlarini boshqarish</translation>
 <translation id="7939412583708276221">Baribir davom etsin</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> asosida saralash</translation>
 <translation id="7941179291434537290">Modem rejimiga tayyorlik:</translation>
 <translation id="7942349550061667556">Qizil</translation>
 <translation id="7943368935008348579">PDF fayllarni yuklab olish</translation>
@@ -8056,7 +8060,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8549316893834449916">Chromebook qurilmangizga – Gmail, Drive, YouTube va boshqa xizmatlarda ishlatadigan Google hisobingizdan kirish mumkin.</translation>
 <translation id="8551388862522347954">Litsenziyalar</translation>
 <translation id="8551588720239073785">Sana va vaqt sozlamalari</translation>
-<translation id="8552102814346875916">“quyidagi saytlar doim faol qolsin” roʻyxatiga saqlash</translation>
+<translation id="8552102814346875916">“Quyidagi saytlar doim faol qolsin” roʻyxatiga saqlash</translation>
 <translation id="8553342806078037065">Boshqa foydalanuvchilarni boshqarish</translation>
 <translation id="8554899698005018844">Til tanlanmagan</translation>
 <translation id="855604308879080518">Android ilovalarga bu Chromebook USB qurilmalaridan foydalanishiga ruxsat berish. Har safar USB qurilma ulanganda ruxsat soʻraladi. Ayrim Android ilovalar qoʻshimcha ruxsatlar soʻrashi ham mumkin.</translation>

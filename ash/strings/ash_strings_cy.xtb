@@ -307,6 +307,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2673968385134502798">Gemau</translation>
 <translation id="2678852583403169292">Dewislen Dewis i siarad</translation>
 <translation id="2689613560355655046">Desg 8</translation>
+<translation id="2695132445805301912">Dangos bysellau a chliciau</translation>
 <translation id="2695305337569143674">y we</translation>
 <translation id="2697697418792422688">Dangos y gosodiadau bysellfwrdd. Mae <ph name="KEYBOARD_NAME" /> wedi'i ddewis.</translation>
 <translation id="2700493154570097719">Gosod eich bysellfwrdd</translation>
@@ -1124,6 +1125,7 @@ Gosodiad newydd</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Ehangu'r camera</translation>
 <translation id="731589979057211264">Mae'r modd Parti Silff wedi'i droi ymlaen.</translation>
+<translation id="7340731148882810149">Dewislen cliciau awtomatig</translation>
 <translation id="7346909386216857016">Iawn, rwy'n deall</translation>
 <translation id="7348093485538360975">Bysellfwrdd ar y sgrîn</translation>
 <translation id="735745346212279324">Mae'r VPN wedi'i ddatgysylltu</translation>
@@ -1301,6 +1303,7 @@ Gosodiad newydd</translation>
 <translation id="826107067893790409">Pwyswch Enter i ddatgloi ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Dileu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Newid dyfais i'r fersiwn flaenorol o fewn awr}zero{Newid dyfais i'r fersiwn flaenorol o fewn # awr}two{Newid dyfais i'r fersiwn flaenorol o fewn # awr}few{Newid dyfais i'r fersiwn flaenorol o fewn # awr}many{Newid dyfais i'r fersiwn flaenorol o fewn # awr}other{Newid dyfais i'r fersiwn flaenorol o fewn # awr}}</translation>
+<translation id="8277261673056602147">Amlygu testun ar eich sgrîn</translation>
 <translation id="8284362522226889623">Sweipiwch i'r chwith gyda phedwar bys i newid i'r ddesg flaenorol</translation>
 <translation id="828708037801473432">Diffodd</translation>
 <translation id="8297006494302853456">Gwan</translation>

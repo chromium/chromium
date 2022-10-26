@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />% သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> တွင် ထုတ်ယူနေသည်</translation>
 <translation id="6499681088828539489">မျှဝေထားသည့် ကွန်ရက်များအတွက် ပရောက်စီများကို ခွင့်မပြုရန်</translation>
+<translation id="6503285896705205014">ဖိုင် <ph name="COUNT" /> ဖိုင် မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="6509122719576673235">နော်ဝေ ဂျီယန်</translation>
 <translation id="6528513914570774834">ဤစက်ပစ္စည်း၏ အခြားအသုံးပြုသူများအား ဤကွန်ရက်ကို အသုံးပြုခွင့်ပေးရန်</translation>
 <translation id="653019979737152879">စင့်ခ် လုပ်နေ <ph name="FILE_NAME" />...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">ဤဖိုင်အမျိုးအစားကို မပံ့ပိုးပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာရန်<ph name="END_LINK_HELP" />။</translation>
 <translation id="7359359531237882347">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးနေသည်…</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> အရ ကြီးစဉ်ငယ်လိုက် စီထားသော ဖိုင်စာရင်း။</translation>
+<translation id="7377161162143020057">ဤဖိုင်မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="7402503521691663770">ChromeOS Flex စက်များ</translation>
 <translation id="7408870451288633753">ချက်</translation>
 <translation id="7417453074306512035">အီသီယိုးပီးယား ကီးဘုတ်</translation>

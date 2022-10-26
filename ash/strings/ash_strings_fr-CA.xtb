@@ -307,6 +307,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour énoncer</translation>
 <translation id="2689613560355655046">Bureau 8</translation>
+<translation id="2695132445805301912">Afficher les clés et les clics</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Afficher les paramètres du clavier. Langue sélectionnée : <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">Définir votre clavier</translation>
@@ -1124,6 +1125,7 @@ Nouvelle installation</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Développer le bouton caméra</translation>
 <translation id="731589979057211264">Le mode Shelf Party est activé.</translation>
+<translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="7348093485538360975">Clavier à l'écran</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
@@ -1301,6 +1303,7 @@ Nouvelle installation</translation>
 <translation id="826107067893790409">Appuyez sur Entrée pour déverrouiller l'appareil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8270450402312105425">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai d'une heure}one{Restaurez la version antérieure de l'appareil dans un délai de # heure}other{Restaurez la version antérieure de l'appareil dans un délai de # heures}}</translation>
+<translation id="8277261673056602147">Mettre du texte en évidence sur votre écran</translation>
 <translation id="8284362522226889623">Balayez vers la gauche avec quatre doigts pour passer au bureau précédent</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>

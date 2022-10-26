@@ -119,6 +119,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1832848789136765277">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la datele sincronizate</translation>
 <translation id="1870148520156231997">Afișează parola</translation>
 <translation id="1872096359983322073">Lanternă</translation>
+<translation id="1891796056033961979">Marcajele salvate, parolele, setările și multe altele sunt disponibile de pe acest ecran.</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
 <translation id="1923342640370224680">Ultima oră</translation>
 <translation id="1930989359703290198">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3533202363250687977">Închide toate filele incognito</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
 <translation id="3551320343578183772">Închide fila</translation>
+<translation id="3575234738189584619">Caută cu Lens</translation>
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
 <translation id="3595252146048399851">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
@@ -494,6 +496,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4904877109095351937">Marchează ca citite</translation>
 <translation id="4908869848243824489">Discover de la Google</translation>
 <translation id="4916679969857390442">Lupă</translation>
+<translation id="4922154083994158612">Mai multă securitate?</translation>
 <translation id="4930714375720679147">Activează</translation>
 <translation id="4941089862236492464">A apărut o problemă la trimiterea articolului.</translation>
 <translation id="4944543191714094452">Caută în pagină…</translation>
@@ -832,6 +835,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7435356471928173109">Dezactivată de administrator</translation>
 <translation id="7438481509621345350">Acum vei vedea articole de la <ph name="CHANNEL_NAME" /> când deschizi o filă nouă.</translation>
 <translation id="7454057999980797137">Stat/Județ</translation>
+<translation id="7459628154744868585">Protecția îmbunătățită este activată</translation>
 <translation id="7464701184726199289">Astfel, datele sincronizate vor fi șterse de pe toate dispozitivele. Setările salvate pentru site-uri nu vor fi șterse și pot reflecta obiceiurile de navigare. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. selectează Chrome.</translation>
 <translation id="7472734401283673885">Numele companiei</translation>
@@ -1024,6 +1028,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9037965129289936994">Afișează versiunea originală</translation>
 <translation id="9039373489628511875">Lățime de bandă</translation>
 <translation id="9055772144595778347">Conectare nereușită</translation>
+<translation id="9055960261314198756">Protecția îmbunătățită este dezactivată</translation>
 <translation id="9057972802061533987">Nu se poate urmări. A apărut o eroare.</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9068336935206019333">Deschide în modul incognito din Chrome</translation>

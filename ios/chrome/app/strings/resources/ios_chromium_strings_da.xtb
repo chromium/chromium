@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Data fra Chromium Sync</translation>
 <translation id="1722370509450468186">Din adgangskode gemmes på din konto (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium-data blev ryddet</translation>
+<translation id="177102542580335555">Du får standardbeskyttelse til denne Chromium-profil</translation>
 <translation id="1838412507805038478">Chromium har bekræftet, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
 <translation id="1843424232666537147">Chromium har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Log ind for at få mest muligt ud af Chromium.</translation>
 <translation id="4555020257205549924">Når denne funktion er aktiveret, vil Chromium tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
+<translation id="4633738821577273991">Få også Udvidet beskyttet browsing til denne Chromium-profil</translation>
 <translation id="4654936625574199632">Chromium sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
 <translation id="4736424910885271643">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chromium-data ryddet fra denne enhed</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="8308172444429103994">Tip til Chromium. Log ind hurtigere ved at vælge din gemte adgangskode øverst på tastaturet.</translation>
+<translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="858114650497379505">Du kan bruge de adgangskoder, du har gemt i Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="865600487977764604">Beskytter dig i Chromium og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>

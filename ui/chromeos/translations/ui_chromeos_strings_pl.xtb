@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Hiszpański</translation>
 <translation id="5438282218546237410">Brak wyników dla: <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Nieprawidłowe hasło</translation>
+<translation id="5459064203055649751">Plik „<ph name="FILENAME" />” już istnieje. Czy chcesz zastąpić go tym, który przenosisz?</translation>
 <translation id="5463231940765244860">Wpisz</translation>
 <translation id="5469868506864199649">Włoski</translation>
 <translation id="5473333559083690127">Ponownie wpisz nowy kod PIN</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="649877868557234318">Rozpakowuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Nie zezwalaj na serwery proxy w sieciach współdzielonych</translation>
+<translation id="6503285896705205014">Kopiowanie <ph name="COUNT" /> plików jest zablokowane przez zasady administratora</translation>
 <translation id="6509122719576673235">Norweski</translation>
 <translation id="6528513914570774834">Zezwól innym użytkownikom tego urządzenia na używanie tej sieci</translation>
 <translation id="653019979737152879">Synchronizuję <ph name="FILE_NAME" />...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Ten typ pliku nie jest obsługiwany. <ph name="BEGIN_LINK_HELP" />Dowiedz się więcej<ph name="END_LINK_HELP" /> o otwieraniu plików w Chrome OS.</translation>
 <translation id="7359359531237882347">Kopiuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista plików posortowana według kolumny <ph name="COLUMN_NAME" /> w kolejności malejącej.</translation>
+<translation id="7377161162143020057">Kopiowanie tego pliku jest zablokowane przez zasady administratora</translation>
 <translation id="7402503521691663770">Urządzenia z ChromeOS Flex</translation>
 <translation id="7408870451288633753">Czeski</translation>
 <translation id="7417453074306512035">klawiatura etiopska</translation>

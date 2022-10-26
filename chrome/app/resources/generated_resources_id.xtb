@@ -895,6 +895,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1805967612549112634">Konfirmasi PIN</translation>
 <translation id="1806335016774576568">Alihkan ke aplikasi lain yang terbuka</translation>
 <translation id="1807246157184219062">Terang</translation>
+<translation id="1809201888580326312">Anda telah memilih untuk tidak menyimpan sandi untuk situs dan aplikasi ini</translation>
 <translation id="1809483812148634490">Aplikasi yang telah Anda download dari Google Play akan dihapus dari Chromebook ini.
     <ph name="LINE_BREAKS1" />
     Konten yang telah Anda beli seperti film, acara TV, musik, buku, atau pembelian dalam aplikasi lainnya juga dapat dihapus.
@@ -1811,6 +1812,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> tidak dapat didownload dengan aman.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="262154978979441594">Latih model suara Asisten Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Jangan izinkan situs apa pun menangani protokol</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Halaman ini mengakses kamera dan mikrofon Anda.</translation>
@@ -4040,6 +4042,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4726710355753484204">Gunakan Ctrl + Alt + Tingkatkan kecerahan untuk memperbesar.
 Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4726710629007580002">Ada peringatan saat mencoba untuk memasang ekstensi ini:</translation>
+<translation id="472738079453283624">Produk</translation>
 <translation id="4727847987444062305">Sesi tamu terkelola</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Administrator<ph name="END_LINK" /> Anda telah menonaktifkan pemeriksaan terhadap software berbahaya</translation>
@@ -4959,6 +4962,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5612734644261457353">Maaf, sandi Anda masih belum dapat diverifikasi. Catatan: jika Anda baru saja mengubah sandi Anda, sandi yang baru akan diterapkan saat Anda keluar, gunakan sandi lama di sini.</translation>
 <translation id="5614190747811328134">Notifikasi Pengguna</translation>
 <translation id="5614553682702429503">Simpan sandi?</translation>
+<translation id="5616571005307953937">Terlama</translation>
 <translation id="5616726534702877126">Tetapkan ukuran</translation>
 <translation id="561698261642843490">Tutup Firefox</translation>
 <translation id="5620540760831960151">Daftar ini dipengaruhi oleh <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5590,6 +5594,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6212168817037875041">Matikan layar</translation>
 <translation id="6212752530110374741">Email Link</translation>
 <translation id="621470880408090483">Jangan izinkan situs terhubung ke perangkat Bluetooth</translation>
+<translation id="6216239400972191926">Situs dan aplikasi yang ditolak</translation>
 <translation id="6216601812881225442">Container Anda tidak mendukung fitur ubah ukuran. Untuk menyesuaikan jumlah ruang yang telah dialokasikan sebelumnya untuk Linux, cadangkan lalu pulihkan ke dalam container baru.</translation>
 <translation id="6216696360484424239">Login secara otomatis</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> offline. Sambungkan ke internet, lalu coba lagi.</translation>

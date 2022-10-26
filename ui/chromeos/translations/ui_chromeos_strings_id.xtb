@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Spanyol</translation>
 <translation id="5438282218546237410">Tidak ada hasil untuk <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Sandi tidak valid</translation>
+<translation id="5459064203055649751">File bernama "<ph name="FILENAME" />" sudah ada. Ingin menggantinya dengan file yang sedang Anda pindahkan?</translation>
 <translation id="5463231940765244860">Masuk</translation>
 <translation id="5469868506864199649">Italia</translation>
 <translation id="5473333559083690127">Masukkan lagi PIN baru</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Jangan izinkan proxy untuk jaringan bersama</translation>
+<translation id="6503285896705205014">Penyalinan <ph name="COUNT" /> file diblokir oleh kebijakan administrator</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Izinkan pengguna lain di perangkat ini untuk menggunakan jaringan ini</translation>
 <translation id="653019979737152879">Menyinkronkan <ph name="FILE_NAME" />...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Jenis file ini tidak didukung. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di ChromeOS.</translation>
 <translation id="7359359531237882347">Menyalin <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="7375951387215729722">Daftar file diurutkan berdasarkan <ph name="COLUMN_NAME" /> dari bawah ke atas.</translation>
+<translation id="7377161162143020057">Penyalinan file ini diblokir oleh kebijakan administrator</translation>
 <translation id="7402503521691663770">Perangkat ChromeOS Flex</translation>
 <translation id="7408870451288633753">Ceko</translation>
 <translation id="7417453074306512035">Keyboard Ethiopia</translation>

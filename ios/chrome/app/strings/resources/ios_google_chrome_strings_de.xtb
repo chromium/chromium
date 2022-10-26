@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
 <translation id="1511320244449497906">Du bist angemeldet und deine Daten werden mit einem Konto synchronisiert, das von <ph name="DOMAIN" /> verwaltet wird. Der Administrator dieser Domain kann jetzt spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chrome verändern können.</translation>
+<translation id="1554731936187952550">Du nutzt den umfangreichen Schutz von Chrome vor schädlichen Websites</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Mit Chrome sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3345341804167540816">Chrome überall nutzen</translation>
+<translation id="3503014945441706099">Hol dir für dieses Chrome-Profil auch erweitertes Safe Browsing</translation>
 <translation id="3522659714780527202">Aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="3641179212828090796">Du kannst das Passwort verwenden, das du in Chrome gespeichert hast, um dich schneller anzumelden</translation>
@@ -135,6 +137,7 @@ Wichtige Hinweise:
 <ph name="BEGIN_INDENT" />  • Daten zu deiner Chrome-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
   • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
   • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Dieses Chrome-Profil wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 <translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>
 </translationbundle>

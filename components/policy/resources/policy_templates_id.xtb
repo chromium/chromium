@@ -1221,7 +1221,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="2168397434410358693">Menunda waktu menganggur saat menggunakan daya AC</translation>
 <translation id="217013996107840632">Parameter command line untuk beralih dari browser alternatif.</translation>
 <translation id="2170233653554726857">Aktifkan pengoptimalan WPAD</translation>
-<translation id="2171952274731262470">Penundaan dan tindakan yang harus diambil saat perangkat tidak beraktivitas dan menggunakan baterai.</translation>
 <translation id="2175353308236295184">Objek konfigurasi JSON khusus aplikasi dengan sekumpulan key-value pair, mis. '"managedConfiguration": { "key1": value1, "key2": value2}'. Kunci ditentukan dalam manifes aplikasi.</translation>
 <translation id="2176115444876446233">Cegah pengguna mengumpulkan jejak performa di seluruh sistem.</translation>
 <translation id="2177696016354404697">Selalu nonaktifkan layar privasi</translation>
@@ -2432,15 +2431,6 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
 <translation id="3278042410658310805">Nonaktifkan respons lisan di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
-<translation id="3282240846541032181">Kebijakan ini memungkinkan admin menentukan aplikasi yang bertindak sebagai pengendali default untuk setiap ekstensi file di <ph name="PRODUCT_OS_NAME" /> yang tidak dapat diubah pengguna.
-      Untuk semua ekstensi file yang tidak ditentukan dalam kebijakan, pengguna bebas menetapkan setelan default mereka sendiri sesuai dengan alur kerja biasa.
-
-      Tentukan aplikasi Chrome berdasarkan ID-nya, seperti <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" /> dan aplikasi web menurut URL yang digunakan di <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, seperti <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
-
-      Perhatikan bahwa aplikasi HARUS mendeklarasikan diri sebagai pengendali file untuk ekstensi file tertentu dalam manifes agar item kebijakan tersebut dapat diterapkan (yaitu, kebijakan TIDAK memperluas kemampuan aplikasi yang ada).
-
-      Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih pengendali default sesuai dengan logika internal.
-      </translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
 <translation id="3286159327013237833">Aktifkan klik otomatis di layar login</translation>
@@ -3763,7 +3753,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="46321462262887935">Perlakukan tombol baris atas sebagai tombol fungsi, tetapi izinkan pengguna mengubahnya</translation>
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
 <translation id="4632566332417930481">Larang penggunaan Developer Tools pada ekstensi yang diinstal oleh kebijakan perusahaan, izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
-<translation id="4635284822166984665">Waktu perangkat akan mulai mengisi daya, disesuaikan dengan zona waktu lokal perangkat.</translation>
 <translation id="4636354638176939375">Nonaktifkan pembuatan pengguna yang diawasi</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
@@ -4340,7 +4329,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, sorotan kursor mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
-<translation id="5279539586558702228">Waktu ketika perangkat akan menggunakan arus listrik AC, disesuaikan dengan zona waktu lokal perangkat.</translation>
 <translation id="5283457834853986457">Nonaktifkan pencari plugin (tidak digunakan lagi)</translation>
 <translation id="5286579716704722323">Izinkan pengguna mengklik halaman peringatan SSL</translation>
 <translation id="5288772341821359899">Jika kebijakan disetel, rentang port UDP yang digunakan oleh WebRTC dibatasi ke interval port yang ditentukan (termasuk titik akhir).
@@ -5174,11 +5162,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6181618732396778048">Jangan izinkan situs apa pun meminta akses tulis ke file atau direktori</translation>
 <translation id="6181783961196084973">Nilai tombol alih pengumpulan data aktivitas aplikasi. Jika disetel ke benar (true), aktivitas aplikasi pengguna akan dilaporkan ke server dengan tujuan untuk ditampilkan di aplikasi <ph name="PRODUCT_NAME" /> anak dan orang tua. Jika disetel ke salah (false), fitur Batas waktu per aplikasi akan tetap berfungsi, tetapi tidak ada data yang akan dilaporkan ke server dan oleh karena itu, tidak ada data yang akan ditampilkan di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6182563940865917569">Izinkan Chrome memutar media secara otomatis</translation>
-<translation id="6183327369896253878">Menetapkan kebijakan akan menetapkan ID aplikasi mana yang ditampilkan <ph name="PRODUCT_OS_NAME" /> sebagai aplikasi yang dipasangi pin di kotak peluncur, dan pengguna tidak dapat mengubahnya.
-
-      Tentukan aplikasi Chrome berdasarkan ID, seperti pjkljhegncpnkpknbcohdijeoejaedia; aplikasi Android berdasarkan nama paket, seperti com.google.android.gm; dan aplikasi web berdasarkan URL yang digunakan di <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, seperti https://google.com/maps.
-
-      Jika tidak ditetapkan, pengguna akan diizinkan mengubah daftar aplikasi yang dipasangi pin di peluncur.</translation>
 <translation id="6184385589352532028">Jangan aktifkan Desk API untuk kontrol ChromeOS pihak ketiga</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
 <translation id="6191963383731098056">Kebijakan ini memungkinkan admin mengonfigurasi warna tema <ph name="PRODUCT_NAME" />. String input harus berupa string warna hex valid yang sesuai dengan format "#RRGGBB".
@@ -6619,7 +6602,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 
       Jika kebijakan tidak disetel atau disetel ke daftar kosong, tidak akan ada mode buka kunci cepat yang tersedia bagi perangkat terkelola.</translation>
 <translation id="754176366378585605">Mengontrol penggunaan File Handling API</translation>
-<translation id="7543109906499122922">Waktu saat perangkat akan mulai menggunakan baterai, disesuaikan dengan zona waktu lokal perangkat.</translation>
 <translation id="7544392541165889987">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> dapat bertindak sebagai proxy di antara <ph name="CLOUD_PRINT_NAME" /> dan printer lama yang terhubung ke mesin. Dengan Akun Google-nya, pengguna dapat mengaktifkan proxy cloud print melalui autentikasi.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengaktifkan proxy, dan mesin tidak dapat membagikan printernya ke <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -6936,7 +6918,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
       Menentukan id ekstensi untuk digunakan sebagai tirai layar pada layar masuk. Ekstensi haruslah bagian dari AppPack yang dikonfigurasi untuk domain ini melalui kebijakan DeviceAppPack.</translation>
 <translation id="7882890448959833986">Sembunyikan peringatan OS tidak didukung</translation>
 <translation id="788480874436328004">Nonaktifkan penyimpanan sandi menggunakan pengelola sandi</translation>
-<translation id="7887379840451099426">Setelan pengelolaan daya hanya berlaku saat menggunakan daya baterai.</translation>
 <translation id="7891884447851425349">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> akan menentukan URL mesin telusur yang digunakan saat penelusuran default. URL harus menyertakan string <ph name="SEARCH_TERM_MARKER" />, yang diganti di kueri dengan istilah penelusuran pengguna.
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SEARCH_URL" />.</translation>

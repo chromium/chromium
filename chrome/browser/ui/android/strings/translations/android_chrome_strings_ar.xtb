@@ -235,7 +235,6 @@
 <translation id="2276231040576210443">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK1" />الإعدادات<ph name="END_LINK1" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="2276696007612801991">‏يُرجى تسجيل الدخول إلى حسابك على Google للتحقُّق من كلمات المرور.</translation>
 <translation id="2278052315791335171">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="SITE" />.</translation>
-<translation id="2279146068164892489">هل تريد فتح تطبيق <ph name="APPNAME" />؟</translation>
 <translation id="2286841657746966508">عنوان الفاتورة</translation>
 <translation id="228704530595896923">قائمة خيارات المشاركة</translation>
 <translation id="230115972905494466">لم يتم العثور على أي أجهزة متوافقة</translation>
@@ -948,7 +947,6 @@
 <translation id="6192907950379606605">عرض أوصاف الصور</translation>
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
 <translation id="6196315980958524839">‏يتم حفظ كلمات المرور في تطبيق "مدير كلمات المرور في Google" على هذا الجهاز.</translation>
-<translation id="620197886010707372">‏هل تريد فتح تطبيق <ph name="APPNAME" /> باستخدام Google Play؟</translation>
 <translation id="6202812185118613467">سجِّل الدخول مرة أخرى لبدء المزامنة.</translation>
 <translation id="6210748933810148297">ليس <ph name="EMAIL" />؟</translation>
 <translation id="6211386937064921208">جارٍ معاينة هذه الصفحة</translation>

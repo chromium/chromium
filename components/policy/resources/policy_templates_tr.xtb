@@ -1221,7 +1221,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="2168397434410358693">AC güçle çalışırken boşta kalma gecikmesi</translation>
 <translation id="217013996107840632">Alternatif tarayıcıdan geçiş yapmak için komut satırı parametreleri.</translation>
 <translation id="2170233653554726857">WPAD optimizasyonunu etkinleştir</translation>
-<translation id="2171952274731262470">Cihaz boşta kalıp pil gücüyle çalışırken yapılacak işlemler ve gecikmeler</translation>
 <translation id="2175353308236295184">Bir anahtar/değer çifti grubuna sahip uygulamaya özel JSON yapılandırma nesnesi, ör. '"managedConfiguration": { "key1": value1, "key2": value2 }'. Anahtarlar, uygulama manifest dosyasında tanımlanır.</translation>
 <translation id="2176115444876446233">Kullanıcıların sistem genelinde performans izleme verilerini toplamasını engeller.</translation>
 <translation id="2177696016354404697">Gizlilik ekranını her zaman devre dışı bırak</translation>
@@ -2417,15 +2416,6 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
 <translation id="3264793472749429012">Varsayılan arama sağlayıcı kodlamaları</translation>
 <translation id="3273221114520206906">Varsayılan JavaScript ayarı</translation>
 <translation id="3278042410658310805">Giriş ekranında sözlü geri bildirimi devre dışı bırak ve kullanıcının bunu geçici olarak etkinleştirmesine izin ver</translation>
-<translation id="3282240846541032181">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> ürününde kullanıcıların değiştiremeyeceği ilgili dosya uzantıları için varsayılan işleyici görevi gören uygulamaları belirtebilir.
-      Kullanıcılar, politikada belirtilmeyen tüm dosya uzantıları için normal iş akışına göre kendi varsayılanlarını ayarlayabilir.
-
-      Chrome uygulamalarını kimliklerine göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />), web uygulamalarını da <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> politikasında kullanılan URL'lere göre (ör. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />) belirtin.
-
-      İlgili politika öğesinin etkili olması için (politika, mevcut uygulama özelliklerini ARTIRMAZ) uygulamaların, manifest dosyalarında belirtilen dosya uzantılarının dosya işleyicisi olarak beyan edilmeleri GEREKİR.
-
-      Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, dahili mantık doğrultusunda varsayılan işleyiciler seçebilir.
-      </translation>
 <translation id="328347261792478720">Varsayılan olarak tarayıcı, kullanıcıya göre kişiselleştirilmiş medya önerileri gösterir. Bu politika Devre Dışı değerine ayarlanırsa bu öneriler kullanıcıdan gizlenir. Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıya medya önerileri gösterilir.</translation>
 <translation id="3284094172359247914">WebUSB API'sinin kullanımını kontrol et</translation>
 <translation id="3286159327013237833">Giriş ekranında otomatik tıklamayı etkinleştir</translation>
@@ -3727,7 +3717,6 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> için listelenen içerik türlerini işlemeye izin ver</translation>
 <translation id="4632566332417930481">Kurumsal politika tarafından yüklenen uzantılarda Geliştirici Araçları kullanımına izin verme, diğer bağlamlarda Geliştirici Araçları kullanımına izin ver</translation>
-<translation id="4635284822166984665">Cihazın şarj olmaya başlayacağı zaman (cihazın yerel saat dilimine göre).</translation>
 <translation id="4636354638176939375">Gözetimli kullanıcı oluşturmayı devre dışı bırak</translation>
 <translation id="4646626362889216307">Politikanın ayarlanması, farklı kaynaklardan seçilen politikaların aynı kapsamda ve düzeyde birleştirilmesine olanak tanır. Bu birleştirme, her kaynaktaki sözlüğün ilk düzey anahtarlarında meydana gelir. En yüksek öncelikli kaynaktan gelen anahtar tercih edilir.
 
@@ -4300,7 +4289,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında imleci vurgulama başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
-<translation id="5279539586558702228">Cihazın alternatif akım kullanarak çalışacağı zaman (cihazın yerel saat dilimine göre).</translation>
 <translation id="5283457834853986457">Eklenti bulucuyu devre dışı bırak (kullanımdan kaldırıldı)</translation>
 <translation id="5286579716704722323">Kullanıcıların SSL uyarı sayfalarını tıklamasına izin ver</translation>
 <translation id="5288772341821359899">Politika ayarlanırsa, WebRTC tarafından kullanılan UDP bağlantı noktası aralığı, belirtilen bağlantı noktası aralığı (başlangıç ve bitiş noktaları dahil) kullanılacak şekilde kısıtlanır.
@@ -5124,11 +5112,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="6181618732396778048">Hiçbir sitenin dosya ve dizinlere yazma erişimi istemesine izin verme</translation>
 <translation id="6181783961196084973">Uygulama etkinliği toplama düğmesinin değeri. Doğru değerine ayarlanırsa kullanıcının uygulama etkinliği, çocuk ve ebeveyne ait <ph name="PRODUCT_NAME" /> uygulamasında görüntülenmek amacıyla sunucuya bildirilir. Yanlış değerine ayarlanırsa Uygulama başına süre sınırları özelliği çalışmaya devam eder, ancak sunucuya hiçbir veri bildirilmeyeceğinden <ph name="PRODUCT_NAME" /> içinde de görüntülenmez.</translation>
 <translation id="6182563940865917569">Chrome'un medyayı otomatik oynatmasına izin ver</translation>
-<translation id="6183327369896253878">Politikanın ayarlanması, <ph name="PRODUCT_OS_NAME" /> ürününün başlatıcı çubuğunda sabitlenmiş uygulamalar olarak gösterdiği uygulama tanımlayıcılarını sabitler ve kullanıcılar bunları değiştiremez.
-
-      Chrome uygulamalarını kimliklerine göre (ör. pjkljhegncpnkpknbcohdijeoejaedia); Android uygulamalarını paket adlarına göre (ör. com.google.android.gm); web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> öğesinde kullanılan URL'lerine göre (ör. https://google.com/maps) belirtir.
-
-      Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uygulamalar listesini değiştirmesine izin verir.</translation>
 <translation id="6184385589352532028">Üçüncü taraf Chrome OS kontrolü için Desk API'yi etkinleştirme</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
@@ -6569,7 +6552,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen cihazlarda hızlı kilit açma modları kullanılamaz.</translation>
 <translation id="754176366378585605">File Handling API'nin kullanımını kontrol et</translation>
-<translation id="7543109906499122922">Cihazın pil gücünü kullanarak çalışmaya başlayacağı zaman (cihazın yerel saat dilimine göre).</translation>
 <translation id="7544392541165889987">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />; <ph name="CLOUD_PRINT_NAME" /> ile makineye bağlı eski yazıcılar arasında bir proxy gibi çalışır. Kullanıcılar Google Hesapları ile kimlik doğrulama yaparak cloud print proxy'sini etkinleştirebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar proxy'yi etkinleştiremez ve makine kendi yazıcılarını <ph name="CLOUD_PRINT_NAME" /> ile paylaşamaz.</translation>
@@ -6886,7 +6868,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Oturum açma ekranında ekran koruyucu olarak kullanılacak uzantının kimliğini belirler. Uzantı, DeviceAppPack politikası kullanılarak bu alan adı için yapılandırılmış AppPack'in bir parçası olmalıdır.</translation>
 <translation id="7882890448959833986">Desteklenmeyen OS uyarısını gizle</translation>
 <translation id="788480874436328004">Şifre yöneticisini kullanarak şifre kaydetmeyi devre dışı bırak</translation>
-<translation id="7887379840451099426">Yalnızca pil gücüyle çalışırken geçerli olan güç yönetimi ayarları</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> politikasının ayarlanması, varsayılan arama sırasında kullanılan arama motorunu belirtir. URL, sorguda kullanıcının arama terimi ile değiştirilen <ph name="SEARCH_TERM_MARKER" /> dizesini içermelidir.
 
       Google'ın arama URL'sini şu şekilde belirtebilirsiniz: <ph name="GOOGLE_SEARCH_URL" />.</translation>

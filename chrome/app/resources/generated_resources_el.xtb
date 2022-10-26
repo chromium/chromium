@@ -2468,6 +2468,7 @@
 <translation id="3241680850019875542">Επιλέξτε τον κατάλογο ρίζας της επέκτασης που θέλετε να στοιβάξετε. Για να ενημερώσετε μια επέκταση, επιλέξτε επίσης το αρχείο ιδιωτικού κλειδιού που θα επαναχρησιμοποιηθεί.</translation>
 <translation id="3242289508736283383">Θα πρέπει να εγκατασταθεί μια εφαρμογή με χαρακτηριστικό μανιφέστου kiosk_only στη λειτουργία kiosk του Chrome OS</translation>
 <translation id="3242665648857227438">Σε αυτό το προφίλ χρησιμοποιούνται ρυθμίσεις διακομιστή μεσολάβησης Chrome OS.</translation>
+<translation id="3243017971870859287">Ανάγνωση σειριακών αριθμών συσκευής και στοιχείων ChromeOS Flex</translation>
 <translation id="3244294424315804309">Συνέχιση σίγασης ήχου</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Σφάλμα δικτύου</translation>
 <translation id="3248902735035392926">Η ασφάλεια μετράει. Αφιερώστε ένα λεπτό για να <ph name="BEGIN_LINK" />ελέγξετε τις επεκτάσεις σας τώρα<ph name="END_LINK" /></translation>
@@ -2524,6 +2525,7 @@
 <translation id="3297105622164376095">Επιτρέπεται η εμφάνιση προτροπών σύνδεσης τρίτου μέρους</translation>
 <translation id="3297536526040732495">Όταν είστε συνδεδεμένοι, συνδέει προσωρινά αυτά τα δεδομένα με τον Λογαριασμό σας Google, για να σας προστατεύσει σε όλες τις εφαρμογές Google</translation>
 <translation id="329838636886466101">Επιδιόρθωση</translation>
+<translation id="3298438307450647315">Ανάγνωση πληροφοριών και δεδομένων συσκευής Chrome OS</translation>
 <translation id="3298789223962368867">Καταχωρήθηκε μη έγκυρη διεύθυνση URL.</translation>
 <translation id="32991397311664836">Συσκευές:</translation>
 <translation id="33022249435934718">Χειρισμοί GDI</translation>
@@ -2630,6 +2632,7 @@
 <translation id="3402255108239926910">Επιλέξτε ένα avatar</translation>
 <translation id="3402585168444815892">Εγγραφή στη λειτουργία επίδειξης</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Ανάγνωση πληροφοριών και δεδομένων συσκευής ChromeOS Flex</translation>
 <translation id="3404065873681873169">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης για αυτόν τον ιστότοπο</translation>
 <translation id="3405664148539009465">Προσαρμογή γραμματοσειρών</translation>
 <translation id="3405763860805964263">…</translation>
@@ -4185,6 +4188,7 @@
 <translation id="486635084936119914">Άνοιγμα ορισμένων τύπων αρχείων αυτόματα μετά τη λήψη</translation>
 <translation id="4868281708609571334">Εκπαιδεύστε τον Βοηθό Google να αναγνωρίζει τη φωνή του παιδιού <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Αυτήν τη στιγμή δεν γίνεται εστίαση σε αυτό το παράθυρο διαλόγου. Πατήστε Command-Shift-Επιλογή A για εστίαση σε αυτό το παράθυρο διαλόγου.</translation>
+<translation id="4869170227080975044">Ανάγνωση πληροφοριών δικτύου Chrome OS</translation>
 <translation id="4870724079713069532">Μπορείτε να ανοίξετε και να επεξεργαστείτε υποστηριζόμενα αρχεία με αυτήν την εφαρμογή από την Εξερεύνηση αρχείων ή από άλλες εφαρμογές. Για να ελέγξετε ποια αρχεία ανοίγουν σε αυτήν την εφαρμογή από προεπιλογή, μεταβείτε στις <ph name="BEGIN_LINK" />ρυθμίσεις των Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Καταχωρίστε τον κωδικό πρόσβασης που παρασχέθηκε από τον διαχειριστή, για να λάβετε πληροφορίες διαμόρφωσης</translation>
 <translation id="4870995365819149457">Ορισμένοι υποστηριζόμενοι σύνδεσμοι θα εξακολουθούν να ανοίγουν στις εφαρμογές <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> και σε μία ακόμη εφαρμογή.</translation>
@@ -4917,6 +4921,7 @@
 <translation id="5571066253365925590">Το Bluetooth έχει ενεργοποιηθεί</translation>
 <translation id="5571092938913434726">Καθολικά στοιχεία ελέγχου μέσων</translation>
 <translation id="5571832155627049070">Προσαρμογή του προφίλ σας</translation>
+<translation id="5572252023412311448">Εμφάνιση λεπτομερειών ιστοτόπου για <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Θα λαμβάνετε βελτιωμένες προτάσεις στη γραμμή διευθύνσεων.</translation>
 <translation id="5572851009514199876">Εκκινήστε και συνδεθείτε στο Chrome, έτσι ώστε το Chrome να μπορεί να ελέγξει εάν έχετε δικαίωμα πρόσβασης σε αυτόν τον ιστότοπο.</translation>
 <translation id="557506220935336383">Προβολή αδειών επέκτασης για άλλους ιστοτόπους</translation>
@@ -6107,6 +6112,7 @@
 <translation id="6703212423117969852">Μπορείτε να δοκιμάσετε ξανά αργότερα στο Chrome.</translation>
 <translation id="6703254819490889819">Επαναφορά αντιγράφου ασφαλείας</translation>
 <translation id="6706210727756204531">Εύρος</translation>
+<translation id="6707122714992751648">Εκτέλεση διαγνωστικών ελέγχων Chrome OS</translation>
 <translation id="6707389671160270963">Πιστοποιητικό πελάτη SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> και μία ακόμη καρτέλα}other{<ph name="PAGE_TITLE" /> και # ακόμη καρτέλες}}</translation>
 <translation id="6709133671862442373">Ειδήσεις</translation>
@@ -6285,6 +6291,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> δ.</translation>
 <translation id="6860097299815761905">Ρυθμίσεις διακομιστή μεσολάβησης...</translation>
 <translation id="6860427144121307915">Άνοιγμα σε καρτέλα</translation>
+<translation id="6861179941841598556">Περισσότερες ενέργειες για το προφίλ <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Επιτρέπονται όλες οι επεκτάσεις</translation>
 <translation id="686366188661646310">Διαγραφή κωδικού πρόσβασης;</translation>
 <translation id="6865313869410766144">Δεδομένα φόρμας αυτόματης συμπλήρωσης</translation>
@@ -6374,6 +6381,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Μπορείτε να διαχειριστείτε τις ρυθμίσεις από το μενού κάρτας ή να δείτε περισσότερες επιλογές στην ενότητα Προσαρμογή του Chrome.</translation>
+<translation id="6949089178006131285">Ανάγνωση πληροφοριών δικτύου ChromeOS Flex</translation>
 <translation id="6949434160682548041">Κωδικός πρόσβασης (προαιρετικά)</translation>
 <translation id="6950627417367801484">Επαναφορά εφαρμογών</translation>
 <translation id="6952242901357037157">Μπορείτε επίσης να εμφανίσετε τους κωδικούς πρόσβασης από τον <ph name="BEGIN_LINK" />Λογαριασμό σας Google<ph name="END_LINK" /> εδώ.</translation>
@@ -6936,7 +6944,7 @@
 <translation id="7495778526395737099">Ξεχάσατε τον προηγούμενο κωδικό πρόσβασης σας;</translation>
 <translation id="7497981768003291373">Δεν υπάρχουν αρχεία καταγραφής κειμένου WebRTC τα οποία λήφθηκαν πρόσφατα.</translation>
 <translation id="7501957181231305652">ή</translation>
-<translation id="7502220299952823578">Προσθήκη στη λίστα Να διατηρούνται πάντα ενεργοί αυτοί οι ιστότοποι</translation>
+<translation id="7502220299952823578">Προσθήκη στη λίστα "να διατηρούνται πάντα ενεργοί αυτοί οι ιστότοποι"</translation>
 <translation id="7503191893372251637">Τύπος πιστοποιητικού Netscape</translation>
 <translation id="7503985202154027481">Μια καταγραφή της επίσκεψής σας σε αυτόν τον ιστότοπο θα διατηρηθεί στο κλειδί ασφαλείας.</translation>
 <translation id="750509436279396091">Άνοιγμα φακέλου λήψεων</translation>
@@ -7990,6 +7998,7 @@
 <translation id="8463001014623882202">Η εξουσιοδότηση απέτυχε</translation>
 <translation id="846374874681391779">Γραμμή λήψεων</translation>
 <translation id="8463955938112983119">Το <ph name="PLUGIN_NAME" /> απενεργοποιήθηκε.</translation>
+<translation id="846399539692727039">Εκτέλεση διαγνωστικών ελέγχων ChromeOS Flex</translation>
 <translation id="8464132254133862871">Αυτός ο λογαριασμός χρήστη δεν είναι κατάλληλος για την υπηρεσία.</translation>
 <translation id="8465252176946159372">Μη έγκυρο</translation>
 <translation id="8465444703385715657">Η προσθήκη <ph name="PLUGIN_NAME" /> απαιτεί την άδειά σας για να εκτελεστεί</translation>
@@ -8136,6 +8145,7 @@
 <translation id="8624315169751085215">Αντιγραφή στο πρόχειρο</translation>
 <translation id="8624354461147303341">Λήψη εκπτώσεων</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Ανάγνωση σειριακών αριθμών συσκευής και στοιχείων Chrome OS</translation>
 <translation id="862542460444371744">&amp;Επεκτάσεις</translation>
 <translation id="8625663000550647058">Δεν επιτρέπεται να χρησιμοποιούν το μικρόφωνό σας</translation>
 <translation id="8625916342247441948">Να μην επιτρέπεται στους ιστοτόπους να συνδέονται σε συσκευές HID</translation>

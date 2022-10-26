@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">게임</translation>
 <translation id="2678852583403169292">텍스트 읽어주기 메뉴</translation>
 <translation id="2689613560355655046">데스크 8</translation>
+<translation id="2695132445805301912">키 및 클릭 표시</translation>
 <translation id="2695305337569143674">웹</translation>
 <translation id="2697697418792422688">키보드 설정을 표시합니다. <ph name="KEYBOARD_NAME" />이(가) 선택되었습니다.</translation>
 <translation id="2700493154570097719">키보드 설정</translation>
@@ -1124,6 +1125,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
 <translation id="731589979057211264">Shelf Party가 켜져 있습니다.</translation>
+<translation id="7340731148882810149">자동 클릭 메뉴</translation>
 <translation id="7346909386216857016">확인</translation>
 <translation id="7348093485538360975">터치 키보드</translation>
 <translation id="735745346212279324">VPN 연결 끊김</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409">Enter 키를 눌러서 <ph name="USER_EMAIL_ADDRESS" /> 잠금 해제</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8270450402312105425">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 되돌리세요}other{#시간 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
+<translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>
 <translation id="8284362522226889623">이전 데스크로 전환하려면 네 손가락을 사용해 왼쪽으로 스와이프하세요.</translation>
 <translation id="828708037801473432">사용 안함</translation>
 <translation id="8297006494302853456">약함</translation>

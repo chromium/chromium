@@ -884,6 +884,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1805967612549112634">Confirma el PIN</translation>
 <translation id="1806335016774576568">Canvia a una altra aplicació oberta</translation>
 <translation id="1807246157184219062">Clar</translation>
+<translation id="1809201888580326312">Has triat no desar les contrasenyes d'aquests llocs web i aplicacions</translation>
 <translation id="1809483812148634490">Les aplicacions que hagis baixat de Google Play se suprimiran d'aquest Chromebook.
       <ph name="LINE_BREAKS1" />
       També pot ser que se suprimeixi el contingut que hagis comprat, com ara pel·lícules, sèries de televisió, música, llibres o altres compres fetes des de les aplicacions.
@@ -1796,6 +1797,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> no es pot baixar de manera segura.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Entrena el model de veu de l'Assistent de Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" />)</translation>
 <translation id="26224892172169984">No permetis que cap lloc web gestioni els protocols</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Aquesta pàgina té accés a la càmera i al micròfon</translation>
@@ -2418,6 +2420,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3197453258332670132">Si mantens el text premut o hi fas clic amb el botó dret, es mostrarà informació relacionada amb el text seleccionat</translation>
 <translation id="3199127022143353223">Servidors</translation>
 <translation id="3200061262156232574">Al carretó electrònic</translation>
+<translation id="3201237270673604992">De la Z a la A</translation>
 <translation id="3201422919974259695">Els dispositius USB disponibles es mostraran aquí.</translation>
 <translation id="3202131003361292969">Camí</translation>
 <translation id="3202173864863109533">S'està silenciant l'àudio d'aquesta pestanya.</translation>
@@ -3740,6 +3743,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4460014764210899310">Desagrupa</translation>
 <translation id="4462159676511157176">Servidors de noms personalitzats</translation>
 <translation id="4465236939126352372">S'ha establert <ph name="TIME" /> com a límit de temps per a <ph name="APP_NAME" /></translation>
+<translation id="4465649939134800363">Opcions d'ordenació</translation>
 <translation id="4466839823729730432">Consulta els teus records aquí</translation>
 <translation id="4469324811108161144">Les notes poden desar fins a <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pot editar els fitxers que conté la carpeta <ph name="FOLDERNAME" /></translation>
@@ -4949,6 +4953,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5612734644261457353">Encara no s'ha pogut verificar la contrasenya. Nota: Si l'has canviat fa poc, la contrasenya nova s'aplicarà un cop hagis tancat la sessió. Fes servir la contrasenya anterior aquí.</translation>
 <translation id="5614190747811328134">Avís per a l'usuari </translation>
 <translation id="5614553682702429503">Vols desar la contrasenya?</translation>
+<translation id="5616571005307953937">La més antiga</translation>
 <translation id="5616726534702877126">Reserva la mida</translation>
 <translation id="561698261642843490">Tanca Firefox</translation>
 <translation id="5620540760831960151"><ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> afecten aquesta llista</translation>
@@ -5578,6 +5583,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6212168817037875041">Desactiva la pantalla</translation>
 <translation id="6212752530110374741">Envia l'enllaç per correu electrònic</translation>
 <translation id="621470880408090483">No permetis que els llocs web es connectin a dispositius Bluetooth</translation>
+<translation id="6216239400972191926">Aplicacions i llocs web rebutjats</translation>
 <translation id="6216601812881225442">El teu contenidor no admet el canvi de mida. Per ajustar la quantitat d'espai que s'assigna prèviament a Linux, crea una còpia de seguretat i, a continuació, fes la restauració en un contenidor nou.</translation>
 <translation id="6216696360484424239">Inicia la sessió automàticament</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> no té connexió. Connecta't a Internet i torna-ho a provar.</translation>
@@ -6249,6 +6255,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6843264316370513305">Depuració de la xarxa</translation>
 <translation id="6843423766595476978">Ok Google ja està configurat</translation>
 <translation id="6845038076637626672">Obre-la maximitzada</translation>
+<translation id="6845231585063669905">De la A a la Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" vol imprimir <ph name="FILE_NAME" /> amb <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Allibera espai per continuar</translation>
 <translation id="6848388270925200958">En aquest moment tens targetes que només es poden fer servir en aquest dispositiu</translation>
@@ -7403,6 +7410,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7939073735115504773">Fes clic a la icona d'aquesta extensió per llegir i canviar <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Gestiona els certificats del dispositiu</translation>
 <translation id="7939412583708276221">Continua de totes maneres</translation>
+<translation id="7940265372707990269">Ordena per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparació de la compartició de xarxa:</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7943368935008348579">Baixa els fitxers PDF</translation>

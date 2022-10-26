@@ -235,7 +235,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2276231040576210443">In den <ph name="BEGIN_LINK1" />Einstellungen<ph name="END_LINK1" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="2276696007612801991">Melde dich in deinem Google-Konto an, um deine Passwörter zu prüfen</translation>
 <translation id="2278052315791335171">Durch das Entfernen dieses Passworts wird dein Konto auf <ph name="SITE" /> nicht gelöscht</translation>
-<translation id="2279146068164892489">App für <ph name="APPNAME" /> öffnen?</translation>
 <translation id="2286841657746966508">Rechnungsadresse</translation>
 <translation id="228704530595896923">Liste der Freigabeoptionen.</translation>
 <translation id="230115972905494466">Keine kompatiblen Geräte gefunden</translation>
@@ -306,7 +305,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
-<translation id="2709516037105925701">Automatisches Ausfüllen</translation>
+<translation id="2709516037105925701">Autofill</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2711073837061989559">Tests</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
@@ -947,7 +946,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6192907950379606605">Bildbeschreibungen abrufen</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
 <translation id="6196315980958524839">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert</translation>
-<translation id="620197886010707372">App für <ph name="APPNAME" /> mit Google Play öffnen?</translation>
 <translation id="6202812185118613467">Melde dich wieder an, um die Synchronisierung zu starten</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht deine E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>

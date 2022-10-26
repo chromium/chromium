@@ -1130,7 +1130,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3890664840433101773">Thêm email</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">Thẻ đã hết hạn</translation>
-<translation id="3906600011954732550">B5-Extra</translation>
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3909477809443608991"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh của thiết bị sẽ được Google xác minh và trang web này có thể truy cập vào thông tin đó.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
@@ -1537,7 +1536,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4950898438188848926">Nút chuyển đổi thẻ, nhấn phím Enter để chuyển sang thẻ đang mở, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Tác vụ</translation>
 <translation id="4953689047182316270">Phản hồi các sự kiện trợ năng</translation>
-<translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">Mở rộng danh sách</translation>
 <translation id="4964505745997821360">Bảo hiểm y tế</translation>
 <translation id="4968522289500246572">Ứng dụng này được thiết kế cho thiết bị di động và có thể thay đổi kích thước không chuẩn xác. Ứng dụng có thể gặp sự cố hoặc khởi động lại.</translation>
@@ -1720,7 +1718,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5379027395132364855">Nút tạo bản trình bày, nhấn phím Enter để tạo nhanh một bản trình bày mới trong Google Trang trình bày</translation>
 <translation id="5385857628869214740">Hài hước</translation>
 <translation id="5386426401304769735">Chuỗi chứng chỉ cho trang web này có chứa một chứng chỉ đã ký bằng SHA-1.</translation>
-<translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">May viền ở bên phải</translation>
 <translation id="5398772614898833570">Đã chặn quảng cáo</translation>
 <translation id="5400836586163650660">Màu xám</translation>
@@ -2313,6 +2310,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Mức thu phóng</translation>
 <translation id="7016992613359344582">Các khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng.</translation>
+<translation id="7023162328967545559">Cảnh báo của quản trị viên</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7030436163253143341">Chứng chỉ không hợp lệ</translation>
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>
@@ -2428,7 +2426,6 @@ Thông tin chi tiết bổ sung:
 <translation id="733923710415886693">Chứng chỉ của máy chủ đã không được tiết lộ qua Tính minh bạch của chứng chỉ.</translation>
 <translation id="7341357280245177602">Xe đã qua sử dụng</translation>
 <translation id="7346048084945669753">Được liên kết:</translation>
-<translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7349921148288539306">Được phép cho đến khi bạn đóng thẻ này</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
 <translation id="7353601530677266744">Dòng Lệnh</translation>
@@ -2500,6 +2497,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7489473601138133813">Hoạch định và nguồn lực xây dựng sự nghiệp</translation>
 <translation id="7495528107193238112">Nội dung này bị chặn. Hãy liên hệ với chủ sở hữu trang web để khắc phục sự cố.</translation>
 <translation id="7497998058912824456">Nút tạo tài liệu, nhấn phím Enter để tạo nhanh một tài liệu mới trên Google Tài liệu</translation>
+<translation id="7501663406926337752">Tổ chức của bạn đã gắn cờ trang web bạn sắp truy cập</translation>
 <translation id="7501853161948120656">Tài nguyên giáo dục</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />sẽ không lưu<ph name="END_EMPHASIS" /> những thông tin sau:
         <ph name="BEGIN_LIST" />
@@ -2746,6 +2744,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8094917007353911263">Mạng mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Đã xóa các thẻ không hợp lệ</translation>
+<translation id="8100666323495101203">Tổ chức của bạn đã xác định <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> là trang web có thể vi phạm chính sách. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Hội nghị và ấn phẩm học thuật</translation>
 <translation id="8103161714697287722">Phương thức thanh toán</translation>
 <translation id="8103643211515685474">Vẫn in</translation>

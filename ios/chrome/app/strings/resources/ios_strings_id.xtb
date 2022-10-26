@@ -119,6 +119,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
 <translation id="1870148520156231997">Tampilkan Sandi</translation>
 <translation id="1872096359983322073">Senter</translation>
+<translation id="1891796056033961979">Bookmark, sandi, setelan, dan lainnya yang Anda simpan tersedia dari layar ini.</translation>
 <translation id="1911619930368729126">Upload ke Google Drive</translation>
 <translation id="1923342640370224680">Sejam Terakhir</translation>
 <translation id="1930989359703290198">Organisasi mengizinkan Anda login hanya dengan akun tertentu. Akun yang tidak diizinkan akan disembunyikan. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3533202363250687977">Tutup Semua Tab Samaran</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
+<translation id="3575234738189584619">Telusuri dengan Lens</translation>
 <translation id="3581564640715911333">Tawarkan penerjemahan halaman ke dalam bahasa lain</translation>
 <translation id="3588820906588687999">Buka Gambar di Tab Baru</translation>
 <translation id="3595252146048399851">Anda dapat memilih jenis data yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
@@ -494,6 +496,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4904877109095351937">Tandai Sudah Dibaca</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4916679969857390442">Lensa</translation>
+<translation id="4922154083994158612">Keamanan yang Lebih Baik?</translation>
 <translation id="4930714375720679147">Aktifkan</translation>
 <translation id="4941089862236492464">Maaf, terjadi error saat berbagi item Anda.</translation>
 <translation id="4944543191714094452">Cari di Halaman…</translation>
@@ -832,6 +835,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
 <translation id="7438481509621345350">Anda sekarang akan melihat cerita dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="7454057999980797137">Prov./County</translation>
+<translation id="7459628154744868585">Perlindungan yang Ditingkatkan Aktif</translation>
 <translation id="7464701184726199289">Tindakan ini akan menghapus data yang disinkronkan dari semua perangkat. Setelan situs yang disimpan tidak akan dihapus dan dapat mencerminkan kebiasaan penjelajahan Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3 Pilih Chrome</translation>
 <translation id="7472734401283673885">Nama Perusahaan</translation>
@@ -1024,6 +1028,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9037965129289936994">Tampilkan Halaman Asli</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9055772144595778347">Tidak Dapat Login</translation>
+<translation id="9055960261314198756">Perlindungan yang Ditingkatkan Nonaktif</translation>
 <translation id="9057972802061533987">Tidak dapat mengikuti. Terjadi error.</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9068336935206019333">Buka di Samaran Chrome</translation>

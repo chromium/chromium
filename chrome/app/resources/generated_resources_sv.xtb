@@ -895,6 +895,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1805967612549112634">Bekräfta pinkod</translation>
 <translation id="1806335016774576568">Byt till en annan öppen app</translation>
 <translation id="1807246157184219062">Ljus</translation>
+<translation id="1809201888580326312">Du har valt att inte spara lösenord för dessa webbplatser och appar</translation>
 <translation id="1809483812148634490">Appar som du har laddat ned från Google Play raderas från Chromebook.
     <ph name="LINE_BREAKS1" />
     Innehåll du har köpt, t.ex. filmer, tv-program, musik, böcker eller andra köp i appar, kanske också raderas.
@@ -1811,6 +1812,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2620215283731032047">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="262154978979441594">Träna Google-assistentens röstmodell</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" />)</translation>
 <translation id="26224892172169984">Tillåt inte att någon webbplats hanterar protokoll</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Din kamera och mikrofon används på sidan.</translation>
@@ -4959,6 +4961,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5612734644261457353">Det gick inte att verifiera lösenordet nu heller. Obs! Om du nyligen har bytt lösenord börjar det nya lösenordet gälla när du loggar ut. Använd det gamla lösenordet här.</translation>
 <translation id="5614190747811328134">Meddelande till användaren</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
+<translation id="5616571005307953937">Äldsta</translation>
 <translation id="5616726534702877126">Reservera storlek</translation>
 <translation id="561698261642843490">Stäng Firefox</translation>
 <translation id="5620540760831960151">Den här listan påverkas av <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5590,6 +5593,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6212168817037875041">Stäng av skärmen</translation>
 <translation id="6212752530110374741">Skicka länk via e-post</translation>
 <translation id="621470880408090483">Tillåt inte att webbplatser ansluter till enheter via Bluetooth</translation>
+<translation id="6216239400972191926">Avvisade webbplatser och appar</translation>
 <translation id="6216601812881225442">Det går inte att ändra storlek på den här behållaren. Om du vill justera hur mycket utrymme som ska förhandstilldelas Linux säkerhetskopierar du behållaren och återställer den till en ny behållare.</translation>
 <translation id="6216696360484424239">Logga in automatiskt</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> är offline. Anslut till internet och försök igen.</translation>
@@ -5877,7 +5881,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Det finns känsligt eller skadligt innehåll i denna data}=1{Filen har känsligt eller skadligt innehåll}other{Filerna har känsligt eller skadligt innehåll}}</translation>
-<translation id="6497548114956205206">Läs mer om energisparläge</translation>
+<translation id="6497548114956205206">Läs mer om energisparläget</translation>
 <translation id="6497784818439587832">Ändra skärmstorlek för att göra objekt på skärmen större eller mindre</translation>
 <translation id="6497789971060331894">Omvänd scrollning på musen</translation>
 <translation id="6498249116389603658">&amp;Alla dina språk</translation>
@@ -7858,7 +7862,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8340547030807793004">Fler åtgärder för <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Granska <ph name="BEGIN_BOLD" />1 webbplats<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}other{Granska <ph name="BEGIN_BOLD" />{NUM_SITES} webbplatser<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}}</translation>
 <translation id="8342221978608739536">Jag försökte inte</translation>
-<translation id="8342399870062010251">Läs mer om minnessparläge</translation>
+<translation id="8342399870062010251">Läs mer om minnessparläget</translation>
 <translation id="8342861492835240085">Välj en samling</translation>
 <translation id="8345848587667658367">Nu kan du se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>

@@ -2436,6 +2436,7 @@
 <translation id="3197453258332670132">Прикажува поврзани информации за избраниот текст при кликнување со десно копче или долго притискање</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3200061262156232574">Во вашата кошничка за купување</translation>
+<translation id="3201237270673604992">Ш до А</translation>
 <translation id="3201422919974259695">Достапните USB-уреди ќе се појават тука.</translation>
 <translation id="3202131003361292969">Патека</translation>
 <translation id="3202173864863109533">Звукот на оваа картичка е исклучен.</translation>
@@ -3759,6 +3760,7 @@
 <translation id="4460014764210899310">Одгрупирајте</translation>
 <translation id="4462159676511157176">Сервери со приспособено име</translation>
 <translation id="4465236939126352372">Поставено е временско ограничување од <ph name="TIME" /> за <ph name="APP_NAME" /></translation>
+<translation id="4465649939134800363">Опции за подредување</translation>
 <translation id="4466839823729730432">Видете ги спомените овде</translation>
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да изменува датотеки во <ph name="FOLDERNAME" /></translation>
@@ -6274,6 +6276,7 @@
 <translation id="6843264316370513305">Отстранување грешки на мрежата</translation>
 <translation id="6843423766595476978">„Ok Google“ е поставен</translation>
 <translation id="6845038076637626672">Отвори максимизирано</translation>
+<translation id="6845231585063669905">А до Ш</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />“ сака да ја отпечати датотеката <ph name="FILE_NAME" /> на <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Ослободете простор за да продолжите</translation>
 <translation id="6848388270925200958">Во моментов имате картички што може да се користат само на овој уред</translation>
@@ -7428,6 +7431,7 @@
 <translation id="7939073735115504773">Кликнете на иконава за екстензија за да чита и менува <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Управувајте со сертификатите на уредот</translation>
 <translation id="7939412583708276221">Сепак задржи</translation>
+<translation id="7940265372707990269">Подреди по <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Подготвеност за интернет преку мобилен:</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7943368935008348579">Преземи во PDF-формат</translation>

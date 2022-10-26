@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="1511320244449497906">Ön a(z) <ph name="DOMAIN" /> által felügyelt fiókba van bejelentkezve, és szinkronizálja vele az adatait. Ennek a domainnek a rendszergazdája mostantól beállíthat olyan felhasználói házirendeket erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
+<translation id="1554731936187952550">A Chrome a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
 <translation id="1682483655351012182">Chrome-adatok szinkronizálása</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chrome-ból és az eszközön lévő többi Google-alkalmazásból.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">A Chrome időt takarít meg Önnek azzal, hogy a fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3345341804167540816">A Chrome használata mindenhol</translation>
+<translation id="3503014945441706099">A Biztonságos Böngészés fokozott védelemmel funkciót kapja e Chrome-profilhoz is</translation>
 <translation id="3522659714780527202">Kapcsolja be a szinkronizálást, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
 <translation id="3533694711092285624">Nincsenek mentett jelszavak. A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket.</translation>
 <translation id="3641179212828090796">A Chrome-ban mentett jelszóval gyorsabban jelentkezhet be</translation>
@@ -136,6 +138,7 @@ Fontos tudnivalók:
   • Ha a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes információk.
 
   • Ha bekapcsolja a szinkronizálást, a mutatók tartalmazhatnak az Ön által felkeresett URL-ekkel kapcsolatos adatokat is.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">A normál szintű biztonsági védelmet kapja ehhez a Chrome-profilhoz</translation>
 <translation id="9112744793181547300">Beállítja a Chrome-ot alapértelmezettként?</translation>
 <translation id="9122931302567044771">Ez azt jelenti, hogy a Chrome mindig az asztali webhelyet kéri majd.</translation>
 </translationbundle>

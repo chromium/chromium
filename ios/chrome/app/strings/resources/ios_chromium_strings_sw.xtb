@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Data kutoka usawazishaji wa Chromium</translation>
 <translation id="1722370509450468186">Nenosiri lako litahifadhiwa katika Akaunti yako (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Imefuta data ya Chromium</translation>
+<translation id="177102542580335555">Unapata ulinzi wa kawaida wa usalama kwenye wasifu huu wa Chromium</translation>
 <translation id="1838412507805038478">Chromium imethibitisha kuwa <ph name="ISSUER" /> ndiye mtoa cheti cha tovuti hii.</translation>
 <translation id="1843424232666537147">Chromium ina vipengele vinavyokusaidia kudhibiti data yako ya intaneti na kasi unayoweza kupakia nayo kurasa za wavuti.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Ingia katika akaunti ili unufaike zaidi na Chromium.</translation>
 <translation id="4555020257205549924">Kipengele hiki kikiwashwa, Chromium itatafsiri kurasa zilizoandikwa kwa lugha nyingine kwa kutumia Google Tafsiri. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sasa unaweza kutumia Chromium wakati wowote unapogusa viungo katika ujumbe, hati na programu zingine.</translation>
+<translation id="4633738821577273991">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chromium</translation>
 <translation id="4654936625574199632">Ili kusaidia kuboresha programu hii, Chromium hutuma takwimu ya matumizi na ripoti ya kuacha kufanya kazi kwenda Google. <ph name="BEGIN_LINK" />Dhibiti<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Washa kichanganuzi cha Chromium</translation>
 <translation id="4736424910885271643">Akaunti yako inadhibitiwa na <ph name="HOSTED_DOMAIN" />, kwa hivyo data yako ya Chromium itafutwa kwenye kifaa hiki</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Ungependa kufuta data yako yote ya Chromium kwenye kifaa hiki?</translation>
 <translation id="8240981428553046115">Chromium imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
 <translation id="8308172444429103994">Kidokezo cha Chromium. Ingia haraka katika akaunti kwa kuchagua nenosiri lako ulilohifadhi kwenye sehemu ya juu ya kibodi.</translation>
+<translation id="8409374867500149834">Una ulinzi thabiti zaidi wa Chromium dhidi ya tovuti hatari</translation>
 <translation id="858114650497379505">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri katika programu zingine kwenye iPhone yako.</translation>
 <translation id="8586442755830160949">Hakimiliki <ph name="YEAR" /> Wasanidi wa Chromium. Haki zote zimehifadhiwa.</translation>
 <translation id="865600487977764604">Hulinda usalama wako kwenye Chromium na huenda ikatumiwa kuboresha usalama wako kwenye programu nyingine za Google unapokuwa umeingia katika akaunti.</translation>

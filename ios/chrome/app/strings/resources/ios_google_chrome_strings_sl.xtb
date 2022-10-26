@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Nastavite Chrome kot privzeto možnost sinhroniziranja zavihkov, gesel in podatkov za plačilo v vseh napravah.</translation>
 <translation id="1504372625950710826">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="1511320244449497906">Prijavljeni ste in poteka sinhronizacija podatkov z računom, ki ga upravlja domena <ph name="DOMAIN" />, kjer lahko skrbnik zdaj nastavi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
+<translation id="1554731936187952550">Uporabljate Chromovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
 <translation id="1682483655351012182">Sinhronizacija podatkov v Chromu</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Ta račun in vsi neshranjeni podatki bodo odstranjeni iz Chroma in drugih Googlovih aplikacij v tej napravi.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome poskrbi, da so vaši računi v spletu, in vam tako prihrani čas. Račune lahko dodajate ali odstranjujete v nastavitvah.</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
+<translation id="3503014945441706099">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromu.</translation>
 <translation id="3522659714780527202">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, vklopite sinhronizacijo</translation>
 <translation id="3533694711092285624">Ni shranjenih gesel. Chrome lahko preveri gesla, če jih shranite.</translation>
 <translation id="3641179212828090796">Za hitrejšo prijavo uporabite gesla, ki ste jih shranili v Chrome</translation>
@@ -137,6 +139,7 @@ Kaj je treba upoštevati:
   • Če se Chrome zruši, bodo med podatki o zrušitvi morda nekateri osebni podatki.
 
   • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">V tem profilu za Chrome uporabljate standardno varnostno zaščito.</translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 <translation id="9122931302567044771">To pomeni, da bo Chrome vsakič zahteval spletno mesto za namizne naprave.</translation>
 </translationbundle>

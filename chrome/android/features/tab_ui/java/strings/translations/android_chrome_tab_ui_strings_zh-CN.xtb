@@ -84,6 +84,7 @@
 <translation id="753732157349120914">标签页切换器</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 条来自 Google 的评价}other{<ph name="REVIEWS_COUNT_MANY" /> 条来自 Google 的评价}}</translation>
 <translation id="7559245342362162951">以全屏网格状视图显示组中的标签页</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{分享所选的 <ph name="TABS_COUNT_ONE" /> 个标签页}other{分享所选的 <ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="7792771145871471484">查看建议。</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页建组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页建组}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />，共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价}other{当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />，共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价}}</translation>

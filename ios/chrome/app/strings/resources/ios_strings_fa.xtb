@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
 <translation id="1870148520156231997">نشان دادن گذرواژه</translation>
 <translation id="1872096359983322073">چراغ‌قوه</translation>
+<translation id="1891796056033961979">نشانک‌ها، گذرواژه‌ها، تنظیمات، دیگر داده‌های ذخیره‌شده‌تان از این صفحه دردسترس هستند.</translation>
 <translation id="1911619930368729126">‏بارگذاری در Google Drive</translation>
 <translation id="1923342640370224680">ساعت گذشته</translation>
 <translation id="1930989359703290198">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">بستن همه برگه‌های حالت ناشناس</translation>
 <translation id="3533436815740441613">برگه جدید</translation>
 <translation id="3551320343578183772">بستن برگه</translation>
+<translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
 <translation id="3588820906588687999">باز کردن تصویر در برگه جدید</translation>
 <translation id="3595252146048399851">‏همواره می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید چه مواردی همگام‌سازی شود. Google ممکن است براساس سابقه‌تان «جستجو» و سرویس‌های دیگر را شخصی کند.</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="4908869848243824489">‏«یافته‌ها» از Google</translation>
 <translation id="4916679969857390442">لنز</translation>
+<translation id="4922154083994158612">امنیت بیشتری می‌خواهید؟</translation>
 <translation id="4930714375720679147">روشن کردن</translation>
 <translation id="4941089862236492464">متأسفیم! مشكلی در اشتراک‌گذاری مورد شما وجود داشت.</translation>
 <translation id="4944543191714094452">یافتن در صفحه…</translation>
@@ -832,6 +835,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7435356471928173109">سرپرستتان آن را خاموش کرده است</translation>
 <translation id="7438481509621345350">اکنون وقتی برگه جدیدی باز می‌کنید، داستان‌هایی از <ph name="CHANNEL_NAME" /> خواهید دید.</translation>
 <translation id="7454057999980797137">ایالت / استان</translation>
+<translation id="7459628154744868585">«محافظت بهبودیافته» روشن است</translation>
 <translation id="7464701184726199289">با این کار داده‌های همگام‌سازی‌شده در همه دستگاه‌ها پاک می‌شوند. تنظیمات ذخیره‌شده سایت حذف نمی‌شوند و احتمالاً عادات مرور شما را نشان می‌دهند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">‏۳. Chrome را انتخاب کنید</translation>
 <translation id="7472734401283673885">نام شرکت</translation>
@@ -1024,6 +1028,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9037965129289936994">نمایش مورد اصلی</translation>
 <translation id="9039373489628511875">پهنای باند</translation>
 <translation id="9055772144595778347">امکان ورود به سیستم وجود ندارد</translation>
+<translation id="9055960261314198756">«محافظت بهبودیافته» خاموش است</translation>
 <translation id="9057972802061533987">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9068336935206019333">‏باز کردن در حالت ناشناس Chrome</translation>

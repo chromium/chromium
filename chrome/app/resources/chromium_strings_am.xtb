@@ -64,6 +64,7 @@
 <translation id="2560420686485554789">Chromium ፋይሎችን ለማውረድ የማከማቻ መዳረሻ ያስፈልገዋል</translation>
 <translation id="2572494885440352020">Chromium አጋዥ</translation>
 <translation id="2583187216237139145">ይህን መገለጫ በሚጠቀሙበት ጊዜ የመነጨ ማንኛውም የChromium ውሂብ (እንደ የዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መፈጠር ያለ) በስራ መገለጫ አስተዳዳሪው ሊወገድ ይችላል። <ph name="LEARN_MORE" /></translation>
+<translation id="2592940277904433508">Chromiumን መጠቀምዎን ይቀጥሉ</translation>
 <translation id="2648074677641340862">በጭነት ጊዜ የስርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Chromiumን እንደገና ያውርዱት።</translation>
 <translation id="2661879430930417727">መሣሪያ የሚያጋሩ ከሆኑ ጓደኛዎች እና ቤተሰብ ተለይተው ሊያስሱ እና Chromiumን በሚፈልጉበት መንገድ ማዋቀር ይችላሉ</translation>
 <translation id="2669853942967761236">Chromium ይህ መዝገብ ፋይል ተንኮል አዘል ዌርን ሊደብቅ ስለሚችል አግዶታል</translation>
@@ -105,6 +106,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">ወደ ነባር የChromium መገለጫ ይቀየር?</translation>
 <translation id="3412460710772753638">በዚህ መሣሪያ ላይ በይለፍ ቃል አስተዳዳሪ ውስጥ</translation>
+<translation id="3420193029125244288">{COUNT,plural, =1{አስተዳዳሪዎ Chromium ከ1 ደቂቃ በላይ ስራ ላይ ሳይሆን ከቆየ እንዲጠፋ አዋቅረውታል።}one{አስተዳዳሪዎ Chromium ከ# ደቂቃ በላይ ስራ ላይ ሳይሆን ከቆየ እንዲጠፋ አዋቅረውታል።}other{አስተዳዳሪዎ Chromium ከ# ደቂቃዎች በላይ ስራ ላይ ሳይሆን ከቆየ እንዲጠፋ አዋቅረውታል።}}</translation>
 <translation id="3430503420100763906">በ Chromium መገለጫዎች ሁሉንም የ Chromium ነገሮችዎን መለየት ይችላሉ። ለጓደኞች እና ለቤተሰብ መገለጫዎችን ይፍጠሩ፣ ወይም በሥራ እና በመዝናኛ መካከል ይከፋፈሉ።</translation>
 <translation id="347328004046849135">እርስዎ በተጠለፈ የይለፍ ቃል ሲገቡ Chromium ያሳውቀዎታል</translation>
 <translation id="3474745554856756813">ይሄ <ph name="ITEMS_COUNT" /> ንጥሎችን ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
@@ -186,6 +188,7 @@
 <translation id="538767207339317086">የChromium በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="5398878173008909840">አዲስ የChromium ስሪት አለ።</translation>
 <translation id="5405650547142096840">ከChromium አስወግድ</translation>
+<translation id="5421879995290576427">{0,plural, =0{Chromium አሁን ይዘጋል።}=1{Chromium በ1 ሰከንድ ውስጥ ይዘጋል።}one{Chromium በ# ሰከንድ ውስጥ ይዘጋል።}other{Chromium በ# ሰከንዶች ውስጥ ይዘጋል።}}</translation>
 <translation id="5427571867875391349">Chromium እንደ ነባሪ አሳሽዎ አድርገው ያዋቅሩት</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium ቅድመ-ይሁንታ</translation>
 <translation id="5473971139929175403">በዚህ የLinux ስርጭት ላይ ከእንግዲህ ስለማይደገፍ Chromium በአግባቡ ላይሰራ ይችላል።</translation>
@@ -273,6 +276,7 @@
 <translation id="6940431691900807093">በኋላ ላይ እርስዎ የሚጎበኙት ጣቢያ እርስዎ የሚያዩዋቸውን ማስታወቂያዎች ግላዊነት ለማላበስ Chromium ዝንባሌዎችዎን እንዲያይ ሊጠይቅ ይችላል። Chromium እስከ 3 ዝንባሌዎች ድረስ ማጋራት ይችላል።</translation>
 <translation id="6964305034639999644">አገናኙን በChromium ማን&amp;ነትን በማያሳውቅ መስኮት ውስጥ ክፈት</translation>
 <translation id="6978145336957848883">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። Chromium <ph name="BEGIN_LINK" /> ለእርስዎ ጠንካራ የይለፍ ቃላትን እንዲፈጥር እና እንዲያስታውስ<ph name="END_LINK" /> ይፍቀዱ።</translation>
+<translation id="6984667024406244807">Chromium ገቢር አልሆነም</translation>
 <translation id="6985329841647292029">የChromiumOS ውል</translation>
 <translation id="6990124437352146030">Chromium ለዚህ ጣቢያ የእርስዎን ማይክሮፎን ለመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="7025789849649390912">መጫኑ ቆሟል።</translation>
