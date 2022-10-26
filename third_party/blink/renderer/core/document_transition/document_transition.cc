@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -44,9 +46,25 @@
 namespace blink {
 namespace {
 
+const char kAbortedMessage[] = "Transition was skipped";
 uint32_t NextDocumentTag() {
   static uint32_t next_document_tag = 1u;
   return next_document_tag++;
+}
+
+void RejectWithAbort(ScriptPromiseResolver* resolver) {
+  auto* script_state = resolver->GetScriptState();
+  if (!script_state->ContextIsValid())
+    return;
+
+  ScriptState::Scope scope(script_state);
+  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+      kAbortedMessage));
+}
+
+void Resolve(ScriptPromiseResolver* resolver) {
+  resolver->Resolve();
 }
 
 }  // namespace
@@ -54,10 +72,10 @@ uint32_t NextDocumentTag() {
 // DOMChangeFinishedCallback implementation.
 DocumentTransition::DOMChangeFinishedCallback::DOMChangeFinishedCallback(
     DocumentTransition* transition,
-    ScriptPromiseResolver* dom_updated_resolver,
+    ScriptPromiseResolver* dom_updated_promise_resolver,
     bool success)
     : transition_(transition),
-      dom_updated_resolver_(dom_updated_resolver),
+      dom_updated_promise_resolver_(dom_updated_promise_resolver),
       success_(success) {}
 
 DocumentTransition::DOMChangeFinishedCallback::~DOMChangeFinishedCallback() =
@@ -70,9 +88,9 @@ ScriptValue DocumentTransition::DOMChangeFinishedCallback::Call(
     transition_->NotifyDOMCallbackFinished(success_);
 
   if (success_)
-    dom_updated_resolver_->Resolve();
+    dom_updated_promise_resolver_->Resolve();
   else
-    dom_updated_resolver_->Reject(value);
+    dom_updated_promise_resolver_->Reject(value);
   return ScriptValue();
 }
 
@@ -80,7 +98,7 @@ void DocumentTransition::DOMChangeFinishedCallback::Trace(
     Visitor* visitor) const {
   ScriptFunction::Callable::Trace(visitor);
   visitor->Trace(transition_);
-  visitor->Trace(dom_updated_resolver_);
+  visitor->Trace(dom_updated_promise_resolver_);
 }
 
 // DocumentTransition implementation.
@@ -110,6 +128,7 @@ void DocumentTransition::skipTransition() {
   if (IsTerminalState(state_))
     return;
 
+  // If we haven't run the dom change callback yet, schedule a task to do so.
   if (static_cast<int>(state_) < static_cast<int>(State::kDOMCallbackRunning)) {
     document_->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(
@@ -119,20 +138,30 @@ void DocumentTransition::skipTransition() {
                           WrapPersistent(this)));
   }
 
-  ResumeRendering();
-
-  style_tracker_->Abort();
-
+  // If the ready promise has not yet been resolved, reject it. Note that the if
+  // check here is an optimization to avoid creating the kAbort error if we've
+  // already resolved the promise.
   if (static_cast<int>(state_) <
       static_cast<int>(State::kAnimateRequestPending)) {
-    // TODO(vmpstr): Add abort error.
-    ready_promise_resolver_->Reject();
+    AtMicrotask(&RejectWithAbort, ready_promise_resolver_);
   }
 
-  AdvanceTo(State::kAborted);
+  // If we already started processing the transition (i.e. we're beyond capture
+  // tag discovery), then send a release directive.
+  if (static_cast<int>(state_) >
+      static_cast<int>(State::kCaptureTagDiscovery)) {
+    directive_store_->AddPendingRequest(
+        DocumentTransitionRequest::CreateRelease(document_tag_));
+  }
 
-  // TODO(vmpstr): Add abort error.
-  finished_promise_resolver_->Reject();
+  // Resume rendering, and finalize the rest of the state.
+  ResumeRendering();
+  style_tracker_->Abort();
+  AtMicrotask(&RejectWithAbort, finished_promise_resolver_);
+
+  // This should be the last call in this function to avoid erroneously checking
+  // the `state_` against the wrong state.
+  AdvanceTo(State::kAborted);
 }
 
 ScriptPromise DocumentTransition::finished() const {
@@ -309,7 +338,7 @@ void DocumentTransition::ProcessCurrentState() {
 
         // TODO(vmpstr): Maybe fold this into InvokeDOMChangeCallback somehow.
         if (!update_dom_callback_) {
-          dom_updated_promise_resolver_->Resolve();
+          AtMicrotask(&Resolve, dom_updated_promise_resolver_);
           dom_callback_succeeded_ = true;
           process_next_state = AdvanceTo(State::kDOMCallbackFinished);
           DCHECK(process_next_state);
@@ -317,7 +346,7 @@ void DocumentTransition::ProcessCurrentState() {
         }
 
         if (!InvokeDOMChangeCallback()) {
-          dom_updated_promise_resolver_->Reject();
+          AtMicrotask(&RejectWithAbort, dom_updated_promise_resolver_);
           skipTransition();
           break;
         }
@@ -363,7 +392,7 @@ void DocumentTransition::ProcessCurrentState() {
         DCHECK(!process_next_state);
 
         DCHECK(!in_main_lifecycle_update_);
-        ready_promise_resolver_->Resolve();
+        AtMicrotask(&Resolve, ready_promise_resolver_);
         break;
 
       case State::kAnimating:
@@ -376,7 +405,7 @@ void DocumentTransition::ProcessCurrentState() {
           break;
 
         style_tracker_->StartFinished();
-        finished_promise_resolver_->Resolve();
+        AtMicrotask(&Resolve, finished_promise_resolver_);
 
         style_tracker_ = nullptr;
 
@@ -430,6 +459,9 @@ bool DocumentTransition::InvokeDOMChangeCallback() {
 }
 
 void DocumentTransition::ContextDestroyed() {
+  ready_promise_resolver_->Detach();
+  finished_promise_resolver_->Detach();
+  dom_updated_promise_resolver_->Detach();
   skipTransition();
 }
 
@@ -640,6 +672,12 @@ void DocumentTransition::ResumeRendering() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("blink", "DocumentTransition::PauseRendering",
                                   this);
   rendering_paused_scope_.reset();
+}
+
+void DocumentTransition::AtMicrotask(void callback(ScriptPromiseResolver*),
+                                     ScriptPromiseResolver* resolver) {
+  document_->GetAgent().event_loop()->EnqueueMicrotask(
+      WTF::BindOnce(callback, WrapPersistent(resolver)));
 }
 
 }  // namespace blink

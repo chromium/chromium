@@ -195,7 +195,7 @@ class CORE_EXPORT DocumentTransition
    public:
     explicit DOMChangeFinishedCallback(
         DocumentTransition* transition,
-        ScriptPromiseResolver* dom_updated_resolver,
+        ScriptPromiseResolver* dom_updated_promise_resolver,
         bool success);
     ~DOMChangeFinishedCallback() override;
 
@@ -206,7 +206,7 @@ class CORE_EXPORT DocumentTransition
 
    private:
     WeakMember<DocumentTransition> transition_;
-    Member<ScriptPromiseResolver> dom_updated_resolver_;
+    Member<ScriptPromiseResolver> dom_updated_promise_resolver_;
     const bool success_;
   };
 
@@ -229,12 +229,15 @@ class CORE_EXPORT DocumentTransition
   // is no dom callback, since effectively we called "noop".
   bool InvokeDOMChangeCallback();
 
+  void AtMicrotask(void callback(ScriptPromiseResolver*),
+                   ScriptPromiseResolver* resolver);
+
   Member<Document> document_;
 
   State state_ = State::kInitial;
 
-  // The document tag identifies the document to which this transition belongs.
-  // It's unique among other local documents.
+  // The document tag identifies the document to which this transition
+  // belongs. It's unique among other local documents.
   uint32_t document_tag_ = 0u;
 
   Member<ScriptState> script_state_;
