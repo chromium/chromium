@@ -25,6 +25,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 
 namespace views::test {
@@ -35,21 +36,6 @@ InteractionTestUtilSimulatorViews::~InteractionTestUtilSimulatorViews() =
     default;
 
 namespace {
-
-// Checks to see if a View has been destroyed. This is necessary because some
-// menu-like buttons can confirm and dismiss on key down rather than on key up,
-// which can in turn result in the view being destroyed between events.
-class ViewDestroyedObserver : public ViewObserver {
- public:
-  explicit ViewDestroyedObserver(View* view) { observation_.Observe(view); }
-
-  bool is_destroyed() const { return !observation_.IsObserving(); }
-
- private:
-  void OnViewIsDeleting(View* observed_view) override { observation_.Reset(); }
-
-  base::ScopedObservation<View, ViewObserver> observation_{this};
-};
 
 gfx::Point GetCenter(views::View* view) {
   return view->GetLocalBounds().CenterPoint();
@@ -97,15 +83,15 @@ void SendTapGesture(T* target, const gfx::Point& point) {
 
 // Sends a key press to the specified `target`.
 void SendKeyPress(View* view, ui::KeyboardCode code) {
-  // Verify that the button is not destroyed after the key-down before trying
-  // to send the key-up.
-  ViewDestroyedObserver observer(view);
+  ViewTracker tracker(view);
   view->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE,
                                   ui::EventTimeForNow()));
 
-  if (!observer.is_destroyed()) {
-    view->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, code, ui::EF_NONE,
-                                     ui::EventTimeForNow()));
+  // Verify that the button is not destroyed after the key-down before trying
+  // to send the key-up.
+  if (tracker.view()) {
+    tracker.view()->OnKeyReleased(ui::KeyEvent(
+        ui::ET_KEY_RELEASED, code, ui::EF_NONE, ui::EventTimeForNow()));
   }
 }
 

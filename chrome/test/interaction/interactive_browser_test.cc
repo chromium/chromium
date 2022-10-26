@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -22,6 +23,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_tracker.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "ui/views/views_delegate.h"
@@ -106,6 +108,72 @@ WebContentsInteractionTestUtil* InteractiveBrowserTest::InstrumentNonTabWebView(
       instrumented_web_contents_.emplace(id, std::move(instrument));
   CHECK(result.second);
   return result.first->second.get();
+}
+
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameView(
+    base::StringPiece name,
+    AbsoluteViewSpecifier spec) {
+  return NameViewRelative(kPivotElementId, name,
+                          GetFindViewCallback(std::move(spec)));
+}
+
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameViewRelative(
+    ElementSpecifier relative_to,
+    base::StringPiece name,
+    FindViewCallback find_callback) {
+  StepBuilder builder;
+  SpecifyElement(builder, relative_to);
+  builder.SetMustBeVisibleAtStart(true);
+  builder.SetStartCallback(base::BindOnce(
+      [](FindViewCallback find_callback, std::string name,
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        views::View* relative_to = nullptr;
+        if (el->identifier() != kPivotElementId) {
+          if (!el->IsA<views::TrackedElementViews>()) {
+            LOG(ERROR) << "NameView(): Target element is not a View.";
+            seq->FailForTesting();
+            return;
+          }
+          relative_to = AsView<views::View>(el);
+        }
+        views::View* const result = std::move(find_callback).Run(relative_to);
+        if (!result) {
+          LOG(ERROR) << "NameView(): No View found.";
+          seq->FailForTesting();
+          return;
+        }
+        seq->NameElement(
+            views::ElementTrackerViews::GetInstance()->GetElementForView(
+                result, /* assign_temporary_id =*/true),
+            name);
+      },
+      std::move(find_callback), std::string(name)));
+  return builder;
+}
+
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameChildView(
+    ElementSpecifier parent,
+    base::StringPiece name,
+    ChildViewSpecifier spec) {
+  return NameViewRelative(parent, name, GetFindViewCallback(std::move(spec)));
+}
+
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameDescendantView(
+    ElementSpecifier parent,
+    base::StringPiece name,
+    ViewMatcher matcher) {
+  return NameViewRelative(
+      parent, name,
+      base::BindOnce(
+          [](ViewMatcher matcher, views::View* ancestor) -> views::View* {
+            auto* const result =
+                FindMatchingView(ancestor, matcher, /* recursive =*/true);
+            if (!result)
+              LOG(ERROR)
+                  << "NameDescendantView(): No descendant matches matcher.";
+            return result;
+          },
+          matcher));
 }
 
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::PressButton(
@@ -603,6 +671,78 @@ InteractiveBrowserTest::GetPositionCallback(RelativePositionSpecifier spec) {
         ->GetBoundsInScreen()
         .CenterPoint();
   });
+}
+
+// static
+InteractiveBrowserTest::FindViewCallback
+InteractiveBrowserTest::GetFindViewCallback(AbsoluteViewSpecifier spec) {
+  if (views::View** view = absl::get_if<views::View*>(&spec)) {
+    CHECK(*view) << "NameView(View*): view must be set.";
+    return base::BindOnce(
+        [](const std::unique_ptr<views::ViewTracker>& ref, views::View*) {
+          LOG_IF(ERROR, !ref->view()) << "NameView(View*): view ceased to be "
+                                         "valid before step was executed.";
+          return ref->view();
+        },
+        std::make_unique<views::ViewTracker>(*view));
+  }
+
+  if (views::View*** view = absl::get_if<views::View**>(&spec)) {
+    CHECK(*view) << "NameView(View**): view pointer is null.";
+    return base::BindOnce(
+        [](views::View** view, views::View*) {
+          LOG_IF(ERROR, !*view) << "NameView(View**): view pointer is null.";
+          return *view;
+        },
+        base::Unretained(*view));
+  }
+
+  return base::RectifyCallback<FindViewCallback>(
+      std::move(absl::get<base::OnceCallback<views::View*()>>(spec)));
+}
+
+// static
+InteractiveBrowserTest::FindViewCallback
+InteractiveBrowserTest::GetFindViewCallback(ChildViewSpecifier spec) {
+  if (size_t* index = absl::get_if<size_t>(&spec)) {
+    return base::BindOnce(
+        [](size_t index, views::View* parent) -> views::View* {
+          if (index >= parent->children().size()) {
+            LOG(ERROR) << "NameChildView(int): Child index out of bounds; got "
+                       << index << " but only " << parent->children().size()
+                       << " children.";
+            return nullptr;
+          }
+          return parent->children()[index];
+        },
+        *index);
+  }
+
+  return base::BindOnce(
+      [](ViewMatcher matcher, views::View* parent) -> views::View* {
+        auto* const result =
+            FindMatchingView(parent, matcher, /*recursive =*/false);
+        LOG_IF(ERROR, !result)
+            << "NameChildView(ViewMatcher): No child matches matcher.";
+        return result;
+      },
+      absl::get<ViewMatcher>(spec));
+}
+
+// static
+views::View* InteractiveBrowserTest::FindMatchingView(const views::View* from,
+                                                      ViewMatcher& matcher,
+                                                      bool recursive) {
+  for (auto* const child : from->children()) {
+    if (matcher.Run(child))
+      return child;
+    if (recursive) {
+      auto* const result = FindMatchingView(child, matcher, true);
+      if (result)
+        return result;
+    }
+  }
+  return nullptr;
 }
 
 InteractiveBrowserTest::StepBuilder

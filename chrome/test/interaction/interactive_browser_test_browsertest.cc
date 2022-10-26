@@ -25,6 +25,11 @@
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
+namespace {
+constexpr char kViewName[] = "Named View";
+constexpr char kViewName2[] = "Named View 2";
+}  // namespace
+
 class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -87,4 +92,98 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckViewProperty) {
           AppMenuModel::kDownloadsMenuItem, &views::MenuItemView::title,
           // Explicit creation of an inequality matcher.
           testing::Ne(l10n_util::GetStringUTF16(IDS_MORE_TOOLS_MENU))));
+}
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       NameViewAbsoluteValue) {
+  auto* const view = browser_view_->toolbar();
+  RunTestSequence(
+      NameView(kViewName, view),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_EQ(view, AsView<ToolbarView>(el));
+                  })));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       NameViewAbsoluteDeferred) {
+  views::View* view = nullptr;
+  RunTestSequence(
+      Do(base::BindLambdaForTesting(
+          [&]() { view = browser_view_->toolbar(); })),
+      NameView(kViewName, &view),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_EQ(view, AsView<ToolbarView>(el));
+                  })));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       NameViewAbsoluteCallback) {
+  RunTestSequence(
+      NameView(kViewName, base::BindLambdaForTesting([&]() -> views::View* {
+                 return browser_view_->toolbar();
+               })),
+      WithElement(kViewName,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_TRUE(AsView<ToolbarView>(el));
+                  })));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       NameChildViewByIndex) {
+  auto* const view = browser_view_->toolbar();
+  RunTestSequence(
+      NameView(kViewName, view), NameChildView(kViewName, kViewName2, 2U),
+      WithElement(kViewName2,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    auto* const button = AsView<ToolbarButton>(el);
+                    EXPECT_EQ(2U, button->parent()->GetIndexOf(button));
+                  })));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       NameChildViewByFilter) {
+  auto* const view = browser_view_->toolbar();
+  RunTestSequence(
+      NameView(kViewName, view),
+      NameChildView(kViewName, kViewName2,
+                    base::BindRepeating([&](const views::View* view) {
+                      return view->GetProperty(views::kElementIdentifierKey) ==
+                             kAppMenuButtonElementId;
+                    })),
+      WithElement(kViewName2,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_TRUE(AsView<BrowserAppMenuButton>(el));
+                  })));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, NameDescendantView) {
+  RunTestSequence(
+      NameView(kViewName, browser_view_),
+      NameDescendantView(kViewName, kViewName2,
+                         base::BindRepeating([&](const views::View* view) {
+                           return view->GetProperty(
+                                      views::kElementIdentifierKey) ==
+                                  kAppMenuButtonElementId;
+                         })),
+      WithElement(kViewName2,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_TRUE(AsView<BrowserAppMenuButton>(el));
+                  })));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, NameViewRelative) {
+  RunTestSequence(
+      NameView(kViewName, browser_view_),
+      NameViewRelative(
+          kViewName, kViewName2,
+          base::BindRepeating([&](views::View* view) -> views::View* {
+            return views::AsViewClass<BrowserView>(view)
+                ->toolbar()
+                ->app_menu_button();
+          })),
+      WithElement(kViewName2,
+                  base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                    EXPECT_TRUE(AsView<BrowserAppMenuButton>(el));
+                  })));
 }

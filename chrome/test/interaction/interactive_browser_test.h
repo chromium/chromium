@@ -133,6 +133,72 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   using ElementSpecifier =
       absl::variant<ui::ElementIdentifier, base::StringPiece>;
 
+  // Naming views:
+  //
+  // The following methods name a view (to be referred to later in the test
+  // sequence by name) based on some kind of rule or relationship. The View need
+  // not have an ElementIdentifier assigned ahead of time, so this is useful for
+  // finding random or dynamically-created views.
+  //
+  // For example:
+  //
+  //   RunTestSequence(
+  //     ...
+  //     NameView(kThirdTabName,
+  //              base::BindLambdaForTesting([&](){
+  //                return browser_view->tabstrip()->tab_at(3);
+  //              }))
+  //     WithElement(kThirdTabName, ...)
+  //     ...
+  //   );
+  //
+  // How the view is named will depend on which version of the method you use;
+  // the
+
+  // Determines if a view matches some predicate.
+  using ViewMatcher = base::RepeatingCallback<bool(const views::View*)>;
+
+  // Specifies a View not relative to any particular other View.
+  using AbsoluteViewSpecifier = absl::variant<
+      // Specify a view that is known at the time the sequence is created. The
+      // View must persist until the step executes.
+      views::View*,
+      // Specify a view that will be valid by the time the step executes (i.e.
+      // is set in a previous step callback) but not at the time the test
+      // sequence is built. The view will be read from the target variable,
+      // which must point to a valid view.
+      views::View**,
+      // Find and return a view based on an arbitrary rule.
+      base::OnceCallback<views::View*()>>;
+
+  // Specifies a view relative to its parent.
+  using ChildViewSpecifier = absl::variant<
+      // The index of the child in the parent view. An out of bounds index will
+      // generate an error.
+      size_t,
+      // Specifies a filter that is applied to the children; the first child
+      // view to satisfy the filter (i.e. return true) is named.
+      ViewMatcher>;
+
+  // Specifies a view relative to another view `relative_to` based on an
+  // arbitrary rule. The resulting view does not need to be a descendant (or
+  // even an ancestor) of `relative_to`.
+  using FindViewCallback =
+      base::OnceCallback<views::View*(views::View* relative_to)>;
+
+  // Methods that name views.
+  [[nodiscard]] StepBuilder NameView(base::StringPiece name,
+                                     AbsoluteViewSpecifier spec);
+  [[nodiscard]] StepBuilder NameViewRelative(ElementSpecifier relative_to,
+                                             base::StringPiece name,
+                                             FindViewCallback find_callback);
+  [[nodiscard]] StepBuilder NameChildView(ElementSpecifier parent,
+                                          base::StringPiece name,
+                                          ChildViewSpecifier spec);
+  [[nodiscard]] StepBuilder NameDescendantView(ElementSpecifier ancestor,
+                                               base::StringPiece name,
+                                               ViewMatcher matcher);
+
   // Convenience methods for creating interaction steps of type kShown. The
   // resulting step's start callback is already set; therefore, do not try to
   // add additional logic. However, any other parameter on the step may be set,
@@ -354,6 +420,16 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
       AbsolutePositionSpecifier spec);
   static RelativePositionCallback GetPositionCallback(
       RelativePositionSpecifier spec);
+
+  static FindViewCallback GetFindViewCallback(AbsoluteViewSpecifier spec);
+  static FindViewCallback GetFindViewCallback(ChildViewSpecifier spec);
+
+  // Recursively finds an element that matches `matcher` starting with (but
+  // not including) `from`. If `recursive` is true, searches all descendants,
+  // otherwise searches children.
+  static views::View* FindMatchingView(const views::View* from,
+                                       ViewMatcher& matcher,
+                                       bool recursive);
 
   // Creates the follow-up step for a mouse action.
   StepBuilder CreateMouseFollowUpStep();
