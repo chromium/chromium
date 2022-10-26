@@ -299,8 +299,8 @@ absl::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
     absl::optional<std::wstring> formatted_parameter =
         FormatParameter(substitutions, parameters[i]);
     if (!formatted_parameter) {
-      LOG(ERROR) << __func__ << " FormatParameter failed: " << parameters[i]
-                 << ": " << substitutions.size();
+      VLOG(1) << __func__ << " FormatParameter failed: " << parameters[i]
+              << ": " << substitutions.size();
       return absl::nullopt;
     }
 
