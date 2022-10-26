@@ -81,39 +81,35 @@ These builders must pass before a CL may land that affects files outside of
 ## Optional builders
 These builders optionally run, depending on the files in a CL. For example, a CL
 which touches `//gpu/BUILD.gn` would trigger the builder
-`android_optional_gpu_tests_rel`, due to the `location_regexp` values for that
+`android_optional_gpu_tests_rel`, due to the `location_filters` values for that
 builder.
 
 * [3pp-linux-amd64-packager](https://ci.chromium.org/p/chromium/builders/try/3pp-linux-amd64-packager) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""3pp-linux-amd64-packager"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""3pp-linux-amd64-packager""))
 
-  Path regular expressions:
+  Location filters:
   * [`//.+/3pp/.+`](https://cs.chromium.org/search?q=+file:.+/3pp/)
 
 * [android-cronet-arm-dbg](https://ci.chromium.org/p/chromium/builders/try/android-cronet-arm-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-arm-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-cronet-arm-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
   * [`//components/grpc_support/.+`](https://cs.chromium.org/chromium/src/components/grpc_support/)
   * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
   * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
-
-  Path exclude regular expressions:
-  * [`//components/cronet/ios/.+`](https://cs.chromium.org/chromium/src/components/cronet/ios/)
+  * exclude: [`//components/cronet/ios/.+`](https://cs.chromium.org/chromium/src/components/cronet/ios/)
 
 * [android-cronet-x86-dbg-10-tests](https://ci.chromium.org/p/chromium/builders/try/android-cronet-x86-dbg-10-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-cronet-x86-dbg-10-tests"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-cronet-x86-dbg-10-tests""))
 
-  Path regular expressions:
+  Location filters:
   * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
   * [`//components/grpc_support/.+`](https://cs.chromium.org/chromium/src/components/grpc_support/)
   * [`//build/android/.+`](https://cs.chromium.org/chromium/src/build/android/)
   * [`//build/config/android/.+`](https://cs.chromium.org/chromium/src/build/config/android/)
-
-  Path exclude regular expressions:
-  * [`//components/cronet/ios/.+`](https://cs.chromium.org/chromium/src/components/cronet/ios/)
+  * exclude: [`//components/cronet/ios/.+`](https://cs.chromium.org/chromium/src/components/cronet/ios/)
 
 * [android-pie-arm64-dbg](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/android/features/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/features/vr/)
   * [`//chrome/android/java/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/vr/)
   * [`//chrome/android/javatests/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/vr/)
@@ -127,7 +123,7 @@ builder.
 
 * [android_compile_x64_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_x64_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_x64_dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_compile_x64_dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/android/java/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/vr/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
@@ -139,7 +135,7 @@ builder.
 
 * [android_compile_x86_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_x86_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_x86_dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_compile_x86_dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/android/java/src/org/chromium/chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/vr/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
@@ -151,7 +147,7 @@ builder.
 
 * [android_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/android_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_optional_gpu_tests_rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_optional_gpu_tests_rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//cc/.+`](https://cs.chromium.org/chromium/src/cc/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
@@ -179,30 +175,30 @@ builder.
 
 * [branch-config-verifier](https://ci.chromium.org/p/chromium/builders/try/branch-config-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""branch-config-verifier"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""branch-config-verifier""))
 
-  Path regular expressions:
+  Location filters:
   * [`//infra/config/.+`](https://cs.chromium.org/chromium/src/infra/config/)
 
 * [builder-config-verifier](https://ci.chromium.org/p/chromium/builders/try/builder-config-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""builder-config-verifier"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""builder-config-verifier""))
 
-  Path regular expressions:
+  Location filters:
   * [`//infra/config/generated/builders/.*`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/.*)
 
 * [chromeos-amd64-generic-dbg](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromeos-amd64-generic-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//content/gpu/.+`](https://cs.chromium.org/chromium/src/content/gpu/)
   * [`//media/.+`](https://cs.chromium.org/chromium/src/media/)
 
 * [chromeos-kevin-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-kevin-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-kevin-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromeos-kevin-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//build/chromeos/.+`](https://cs.chromium.org/chromium/src/build/chromeos/)
   * [`//build/config/chromeos/.*`](https://cs.chromium.org/search?q=+file:build/config/chromeos/.*)
   * [`//chromeos/CHROMEOS_LKGM`](https://cs.chromium.org/chromium/src/chromeos/CHROMEOS_LKGM)
 
 * [dawn-android-arm-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-android-arm-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-android-arm-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-android-arm-deps-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
@@ -217,7 +213,7 @@ builder.
 
 * [dawn-linux-x64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-linux-x64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-linux-x64-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-linux-x64-deps-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
@@ -232,7 +228,7 @@ builder.
 
 * [dawn-mac-x64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-mac-x64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-mac-x64-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-mac-x64-deps-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
@@ -247,7 +243,7 @@ builder.
 
 * [dawn-win10-x64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-win10-x64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-win10-x64-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-win10-x64-deps-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
@@ -262,7 +258,7 @@ builder.
 
 * [dawn-win10-x86-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-win10-x86-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-win10-x86-deps-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""dawn-win10-x86-deps-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//testing/buildbot/chromium.dawn.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/chromium.dawn.json)
@@ -277,44 +273,42 @@ builder.
 
 * [fuchsia-arm64-cast-receiver-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-arm64-cast-receiver-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-arm64-cast-receiver-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-arm64-cast-receiver-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
 * [fuchsia-compile-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/fuchsia-compile-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-compile-x64-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-compile-x64-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//base/fuchsia/.+`](https://cs.chromium.org/chromium/src/base/fuchsia/)
   * [`//fuchsia/.+`](https://cs.chromium.org/chromium/src/fuchsia/)
   * [`//media/fuchsia/.+`](https://cs.chromium.org/chromium/src/media/fuchsia/)
 
 * [ios-simulator-cronet](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-cronet"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator-cronet""))
 
-  Path regular expressions:
+  Location filters:
   * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
   * [`//components/grpc_support/.+`](https://cs.chromium.org/chromium/src/components/grpc_support/)
   * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
-
-  Path exclude regular expressions:
-  * [`//components/cronet/android/.+`](https://cs.chromium.org/chromium/src/components/cronet/android/)
+  * exclude: [`//components/cronet/android/.+`](https://cs.chromium.org/chromium/src/components/cronet/android/)
 
 * [ios-simulator-full-configs](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-full-configs) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-full-configs"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator-full-configs""))
 
-  Path regular expressions:
+  Location filters:
   * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
 
 * [ios-simulator-noncq](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-noncq) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator-noncq"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator-noncq""))
 
-  Path regular expressions:
+  Location filters:
   * [`//third_party/crashpad/crashpad/.+`](https://cs.chromium.org/chromium/src/third_party/crashpad/crashpad/)
 
 * [linux-arm64-castos](https://ci.chromium.org/p/chromium/builders/try/linux-arm64-castos) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-arm64-castos"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-arm64-castos""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
 * [linux-blink-rel](https://ci.chromium.org/p/chromium/builders/try/linux-blink-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-blink-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-blink-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//cc/.+`](https://cs.chromium.org/chromium/src/cc/)
   * [`//third_party/blink/renderer/core/paint/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/paint/)
   * [`//third_party/blink/renderer/core/svg/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/svg/)
@@ -322,7 +316,7 @@ builder.
 
 * [linux-blink-web-tests-force-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/linux-blink-web-tests-force-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-blink-web-tests-force-accessibility-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-blink-web-tests-force-accessibility-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//third_party/blink/renderer/modules/accessibility/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/accessibility/)
   * [`//content/renderer/accessibility/.+`](https://cs.chromium.org/chromium/src/content/renderer/accessibility/)
   * [`//content/browser/accessibility/.+`](https://cs.chromium.org/chromium/src/content/browser/accessibility/)
@@ -330,7 +324,7 @@ builder.
 
 * [linux-cfm-rel](https://ci.chromium.org/p/chromium/builders/try/linux-cfm-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-cfm-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-cfm-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chromeos/ash/components/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/components/chromebox_for_meetings/)
   * [`//chromeos/ash/components/dbus/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/components/dbus/chromebox_for_meetings/)
   * [`//chromeos/ash/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/ash/services/chromebox_for_meetings/)
@@ -341,7 +335,7 @@ builder.
 
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-perfetto-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-perfetto-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//base/trace_event/.+`](https://cs.chromium.org/chromium/src/base/trace_event/)
   * [`//base/tracing/.+`](https://cs.chromium.org/chromium/src/base/tracing/)
   * [`//components/tracing/.+`](https://cs.chromium.org/chromium/src/components/tracing/)
@@ -350,17 +344,17 @@ builder.
 
 * [linux-x64-castos-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-x64-castos-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
 * [linux_chromium_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_dbg_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_dbg_ng""))
 
-  Path regular expressions:
+  Location filters:
   * [`//build/.*check_gn_headers.*`](https://cs.chromium.org/search?q=+file:build/.*check_gn_headers.*)
 
 * [linux_layout_tests_layout_ng_disabled](https://ci.chromium.org/p/chromium/builders/try/linux_layout_tests_layout_ng_disabled) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_layout_tests_layout_ng_disabled"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_layout_tests_layout_ng_disabled""))
 
-  Path regular expressions:
+  Location filters:
   * [`//third_party/blink/renderer/core/editing/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/editing/)
   * [`//third_party/blink/renderer/core/layout/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/)
   * [`//third_party/blink/renderer/core/paint/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/paint/)
@@ -371,7 +365,7 @@ builder.
 
 * [linux_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/linux_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_optional_gpu_tests_rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_optional_gpu_tests_rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
@@ -396,23 +390,23 @@ builder.
 
 * [linux_vr](https://ci.chromium.org/p/chromium/builders/try/linux_vr) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_vr"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_vr""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
 
 * [mac-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac-updater-try-builder-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
 * [mac-updater-try-builder-rel](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-updater-try-builder-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac-updater-try-builder-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
 * [mac_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/mac_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac_optional_gpu_tests_rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac_optional_gpu_tests_rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
@@ -438,29 +432,29 @@ builder.
 
 * [reclient-config-deployment-verifier](https://ci.chromium.org/p/chromium/builders/try/reclient-config-deployment-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""reclient-config-deployment-verifier"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""reclient-config-deployment-verifier""))
 
-  Path regular expressions:
+  Location filters:
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//DEPS`](https://cs.chromium.org/chromium/src/DEPS)
 
 * [win-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-updater-try-builder-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win-updater-try-builder-dbg""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
 * [win-updater-try-builder-rel](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-updater-try-builder-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win-updater-try-builder-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
 * [win7-rel](https://ci.chromium.org/p/chromium/builders/try/win7-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win7-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win7-rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
   * [`//sandbox/policy/win/.+`](https://cs.chromium.org/chromium/src/sandbox/policy/win/)
 
 * [win_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/win_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win_optional_gpu_tests_rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win_optional_gpu_tests_rel""))
 
-  Path regular expressions:
+  Location filters:
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
@@ -495,7 +489,7 @@ as required builders.
 * [chromeos-jacuzzi-nearby-chrome-fyi](https://ci.chromium.org/p/chromium/builders/try/chromeos-jacuzzi-nearby-chrome-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-jacuzzi-nearby-chrome-fyi"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromeos-jacuzzi-nearby-chrome-fyi""))
   * Experiment percentage: 100.0
 
-  Path regular expressions:
+  Location filters:
   * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
 
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-12-x64-rel""))

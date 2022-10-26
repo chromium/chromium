@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/try.star", "DEFAULT_EXCLUDE_REGEXPS")
+load("//lib/try.star", "DEFAULT_EXCLUDE_LOCATION_FILTERS")
 load("//outages/config.star", outages_config = "config")
 
 _MD_HEADER = """\
@@ -30,7 +30,7 @@ These builders must pass before a CL may land that affects files outside of
 _OPTIONAL_HEADER = """\
 These builders optionally run, depending on the files in a CL. For example, a CL
 which touches `//gpu/BUILD.gn` would trigger the builder
-`android_optional_gpu_tests_rel`, due to the `location_regexp` values for that
+`android_optional_gpu_tests_rel`, due to the `location_filters` values for that
 builder.
 """
 
@@ -45,8 +45,6 @@ setting. See //infra/config/outages/README.md for more information.
 """ if outages_config.disable_cq_experiments else "")
 
 _TRY_BUILDER_VIEW_URL = "https://ci.chromium.org/p/chromium/builders/try"
-
-_REGEX_PREFIX = ".+/[+]/"
 
 def _get_main_config_group_builders(ctx):
     cq_cfg = ctx.output["luci/commit-queue.cfg"]
@@ -71,21 +69,28 @@ def _get_main_config_group_builders(ctx):
 
     fail("Could not find the main CQ group")
 
+def _normalize_regexp(regexp):
+    if regexp == ".*":
+        return None
+    return regexp
+
+def _normalize_location_filter(f):
+    return cq.location_filter(
+        gerrit_host_regexp = _normalize_regexp(f.gerrit_host_regexp),
+        gerrit_project_regexp = _normalize_regexp(f.gerrit_project_regexp),
+        path_regexp = _normalize_regexp(f.path_regexp),
+        exclude = f.exclude,
+    )
+
 def _normalize_builder(builder):
-    location_regexp_exclude = [
-        r
-        for r in builder.location_regexp_exclude
-        if r not in DEFAULT_EXCLUDE_REGEXPS
-    ]
-    location_regexp = builder.location_regexp
-    if list(location_regexp) == [".*"] and not location_regexp_exclude:
-        location_regexp = None
+    location_filters = [_normalize_location_filter(f) for f in builder.location_filters]
+    location_filters = [f for f in location_filters if f not in DEFAULT_EXCLUDE_LOCATION_FILTERS]
+
     return struct(
         name = builder.name,
         experiment_percentage = builder.experiment_percentage,
         includable_only = builder.includable_only,
-        location_regexp = location_regexp,
-        location_regexp_exclude = location_regexp_exclude,
+        location_filters = location_filters,
     )
 
 def _group_builders_by_section(builders):
@@ -97,7 +102,7 @@ def _group_builders_by_section(builders):
         builder = _normalize_builder(builder)
         if builder.experiment_percentage:
             experimental.append(builder)
-        elif builder.location_regexp or builder.location_regexp_exclude:
+        elif builder.location_filters:
             optional.append(builder)
         elif builder.includable_only:
             continue
@@ -117,9 +122,11 @@ def _codesearch_query(*atoms):
         query.append(atom)
     return "".join(query)
 
-def _get_regex_line_details(regex):
-    if regex.startswith(_REGEX_PREFIX):
-        regex = regex[len(_REGEX_PREFIX):]
+def _get_location_filter_details(f):
+    if f.gerrit_host_regexp or f.gerrit_project_regexp:
+        fail("cq-builders.md generator needs updating to support gerrit host/project regexp")
+
+    regex = f.path_regexp
     title = "//" + regex.lstrip("/")
     if regex.endswith(".+"):
         regex = regex[:-len(".+")]
@@ -133,6 +140,7 @@ def _get_regex_line_details(regex):
         url = "https://cs.chromium.org/chromium/src/" + regex
 
     return struct(
+        prefix = "exclude: " if f.exclude else "",
         title = title,
         url = url,
     )
@@ -184,20 +192,15 @@ def _generate_cq_builders_md(ctx):
                     percentage = b.experiment_percentage,
                 ))
 
-            for attr, regexp_header in (
-                ("location_regexp", "Path regular expressions:"),
-                ("location_regexp_exclude", "Path exclude regular expressions:"),
-            ):
-                regexes = getattr(b, attr)
-                if not regexes:
-                    continue
+            if b.location_filters:
                 lines.append("")
-                lines.append("  " + regexp_header)
-                for regex in regexes:
-                    regex_line_details = _get_regex_line_details(regex)
-                    lines.append("  * [`{title}`]({url})".format(
-                        title = regex_line_details.title,
-                        url = regex_line_details.url,
+                lines.append("  Location filters:")
+                for f in b.location_filters:
+                    details = _get_location_filter_details(f)
+                    lines.append("  * {prefix}[`{title}`]({url})".format(
+                        prefix = details.prefix,
+                        title = details.title,
+                        url = details.url,
                     ))
 
             lines.append("")

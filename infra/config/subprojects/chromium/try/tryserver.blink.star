@@ -62,11 +62,11 @@ try_.builder(
     main_list_view = "try",
     os = os.LINUX_DEFAULT,
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/cc/.+",
-            ".+/[+]/third_party/blink/renderer/core/paint/.+",
-            ".+/[+]/third_party/blink/renderer/core/svg/.+",
-            ".+/[+]/third_party/blink/renderer/platform/graphics/.+",
+        location_filters = [
+            "cc/.+",
+            "third_party/blink/renderer/core/paint/.+",
+            "third_party/blink/renderer/core/svg/.+",
+            "third_party/blink/renderer/platform/graphics/.+",
         ],
     ),
 )
