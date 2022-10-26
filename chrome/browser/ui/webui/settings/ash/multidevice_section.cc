@@ -819,6 +819,10 @@ bool MultiDeviceSection::IsFeatureSupported(Feature feature) {
 }
 
 void MultiDeviceSection::RefreshNearbyBackgroundScanningShareSearchConcepts() {
+  if (!NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+          profile())) {
+    return;
+  }
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   NearbySharingService* nearby_sharing_service =
       NearbySharingServiceFactory::GetForBrowserContext(profile());
@@ -846,6 +850,10 @@ void MultiDeviceSection::RefreshNearbyBackgroundScanningShareSearchConcepts() {
 }
 
 void MultiDeviceSection::OnEnabledChanged(bool enabled) {
+  if (!NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
+          profile())) {
+    return;
+  }
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   if (enabled) {
     updater.RemoveSearchTags(GetNearbyShareOffSearchConcepts());
