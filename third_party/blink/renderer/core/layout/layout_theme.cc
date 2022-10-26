@@ -258,9 +258,9 @@ void LayoutTheme::AdjustStyle(const Element* element,
   // value.
   switch (part) {
     case kMenulistPart:
-      return AdjustMenuListStyle(style);
+      return AdjustMenuListStyle(builder);
     case kMenulistButtonPart:
-      return AdjustMenuListButtonStyle(style);
+      return AdjustMenuListButtonStyle(builder);
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
       return AdjustSliderThumbStyle(style);
@@ -445,14 +445,14 @@ void LayoutTheme::AdjustButtonStyle(ComputedStyle& style) const {}
 
 void LayoutTheme::AdjustInnerSpinButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style) const {
+void LayoutTheme::AdjustMenuListStyle(ComputedStyleBuilder& builder) const {
   // Menulists should have visible overflow
   // https://bugs.webkit.org/show_bug.cgi?id=21287
-  style.SetOverflowX(EOverflow::kVisible);
-  style.SetOverflowY(EOverflow::kVisible);
+  builder.SetOverflowX(EOverflow::kVisible);
+  builder.SetOverflowY(EOverflow::kVisible);
 }
 
-void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
+void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyleBuilder&) const {}
 
 void LayoutTheme::AdjustSliderContainerStyle(
     const Element& element,

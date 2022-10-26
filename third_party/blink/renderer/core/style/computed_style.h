@@ -2617,13 +2617,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasViewportUnits() const { return ViewportUnitFlags(); }
 
-  void SetHasExplicitOverflowXVisible() {
-    SetHasExplicitOverflowXVisibleInternal(true);
-  }
-  void SetHasExplicitOverflowYVisible() {
-    SetHasExplicitOverflowYVisibleInternal(true);
-  }
-
  private:
   EClear Clear() const { return ClearInternal(); }
   EFloat Floating() const { return FloatingInternal(); }

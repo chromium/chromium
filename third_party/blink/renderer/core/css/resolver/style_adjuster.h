@@ -53,11 +53,11 @@ class StyleAdjuster {
                                          const ComputedStyle& parent_style,
                                          Element* element,
                                          bool is_svg_root);
-  static void AdjustOverflow(ComputedStyle& style, Element* element);
-  static void AdjustForForcedColorsMode(ComputedStyle& style,
-                                        ComputedStyleBuilder& builder);
-  static void AdjustForSVGTextElement(ComputedStyle& style,
-                                      ComputedStyleBuilder& builder);
+  static void AdjustOverflow(ComputedStyle&,
+                             ComputedStyleBuilder&,
+                             Element* element);
+  static void AdjustForForcedColorsMode(ComputedStyle&, ComputedStyleBuilder&);
+  static void AdjustForSVGTextElement(ComputedStyle&, ComputedStyleBuilder&);
 };
 
 }  // namespace blink

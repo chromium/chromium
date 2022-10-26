@@ -3586,6 +3586,7 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "overflow-wrap",
@@ -3597,6 +3598,7 @@
       default_value: "normal",
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      readonly: true,
     },
     {
       name: "overflow-inline",
@@ -3625,6 +3627,7 @@
       default_value: "absl::nullopt",
       type_name: "absl::optional<StyleOverflowClipMargin>",
       converter: "ConvertOverflowClipMargin",
+      readonly: true,
     },
     {
       name: "overflow-x",
@@ -3649,6 +3652,7 @@
       // Modifying overflow frequently should not be common, so we take it out.
       supports_incremental_style: false,
       idempotent: false,
+      readonly: true,
     },
     {
       name: "overflow-y",
@@ -3669,6 +3673,7 @@
       // See comment on overflow-x.
       supports_incremental_style: false,
       idempotent: false,
+      readonly: true,
     },
     {
       name: "overscroll-behavior-inline",
@@ -4738,6 +4743,7 @@
       typedom_types: ["Keyword"],
       default_value: "clip",
       valid_for_formatted_text: true,
+      readonly: true,
     },
     {
       name: "text-shadow",

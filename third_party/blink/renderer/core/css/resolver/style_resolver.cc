@@ -128,12 +128,11 @@ scoped_refptr<const ComputedStyle> BuildInitialStyleForImg(
   // This matches the img {} declarations in html.css to avoid copy-on-write
   // when only UA styles apply for these properties. See crbug.com/1369454
   // for details.
-  auto initial_style_for_img = ComputedStyle::Clone(*initial_style);
-  initial_style_for_img->SetOverflowX(EOverflow::kClip);
-  initial_style_for_img->SetOverflowY(EOverflow::kClip);
-  initial_style_for_img->SetOverflowClipMargin(
-      StyleOverflowClipMargin::CreateContent());
-  return initial_style_for_img;
+  ComputedStyleBuilder builder(*initial_style);
+  builder.SetOverflowX(EOverflow::kClip);
+  builder.SetOverflowY(EOverflow::kClip);
+  builder.SetOverflowClipMargin(StyleOverflowClipMargin::CreateContent());
+  return builder.TakeStyle();
 }
 
 bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
@@ -855,22 +854,23 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
-  scoped_refptr<ComputedStyle> viewport_style = InitialStyleForElement();
+  ComputedStyleBuilder builder = InitialStyleBuilderForElement();
 
-  viewport_style->SetZIndex(0);
-  viewport_style->SetIsStackingContextWithoutContainment(true);
-  viewport_style->SetDisplay(EDisplay::kBlock);
-  viewport_style->SetPosition(EPosition::kAbsolute);
+  builder.MutableInternalStyle()->SetZIndex(0);
+  builder.SetIsStackingContextWithoutContainment(true);
+  builder.SetDisplay(EDisplay::kBlock);
+  builder.SetPosition(EPosition::kAbsolute);
 
   // Document::InheritHtmlAndBodyElementStyles will set the final overflow
   // style values, but they should initially be auto to avoid premature
   // scrollbar removal in PaintLayerScrollableArea::UpdateAfterStyleChange.
-  viewport_style->SetOverflowX(EOverflow::kAuto);
-  viewport_style->SetOverflowY(EOverflow::kAuto);
+  builder.SetOverflowX(EOverflow::kAuto);
+  builder.SetOverflowY(EOverflow::kAuto);
 
-  GetDocument().GetStyleEngine().ApplyVisionDeficiencyStyle(viewport_style);
+  GetDocument().GetStyleEngine().ApplyVisionDeficiencyStyle(
+      builder.MutableInternalStyle());
 
-  return viewport_style;
+  return builder.TakeStyle();
 }
 
 static StyleBaseData* GetBaseData(const StyleResolverState& state) {
@@ -1559,7 +1559,7 @@ float StyleResolver::InitialZoom() const {
   return 1;
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
+ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
   StyleEngine& engine = GetDocument().GetStyleEngine();
 
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
@@ -1593,7 +1593,7 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   if (initial_data)
     initial_style->SetInitialData(std::move(initial_data));
 
-  return builder.TakeStyle();
+  return builder;
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForText(

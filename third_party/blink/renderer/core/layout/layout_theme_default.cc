@@ -209,14 +209,16 @@ void LayoutThemeDefault::AdjustSearchFieldCancelButtonStyle(
   style.SetHeight(Length::Fixed(cancel_button_size));
 }
 
-void LayoutThemeDefault::AdjustMenuListStyle(ComputedStyle& style) const {
-  LayoutTheme::AdjustMenuListStyle(style);
+void LayoutThemeDefault::AdjustMenuListStyle(
+    ComputedStyleBuilder& builder) const {
+  LayoutTheme::AdjustMenuListStyle(builder);
   // Height is locked to auto on all browsers.
-  style.SetLineHeight(ComputedStyleInitialValues::InitialLineHeight());
+  builder.ResetLineHeight();
 }
 
-void LayoutThemeDefault::AdjustMenuListButtonStyle(ComputedStyle& style) const {
-  AdjustMenuListStyle(style);
+void LayoutThemeDefault::AdjustMenuListButtonStyle(
+    ComputedStyleBuilder& builder) const {
+  AdjustMenuListStyle(builder);
 }
 
 // The following internal paddings are in addition to the user-supplied padding.

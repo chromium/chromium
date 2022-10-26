@@ -106,11 +106,13 @@ TEST_F(ComputedStyleTest, SVGStackingContext) {
 }
 
 TEST_F(ComputedStyleTest, Preserve3dForceStackingContext) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
-  style->SetOverflowX(EOverflow::kHidden);
-  style->SetOverflowY(EOverflow::kHidden);
-  style->UpdateIsStackingContextWithoutContainment(false, false, false);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
+  builder.SetOverflowX(EOverflow::kHidden);
+  builder.SetOverflowY(EOverflow::kHidden);
+  builder.MutableInternalStyle()->UpdateIsStackingContextWithoutContainment(
+      false, false, false);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(ETransformStyle3D::kFlat, style->UsedTransformStyle3D());
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
 }
@@ -267,9 +269,10 @@ TEST_F(ComputedStyleTest,
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsOverflow) {
   scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  ComputedStyleBuilder builder(*style);
+  builder.SetOverflowX(EOverflow::kHidden);
+  scoped_refptr<ComputedStyle> other = builder.TakeStyle();
 
-  other->SetOverflowX(EOverflow::kHidden);
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());

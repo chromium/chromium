@@ -146,8 +146,10 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
-  scoped_refptr<ComputedStyle> text_block_style =
-      GetDocument().GetStyleResolver().CreateComputedStyle();
+  ComputedStyleBuilder text_block_style_builder =
+      GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+  ComputedStyle* text_block_style =
+      text_block_style_builder.MutableInternalStyle();
   text_block_style->InheritFrom(start_style);
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
@@ -168,8 +170,8 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
 
   if (!IsA<HTMLTextAreaElement>(host)) {
     text_block_style->SetWhiteSpace(EWhiteSpace::kPre);
-    text_block_style->SetOverflowWrap(EOverflowWrap::kNormal);
-    text_block_style->SetTextOverflow(
+    text_block_style_builder.SetOverflowWrap(EOverflowWrap::kNormal);
+    text_block_style_builder.SetTextOverflow(
         ToTextControl(host)->ValueForTextOverflow());
     int computed_line_height = start_style.ComputedLineHeight();
     // Do not allow line-height to be smaller than our default.
@@ -197,9 +199,9 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     if (To<HTMLInputElement>(host)->ShouldRevealPassword())
       text_block_style->SetTextSecurity(ETextSecurity::kNone);
 
-    text_block_style->SetOverflowX(EOverflow::kScroll);
+    text_block_style_builder.SetOverflowX(EOverflow::kScroll);
     // overflow-y:visible doesn't work because overflow-x:scroll makes a layer.
-    text_block_style->SetOverflowY(EOverflow::kScroll);
+    text_block_style_builder.SetOverflowY(EOverflow::kScroll);
     scoped_refptr<ComputedStyle> no_scrollbar_style =
         GetDocument().GetStyleResolver().CreateComputedStyle();
     no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
@@ -213,7 +215,7 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
       text_block_style->SetAlignSelfBlockCenter(true);
   }
 
-  return text_block_style;
+  return text_block_style_builder.TakeStyle();
 }
 
 // ----------------------------

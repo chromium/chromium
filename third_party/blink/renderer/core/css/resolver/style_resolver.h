@@ -80,7 +80,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // Create a ComputedStyle for initial styles to be used as the basis for the
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
-  scoped_refptr<ComputedStyle> InitialStyleForElement() const;
+  ComputedStyleBuilder InitialStyleBuilderForElement() const;
+  scoped_refptr<ComputedStyle> InitialStyleForElement() const {
+    return InitialStyleBuilderForElement().TakeStyle();
+  }
   float InitialZoom() const;
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(

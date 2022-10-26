@@ -1155,19 +1155,17 @@
     },
     {
       name: "HasExplicitOverflowXVisible",
-      field_template: "primitive",
+      field_template: "monotonic_flag",
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      computed_style_custom_functions: ["setter"],
     },
     {
       name: "HasExplicitOverflowYVisible",
-      field_template: "primitive",
+      field_template: "monotonic_flag",
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-      computed_style_custom_functions: ["setter"],
     }
   ],
 }

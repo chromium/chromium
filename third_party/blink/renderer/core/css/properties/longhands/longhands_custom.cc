@@ -5498,28 +5498,31 @@ const CSSValue* OverflowX::CSSValueFromComputedStyleInternal(
 }
 
 void OverflowX::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetOverflowX(ComputedStyleInitialValues::InitialOverflowX());
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetOverflowX(ComputedStyleInitialValues::InitialOverflowX());
 
-  DCHECK_EQ(state.Style()->OverflowX(), EOverflow::kVisible);
-  state.Style()->SetHasExplicitOverflowXVisible();
+  DCHECK_EQ(builder.OverflowX(), EOverflow::kVisible);
+  builder.SetHasExplicitOverflowXVisible();
 }
 
 void OverflowX::ApplyInherit(StyleResolverState& state) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   auto parent_value = state.ParentStyle()->OverflowX();
-  state.Style()->SetOverflowX(parent_value);
+  builder.SetOverflowX(parent_value);
 
   if (parent_value == EOverflow::kVisible)
-    state.Style()->SetHasExplicitOverflowXVisible();
+    builder.SetHasExplicitOverflowXVisible();
 }
 
 void OverflowX::ApplyValue(StyleResolverState& state,
                            const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   auto converted_value =
       To<CSSIdentifierValue>(value).ConvertTo<blink::EOverflow>();
-  state.Style()->SetOverflowX(converted_value);
+  builder.SetOverflowX(converted_value);
 
   if (converted_value == EOverflow::kVisible)
-    state.Style()->SetHasExplicitOverflowXVisible();
+    builder.SetHasExplicitOverflowXVisible();
 }
 
 const CSSValue* OverflowY::CSSValueFromComputedStyleInternal(
@@ -5530,28 +5533,31 @@ const CSSValue* OverflowY::CSSValueFromComputedStyleInternal(
 }
 
 void OverflowY::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetOverflowY(ComputedStyleInitialValues::InitialOverflowY());
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetOverflowY(ComputedStyleInitialValues::InitialOverflowY());
 
-  DCHECK_EQ(state.Style()->OverflowY(), EOverflow::kVisible);
-  state.Style()->SetHasExplicitOverflowYVisible();
+  DCHECK_EQ(builder.OverflowY(), EOverflow::kVisible);
+  builder.SetHasExplicitOverflowYVisible();
 }
 
 void OverflowY::ApplyInherit(StyleResolverState& state) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   auto parent_value = state.ParentStyle()->OverflowY();
-  state.Style()->SetOverflowY(parent_value);
+  builder.SetOverflowY(parent_value);
 
   if (parent_value == EOverflow::kVisible)
-    state.Style()->SetHasExplicitOverflowYVisible();
+    builder.SetHasExplicitOverflowYVisible();
 }
 
 void OverflowY::ApplyValue(StyleResolverState& state,
                            const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   auto converted_value =
       To<CSSIdentifierValue>(value).ConvertTo<blink::EOverflow>();
-  state.Style()->SetOverflowY(converted_value);
+  builder.SetOverflowY(converted_value);
 
   if (converted_value == EOverflow::kVisible)
-    state.Style()->SetHasExplicitOverflowYVisible();
+    builder.SetHasExplicitOverflowYVisible();
 }
 
 const CSSValue* OverscrollBehaviorX::CSSValueFromComputedStyleInternal(
