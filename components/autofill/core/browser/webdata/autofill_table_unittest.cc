@@ -915,7 +915,7 @@ TEST_F(AutofillTableTest, AutofillProfile) {
 
   // Get the 'Home' profile from the table.
   std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(home_profile.guid());
+      table_->GetAutofillProfile(home_profile.guid(), home_profile.source());
   ASSERT_TRUE(db_profile);
 
   // Verify that it is correct.
@@ -1131,7 +1131,7 @@ TEST_F(AutofillTableTest, UpdateAutofillProfile) {
 
   // Get the profile.
   std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(profile.guid());
+      table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
   sql::Statement s_original(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1147,7 +1147,7 @@ TEST_F(AutofillTableTest, UpdateAutofillProfile) {
   table_->UpdateAutofillProfile(profile);
 
   // Get the profile.
-  db_profile = table_->GetAutofillProfile(profile.guid());
+  db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
   sql::Statement s_updated(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1171,7 +1171,7 @@ TEST_F(AutofillTableTest, UpdateAutofillProfile) {
   table_->UpdateAutofillProfile(profile);
 
   // Get the profile.
-  db_profile = table_->GetAutofillProfile(profile.guid());
+  db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
   sql::Statement s_unchanged(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1282,7 +1282,7 @@ TEST_F(AutofillTableTest, UpdateProfileOriginOnly) {
 
   // Get the profile.
   std::unique_ptr<AutofillProfile> db_profile =
-      table_->GetAutofillProfile(profile.guid());
+      table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
   sql::Statement s_original(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1298,7 +1298,7 @@ TEST_F(AutofillTableTest, UpdateProfileOriginOnly) {
   table_->UpdateAutofillProfile(profile);
 
   // Get the profile.
-  db_profile = table_->GetAutofillProfile(profile.guid());
+  db_profile = table_->GetAutofillProfile(profile.guid(), profile.source());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
   sql::Statement s_updated(db_->GetSQLConnection()->GetUniqueStatement(

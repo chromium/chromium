@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/sync/base/model_type.h"
@@ -29,7 +30,6 @@ class SingleThreadTaskRunner;
 namespace autofill {
 
 class AutofillEntry;
-class AutofillProfile;
 class AutofillWebDataBackend;
 class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
@@ -81,12 +81,14 @@ class AutofillWebDataService : public WebDataServiceBase {
 
   // Schedules a task to remove an Autofill profile from the web database.
   // |guid| is the identifier of the profile to remove.
-  void RemoveAutofillProfile(const std::string& guid);
+  void RemoveAutofillProfile(const std::string& guid,
+                             AutofillProfile::Source profile_source);
 
   // Initiates the request for local/server Autofill profiles.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the profiles included in the argument |result|.  The
   WebDataServiceBase::Handle GetAutofillProfiles(
+      AutofillProfile::Source profile_source,
       WebDataServiceConsumer* consumer);
   WebDataServiceBase::Handle GetServerProfiles(
       WebDataServiceConsumer* consumer);

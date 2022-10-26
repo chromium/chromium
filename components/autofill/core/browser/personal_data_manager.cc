@@ -1757,7 +1757,8 @@ void PersonalDataManager::LoadProfiles() {
   CancelPendingServerQuery(&pending_server_profiles_query_);
 
   pending_profiles_query_ =
-      database_helper_->GetLocalDatabase()->GetAutofillProfiles(this);
+      database_helper_->GetLocalDatabase()->GetAutofillProfiles(
+          AutofillProfile::Source::kLocal, this);
   if (database_helper_->GetServerDatabase()) {
     pending_server_profiles_query_ =
         database_helper_->GetServerDatabase()->GetServerProfiles(this);
@@ -2261,7 +2262,8 @@ void PersonalDataManager::RemoveProfileFromDB(const std::string& guid) {
                      : ongoing_profile_changes_[guid].back().profile();
   AutofillProfileDeepChange change(AutofillProfileChange::REMOVE, *profile);
   if (!ProfileChangesAreOngoing(guid)) {
-    database_helper_->GetLocalDatabase()->RemoveAutofillProfile(guid);
+    database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
+        guid, AutofillProfile::Source::kLocal);
     change.set_is_ongoing_on_background();
   }
   ongoing_profile_changes_[guid].push_back(std::move(change));
@@ -2287,7 +2289,8 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       OnProfileChangeDone(guid);
       return;
     }
-    database_helper_->GetLocalDatabase()->RemoveAutofillProfile(guid);
+    database_helper_->GetLocalDatabase()->RemoveAutofillProfile(
+        guid, AutofillProfile::Source::kLocal);
     change.set_is_ongoing_on_background();
     return;
   }

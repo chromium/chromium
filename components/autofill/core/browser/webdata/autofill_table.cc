@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -1440,9 +1439,13 @@ bool AutofillTable::AddAutofillProfile(const AutofillProfile& profile) {
 
 bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
   DCHECK(base::IsValidGUID(profile.guid()));
+  // TODO(crbug.com/1348294): Update `kContactInfoTable` when `profile_source`
+  // is `kAccount`.
+  if (profile.source() != AutofillProfile::Source::kLocal)
+    return false;
 
   std::unique_ptr<AutofillProfile> old_profile =
-      GetAutofillProfile(profile.guid());
+      GetAutofillProfile(profile.guid(), profile.source());
   if (!old_profile)
     return false;
 
@@ -1473,15 +1476,27 @@ bool AutofillTable::UpdateAutofillProfile(const AutofillProfile& profile) {
   return AddAutofillProfilePieces(profile, db_);
 }
 
-bool AutofillTable::RemoveAutofillProfile(const std::string& guid) {
+bool AutofillTable::RemoveAutofillProfile(
+    const std::string& guid,
+    AutofillProfile::Source profile_source) {
   DCHECK(base::IsValidGUID(guid));
+  // TODO(crbug.com/1348294): Remove from `kContactInfoTable` when
+  // `profile_source` is `kAccount`.
+  if (profile_source != AutofillProfile::Source::kLocal)
+    return false;
   return DeleteWhereColumnEq(db_, kAutofillProfilesTable, kGuid, guid) &&
          RemoveAutofillProfilePieces(guid, db_);
 }
 
 std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
-    const std::string& guid) {
+    const std::string& guid,
+    AutofillProfile::Source profile_source) {
   DCHECK(base::IsValidGUID(guid));
+  // TODO(crbug.com/1348294): Query `kContactInfoTable` when `profile_source` is
+  // `kAccount`.
+  if (profile_source != AutofillProfile::Source::kLocal)
+    return nullptr;
+
   sql::Statement s;
   SelectBuilder(
       db_, s, kAutofillProfilesTable,
@@ -1527,9 +1542,15 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
 }
 
 bool AutofillTable::GetAutofillProfiles(
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) {
+    std::vector<std::unique_ptr<AutofillProfile>>* profiles,
+    AutofillProfile::Source profile_source) {
   DCHECK(profiles);
   profiles->clear();
+
+  // TODO(crbug.com/1348294): Query `kContactInfoTable` when `profile_source` is
+  // `kRemote`.
+  if (profile_source != AutofillProfile::Source::kLocal)
+    return false;
 
   sql::Statement s;
   SelectBuilder(db_, s, kAutofillProfilesTable, {kGuid},
@@ -1537,7 +1558,8 @@ bool AutofillTable::GetAutofillProfiles(
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<AutofillProfile> profile = GetAutofillProfile(guid);
+    std::unique_ptr<AutofillProfile> profile =
+        GetAutofillProfile(guid, profile_source);
     if (!profile)
       return false;
     profiles->push_back(std::move(profile));
@@ -2468,7 +2490,8 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
   profiles->clear();
   while (s_profiles_get.Step()) {
     std::string guid = s_profiles_get.ColumnString(0);
-    std::unique_ptr<AutofillProfile> profile = GetAutofillProfile(guid);
+    std::unique_ptr<AutofillProfile> profile =
+        GetAutofillProfile(guid, AutofillProfile::Source::kLocal);
     if (!profile)
       return false;
     profiles->push_back(std::move(profile));
@@ -2559,7 +2582,8 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
     if (!s_profile.Run())
       return false;
 
-    std::unique_ptr<AutofillProfile> profile = GetAutofillProfile(guid);
+    std::unique_ptr<AutofillProfile> profile =
+        GetAutofillProfile(guid, AutofillProfile::Source::kLocal);
     if (!profile)
       return false;
 

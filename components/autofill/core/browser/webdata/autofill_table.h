@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "components/webdata/common/web_database_table.h"
@@ -33,7 +34,6 @@ class AutofillChange;
 class AutofillEntry;
 struct AutofillMetadata;
 class AutofillOfferData;
-class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;
 class CreditCard;
@@ -530,16 +530,24 @@ class AutofillTable : public WebDatabaseTable,
   // Updates the database values for the specified profile.  Multi-value aware.
   virtual bool UpdateAutofillProfile(const AutofillProfile& profile);
 
-  // Removes a row from the autofill_profiles table.  |guid| is the identifier
-  // of the profile to remove.
-  virtual bool RemoveAutofillProfile(const std::string& guid);
+  // Removes the Autofill profile with the given `guid`. `profile_source`
+  // indicates where the profile was synced from and thus whether it is stored
+  // in `kAutofillProfilesTable` or `kContactInfoTable`.
+  virtual bool RemoveAutofillProfile(const std::string& guid,
+                                     AutofillProfile::Source profile_source);
 
-  // Retrieves a profile with guid |guid|.
-  std::unique_ptr<AutofillProfile> GetAutofillProfile(const std::string& guid);
+  // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
+  // `kContactInfoTable`.
+  std::unique_ptr<AutofillProfile> GetAutofillProfile(
+      const std::string& guid,
+      AutofillProfile::Source profile_source);
 
   // Retrieves local/server profiles in the database.
+  // The `profile_source` specifies if profiles from the legacy or the remote
+  // backend should be retrieved.
   virtual bool GetAutofillProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles);
+      std::vector<std::unique_ptr<AutofillProfile>>* profiles,
+      AutofillProfile::Source profile_source);
   virtual bool GetServerProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
 

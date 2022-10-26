@@ -176,7 +176,8 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteDelete(
 optional<ModelError> AutofillProfileSyncDifferenceTracker::FlushToLocal(
     base::OnceClosure autofill_changes_callback) {
   for (const std::string& storage_key : delete_from_local_) {
-    if (!table_->RemoveAutofillProfile(storage_key)) {
+    if (!table_->RemoveAutofillProfile(storage_key,
+                                       AutofillProfile::Source::kLocal)) {
       return ModelError(FROM_HERE, "Failed deleting from WebDatabase");
     }
   }
@@ -244,7 +245,7 @@ bool AutofillProfileSyncDifferenceTracker::
   }
 
   std::vector<std::unique_ptr<AutofillProfile>> entries;
-  if (!table_->GetAutofillProfiles(&entries)) {
+  if (!table_->GetAutofillProfiles(&entries, AutofillProfile::Source::kLocal)) {
     return false;
   }
 

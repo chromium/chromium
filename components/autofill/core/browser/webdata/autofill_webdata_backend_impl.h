@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_data_results.h"
@@ -28,7 +29,6 @@ class WebDatabaseBackend;
 
 namespace autofill {
 
-class AutofillProfile;
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
 class IBAN;
@@ -130,11 +130,15 @@ class AutofillWebDataBackendImpl
 
   // Removes an Autofill profile from the web database. Valid only for local
   // profiles.
-  WebDatabase::State RemoveAutofillProfile(const std::string& guid,
-                                           WebDatabase* db);
+  WebDatabase::State RemoveAutofillProfile(
+      const std::string& guid,
+      AutofillProfile::Source profile_source,
+      WebDatabase* db);
 
   // Returns the local/server Autofill profiles from the web database.
-  std::unique_ptr<WDTypedResult> GetAutofillProfiles(WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetAutofillProfiles(
+      AutofillProfile::Source profile_source,
+      WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerProfiles(WebDatabase* db);
 
   // Converts server profiles to local profiles, comparing profiles using

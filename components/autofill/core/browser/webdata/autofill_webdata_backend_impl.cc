@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -267,7 +266,8 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
   // valid to try to update a missing profile.  We simply drop the write and
   // the caller will detect this on the next refresh.
   std::unique_ptr<AutofillProfile> original_profile =
-      AutofillTable::FromWebDatabase(db)->GetAutofillProfile(profile.guid());
+      AutofillTable::FromWebDatabase(db)->GetAutofillProfile(profile.guid(),
+                                                             profile.source());
   if (!original_profile) {
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
@@ -294,16 +294,19 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     const std::string& guid,
+    AutofillProfile::Source profile_source,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::unique_ptr<AutofillProfile> profile =
-      AutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid);
+      AutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid,
+                                                             profile_source);
   if (!profile) {
     NOTREACHED();
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  if (!AutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(guid)) {
+  if (!AutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(
+          guid, profile_source)) {
     NOTREACHED();
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
@@ -326,10 +329,12 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
 }
 
 std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillProfiles(
+    AutofillProfile::Source profile_source,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  AutofillTable::FromWebDatabase(db)->GetAutofillProfiles(&profiles);
+  AutofillTable::FromWebDatabase(db)->GetAutofillProfiles(&profiles,
+                                                          profile_source);
   return std::unique_ptr<WDTypedResult>(
       new WDResult<std::vector<std::unique_ptr<AutofillProfile>>>(
           AUTOFILL_PROFILES_RESULT, std::move(profiles)));

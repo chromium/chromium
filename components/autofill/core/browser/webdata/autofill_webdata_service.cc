@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -133,19 +132,21 @@ void AutofillWebDataService::UpdateAutofillProfile(
 }
 
 void AutofillWebDataService::RemoveAutofillProfile(
-    const std::string& guid) {
+    const std::string& guid,
+    AutofillProfile::Source profile_source) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveAutofillProfile,
-                     autofill_backend_, guid));
+                     autofill_backend_, guid, profile_source));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
+    AutofillProfile::Source profile_source,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillProfiles,
-                     autofill_backend_),
+                     autofill_backend_, profile_source),
       consumer);
 }
 

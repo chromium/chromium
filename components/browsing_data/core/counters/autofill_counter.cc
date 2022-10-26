@@ -100,7 +100,8 @@ void AutofillCounter::Count() {
   credit_cards_query_ = web_data_service_->GetCreditCards(this);
 
   // Count the addresses.
-  addresses_query_ = web_data_service_->GetAutofillProfiles(this);
+  addresses_query_ = web_data_service_->GetAutofillProfiles(
+      autofill::AutofillProfile::Source::kLocal, this);
 }
 
 void AutofillCounter::OnWebDataServiceRequestDone(
