@@ -168,7 +168,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       buffer_formats[0] = gfx::BufferFormat::R_16;
       // TODO(https://crbug.com/1233228): This needs to be
       // gfx::BufferFormat::RG_1616.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       buffer_formats[1] = gfx::BufferFormat::RG_1616;
 #else
       buffer_formats[1] = gfx::BufferFormat::RG_88;

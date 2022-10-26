@@ -67,12 +67,12 @@ viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   DCHECK_LT(plane, NumPlanes(dxgi_format));
   viz::ResourceFormat format;
   switch (dxgi_format) {
-    // TODO(crbug.com/1011555): P010 formats are not fully supported by Skia.
-    // Treat them the same as NV12 for the time being.
     case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
       // Y plane is accessed as R8 and UV plane is accessed as RG88 in D3D.
       format = plane == 0 ? viz::RED_8 : viz::RG_88;
+      break;
+    case DXGI_FORMAT_P010:
+      format = plane == 0 ? viz::R16_EXT : viz::RG16_EXT;
       break;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
       format = viz::BGRA_8888;

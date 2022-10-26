@@ -62,7 +62,8 @@ enum DCLayerResult {
   DC_LAYER_FAILED_NOT_DAMAGED = 15,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
   DC_LAYER_FAILED_HDR_TONE_MAPPING = 17,
-  kMaxValue = DC_LAYER_FAILED_HDR_TONE_MAPPING,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA,
 };
 
 enum : size_t {
@@ -121,6 +122,15 @@ DCLayerResult ValidateYUVQuad(
   for (const auto& filter_target_rect : backdrop_filter_rects) {
     if (filter_target_rect.Intersects(quad_target_rect))
       return DC_LAYER_FAILED_BACKDROP_FILTERS;
+  }
+
+  // HLG doesn't have the hdr metadata, but we don't want to promote it to
+  // overlay, as VideoProcessor doesn't support HLG tone mapping well between
+  // different gpu vendors, see: https://crbug.com/1144260#c6.
+  // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
+  // hdr metadata is still missing. We shouldn't promote too for that case.
+  if (quad->video_color_space.IsHDR() && !quad->hdr_metadata.has_value()) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
   }
 
   return DC_LAYER_SUCCESS;

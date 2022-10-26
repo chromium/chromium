@@ -100,6 +100,9 @@ gfx::Size g_primary_monitor_size;
 // The number of all visible display monitors on a desktop.
 int g_num_monitors = 0;
 
+// Whether there is a HDR capable display monitor being connected.
+bool g_system_hdr_enabled = false;
+
 // Global direct composition device.
 IDCompositionDevice2* g_dcomp_device = nullptr;
 // Whether swap chain present failed and direct composition should be disabled.
@@ -368,6 +371,10 @@ void UpdateMonitorInfo() {
   } else {
     g_primary_monitor_size = gfx::Size();
   }
+  g_system_hdr_enabled = false;
+  auto dxgi_info = gl::GetDirectCompositionHDRMonitorDXGIInfo();
+  for (const auto& output_desc : dxgi_info->output_descs)
+    g_system_hdr_enabled |= output_desc->hdr_enabled;
 }
 
 }  // namespace
@@ -559,6 +566,12 @@ int GetDirectCompositionNumMonitors() {
   if (g_num_monitors == 0)
     UpdateMonitorInfo();
   return g_num_monitors;
+}
+
+bool DirectCompositionSystemHDREnabled() {
+  if (g_num_monitors == 0)
+    UpdateMonitorInfo();
+  return g_system_hdr_enabled;
 }
 
 DXGI_FORMAT GetDirectCompositionSDROverlayFormat() {

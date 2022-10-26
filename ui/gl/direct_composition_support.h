@@ -74,6 +74,9 @@ GL_EXPORT bool DXGISwapChainTearingSupported();
 GL_EXPORT bool DirectCompositionSwapChainTearingEnabled();
 
 // Returns true if there is an HDR capable display connected.
+GL_EXPORT bool DirectCompositionSystemHDREnabled();
+
+// Returns the collected DXGI information.
 GL_EXPORT gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo();
 
 // Set direct composition swap chain failure so that direct composition is

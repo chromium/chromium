@@ -310,8 +310,10 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     gfx::ProtectedVideoType protected_video_type,
     bool content_is_hdr) {
   // Prefer RGB10A2 swapchain when playing HDR content.
-  if (content_is_hdr)
+  // Only use rgb10a2 overlay when the hdr monitor is available.
+  if (content_is_hdr && DirectCompositionSystemHDREnabled()) {
     return DXGI_FORMAT_R10G10B10A2_UNORM;
+  }
 
   DXGI_FORMAT yuv_overlay_format = GetDirectCompositionSDROverlayFormat();
   // Always prefer YUV swap chain for hardware protected video for now.
@@ -1148,8 +1150,10 @@ bool SwapChainPresenter::PresentToSwapChain(
 
   bool swap_chain_resized = swap_chain_size_ != swap_chain_size;
 
+  bool use_hdr_swap_chain = content_is_hdr && params.hdr_metadata.IsValid();
+
   DXGI_FORMAT swap_chain_format =
-      GetSwapChainFormat(params.protected_video_type, content_is_hdr);
+      GetSwapChainFormat(params.protected_video_type, use_hdr_swap_chain);
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
   bool toggle_protected_video =
       protected_video_type_ != params.protected_video_type;
@@ -1429,8 +1433,9 @@ bool SwapChainPresenter::VideoProcessorBlt(
       (output_color_space == gfx::ColorSpace::CreateREC709())) {
     output_color_space = gfx::ColorSpace::CreateREC601();
   }
-  if (content_is_hdr)
+  if (content_is_hdr) {
     output_color_space = gfx::ColorSpace::CreateHDR10();
+  }
 
   VideoProcessorWrapper* video_processor_wrapper =
       layer_tree_->InitializeVideoProcessor(
