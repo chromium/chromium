@@ -564,11 +564,14 @@ SBThreatType SafeBrowsingUrlCheckerImpl::CheckWebUIUrls(const GURL& url) {
 bool SafeBrowsingUrlCheckerImpl::RunNextCallback(bool proceed,
                                                  bool showed_interstitial) {
   DCHECK_LT(next_index_, urls_.size());
-
+  // OnCompleteCheck may delete *this*. Do not access internal members after
+  // the call.
   auto weak_self = weak_factory_.GetWeakPtr();
-  urls_[next_index_].notifier.OnCompleteCheck(
-      proceed, showed_interstitial, urls_[next_index_].did_check_allowlist);
-  next_index_++;
+  UrlInfo& url_info = urls_[next_index_++];
+  url_info.notifier.OnCompleteCheck(proceed, showed_interstitial,
+                                    url_info.did_check_allowlist);
+
+  // Careful; `this` may be destroyed.
   return !!weak_self;
 }
 
