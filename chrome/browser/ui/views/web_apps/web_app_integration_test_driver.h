@@ -76,6 +76,8 @@ enum class Color { kRed, kGreen };
 
 enum class ProfileClient { kClient2, kClient1 };
 
+enum class ProfileName { kDefault, kProfile2 };
+
 enum class UserDisplayPreference { kStandalone, kBrowser };
 
 enum class IsShown { kShown, kNotShown };
@@ -222,6 +224,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ClosePwa();
   void DisableRunOnOsLogin(Site site);
   void EnableRunOnOsLogin(Site site);
+  void DisableFileHandling(Site site);
+  void EnableFileHandling(Site site);
   void DisableWindowControlsOverlay(Site site);
   void EnableWindowControlsOverlay(Site site);
   void CreateShortcut(Site site, WindowOptions window_options);
@@ -262,6 +266,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void SetOpenInWindow(Site site);
   void SwitchIncognitoProfile();
   void SwitchProfileClients(ProfileClient client);
+  void SwitchActiveProfile(ProfileName profile_name);
   void SyncTurnOff();
   void SyncTurnOn();
   void UninstallFromList(Site site);
@@ -365,6 +370,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                                 const AppId& id);
 
   bool IsFileHandledBySite(Site site, std::string file_extension);
+  void SetFileHandlingEnabled(Site site, bool enabled);
 
   void SetRunOnOsLoginMode(Site site, apps::RunOnOsLoginMode login_mode);
 

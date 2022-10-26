@@ -96,6 +96,43 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog) {
   helper_.CheckWindowCreated();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, DisableEnableFileHandling) {
+  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+
+  helper_.DisableFileHandling(Site::kMinimalUi);
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "quux");
+
+  helper_.EnableFileHandling(Site::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, MultiProfileFileHandling) {
+  // Install file handling PWA in two profiles.
+  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+
+  helper_.SwitchActiveProfile(ProfileName::kProfile2);
+  helper_.InstallMenuOption(InstallableSite::kMinimalUi);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+
+  // Disabling file handling in one profile should not disable it in the other.
+  helper_.DisableFileHandling(Site::kMinimalUi);
+  helper_.SwitchActiveProfile(ProfileName::kDefault);
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteHandlesFile(Site::kMinimalUi, "quux");
+
+  // Disabling in both should disable file handling.
+  helper_.DisableFileHandling(Site::kMinimalUi);
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "qux");
+  helper_.CheckSiteNotHandlesFile(Site::kMinimalUi, "quux");
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

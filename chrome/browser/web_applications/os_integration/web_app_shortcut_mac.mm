@@ -1001,6 +1001,12 @@ void WebAppShortcutCreator::CreateShortcutsAt(
     base::mac::RemoveQuarantineAttribute(dst_app_path.Append("Contents")
                                              .Append("MacOS")
                                              .Append("app_mode_loader"));
+
+    // LaunchServices will eventually detect the (updated) app, but explicitly
+    // calling LSRegisterURL ensures tests see the right state immediately.
+    LSRegisterURL(
+        base::mac::NSToCFCast(base::mac::FilePathToNSURL(dst_app_path)), true);
+
     updated_paths->push_back(dst_app_path);
   }
 }

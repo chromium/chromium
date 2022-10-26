@@ -76,6 +76,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -970,6 +971,20 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLogin(Site site) {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::DisableFileHandling(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__))
+    return;
+  SetFileHandlingEnabled(site, false);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::EnableFileHandling(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__))
+    return;
+  SetFileHandlingEnabled(site, true);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::CreateShortcut(Site site,
                                                  WindowOptions options) {
   if (!BeforeStateChangeAction(__FUNCTION__))
@@ -1729,6 +1744,34 @@ void WebAppIntegrationTestDriver::SwitchProfileClients(ProfileClient client) {
   DCHECK(active_profile_)
       << "Cannot switch profile clients if delegate only supports one profile";
   delegate_->AwaitWebAppQuiescence();
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::SwitchActiveProfile(
+    ProfileName profile_name) {
+  if (!BeforeStateChangeAction(__FUNCTION__))
+    return;
+  const char* profile_name_str = nullptr;
+  switch (profile_name) {
+    case ProfileName::kDefault:
+      profile_name_str = "Default";
+      break;
+    case ProfileName::kProfile2:
+      profile_name_str = "Profile2";
+      break;
+  }
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::FilePath profile_path = user_data_dir.AppendASCII(profile_name_str);
+  active_profile_ =
+      g_browser_process->profile_manager()->GetProfile(profile_path);
+  // Make sure the profile has at least one browser by creating one if one
+  // doesn't exist already.
+  if (!chrome::FindTabbedBrowser(active_profile_,
+                                 /*match_original_profiles=*/false)) {
+    delegate_->CreateBrowser(active_profile_);
+  }
   AfterStateChangeAction();
 }
 
@@ -3070,12 +3113,31 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   for (const LinuxFileRegistration& command :
        override_registration_->shortcut_override->linux_file_registration) {
     if (base::Contains(command.xdg_command, app_id) &&
-        base::Contains(command.file_contents, file_extension)) {
-      is_file_handled = base::Contains(command.xdg_command, "install");
+        base::Contains(command.xdg_command,
+                       profile()->GetPath().BaseName().value())) {
+      if (base::StartsWith(command.xdg_command, "xdg-mime install")) {
+        is_file_handled = base::Contains(command.file_contents,
+                                         "\"*." + file_extension + "\"");
+      } else {
+        DCHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
+            << command.xdg_command;
+        is_file_handled = false;
+      }
     }
   }
 #endif
   return is_file_handled;
+}
+
+void WebAppIntegrationTestDriver::SetFileHandlingEnabled(Site site,
+                                                         bool enabled) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  AppId app_id = GetAppIdBySiteMode(site);
+  ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
+      << "No app installed for site: " << static_cast<int>(site);
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+  app_management_page_handler.SetFileHandlingEnabled(app_id, enabled);
+#endif
 }
 
 void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
