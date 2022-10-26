@@ -524,8 +524,7 @@ void StandaloneBrowserExtensionApps::RegisterAppController(
 
 void StandaloneBrowserExtensionApps::OnCapabilityAccesses(
     std::vector<CapabilityAccessPtr> deltas) {
-  // TODO(https://crbug.com/1225848): Implement.
-  NOTIMPLEMENTED();
+  proxy()->OnCapabilityAccesses(std::move(deltas));
 }
 
 void StandaloneBrowserExtensionApps::LoggedInStateChanged() {
