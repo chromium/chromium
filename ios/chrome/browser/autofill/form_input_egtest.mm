@@ -51,7 +51,8 @@ void AssertElementIsFocused(const std::string& element_id) {
   ConditionBlock condition = ^{
     return base::SysNSStringToUTF8(GetFocusedElementId()) == element_id;
   };
-  GREYAssert(WaitUntilConditionOrTimeout(10, condition), description);
+  GREYAssert(WaitUntilConditionOrTimeout(base::Seconds(10), condition),
+             description);
 }
 
 }  // namespace
