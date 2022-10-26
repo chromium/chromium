@@ -5,6 +5,7 @@
 /**
  * @fileoverview Contains the rules for output based on type information.
  */
+import {OutputEventType} from './output_types.js';
 
 /**
  * @typedef {{
@@ -16,15 +17,28 @@
 export let OutputRuleSpecifier;
 
 export class OutputRule {
-  constructor() {
-    /** @private {string|undefined} */
-    this.event_;
+  /** @param {string} event */
+  constructor(event) {
+    /** @private {!OutputEventType} */
+    this.event_ = this.getEvent_(event);
     /** @private {string|undefined} */
     this.role_;
     /** @private {string|undefined} */
     this.navigation_;
     /** @private {string|undefined} */
     this.output_;
+  }
+
+  /**
+   * @param {string} event
+   * @return {!OutputEventType}
+   * @private
+   */
+  getEvent_(event) {
+    if (Object.values(OutputEventType).includes(event)) {
+      return /** @type {!OutputEventType} */ (event);
+    }
+    return OutputEventType.NAVIGATE;
   }
 
   /** @return {!OutputRuleSpecifier} */
@@ -45,10 +59,6 @@ export class OutputRule {
   // TODO(anastasi): move the logic for determining the below properties into
   // this class.
 
-  /** @param {string} event */
-  set event(event) {
-    this.event_ = event;
-  }
   /** @param {string|undefined} role */
   set role(role) {
     this.role_ = role;
@@ -62,11 +72,8 @@ export class OutputRule {
     this.output_ = output;
   }
 
-  /** @return {string} */
+  /** @return {!OutputEventType} */
   get event() {
-    if (!this.event_) {
-      throw new Error('Cannot get the value of event before it has been set');
-    }
     return this.event_;
   }
   /** @return {string} */

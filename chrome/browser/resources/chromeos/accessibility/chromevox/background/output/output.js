@@ -1918,10 +1918,8 @@ export class Output {
   ancestryHelper_(args) {
     let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
 
-    const rule = new OutputRule();
+    const rule = new OutputRule(type);
     // First, look up the event type's format block.
-    // Navigate is the default event.
-    rule.event = OutputRule.RULES[type] ? type : 'navigate';
     const eventBlock = OutputRule.RULES[rule.event];
 
     const excludeRoles =
@@ -2001,10 +1999,7 @@ export class Output {
       formatLog.bufferClear();
     }
 
-    const rule = new OutputRule();
-
-    // Navigate is the default event.
-    rule.event = OutputRule.RULES[type] ? type : 'navigate';
+    const rule = new OutputRule(type);
     const eventBlock = OutputRule.RULES[rule.event];
     const parentRole = (OutputRoleInfo[node.role] || {}).inherits || '';
     /**

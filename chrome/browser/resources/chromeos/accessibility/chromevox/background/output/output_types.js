@@ -132,6 +132,10 @@ export class OutputNodeSpan {
  * @enum {string}
  */
 export const OutputEventType = {
+  ALERT: 'alert',
+  MENU_END: 'menuEnd',
+  MENU_LIST_VALUE_CHANGED: 'menuListValueChanged',
+  MENU_START: 'menuStart',
   NAVIGATE: 'navigate',
 };
 
