@@ -4,12 +4,12 @@ import make_runtime_features_utilities as util
 import template_expander
 
 
-class RuntimeFeatureMojomWriter(make_runtime_features.BaseRuntimeFeatureWriter
-                                ):
-    file_basename = "runtime_enabled_features"
+class RuntimeFeatureStateMojomWriter(
+        make_runtime_features.BaseRuntimeFeatureWriter):
+    file_basename = "runtime_feature_state"
 
     def __init__(self, json5_file_path, output_dir):
-        super(RuntimeFeatureMojomWriter,
+        super(RuntimeFeatureStateMojomWriter,
               self).__init__(json5_file_path, output_dir)
         self._outputs = {
             (self.file_basename + '.mojom'): self.generate_mojom_definition
@@ -41,4 +41,4 @@ class RuntimeFeatureMojomWriter(make_runtime_features.BaseRuntimeFeatureWriter
 
 
 if __name__ == '__main__':
-    json5_generator.Maker(RuntimeFeatureMojomWriter).main()
+    json5_generator.Maker(RuntimeFeatureStateMojomWriter).main()

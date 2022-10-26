@@ -6,7 +6,7 @@
 module blink.mojom;
 
 // These enum values should not be persisted nor logged to histograms.
-enum RuntimeEnabledFeatures {
+enum RuntimeFeatureState {
   {% for feature in browser_read_access_features %}
   k{{feature.name}},
   {% endfor %}
