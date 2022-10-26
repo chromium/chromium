@@ -19,6 +19,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -5923,6 +5924,33 @@ class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
         {/* disabled_features */});
   }
 
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(
+        base::BindRepeating(&net::test_server::HandlePrefixedRequest,
+                            "/server-redirect-credentialed-prerender",
+                            base::BindRepeating(HandleCredentialedRequest)));
+    PrerenderBrowserTest::SetUp();
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleCredentialedRequest(const net::test_server::HttpRequest& request) {
+    GURL request_url = request.GetURL();
+    std::string dest =
+        base::UnescapeBinaryURLComponent(request_url.query_piece());
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_FOUND);
+    http_response->AddCustomHeader("Location", dest);
+    http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    http_response->AddCustomHeader("Supports-Loading-Mode",
+                                   "credentialed-prerender");
+    http_response->set_content_type("text/html");
+    http_response->set_content(base::StringPrintf(
+        "<!doctype html><p>Redirecting to %s", dest.c_str()));
+    return http_response;
+  }
+
   GURL GetUrl(const std::string& path) {
     return ssl_server().GetURL("a.a.test", path);
   }
@@ -6670,6 +6698,70 @@ IN_PROC_BROWSER_TEST_F(
       GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
   const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
       "/server-redirect?" + kRedirectedUrl.spec());
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+}
+
+// Tests that same-site cross-origin redirection with credentialed prerender by
+// speculation rules with the feature enabled but the redirected page without
+// opt-in. This test verifies a case which is a.a.test -> a.a.test (credentialed
+// prerender) -> b.a.test (no credentialed prerender).
+IN_PROC_BROWSER_TEST_F(
+    PrerenderSameSiteCrossOriginBrowserTest,
+    SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader) {
+  ASSERT_TRUE(blink::features::
+                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering a URL that causes cross-origin redirection. The
+  // cross-origin redirection should fail prerendering without an opt-in header.
+  const GURL kRedirectedUrl =
+      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
+  const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
+      "/server-redirect-credentialed-prerender?" + kRedirectedUrl.spec());
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+}
+
+// Tests that same-site cross-origin redirection with credentialed prerender by
+// speculation rules with the feature enabled but the redirected page without
+// opt-in. This test verifies a case which is a.a.test -> b.a.test (credentialed
+// prerender) -> b.a.test (no credentialed prerender)
+IN_PROC_BROWSER_TEST_F(
+    PrerenderSameSiteCrossOriginBrowserTest,
+    SameSiteCrossOriginCredentialedPrerenderRedirectionSpeculationRulesWithoutOptInHeader2) {
+  ASSERT_TRUE(blink::features::
+                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering a URL that causes cross-origin redirection. The
+  // cross-origin redirection should fail prerendering without an opt-in header.
+  const GURL kRedirectedUrl =
+      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
+  const GURL kPrerenderingUrl = GetSameSiteCrossOriginUrl(
+      "/server-redirect-credentialed-prerender?" + kRedirectedUrl.spec());
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
   test::PrerenderHostObserver host_observer(*web_contents_impl(),
                                             kPrerenderingUrl);
