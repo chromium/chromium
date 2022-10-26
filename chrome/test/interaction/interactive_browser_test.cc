@@ -435,6 +435,21 @@ InteractiveBrowserTest::StepBuilder InteractiveBrowserTest::Do(
   return builder;
 }
 
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckElement(
+    ElementSpecifier element,
+    base::OnceCallback<bool(ui::TrackedElement* el)> check) {
+  StepBuilder step;
+  SpecifyElement(step, element);
+  step.SetStartCallback(base::BindOnce(
+      [](base::OnceCallback<bool(ui::TrackedElement * el)> check,
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        if (!std::move(check).Run(el))
+          seq->FailForTesting();
+      },
+      std::move(check)));
+  return step;
+}
+
 InteractiveBrowserTest::MultiStep InteractiveBrowserTest::EnsureNotPresent(
     ui::ElementIdentifier element_to_check,
     bool in_any_context) {

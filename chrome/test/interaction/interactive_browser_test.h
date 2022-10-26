@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,8 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interaction_test_util_mouse.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -260,6 +263,30 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   // Does an action. Identical to Check() if check_callback always returns true.
   [[nodiscard]] StepBuilder Do(base::OnceClosure action);
 
+  // Checks that `check` returns true for element `element`. will fail the test
+  // sequence if `check` returns false - the callback should log any specific
+  // error before returning.
+  //
+  // Note that unless you add .SetMustBeVisibleAtStart(true), this test step
+  // will wait for `element` to be shown before proceeding.
+  [[nodiscard]] StepBuilder CheckElement(
+      ElementSpecifier element,
+      base::OnceCallback<bool(ui::TrackedElement* el)> check);
+
+  // As above, but `view` should resolve to a TrackedElementViews wrapping a
+  // view of type `V`.
+  template <class V>
+  [[nodiscard]] StepBuilder CheckView(ElementSpecifier view,
+                                      base::OnceCallback<bool(V* view)> check);
+
+  // As above, but check that `matcher` matches the value returned by fetching
+  // `property` from `view`. On failure, logs the matcher error before failing
+  // the test.
+  template <class V, typename T, typename U>
+  [[nodiscard]] StepBuilder CheckViewProperty(ElementSpecifier view,
+                                              T (V::*property)() const,
+                                              U&& matcher);
+
   // Shorthand methods for working with basic ElementTracker events. The element
   // will have `step_callback` called on it. You may specify additional
   // constraints such as SetMustBeVisibleAtStart(),
@@ -468,6 +495,37 @@ template <typename T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::InAnyContext(
     T&& step) {
   return std::move(step.SetFindElementInAnyContext(true));
+}
+
+template <typename V>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckView(
+    ElementSpecifier view,
+    base::OnceCallback<bool(V* view)> check) {
+  return CheckElement(view, base::BindOnce(
+                                [](base::OnceCallback<bool(V * view)> check,
+                                   ui::TrackedElement* el) {
+                                  return std::move(check).Run(AsView<V>(el));
+                                },
+                                std::move(check)));
+}
+
+template <class V, typename T, typename U>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckViewProperty(
+    ElementSpecifier view,
+    T (V::*property)() const,
+    U&& matcher) {
+  return CheckElement(
+      view, base::BindOnce(
+                [](T (V::*property)() const, testing::Matcher<T> matcher,
+                   ui::TrackedElement* el) {
+                  testing::StringMatchResultListener listener;
+                  const bool result = matcher.MatchAndExplain(
+                      (AsView<V>(el)->*property)(), &listener);
+                  if (!result)
+                    LOG(ERROR) << "CheckThat() failed: " << listener.str();
+                  return result;
+                },
+                property, std::forward<U>(matcher)));
 }
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
