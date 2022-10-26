@@ -39,7 +39,7 @@ constexpr int kAutoDisableAccessibilityEventCount = 3;
 
 // Updating Active/Inactive time on every accessibility api calls would not be
 // good for perf. Instead, delay the update task.
-constexpr int kOnAccessibilityUsageUpdateDelaySecs = 1;
+constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 
 // Record a histograms for an accessibility mode when it's enabled.
 void RecordNewAccessibilityModeFlags(
