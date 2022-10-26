@@ -238,18 +238,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static void SetClockForTesting(base::Clock* clock);
 
  private:
-  struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {
-    std::string host;
-    blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;
-    int64_t quota = 0;
-  };
-  friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator==(
-      const QuotaTableEntry& lhs,
-      const QuotaTableEntry& rhs);
-  friend COMPONENT_EXPORT(STORAGE_BROWSER) bool operator<(
-      const QuotaTableEntry& lhs,
-      const QuotaTableEntry& rhs);
-
   // Structures used for CreateSchema.
   struct TableSchema {
     const char* table_name;
@@ -262,8 +250,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     bool unique;
   };
 
-  using QuotaTableCallback =
-      base::RepeatingCallback<bool(const QuotaTableEntry&)>;
   using BucketTableCallback =
       base::RepeatingCallback<bool(mojom::BucketTableEntryPtr)>;
 
@@ -286,7 +272,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Dumps table entries for chrome://quota-internals page.
   // `callback` may return false to stop reading data.
-  QuotaError DumpQuotaTable(const QuotaTableCallback& callback);
   QuotaError DumpBucketTable(const BucketTableCallback& callback);
 
   // Adds a new bucket entry in the buckets table. Will return a

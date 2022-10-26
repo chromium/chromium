@@ -482,15 +482,6 @@ class QuotaManagerImplTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  void DidGetHostUsageBreakdown(
-      base::OnceClosure quit_closure,
-      int64_t usage,
-      blink::mojom::UsageBreakdownPtr usage_breakdown) {
-    usage_ = usage;
-    usage_breakdown_ = std::move(usage_breakdown);
-    std::move(quit_closure).Run();
-  }
-
   void DidGetEvictionRoundInfo(QuotaStatusCode status,
                                const QuotaSettings& settings,
                                int64_t available_space,

@@ -112,37 +112,10 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     }
   };
 
-  QuotaError DumpQuotaTable(QuotaDatabase* quota_database,
-                            const QuotaDatabase::QuotaTableCallback& callback) {
-    return quota_database->DumpQuotaTable(callback);
-  }
-
   QuotaError DumpBucketTable(
       QuotaDatabase* quota_database,
       const QuotaDatabase::BucketTableCallback& callback) {
     return quota_database->DumpBucketTable(callback);
-  }
-
-  template <typename Container>
-  void AssignQuotaTable(QuotaDatabase* quota_database, Container&& entries) {
-    ASSERT_NE(quota_database->db_.get(), nullptr);
-    for (const auto& entry : entries) {
-      const char* kSql =
-          // clang-format off
-          "INSERT INTO quota(host, type, quota) "
-            "VALUES (?, ?, ?)";
-      // clang-format on
-      sql::Statement statement;
-      statement.Assign(
-          quota_database->db_.get()->GetCachedStatement(SQL_FROM_HERE, kSql));
-      ASSERT_TRUE(statement.is_valid());
-
-      statement.BindString(0, entry.host);
-      statement.BindInt(1, static_cast<int>(entry.type));
-      statement.BindInt64(2, entry.quota);
-      EXPECT_TRUE(statement.Run());
-    }
-    quota_database->Commit();
   }
 
   template <typename Container>
