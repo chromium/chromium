@@ -13,9 +13,12 @@ import android.widget.LinearLayout;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -35,10 +38,6 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
      */
     private final Set<TabSelectionEditorMenuItem> mVisibleActions = new ArraySet<>();
 
-    /**
-     * Spacer that pushes visible elements to the end of the container.
-     */
-    private View mSpacer;
     /**
      * {@link ListMenuButton} for showing the {@link TabSelectionEditorMenu}.
      */
@@ -71,7 +70,6 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mSpacer = findViewById(R.id.spacer);
         mMenuButton = findViewById(R.id.list_menu_button);
         mMenuButton.tryToFitLargestItem(true);
     }
@@ -153,21 +151,33 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (!isUsingTabSelectionEditorV2Features()) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            final int width = getMeasuredWidth();
+
+            if (getChildCount() < 3 || !(getChildAt(1) instanceof ButtonCompat)) return;
+
+            // Child 1 will be the button.
+            getChildAt(1).measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            int requiredWidth =
+                    getPaddingLeft() + getPaddingRight() + getChildAt(1).getMeasuredWidth();
+            // Make the number roll view use the remaining space.
+            makeNumberRollViewFill(MathUtils.clamp(width - requiredWidth, 0, width));
+            // Get the final measurement.
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
 
         // Get empty size without spacer and action views.
         removeAllActionViews();
-        mSpacer.setVisibility(View.GONE);
         mMenuButton.setVisibility(View.VISIBLE);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int width = getMeasuredWidth();
 
         // Calculate the remaining room used by the menu, number roll view, etc.
         int usedRoom = getPaddingLeft() + getPaddingRight();
+        int requiredWidth = usedRoom;
         for (int i = 0; i < getChildCount(); i++) {
-            // Ignore the spacer as it still may have a width.
-            if (getChildAt(i) == mSpacer) continue;
+            // NumberRollView size is dynamically restricted.
+            if (getChildAt(i) instanceof NumberRollView) continue;
 
             usedRoom += getChildAt(i).getMeasuredWidth();
         }
@@ -191,19 +201,32 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
             addView(actionView, getChildCount() - 1, mActionViewParams);
             mVisibleActions.add(menuItem);
             usedRoom += actionViewWidth;
+            requiredWidth += actionViewWidth;
         }
         mDelegate.setVisibleActionViews(mVisibleActions);
         if (mHasMenuOnlyItems || !allActionViewsShown) {
             mMenuButton.setVisibility(View.VISIBLE);
+            requiredWidth += mMenuButton.getMeasuredWidth();
         } else {
             mMenuButton.setVisibility(View.GONE);
         }
 
-        // Show the spacer for the remaining space.
-        mSpacer.setVisibility(View.VISIBLE);
+        // Make the number roll view use the remaining space.
+        makeNumberRollViewFill(MathUtils.clamp(width - requiredWidth, 0, width));
 
         // Get the final measurement.
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private void makeNumberRollViewFill(int maxWidth) {
+        View firstView = getChildAt(0);
+        if (firstView instanceof NumberRollView) {
+            NumberRollView numberRollView = (NumberRollView) firstView;
+            LinearLayout.LayoutParams params =
+                    (LinearLayout.LayoutParams) numberRollView.getLayoutParams();
+            params.width = maxWidth;
+            numberRollView.setLayoutParams(params);
+        }
     }
 
     private void update() {
