@@ -1016,6 +1016,7 @@ TEST_F(MultiWordSuggesterTest,
       /*sample=*/MultiWordSuggestionType::kCompletion,
       /*expected_count=*/3);
 }
+
 TEST_F(MultiWordSuggesterTest,
        DoesNotRecordCouldPossiblyShowSuggestionWhenSuggestionIsShowing) {
   std::vector<AssistiveSuggestion> suggestions = {
@@ -1043,6 +1044,180 @@ TEST_F(MultiWordSuggesterTest,
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion", 1);
   histogram_tester.ExpectUniqueSample(
       "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
+      /*sample=*/MultiWordSuggestionType::kPrediction,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitAcceptanceWhenAUserPartiallyTypesWord) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitAcceptanceWhenSuggestionDismissed) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  // Dismisses suggestion as text no longer matches
+  suggester_->OnSurroundingTextChanged(u"how are t", 9, 9);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       DoesNotRecordImplicitAcceptanceWhenSuggestionAccepted) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  SendKeyEvent(suggester_.get(), ui::DomCode::TAB);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsImplicitAcceptanceOnceWhenPredictionSuggestionTypedFully) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how are y", 9, 9);
+  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"how are you", 11, 11);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance",
+      /*sample=*/MultiWordSuggestionType::kPrediction,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsImplicitAcceptanceOnceWhenCompletionSuggestionTypedFully) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how are y", 9, 9);
+  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
+  suggester_->OnSurroundingTextChanged(u"how are you", 11, 11);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance",
+      /*sample=*/MultiWordSuggestionType::kCompletion,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(MultiWordSuggesterTest,
+       RecordsImplicitAcceptanceOnceWhenTypingMoreThenSuggestion) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 0);
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"how a", 5, 5);
+  suggester_->OnSurroundingTextChanged(u"how ar", 6, 6);
+  suggester_->OnSurroundingTextChanged(u"how are", 7, 7);
+  suggester_->OnSurroundingTextChanged(u"how are ", 8, 8);
+  suggester_->OnSurroundingTextChanged(u"how are y", 9, 9);
+  suggester_->OnSurroundingTextChanged(u"how are yo", 10, 10);
+  // Metric should be recorded after the following surrounding text
+  suggester_->OnSurroundingTextChanged(u"how are you", 11, 11);
+  suggester_->OnSurroundingTextChanged(u"how are you ", 12, 12);
+  suggester_->OnSurroundingTextChanged(u"how are you g", 13, 13);
+  suggester_->OnSurroundingTextChanged(u"how are you go", 14, 14);
+  suggester_->OnSurroundingTextChanged(u"how are you goi", 15, 15);
+  suggester_->OnSurroundingTextChanged(u"how are you goin", 16, 16);
+  suggester_->OnSurroundingTextChanged(u"how are you going", 17, 17);
+
+  histogram_tester.ExpectTotalCount(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance", 1);
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance",
       /*sample=*/MultiWordSuggestionType::kPrediction,
       /*expected_bucket_count=*/1);
 }

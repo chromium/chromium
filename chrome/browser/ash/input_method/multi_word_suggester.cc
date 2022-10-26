@@ -104,6 +104,13 @@ void RecordCouldPossiblyShowSuggestion(
       ToSuggestionType(suggestion_mode));
 }
 
+void RecordImplicitAcceptance(
+    const ime::AssistiveSuggestionMode& suggestion_mode) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.MultiWord.ImplicitAcceptance",
+      ToSuggestionType(suggestion_mode));
+}
+
 absl::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
   ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
@@ -456,6 +463,9 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
                                       ? new_confirmed_length
                                       : suggestion_->initial_confirmed_length;
 
+  bool user_typed_suggestion =
+      new_confirmed_length == suggestion_->text.length();
+
   // Are we still tracking the last suggestion shown to the user?
   bool no_longer_tracking =
       state_ == State::kTrackingLastSuggestionShown &&
@@ -463,7 +473,10 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
         new_confirmed_length < suggestion_->initial_confirmed_length) ||
        (new_confirmed_length == suggestion_->confirmed_length &&
         surrounding_text_->cursor_pos != surrounding_text_->prev_cursor_pos) ||
-       new_confirmed_length == suggestion_->text.length());
+       user_typed_suggestion);
+
+  if (no_longer_tracking && user_typed_suggestion)
+    RecordImplicitAcceptance(suggestion_->mode);
 
   if (no_longer_tracking || !surrounding_text_->cursor_at_end_of_text) {
     UpdateState(State::kSuggestionDismissed);

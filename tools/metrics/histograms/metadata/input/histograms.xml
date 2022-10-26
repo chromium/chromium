@@ -417,6 +417,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.Assistive.MultiWord.ImplicitAcceptance"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-03-05">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This metric is recorded when a user implicitly accepts a multi word
+    suggestion that is shown to them. Implicit acceptance here means the user
+    has fully typed the suggestion shown to them, without explicitly accepting
+    the suggestion through the ui shown.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Assistive.MultiWord.InputState"
     enum="IMEAssistiveTextInputState" expires_after="2023-04-16">
   <owner>curtismcmullan@google.com</owner>
