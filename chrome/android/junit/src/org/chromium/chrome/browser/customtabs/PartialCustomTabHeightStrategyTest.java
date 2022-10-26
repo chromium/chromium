@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
@@ -1049,6 +1050,17 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals(
                 "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed should be recorded once.", 1,
                 histogramDelta.getDelta());
+    }
+
+    @Test
+    public void noTopShadowAtFullHeight() {
+        doReturn(47).when(mResources).getDimensionPixelSize(eq(R.dimen.custom_tabs_shadow_offset));
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
+        PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
+        assertNotEquals("Top margin should be non-zero for the shadow", 0, mLayoutParams.topMargin);
+
+        dragTab(handleStrategy, 1500, 1000, 500);
+        assertEquals("There should be no top shadow at full height", 0, mLayoutParams.topMargin);
     }
 
     private boolean isFullscreen() {

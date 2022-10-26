@@ -563,9 +563,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private void updateShadowOffset() {
-        // TODO(jinsukkim): Remove the shadow when in full-height so there won't be a gap
-        //                  beneath the status bar.
-        if (isFullHeight() || mDrawOutlineShadow) {
+        if (isFullHeight() || mDrawOutlineShadow || mStatus == HeightStatus.TOP) {
             mShadowOffset = 0;
         } else {
             mShadowOffset = mActivity.getResources().getDimensionPixelSize(
@@ -694,6 +692,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             mTargetStatus = mStatus;
             mStatus = HeightStatus.TRANSITION;
         }
+        updateShadowOffset();
         if (mSoftKeyboardRunnable != null) {
             mSoftKeyboardRunnable.run();
             mSoftKeyboardRunnable = null;
@@ -774,8 +773,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // We resize CoordinatorLayout to occupy the size we want for CCT. This excludes
         // the bottom navigation bar height and the top margin of CVH set aside for
         // the handle bar portion of the CCT toolbar header.
-        // TODO(jinsukkim):
-        //   - Remove the shadow when in full-height so there won't be a gap beneath the status bar.
         int windowPos = mActivity.getWindow().getAttributes().y;
         lp.height = mDisplayHeight - windowPos - getHandleHeight() - mShadowOffset - mNavbarHeight;
         mCoordinatorLayout.setLayoutParams(lp);
