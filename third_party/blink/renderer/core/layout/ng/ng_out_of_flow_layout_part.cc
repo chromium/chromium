@@ -791,23 +791,27 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
             continue;
           }
         }
-        const bool is_container_inline = candidate.inline_container.container;
-        if (is_container_inline) {
-          if (!anchor_queries) {
-            if (NGFragmentItemsBuilder* items_builder =
-                    container_builder_->ItemsBuilder()) {
-              items = &items_builder->Items(conainer_converter.OuterSize());
-            }
-            anchor_queries.emplace(*container_builder_->Node().GetLayoutBox(),
-                                   container_builder_->Children(), items,
-                                   conainer_converter);
+
+        // If the containing block is inline, it may have a different anchor
+        // query than |container_builder_|. Compute the anchor query for it.
+        const bool needs_anchor_queries =
+            candidate.inline_container.container &&
+            container_builder_->AnchorQuery();
+        if (needs_anchor_queries && !anchor_queries) {
+          if (NGFragmentItemsBuilder* items_builder =
+                  container_builder_->ItemsBuilder()) {
+            items = &items_builder->Items(conainer_converter.OuterSize());
           }
+          anchor_queries.emplace(*container_builder_->Node().GetLayoutBox(),
+                                 container_builder_->Children(), items,
+                                 conainer_converter);
         }
+
         NodeInfo node_info = SetupNodeInfo(candidate);
         NodeToLayout node_to_layout = {
             node_info,
             CalculateOffset(node_info, only_layout, /* is_first_run */ false,
-                            is_container_inline ? &*anchor_queries : nullptr)};
+                            needs_anchor_queries ? &*anchor_queries : nullptr)};
         const NGLayoutResult* result =
             LayoutOOFNode(node_to_layout, only_layout);
         container_builder_->AddResult(
@@ -818,7 +822,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
           container_builder_->PropagateTallestUnbreakableBlockSize(
               result->TallestUnbreakableBlockSize());
         }
-        if (is_container_inline) {
+        if (needs_anchor_queries) {
           DCHECK(anchor_queries);
           if (result->PhysicalFragment().HasAnchorQueryToPropagate())
             anchor_queries->SetChildren(container_builder_->Children(), items);
