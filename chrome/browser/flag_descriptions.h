@@ -2918,12 +2918,6 @@ extern const char kFastPairSavedDevicesDescription[];
 extern const char kFrameSinkDesktopCapturerInCrdName[];
 extern const char kFrameSinkDesktopCapturerInCrdDescription[];
 
-extern const char kGetDisplayMediaSetName[];
-extern const char kGetDisplayMediaSetDescription[];
-
-extern const char kGetDisplayMediaSetAutoSelectAllScreensName[];
-extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
-
 extern const char kUseHDRTransferFunctionName[];
 extern const char kUseHDRTransferFunctionDescription[];
 extern const char kDoubleTapToZoomInTabletModeName[];
@@ -3572,6 +3566,12 @@ extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 
 extern const char kDisableOfficeEditingComponentAppName[];
 extern const char kDisableOfficeEditingComponentAppDescription[];
+
+extern const char kGetDisplayMediaSetName[];
+extern const char kGetDisplayMediaSetDescription[];
+
+extern const char kGetDisplayMediaSetAutoSelectAllScreensName[];
+extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
 
 extern const char kVaapiAV1DecoderName[];
 extern const char kVaapiAV1DecoderDescription[];

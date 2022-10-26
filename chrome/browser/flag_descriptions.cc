@@ -5115,17 +5115,6 @@ const char kFrameSinkDesktopCapturerInCrdDescription[] =
     "CRD, "
     "replacing the use of AuraDesktopCapturer";
 
-const char kGetDisplayMediaSetName[] = "GetDisplayMediaSet API";
-const char kGetDisplayMediaSetDescription[] =
-    "When enabled, the getDisplayMediaSet API for capturing multiple surfaces "
-    "at once is available.";
-
-const char kGetDisplayMediaSetAutoSelectAllScreensName[] =
-    "autoSelectAllScreens attribute for GetDisplayMediaSet";
-const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
-    "When enabled, the autoSelectAllScreens attribute is available for usage "
-    "with the GetDisplayMediaSet API.";
-
 const char kUseHDRTransferFunctionName[] =
     "Monitor/Display HDR transfer function";
 const char kUseHDRTransferFunctionDescription[] =
@@ -6241,6 +6230,17 @@ const char kDisableOfficeEditingComponentAppDescription[] =
     "Disables Office Editing for Docs, Sheets & Slides component app so "
     "handlers won't be registered, making it possible to install another "
     "version for testing.";
+
+const char kGetDisplayMediaSetName[] = "GetDisplayMediaSet API";
+const char kGetDisplayMediaSetDescription[] =
+    "When enabled, the getDisplayMediaSet API for capturing multiple surfaces "
+    "at once is available.";
+
+const char kGetDisplayMediaSetAutoSelectAllScreensName[] =
+    "autoSelectAllScreens attribute for GetDisplayMediaSet";
+const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
+    "When enabled, the autoSelectAllScreens attribute is available for usage "
+    "with the GetDisplayMediaSet API.";
 
 const char kVaapiAV1DecoderName[] = "VA-API decode acceleration for AV1";
 const char kVaapiAV1DecoderDescription[] =

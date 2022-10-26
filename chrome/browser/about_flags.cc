@@ -6963,16 +6963,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          remoting::features::kEnableFrameSinkDesktopCapturerInCrd)},
 
-    {"enable-get-display-media-set", flag_descriptions::kGetDisplayMediaSetName,
-     flag_descriptions::kGetDisplayMediaSetDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSet)},
-
-    {"enable-get-display-media-set-auto-select-all-screens",
-     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensName,
-     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSetAutoSelectAllScreens)},
-
     {"fast-pair-software-scanning",
      flag_descriptions::kFastPairSoftwareScanningName,
      flag_descriptions::kFastPairSoftwareScanningDescription, kOsCrOS,
@@ -8263,6 +8253,16 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"enable-get-display-media-set", flag_descriptions::kGetDisplayMediaSetName,
+     flag_descriptions::kGetDisplayMediaSetDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSet)},
+
+    {"enable-get-display-media-set-auto-select-all-screens",
+     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensName,
+     flag_descriptions::kGetDisplayMediaSetAutoSelectAllScreensDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kGetDisplayMediaSetAutoSelectAllScreens)},
+
     {"enable-vaapi-av1-decode-acceleration",
      flag_descriptions::kVaapiAV1DecoderName,
      flag_descriptions::kVaapiAV1DecoderDescription, kOsCrOS | kOsLacros,
