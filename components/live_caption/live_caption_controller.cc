@@ -44,7 +44,37 @@ LiveCaptionController::LiveCaptionController(
     content::BrowserContext* browser_context)
     : profile_prefs_(profile_prefs),
       global_prefs_(global_prefs),
-      browser_context_(browser_context) {}
+      browser_context_(browser_context) {
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled2",
+                            IsLiveCaptionFeatureSupported());
+
+  // Hidden behind a feature flag.
+  if (!IsLiveCaptionFeatureSupported())
+    return;
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(profile_prefs_);
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line &&
+      command_line->HasSwitch(switches::kEnableLiveCaptionPrefForTesting)) {
+    profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, true);
+  }
+
+  pref_change_registrar_->Add(
+      prefs::kLiveCaptionEnabled,
+      base::BindRepeating(&LiveCaptionController::OnLiveCaptionEnabledChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_->Add(
+      prefs::kLiveCaptionLanguageCode,
+      base::BindRepeating(&LiveCaptionController::OnLiveCaptionLanguageChanged,
+                          base::Unretained(this)));
+
+  enabled_ = IsLiveCaptionEnabled();
+  base::UmaHistogramBoolean("Accessibility.LiveCaption2", enabled_);
+  if (enabled_) {
+    StartLiveCaption();
+  }
+}
 
 LiveCaptionController::~LiveCaptionController() {
   if (enabled_) {
@@ -83,40 +113,6 @@ void LiveCaptionController::RegisterProfilePrefs(
     registry->RegisterStringPref(
         prefs::kLiveTranslateTargetLanguageCode, speech::kUsEnglishLocale,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  }
-}
-
-void LiveCaptionController::Init() {
-  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
-                            IsLiveCaptionFeatureSupported());
-
-  // Hidden behind a feature flag.
-  if (!IsLiveCaptionFeatureSupported())
-    return;
-
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(profile_prefs_);
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line &&
-      command_line->HasSwitch(switches::kEnableLiveCaptionPrefForTesting)) {
-    profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, true);
-  }
-
-  pref_change_registrar_->Add(
-      prefs::kLiveCaptionEnabled,
-      base::BindRepeating(&LiveCaptionController::OnLiveCaptionEnabledChanged,
-                          base::Unretained(this)));
-  pref_change_registrar_->Add(
-      prefs::kLiveCaptionLanguageCode,
-      base::BindRepeating(&LiveCaptionController::OnLiveCaptionLanguageChanged,
-                          base::Unretained(this)));
-
-  enabled_ = IsLiveCaptionEnabled();
-  base::UmaHistogramBoolean("Accessibility.LiveCaption", enabled_);
-  if (enabled_) {
-    StartLiveCaption();
-  } else {
-    StopLiveCaption();
   }
 }
 

@@ -1724,13 +1724,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   // because SyncService needs the URL context getter.
   UnifiedConsentServiceFactory::GetForProfile(profile);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::ProfileHelper::IsSigninProfile(profile))
-    captions::LiveCaptionControllerFactory::GetForProfile(profile)->Init();
-#elif !BUILDFLAG(IS_ANDROID)  // !BUILDFLAG(IS_ANDROID) && !IS_CHROMEOS_ASH
-  captions::LiveCaptionControllerFactory::GetForProfile(profile)->Init();
-#endif
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)
   signin_util::SigninWithCredentialProviderIfPossible(profile);
 #endif

@@ -5,9 +5,14 @@
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/live_caption_controller.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 namespace captions {
 
@@ -34,12 +39,30 @@ LiveCaptionControllerFactory* LiveCaptionControllerFactory::GetInstance() {
 LiveCaptionControllerFactory::LiveCaptionControllerFactory()
     : ProfileKeyedServiceFactory(
           "LiveCaptionController",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Use OTR profile for Guest Session.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              // No service for system profile.
+              .WithSystem(ProfileSelection::kNone)
+              .Build()) {}
 
 LiveCaptionControllerFactory::~LiveCaptionControllerFactory() = default;
 
+bool LiveCaptionControllerFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 KeyedService* LiveCaptionControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ChromeOS creates various profiles (login, lock screen...) that do
+  // not need the Live Caption controller.
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!chromeos::ProfileHelper::IsUserProfile(profile))
+    return nullptr;
+#endif
+
   return new LiveCaptionController(
       Profile::FromBrowserContext(context)->GetPrefs(),
       g_browser_process->local_state(), context);

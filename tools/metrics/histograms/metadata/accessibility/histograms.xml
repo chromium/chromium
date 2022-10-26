@@ -1161,13 +1161,19 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
     expires_after="2023-06-13">
+  <obsolete>
+    Replaced in M-109 with the histogram Accessibility.LiveCaption2, which is
+    similar but not logged for unnecessary profiles such as system profiles and
+    unusual ChromeOS profiles (sign-in profile, etc.)
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether the Live Caption feature is enabled. This is logged once, 45 seconds
-    after startup.
+    Whether the Live Caption feature is enabled. This is logged once when the
+    Live Caption controller is initialized on platforms that support Live
+    Caption.
   </summary>
 </histogram>
 
@@ -1267,6 +1273,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled"
     enum="BooleanEnabled" expires_after="2023-06-13">
+  <obsolete>
+    Replaced in M-109 with the histogram
+    Accessibility.LiveCaption.FeatureEnabled2, which is similar but not logged
+    for unnecessary profiles such as system profiles and unusual ChromeOS
+    profiles (sign-in profile, etc.)
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1274,6 +1286,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the Live Caption feature flag is enabled. This is logged once at the
     time of component registration.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.FeatureEnabled2"
+    enum="BooleanEnabled" expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature flag is enabled. This is logged once when
+    the Live Caption controller is initialized.
   </summary>
 </histogram>
 
@@ -1346,6 +1370,19 @@ chromium-metrics-reviews@google.com.
     The language code used to initialize the speech recognition service. Logged
     once when getting the Speech On-Device API (SODA) config path to use with
     the speech recognition service.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption2" enum="BooleanEnabled"
+    expires_after="2023-06-13">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature is enabled. This is logged once when the
+    Live Caption controller is initialized on platforms that support Live
+    Caption.
   </summary>
 </histogram>
 

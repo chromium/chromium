@@ -30,6 +30,7 @@ class LiveCaptionControllerFactory : public ProfileKeyedServiceFactory {
   ~LiveCaptionControllerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 };

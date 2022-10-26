@@ -54,8 +54,6 @@ class LiveCaptionController : public KeyedService,
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  void Init();
-
   // Routes a transcription to the CaptionBubbleController. Returns whether the
   // transcription result was routed successfully. Transcriptions will halt if
   // this returns false.
