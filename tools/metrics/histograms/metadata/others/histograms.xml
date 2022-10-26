@@ -4972,6 +4972,7 @@ chromium-metrics-reviews@google.com.
     home page, each pillar page. The metric will be emitted when the user enters
     another page or exits the Highlights app.
   </summary>
+  <token key="HighlightsPageName" variants="HighlightsPageName"/>
 </histogram>
 
 <histogram name="DemoMode.IdleLogoutWarningEvent"
