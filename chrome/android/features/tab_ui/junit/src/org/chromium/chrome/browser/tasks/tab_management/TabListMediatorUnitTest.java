@@ -437,7 +437,7 @@ public class TabListMediatorUnitTest {
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, false, null,
                 mGridCardOnClickListenerProvider, null, null, getClass().getSimpleName(),
-                UiType.CLOSABLE);
+                UiType.CLOSABLE, null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         TrackerFactory.setTrackerForTests(mTracker);
 
@@ -1126,7 +1126,7 @@ public class TabListMediatorUnitTest {
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
                 mGridCardOnClickListenerProvider, null, null, getClass().getSimpleName(),
-                UiType.CLOSABLE);
+                UiType.CLOSABLE, null);
         mMediator.initWithNative(mProfile);
         // mTabModelObserverCaptor captures on every initWithNative calls. There is one
         // initWithNative call in the setup already.
@@ -3222,7 +3222,7 @@ public class TabListMediatorUnitTest {
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
-                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE, null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
 
@@ -3246,7 +3246,7 @@ public class TabListMediatorUnitTest {
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
-                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE, null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
 
@@ -3390,7 +3390,7 @@ public class TabListMediatorUnitTest {
         setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
-                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE, null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3407,7 +3407,7 @@ public class TabListMediatorUnitTest {
         setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
-                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE, null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3724,9 +3724,11 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, () -> {
-                    return mSelectionDelegate;
-                }, null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true,
+                ()
+                        -> { return mSelectionDelegate; },
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE,
+                null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3757,9 +3759,11 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, () -> {
-                    return mSelectionDelegate;
-                }, null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true,
+                ()
+                        -> { return mSelectionDelegate; },
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE,
+                null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3790,9 +3794,11 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, () -> {
-                    return mSelectionDelegate;
-                }, null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true,
+                ()
+                        -> { return mSelectionDelegate; },
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE,
+                null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3987,7 +3993,8 @@ public class TabListMediatorUnitTest {
 
         mMediator = new TabListMediator(mActivity, mModel, mode, mTabModelSelector,
                 getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider,
-                actionOnRelatedTabs, null, null, handler, null, getClass().getSimpleName(), uiType);
+                actionOnRelatedTabs, null, null, handler, null, getClass().getSimpleName(), uiType,
+                null);
         mMediator.registerOrientationListener(mGridLayoutManager);
 
         // TabGroupModelFilterObserver is registered when native is ready.

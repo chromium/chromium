@@ -35449,6 +35449,12 @@ should be able to be added at any place in this file.
       label="Users opened TabSelectionEditorV2 from the Tab Dialog."/>
   <suffix name="OpenFromGrid"
       label="Users opened TabSelectionEditorV2 from the Tab Switcher."/>
+  <suffix name="OpenLongPressInDialog"
+      label="Users enacted a longpress action from the Tab Dialog to enter
+             TabSelectionEditorV2."/>
+  <suffix name="OpenLongPressInGrid"
+      label="Users enacted a longpress action from the Tab Switcher to enter
+             TabSelectionEditorV2."/>
   <suffix name="SelectAll"
       label="Users tapped on the select all button in TabSelectionEditorV2."/>
   <suffix name="SharedTabAsTextList"

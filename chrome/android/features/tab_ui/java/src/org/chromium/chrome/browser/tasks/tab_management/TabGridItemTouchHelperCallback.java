@@ -14,6 +14,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +44,16 @@ import java.util.List;
  * related actions in grid related layouts.
  */
 public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
+    /**
+     * An interface to observe the longpress event.
+     */
+    interface OnLongPressEventListener {
+        /**
+         * Notify the observers that the longpress event has triggered.
+         * @param tabId the id of the current tab that is being selected.
+         */
+        void onLongPressEvent(int tabId);
+    }
 
     private final TabListModel mModel;
     private final TabModelSelector mTabModelSelector;
@@ -50,11 +61,14 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     private final @TabListMode int mMode;
+    private final OnLongPressEventListener mOnLongPressEventListener;
+    private final int mLongPressDpThreshold;
     private float mSwipeToDismissThreshold;
     private float mMergeThreshold;
     private float mUngroupThreshold;
     private boolean mActionsOnAllRelatedTabs;
     private boolean mIsSwipingToDismiss;
+    private boolean mActionAttempted;
     private int mDragFlags;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
     private int mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -67,8 +81,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     public TabGridItemTouchHelperCallback(Context context, TabListModel tabListModel,
             TabModelSelector tabModelSelector, TabActionListener tabClosedListener,
             TabGridDialogHandler tabGridDialogHandler, String componentName,
-            boolean actionsOnAllRelatedTabs, @TabListMode int mode) {
+            boolean actionsOnAllRelatedTabs, @TabListMode int mode,
+            @Nullable OnLongPressEventListener onLongPressEventListener) {
         super(0, 0);
+        int longPressDpSize = context.getResources().getDimensionPixelSize(
+                R.dimen.tab_selection_editor_longpress_entry_threshold);
         mModel = tabListModel;
         mTabModelSelector = tabModelSelector;
         mTabClosedListener = tabClosedListener;
@@ -77,6 +94,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mTabGridDialogHandler = tabGridDialogHandler;
         mContext = context;
         mMode = mode;
+        mOnLongPressEventListener = onLongPressEventListener;
+        mLongPressDpThreshold = longPressDpSize;
     }
 
     /**
@@ -161,6 +180,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             ((TabGroupModelFilter) filter).moveRelatedTabs(currentTabId, newIndex);
         }
         RecordUserAction.record("TabGrid.Drag.Reordered." + mComponentName);
+        mActionAttempted = true;
         return true;
     }
 
@@ -181,6 +201,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             viewHolder.itemView.findViewById(R.id.close_button).performClick();
             // TODO(crbug.com/1004570): UserAction swipe to dismiss.
         }
+        mActionAttempted = true;
     }
 
     @Override
@@ -211,6 +232,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                             mModel.getTabCardCountsBefore(mHoveredTabIndex));
                     mRecyclerView.getLayoutManager().removeView(selectedItemView);
                 }
+                mActionAttempted = true;
             } else {
                 mModel.updateSelectedTabForMergeToGroup(mSelectedTabIndex, false);
             }
@@ -220,6 +242,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                                 ? mHoveredTabIndex
                                 : mModel.getTabIndexBefore(mHoveredTabIndex),
                         false);
+                mActionAttempted = true;
             }
             if (mUnGroupTabIndex != TabModel.INVALID_TAB_INDEX) {
                 TabGroupModelFilter filter =
@@ -238,7 +261,21 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     }
                     RecordUserAction.record("TabGrid.Drag.RemoveFromGroup." + mComponentName);
                 }
+                mActionAttempted = true;
             }
+            // If a swipe was started but unfinished mSelectedTabIndex may not be set.
+            // If a swipe, move or group/ungroup happens this will not occur.
+            // If a tab is moved beyond a minimum distance from its original location this will not
+            // trigger.
+            if (mOnLongPressEventListener != null) {
+                if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX && !mActionAttempted
+                        && TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY
+                                   .getValue()) {
+                    int tabId = mModel.get(mSelectedTabIndex).model.get(TabProperties.TAB_ID);
+                    mOnLongPressEventListener.onLongPressEvent(tabId);
+                }
+            }
+            mActionAttempted = false;
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
             mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -297,6 +334,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             }
             mIsSwipingToDismiss = isOverThreshold;
             return;
+        }
+        if (dX * dX + dY * dY > mLongPressDpThreshold * mLongPressDpThreshold) {
+            mActionAttempted = true;
         }
         mCurrentActionState = actionState;
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
