@@ -653,6 +653,13 @@
        ]
       ]
      },
+     "float-011-crash.html": [
+      "5838050a83c7b276d1cee80ac192ef0148954785",
+      [
+       null,
+       {}
+      ]
+     ],
      "float-after-self-collapsing-block-in-inline-crash.html": [
       "1ab512748cab6d010bea00361af3344834dc9771",
       [
@@ -86046,6 +86053,19 @@
        [
         [
          "/css/css-break/float-009-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "float-010.html": [
+      "68eef4a6d26c96b0bca43d4ae1fa3b8ad74eddb2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -391899,6 +391919,13 @@
        {}
       ]
      ],
+     "anchor-position-multicol-fixed-001.html": [
+      "4321c20defb2e57e6a989e4ddea9f68d84f6d1c0",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-position-multicol-nested-001.html": [
       "d83b8ddd95201dbf1b00dad3faea102c87eece40",
       [
@@ -547193,7 +547220,7 @@
      ]
     ],
     "onchange-event.html": [
-     "9c416eba81faf55a6d870a1aeb572f233d6341ef",
+     "e0d3afd7b4021f5eabf8829981705da822b01c03",
      [
       null,
       {
