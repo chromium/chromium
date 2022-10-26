@@ -167,7 +167,7 @@ export class AcceleratorLookupManager {
       // new accelerator.
       if (currentAccelerator.type === AcceleratorType.kDefault) {
         // The default accelerator should be disabled.
-        currentAccelerator.state = AcceleratorState.DISABLED_BY_USER;
+        currentAccelerator.state = AcceleratorState.kDisabledByUser;
 
         this.addAccelerator(source, action, newAccelerator);
       } else {
@@ -202,7 +202,7 @@ export class AcceleratorLookupManager {
       const newAccelInfo: AcceleratorInfo = {
         accelerator: newAccelerator,
         type: AcceleratorType.kUser,
-        state: AcceleratorState.ENABLED,
+        state: AcceleratorState.kEnabled,
         locked: false,
       };
       accelInfos.push(newAccelInfo);
@@ -225,7 +225,7 @@ export class AcceleratorLookupManager {
 
     // Default accelerators are only disabled, not removed.
     if (foundAccel!.type === AcceleratorType.kDefault) {
-      foundAccel!.state = AcceleratorState.DISABLED_BY_USER;
+      foundAccel!.state = AcceleratorState.kDisabledByUser;
       return;
     }
 
@@ -257,7 +257,7 @@ export class AcceleratorLookupManager {
     }
 
     // Re-enable the default accelerator.
-    accelInfos[defaultIdx].state = AcceleratorState.ENABLED;
+    accelInfos[defaultIdx].state = AcceleratorState.kEnabled;
 
     return true;
   }
@@ -298,7 +298,7 @@ export class AcceleratorLookupManager {
 
     // Default accelerators are only disabled, not removed.
     if (accelerator.type === AcceleratorType.kDefault) {
-      accelerator.state = AcceleratorState.DISABLED_BY_USER;
+      accelerator.state = AcceleratorState.kDisabledByUser;
       return;
     }
 

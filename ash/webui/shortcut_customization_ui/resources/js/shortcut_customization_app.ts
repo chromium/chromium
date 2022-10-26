@@ -176,7 +176,7 @@ export class ShortcutCustomizationAppElement extends
               // Hide accelerators that are default and disabled.
               return !(
                   accel.type === AcceleratorType.kDefault &&
-                  accel.state === AcceleratorState.DISABLED_BY_USER);
+                  accel.state === AcceleratorState.kDisabledByUser);
             });
 
     this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!

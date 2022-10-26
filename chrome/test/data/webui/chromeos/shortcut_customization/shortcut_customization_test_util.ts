@@ -14,7 +14,7 @@ export function createDefaultAccelerator(
       keyDisplay: keyDisplay,
     },
     type: AcceleratorType.kDefault,
-    state: AcceleratorState.ENABLED,
+    state: AcceleratorState.kEnabled,
     locked: locked,
   };
 }
@@ -29,7 +29,7 @@ export function createUserAccelerator(
       keyDisplay: keyDisplay,
     },
     type: AcceleratorType.kUser,
-    state: AcceleratorState.ENABLED,
+    state: AcceleratorState.kEnabled,
     locked: locked,
   };
 }

@@ -28,7 +28,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     // Snap Window Left
     [0]: [{
       type: AcceleratorType.kDefault,
-      state: AcceleratorState.ENABLED,
+      state: AcceleratorState.kEnabled,
       locked: true,
       accelerator: {
         modifiers: Modifier.ALT,
@@ -39,7 +39,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     // Snap Window Right
     [1]: [{
       type: AcceleratorType.kDefault,
-      state: AcceleratorState.ENABLED,
+      state: AcceleratorState.kEnabled,
       locked: false,
       accelerator: {
         modifiers: Modifier.ALT,
@@ -50,7 +50,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     // New Desk
     [2]: [{
       type: AcceleratorType.kDefault,
-      state: AcceleratorState.ENABLED,
+      state: AcceleratorState.kEnabled,
       locked: false,
       accelerator: {
         modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -61,7 +61,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     // Remove Desk
     [3]: [{
       type: AcceleratorType.kDefault,
-      state: AcceleratorState.ENABLED,
+      state: AcceleratorState.kEnabled,
       locked: false,
       accelerator: {
         modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -74,7 +74,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     // New Tab
     [1001]: [{
       type: AcceleratorType.kDefault,
-      state: AcceleratorState.ENABLED,
+      state: AcceleratorState.kEnabled,
       locked: true,
       accelerator: {
         modifiers: Modifier.CONTROL,

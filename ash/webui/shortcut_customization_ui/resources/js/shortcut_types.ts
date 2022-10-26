@@ -36,11 +36,8 @@ export type AcceleratorType = AcceleratorInfoTypes.AcceleratorType;
 export const AcceleratorType = AcceleratorInfoTypes.AcceleratorType;
 
 /** Enumeration of accelerator states. */
-export enum AcceleratorState {
-  ENABLED,
-  DISABLED_BY_CONFLICT,
-  DISABLED_BY_USER,
-}
+export type AcceleratorState = AcceleratorInfoTypes.AcceleratorState;
+export const AcceleratorState = AcceleratorInfoTypes.AcceleratorState;
 
 /**
  * Enumeration of accelerator config results from adding/replacing/removing an

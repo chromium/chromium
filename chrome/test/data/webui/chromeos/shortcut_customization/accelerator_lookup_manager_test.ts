@@ -206,7 +206,7 @@ suite('acceleratorLookupManagerTest', function() {
           AcceleratorSource.kAsh, snapWindowRightAction);
       assertEquals(1, snapWindowRightLookup.length);
       assertEquals(
-          AcceleratorState.DISABLED_BY_USER, snapWindowRightLookup[0]!.state);
+          AcceleratorState.kDisabledByUser, snapWindowRightLookup[0]!.state);
     });
   });
 
@@ -278,7 +278,7 @@ suite('acceleratorLookupManagerTest', function() {
           AcceleratorSource.kAsh, snapWindowRightAction);
       assertEquals(1, snapWindowRightLookup.length);
       assertEquals(
-          AcceleratorState.DISABLED_BY_USER, snapWindowRightLookup[0]!.state);
+          AcceleratorState.kDisabledByUser, snapWindowRightLookup[0]!.state);
     });
   });
 
@@ -304,7 +304,7 @@ suite('acceleratorLookupManagerTest', function() {
 
       // Removing a default accelerator only disables it.
       assertEquals(1, lookup.length);
-      assertEquals(AcceleratorState.DISABLED_BY_USER, lookup[0]!.state);
+      assertEquals(AcceleratorState.kDisabledByUser, lookup[0]!.state);
 
       // Removed accelerator should not appear in the reverse lookup.
       assertEquals(
