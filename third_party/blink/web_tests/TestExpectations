@@ -276,18 +276,13 @@ crbug.com/1218540 external/wpt/shared-storage/* [ Skip ]
 crbug.com/1218540 virtual/shared-storage-fenced-frame-mparch/* [ Pass ]
 crbug.com/1218540 virtual/shared-storage-fenced-frame-shadow-dom/* [ Pass ]
 
-# These tests require the experimental prerender feature.
-# See https://crbug.com/1126305.
-crbug.com/1126305 external/wpt/speculation-rules/prerender/* [ Skip ]
-crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/* [ Pass ]
-crbug.com/1126305 wpt_internal/prerender/* [ Skip ]
-crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
-crbug.com/1126305 http/tests/inspector-protocol/prerender/* [ Skip ]
-crbug.com/1126305 virtual/prerender/http/tests/inspector-protocol/prerender/* [ Pass ]
+# This test is originally added with external/wpt/speculation-rules/prerender/* skipped and broken.
+# TODO(https://crbug.com/1356449): Fix the test.
+crbug.com/1356449 external/wpt/speculation-rules/prerender/credentialed-prerender-opt-in.html [ Skip ]
 # These tests are tentatively disabled.
-crbug.com/1302831 virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
-crbug.com/1302831 virtual/prerender/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Skip ]
-crbug.com/1302831 virtual/prerender/wpt_internal/prerender/restriction-web-auth.https.html [ Skip ]
+crbug.com/1302831 external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Skip Timeout ]
+crbug.com/1302831 http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Skip ]
+crbug.com/1302831 wpt_internal/prerender/restriction-web-auth.https.html [ Skip ]
 crbug.com/1302831 [ Mac10.14 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
@@ -3373,9 +3368,9 @@ crbug.com/626703 virtual/threaded/external/wpt/requestidlecallback/deadline-max-
 crbug.com/626703 external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
-crbug.com/1359555 virtual/prerender/external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
-crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
-crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
+crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
+crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
+crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
@@ -3551,16 +3546,16 @@ crbug.com/626703 virtual/document-transition/wpt_internal/document-transition/co
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/Create-extensions-empty.any.html?wpt_flags=h2 [ Skip Timeout ]
 crbug.com/626703 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment.html [ Failure Skip Timeout ]
-crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
-crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Skip ]
-crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
-crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
+crbug.com/626703 wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Skip ]
+crbug.com/626703 wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Skip ]
+crbug.com/626703 wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Skip ]
+crbug.com/626703 wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Skip ]
 crbug.com/626703 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 # TODO(crbug.com/1315625): Re-enable this test
 crbug.com/626703 external/wpt/webrtc-encoded-transform/sframe-keys.https.html [ Skip ]
 crbug.com/626703 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Timeout ]
-crbug.com/626703 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
-crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/media-autoplay.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute.https.sub.html [ Timeout ]
@@ -3808,10 +3803,10 @@ crbug.com/626703 [ Mac ] external/wpt/webrtc/RTCDTMFSender-ontonechange-long.htt
 ### Remove this once crbug.com/1369049 and crbug.com/1377359 is closed.
 crbug.com/1369049 external/wpt/webrtc-stats/hardware-capability-stats.https.html [ Failure Pass Timeout ]
 
-### virtual/prerender/external/wpt/speculation-rules/prerender
-crbug.com/1126305 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
-crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
-crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
+### external/wpt/speculation-rules/prerender
+crbug.com/1126305 [ Mac10.15 ] external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
+crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
+crbug.com/1126305 external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
 
 ### See crbug.com/891427 comment near the top of this file:
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
@@ -6413,9 +6408,9 @@ crbug.com/1266221 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system
 crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass Timeout ]
 
 # This test is flaky on all platforms
-crbug.com/1191846 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
-crbug.com/1191846 [ Mac12 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
-crbug.com/1191846 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
+crbug.com/1191846 [ Mac11 ] external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
+crbug.com/1191846 [ Mac12 ] external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass Timeout ]
+crbug.com/1191846 [ Win ] external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
 crbug.com/1268963 [ Linux ] external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
@@ -6843,9 +6838,9 @@ crbug.com/1282966 http/tests/security/mixedContent/insecure-plugin-in-iframe.htm
 crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Failure Pass ]
 
 # Imported WPT crashes on desktop platforms
-crbug.com/1318456 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
-crbug.com/1318456 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
-crbug.com/1318456 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
+crbug.com/1318456 [ Linux ] external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
+crbug.com/1318456 [ Mac ] external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
+crbug.com/1318456 [ Win ] external/wpt/speculation-rules/prerender/opt-out.html [ Crash Skip Timeout ]
 
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]

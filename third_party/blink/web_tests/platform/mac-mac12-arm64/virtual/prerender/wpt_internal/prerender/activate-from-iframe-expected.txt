@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Navigation on the main frame initiated by window opened by an iframe opening via window.parent.location should not activate a prerendered page assert_equals: expected "attempting prerender activation" but got "loaded from scratch"
-Harness: the test ran to completion.
-

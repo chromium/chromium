@@ -101,10 +101,10 @@ crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter
 crbug.com/1357443 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Timeout ]
 
 # Flaking on WebKit Linux MSAN
-crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
-crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip ]
-crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip ]
-crbug.com/1126305 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip ]
+crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/fetch-blob.html [ Skip ]
+crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip ]
+crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/indexeddb.html [ Skip ]
+crbug.com/1126305 [ Linux ] external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip ]
 
 # Flakes due to internal timeout values
 crbug.com/1361922 [ Linux ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-with-transform-old-image.html [ Skip ]
