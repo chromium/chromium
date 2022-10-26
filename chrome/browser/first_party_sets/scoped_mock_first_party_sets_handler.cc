@@ -50,6 +50,11 @@ ScopedMockFirstPartySetsHandler::FindEntry(
 void ScopedMockFirstPartySetsHandler::GetContextConfigForPolicy(
     const base::Value::Dict* policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+  if (invoke_callbacks_asynchronously_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), config_.Clone()));
+    return;
+  }
   std::move(callback).Run(config_.Clone());
 }
 
@@ -59,6 +64,12 @@ void ScopedMockFirstPartySetsHandler::ClearSiteDataOnChangedSetsForContext(
     net::FirstPartySetsContextConfig context_config,
     base::OnceCallback<void(net::FirstPartySetsContextConfig,
                             net::FirstPartySetsCacheFilter)> callback) {
+  if (invoke_callbacks_asynchronously_) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), config_.Clone(),
+                                  cache_filter_.Clone()));
+    return;
+  }
   std::move(callback).Run(config_.Clone(), cache_filter_.Clone());
 }
 
