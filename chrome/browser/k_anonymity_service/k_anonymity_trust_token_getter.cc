@@ -494,7 +494,9 @@ void KAnonymityTrustTokenGetter::CompleteOneRequest() {
 }
 
 void KAnonymityTrustTokenGetter::DoCallback(bool status) {
-  DCHECK(!pending_callbacks_.empty());
+  // TODO(behamilton): Change this back to a DCHECK once we have resolved
+  // https://crbug.com/1376858
+  CHECK(!pending_callbacks_.empty());
 
   absl::optional<KeyAndNonUniqueUserId> result;
   if (status) {
