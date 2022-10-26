@@ -49,7 +49,8 @@ applications for any browser, for any host, on any OS. TypeScript compiles to
 readable, standards-based JavaScript.
 
 Local Modifications:
-(none)
+See typescript.patch to work-around
+https://github.com/microsoft/TypeScript/issues/30024
 
 
 Name: Type Definition for D3 library
