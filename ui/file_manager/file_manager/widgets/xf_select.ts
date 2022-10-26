@@ -1,0 +1,181 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {getTemplate} from './xf_select.html.js';
+
+/**
+ * The data structure used to set the new options on the select element.
+ * The value field should be independent of the user locale, while text should
+ * be a string corresponding to the value in the user locale.
+ */
+export interface XfOption {
+  // The locale independent value, e.g., 'home'.
+  value: string;
+  // The locale dependent string, e.g., 'hejmen' in Esperanto.
+  text: string;
+  // Whether this is the default option, shown prior to user actions.
+  default?: boolean;
+}
+
+/**
+ * The data structure used to inform SELECTION_CHANGED listeners about the
+ * current selection. Posted in the event detail.
+ */
+export interface XfSelectedValue {
+  index: number;
+  value: string;
+  text: string;
+}
+
+/**
+ * Implements an element similar to HTML select, customized for ChromeOS files.
+ *
+ * It emits the `SELECTION_CHANGED` event when the selected element change. The
+ * detail filed of the event carries index of the new element, its value and the
+ * text visible to the user.
+ *
+ * const element = document.createElement('xf-select');
+ * element.setOptions([
+ *   {value: 'value-a', text: 'Text of value A'},
+ *   ...
+ * ]);
+ * element.addEventListener(
+ *     SELECTION_CHANGED, (event) => {
+ *       if (event.detail.value === 'value-a') {
+ *         ... // React to value-a being selected.
+ *       }
+ *     });
+ *
+ * We explicitly disable type checking for closure, as it is done by the
+ * typescript compiler.
+ * @suppress{missingProperties}
+ */
+export class XfSelect extends HTMLElement {
+  private boundSelectionListener_: (event: Event) => void;
+
+  constructor() {
+    super();
+    // Create element content.
+    const template = document.createElement('template');
+    template.innerHTML = getTemplate() as unknown as string;
+    const fragment = template.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
+    this.boundSelectionListener_ = this.onSelectionChanged.bind(this);
+  }
+
+  /**
+   * Initializes event listeners on the components of the widget.
+   */
+  connectedCallback(): void {
+    this.getSelect_().addEventListener('change', this.boundSelectionListener_);
+  }
+
+  /**
+   * Disconnects event listeners registered in the connectedCallback method.
+   */
+  disconnectedCallback(): void {
+    this.getSelect_().removeEventListener(
+        'change', this.boundSelectionListener_);
+  }
+
+  /**
+   * Sets the given value text pairs as the selectable options.
+   */
+  setOptions(optionList: XfOption[]) {
+    // Create new options.
+    const newOptions: Node[] = [];
+    for (const option of optionList) {
+      const optionElement = document.createElement('option');
+      optionElement.value = option.value;
+      optionElement.text = option.text;
+      if (option.default) {
+        optionElement.selected = true;
+      }
+      newOptions.push(optionElement);
+    }
+    // Use new options to replace any children the select element may have.
+    this.getSelect_().replaceChildren(...newOptions);
+  }
+
+  /**
+   * Returns the currently selected option. If nothing is selected the index is
+   * set to -1, and text and value are set to an empty string.
+   */
+  getSelectedOption(): XfSelectedValue {
+    return this.getSelectedOptionOfSelect_(this.getSelect_());
+  }
+
+  /**
+   * Sets the selected value of the xf-select. The |optionValue| should be one
+   * of the values of the options set on the select element. If the value
+   * changes, this element will trigger a new SELECTION_CHANGED event.
+   */
+  set value(newValue: string) {
+    const select = this.getSelect_();
+    const currentValue = select.value;
+    if (currentValue !== newValue) {
+      select.value = newValue;
+      select.dispatchEvent(new Event('change'));
+    }
+  }
+
+  /**
+   * Extracts the currently selected option for the given select element.
+   */
+  private getSelectedOptionOfSelect_(element: HTMLSelectElement):
+      XfSelectedValue {
+    const index = element.selectedIndex;
+    let value = '';
+    let text = '';
+
+    if (index !== -1) {
+      const option = element.options[index];
+      if (option) {
+        value = option.value;
+        text = option.text;
+      }
+    }
+    return {index, value, text};
+  }
+
+  private getSelect_(): HTMLSelectElement {
+    const element = this.shadowRoot!.querySelector('#select');
+    if (element) {
+      return element as HTMLSelectElement;
+    }
+    throw new Error('Failed to locate the select element');
+  }
+
+  private onSelectionChanged(event: Event): void {
+    this.dispatchEvent(new CustomEvent(SELECTION_CHANGED, {
+      bubbles: true,
+      composed: true,
+      detail:
+          this.getSelectedOptionOfSelect_(event.target as HTMLSelectElement),
+    }));
+  }
+}
+
+/**
+ * The name of the even generated by this widget.
+ */
+export const SELECTION_CHANGED = 'selection_changed';
+
+/**
+ * A custom event that informs the container which option kind change to what
+ * value. It is up to the container to interpret these.
+ */
+export type SelectionChangedEvent = CustomEvent<XfSelectedValue>;
+
+declare global {
+  interface HTMLElementEventMap {
+    [SELECTION_CHANGED]: SelectionChangedEvent;
+  }
+
+  interface HTMLElementTagNameMap {
+    'xf-select': XfSelect;
+  }
+}
+
+customElements.define('xf-select', XfSelect);

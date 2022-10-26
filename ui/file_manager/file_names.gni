@@ -267,14 +267,16 @@ ts_files = [
   # Widgets.
   "file_manager/widgets/xf_base.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
-  "file_manager/widgets/xf_nudge.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
+  "file_manager/widgets/xf_nudge.ts",
+  "file_manager/widgets/xf_select.ts",
 ]
 
 # HTML template files that are used to generate the ".html.ts"
 ts_templates = [
-  "file_manager/widgets/xf_nudge.html",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
+  "file_manager/widgets/xf_nudge.html",
+  "file_manager/widgets/xf_select.html",
 ]
 
 ts_test_files = [
@@ -293,6 +295,7 @@ ts_test_files = [
   "file_manager/widgets/xf_breadcrumb_unittest.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog_unittest.ts",
   "file_manager/widgets/xf_nudge_unittest.ts",
+  "file_manager/widgets/xf_select_unittest.ts",
 ]
 
 ts_generated_templates = []
