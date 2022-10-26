@@ -185,7 +185,7 @@ BASE_FEATURE(kMicrotaskQueuePerAnimationWorklet,
 
 BASE_FEATURE(kMicrotaskQueuePerAudioWorklet,
              "BlinkSchedulerMicroTaskQueuePerAudioWorklet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMicrotaskQueuePerWorkerAgent,
              "BlinkSchedulerMicroTaskQueuePerWorkerAgent",
