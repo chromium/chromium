@@ -165,7 +165,7 @@ void TaskAnnotator::ClearObserverForTesting() {
 // TRACE_EVENT argument helper, writing the task location data into
 // EventContext.
 void TaskAnnotator::EmitTaskLocation(perfetto::EventContext& ctx,
-                                     const PendingTask& task) const {
+                                     const PendingTask& task) {
   ctx.event()->set_task_execution()->set_posted_from_iid(
       base::trace_event::InternedSourceLocation::Get(&ctx, task.posted_from));
 }
@@ -235,4 +235,31 @@ TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
   tls_ipc_hash->Set(old_scoped_ipc_hash_.get());
 }
 
+TaskAnnotator::LongTaskTracker::LongTaskTracker(const TickClock* tick_clock,
+                                                PendingTask& pending_task,
+                                                TaskAnnotator* task_annotator)
+    : tick_clock_(tick_clock),
+      pending_task_(pending_task),
+      task_annotator_(task_annotator) {
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("scheduler.long_tasks", &is_tracing_);
+  if (is_tracing_) {
+    task_start_time_ = tick_clock_->NowTicks();
+  }
+}
+
+TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
+  if (!is_tracing_)
+    return;
+  TimeTicks task_end_time = tick_clock_->NowTicks();
+  if ((task_end_time - task_start_time_) >= kMaxTaskDurationTimeDelta) {
+    TRACE_EVENT_BEGIN("scheduler.long_tasks", "LongTaskTracker",
+                      perfetto::Track::ThreadScoped(task_annotator_),
+                      task_start_time_, [&](perfetto::EventContext& ctx) {
+                        TaskAnnotator::EmitTaskLocation(ctx, pending_task_);
+                      });
+    TRACE_EVENT_END("scheduler.long_tasks",
+                    perfetto::Track::ThreadScoped(task_annotator_),
+                    task_end_time);
+  }
+}
 }  // namespace base

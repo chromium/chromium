@@ -15,6 +15,8 @@
 #include "base/message_loop/message_pump.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/common/task_annotator.h"
+#include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/task/task_features.h"
 #include "base/threading/hang_watcher.h"
@@ -436,17 +438,23 @@ WorkDetails ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // See https://crbug.com/681863 and https://crbug.com/874982
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
 
-    // Note: all arguments after task are just passed to a TRACE_EVENT for
-    // logging so lambda captures are safe as lambda is executed inline.
-    task_annotator_.RunTask("ThreadControllerImpl::RunTask",
-                            selected_task->task,
-                            [&selected_task](perfetto::EventContext& ctx) {
-                              if (selected_task->task_execution_trace_logger)
-                                selected_task->task_execution_trace_logger.Run(
-                                    ctx, selected_task->task);
-                              SequenceManagerImpl::MaybeEmitTaskDetails(
-                                  ctx, selected_task.value());
-                            });
+    {
+      // Always track the start of the task, as this is low-overhead.
+      TaskAnnotator::LongTaskTracker long_task_tracker(
+          time_source_, selected_task->task, &task_annotator_);
+
+      // Note: all arguments after task are just passed to a TRACE_EVENT for
+      // logging so lambda captures are safe as lambda is executed inline.
+      task_annotator_.RunTask(
+          "ThreadControllerImpl::RunTask", selected_task->task,
+          [&selected_task](perfetto::EventContext& ctx) {
+            if (selected_task->task_execution_trace_logger)
+              selected_task->task_execution_trace_logger.Run(
+                  ctx, selected_task->task);
+            SequenceManagerImpl::MaybeEmitTaskDetails(ctx,
+                                                      selected_task.value());
+          });
+    }
 
     LazyNow lazy_now_after_run_task(time_source_);
     main_thread_only().task_source->DidRunTask(lazy_now_after_run_task);

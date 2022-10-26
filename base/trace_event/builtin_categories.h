@@ -148,6 +148,7 @@
   X("SiteEngagement")                                                    \
   X("safe_browsing")                                                     \
   X("scheduler")                                                         \
+  X("scheduler.long_tasks")                                              \
   X("screenlock_monitor")                                                \
   X("segmentation_platform")                                             \
   X("sequence_manager")                                                  \
