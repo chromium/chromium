@@ -588,7 +588,7 @@ group("gn_all") {
         deps += [ "//components/nacl/loader:nacl_loader_unittests" ]
       }
 
-      if ((target_cpu != "arm64" && is_linux) || is_chromeos) {
+      if (is_linux || is_chromeos) {
         # TODO(dpranke): Figure out what platforms should actually have this.
         deps += [ "//components/nacl/loader:nacl_helper" ]
       }
