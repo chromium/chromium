@@ -23,13 +23,6 @@ class PasswordManagerErrorMessageDelegate {
       std::unique_ptr<PasswordManagerErrorMessageHelperBridge> bridge_);
   ~PasswordManagerErrorMessageDelegate();
 
-  // Dismisses the message if one is enqueued. Called when the `WebContents` is
-  // destroyed, but before the owner of `this` is destroyed. This is to ensure
-  // that any message that is still showing is dismissed before the `message_`
-  // is destroyed.
-  void DismissPasswordManagerErrorMessage(
-      messages::DismissReason dismiss_reason);
-
   // Displays a password error message for current `web_contents` if enough
   // time has passed since the last error message was displayed.
   // `ErrorMessageFlowType` decides whether the error message mentions the
@@ -41,6 +34,8 @@ class PasswordManagerErrorMessageDelegate {
       password_manager::ErrorMessageFlowType flow_type,
       password_manager::PasswordStoreBackendErrorType error_type,
       base::OnceCallback<void()> dismissal_callback);
+  void DismissPasswordManagerErrorMessage(
+      messages::DismissReason dismiss_reason);
 
  private:
   friend class PasswordManagerErrorMessageDelegateTest;

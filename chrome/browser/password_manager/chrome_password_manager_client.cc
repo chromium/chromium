@@ -1552,11 +1552,6 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
 
 #if BUILDFLAG(IS_ANDROID)
   save_update_password_message_delegate_.DismissSaveUpdatePasswordPrompt();
-  if (password_manager_error_message_delegate_) {
-    password_manager_error_message_delegate_
-        ->DismissPasswordManagerErrorMessage(
-            messages::DismissReason::TAB_DESTROYED);
-  }
 #endif
 }
 
