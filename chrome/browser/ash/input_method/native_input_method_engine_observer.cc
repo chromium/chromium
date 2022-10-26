@@ -118,8 +118,7 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
 
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
                                 const std::string& engine_id) {
-  return (features::IsAssistiveMultiWordEnabled() &&
-          IsPredictiveWritingPrefEnabled(pref_service, engine_id) &&
+  return (IsPredictiveWritingPrefEnabled(pref_service, engine_id) &&
           IsUsEnglishEngine(engine_id));
 }
 
@@ -462,10 +461,9 @@ InputFieldContext CreateInputFieldContext(
 mojom::TextPredictionMode GetTextPredictionMode(
     const std::string& engine_id,
     const InputFieldContext& context,
-    const PrefService& prefs) {
+    PrefService* prefs) {
   return context.multiword_enabled && context.multiword_allowed &&
-                 prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
-                 IsUsEnglishEngine(engine_id)
+                 IsPredictiveWritingEnabled(prefs, engine_id)
              ? mojom::TextPredictionMode::kEnabled
              : mojom::TextPredictionMode::kDisabled;
 }
@@ -495,7 +493,7 @@ mojom::InputFieldInfoPtr CreateInputFieldInfo(
     const std::string& engine_id,
     const ui::TextInputMethod::InputContext& context,
     const InputFieldContext& input_field_context,
-    const PrefService& prefs,
+    PrefService* prefs,
     bool is_normal_screen) {
   // Disable most features on the login screen.
   if (!is_normal_screen) {
@@ -669,9 +667,11 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
   if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
-      // The FST Mojo engine is only needed if autocorrect is enabled.
+      // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
-      !IsPredictiveWritingEnabled(prefs_, engine_id)) {
+      // ... or if predictive writing is enabled.
+      !(features::IsAssistiveMultiWordEnabled() &&
+        IsPredictiveWritingEnabled(prefs_, engine_id))) {
     connection_factory_.reset();
     remote_manager_.reset();
     input_method_.reset();
@@ -769,7 +769,7 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
       InputMethodManager::Get()->GetActiveIMEState()->GetUIStyle() ==
       InputMethodManager::UIStyle::kNormal;
   mojom::InputFieldInfoPtr input_field_info = CreateInputFieldInfo(
-      engine_id, context, input_field_context, *prefs_, is_normal_screen);
+      engine_id, context, input_field_context, prefs_, is_normal_screen);
 
   base::OnceCallback<void(bool)> on_focus_callback =
       base::BindOnce(&NativeInputMethodEngineObserver::ActivateTextClient,
