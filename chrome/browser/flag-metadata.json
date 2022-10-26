@@ -2554,11 +2554,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-lens-in-omnibox-copied-image",
-    "owners": [ "schechter", "hujasonx" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-lens-instruction-chip-improvements",
     "owners": [ "schechter@google.com", "juanmojica@google.com" ],
     "expiry_milestone": 110

@@ -2492,9 +2492,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SEARCH_COPIED_IMAGE" desc="If a user has an image on their clipboard, this string will appear as an option when the user long-presses on Chrome's address bar. The user can select this option to search the default search engine for the image. This string is a complete sentence. If necessary for your language, you can translate as 'Search for Image That You Copied.' [iOS only]" meaning="Maximum characters: 32">
           Search for Copied Image
       </message>
-      <message name="IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS" desc="If a user has an image on their clipboard, this string will appear as an option when the user long-presses on Chrome's address bar if Lens is enabled. The user can select this option to trigger a Lens search on the image. This string is a complete sentence. If necessary for your language, you can translate as 'Lens Image That You Copied.' [iOS only]" meaning="Maximum characters: 32">
-          Lens Copied Image
-      </message>
       <message name="IDS_IOS_SEARCH_COPIED_TEXT" desc="If a user has some text on their clipboard, this string will appear as an option when the user long-presses on Chrome's address bar. The user can select this option to search the default search engine for the text. This string is a complete sentence. If necessary for your language, you can translate as 'Search for Text That You Copied.' [iOS only]" meaning="Maximum characters: 32">
           Search for Copied Text
       </message>
@@ -3443,18 +3440,15 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TOOLS_MENU_HISTORY" desc="The Tools menu item for opening the navigation history menu">
         History
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_LENS_COPIED_IMAGE" desc="If a user has an image on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon and Lens is enabled. The user can select this option to search the image using Lens. This string is a complete sentence. If necessary for your language, you can translate as 'Lens Image That You Copied.'" meaning="[Length:Unlimited]">
-        Lens Image You Copied
-      </message>
-      <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
-        Incognito Search
-      </message>
+<message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
+Incognito Search
+</message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB" desc="The iOS menu item for opening a new Incognito tab [iOS only]" meaning="Tools menu entry to create a new Incognito tab. [Length: Unlimited]">
         New Incognito Tab
       </message>
-      <message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
-        New Search
-      </message>
+<message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
+New Search
+</message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_TAB" desc="The iOS menu item for opening a new tab [iOS only]" meaning="Tools menu entry to create a new tab. [Length: Unlimited]">
         New Tab
       </message>

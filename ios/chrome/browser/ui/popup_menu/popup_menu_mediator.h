@@ -18,7 +18,6 @@ namespace feature_engagement {
 class Tracker;
 }
 @protocol BrowserCommands;
-@protocol LensCommands;
 class OverlayPresenter;
 @protocol PopupMenuConsumer;
 class PrefService;
@@ -55,10 +54,8 @@ class FollowBrowserAgent;
 @property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
 // The consumer to be configured with this mediator.
 @property(nonatomic, strong) id<PopupMenuConsumer> popupMenu;
-// Handler for browser commands.
-@property(nonatomic, weak) id<BrowserCommands> browserCommandsHandler;
-// Handler for Lens commands.
-@property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
+// Dispatcher.
+@property(nonatomic, weak) id<BrowserCommands> dispatcher;
 // Records events for the use of in-product help. The mediator does not take
 // ownership of tracker. Tracker must not be destroyed during lifetime of the
 // object.

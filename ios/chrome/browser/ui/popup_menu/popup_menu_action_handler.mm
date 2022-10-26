@@ -205,11 +205,6 @@ using base::UserMetricsAction;
       [self.delegate searchCopiedImage];
       break;
     }
-    case PopupMenuActionLensCopiedImage: {
-      RecordAction(UserMetricsAction("MobileMenuLensCopiedImage"));
-      [self.delegate lensCopiedImage];
-      break;
-    }
     case PopupMenuActionSearchCopiedText: {
       RecordAction(UserMetricsAction("MobileMenuPasteAndGo"));
       ClipboardRecentContent* clipboardRecentContent =

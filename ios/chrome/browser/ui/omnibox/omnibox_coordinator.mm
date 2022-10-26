@@ -112,8 +112,6 @@
   self.mediator.consumer = self.viewController;
   self.mediator.omniboxCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  self.mediator.lensCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
   self.mediator.loadQueryCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), LoadQueryCommands);
   self.mediator.sceneState =

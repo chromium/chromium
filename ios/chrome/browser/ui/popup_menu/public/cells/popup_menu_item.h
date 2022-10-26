@@ -41,7 +41,6 @@ typedef NS_ENUM(NSInteger, PopupMenuAction) {
   PopupMenuActionSearch,
   PopupMenuActionIncognitoSearch,
   PopupMenuActionQRCodeSearch,
-  PopupMenuActionLensCopiedImage,
   PopupMenuActionSearchCopiedImage,
   PopupMenuActionSearchCopiedText,
   PopupMenuActionVisitCopiedLink,

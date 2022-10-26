@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_view_controller.h"
 
 #import "base/bind.h"
-#import "base/containers/contains.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -19,12 +18,10 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -52,10 +49,6 @@ const CGFloat kClearButtonSize = 28.0f;
 // Whether the default search engine supports search-by-image. This controls the
 // edit menu option to do an image search.
 @property(nonatomic, assign) BOOL searchByImageEnabled;
-
-// Whether the default search engine supports Lens. This controls the
-// edit menu option to do a Lens search.
-@property(nonatomic, assign) BOOL lensImageEnabled;
 
 @property(nonatomic, assign) BOOL incognito;
 
@@ -135,10 +128,6 @@ const CGFloat kClearButtonSize = 28.0f;
   RegisterEditMenuItem([[UIMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_COPIED_IMAGE)
              action:@selector(searchCopiedImage:)]);
-  RegisterEditMenuItem([[UIMenuItem alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_SEARCH_COPIED_IMAGE_WITH_LENS)
-             action:@selector(lensCopiedImage:)]);
   RegisterEditMenuItem([[UIMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_VISIT_COPIED_LINK)
              action:@selector(visitCopiedLink:)]);
@@ -381,7 +370,7 @@ const CGFloat kClearButtonSize = 28.0f;
 
 - (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
   for (NSItemProvider* itemProvider in itemProviders) {
-    if (((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
+    if ((self.searchByImageEnabled &&
          [itemProvider canLoadObjectOfClass:[UIImage class]]) ||
         [itemProvider canLoadObjectOfClass:[NSURL class]] ||
         [itemProvider canLoadObjectOfClass:[NSString class]]) {
@@ -427,10 +416,6 @@ const CGFloat kClearButtonSize = 28.0f;
   self.searchByImageEnabled = searchByImageSupported;
 }
 
-- (void)updateLensImageSupported:(BOOL)lensImageSupported {
-  self.lensImageEnabled = lensImageSupported;
-}
-
 - (void)updateText:(NSAttributedString*)text {
   [self.textField setText:text userTextLength:text.length];
 }
@@ -470,26 +455,6 @@ const CGFloat kClearButtonSize = 28.0f;
   return [UIColor colorNamed:kTextfieldPlaceholderColor];
 }
 
-- (BOOL)shouldUseLensInMenu {
-  return ios::provider::IsLensSupported() &&
-         base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
-         self.lensImageEnabled;
-}
-
-- (void)onClipboardContentTypesReceived:
-    (const std::set<ClipboardContentType>&)types {
-  self.hasCopiedContent = !types.empty();
-  if ((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
-      base::Contains(types, ClipboardContentType::Image)) {
-    self.copiedContentType = ClipboardContentType::Image;
-  } else if (base::Contains(types, ClipboardContentType::URL)) {
-    self.copiedContentType = ClipboardContentType::URL;
-  } else if (base::Contains(types, ClipboardContentType::Text)) {
-    self.copiedContentType = ClipboardContentType::Text;
-  }
-  self.isUpdatingCachedClipboardState = NO;
-}
-
 #pragma mark notification callbacks
 
 // Called on UITextInputCurrentInputModeDidChangeNotification for self.textField
@@ -525,7 +490,19 @@ const CGFloat kClearButtonSize = 28.0f;
   clipboardRecentContent->HasRecentContentFromClipboard(
       desired_types,
       base::BindOnce(^(std::set<ClipboardContentType> matched_types) {
-        [weakSelf onClipboardContentTypesReceived:matched_types];
+        weakSelf.hasCopiedContent = !matched_types.empty();
+        if (weakSelf.searchByImageEnabled &&
+            matched_types.find(ClipboardContentType::Image) !=
+                matched_types.end()) {
+          weakSelf.copiedContentType = ClipboardContentType::Image;
+        } else if (matched_types.find(ClipboardContentType::URL) !=
+                   matched_types.end()) {
+          weakSelf.copiedContentType = ClipboardContentType::URL;
+        } else if (matched_types.find(ClipboardContentType::Text) !=
+                   matched_types.end()) {
+          weakSelf.copiedContentType = ClipboardContentType::Text;
+        }
+        self.isUpdatingCachedClipboardState = NO;
       }));
 }
 
@@ -633,16 +610,12 @@ const CGFloat kClearButtonSize = 28.0f;
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   if (action == @selector(searchCopiedImage:) ||
-      action == @selector(lensCopiedImage:) ||
       action == @selector(visitCopiedLink:) ||
       action == @selector(searchCopiedText:)) {
     if (!self.hasCopiedContent) {
       return NO;
     }
     if (self.copiedContentType == ClipboardContentType::Image) {
-      if (self.shouldUseLensInMenu) {
-        return action == @selector(lensCopiedImage:);
-      }
       return action == @selector(searchCopiedImage:);
     }
     if (self.copiedContentType == ClipboardContentType::URL) {
@@ -661,12 +634,6 @@ const CGFloat kClearButtonSize = 28.0f;
       UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedImage"));
   self.omniboxInteractedWhileFocused = YES;
   [self.pasteDelegate didTapSearchCopiedImage];
-}
-
-- (void)lensCopiedImage:(id)sender {
-  RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.LensCopiedImage"));
-  self.omniboxInteractedWhileFocused = YES;
-  [self.pasteDelegate didTapLensCopiedImage];
 }
 
 - (void)visitCopiedLink:(id)sender {

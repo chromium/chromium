@@ -137,7 +137,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
   const bool isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   [self openWebLoadParams:ios::provider::GenerateLensLoadParamsForImage(
-                              command.image, command.entryPoint, isIncognito)];
+                              command.image, LensEntrypoint::ContextMenu,
+                              isIncognito)];
 }
 
 - (void)openInputSelectionForEntrypoint:(LensEntrypoint)entrypoint {

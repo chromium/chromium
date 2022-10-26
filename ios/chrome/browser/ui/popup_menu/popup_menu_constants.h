@@ -58,8 +58,6 @@ extern NSString* const kToolsMenuSettingsId;
 extern NSString* const kToolsMenuSettingsActionId;
 // Help item accessibility Identifier.
 extern NSString* const kToolsMenuHelpId;
-// Lens Copied Image item accessibility Identifier.
-extern NSString* const kToolsMenuLensCopiedImage;
 // Request mobile item accessibility Identifier.
 extern NSString* const kToolsMenuRequestMobileId;
 // ReadLater item accessibility Identifier.

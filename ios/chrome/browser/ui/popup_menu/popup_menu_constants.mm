@@ -40,7 +40,6 @@ NSString* const kToolsMenuRequestDesktopId = @"kToolsMenuRequestDesktopId";
 NSString* const kToolsMenuSettingsId = @"kToolsMenuSettingsId";
 NSString* const kToolsMenuSettingsActionId = @"kToolsMenuSettingsActionId";
 NSString* const kToolsMenuHelpId = @"kToolsMenuHelpId";
-NSString* const kToolsMenuLensCopiedImage = @"kToolsMenuLensCopiedImage";
 NSString* const kToolsMenuRequestMobileId = @"kToolsMenuRequestMobileId";
 NSString* const kToolsMenuReadLater = @"kToolsMenuReadLater";
 NSString* const kToolsMenuAddToBookmarks = @"kToolsMenuAddToBookmarks";

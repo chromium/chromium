@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
 
 class FaviconLoader;
-@protocol LensCommands;
 @protocol LoadQueryCommands;
 @protocol OmniboxCommands;
 @protocol OmniboxConsumer;
@@ -37,7 +36,6 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<OmniboxConsumer> consumer;
 
 @property(nonatomic, weak) id<LoadQueryCommands> loadQueryCommandsHandler;
-@property(nonatomic, weak) id<LensCommands> lensCommandsHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 
 // The favicon loader.

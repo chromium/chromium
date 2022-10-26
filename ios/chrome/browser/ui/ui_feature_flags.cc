@@ -85,10 +85,6 @@ BASE_FEATURE(kEnableLensInNTP,
              "EnableLensInNTP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
-             "EnableLensInOmniboxCopiedImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRemoveExcessNTPs,
              "RemoveExcessNTPs",
              base::FEATURE_ENABLED_BY_DEFAULT);
