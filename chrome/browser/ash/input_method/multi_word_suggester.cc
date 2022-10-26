@@ -320,7 +320,14 @@ bool MultiWordSuggester::HasSuggestions() {
 }
 
 std::vector<AssistiveSuggestion> MultiWordSuggester::GetSuggestions() {
-  return {};
+  auto suggestion = state_.GetSuggestion();
+  if (!suggestion)
+    return {};
+  return {
+      AssistiveSuggestion{.mode = suggestion->mode,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = base::UTF16ToUTF8(suggestion->text),
+                          .confirmed_length = suggestion->confirmed_length}};
 }
 
 void MultiWordSuggester::DisplaySuggestionIfAvailable() {
@@ -469,10 +476,12 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
     UpdateState(State::kTrackingLastSuggestionShown);
   }
 
-  suggestion_ = Suggestion{.text = suggestion_->text,
+  suggestion_ = Suggestion{.mode = suggestion_->mode,
+                           .text = suggestion_->text,
                            .confirmed_length = new_confirmed_length,
                            .initial_confirmed_length = initial_confirmed_length,
-                           .time_first_shown = suggestion_->time_first_shown};
+                           .time_first_shown = suggestion_->time_first_shown,
+                           .highlighted = suggestion_->highlighted};
 }
 
 void MultiWordSuggester::SuggestionState::ToggleSuggestionHighlight() {

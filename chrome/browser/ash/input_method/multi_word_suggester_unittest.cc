@@ -600,6 +600,48 @@ TEST_F(MultiWordSuggesterTest,
   EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 10u);  // how are yo
 }
 
+TEST_F(MultiWordSuggesterTest, MaintainsPredictionSuggestionModeWhenTracking) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kPrediction,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
+  suggester_->TrySuggestWithSurroundingText(u"ho", 2, 2);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->TrySuggestWithSurroundingText(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->TrySuggestWithSurroundingText(u"how ", 4, 4);
+
+  EXPECT_EQ(suggester_->GetSuggestions()[0].mode,
+            AssistiveSuggestionMode::kPrediction);
+}
+
+TEST_F(MultiWordSuggesterTest, MaintainsCompletionSuggestionModeWhenTracking) {
+  std::vector<AssistiveSuggestion> suggestions = {
+      AssistiveSuggestion{.mode = AssistiveSuggestionMode::kCompletion,
+                          .type = AssistiveSuggestionType::kMultiWord,
+                          .text = "how are you"},
+  };
+
+  suggester_->OnFocus(kFocusedContextId);
+  suggester_->OnSurroundingTextChanged(u"h", 1, 1);
+  suggester_->OnExternalSuggestionsUpdated(suggestions);
+  suggester_->OnSurroundingTextChanged(u"ho", 2, 2);
+  suggester_->TrySuggestWithSurroundingText(u"ho", 2, 2);
+  suggester_->OnSurroundingTextChanged(u"how", 3, 3);
+  suggester_->TrySuggestWithSurroundingText(u"how", 3, 3);
+  suggester_->OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester_->TrySuggestWithSurroundingText(u"how ", 4, 4);
+
+  EXPECT_EQ(suggester_->GetSuggestions()[0].mode,
+            AssistiveSuggestionMode::kCompletion);
+}
+
 TEST_F(MultiWordSuggesterTest,
        DoesNotTrackLastSuggestionIfSurroundingTextChange) {
   std::vector<AssistiveSuggestion> suggestions = {
