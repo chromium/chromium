@@ -164,6 +164,8 @@ public class ChromeCachedFlags {
                         add(CustomTabIntentDataProvider.DENYLIST_ENTRIES);
                         add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);
                         add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
+                        add(StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS);
+                        add(StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL);
                         add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);

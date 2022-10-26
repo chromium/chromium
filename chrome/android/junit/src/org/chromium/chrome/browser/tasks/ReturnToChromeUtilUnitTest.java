@@ -8,6 +8,8 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL;
 
 import android.content.Context;
 import android.content.Intent;
@@ -175,6 +177,49 @@ public class ReturnToChromeUtilUnitTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
+    public void testShouldShowTabSwitcherWithStartReturnTimeWithoutUseModel() {
+        Assert.assertTrue(ChromeFeatureList.sStartSurfaceReturnTime.isEnabled());
+        Assert.assertTrue(ChromeFeatureList.sStartSurfaceAndroid.isEnabled());
+        START_SURFACE_RETURN_TIME_USE_MODEL.setForTesting(false);
+        Assert.assertFalse(START_SURFACE_RETURN_TIME_USE_MODEL.getValue());
+        // Filters out the cases of 1) "not show": -1 and 2) "show immediately": 0.
+        Assert.assertTrue(TAB_SWITCHER_ON_RETURN_MS.getValue() > 0);
+
+        // Default value is not shown.
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
+        Assert.assertEquals(-1, START_SURFACE_RETURN_TIME_SECONDS.getValue());
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis() - 10));
+        TAB_SWITCHER_ON_RETURN_MS.setForTesting(0); // immediate return
+        // Verifies to return false if TAB_SWITCHER_ON_RETURN_MS has set to immediate return.
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis()));
+
+        // Restores the value.
+        TAB_SWITCHER_ON_RETURN_MS.setForTesting(TAB_SWITCHER_ON_RETURN_MS.getDefaultValue());
+        // Sets to immediate return.
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        Assert.assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis()));
+
+        // Sets to an random time.
+        int expectedReturnTimeSeconds = 60; // one minute
+        int expectedReturnTimeMs = (int) (expectedReturnTimeSeconds * DateUtils.SECOND_IN_MILLIS);
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(expectedReturnTimeSeconds);
+        Assert.assertEquals(
+                expectedReturnTimeSeconds, START_SURFACE_RETURN_TIME_SECONDS.getValue());
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(
+                System.currentTimeMillis() - expectedReturnTimeMs));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(
+                System.currentTimeMillis() - expectedReturnTimeSeconds));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME})
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
         final SegmentId showStartId =
                 SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2;
@@ -183,13 +228,14 @@ public class ReturnToChromeUtilUnitTest {
         // Verifies that when the preference key isn't stored, return
         // TAB_SWITCHER_ON_RETURN_MS.getDefaultValue() as default value, i.e., 8 hours.
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
-        Assert.assertEquals(TAB_SWITCHER_ON_RETURN_MS.getDefaultValue(),
+        Assert.assertEquals(START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
                 ReturnToChromeUtil.getReturnTimeFromSegmentation());
 
         // Verifies returning false if both flags haven't been set any value or any meaningful yet.
+        START_SURFACE_RETURN_TIME_USE_MODEL.setForTesting(true);
         Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
-        // Tab switcher on return is enabled for 1 min:
+        // Return time from segmentation model is enabled for 1 min:
         long returnTimeSeconds = 60; // One minute
         long returnTimeMs = returnTimeSeconds * DateUtils.SECOND_IN_MILLIS; // One minute
         sharedPreferencesManager = SharedPreferencesManager.getInstance();
@@ -204,7 +250,7 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis() - 1));
 
-        // If immediate return is enabled by {@link ChromeFeatureList.START_SURFACE_RETURN_TIME},
+        // If immediate return is enabled by {@link ChromeFeatureList.TAB_SWITCHER_ON_RETURN_MS},
         // returns true:
         TAB_SWITCHER_ON_RETURN_MS.setForTesting(-1);
         Assert.assertEquals(-1, TAB_SWITCHER_ON_RETURN_MS.getValue());

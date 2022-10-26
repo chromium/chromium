@@ -2382,6 +2382,19 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "start_surface_return_time_seconds": "28800",
+                        "start_surface_return_time_use_model": "false"
+                    },
+                    "enable_features": [
+                        "StartSurfaceReturnTime"
+                    ]
+                },
+                {
+                    "name": "Enabled_Model",
+                    "params": {
+                        "start_surface_return_time_use_model": "true"
+                    },
                     "enable_features": [
                         "StartSurfaceReturnTime"
                     ]

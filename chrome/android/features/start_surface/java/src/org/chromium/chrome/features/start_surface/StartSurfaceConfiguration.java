@@ -105,6 +105,19 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
 
+    // Start return time experiment:
+    private static final String START_SURFACE_RETURN_TIME_SECONDS_PARAM =
+            "start_surface_return_time_seconds";
+    public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_SECONDS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_RETURN_TIME,
+                    START_SURFACE_RETURN_TIME_SECONDS_PARAM, 28800); // 8 hours
+
+    private static final String START_SURFACE_RETURN_TIME_USE_MODEL_PARAM =
+            "start_surface_return_time_use_model";
+    public static final BooleanCachedFieldTrialParameter START_SURFACE_RETURN_TIME_USE_MODEL =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_RETURN_TIME,
+                    START_SURFACE_RETURN_TIME_USE_MODEL_PARAM, false);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
