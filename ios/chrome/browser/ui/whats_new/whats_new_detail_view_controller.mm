@@ -43,7 +43,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
 }  // namespace
 
-@interface WhatsNewDetailViewController ()
+@interface WhatsNewDetailViewController () <UIScrollViewDelegate>
 
 // Visible UI components.
 @property(nonatomic, strong) UIScrollView* scrollView;
@@ -100,6 +100,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.scrollView.delegate = self;
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   UIView* instructionView =
       [[InstructionView alloc] initWithList:self.instructionSteps];
@@ -235,6 +236,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 - (void)viewDidDisappear:(BOOL)animated {
   if (self.navigationBar) {
     self.navigationBar.translucent = NO;
+    self.navigationBar.prefersLargeTitles = YES;
     self.navigationBar = nil;
   }
   self.actionHandler = nil;
@@ -258,6 +260,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 
     self.navigationBar = self.navigationController.navigationBar;
     self.navigationBar.translucent = YES;
+    self.navigationBar.prefersLargeTitles = NO;
   }
 }
 
@@ -393,6 +396,17 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   return _learnMoreActionButton;
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  DCHECK_EQ(self.scrollView, scrollView);
+  if ([self shouldRemoveNavBarTranslucent]) {
+    self.navigationBar.translucent = NO;
+  } else {
+    self.navigationBar.translucent = YES;
+  }
+}
+
 #pragma mark - Private
 
 - (void)didTapPrimaryActionButton {
@@ -402,6 +416,14 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 - (void)didTaplearnMoreActionButton {
   [self.actionHandler didTapLearnMoreButton:self.learnMoreURL type:self.type];
   [self.delegate dismissWhatsNewDetailView:self];
+}
+
+- (BOOL)shouldRemoveNavBarTranslucent {
+  // The navbar should not be translucent if the user scrolls pass the banner
+  // image.
+  return self.scrollView.contentOffset.y >=
+         self.imageView.bounds.size.height -
+             self.navigationBar.bounds.size.height;
 }
 
 @end
