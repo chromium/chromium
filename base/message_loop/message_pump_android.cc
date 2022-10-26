@@ -133,8 +133,7 @@ itimerspec GetTimerSpecDelay(base::TimeDelta yield_duration) {
 }
 
 MessagePumpForUI::MessagePumpForUI()
-    : yield_duration_(kBrowserPeriodicYieldingToNativeDelay.Get()),
-      env_(base::android::AttachCurrentThread()) {
+    : env_(base::android::AttachCurrentThread()) {
   // The Android native ALooper uses epoll to poll our file descriptors and wake
   // us up. We use a simple level-triggered eventfd to signal that non-delayed
   // work is available, and a timerfd to signal when delayed work is ready to
@@ -424,9 +423,15 @@ void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
 void MessagePumpForUI::ScheduleWorkWithDelay() {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("base"),
               "MessagePumpForUI::ScheduleWorkWithDelay");
+
+  // This initialization can't be done in the constructor because the
+  // FeatureList is not initialized at that time.
+  if (!yield_duration_.has_value())
+    yield_duration_ = kBrowserPeriodicYieldingToNativeDelay.Get();
+
   auto timer = TimeTicks::Now();
   struct itimerspec ts =
-      GetTimerSpecDelay(timer.since_origin() + yield_duration_);
+      GetTimerSpecDelay(timer.since_origin() + yield_duration_.value());
   long ret = timerfd_settime(resume_after_yielding_non_delayed_fd_,
                              TFD_TIMER_ABSTIME, &ts, nullptr);
   DPCHECK(ret >= 0);
