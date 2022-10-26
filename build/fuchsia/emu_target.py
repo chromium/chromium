@@ -17,6 +17,10 @@ import ffx_session
 import pkg_repo
 import target
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+from compatible_utils import running_unattended
+
 
 class EmuTarget(target.Target):
   LOCAL_ADDRESS = 'localhost'
@@ -44,7 +48,7 @@ class EmuTarget(target.Target):
     return os.environ.copy()
 
   def Start(self):
-    if common.IsRunningUnattended() and not self._HasNetworking():
+    if running_unattended() and not self._HasNetworking():
       # Bots may accumulate stale manually-added targets with the same address
       # as the one to be added here. Preemtively remove any unknown targets at
       # this address before starting the emulator and adding it as a target.

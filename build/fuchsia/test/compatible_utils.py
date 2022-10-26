@@ -20,6 +20,16 @@ class VersionNotFoundError(Exception):
     """Thrown when version info cannot be retrieved from device."""
 
 
+def running_unattended() -> bool:
+    """Returns true if running non-interactively.
+
+    When running unattended, confirmation prompts and the like are suppressed.
+    """
+
+    # Chromium tests only for the presence of the variable, so match that here.
+    return 'CHROME_HEADLESS' in os.environ
+
+
 def pave(image_dir: str, target_id: Optional[str])\
         -> subprocess.CompletedProcess:
     """"Pave a device using the pave script inside |image_dir|."""

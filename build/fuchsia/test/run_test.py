@@ -15,7 +15,7 @@ from typing import List
 from common import register_common_args, register_device_args, \
                    register_log_args, resolve_packages, resolve_v1_packages, \
                    set_ffx_isolate_dir
-from compatible_utils import pave
+from compatible_utils import pave, running_unattended
 from ffx_integration import ScopedFfxConfig, test_connection
 from flash_device import register_flash_args, update_required
 from log_manager import LogManager, start_system_log
@@ -75,7 +75,9 @@ def main():
         parser.error('-d is required when --target-id is used')
 
     with ExitStack() as stack:
-        set_ffx_isolate_dir(stack.enter_context(tempfile.TemporaryDirectory()))
+        if running_unattended():
+            set_ffx_isolate_dir(
+                stack.enter_context(tempfile.TemporaryDirectory()))
         stack.enter_context(
             ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
