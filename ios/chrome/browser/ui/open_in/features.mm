@@ -13,7 +13,7 @@
 #endif
 
 BASE_FEATURE(kEnableOpenInDownload,
-             "EnableFREDefaultBrowserScreenTesting",
+             "EnableOpenInDownload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kOpenInDownloadParameterName[] = "default";

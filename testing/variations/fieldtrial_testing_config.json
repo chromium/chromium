@@ -5668,6 +5668,24 @@
             ]
         }
     ],
+    "IOSOpenInDownloadAndUIStudy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithWKDownloadInShareButton",
+                    "params": {
+                        "default": "variant_with_wkdownload"
+                    },
+                    "enable_features": [
+                        "EnableOpenInDownload"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasswordAutofillRichIPHStudy": [
         {
             "platforms": [
