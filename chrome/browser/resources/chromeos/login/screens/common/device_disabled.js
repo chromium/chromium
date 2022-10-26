@@ -6,7 +6,19 @@
  * @fileoverview Polymer element for Device Disabled message screen.
  */
 
-/* #js_imports_placeholder */
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+
 
 /**
  * @constructor
@@ -14,9 +26,9 @@
  * @implements {OobeI18nBehaviorInterface}
  * @implements {LoginScreenBehaviorInterface}
  */
-const DeviceDisabledElementBase = Polymer.mixinBehaviors(
+const DeviceDisabledElementBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @typedef {{
@@ -30,7 +42,9 @@ class DeviceDisabled extends DeviceDisabledElementBase {
     return 'device-disabled-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {

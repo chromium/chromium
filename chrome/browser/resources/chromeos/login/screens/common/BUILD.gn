@@ -14,7 +14,6 @@ assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 group("polymer3_elements") {
   public_deps = [
     ":app_launch_splash_module",
-    ":device_disabled_module",
     ":family_link_notice_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
@@ -51,7 +50,7 @@ js_type_check("closure_compile_local") {
     #":assistant_optin",
     ":autolaunch",
     ":consolidated_consent",
-    ":device_disabled.m",
+    ":device_disabled",
     ":enable_kiosk",
     ":error_message",
     ":family_link_notice.m",
@@ -196,8 +195,8 @@ js_library("consolidated_consent") {
   ]
 }
 
-js_library("device_disabled.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/device_disabled.m.js" ]
+js_library("device_disabled") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/device_disabled.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -205,7 +204,7 @@ js_library("device_disabled.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":device_disabled_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("enable_kiosk") {
@@ -676,15 +675,6 @@ polymer_modulizer("app_launch_splash") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("device_disabled") {
-  js_file = "device_disabled.js"
-  html_file = "device_disabled.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("family_link_notice") {
   js_file = "family_link_notice.js"
   html_file = "family_link_notice.html"
@@ -785,5 +775,6 @@ html_to_js("web_components") {
     "theme_selection.js",
     "tpm_error.js",
     "wrong_hwid.js",
+    "device_disabled.js",
   ]
 }

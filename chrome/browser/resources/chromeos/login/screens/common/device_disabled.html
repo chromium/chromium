@@ -10,47 +10,28 @@ code in DisplayManager.showScreen() would prevent rest of the code from working
 correctly. Adding a phony dependency to other screen makes that screen register
 first, and prevents such error.
 -->
-<link rel="import" href="/screens/common/user_creation.html">
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<style include="oobe-dialog-host-styles">
+  #message {
+    overflow: auto;
+    text-overflow: clip;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+</style>
 
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="../../components/display_manager_types.html">
-
-<dom-module id="device-disabled-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      #message {
-        overflow: auto;
-        text-overflow: clip;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-    </style>
-
-    <oobe-adaptive-dialog title-key="deviceDisabledHeading" id="dialog"
-        role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'deviceDisabledHeading')]]">
-      <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'deviceDisabledHeading')]]
-      </h1>
-      <div slot="subtitle">
-        [[disabledText_(locale, serial_, enrollmentDomain_)]]
-      </div>
-      <div slot="content" class="flex layout vertical center center-justified">
-        <div id="message" class="oobe-default-font">[[message_]]</div>
-        <img src="/images/device-disabled.svg"
-            class="oobe-illustration flex" aria-hidden="true">
-      </div>
-    </oobe-adaptive-dialog>
-  </template>
-  <script src="device_disabled.js"></script>
-</dom-module>
+<oobe-adaptive-dialog title-key="deviceDisabledHeading" id="dialog"
+  role="dialog" aria-label$="[[i18nDynamic(locale, 'deviceDisabledHeading')]]"
+>
+  <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+  <h1 slot="title">[[i18nDynamic(locale, 'deviceDisabledHeading')]]</h1>
+  <div slot="subtitle">
+    [[disabledText_(locale, serial_, enrollmentDomain_)]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <div id="message" class="oobe-default-font">[[message_]]</div>
+    <img src="/images/device-disabled.svg" class="oobe-illustration flex"
+      aria-hidden="true"
+    >
+  </div>
+</oobe-adaptive-dialog>
