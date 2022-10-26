@@ -245,15 +245,5 @@
         },
         "is_try_builder": true,
         "is_cq_builder":true
-    },
-    "android-webview-pie-x86-wpt-fyi-rel": {
-        "port_name": "android-android-pie",
-        "main": "chromium.android.fyi",
-        "specifiers": ["Android", "android_webview", "Release"]
-    },
-    "android-chrome-pie-x86-wpt-fyi-rel": {
-        "port_name": "android-android-pie",
-        "main": "chromium.android.fyi",
-        "specifiers": ["Android", "chrome_android", "Release"]
     }
 }
