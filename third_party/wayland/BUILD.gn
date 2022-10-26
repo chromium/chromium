@@ -7,6 +7,8 @@ import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
 
+assert(is_linux || is_chromeos)
+
 # This should be open to both system and non - system libwayland as
 # wayland_stubs also uses this.
 wayland_protocol("wayland_protocol_c") {
