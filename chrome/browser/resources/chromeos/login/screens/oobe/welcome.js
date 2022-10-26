@@ -26,7 +26,7 @@ import {getSelectedTitle, SelectListType} from '../../components/oobe_select.m.j
 import {OobeTypes} from '../../components/oobe_types.m.js';
 import {Oobe} from '../../cr_ui.m.js';
 
-import {OobeWelcomeDialog} from './welcome_dialog.m.js';
+import {OobeWelcomeDialog} from './welcome_dialog.js';
 
 /** @const {string} */
 const DEFAULT_CHROMEVOX_HINT_LOCALE = 'en-US';

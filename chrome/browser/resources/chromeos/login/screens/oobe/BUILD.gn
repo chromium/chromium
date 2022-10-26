@@ -13,7 +13,6 @@ group("polymer3_elements") {
     ":enterprise_enrollment_module",
     ":packaged_license_module",
     ":quick_start_module",
-    ":welcome_dialog_module",
   ]
 }
 
@@ -38,7 +37,7 @@ js_type_check("closure_compile") {
     ":quick_start.m",
     ":update",
     ":welcome",
-    ":welcome_dialog.m",
+    ":welcome_dialog",
   ]
 }
 
@@ -189,7 +188,7 @@ js_library("update") {
 js_library("welcome") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.js" ]
   deps = [
-    ":welcome_dialog.m",
+    ":welcome_dialog",
     "../..:display_manager.m",
     "../../components:oobe_cr_lottie",
     "../../components:oobe_select.m",
@@ -209,8 +208,8 @@ js_library("welcome") {
   ]
 }
 
-js_library("welcome_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.m.js" ]
+js_library("welcome_dialog") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.js" ]
   deps = [
     "../../components:long_touch_detector.m",
     "../../components:oobe_cr_lottie",
@@ -220,7 +219,7 @@ js_library("welcome_dialog.m") {
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":welcome_dialog_module" ]
+  extra_deps = [ ":web_components" ]
   externs_list = [ "$externs_path/tts.js" ]
 }
 
@@ -251,15 +250,6 @@ polymer_modulizer("packaged_license") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("welcome_dialog") {
-  js_file = "welcome_dialog.js"
-  html_file = "welcome_dialog.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports + [ "chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.html|OobeCrLottie" ]
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 html_to_js("web_components") {
   js_files = [
     "auto_enrollment_check.js",
@@ -270,5 +260,6 @@ html_to_js("web_components") {
     "oobe_network.js",
     "update.js",
     "welcome.js",
+    "welcome_dialog.js",
   ]
 }

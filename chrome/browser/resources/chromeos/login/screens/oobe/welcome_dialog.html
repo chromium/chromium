@@ -4,226 +4,226 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-shared-style oobe-dialog-host-styles">
+  :host {
+    box-sizing: border-box;
+    height: var(--oobe-adaptive-dialog-height);
+    padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
+    padding-inline-end: 40px;
+    padding-inline-start: 40px;
+    padding-top: calc(
+      var(--cr-button-height) + 2 *
+        var(--oobe-adaptive-dialog-back-button-vertical-padding)
+    );
+    width: var(--oobe-adaptive-dialog-width);
+  }
 
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/ash/common/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
+  #dialog {
+    box-sizing: border-box;
+    height: 100%;
+  }
 
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/oobe_cr_lottie.html">
-<link rel="import" href="../../components/long_touch_detector.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_icon_button.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
-<link rel="import" href="../../components/oobe_vars/oobe_shared_vars_css.html">
+  #content {
+    display: grid;
+    flex-grow: 1;
+    min-height: 0;
+  }
+  :host-context([orientation='vertical']) #content {
+    grid-template-columns: auto;
+    grid-template-rows: min-content auto min-content;
+  }
+  :host-context([orientation='horizontal']) #content {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  }
 
-<!--
-  OOBE Welcome screen
--->
+  #buttons {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+  }
+  :host-context([orientation='vertical']) #buttons {
+    align-items: center;
+    align-self: center;
+    justify-self: center;
+  }
+  :host-context([orientation='horizontal']) #buttons {
+    align-self: start;
+    justify-self: start;
+  }
 
-<dom-module id="oobe-welcome-dialog">
-  <template>
-    <style include="cr-shared-style oobe-dialog-host-styles">
-      :host {
-        box-sizing: border-box;
-        height: var(--oobe-adaptive-dialog-height);
-        padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
-        padding-inline-end: 40px;
-        padding-inline-start: 40px;
-        padding-top: calc(var(--cr-button-height) +
-          2*var(--oobe-adaptive-dialog-back-button-vertical-padding));
-        width: var(--oobe-adaptive-dialog-width);
-      }
+  :host-context([orientation='vertical']) #bottomButtons {
+    align-self: end;
+    grid-column: 1 / span 1;
+    grid-row: 3 / span 1;
+    justify-self: center;
+  }
+  :host-context([orientation='horizontal']) #bottomButtons {
+    align-self: end;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    justify-self: start;
+  }
 
-      #dialog {
-        box-sizing: border-box;
-        height: 100%;
-      }
+  #welcomeAnimation {
+    min-height: 0;
+    min-width: 0;
+  }
+  :host-context([orientation='vertical']) #welcomeAnimationSlot {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    place-self: stretch;
+  }
+  :host-context([orientation='horizontal']) #welcomeAnimationSlot {
+    align-self: stretch;
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 2;
+  }
 
-      #content {
-        display: grid;
-        flex-grow: 1;
-        min-height: 0;
-      }
-      :host-context([orientation=vertical]) #content {
-        grid-template-columns: auto;
-        grid-template-rows: min-content auto min-content;
-      }
-      :host-context([orientation=horizontal]) #content {
-        grid-template-columns: auto minmax(0, 1fr);
-        grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-      }
+  #accessibilitySettingsButton,
+  #timezoneSettingsButton,
+  #enableDebuggingButton {
+    margin-top: 16px;
+  }
 
-      #buttons {
-        grid-column: 1 / span 1;
-        grid-row: 1 / span 1;
-      }
-      :host-context([orientation=vertical]) #buttons {
-        align-items: center;
-        align-self: center;
-        justify-self: center;
-      }
-      :host-context([orientation=horizontal]) #buttons {
-        align-self: start;
-        justify-self: start;
-      }
+  #title {
+    color: var(--oobe-header-text-color);
+    font-family: var(--oobe-header-font-family);
+    font-size: 36px;
+    line-height: 44px;
+    margin-bottom: 0;
+  }
 
-      :host-context([orientation=vertical]) #bottomButtons {
-        align-self: end;
-        grid-column: 1 / span 1;
-        grid-row: 3 / span 1;
-        justify-self: center;
-      }
-      :host-context([orientation=horizontal]) #bottomButtons {
-        align-self: end;
-        grid-column: 1 / span 1;
-        grid-row: 2 / span 1;
-        justify-self: start;
-      }
+  :host-context([orientation='horizontal']) #title {
+    margin-top: 48px;
+  }
 
-      #welcomeAnimation {
-        min-height: 0;
-        min-width: 0;
-      }
-      :host-context([orientation=vertical]) #welcomeAnimationSlot {
-        grid-column: 1 / span 1;
-        grid-row: 2 / span 1;
-        place-self: stretch;
-      }
-      :host-context([orientation=horizontal]) #welcomeAnimationSlot {
-        align-self: stretch;
-        grid-column: 2 / span 1;
-        grid-row: 1 / span 2;
-      }
+  :host-context([orientation='vertical']) #title {
+    margin-top: 40px;
+  }
 
-      #accessibilitySettingsButton,
-      #timezoneSettingsButton,
-      #enableDebuggingButton {
-        margin-top: 16px;
-      }
+  #subtitle {
+    color: var(--oobe-subheader-text-color);
+    font-family: var(--oobe-header-font-family);
+    font-size: 24px;
+    line-height: 32px;
+    margin-top: 16px;
+  }
 
-      #title {
-        color: var(--oobe-header-text-color);
-        font-family: var(--oobe-header-font-family);
-        font-size: 36px;
-        line-height: 44px;
-        margin-bottom: 0;
-      }
+  :host-context([orientation='horizontal']) #subtitle {
+    margin-bottom: 64px;
+  }
 
-      :host-context([orientation=horizontal]) #title {
-        margin-top: 48px;
-      }
+  :host-context([orientation='vertical']) #subtitle {
+    margin-bottom: 40px;
+  }
 
-      :host-context([orientation=vertical]) #title {
-        margin-top: 40px;
-      }
-
-      #subtitle {
-        color: var(--oobe-subheader-text-color);
-        font-family: var(--oobe-header-font-family);
-        font-size: 24px;
-        line-height: 32px;
-        margin-top: 16px;
-      }
-
-      :host-context([orientation=horizontal]) #subtitle {
-        margin-bottom: 64px;
-      }
-
-      :host-context([orientation=vertical]) #subtitle {
-        margin-bottom: 40px;
-      }
-
-      .welcome-header-text {
-        font-weight: var(--oobe-welcome-header-font-weight);
-      }
-      :host-context([orientation=vertical]) .welcome-header-text {
-        align-self: center;
-        text-align: center;
-      }
-      :host-context([orientation=horizontal]) .welcome-header-text {
-        text-align: start;
-      }
-    </style>
-    <div id="dialog" class="layout vertical">
-      <h1 id="title" class="welcome-header-text">
-        [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
-      </h1>
-      <div id="subtitle" class="welcome-header-text">
-        [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
-      </div>
-      <div id="content">
-        <div id="buttons" class="layout vertical">
-          <oobe-icon-button id="languageSelectionButton"
-              icon1x="oobe-20:welcome-language"
-              icon2x="oobe-40:welcome-language"
-              on-click="onLanguageClicked_"
-              label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
-                  currentLanguage)]]">
-            <div slot="text">[[currentLanguage]]</div>
-          </oobe-icon-button>
-          <oobe-icon-button id="accessibilitySettingsButton"
-              text-key="accessibilityLink"
-              icon1x="oobe-20:welcome-accessibility"
-              icon2x="oobe-40:welcome-accessibility"
-              on-click="onAccessibilityClicked_">
-          </oobe-icon-button>
-          <oobe-icon-button id="timezoneSettingsButton"
-              text-key="timezoneButtonText"
-              icon1x="oobe-32:timezone"
-              icon2x="oobe-32:timezone"
-              on-click="onTimezoneClicked_"
-              hidden="[[!timezoneButtonVisible]]">
-          </oobe-icon-button>
-          <oobe-icon-button id="enableDebuggingButton"
-            text-key="debuggingFeaturesLink"
-            icon1x="oobe-32:chromebook"
-            icon2x="oobe-32:chromebook"
-            on-click="onDebuggingLinkClicked_"
-            hidden="[[!debuggingLinkVisible]]">
-          </oobe-icon-button>
-        </div>
-        <div id="bottomButtons">
-            <oobe-text-button id="quickStart"
-               on-click="onQuickStartClicked_"
-               hidden="[[!isQuickStartEnabled]]"
-               text-key="welcomeScreenQuickStart">
-            </oobe-text-button>
-          <oobe-text-button id="getStarted"
-              inverse on-click="onNextClicked_"
-              text-key="welcomeScreenGetStarted">
-          </oobe-text-button>
-        </div>
-        <div id="welcomeAnimationSlot">
-          <oobe-cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
-              animation-url="animations/welcome_screen_animation.json">
-          </oobe-cr-lottie>
-          <img src="/images/cfm/welcome.svg" class="oobe-illustration"
-              id="remoraWelcomeImage" hidden="[[!isMeet_]]" aria-hidden="true">
-        </div>
-      </div>
+  .welcome-header-text {
+    font-weight: var(--oobe-welcome-header-font-weight);
+  }
+  :host-context([orientation='vertical']) .welcome-header-text {
+    align-self: center;
+    text-align: center;
+  }
+  :host-context([orientation='horizontal']) .welcome-header-text {
+    text-align: start;
+  }
+</style>
+<div id="dialog" class="layout vertical">
+  <h1 id="title" class="welcome-header-text">
+    [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
+  </h1>
+  <div id="subtitle" class="welcome-header-text">
+    [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
+  </div>
+  <div id="content">
+    <div id="buttons" class="layout vertical">
+      <oobe-icon-button
+        id="languageSelectionButton"
+        icon1x="oobe-20:welcome-language"
+        icon2x="oobe-40:welcome-language"
+        on-click="onLanguageClicked_"
+        label-for-aria="[[i18nDynamic(locale, 'languageButtonLabel',
+                  currentLanguage)]]"
+      >
+        <div slot="text">[[currentLanguage]]</div>
+      </oobe-icon-button>
+      <oobe-icon-button
+        id="accessibilitySettingsButton"
+        text-key="accessibilityLink"
+        icon1x="oobe-20:welcome-accessibility"
+        icon2x="oobe-40:welcome-accessibility"
+        on-click="onAccessibilityClicked_"
+      >
+      </oobe-icon-button>
+      <oobe-icon-button
+        id="timezoneSettingsButton"
+        text-key="timezoneButtonText"
+        icon1x="oobe-32:timezone"
+        icon2x="oobe-32:timezone"
+        on-click="onTimezoneClicked_"
+        hidden="[[!timezoneButtonVisible]]"
+      >
+      </oobe-icon-button>
+      <oobe-icon-button
+        id="enableDebuggingButton"
+        text-key="debuggingFeaturesLink"
+        icon1x="oobe-32:chromebook"
+        icon2x="oobe-32:chromebook"
+        on-click="onDebuggingLinkClicked_"
+        hidden="[[!debuggingLinkVisible]]"
+      >
+      </oobe-icon-button>
     </div>
-    <oobe-modal-dialog id="chromeVoxHint">
-      <div slot="title">
-        <p>[[i18nDynamic(locale, 'chromeVoxHintText')]]</p>
-      </div>
-      <div slot="buttons">
-        <oobe-text-button id="dismissChromeVoxButton"
-            on-click="dismissChromeVoxHint_"
-            text-key="continueWithoutChromeVox">
-        </oobe-text-button>
-        <oobe-text-button id="activateChromeVoxButton" inverse
-            on-click="activateChromeVox_" text-key="activateChromeVox">
-        </oobe-text-button>
-      </div>
-    </oobe-modal-dialog>
-  </template>
-  <script src="welcome_dialog.js"></script>
-</dom-module>
+    <div id="bottomButtons">
+      <oobe-text-button
+        id="quickStart"
+        on-click="onQuickStartClicked_"
+        hidden="[[!isQuickStartEnabled]]"
+        text-key="welcomeScreenQuickStart"
+      >
+      </oobe-text-button>
+      <oobe-text-button
+        id="getStarted"
+        inverse
+        on-click="onNextClicked_"
+        text-key="welcomeScreenGetStarted"
+      >
+      </oobe-text-button>
+    </div>
+    <div id="welcomeAnimationSlot">
+      <oobe-cr-lottie
+        id="welcomeAnimation"
+        hidden="[[isMeet_]]"
+        animation-url="animations/welcome_screen_animation.json"
+      >
+      </oobe-cr-lottie>
+      <img
+        src="/images/cfm/welcome.svg"
+        class="oobe-illustration"
+        id="remoraWelcomeImage"
+        hidden="[[!isMeet_]]"
+        aria-hidden="true"
+      >
+    </div>
+  </div>
+</div>
+<oobe-modal-dialog id="chromeVoxHint">
+  <div slot="title">
+    <p>[[i18nDynamic(locale, 'chromeVoxHintText')]]</p>
+  </div>
+  <div slot="buttons">
+    <oobe-text-button
+      id="dismissChromeVoxButton"
+      on-click="dismissChromeVoxHint_"
+      text-key="continueWithoutChromeVox"
+    >
+    </oobe-text-button>
+    <oobe-text-button
+      id="activateChromeVoxButton"
+      inverse
+      on-click="activateChromeVox_"
+      text-key="activateChromeVox"
+    >
+    </oobe-text-button>
+  </div>
+</oobe-modal-dialog>
