@@ -97,6 +97,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager {
   // Checks whether an adapter is currently enabled and being used.
   bool HasActiveAdapter() const;
 
+  // Get the active adapter.
+  int GetActiveAdapter() const;
+
   // Returns system bus pointer (owned by FlossDBusThreadManager).
   dbus::Bus* GetSystemBus() const { return bus_; }
 

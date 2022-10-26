@@ -24,6 +24,10 @@ component("audio") {
     "cras_audio_client.h",
     "fake_cras_audio_client.cc",
     "fake_cras_audio_client.h",
+    "fake_floss_media_client.cc",
+    "fake_floss_media_client.h",
+    "floss_media_client.cc",
+    "floss_media_client.h",
     "volume_state.cc",
     "volume_state.h",
   ]

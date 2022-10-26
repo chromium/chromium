@@ -24,6 +24,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
+#include "chromeos/ash/components/dbus/audio/floss_media_client.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -134,6 +135,11 @@ void CrasAudioHandler::InitializeForTesting() {
   // Make sure CrasAudioClient has been initialized.
   if (!CrasAudioClient::Get())
     CrasAudioClient::InitializeFake();
+  // Make sure FlossMediaClient has been initialized.
+  // TODO(b/228608730): Remove this after Floss bypasses CRAS to receive media
+  // information directly from the provider.
+  if (floss::features::IsFlossEnabled() && !FlossMediaClient::Get())
+    FlossMediaClient::InitializeFake();
   CrasAudioHandler::Initialize(mojo::NullRemote(),
                                new AudioDevicesPrefHandlerStub());
 }
@@ -261,9 +267,17 @@ void CrasAudioHandler::HandleMediaSessionMetadataReset() {
   const std::map<std::string, std::string> empty_metadata_map = {
       {"title", ""}, {"artist", ""}, {"album", ""}};
 
-  CrasAudioClient::Get()->SetPlayerMetadata(empty_metadata_map);
-  CrasAudioClient::Get()->SetPlayerIdentity("");
-  CrasAudioClient::Get()->SetPlayerPlaybackStatus("stopped");
+  // TODO(b/228608730): Remove this after Floss bypasses CRAS to receive media
+  // information directly from the provider.
+  if (floss::features::IsFlossEnabled()) {
+    FlossMediaClient::Get()->SetPlayerMetadata(empty_metadata_map);
+    FlossMediaClient::Get()->SetPlayerIdentity("");
+    FlossMediaClient::Get()->SetPlayerPlaybackStatus("stopped");
+  } else {
+    CrasAudioClient::Get()->SetPlayerMetadata(empty_metadata_map);
+    CrasAudioClient::Get()->SetPlayerIdentity("");
+    CrasAudioClient::Get()->SetPlayerPlaybackStatus("stopped");
+  }
 }
 
 void CrasAudioHandler::MediaSessionInfoChanged(
@@ -276,7 +290,13 @@ void CrasAudioHandler::MediaSessionInfoChanged(
                           ? "playing"
                           : "paused";
 
-  CrasAudioClient::Get()->SetPlayerPlaybackStatus(state);
+  // TODO(b/228608730): Remove this after Floss bypasses CRAS to receive media
+  // information directly from the provider.
+  if (floss::features::IsFlossEnabled()) {
+    FlossMediaClient::Get()->SetPlayerPlaybackStatus(state);
+  } else {
+    CrasAudioClient::Get()->SetPlayerPlaybackStatus(state);
+  }
 }
 
 void CrasAudioHandler::MediaSessionMetadataChanged(
@@ -294,8 +314,16 @@ void CrasAudioHandler::MediaSessionMetadataChanged(
 
   // Assume media duration/length should always change with new metadata.
   fetch_media_session_duration_ = true;
-  CrasAudioClient::Get()->SetPlayerMetadata(metadata_map);
-  CrasAudioClient::Get()->SetPlayerIdentity(source_title);
+
+  // TODO(b/228608730): Remove this after Floss bypasses CRAS to receive media
+  // information directly from the provider.
+  if (floss::features::IsFlossEnabled()) {
+    FlossMediaClient::Get()->SetPlayerMetadata(metadata_map);
+    FlossMediaClient::Get()->SetPlayerIdentity(source_title);
+  } else {
+    CrasAudioClient::Get()->SetPlayerMetadata(metadata_map);
+    CrasAudioClient::Get()->SetPlayerIdentity(source_title);
+  }
 }
 
 void CrasAudioHandler::MediaSessionPositionChanged(
@@ -307,7 +335,13 @@ void CrasAudioHandler::MediaSessionPositionChanged(
   if (fetch_media_session_duration_) {
     duration = position->duration().InMicroseconds();
     if (duration > 0) {
-      CrasAudioClient::Get()->SetPlayerDuration(duration);
+      // TODO(b/228608730): Remove this after Floss bypasses the media
+      // information from CRAS.
+      if (floss::features::IsFlossEnabled()) {
+        FlossMediaClient::Get()->SetPlayerDuration(duration);
+      } else {
+        CrasAudioClient::Get()->SetPlayerDuration(duration);
+      }
       fetch_media_session_duration_ = false;
     }
   }
@@ -316,7 +350,13 @@ void CrasAudioHandler::MediaSessionPositionChanged(
   if (current_position < 0 || (duration > 0 && current_position > duration))
     return;
 
-  CrasAudioClient::Get()->SetPlayerPosition(current_position);
+  // TODO(b/228608730): Remove this after Floss bypasses CRAS to receive media
+  // information directly from the provider.
+  if (floss::features::IsFlossEnabled()) {
+    FlossMediaClient::Get()->SetPlayerPosition(current_position);
+  } else {
+    CrasAudioClient::Get()->SetPlayerPosition(current_position);
+  }
 }
 
 void CrasAudioHandler::HandleKeyboardMicrophoneMuteSwitchPressed(bool muted) {

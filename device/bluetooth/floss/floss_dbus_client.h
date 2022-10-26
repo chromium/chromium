@@ -35,6 +35,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kExperimentalInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
+extern DEVICE_BLUETOOTH_EXPORT const char kMediaObjectFormat[];
 
 // Other interfaces
 extern DEVICE_BLUETOOTH_EXPORT const char kSocketManagerInterface[];

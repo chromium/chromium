@@ -26,6 +26,7 @@ const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
+const char kMediaObjectFormat[] = "/org/chromium/bluetooth/hci%d/media";
 
 const char kSocketManagerInterface[] = "org.chromium.bluetooth.SocketManager";
 

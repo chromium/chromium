@@ -177,6 +177,10 @@ bool FlossDBusManager::HasActiveAdapter() const {
   return active_adapter_ != kInvalidAdapter;
 }
 
+int FlossDBusManager::GetActiveAdapter() const {
+  return active_adapter_;
+}
+
 FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
   return client_bundle_->adapter_client();
 }
