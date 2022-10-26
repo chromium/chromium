@@ -2275,69 +2275,6 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "../app_shim_remote_cocoa/web_drag_source_mac.h",
-      "../app_shim_remote_cocoa/web_drag_source_mac.mm",
-      "accessibility/browser_accessibility_cocoa.h",
-      "accessibility/browser_accessibility_cocoa.mm",
-      "accessibility/browser_accessibility_mac.h",
-      "accessibility/browser_accessibility_mac.mm",
-      "accessibility/browser_accessibility_manager_mac.h",
-      "accessibility/browser_accessibility_manager_mac.mm",
-      "accessibility/browser_accessibility_state_impl_mac.mm",
-      "browser_plugin/browser_plugin_popup_menu_helper_mac.h",
-      "browser_plugin/browser_plugin_popup_menu_helper_mac.mm",
-      "child_process_launcher_helper_mac.cc",
-      "child_process_task_port_provider_mac.cc",
-      "child_process_task_port_provider_mac.h",
-      "cocoa/system_hotkey_helper_mac.h",
-      "cocoa/system_hotkey_helper_mac.mm",
-      "cocoa/system_hotkey_map.h",
-      "cocoa/system_hotkey_map.mm",
-      "devtools/protocol/native_input_event_builder_mac.mm",
-      "media/desktop_media_window_registry_mac.mm",
-      "memory/swap_metrics_driver_impl_mac.cc",
-      "memory/swap_metrics_driver_impl_mac.h",
-      "native_io/native_io_file_host_mac.cc",
-      "renderer_host/clipboard_host_impl_mac.mm",
-      "renderer_host/input/fling_scheduler_mac.h",
-      "renderer_host/input/fling_scheduler_mac.mm",
-      "renderer_host/input/mouse_wheel_rails_filter_mac.cc",
-      "renderer_host/input/mouse_wheel_rails_filter_mac.h",
-      "renderer_host/input/synthetic_gesture_target_mac.h",
-      "renderer_host/input/synthetic_gesture_target_mac.mm",
-      "renderer_host/input/web_input_event_builders_mac.h",
-      "renderer_host/input/web_input_event_builders_mac.mm",
-      "renderer_host/native_web_keyboard_event_mac.mm",
-      "renderer_host/popup_menu_helper_mac.h",
-      "renderer_host/popup_menu_helper_mac.mm",
-      "renderer_host/render_widget_host_view_mac.h",
-      "renderer_host/render_widget_host_view_mac.mm",
-      "renderer_host/render_widget_host_view_mac_editcommand_helper.h",
-      "renderer_host/render_widget_host_view_mac_editcommand_helper.mm",
-      "renderer_host/text_input_client_mac.h",
-      "renderer_host/text_input_client_mac.mm",
-      "renderer_host/text_input_host_impl.h",
-      "renderer_host/text_input_host_impl.mm",
-      "renderer_host/webmenurunner_mac.h",
-      "renderer_host/webmenurunner_mac.mm",
-      "sandbox_parameters_mac.h",
-      "sandbox_parameters_mac.mm",
-      "scheduler/responsiveness/native_event_observer_mac.mm",
-      "screenlock_monitor/screenlock_monitor_device_source_mac.mm",
-      "speech/tts_mac.h",
-      "speech/tts_mac.mm",
-      "theme_helper_mac.h",
-      "theme_helper_mac.mm",
-      "web_contents/web_contents_impl_mac.mm",
-      "web_contents/web_contents_view_mac.h",
-      "web_contents/web_contents_view_mac.mm",
-      "web_contents/web_drag_dest_mac.h",
-      "web_contents/web_drag_dest_mac.mm",
-    ]
-  }
-
   if (is_android) {
     sources += [
       "android/android_overlay_provider_impl.cc",
@@ -2590,28 +2527,111 @@ source_set("browser") {
   }
 
   if (is_mac) {
-    frameworks += [ "AppKit.framework" ]
     sources += [
+      "../app_shim_remote_cocoa/ns_view_bridge_factory_impl.mm",
+      "../app_shim_remote_cocoa/popup_window_mac.h",
+      "../app_shim_remote_cocoa/popup_window_mac.mm",
+      "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h",
+      "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.mm",
+      "../app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h",
+      "../app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
+      "../app_shim_remote_cocoa/render_widget_host_view_cocoa.mm",
+      "../app_shim_remote_cocoa/sharing_service_picker.h",
+      "../app_shim_remote_cocoa/sharing_service_picker.mm",
       "../app_shim_remote_cocoa/web_contents_ns_view_bridge.h",
       "../app_shim_remote_cocoa/web_contents_ns_view_bridge.mm",
+      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h",
+      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.mm",
+      "../app_shim_remote_cocoa/web_contents_view_cocoa.h",
+      "../app_shim_remote_cocoa/web_contents_view_cocoa.mm",
+      "../app_shim_remote_cocoa/web_drag_source_mac.h",
+      "../app_shim_remote_cocoa/web_drag_source_mac.mm",
+      "accessibility/browser_accessibility_cocoa.h",
+      "accessibility/browser_accessibility_cocoa.mm",
+      "accessibility/browser_accessibility_mac.h",
+      "accessibility/browser_accessibility_mac.mm",
+      "accessibility/browser_accessibility_manager_mac.h",
+      "accessibility/browser_accessibility_manager_mac.mm",
+      "accessibility/browser_accessibility_state_impl_mac.mm",
+      "browser_plugin/browser_plugin_popup_menu_helper_mac.h",
+      "browser_plugin/browser_plugin_popup_menu_helper_mac.mm",
+      "child_process_launcher_helper_mac.cc",
+      "child_process_task_port_provider_mac.cc",
+      "child_process_task_port_provider_mac.h",
+      "cocoa/system_hotkey_helper_mac.h",
+      "cocoa/system_hotkey_helper_mac.mm",
+      "cocoa/system_hotkey_map.h",
+      "cocoa/system_hotkey_map.mm",
+      "devtools/protocol/native_input_event_builder_mac.mm",
       "font_access/font_enumeration_data_source_mac.h",
       "font_access/font_enumeration_data_source_mac.mm",
       "gpu/ca_transaction_gpu_coordinator.cc",
       "gpu/ca_transaction_gpu_coordinator.h",
+      "media/desktop_media_window_registry_mac.mm",
+      "memory/swap_metrics_driver_impl_mac.cc",
+      "memory/swap_metrics_driver_impl_mac.h",
+      "native_io/native_io_file_host_mac.cc",
+      "renderer_host/browser_compositor_view_mac.h",
+      "renderer_host/browser_compositor_view_mac.mm",
+      "renderer_host/clipboard_host_impl_mac.mm",
+      "renderer_host/input/fling_scheduler_mac.h",
+      "renderer_host/input/fling_scheduler_mac.mm",
+      "renderer_host/input/mouse_wheel_rails_filter_mac.cc",
+      "renderer_host/input/mouse_wheel_rails_filter_mac.h",
+      "renderer_host/input/synthetic_gesture_target_mac.h",
+      "renderer_host/input/synthetic_gesture_target_mac.mm",
+      "renderer_host/input/web_input_event_builders_mac.h",
+      "renderer_host/input/web_input_event_builders_mac.mm",
+      "renderer_host/native_web_keyboard_event_mac.mm",
+      "renderer_host/popup_menu_helper_mac.h",
+      "renderer_host/popup_menu_helper_mac.mm",
+      "renderer_host/render_widget_host_view_mac.h",
+      "renderer_host/render_widget_host_view_mac.mm",
+      "renderer_host/render_widget_host_view_mac_editcommand_helper.h",
+      "renderer_host/render_widget_host_view_mac_editcommand_helper.mm",
+      "renderer_host/text_input_client_mac.h",
+      "renderer_host/text_input_client_mac.mm",
+      "renderer_host/text_input_host_impl.h",
+      "renderer_host/text_input_host_impl.mm",
+      "renderer_host/webmenurunner_mac.h",
+      "renderer_host/webmenurunner_mac.mm",
+      "sandbox_parameters_mac.h",
+      "sandbox_parameters_mac.mm",
       "sandbox_support_mac_impl.h",
       "sandbox_support_mac_impl.mm",
+      "scheduler/responsiveness/native_event_observer_mac.mm",
+      "screenlock_monitor/screenlock_monitor_device_source_mac.mm",
+      "speech/tts_mac.h",
+      "speech/tts_mac.mm",
+      "theme_helper_mac.h",
+      "theme_helper_mac.mm",
+      "web_contents/web_contents_impl_mac.mm",
+      "web_contents/web_contents_view_mac.h",
+      "web_contents/web_contents_view_mac.mm",
+      "web_contents/web_drag_dest_mac.h",
+      "web_contents/web_drag_dest_mac.mm",
     ]
     deps += [
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//components/remote_cocoa/common:mojo",
+      "//media",
+      "//third_party/mozilla",
+      "//ui/accelerated_widget_mac",
       "//ui/events:dom_keyboard_layout",
     ]
-  }
-
-  if (!is_mac) {
+    frameworks += [
+      "AppKit.framework",
+      "Carbon.framework",
+      "CoreGraphics.framework",
+      "QuartzCore.framework",
+      "IOSurface.framework",
+    ]
+  } else {
+    # Not Mac.
     deps += [ "//sandbox" ]
   }
+
   if (!is_android) {
     deps += [
       "//components/vector_icons",
@@ -3110,36 +3130,6 @@ source_set("browser") {
     ]
   }
 
-  if (is_mac) {
-    deps += [
-      "//media",
-      "//third_party/mozilla",
-      "//ui/accelerated_widget_mac",
-    ]
-    frameworks += [
-      "Carbon.framework",
-      "CoreGraphics.framework",
-      "QuartzCore.framework",
-      "IOSurface.framework",
-    ]
-    sources += [
-      "../app_shim_remote_cocoa/ns_view_bridge_factory_impl.mm",
-      "../app_shim_remote_cocoa/popup_window_mac.h",
-      "../app_shim_remote_cocoa/popup_window_mac.mm",
-      "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.h",
-      "../app_shim_remote_cocoa/render_widget_host_ns_view_bridge.mm",
-      "../app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h",
-      "../app_shim_remote_cocoa/render_widget_host_view_cocoa.h",
-      "../app_shim_remote_cocoa/render_widget_host_view_cocoa.mm",
-      "../app_shim_remote_cocoa/sharing_service_picker.h",
-      "../app_shim_remote_cocoa/sharing_service_picker.mm",
-      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h",
-      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.mm",
-      "../app_shim_remote_cocoa/web_contents_view_cocoa.h",
-      "../app_shim_remote_cocoa/web_contents_view_cocoa.mm",
-    ]
-  }
-
   if (use_aura) {
     deps += [
       "//ui/aura",
@@ -3186,12 +3176,6 @@ source_set("browser") {
       "renderer_host/delegated_frame_host.h",
     ]
     deps += [ "//ui/compositor" ]
-    if (is_mac) {
-      sources += [
-        "renderer_host/browser_compositor_view_mac.h",
-        "renderer_host/browser_compositor_view_mac.mm",
-      ]
-    }
   }
 
   if ((is_linux || is_chromeos) && use_dbus) {
