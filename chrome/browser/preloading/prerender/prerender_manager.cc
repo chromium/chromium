@@ -116,8 +116,7 @@ class PrerenderManager::SearchPrerenderTask {
  public:
   SearchPrerenderTask(
       const std::u16string& search_terms,
-      std::unique_ptr<content::PrerenderHandle> search_prerender_handle,
-      base::WeakPtr<content::PreloadingAttempt> preloading_attempt)
+      std::unique_ptr<content::PrerenderHandle> search_prerender_handle)
       : search_prerender_handle_(std::move(search_prerender_handle)),
         prerendered_search_terms_(search_terms) {
     expiry_timer_.Start(FROM_HERE, GetSearchPrerenderExpiryDuration(),
@@ -590,7 +589,7 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
     DCHECK(!search_prerender_task_)
         << "SearchPrerenderTask should be reset before setting a new one.";
     search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
-        search_terms, std::move(prerender_handle), attempt);
+        search_terms, std::move(prerender_handle));
   }
 }
 
