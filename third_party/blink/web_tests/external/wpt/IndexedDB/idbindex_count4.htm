@@ -23,7 +23,7 @@
     }
 
     open_rq.onsuccess = function(e) {
-        var index = db.transaction("store")
+        var index = db.transaction("store", "readonly", {durability: 'relaxed'})
                       .objectStore("store")
                       .index("index");
 

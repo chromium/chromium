@@ -30,7 +30,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var cursor_rq = db.transaction("test", "readwrite")
+        var cursor_rq = db.transaction("test", "readwrite", {durability: 'relaxed'})
                           .objectStore("test")
                           .openCursor();
 

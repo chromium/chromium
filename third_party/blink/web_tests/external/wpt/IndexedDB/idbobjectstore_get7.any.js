@@ -14,7 +14,7 @@ open_rq.onupgradeneeded = event => {
 }
 
 open_rq.onsuccess = () => {
-  const store = db.transaction("store")
+  const store = db.transaction("store", "readonly", {durability: 'relaxed'})
     .objectStore("store");
   assert_throws_dom("DataError", () => {
     store.get(null)

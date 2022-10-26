@@ -16,7 +16,7 @@ open_rq.onupgradeneeded = function(e) {
     db.createObjectStore('readonly');
 };
 open_rq.onsuccess = function(e) {
-    var txn = db.transaction('readonly');
+    var txn = db.transaction('readonly', 'readonly', {durability: 'relaxed'});
     assert_equals(txn.mode, "readonly", 'txn.mode');
 
     t.done();

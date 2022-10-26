@@ -19,7 +19,7 @@
         db.close();
 
         assert_throws_dom('InvalidStateError',
-            function() { db.transaction('test'); });
+            function() { db.transaction('test', 'readonly', {durability: 'relaxed'}); });
 
         t.done();
     };

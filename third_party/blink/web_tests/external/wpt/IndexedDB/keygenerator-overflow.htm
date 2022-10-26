@@ -45,7 +45,7 @@
 
     open_rq.onsuccess = function(e) {
         var actual_keys = [],
-          rq = db.transaction("store")
+          rq = db.transaction("store", "readonly", {durability: 'relaxed'})
                  .objectStore("store")
                  .openCursor();
 

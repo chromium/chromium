@@ -29,7 +29,7 @@
     }
 
     open_rq.onsuccess = function() {
-        var store = db.transaction("store").objectStore("store")
+        var store = db.transaction("store", "readonly", {durability: 'relaxed'}).objectStore("store")
 
         assert_equals(store.indexNames[0], "", "indexNames[0]")
         assert_equals(store.indexNames.length, 1, "indexNames.length")

@@ -57,7 +57,7 @@
 
 
     function CursorDeleteRecord(e) {
-        var txn = db.transaction("test", "readwrite"),
+        var txn = db.transaction("test", "readwrite", {durability: 'relaxed'}),
           object_store = txn.objectStore("test"),
           cursor_rq = object_store.openCursor();
 
@@ -91,7 +91,7 @@
 
 
     function VerifyRecordWasDeleted(e) {
-        var cursor_rq = db.transaction("test")
+        var cursor_rq = db.transaction("test", "readonly", {durability: 'relaxed'})
                           .objectStore("test")
                           .openCursor();
 

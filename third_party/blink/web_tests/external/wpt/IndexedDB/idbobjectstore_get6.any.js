@@ -14,7 +14,7 @@ open_rq.onupgradeneeded = event => {
 };
 
 open_rq.onsuccess = event => {
-  const store = db.transaction("store")
+  const store = db.transaction("store", "readonly", {durability: 'relaxed'})
     .objectStore("store");
   store.transaction.abort();
   assert_throws_dom("TransactionInactiveError", function () {

@@ -23,7 +23,7 @@
     }
 
     open_rq.onsuccess = function (event) {
-        var txn = db.transaction("store");
+        var txn = db.transaction("store", "readonly", {durability: 'relaxed'});
         var ostore = txn.objectStore("store");
         t.step(function(){
             assert_throws_dom("ReadOnlyError", function(){

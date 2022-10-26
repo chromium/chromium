@@ -29,7 +29,7 @@
     open_rq.onsuccess = function(e) {
         assert_true(success_event);
 
-        var rq = db.transaction("store")
+        var rq = db.transaction("store", "readonly", {durability: 'relaxed'})
                    .objectStore("store")
                    .get(1);
 

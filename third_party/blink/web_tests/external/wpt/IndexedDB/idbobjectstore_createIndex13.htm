@@ -18,7 +18,7 @@
     }
 
     open_rq.onsuccess = function (event) {
-        var txn = db.transaction("store", "readwrite");
+        var txn = db.transaction("store", "readwrite", {durability: 'relaxed'});
         var ostore = txn.objectStore("store");
         t.step(function(){
             assert_throws_dom("InvalidStateError", function(){

@@ -17,7 +17,7 @@
     }
 
     open_rq.onsuccess = function (e) {
-        var os = db.transaction("store", "readwrite")
+        var os = db.transaction("store", "readwrite", {durability: 'relaxed'})
                    .objectStore("store")
 
         os.delete( IDBKeyRange.bound(3, 6) )

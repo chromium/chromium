@@ -18,7 +18,7 @@ open_rq.onupgradeneeded = event => {
 };
 
 open_rq.onsuccess = event => {
-  const rq = db.transaction("store")
+  const rq = db.transaction("store", "readonly", {durability: 'relaxed'})
     .objectStore("store")
     .get(IDBKeyRange.bound(3, 6));
 

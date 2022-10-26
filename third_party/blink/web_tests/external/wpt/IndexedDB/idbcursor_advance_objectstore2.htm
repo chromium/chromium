@@ -23,7 +23,7 @@
     }
 
     open_rq.onsuccess = function (event) {
-        var txn = db.transaction("store", "readwrite");
+        var txn = db.transaction("store", "readwrite", {durability: 'relaxed'});
         var rq = txn.objectStore("store").openCursor();
         rq.onsuccess = t.step_func(function(event) {
             var cursor = event.target.result;

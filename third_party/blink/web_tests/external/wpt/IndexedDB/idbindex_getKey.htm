@@ -21,7 +21,7 @@
     };
 
     open_rq.onsuccess = function(e) {
-        var rq = db.transaction("test")
+        var rq = db.transaction("test", "readonly", {durability: 'relaxed'})
                    .objectStore("test");
 
         rq = rq.index("index");
