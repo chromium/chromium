@@ -97,12 +97,6 @@ const base::FeatureParam<bool> kUseSidePanelForScreenshotSharing{
 const base::FeatureParam<bool> kEnablePersistentBubble{
     &kLensSearchImageInScreenshotSharing, "enable-persistent-bubble", false};
 
-// Default is set to true but it is only enabled if kLensSearchOptimizations is
-// enabled. This setup allows us to have fullscreen search as a toggleable
-// experience in chrome://flags
-const base::FeatureParam<bool> kEnableLensFullscreenSearch{
-    &kLensSearchOptimizations, "enable-lens-fullscreen-search", true};
-
 const base::FeatureParam<bool> kUseSelectionIconWithImage{
     &kLensInstructionChipImprovements, "use-selection-icon-with-image", false};
 
@@ -176,8 +170,7 @@ bool UseGoogleAsVisualSearchProvider() {
 
 bool IsLensFullscreenSearchEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kEnableLensFullscreenSearch.Get();
+         base::FeatureList::IsEnabled(kLensSearchOptimizations);
 }
 
 bool IsLensSidePanelEnabled() {

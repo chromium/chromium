@@ -688,10 +688,6 @@ extern const char kEnableIphDescription[];
 extern const char kEnableIsolatedWebAppsName[];
 extern const char kEnableIsolatedWebAppsDescription[];
 
-extern const char kEnableLensFullscreenSearchFlagId[];
-extern const char kEnableLensFullscreenSearchName[];
-extern const char kEnableLensFullscreenSearchDescription[];
-
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];

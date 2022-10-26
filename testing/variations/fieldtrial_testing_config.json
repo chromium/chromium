@@ -4798,7 +4798,6 @@
                 {
                     "name": "EnableSearchPageString_20220901",
                     "params": {
-                        "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "false",
                         "use-menu-item-alt-text-1": "true"
                     },
@@ -4809,7 +4808,6 @@
                 {
                     "name": "EnableNoLensAttributionAndSearchInsideImageString_20220901",
                     "params": {
-                        "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true",
                         "use-menu-item-alt-text-3": "true"
                     },
@@ -4820,7 +4818,6 @@
                 {
                     "name": "EnableSearchAnyPartOfThePageString_20220901",
                     "params": {
-                        "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "false",
                         "use-menu-item-alt-text-2": "true"
                     },
@@ -4831,7 +4828,6 @@
                 {
                     "name": "EnableNoLensAttribution_20220901",
                     "params": {
-                        "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true"
                     },
                     "enable_features": [
@@ -4841,7 +4837,6 @@
                 {
                     "name": "EnableNoLensAttributionAndSearchPageString_20220901",
                     "params": {
-                        "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true",
                         "use-menu-item-alt-text-1": "true"
                     },
@@ -4852,7 +4847,6 @@
                 {
                     "name": "EnableNoLensAttributionAndSearchAnyPartOfThePageString_20220901",
                     "params": {
-                        "enable-lens-fullscreen-search": "false",
                         "use-google-as-visual-search-provider": "true",
                         "use-menu-item-alt-text-2": "true"
                     },
