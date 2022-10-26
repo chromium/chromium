@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
@@ -1832,6 +1833,106 @@ TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The input types don't match.");
+  }
+}
+
+TEST_F(MLGraphBuilderTest, ReshapeTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test building reshape with new shape = {3, -1}.
+    auto* input = BuildInput(scope, builder, "input", {2, 3, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->reshape(input, {3, -1}, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({3, 8}));
+    auto* reshape = output->Operator();
+    EXPECT_NE(reshape, nullptr);
+    EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
+    EXPECT_EQ(reshape->IsConnected(), true);
+  }
+  {
+    // Test building reshape with new shape = {-1}, src shape = {2, 3, 4}.
+    auto* input = BuildInput(scope, builder, "input", {2, 3, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->reshape(input, {-1}, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({24}));
+    auto* reshape = output->Operator();
+    EXPECT_NE(reshape, nullptr);
+    EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
+    EXPECT_EQ(reshape->IsConnected(), true);
+  }
+  {
+    // Test building reshape with new shape = {-1}, src shape = {1}.
+    auto* input = BuildInput(scope, builder, "input", {1},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->reshape(input, {-1}, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1}));
+    auto* reshape = output->Operator();
+    EXPECT_NE(reshape, nullptr);
+    EXPECT_EQ(reshape->Kind(), MLOperator::OperatorKind::kReshape);
+    EXPECT_EQ(reshape->IsConnected(), true);
+  }
+  {
+    // Test throwing error when one value of new shape is 0.
+    auto* input = BuildInput(scope, builder, "input", {2, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output =
+        builder->reshape(input, {2, -1, 0}, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The value of new shape should be positive or -1.");
+  }
+  {
+    // Setting new shape = {}.
+    // Test throwing error since the number of elements implied by new shape is
+    // not equal to the number of elements in the input tensor.
+    auto* input = BuildInput(scope, builder, "input", {2, 3, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->reshape(input, {}, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The number of elements (1) implied by new shape doesn't match "
+              "the number of elements (24) in the input tensor.");
+  }
+  {
+    // Test throwing error when more than one components of new_shape are -1.
+    auto* input = BuildInput(scope, builder, "input", {2, 3, 1},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output =
+        builder->reshape(input, {6, -1, -1}, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Only one component of new shape can be -1.");
+  }
+  {
+    // Test throwing error since the number of elements (9) of the input tensor
+    // can't be divided evenly by the number of elements (2) implied by the new
+    // shape.
+    auto* input = BuildInput(scope, builder, "input", {3, 3},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->reshape(input, {2, -1}, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The number of elements (9) in the input tensor can't be "
+              "divided evenly by the number of elements (2) implied by new "
+              "shape.");
   }
 }
 
