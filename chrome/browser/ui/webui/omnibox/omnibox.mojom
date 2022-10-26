@@ -17,8 +17,7 @@ struct AutocompleteAdditionalInfo {
 };
 
 struct AutocompleteMatch {
-  string? provider_name;
-  // Only meaningful if |provider_name| is valid.
+  string provider_name;
   bool provider_done;
   int32 relevance;
   bool deletable;
@@ -39,7 +38,7 @@ struct AutocompleteMatch {
   bool is_search_type;
   string aqs_type_subtypes;
   bool has_tab_match;
-  string? associated_keyword;
+  string associated_keyword;
   string keyword;
   bool starred;
   int32 duplicates;

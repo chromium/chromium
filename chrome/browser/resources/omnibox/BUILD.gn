@@ -11,7 +11,7 @@ ts_files = [
   "omnibox_element.ts",
   "omnibox_input.ts",
   "omnibox.ts",
-  "omnibox_output.js",
+  "omnibox_output.ts",
 ]
 
 copy("copy_mojo") {
@@ -37,6 +37,7 @@ ts_library("build_ts") {
   ]
 }
 
+# TODO(crbug.com/1340376) migrate to `build_webui`.
 generate_grd("build_grd") {
   grd_prefix = "omnibox"
   out_grd = "$target_gen_dir/resources.grd"
