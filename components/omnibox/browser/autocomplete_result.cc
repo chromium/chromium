@@ -1259,6 +1259,12 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
       [](const auto& m) {
         if (AutocompleteMatch::IsStarterPackType(m.type))
           return 0;
+        // Group history cluster suggestions with searches. If the
+        // `omnibox_history_cluster_provider_free_ranking` feature is disabled,
+        // they'll be pushed back to last position, and grouping here will have
+        // no effect.
+        if (m.type == AutocompleteMatchType::HISTORY_CLUSTER)
+          return 0;
         if (AutocompleteMatch::IsSearchType(m.type))
           return 1;
         return 2;

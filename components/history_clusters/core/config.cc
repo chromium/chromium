@@ -187,6 +187,12 @@ Config::Config() {
             internal::kOmniboxHistoryClusterProvider,
             "omnibox_history_cluster_provider_on_navigation_intents",
             omnibox_history_cluster_provider_on_navigation_intents);
+
+    omnibox_history_cluster_provider_free_ranking =
+        base::GetFieldTrialParamByFeatureAsBool(
+            internal::kOmniboxHistoryClusterProvider,
+            "omnibox_history_cluster_provider_free_ranking",
+            omnibox_history_cluster_provider_free_ranking);
   }
 
   // The `kOnDeviceClusteringKeywordFiltering` feature and child params.

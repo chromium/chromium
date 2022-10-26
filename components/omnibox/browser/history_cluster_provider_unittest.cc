@@ -25,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 AutocompleteMatch CreateMatch(std::u16string contents,
                               bool is_search = true,
@@ -425,16 +426,10 @@ TEST_F(HistoryClustersProviderTest, Counterfactual_Disabled) {
   VerifyFeatureTriggered(true);
 }
 
-class HistoryClustersProviderCounterfactualTest
-    : public HistoryClustersProviderTest {
- public:
-  void SetUp() override {
-    config_.omnibox_history_cluster_provider_counterfactual = true;
-    HistoryClustersProviderTest::SetUp();
-  }
-};
+TEST_F(HistoryClustersProviderTest, Counterfactual_Enabled) {
+  config_.omnibox_history_cluster_provider_counterfactual = true;
+  history_clusters::SetConfigForTesting(config_);
 
-TEST_F(HistoryClustersProviderCounterfactualTest, Counterfactual_Enabled) {
   AutocompleteInput input;
   input.set_omit_asynchronous_matches(false);
 
@@ -450,4 +445,24 @@ TEST_F(HistoryClustersProviderCounterfactualTest, Counterfactual_Enabled) {
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
   VerifyFeatureTriggered(true);
+}
+
+TEST_F(HistoryClustersProviderTest, Grouping) {
+  // By default, should have groups.
+  AutocompleteInput input;
+  input.set_omit_asynchronous_matches(false);
+  search_provider_->matches_ = {CreateMatch(u"keyword")};
+  search_provider_->done_ = true;
+  provider_->Start(input, false);
+  ASSERT_EQ(provider_->matches().size(), 1u);
+  EXPECT_EQ(provider_->matches()[0].suggestion_group_id,
+            omnibox::GROUP_HISTORY_CLUSTER);
+
+  // When `omnibox_history_cluster_provider_free_ranking` is enabled, should not
+  // have groups.
+  config_.omnibox_history_cluster_provider_free_ranking = true;
+  history_clusters::SetConfigForTesting(config_);
+  provider_->Start(input, false);
+  ASSERT_EQ(provider_->matches().size(), 1u);
+  EXPECT_EQ(provider_->matches()[0].suggestion_group_id, absl::nullopt);
 }

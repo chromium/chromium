@@ -198,6 +198,10 @@ struct Config {
   // `omnibox_history_cluster_provider` is disabled.
   bool omnibox_history_cluster_provider_on_navigation_intents = false;
 
+  // If enabled, allows the suggestion row to be ranked in any position;
+  // otherwise, always ranked last.
+  bool omnibox_history_cluster_provider_free_ranking = false;
+
   // The `kOnDeviceClusteringKeywordFiltering` feature and child params.
 
   // If enabled, adds the keywords of aliases for detected entity names to a
