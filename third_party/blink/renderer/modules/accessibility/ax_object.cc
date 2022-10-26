@@ -3943,10 +3943,6 @@ String AXObject::AriaTextAlternative(
   bool already_visited = visited.Contains(this);
   visited.insert(this);
 
-  // Slots are elements that cannot be named.
-  if (IsA<HTMLSlotElement>(GetNode()))
-    return String();
-
   // Step 2A from: http://www.w3.org/TR/accname-aam-1.1
   // If you change this logic, update AXNodeObject::nameFromLabelElement, too.
   if (IsHiddenForTextAlternativeCalculation(aria_label_or_description_root)) {

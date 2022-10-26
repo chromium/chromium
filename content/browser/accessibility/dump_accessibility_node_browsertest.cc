@@ -127,16 +127,6 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
     base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
     RunTest(accname_file, "accessibility/accname");
   }
-  void RunAccDescTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "accdescription");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(accname_file, "accessibility/accdescription");
-  }
 };
 
 class DumpAccessibilityAccNameTestExceptUIA
@@ -318,14 +308,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLUnderOver) {
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityMathMLNodeTest, MathMLUnknown) {
   RunMathMLTest(FILE_PATH_LITERAL("unknown.html"));
-}
-
-//
-// AccDescription tests.
-//
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, DescriptionIgnoresSlot) {
-  RunAccDescTest(FILE_PATH_LITERAL("description-ignores-slot.html"));
 }
 
 //
@@ -674,10 +656,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameHeadingComboboxFocusableAlternative) {
   RunAccNameTest(
       FILE_PATH_LITERAL("name-heading-combobox-focusable-alternative.html"));
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameIgnoresSlot) {
-  RunAccNameTest(FILE_PATH_LITERAL("name-ignores-slot.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameImageCssAfterInLabel) {
