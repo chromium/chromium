@@ -68,13 +68,6 @@ public class InstalledWebappBridge {
     }
 
     @CalledByNative
-    @ContentSettingValues
-    private static int getPermission(@ContentSettingsType int type, String origin) {
-        return InstalledWebappPermissionManager.get().getPermission(
-                type, Origin.create(Uri.parse(origin)));
-    }
-
-    @CalledByNative
     private static String getOriginFromPermission(Permission permission) {
         return permission.origin.toString();
     }

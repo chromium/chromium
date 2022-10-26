@@ -221,8 +221,9 @@ public class InstalledWebappPermissionManager {
         }
     }
 
+    @VisibleForTesting
     @ContentSettingValues
-    public int getPermission(@ContentSettingsType int type, Origin origin) {
+    int getPermission(@ContentSettingsType int type, Origin origin) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS: {
                 @ContentSettingValues

@@ -11,7 +11,6 @@
 #include "base/android/jni_utils.h"
 #include "chrome/android/chrome_jni_headers/InstalledWebappBridge_jni.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ScopedJavaLocalRef;
@@ -81,19 +80,4 @@ void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
   Java_InstalledWebappBridge_decidePermission(
       env, static_cast<int>(type), j_origin_url, j_last_committed_url,
       reinterpret_cast<jlong>(callback_ptr));
-}
-
-ContentSetting InstalledWebappBridge::GetPermission(ContentSettingsType type,
-                                                    const GURL& url) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  ScopedJavaLocalRef<jstring> java_origin =
-      base::android::ConvertUTF8ToJavaString(
-          env, url::Origin::Create(url).Serialize());
-
-  ContentSetting setting =
-      IntToContentSetting(Java_InstalledWebappBridge_getPermission(
-          env, static_cast<int>(type), java_origin));
-
-  return setting;
 }
