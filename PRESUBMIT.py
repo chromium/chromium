@@ -212,6 +212,24 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
       ),
       False,
     ),
+    BanRule(
+      r'/(?<!\bsuper\.)(?<!\bIntent )registerReceiver\(',
+      (
+       'Do not call android.content.Context.registerReceiver (or an override) '
+       'directly. Use one of the wrapper methods defined in '
+       'org.chromium.base.ContextUtils, such as '
+       'registerProtectedBroadcastReceiver, '
+       'registerExportedBroadcastReceiver, or '
+       'registerNonExportedBroadcastReceiver. See their documentation for '
+       'which one to use.',
+      ),
+      True,
+      excluded_paths=(
+          r'Test[^a-z]',
+          r'^third_party/',
+          'base/android/java/src/org/chromium/base/ContextUtils.java',
+      ),
+    ),
 )
 
 _BANNED_OBJC_FUNCTIONS : Sequence[BanRule] = (
