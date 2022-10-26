@@ -40,7 +40,34 @@ base::TimeDelta GetMaxBackgroundTimeout() {
           kDefaultPendingBeaconMaxBackgroundTimeout.InMilliseconds())));
 }
 
+bool ShouldBlockURL(const KURL& url, ExceptionState* exception_state) {
+  if (!url.IsValid()) {
+    if (exception_state) {
+      exception_state->ThrowTypeError(
+          "The URL argument is ill-formed or unsupported.");
+    }
+    return true;
+  }
+
+  if (!url.Protocol().empty() && !url.ProtocolIs(WTF::g_https_atom)) {
+    if (exception_state) {
+      exception_state->ThrowTypeError(
+          "PendingBeacons are only supported over HTTPS.");
+    }
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace
+
+// static
+bool PendingBeacon::CanSendBeacon(const String& url,
+                                  const ExecutionContext& ec,
+                                  ExceptionState& exception_state) {
+  return !ShouldBlockURL(ec.CompleteURL(url), &exception_state);
+}
 
 PendingBeacon::PendingBeacon(ExecutionContext* ec,
                              const String& url,
@@ -54,6 +81,11 @@ PendingBeacon::PendingBeacon(ExecutionContext* ec,
       method_(method),
       background_timeout_(base::Milliseconds(background_timeout)),
       timeout_timer_(GetTaskRunner(), this, &PendingBeacon::TimeoutTimerFired) {
+  KURL host_url = ec_->CompleteURL(url);
+  // The caller, i.e. JavaScript factory method `Create()`, must ensure `url`
+  // is valid.
+  CHECK(!ShouldBlockURL(host_url, nullptr));
+
   // Creates a corresponding instance of PendingBeacon in the browser process
   // and binds `remote_` to it.
   mojom::blink::BeaconMethod host_method;
@@ -65,7 +97,6 @@ PendingBeacon::PendingBeacon(ExecutionContext* ec,
 
   mojo::PendingReceiver<mojom::blink::PendingBeacon> beacon_receiver =
       remote_.BindNewPipeAndPassReceiver(GetTaskRunner());
-  KURL host_url = ec_->CompleteURL(url);
 
   PendingBeaconDispatcher& dispatcher =
       PendingBeaconDispatcher::FromOrAttachTo(*ec_);
@@ -121,9 +152,14 @@ void PendingBeacon::setTimeout(int32_t timeout) {
   timeout_timer_.StartOneShot(timeout_, FROM_HERE);
 }
 
-void PendingBeacon::SetURLInternal(const String& url) {
-  url_ = url;
+void PendingBeacon::SetURLInternal(const String& url,
+                                   ExceptionState& exception_state) {
   KURL host_url = ec_->CompleteURL(url);
+  if (ShouldBlockURL(host_url, &exception_state)) {
+    return;
+  }
+
+  url_ = url;
   remote_->SetRequestURL(host_url);
 }
 

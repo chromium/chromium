@@ -253,7 +253,7 @@ class CORE_EXPORT PendingBeaconDispatcher
                            DispatchDuplicatedBeacons);
   FRIEND_TEST_ALL_PREFIXES(PendingBeaconDispatcherOnPagehideTest,
                            OnPagehideUpdateAndUnregisterAllBeacons);
-  FRIEND_TEST_ALL_PREFIXES(PendingBeaconCreateTest, Create);
+  FRIEND_TEST_ALL_PREFIXES(PendingBeaconCreateTest, CreateFromSecureContext);
   FRIEND_TEST_ALL_PREFIXES(PendingBeaconSendTest, Send);
   FRIEND_TEST_ALL_PREFIXES(PendingBeaconSendTest, SendNow);
   FRIEND_TEST_ALL_PREFIXES(PendingBeaconSendTest,

@@ -18,15 +18,21 @@ namespace blink {
 
 // static
 PendingPostBeacon* PendingPostBeacon::Create(ExecutionContext* ec,
-                                             const String& target_url) {
+                                             const String& target_url,
+                                             ExceptionState& exception_state) {
   auto* options = PendingBeaconOptions::Create();
-  return PendingPostBeacon::Create(ec, target_url, options);
+  return PendingPostBeacon::Create(ec, target_url, options, exception_state);
 }
 
 // static
 PendingPostBeacon* PendingPostBeacon::Create(ExecutionContext* ec,
                                              const String& target_url,
-                                             PendingBeaconOptions* options) {
+                                             PendingBeaconOptions* options,
+                                             ExceptionState& exception_state) {
+  if (!CanSendBeacon(target_url, *ec, exception_state)) {
+    return nullptr;
+  }
+
   return MakeGarbageCollected<PendingPostBeacon>(
       ec, target_url, options->backgroundTimeout(), options->timeout(),
       base::PassKey<PendingPostBeacon>());

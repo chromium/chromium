@@ -22,11 +22,13 @@ class CORE_EXPORT PendingPostBeacon : public PendingBeacon {
 
  public:
   static PendingPostBeacon* Create(ExecutionContext* context,
-                                   const String& target_url);
+                                   const String& target_url,
+                                   ExceptionState& exception_state);
 
   static PendingPostBeacon* Create(ExecutionContext* context,
                                    const String& target_url,
-                                   PendingBeaconOptions* options);
+                                   PendingBeaconOptions* options,
+                                   ExceptionState& exception_state);
 
   explicit PendingPostBeacon(ExecutionContext* context,
                              const String& url,

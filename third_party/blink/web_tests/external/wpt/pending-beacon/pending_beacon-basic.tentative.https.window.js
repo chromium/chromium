@@ -9,7 +9,18 @@ test(() => {
 for (const beaconType of BeaconTypes) {
   test(() => {
     assert_throws_js(TypeError, () => new beaconType.type());
-  }, `${beaconType.name}: constructor throws TypeError if url is missing`);
+  }, `${beaconType.name}: constructor throws TypeError if URL is missing.`);
+
+  test(() => {
+    assert_throws_js(
+        TypeError, () => new beaconType.type('http://www.google.com'));
+    assert_throws_js(TypeError, () => new beaconType.type('file://tmp'));
+    assert_throws_js(TypeError, () => new beaconType.type('ssh://example.com'));
+    assert_throws_js(TypeError, () => new beaconType.type('wss://example.com'));
+    assert_throws_js(TypeError, () => new beaconType.type('about:blank'));
+    assert_throws_js(
+        TypeError, () => new beaconType.type(`javascript:alert('');`));
+  }, `${beaconType.name}: constructor throws TypeError on non-HTTPS URL.`);
 
   test(() => {
     const beacon = new beaconType.type('/');
@@ -53,3 +64,14 @@ for (const beaconType of BeaconTypes) {
       `${beaconType.name}: throws TypeError when mutating ` +
           `'url', 'method', 'pending'.`);
 }
+
+test(() => {
+  let beacon = new PendingGetBeacon('/');
+
+  assert_throws_js(TypeError, () => beacon.setURL('http://www.google.com'));
+  assert_throws_js(TypeError, () => beacon.setURL('file://tmp'));
+  assert_throws_js(TypeError, () => beacon.setURL('ssh://example.com'));
+  assert_throws_js(TypeError, () => beacon.setURL('wss://example.com'));
+  assert_throws_js(TypeError, () => beacon.setURL('about:blank'));
+  assert_throws_js(TypeError, () => beacon.setURL(`javascript:alert('');`));
+}, `PendingGetBeacon: setURL() throws TypeError on non-HTTPS URL.`);

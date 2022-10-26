@@ -27,7 +27,7 @@ interface PendingBeaconHost {
   // Creates a new pending beacon object in the browser side.
   // The corresponding remote for `receiver` will be connected to a new browser
   // side `PendingBeacon` object.
-  // `url` is the target url for the beacon.
+  // `url` is the target url for the beacon. Must be valid with https protocol.
   // `method` is the method used to send the beacon.
   CreateBeacon(pending_receiver<blink.mojom.PendingBeacon> receiver,
                url.mojom.Url url,
@@ -60,6 +60,7 @@ interface PendingBeacon {
   // Sets request url for the pending beacon.
   // The spec only allows GET beacons to update its own URL. So the receiving
   // pending beacon's `BeaconMethod` must be kGet.
+  // `url` must be valid with https protocol.
   SetRequestURL(url.mojom.Url url);
 
   // Sends the pending beacon immediately.

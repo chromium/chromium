@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/url_constants.h"
 
 namespace content {
 namespace {
@@ -44,6 +45,16 @@ bool IsBackgroundSyncGranted(RenderFrameHost* host) {
              .status == blink::mojom::PermissionStatus::GRANTED;
 }
 
+// Tells if `url` can be used by PendingBeacon.
+// The renderer checks these criteria in pending_beacon.cc and should have
+// already returned an exception instead of making an IPC to the browser.
+// Double-check in the browser process and report a bad message since the
+// renderer is possibly compromised.
+bool ShouldBlockURL(const GURL& url) {
+  return !url.is_valid() || !url.has_scheme() ||
+         !url.SchemeIs(url::kHttpsScheme);
+}
+
 }  // namespace
 
 PendingBeaconHost::PendingBeaconHost(
@@ -56,6 +67,8 @@ PendingBeaconHost::PendingBeaconHost(
       service_(service) {
   DCHECK(shared_url_factory_);
   DCHECK(service_);
+  // TODO(crbug.com/1293679): Abort if created from a non-secure context.
+  // https://w3c.github.io/webappsec-secure-contexts/
 
   render_frame_host().GetProcess()->AddObserver(this);
 }
@@ -64,6 +77,11 @@ void PendingBeaconHost::CreateBeacon(
     mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver,
     const GURL& url,
     blink::mojom::BeaconMethod method) {
+  if (ShouldBlockURL(url)) {
+    mojo::ReportBadMessage("Unexpected url format from renderer");
+    return;
+  }
+
   auto beacon =
       std::make_unique<Beacon>(url, method, this, std::move(receiver));
   beacons_.emplace_back(std::move(beacon));
@@ -214,6 +232,11 @@ void Beacon::SetRequestURL(const GURL& url) {
     mojo::ReportBadMessage("Unexpected BeaconMethod from renderer");
     return;
   }
+  if (ShouldBlockURL(url)) {
+    mojo::ReportBadMessage("Unexpected url format from renderer");
+    return;
+  }
+
   url_ = url;
 }
 

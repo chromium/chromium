@@ -27,6 +27,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -60,12 +61,25 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
     // permissions.
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    // Using base::Unretained() as `embedded_test_server()` is owned by
-    // `content::BrowserTestBase` and should not be able to outlive.
-    embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+
+    // Initializes an HTTPS server, as the PendingBeacon API is only supported
+    // in secure context.
+    https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_test_server_->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_test_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    net::test_server::RegisterDefaultHandlers(https_test_server_.get());
+    // Using `base::Unretained()` as `https_test_server()` is owned by this
+    // class and and should not be able to outlive.
+    https_test_server_->RegisterDefaultHandler(base::BindRepeating(
         &PendingBeaconTimeoutBrowserTestBase::HandleBeaconRequest,
         base::Unretained(this)));
+
     ContentBrowserTest::SetUpOnMainThread();
+  }
+
+  net::EmbeddedTestServer* https_test_server() {
+    return https_test_server_.get();
   }
 
   // Runs JS `script` in page A, and then navigates to page B.
@@ -74,14 +88,14 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
 
     // Navigate to B.
     ASSERT_TRUE(
-        NavigateToURL(embedded_test_server()->GetURL("b.com", "/title1.html")));
+        NavigateToURL(https_test_server()->GetURL("b.test", "/title1.html")));
   }
 
   // Runs JS `script` in page A.
   void RunScriptInA(const std::string& script) {
     // Navigate to A.
     ASSERT_TRUE(
-        NavigateToURL(embedded_test_server()->GetURL("a.com", "/title1.html")));
+        NavigateToURL(https_test_server()->GetURL("a.test", "/title1.html")));
     // Execute `script` in A.
     ASSERT_TRUE(ExecJs(web_contents(), script));
   }
@@ -89,12 +103,12 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
   // Registers a request monitor to wait for `total_beacon` beacons received,
   // and then starts the test server.
   void RegisterBeaconRequestMonitor(const size_t total_beacon) {
-    // Using base::Unretained() as `embedded_test_server()` is owned by
+    // Using base::Unretained() as `https_test_server()` is owned by
     // `content::BrowserTestBase` and should not be able to outlive.
-    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+    https_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &PendingBeaconTimeoutBrowserTestBase::MonitorBeaconRequest,
         base::Unretained(this), total_beacon));
-    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(https_test_server()->Start());
   }
 
   // Waits for `kBeaconEndpoint` to be requested `total_beacon` times.
@@ -163,7 +177,7 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
 
  private:
   // Waits until `total_beacon` beacons received and stops `waiting_run_loop_`.
-  // Invoked on `embedded_test_server()`'s IO Thread, so it's required to use
+  // Invoked on `https_test_server()`'s IO Thread, so it's required to use
   // a lock to protect shared data `sent_beacon_count_` access.
   void MonitorBeaconRequest(const size_t total_beacon,
                             const net::test_server::HttpRequest& request) {
@@ -183,7 +197,7 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
     }
   }
 
-  // Invoked on `embedded_test_server()`'s IO Thread.
+  // Invoked on `https_test_server()`'s IO Thread.
   // PendingBeacon doesn't really look into its response, so this method just
   // returns OK status.
   std::unique_ptr<net::test_server::HttpResponse> HandleBeaconRequest(
@@ -201,6 +215,8 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
   }
 
   base::test::ScopedFeatureList feature_list_;
+
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_ = nullptr;
 
   base::Lock count_lock_;
   size_t sent_beacon_count_ GUARDED_BY(count_lock_) = 0;

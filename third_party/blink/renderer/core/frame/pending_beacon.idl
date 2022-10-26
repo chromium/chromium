@@ -15,6 +15,7 @@
 [
   RuntimeEnabled = PendingBeaconAPI,
   Exposed = Window,
+  SecureContext,
   ImmutablePrototype
 ] interface PendingBeacon {
   [Measure] readonly attribute USVString url;
@@ -30,20 +31,22 @@
 // Interface for the PendingGetBeacon API.
 [
   RuntimeEnabled = PendingBeaconAPI,
-  Exposed = Window
+  Exposed = Window,
+  SecureContext
 ] interface PendingGetBeacon : PendingBeacon {
-  [Measure, CallWith = ExecutionContext] constructor(
+  [Measure, RaisesException, CallWith = ExecutionContext] constructor(
       USVString url, optional PendingBeaconOptions options);
 
-  [Measure] void setURL(USVString url);
+  [Measure, RaisesException] void setURL(USVString url);
 };
 
 // Interface for the PendingPostBeacon API.
 [
   RuntimeEnabled = PendingBeaconAPI,
-  Exposed = Window
+  Exposed = Window,
+  SecureContext
 ] interface PendingPostBeacon : PendingBeacon {
-  [Measure, CallWith = ExecutionContext] constructor(
+  [Measure, RaisesException, CallWith = ExecutionContext] constructor(
       USVString url, optional PendingBeaconOptions options);
 
   [Measure, RaisesException] void setData(
