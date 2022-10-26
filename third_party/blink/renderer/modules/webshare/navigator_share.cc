@@ -236,7 +236,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
 #if !BUILDFLAG(IS_ANDROID)
   if (!clients_.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "A earlier share had not yet completed.");
+                                      "An earlier share has not yet completed.");
     return ScriptPromise();
   }
 #endif
