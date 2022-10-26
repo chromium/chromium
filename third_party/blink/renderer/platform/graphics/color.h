@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
 
+#include <tuple>
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -74,14 +75,14 @@ class PLATFORM_EXPORT Color {
     // the a-axis and b-axis values and are unbounded.
     kLab,
     // Serializes to oklab(). Parameter meanings are the same as for kLab.
-    kOKLab,
+    kOklab,
     // Serializes to lch(). The value of `param0_` is lightness and is
     // guaranteed to be non-negative. The value of `param1_` is chroma and is
     // also guaranteed to be non-negative. The value of `param2_` is hue, and
     // is unbounded.
-    kLCH,
+    kLch,
     // Serializes to oklch(). Parameter meanings are the same as for kLCH.
-    kOKLCH,
+    kOklch,
     // All these below are to be serialized to rgb() or rgba().
     // The values of `params0_`, `params1_`, and `params2_` are red, green, and
     // blue sRGB values, and are guaranteed to be present and in the [0, 1]
@@ -98,6 +99,17 @@ class PLATFORM_EXPORT Color {
     // interval.
     kHWB,
   };
+
+  static bool IsColorFunction(ColorSpace color_space) {
+    return color_space == ColorSpace::kSRGB ||
+           color_space == ColorSpace::kSRGBLinear ||
+           color_space == ColorSpace::kDisplayP3 ||
+           color_space == ColorSpace::kA98RGB ||
+           color_space == ColorSpace::kProPhotoRGB ||
+           color_space == ColorSpace::kRec2020 ||
+           color_space == ColorSpace::kXYZD50 ||
+           color_space == ColorSpace::kXYZD65;
+  }
 
   // The default constructor creates a transparent color.
   constexpr Color()
@@ -160,6 +172,8 @@ class PLATFORM_EXPORT Color {
   // none should be specified as absl::nullopt. The value for `L` and `chroma`
   // will be clamped to be non-negative. The value for `alpha` will be clamped
   // to the [0, 1] interval.
+  // TODO(1021287), fix the capitalization of these methods so it's coherent
+  // with the spec.
   static Color FromLCH(absl::optional<float> L,
                        absl::optional<float> chroma,
                        absl::optional<float> hue,
@@ -178,6 +192,8 @@ class PLATFORM_EXPORT Color {
     kLab,
     kOKLab,
     // Maximizing chroma
+    // TODO(1021287), fix the capitalization of these enums so it's coherent
+    // with the spec.
     kLCH,
     kOKLCH,
     // Legacy fallback
@@ -298,10 +314,13 @@ class PLATFORM_EXPORT Color {
   // and color-mix functions.
   static String ColorInterpolationSpaceToString(
       Color::ColorInterpolationSpace color_space,
-      Color::HueInterpolationMethod hue_interpolation_method);
+      Color::HueInterpolationMethod hue_interpolation_method =
+          Color::HueInterpolationMethod::kShorter);
 
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, Premultiply);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, Unpremultiply);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, toSkColor4fValidation);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, ExportAsXYZD50Floats);
 
  private:
   constexpr explicit Color(RGBA32 color)
@@ -327,8 +346,12 @@ class PLATFORM_EXPORT Color {
   }
   void GetHueMaxMin(double&, double&, double&) const;
 
+  std::tuple<float, float, float> ExportAsXYZD50Floats() const;
   void ConvertToColorInterpolationSpace(
       ColorInterpolationSpace interpolation_space);
+
+  // For testing purposes and for serializer.
+  static String ColorSpaceToString(Color::ColorSpace color_space);
 
   float PremultiplyColor();
   void UnpremultiplyColor();

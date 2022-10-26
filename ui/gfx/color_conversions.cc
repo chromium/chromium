@@ -427,6 +427,36 @@ std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
+  float max = std::max({r, g, b});
+  float min = std::min({r, g, b});
+  float hue = 0.0f, saturation = 0.0f, ligth = (max + min) / 2.0f;
+  float d = max - min;
+
+  if (d != 0.0f) {
+    saturation = (ligth == 0.0f || ligth == 1.0f)
+                     ? 0.0f
+                     : (max - ligth) / std::min(ligth, 1 - ligth);
+    if (max == r) {
+      hue = (g - b) / d + (g < b ? 6.0f : 0.0f);
+    } else if (max == g) {
+      hue = (b - r) / d + 2.0f;
+    } else {  // if(max == b)
+      hue = (r - g) / d + 4.0f;
+    }
+  }
+
+  return std::make_tuple(hue, saturation, ligth);
+}
+
+std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
+  auto [hue, saturation, light] = SRGBToHSL(r, g, b);
+  float white = std::min({r, g, b});
+  float black = 1.0f - std::max({r, g, b});
+
+  return std::make_tuple(hue, white, black);
+}
+
 SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {
   auto [srgb_r, srgb_g, srgb_b] = ApplyInverseTransferFnsRGB(r, g, b);
   return SkColor4f{srgb_r, srgb_g, srgb_b, alpha};

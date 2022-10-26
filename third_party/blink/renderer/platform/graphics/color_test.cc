@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace {
@@ -55,7 +56,6 @@ struct ColorTest {
   Color color;
   Color color_expected;
 };
-
 }  // namespace
 
 TEST(BlinkColor, ColorMixSameColorSpace) {
@@ -147,6 +147,158 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         << " and it was expecting " << expectedSkColor.fR << " "
         << expectedSkColor.fG << " " << expectedSkColor.fB << " "
         << expectedSkColor.fA;
+  }
+}
+
+TEST(BlinkColor, toSkColor4fValidation) {
+  struct ColorFunctionValues {
+    Color::ColorSpace color_space;
+    float param0;
+    float param1;
+    float param2;
+  };
+
+  ColorFunctionValues color_function_values[] = {
+      {Color::ColorSpace::kSRGB, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kSRGBLinear, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kDisplayP3, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kA98RGB, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kProPhotoRGB, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kRec2020, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kXYZD50, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kXYZD65, 1.0f, 0.7f, 0.2f},
+      {Color::ColorSpace::kLab, 87.82f, -79.3f, 80.99f},
+      {Color::ColorSpace::kOklab, 0.421f, 0.165f, -0.1f},
+      {Color::ColorSpace::kLch, 29.69f, 56.11f, 327.1f},
+      {Color::ColorSpace::kOklch, 0.628f, 0.225f, 0.126f},
+      {Color::ColorSpace::kRGBLegacy, 0.7f, 0.5f, 0.0f},
+      {Color::ColorSpace::kHSL, 4.0f, 0.5f, 0.0f},
+      {Color::ColorSpace::kHWB, 4.0f, 0.5f, 0.0f}};
+
+  Color::ColorInterpolationSpace color_interpolation_space[] = {
+      Color::ColorInterpolationSpace::kXYZD65,
+      Color::ColorInterpolationSpace::kXYZD50,
+      Color::ColorInterpolationSpace::kSRGBLinear,
+      Color::ColorInterpolationSpace::kLab,
+      Color::ColorInterpolationSpace::kOKLab,
+      Color::ColorInterpolationSpace::kLCH,
+      Color::ColorInterpolationSpace::kOKLCH,
+      Color::ColorInterpolationSpace::kSRGB,
+      Color::ColorInterpolationSpace::kHSL,
+      Color::ColorInterpolationSpace::kHWB,
+      Color::ColorInterpolationSpace::kNone};
+
+  for (auto& space : color_interpolation_space) {
+    for (auto& color_function_value : color_function_values) {
+      // To validate if the color conversions are done correctly, we will
+      // convert all input to SkColor4f and then convert the input to the
+      // ColorInterpolationSpace, and then that one to SkColor4f. Those two
+      // values should be the same, if the transformations are correct.
+      // ToSkColor4f is validate in color_conversions_test.cc.
+      Color input;
+      if (Color::IsColorFunction(color_function_value.color_space)) {
+        input = Color::FromColorFunction(
+            color_function_value.color_space, color_function_value.param0,
+            color_function_value.param1, color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space == Color::ColorSpace::kLab) {
+        input = Color::FromLab(color_function_value.param0,
+                               color_function_value.param1,
+                               color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space ==
+                 Color::ColorSpace::kOklab) {
+        input = Color::FromOKLab(color_function_value.param0,
+                                 color_function_value.param1,
+                                 color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space == Color::ColorSpace::kLch) {
+        input = Color::FromLCH(color_function_value.param0,
+                               color_function_value.param1,
+                               color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space ==
+                 Color::ColorSpace::kOklch) {
+        input = Color::FromOKLCH(color_function_value.param0,
+                                 color_function_value.param1,
+                                 color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space ==
+                 Color::ColorSpace::kRGBLegacy) {
+        input = Color::FromRGBAFloat(color_function_value.param0,
+                                     color_function_value.param1,
+                                     color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space == Color::ColorSpace::kHSL) {
+        input = Color::FromHSLA(color_function_value.param0,
+                                color_function_value.param1,
+                                color_function_value.param2, 1.0f);
+      } else if (color_function_value.color_space == Color::ColorSpace::kHWB) {
+        input = Color::FromHWBA(color_function_value.param0,
+                                color_function_value.param1,
+                                color_function_value.param2, 1.0f);
+      }
+
+      SkColor4f expected_output = input.toSkColor4f();
+      input.ConvertToColorInterpolationSpace(space);
+      SkColor4f output = input.toSkColor4f();
+
+      EXPECT_NEAR(expected_output.fR, output.fR, 0.01f)
+          << "Converting from "
+          << Color::ColorSpaceToString(color_function_value.color_space)
+          << " to " << Color::ColorInterpolationSpaceToString(space);
+      EXPECT_NEAR(expected_output.fG, output.fG, 0.01f)
+          << "Converting from "
+          << Color::ColorSpaceToString(color_function_value.color_space)
+          << " to " << Color::ColorInterpolationSpaceToString(space);
+      EXPECT_NEAR(expected_output.fB, output.fB, 0.01f)
+          << "Converting from "
+          << Color::ColorSpaceToString(color_function_value.color_space)
+          << " to " << Color::ColorInterpolationSpaceToString(space);
+    }
+  }
+}
+
+TEST(BlinkColor, ExportAsXYZD50Floats) {
+  Color::ColorInterpolationSpace color_spaces[] = {
+      Color::ColorInterpolationSpace::kXYZD65,
+      Color::ColorInterpolationSpace::kXYZD50,
+      Color::ColorInterpolationSpace::kSRGBLinear,
+      Color::ColorInterpolationSpace::kLab,
+      Color::ColorInterpolationSpace::kOKLab,
+      Color::ColorInterpolationSpace::kLCH,
+      Color::ColorInterpolationSpace::kOKLCH,
+      Color::ColorInterpolationSpace::kSRGB,
+      Color::ColorInterpolationSpace::kHSL,
+      Color::ColorInterpolationSpace::kHWB};
+
+  struct FloatValues {
+    float x;
+    float y;
+    float z;
+  };
+  FloatValues input_parameters[] = {
+      {0.5f, 0.0f, 1.0f},
+      {0.6f, 0.2f, 0.2f},
+      {0.0f, 0.0f, 0.0f},
+      {1.0f, 1.0f, 1.0f},
+  };
+
+  for (auto& input_parameter : input_parameters) {
+    Color expected =
+        Color::FromColorFunction(Color::ColorSpace::kXYZD50, input_parameter.x,
+                                 input_parameter.y, input_parameter.z, 1.0f);
+    for (auto& space : color_spaces) {
+      Color input = Color::FromColorFunction(
+          Color::ColorSpace::kXYZD50, input_parameter.x, input_parameter.y,
+          input_parameter.z, 1.0f);
+      input.ConvertToColorInterpolationSpace(space);
+      auto [x, y, z] = input.ExportAsXYZD50Floats();
+
+      EXPECT_NEAR(x, expected.param0_, 0.01f)
+          << "Converting through "
+          << Color::ColorInterpolationSpaceToString(space);
+      EXPECT_NEAR(y, expected.param1_, 0.01f)
+          << "Converting through "
+          << Color::ColorInterpolationSpaceToString(space);
+      EXPECT_NEAR(z, expected.param2_, 0.01f)
+          << "Converting through "
+          << Color::ColorInterpolationSpaceToString(space);
+    }
   }
 }
 

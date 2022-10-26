@@ -93,6 +93,10 @@ GFX_EXPORT std::tuple<float, float, float> SRGBToXYZD50(float r,
                                                         float g,
                                                         float b);
 
+GFX_EXPORT std::tuple<float, float, float> SRGBToHSL(float r, float g, float b);
+
+GFX_EXPORT std::tuple<float, float, float> SRGBToHWB(float r, float g, float b);
+
 GFX_EXPORT SkColor4f XYZD50ToSkColor4f(float x, float y, float z, float alpha);
 
 GFX_EXPORT SkColor4f XYZD65ToSkColor4f(float x, float y, float z, float alpha);
