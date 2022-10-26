@@ -2307,7 +2307,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputDate) {
 
 // TODO: date and time controls drop their children, including the popup button,
 // on Android
-#if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/1378498): Fix flakiness on Windows.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityInputDateWithPopupOpen \
   DISABLED_AccessibilityInputDateWithPopupOpen
 #else
