@@ -5361,23 +5361,25 @@ const CSSValue* OutlineStyle::CSSValueFromComputedStyleInternal(
 }
 
 void OutlineStyle::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetOutlineStyleIsAuto(
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetOutlineStyleIsAuto(
       ComputedStyleInitialValues::InitialOutlineStyleIsAuto());
-  state.Style()->SetOutlineStyle(EBorderStyle::kNone);
+  builder.SetOutlineStyle(EBorderStyle::kNone);
 }
 
 void OutlineStyle::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetOutlineStyleIsAuto(
-      state.ParentStyle()->OutlineStyleIsAuto());
-  state.Style()->SetOutlineStyle(state.ParentStyle()->OutlineStyle());
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetOutlineStyleIsAuto(state.ParentStyle()->OutlineStyleIsAuto());
+  builder.SetOutlineStyle(state.ParentStyle()->OutlineStyle());
 }
 
 void OutlineStyle::ApplyValue(StyleResolverState& state,
                               const CSSValue& value) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   const auto& identifier_value = To<CSSIdentifierValue>(value);
-  state.Style()->SetOutlineStyleIsAuto(
+  builder.SetOutlineStyleIsAuto(
       static_cast<bool>(identifier_value.ConvertTo<OutlineIsAuto>()));
-  state.Style()->SetOutlineStyle(identifier_value.ConvertTo<EBorderStyle>());
+  builder.SetOutlineStyle(identifier_value.ConvertTo<EBorderStyle>());
 }
 
 const CSSValue* OutlineWidth::ParseSingleValue(

@@ -3537,11 +3537,12 @@
       field_group: "*",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/platform/geometry/layout_unit.h"],
-      default_value: "LayoutUnit(0)",
+      default_value: "LayoutUnit()",
       type_name: "LayoutUnit",
       converter: "ConvertLayoutUnit",
       typedom_types: ["Length"],
       valid_for_cue: true,
+      readonly: true,
     },
     {
       name: "outline-style",
@@ -3557,6 +3558,7 @@
       type_name: "EBorderStyle",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_cue: true,
+      readonly: true,
     },
     {
       name: "outline-width",
@@ -3572,6 +3574,7 @@
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
       valid_for_cue: true,
+      readonly: true,
     },
     {
       name: "overflow-anchor",
@@ -7478,6 +7481,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_cue: true,
+      readonly: true,
     },
     {
       name: "-internal-forced-visited-color",

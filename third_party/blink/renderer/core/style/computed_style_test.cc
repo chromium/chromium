@@ -990,38 +990,45 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
-  scoped_refptr<const ComputedStyle> initial =
-      document.GetStyleResolver().InitialStyleForElement();
-
-  StyleResolverState state(document, *document.documentElement(),
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial.get()));
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetEffectiveZoom(2);
-  style->SetBorderLeftStyle(EBorderStyle::kSolid);
-  style->SetOutlineStyle(EBorderStyle::kSolid);
-  style->SetColumnRuleStyle(EBorderStyle::kSolid);
-  state.SetStyle(style);
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        border-top-style: solid;
+        column-rule-style: solid;
+        outline-style: solid;
+        border-top-width: var(--x);
+        column-rule-width: var(--x);
+        outline-width: var(--x);
+        zoom: 2;
+      }
+      #thin { --x: thin; }
+      #medium { --x: medium; }
+      #thick { --x: thick; }
+    </style>
+    <div id="thin"></div>
+    <div id="medium"></div>
+    <div id="thick"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
   const struct {
-    CSSIdentifierValue* css_value;
+    const ComputedStyle* style;
     double expected_px;
     STACK_ALLOCATED();
   } tests[] = {
-      {CSSIdentifierValue::Create(CSSValueID::kThin), 1.0},
-      {CSSIdentifierValue::Create(CSSValueID::kMedium), 3.0},
-      {CSSIdentifierValue::Create(CSSValueID::kThick), 5.0},
+      {document.getElementById("thin")->GetComputedStyle(), 1.0},
+      {document.getElementById("medium")->GetComputedStyle(), 3.0},
+      {document.getElementById("thick")->GetComputedStyle(), 5.0},
   };
 
   for (const auto& test : tests) {
     for (const auto* property :
-         {&GetCSSPropertyBorderLeftWidth(), &GetCSSPropertyOutlineWidth(),
+         {&GetCSSPropertyBorderTopWidth(), &GetCSSPropertyOutlineWidth(),
           &GetCSSPropertyColumnRuleWidth()}) {
       const Longhand& longhand = To<Longhand>(*property);
-      longhand.ApplyValue(state, *test.css_value);
       auto* computed_value = longhand.CSSValueFromComputedStyleInternal(
-          *style, nullptr /* layout_object */, false /* allow_visited_style */);
+          *test.style, nullptr /* layout_object */,
+          false /* allow_visited_style */);
       AtomicString prop_name = longhand.GetCSSPropertyName().ToAtomicString();
       ASSERT_TRUE(computed_value) << prop_name;
       auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
@@ -1035,87 +1042,76 @@ TEST_F(ComputedStyleTest, BorderWidthZoom) {
 TEST_F(ComputedStyleTest, BorderWidthConversion) {
   // Tests that Border, Outline and Column Rule Widths
   // are converted as expected.
-
   ScopedSnapBorderWidthsBeforeLayoutForTest
-      enableSnapBorderWidthsBeforeLayoutForTest(true);
-
-  const struct {
-    CSSValue* css_value;
-    double expected_px;
-    STACK_ALLOCATED();
-  } tests[] = {
-      {CSSIdentifierValue::Create(CSSValueID::kThin), 1.0},
-      {CSSIdentifierValue::Create(CSSValueID::kMedium), 3.0},
-      {CSSIdentifierValue::Create(CSSValueID::kThick), 5.0},
-      {CSSNumericLiteralValue::Create(0.0,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       0.0},
-      {CSSNumericLiteralValue::Create(0.1,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(0.5,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(0.9,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(1.0,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(3.0,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       3.0},
-      {CSSNumericLiteralValue::Create(3.3,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       3.0},
-      {CSSNumericLiteralValue::Create(3.5,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       3.0},
-      {CSSNumericLiteralValue::Create(3.9,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       3.0},
-      {CSSNumericLiteralValue::Create(3.999,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       3.0},
-  };
+      enable_snap_border_widths_before_layout_for_test(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
-  scoped_refptr<const ComputedStyle> initial =
-      document.GetStyleResolver().InitialStyleForElement();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        border-top-style: solid;
+        column-rule-style: solid;
+        outline-style: solid;
+        border-top-width: var(--x);
+        column-rule-width: var(--x);
+        outline-width: var(--x);
+      }
+      #t1 { --x: 0px; }
+      #t2 { --x: 0.1px; }
+      #t3 { --x: 0.5px; }
+      #t4 { --x: 0.9px; }
+      #t5 { --x: 1.0px; }
+      #t6 { --x: 3.0px; }
+      #t7 { --x: 3.3px; }
+      #t8 { --x: 3.5px; }
+      #t9 { --x: 3.9px; }
+      #t10 { --x: 3.999px; }
+    </style>
+    <div id="t1"></div>
+    <div id="t2"></div>
+    <div id="t3"></div>
+    <div id="t4"></div>
+    <div id="t5"></div>
+    <div id="t6"></div>
+    <div id="t7"></div>
+    <div id="t8"></div>
+    <div id="t9"></div>
+    <div id="t10"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(document, *document.documentElement(),
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial.get()));
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetBorderTopStyle(EBorderStyle::kSolid);
-  style->SetOutlineStyle(EBorderStyle::kSolid);
-  style->SetColumnRuleStyle(EBorderStyle::kSolid);
-  state.SetStyle(style);
+  const struct {
+    const ComputedStyle* style;
+    double expected_px;
+    STACK_ALLOCATED();
+  } tests[] = {
+      {document.getElementById("t1")->GetComputedStyle(), 0.0},
+      {document.getElementById("t2")->GetComputedStyle(), 1.0},
+      {document.getElementById("t3")->GetComputedStyle(), 1.0},
+      {document.getElementById("t4")->GetComputedStyle(), 1.0},
+      {document.getElementById("t5")->GetComputedStyle(), 1.0},
+      {document.getElementById("t6")->GetComputedStyle(), 3.0},
+      {document.getElementById("t7")->GetComputedStyle(), 3.0},
+      {document.getElementById("t8")->GetComputedStyle(), 3.0},
+      {document.getElementById("t9")->GetComputedStyle(), 3.0},
+      {document.getElementById("t10")->GetComputedStyle(), 3.0},
+  };
 
   for (const auto& test : tests) {
     for (const auto* property :
          {&GetCSSPropertyBorderTopWidth(), &GetCSSPropertyOutlineWidth(),
           &GetCSSPropertyColumnRuleWidth()}) {
       const Longhand& longhand = To<Longhand>(*property);
-
-      AtomicString prop_name = longhand.GetCSSPropertyName().ToAtomicString();
-
-      longhand.ApplyValue(state, *test.css_value);
-
       auto* computed_value = longhand.CSSValueFromComputedStyleInternal(
-          *style, nullptr /* layout_object */, false /* allow_visited_style */);
-
-      ASSERT_NE(computed_value, nullptr) << prop_name;
-
+          *test.style, nullptr /* layout_object */,
+          false /* allow_visited_style */);
+      ASSERT_NE(computed_value, nullptr);
       auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(computed_value);
-      ASSERT_NE(numeric_value, nullptr) << prop_name;
-
-      EXPECT_TRUE(numeric_value->IsPx()) << prop_name;
-      EXPECT_DOUBLE_EQ(test.expected_px, numeric_value->DoubleValue())
-          << prop_name;
+      ASSERT_NE(numeric_value, nullptr);
+      EXPECT_TRUE(numeric_value->IsPx());
+      EXPECT_DOUBLE_EQ(test.expected_px, numeric_value->DoubleValue());
     }
   }
 }
@@ -1123,74 +1119,71 @@ TEST_F(ComputedStyleTest, BorderWidthConversion) {
 TEST_F(ComputedStyleTest, BorderWidthConversionWithZoom) {
   // Tests that Border Widths
   // are converted as expected when Zoom is applied.
-
   ScopedSnapBorderWidthsBeforeLayoutForTest
-      enableSnapBorderWidthsBeforeLayoutForTest(true);
-
-  float zoom = 2.0f;
-
-  const struct {
-    CSSValue* css_value;
-    double expected_px;
-    STACK_ALLOCATED();
-  } tests[] = {
-      {CSSIdentifierValue::Create(CSSValueID::kThin), 2.0},
-      {CSSIdentifierValue::Create(CSSValueID::kMedium), 6.0},
-      {CSSIdentifierValue::Create(CSSValueID::kThick), 10.0},
-      {CSSNumericLiteralValue::Create(0.0,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       0.0},
-      {CSSNumericLiteralValue::Create(0.1,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(0.5,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(0.9,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       1.0},
-      {CSSNumericLiteralValue::Create(1.0,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       2.0},
-      {CSSNumericLiteralValue::Create(1.5,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       3.0},
-      {CSSNumericLiteralValue::Create(3.0,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       6.0},
-      {CSSNumericLiteralValue::Create(3.3,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       6.0},
-      {CSSNumericLiteralValue::Create(3.5,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       7.0},
-      {CSSNumericLiteralValue::Create(3.9,
-                                      CSSPrimitiveValue::UnitType::kPixels),
-       7.0},
-  };
+      enable_snap_border_widths_before_layout_for_test(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
-  scoped_refptr<const ComputedStyle> initial =
-      document.GetStyleResolver().InitialStyleForElement();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        border-top-style: solid;
+        border-top-width: var(--x);
+        zoom: 2;
+      }
+      #t1 { --x: thin; }
+      #t2 { --x: medium; }
+      #t3 { --x: thick; }
+      #t4 { --x: 0px; }
+      #t5 { --x: 0.1px; }
+      #t6 { --x: 0.5px; }
+      #t7 { --x: 0.9px; }
+      #t8 { --x: 1.0px; }
+      #t9 { --x: 1.5px; }
+      #t10 { --x: 3.0px; }
+      #t11 { --x: 3.3px; }
+      #t12 { --x: 3.5px; }
+      #t13 { --x: 3.9px; }
+    </style>
+    <div id="t1"></div>
+    <div id="t2"></div>
+    <div id="t3"></div>
+    <div id="t4"></div>
+    <div id="t5"></div>
+    <div id="t6"></div>
+    <div id="t7"></div>
+    <div id="t8"></div>
+    <div id="t9"></div>
+    <div id="t10"></div>
+    <div id="t11"></div>
+    <div id="t12"></div>
+    <div id="t13"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(document, *document.documentElement(),
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial.get()));
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetEffectiveZoom(zoom);
-  style->SetBorderTopStyle(EBorderStyle::kSolid);
-  state.SetStyle(style);
+  const struct {
+    const ComputedStyle* style;
+    double expected_px;
+    STACK_ALLOCATED();
+  } tests[] = {
+      {document.getElementById("t1")->GetComputedStyle(), 2.0},
+      {document.getElementById("t2")->GetComputedStyle(), 6.0},
+      {document.getElementById("t3")->GetComputedStyle(), 10.0},
+      {document.getElementById("t4")->GetComputedStyle(), 0.0},
+      {document.getElementById("t5")->GetComputedStyle(), 1.0},
+      {document.getElementById("t6")->GetComputedStyle(), 1.0},
+      {document.getElementById("t7")->GetComputedStyle(), 1.0},
+      {document.getElementById("t8")->GetComputedStyle(), 2.0},
+      {document.getElementById("t9")->GetComputedStyle(), 3.0},
+      {document.getElementById("t10")->GetComputedStyle(), 6.0},
+      {document.getElementById("t11")->GetComputedStyle(), 6.0},
+      {document.getElementById("t12")->GetComputedStyle(), 7.0},
+      {document.getElementById("t13")->GetComputedStyle(), 7.0},
+  };
 
   for (const auto& test : tests) {
-    const Longhand& longhand = To<Longhand>(GetCSSPropertyBorderTopWidth());
-
-    longhand.ApplyValue(state, *test.css_value);
-
-    auto width = style->BorderTopWidth();
-
+    auto width = test.style->BorderTopWidth();
     EXPECT_DOUBLE_EQ(test.expected_px, width.ToDouble());
   }
 }
