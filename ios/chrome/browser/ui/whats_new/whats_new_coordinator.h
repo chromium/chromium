@@ -9,6 +9,10 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_delegate.h"
 
 @interface WhatsNewCoordinator : ChromeCoordinator <WhatsNewTableViewDelegate>
+
+// Whether to show a promo bubble after dismissing What's New.
+@property(nonatomic, assign) BOOL shouldShowBubblePromoOnDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_COORDINATOR_H_

@@ -46,6 +46,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 @property(nonatomic, readonly) id<ApplicationCommands> applicationHandler;
 // The starting time of What's New.
 @property(nonatomic, assign) base::TimeTicks whatsNewStartTime;
+// Browser coordinator command handler.
+@property(nonatomic, readonly) id<BrowserCoordinatorCommands> handler;
 
 @end
 
@@ -95,6 +97,10 @@ NSString* const kTableViewNavigationDismissButtonId =
   base::RecordAction(base::UserMetricsAction("WhatsNew.Dismissed"));
   UmaHistogramMediumTimes("IOS.WhatsNew.TimeSpent",
                           base::TimeTicks::Now() - self.whatsNewStartTime);
+
+  if (self.shouldShowBubblePromoOnDismiss) {
+    [self.handler showWhatsNewIPH];
+  }
 
   [super stop];
 }
@@ -155,11 +161,15 @@ NSString* const kTableViewNavigationDismissButtonId =
 }
 
 - (void)dismiss {
+  [self.handler dismissWhatsNew];
+}
+
+- (id<BrowserCoordinatorCommands>)handler {
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   DCHECK(handler);
 
-  [handler dismissWhatsNew];
+  return handler;
 }
 
 @end

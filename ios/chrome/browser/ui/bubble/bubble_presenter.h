@@ -53,6 +53,9 @@ class ChromeBrowserState;
 // mode (Desktop/Mobile) of the websites.
 - (void)presentDefaultSiteViewTipBubble;
 
+// Presents a help bubble for What's New, if applicable.
+- (void)presentWhatsNewBottomToolbarBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_H_

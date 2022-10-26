@@ -1417,6 +1417,10 @@ enum class ToolbarKind {
   self.whatsNewCoordinator = nil;
 }
 
+- (void)showWhatsNewIPH {
+  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
+}
+
 #pragma mark - DefaultPromoCommands
 
 - (void)showTailoredPromoStaySafe {
@@ -1590,6 +1594,7 @@ enum class ToolbarKind {
 
 - (void)showWhatsNewPromo {
   [self showWhatsNew];
+  self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
 }
 
 #pragma mark - PageInfoCommands

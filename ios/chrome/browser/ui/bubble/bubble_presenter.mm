@@ -67,6 +67,8 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* followWhileBrowsingBubbleTipPresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* defaultPageModeTipBubblePresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* whatsNewBubblePresenter;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 
@@ -281,6 +283,33 @@ const CGFloat kBubblePresentationDelay = 1;
 
   self.defaultPageModeTipBubblePresenter = presenter;
   base::UmaHistogramBoolean("IOS.IPH.DefaultSite.Presented", true);
+}
+
+- (void)presentWhatsNewBottomToolbarBubble {
+  if (![self canPresentBubble])
+    return;
+
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+  NSString* text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT);
+  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
+                                           direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the tip, then end early to prevent the potential reassignment of the
+  // existing `whatsNewBubblePresenter` to nil.
+  BubbleViewControllerPresenter* presenter = [self
+      presentBubbleForFeature:feature_engagement::kIPHWhatsNewFeature
+                    direction:arrowDirection
+                    alignment:BubbleAlignmentTrailing
+                         text:text
+        voiceOverAnnouncement:l10n_util::GetNSString(IDS_IOS_WHATS_NEW_IPH_TEXT)
+                  anchorPoint:toolsMenuAnchor];
+  if (!presenter)
+    return;
+
+  self.whatsNewBubblePresenter = presenter;
 }
 
 #pragma mark - Private
