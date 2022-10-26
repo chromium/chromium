@@ -46,6 +46,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   ServiceWorkerPaymentAppFinderBrowserTest()
       : alicepay_(net::EmbeddedTestServer::TYPE_HTTPS),
         bobpay_(net::EmbeddedTestServer::TYPE_HTTPS),
+        charliepay_(net::EmbeddedTestServer::TYPE_HTTPS),
         frankpay_(net::EmbeddedTestServer::TYPE_HTTPS),
         georgepay_(net::EmbeddedTestServer::TYPE_HTTPS),
         kylepay_(net::EmbeddedTestServer::TYPE_HTTPS),
@@ -88,6 +89,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(StartTestServer("alicepay.com", &alicepay_));
     ASSERT_TRUE(StartTestServer("bobpay.com", &bobpay_));
+    ASSERT_TRUE(StartTestServer("charliepay.com", &charliepay_));
     ASSERT_TRUE(StartTestServer("frankpay.com", &frankpay_));
     ASSERT_TRUE(StartTestServer("georgepay.com", &georgepay_));
     ASSERT_TRUE(StartTestServer("kylepay.com", &kylepay_));
@@ -148,6 +150,8 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
                                  alicepay_.GetURL("alicepay.com", "/"));
     downloader->AddTestServerURL("https://bobpay.com/",
                                  bobpay_.GetURL("bobpay.com", "/"));
+    downloader->AddTestServerURL("https://charliepay.com/",
+                                 charliepay_.GetURL("charliepay.com", "/"));
     downloader->AddTestServerURL("https://frankpay.com/",
                                  frankpay_.GetURL("frankpay.com", "/"));
     downloader->AddTestServerURL("https://georgepay.com/",
@@ -306,6 +310,11 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // https://bobpay.com/webpay does not permit any other origin to use this
   // payment method.
   net::EmbeddedTestServer bobpay_;
+
+  // https://charliepay.com/webpay has a payment method manifest file that
+  // specifies multiple web app manifests (i.e., multiple payment handlers for
+  // the method).
+  net::EmbeddedTestServer charliepay_;
 
   // https://frankpay.com/webpay supports payment apps from any origin.
   net::EmbeddedTestServer frankpay_;
@@ -912,14 +921,36 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest,
   }
 }
 
-// A range from 0 (inclusive) to 5 (exclusive) will test CSP checker reset:
+// Variant of CSPCheckerResetDoesNotCrash, but with a payment method manifest
+// that has multiple web applications specified (i.e., |default_applications|
+// will have multiple entries).
+IN_PROC_BROWSER_TEST_P(ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest,
+                       CSPCheckerResetDoesNotCrashWithTwoWebAppManifests) {
+  // Repeat lookups should have identical results, regardless of manifest cache
+  // state. To ensure that the cache has no effect, we repeat the test twice.
+  for (int i = 0; i < 2; ++i) {
+    reset_number_of_lookups();
+
+    GetAllPaymentAppsForMethods({"https://charliepay.com/webpay"});
+
+    EXPECT_TRUE(apps().empty());
+    EXPECT_TRUE(installable_apps().empty());
+  }
+}
+
+// A range from 0 (inclusive) to 6 (exclusive) will test CSP checker reset:
 // 0: Before any CSP lookups.
-// 1: After CSP lookup for https://kylepay.com/webpay.
-// 2: After CSP lookup for https://kylepay.com/payment-method.json.
-// 3: After CSP lookup for https://kylepay.com/app.json
-// 4: No CSP checker reset at all, tested just in case.
+// 1: After CSP lookup for payment method URL (e.g.,
+//    https://kylepay.com/webpay).
+// 2: After CSP lookup for payment method manifest (e.g.,
+//    https://kylepay.com/payment-method.json).
+// 3: After CSP lookup for first web app manifest (e.g.,
+//    https://kylepay.com/app.json).
+// 4: After CSP lookup for second web app manifest, if it exists (e.g.,
+//    https://charliepay.com/prod.json).
+// 5: No CSP checker reset at all, tested just in case.
 INSTANTIATE_TEST_SUITE_P(Test,
                          ServiceWorkerPaymentAppFinderCSPCheckerBrowserTest,
-                         testing::Range(0, 5));
+                         testing::Range(0, 6));
 
 }  // namespace payments
