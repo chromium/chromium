@@ -126,11 +126,18 @@ public class ChromeSmokeTest {
         while (true) {
             // Wait for an FRE page to show up.
             waitUntilAnyVisible(frePageDetectors);
-            // If the update play services alert is visible, dismiss it.
-            if (uiLocatorHelper.isOnScreen(playServicesUpdateText)) {
-                UiAutomatorUtils.getInstance().clickOutsideOf(updatePlayServicesPanel);
-                // Different FRE versions show up randomly and in different order,
-                // figure out which one we are on and proceed.
+            // Different FRE versions show up randomly and in different order,
+            // figure out which one we are on and proceed.
+            if (uiLocatorHelper.isOnScreen(urlBar)) {
+                // FRE is over.
+                break;
+            } else if (uiLocatorHelper.isOnScreen(playServicesUpdateText)) {
+                // If the update play services alert is a modal, dismiss it.
+                // Otherwise its just a toast/notification that should not
+                // interfere with the test.
+                if (uiLocatorHelper.isOnScreen(updatePlayServicesPanel)) {
+                    UiAutomatorUtils.getInstance().clickOutsideOf(updatePlayServicesPanel);
+                }
             } else if (uiLocatorHelper.isOnScreen(termsAcceptButton)) {
                 // Click on the accept terms in FRE.
                 UiAutomatorUtils.getInstance().click(termsAcceptButton);
@@ -149,9 +156,6 @@ public class ChromeSmokeTest {
             } else if (uiLocatorHelper.isOnScreen(defaultSearchEngineNextButton)) {
                 // Just press next on choosing the default SE.
                 UiAutomatorUtils.getInstance().click(defaultSearchEngineNextButton);
-            } else if (uiLocatorHelper.isOnScreen(urlBar)) {
-                // FRE is over.
-                break;
             } else {
                 throw new RuntimeException("Unexpected FRE or Start page detected.");
             }
