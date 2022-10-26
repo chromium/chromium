@@ -1,7 +1,7 @@
 # Chromium Flag Guarding Guidelines
 
 This document describes using [`base::Feature`](/base/feature_list.h) flags which
-can be remotely via a server. This applies to both A/B experiments
+can be remotely set via a server. This applies to both A/B experiments
 ([internal link](http://go/finch101)) (disabled by default) and to kill switches
 ([internal link](http://go/finch-killswitch)) (enabled by default).
 
