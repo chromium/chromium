@@ -177,7 +177,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
      */
     public boolean maybeShowFPSInfo(FPSCookieInfo fpsInfo, String currentOrigin) {
         mFPSInfo = fpsInfo;
-        if (fpsInfo == null) {
+        if (fpsInfo == null || mFPSInUse == null) {
             return false;
         }
 
