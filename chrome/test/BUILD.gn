@@ -8204,15 +8204,10 @@ test("unit_tests") {
         "../browser/chromeos/extensions/desk_api/desk_api_extension_manager_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/login_state_api_unittest.cc",
-
-        # TODO(b/207754758): Move the following file into the appropriate target
-        "../browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
         "../browser/chromeos/reporting/network/network_bandwidth_sampler_unittest.cc",
       ]
       deps += [
-        "//chrome/browser/chromeos/extensions/telemetry/api",
-        "//chrome/browser/chromeos/extensions/telemetry/api:fake_hardware_info_delegate",
-        "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
+        "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
         "//chrome/common/chromeos/extensions",
         "//chromeos/dbus/missive:missive",
         "//components/reporting/proto:metric_data_proto",
@@ -8229,9 +8224,6 @@ test("unit_tests") {
         "../browser/chromeos/extensions/login_screen/login/external_logout_done/external_logout_done_event_handler_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api_ash_unittest.cc",
         "../browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher_ash_unittest.cc",
-
-        # TODO(b/207754758): Move the following file into the appropriate target
-        "../browser/chromeos/extensions/telemetry/chromeos_permission_messages_unittest.cc",
         "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
@@ -8250,9 +8242,6 @@ test("unit_tests") {
 
       deps += [
         "//chrome/browser/ash/system_web_apps:unit_tests",
-        "//chrome/browser/chromeos/extensions/telemetry/api",
-        "//chrome/browser/chromeos/extensions/telemetry/api:fake_hardware_info_delegate",
-        "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
         "//chrome/common/chromeos/extensions",
         "//chromeos/ash/components/dbus/image_burner",
         "//content/public/browser",

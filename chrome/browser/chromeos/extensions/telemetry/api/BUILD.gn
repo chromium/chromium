@@ -146,23 +146,26 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "api_guard_delegate_unittest.cc",
     "diagnostics_api_converters_unittest.cc",
     "telemetry_api_converters_unittest.cc",
   ]
 
   deps = [
     ":api",
+    ":fake_hardware_info_delegate",
     "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
 }
 
-# This is needed as a dependency for api_guard_delegate_unittest.cc in
-# /chrome/test/BUILD.gn.
-# TODO(b/207754758): Move into the appropriate target.
 source_set("fake_hardware_info_delegate") {
   testonly = true
   sources = [

@@ -18,3 +18,19 @@ source_set("telemetry") {
     "//extensions/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chromeos_permission_messages_unittest.cc" ]
+
+  deps = [
+    "api:unit_tests",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}
