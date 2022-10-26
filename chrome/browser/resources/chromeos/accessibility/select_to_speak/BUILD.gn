@@ -39,6 +39,9 @@ run_jsbundler("select_to_speak_copied_files") {
     "select_to_speak_constants.js",
     "select_to_speak_main.js",
     "select_to_speak_options.js",
+    "sts-icon-128.png",
+    "sts-icon-16.png",
+    "sts-icon-48.png",
     "tts_manager.js",
     "ui_manager.js",
     "unchecked.png",
@@ -75,6 +78,7 @@ js2gtest("select_to_speak_extjs_tests") {
   test_type = "extension"
   sources = [
     # These are end-to-end tests.
+    "select_to_speak_context_menu_tests.js",
     "select_to_speak_enhanced_voices_test.js",
     "select_to_speak_keystroke_selection_test.js",
     "select_to_speak_mouse_selection_test.js",

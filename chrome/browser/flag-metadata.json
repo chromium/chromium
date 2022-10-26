@@ -1640,6 +1640,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-accessibility-select-to-speak-context-menu-option",
+    "owners": ["francisjp","//ui/accessibility/OWNERS"],
+    "expiry_milestone":130
+  },
+  {
     "name": "enable-accessibility-select-to-speak-hover-text-improvements",
     "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

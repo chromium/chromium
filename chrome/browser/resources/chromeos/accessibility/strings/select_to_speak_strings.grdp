@@ -108,6 +108,9 @@
 <message desc="Description of a checkbox that is a mixed selection" name="IDS_SELECT_TO_SPEAK_CHECKBOX_MIXED">
   partially checked
 </message>
+<message desc="Context menu option to speak the currently highlighted/selected text" name="IDS_SELECT_TO_SPEAK_LISTEN_CONTEXT_MENU_OPTION_TEXT">
+  Listen to selected text
+</message>
 <message desc="Description of a radio button that is not selected" name="IDS_SELECT_TO_SPEAK_RADIOBUTTON_UNSELECTED">
   unselected
 </message>

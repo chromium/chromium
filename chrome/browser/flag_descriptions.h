@@ -581,6 +581,12 @@ extern const char
 extern const char kAccessibilitySelectToSpeakPageMigrationName[];
 extern const char kAccessibilitySelectToSpeakPageMigrationDescription[];
 
+extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
+extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
+
+extern const char kAccessibilitySelectToSpeakContextMenuOptionName[];
+extern const char kAccessibilitySelectToSpeakContextMenuOptionDescription[];
+
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsName[];
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[];
 

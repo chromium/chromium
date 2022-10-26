@@ -157,6 +157,19 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPageMigration);
 // Returns true if Select-to-Speak settings page migration enabled.
 AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPageMigrationEnabled();
 
+// Enables AccessibilitySelectToSpeakPrefsMigration.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration);
+
+// Returns true if AccessibilitySelectToSpeakPrefsMigration enabled.
+AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled();
+
+// Enables AccessibilitySelectToSpeakContextMenuOption.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilitySelectToSpeakContextMenuOption);
+
+// Returns true if AccessibilitySelectToSpeakContextMenuOption is enabled.
+AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakContextMenuOptionEnabled();
+
 // Enables AccessibilitySelectToSpeakHoverTextImprovements.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilitySelectToSpeakHoverTextImprovements);

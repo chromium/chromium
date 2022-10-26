@@ -7051,6 +7051,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityService)},
 
+    {"enable-accessibility-select-to-speak-context-menu-option",
+     flag_descriptions::kAccessibilitySelectToSpeakContextMenuOptionName,
+     flag_descriptions::kAccessibilitySelectToSpeakContextMenuOptionDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kAccessibilitySelectToSpeakContextMenuOption)},
+
     {"enable-accessibility-select-to-speak-hover-text-improvements",
      flag_descriptions::kAccessibilitySelectToSpeakHoverTextImprovementsName,
      flag_descriptions::

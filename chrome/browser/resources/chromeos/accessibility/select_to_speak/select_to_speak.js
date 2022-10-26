@@ -223,6 +223,24 @@ export class SelectToSpeak {
           this.enhancedVoicesFlag_ = result;
         });
 
+    const contextMenuOptionFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature
+            .SELECT_TO_SPEAK_CONTEXT_MENU_OPTION;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        contextMenuOptionFeature, enabled => {
+          if (enabled) {
+            chrome.contextMenus.create({
+              title: chrome.i18n.getMessage(
+                  'select_to_speak_listen_context_menu_option_text'),
+              contexts: ['selection'],
+              onclick: () => {
+                chrome.automation.getFocus(
+                    focusedNode => this.requestSpeakSelectedText_(focusedNode));
+              },
+            });
+          }
+        });
+
     chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, pref => {
       if (!pref) {
         return;

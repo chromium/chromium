@@ -27,6 +27,8 @@ WebAppsCrosapiBrowserTest*
 -ChromeVoxPanelTest.LinkMenu
 -ChromeVoxPortalsTest.PortalName
 -ChromeVoxPortalsTest.ShouldFocusPortal
+# TODO(crbug.com/1378396) Remove once ash extension context menus are passed through to lacros
+-SelectToSpeakContextMenuTest.*
 -SelectToSpeakEnhancedNetworkTtsVoicesTest.*
 -SelectToSpeakNavigationControlTest.*
 -SwitchAccessItemScanManagerTest.*

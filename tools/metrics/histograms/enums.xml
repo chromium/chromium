@@ -60401,6 +60401,8 @@ from previous Chrome versions.
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
   <int value="-273534119" label="LacrosAuraCapture:enabled"/>
+  <int value="-272544597"
+      label="AccessibilitySelectToSpeakContextMenuOption:enabled"/>
   <int value="-272266925" label="ForceStartupSigninPromo:enabled"/>
   <int value="-271790049" label="ArcUsbHost:enabled"/>
   <int value="-271084069" label="ClickToCallUI:enabled"/>
@@ -64215,6 +64217,8 @@ from previous Chrome versions.
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
+  <int value="2044243615"
+      label="AccessibilitySelectToSpeakContextMenuOption:disabled"/>
   <int value="2044623453" label="DeferredShaping:disabled"/>
   <int value="2046329062" label="ReleaseTrackUi:enabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>

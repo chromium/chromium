@@ -272,9 +272,14 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           ::features::IsExperimentalAccessibilityDictationMoreCommandsEnabled();
       break;
     case accessibility_private::
+        ACCESSIBILITY_FEATURE_SELECTTOSPEAKCONTEXTMENUOPTION:
+      enabled =
+          ::features::IsAccessibilitySelectToSpeakContextMenuOptionEnabled();
+      break;
+    case accessibility_private::
         ACCESSIBILITY_FEATURE_SELECTTOSPEAKVOICESWITCHING:
-      enabled = 
-        ::features::IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
+      enabled = ::features::
+          IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
