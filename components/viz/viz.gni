@@ -11,8 +11,8 @@ import("//testing/test.gni")
 enable_gl_backend_tests = !is_fuchsia
 
 # TODO(samans): Support more configurations.
-# CFI issue: https://crbug.com/967819
-# Fuchsia ARM64 https://crbug.com/1058247
+# CFI: TODO(crbug.com/967819): Fix Control Flow Integrity check failure.
+# Fuchsia: TODO(crbug.com/1377994): Enable on ARM64 when bots support Vulkan.
 enable_vulkan_backend_tests =
     enable_vulkan &&
     ((is_linux && !is_castos && !is_cfi) || (is_fuchsia && target_cpu == "x64"))
