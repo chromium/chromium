@@ -198,7 +198,6 @@ class TestAutofillClient : public AutofillClient {
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
-  bool ShouldBlockAutofillForIBAN() const override;
 
   // RiskDataLoader:
   void LoadRiskData(
@@ -337,11 +336,6 @@ class TestAutofillClient : public AutofillClient {
     channel_for_testing_ = channel;
   }
 
-  void set_should_block_origin_for_IBAN_autofill(
-      bool origin_blocked_for_iban_autofill) {
-    origin_blocked_for_iban_autofill_ = origin_blocked_for_iban_autofill;
-  }
-
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder();
@@ -392,8 +386,6 @@ class TestAutofillClient : public AutofillClient {
   // specific to the type of error that occurred, and then based on the contents
   // of this context the dialog is shown.
   AutofillErrorDialogContext autofill_error_dialog_context_;
-
-  bool origin_blocked_for_iban_autofill_ = false;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
   absl::optional<bool> offer_to_save_credit_card_bubble_was_shown_;

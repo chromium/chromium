@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -215,7 +214,6 @@ class ChromeAutofillClient
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing) override;
   bool IsAutofillAssistantShowing() override;
-  bool IsAutofillIBANEnabled() override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
@@ -230,7 +228,6 @@ class ChromeAutofillClient
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
-  bool ShouldBlockAutofillForIBAN() const override;
 
   // RiskDataLoader:
   void LoadRiskData(
@@ -243,8 +240,6 @@ class ChromeAutofillClient
       content::RenderWidgetHost* render_widget_host) override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_for_testing() {
     return popup_controller_;
@@ -267,12 +262,6 @@ class ChromeAutofillClient
   std::u16string GetAccountHolderName();
   std::u16string GetAccountHolderEmail();
   bool SupportsConsentlessExecution(const url::Origin& origin);
-
-  // Callback invoked when `optimization_guide_decider_` has the information
-  // required to decide if autofill for IBAN should be blocked.
-  void OnOptimizationGuideDecisionOnIBAN(
-      optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& metadata);
 
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
@@ -298,27 +287,8 @@ class ChromeAutofillClient
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
 
-  // The optimization guide decider to consult whether IBAN autofill should be
-  // blocked for the opt-out sites.
-  // It's initialized in the constructor, not owned by ChromeAutofillClient.
-  // Weak reference, may be nullptr.
-  raw_ptr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_ = nullptr;
-
   // True if and only if the associated web_contents() is currently focused.
   bool has_focus_ = false;
-
-  // Previous committed origin. This is used to store previous origin
-  // so that it is not needed to update knowledge of if IBAN saving/filling
-  // is available every time the user makes a page navigation, as it should only
-  // change when the domain changes.
-  url::Origin previous_committed_origin_;
-
-  // Denotes whether the current origin URL we are on should be blocked for
-  // IBAN autofill. Used when deciding whether to offer IBAN autofill for
-  // the user as suggestions, and is updated on every
-  // ChromeAutofillClient::DidFinishNavigation() call.
-  bool origin_blocked_for_iban_autofill_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -426,61 +426,6 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerReturnedFalse) {
       SuggestionsContext()));
 }
 
-// Ensure that the router does not route to AutocompleteHistoryManager for
-// this OnGetSingleFieldSuggestions call if
-// `should_block_origin_for_IBAN_autofill` is false and
-// iban_manager.OnGetSingleFieldSuggestions() returns true.
-TEST_F(SingleFieldFormFillRouterTest, IBANManagerURLOriginNotBlocklisted) {
-  autofill_client_.set_should_block_origin_for_IBAN_autofill(false);
-  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-
-  // Mock IBANManager::OnGetSingleFieldSuggestions() returning
-  // true.
-  EXPECT_CALL(*iban_manager_, OnGetSingleFieldSuggestions)
-      .Times(1)
-      .WillOnce(testing::Return(true));
-
-  // Since IBANManager::OnGetSingleFieldSuggestions() returned
-  // true, we should not call
-  // AutocompleteHistoryManager::OnGetSingleFieldSuggestions().
-  EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions)
-      .Times(0);
-
-  // As `test_field_.should_autocomplete` is true, this was a valid field for
-  // IBAN autofill. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
-  // should return true.
-  EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      /*context=*/SuggestionsContext()));
-}
-
-// Ensure that the router routes to AutocompleteHistoryManager for this
-// OnGetSingleFieldSuggestions call if `should_block_origin_for_IBAN_autofill`
-// is true.
-TEST_F(SingleFieldFormFillRouterTest, IBANManagerURLOriginBlocklisted) {
-  autofill_client_.set_should_block_origin_for_IBAN_autofill(true);
-  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-
-  // IBANManager::OnGetSingleFieldSuggestions() should not be called as
-  // autofill is blocked for the IBAN.
-  EXPECT_CALL(*iban_manager_, OnGetSingleFieldSuggestions).Times(0);
-
-  // Since IBANManager::OnGetSingleFieldSuggestions() returned false, we should
-  // call AutocompleteHistoryManager::OnGetSingleFieldSuggestions().
-  EXPECT_CALL(*autocomplete_history_manager_, OnGetSingleFieldSuggestions)
-      .Times(1)
-      .WillOnce(testing::Return(true));
-
-  // As `test_field_.should_autocomplete` is true, this was a valid field for
-  // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
-  // should return true.
-  EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      /*context=*/SuggestionsContext()));
-}
-
 // Ensure that the router routes to IBANManager for this
 // OnRemoveCurrentSingleFieldSuggestion call.
 TEST_F(SingleFieldFormFillRouterTest,

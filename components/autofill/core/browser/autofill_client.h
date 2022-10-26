@@ -726,11 +726,6 @@ class AutofillClient : public RiskDataLoader {
   // Returns true if the Autofill Assistant UI is currently being shown.
   virtual bool IsAutofillAssistantShowing();
 
-  // Returns whether IBAN autofill and the ability to save/fill payment methods
-  // on the Chrome payments settings page are enabled as per the user
-  // preferences.
-  virtual bool IsAutofillIBANEnabled();
-
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 
@@ -766,10 +761,6 @@ class AutofillClient : public RiskDataLoader {
   virtual LogManager* GetLogManager() const;
 
   virtual const AutofillAblationStudy& GetAblationStudy() const;
-
-  // Returns true if the origin where the IBAN was submitted should be blocked
-  // for autofill.
-  virtual bool ShouldBlockAutofillForIBAN() const;
 
 #if BUILDFLAG(IS_IOS)
   // Checks whether the current query is the most recent one.

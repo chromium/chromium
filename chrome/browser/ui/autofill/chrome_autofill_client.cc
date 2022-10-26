@@ -28,8 +28,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,7 +74,6 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
-#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
@@ -97,7 +94,6 @@
 #include "components/variations/service/variations_service.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -174,9 +170,8 @@ ChromeAutofillClient::GetAutocompleteHistoryManager() {
 }
 
 IBANManager* ChromeAutofillClient::GetIBANManager() {
-  if (!IsAutofillIBANEnabled())
+  if (!base::FeatureList::IsEnabled(features::kAutofillFillIbanFields))
     return nullptr;
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return IBANManagerFactory::GetForProfile(profile);
@@ -1134,11 +1129,6 @@ bool ChromeAutofillClient::IsAutofillAssistantShowing() {
                                           autofill_assistant::UIState::kShown;
 }
 
-bool ChromeAutofillClient::IsAutofillIBANEnabled() {
-  return base::FeatureList::IsEnabled(features::kAutofillFillIbanFields) &&
-         prefs::IsAutofillCreditCardEnabled(GetPrefs());
-}
-
 bool ChromeAutofillClient::IsAutocompleteEnabled() const {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
@@ -1242,10 +1232,6 @@ ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
   return flow_id_;
 }
 
-bool ChromeAutofillClient::ShouldBlockAutofillForIBAN() const {
-  return origin_blocked_for_iban_autofill_;
-}
-
 void ChromeAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   risk_util::LoadRiskData(0, web_contents(), std::move(callback));
@@ -1283,33 +1269,6 @@ void ChromeAutofillClient::OnWebContentsFocused(
 #if BUILDFLAG(IS_ANDROID)
   save_card_message_controller_android_.OnWebContentsFocused();
 #endif
-}
-
-void ChromeAutofillClient::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
-    return;
-
-  if (!navigation_handle->HasCommitted())
-    return;
-
-  if (!navigation_handle->GetURL().is_valid())
-    return;
-
-  // Update knowledge of if IBAN saving/filling should be allowed for the
-  // current domain.
-  if (optimization_guide_decider_) {
-    url::Origin current_committed_origin =
-        GetLastCommittedPrimaryMainFrameOrigin();
-    if (previous_committed_origin_ != current_committed_origin) {
-      optimization_guide_decider_->CanApplyOptimizationAsync(
-          navigation_handle, optimization_guide::proto::IBAN_AUTOFILL_BLOCKED,
-          base::BindOnce(
-              &ChromeAutofillClient::OnOptimizationGuideDecisionOnIBAN,
-              base::Unretained(this)));
-    }
-    previous_committed_origin_ = current_committed_origin;
-  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1364,15 +1323,6 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   if (zoom_controller)
     zoom_controller->AddObserver(this);
 #endif
-
-  if (IsAutofillIBANEnabled()) {
-    optimization_guide_decider_ =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile());
-    if (optimization_guide_decider_) {
-      optimization_guide_decider_->RegisterOptimizationTypes(
-          {optimization_guide::proto::IBAN_AUTOFILL_BLOCKED});
-    }
-  }
 }
 
 Profile* ChromeAutofillClient::GetProfile() const {
@@ -1411,13 +1361,6 @@ std::u16string ChromeAutofillClient::GetAccountHolderEmail() {
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return base::UTF8ToUTF16(primary_account_info.email);
-}
-
-void ChromeAutofillClient::OnOptimizationGuideDecisionOnIBAN(
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  origin_blocked_for_iban_autofill_ =
-      decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillClient);

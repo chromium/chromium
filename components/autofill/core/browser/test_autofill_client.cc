@@ -395,10 +395,6 @@ void TestAutofillClient::LoadRiskData(
   std::move(callback).Run("some risk data");
 }
 
-bool TestAutofillClient::ShouldBlockAutofillForIBAN() const {
-  return origin_blocked_for_iban_autofill_;
-}
-
 #if BUILDFLAG(IS_IOS)
 bool TestAutofillClient::IsQueryIDRelevant(int query_id) {
   return true;
