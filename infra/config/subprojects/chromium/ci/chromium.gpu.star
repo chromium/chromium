@@ -92,6 +92,20 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "GPU Linux Builder (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
@@ -190,6 +204,21 @@ ci.gpu.windows_builder(
 
 ci.thin_tester(
     name = "Linux Debug (NVIDIA)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
