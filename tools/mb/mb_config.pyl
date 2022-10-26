@@ -110,7 +110,6 @@
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
       'android-nougat-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
-      'android-nougat-x86-rel-inverse-fyi': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
       'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_monochrome_expectations_reclient',
@@ -993,6 +992,7 @@
       'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
+      'android-nougat-x86-rel-inverse-fyi': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-nougat-x86-rel-reclient': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64',
