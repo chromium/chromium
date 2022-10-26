@@ -22,15 +22,14 @@ class AppListViewPixelRTLTest
     : public AshTestBase,
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
-  AppListViewPixelRTLTest() {
-    pixel_test::InitParams init_params;
+  // AshTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params(
+        /*param_screenshot_prefix=*/"app_list_view_pixel");
     init_params.under_rtl = GetParam();
-    PrepareForPixelDiffTest(/*screenshot_prefix=*/"app_list_view_pixel",
-                            init_params);
+    return init_params;
   }
-  AppListViewPixelRTLTest(const AppListViewPixelRTLTest&) = delete;
-  AppListViewPixelRTLTest& operator=(const AppListViewPixelRTLTest&) = delete;
-  ~AppListViewPixelRTLTest() override = default;
 
   void ShowAppList() {
     AppListTestHelper* test_helper = GetAppListTestHelper();

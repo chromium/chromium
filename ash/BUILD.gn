@@ -3582,6 +3582,7 @@ static_library("test_support") {
     "test/layer_animation_verifier.h",
     "test/pixel/ash_pixel_test_helper.cc",
     "test/pixel/ash_pixel_test_helper.h",
+    "test/pixel/ash_pixel_test_init_params.cc",
     "test/pixel/ash_pixel_test_init_params.h",
     "test/test_ash_web_view.cc",
     "test/test_ash_web_view.h",

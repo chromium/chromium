@@ -19,7 +19,7 @@ namespace ash {
 // A test helper class that sets up the system UI for pixel tests.
 class AshPixelTestHelper {
  public:
-  explicit AshPixelTestHelper(const pixel_test::InitParams& params);
+  explicit AshPixelTestHelper(pixel_test::InitParams params);
   AshPixelTestHelper(const AshPixelTestHelper&) = delete;
   AshPixelTestHelper& operator=(const AshPixelTestHelper&) = delete;
   ~AshPixelTestHelper();

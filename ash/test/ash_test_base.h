@@ -185,16 +185,6 @@ class AshTestBase : public testing::Test {
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);
 
-  // Prepares for the pixel diff test. `screenshot_prefix` is the prefix of the
-  // screenshot names; `init_params` indicates how a pixel test should be set
-  // up; `corpus` specifies the result group that will be used to store
-  // screenshots in Skia Gold. For `screenshot_prefix` and `corpus`, read the
-  // comment of `SKiaGoldPixelDiff::Init()` for more details.
-  // NOTE: this function should be called before `setup_called_` becomes true.
-  void PrepareForPixelDiffTest(const std::string& screenshot_prefix,
-                               const pixel_test::InitParams& init_params,
-                               const std::string& corpus = std::string());
-
   // Returns the raw pointer carried by `pixel_differ_`.
   AshPixelDiffer* GetPixelDiffer();
 
@@ -253,6 +243,12 @@ class AshTestBase : public testing::Test {
 
   // Returns the rotation currently active for the internal display.
   static display::Display::Rotation GetCurrentInternalDisplayRotation();
+
+  // Creates init params to set up a pixel test. If the test is not pixel
+  // related, returns `absl::nullopt`. This function should be overridden by ash
+  // pixel tests.
+  virtual absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const;
 
   void set_start_session(bool start_session) { start_session_ = start_session; }
 
@@ -352,15 +348,13 @@ class AshTestBase : public testing::Test {
  private:
   void CreateWindowTreeIfNecessary();
 
+  void PrepareForPixelDiffTest(const pixel_test::InitParams& init_params);
+
   bool setup_called_ = false;
   bool teardown_called_ = false;
 
   // SetUp() doesn't activate session if this is set to false.
   bool start_session_ = true;
-
-  // The parameters to initialize the pixel diff test. Used only when the ash
-  // test is also a pixel diff test.
-  absl::optional<pixel_test::InitParams> pixel_diff_init_params_;
 
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.

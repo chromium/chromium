@@ -16,6 +16,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/message_center/test_notifier_settings_controller.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -57,10 +58,6 @@ namespace input_method {
 class MockInputMethodManager;
 }  // namespace input_method
 
-namespace pixel_test {
-struct InitParams;
-}  // namespace pixel_test
-
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
 class AshTestHelper : public aura::test::AuraTestHelper {
@@ -78,7 +75,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     PrefService* local_state = nullptr;
 
     // Used only when setting up a pixel diff test.
-    base::raw_ptr<pixel_test::InitParams> pixel_test_init_params = nullptr;
+    absl::optional<pixel_test::InitParams> pixel_test_init_params;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a

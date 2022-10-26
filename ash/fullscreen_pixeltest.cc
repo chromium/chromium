@@ -10,11 +10,12 @@ namespace ash {
 
 class FullscreenPixelTest : public AshTestBase {
  public:
-  FullscreenPixelTest() {
-    PrepareForPixelDiffTest(/*screenshot_prefix=*/"fullscreen_test",
-                            pixel_test::InitParams());
+  // AshTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    return pixel_test::InitParams(
+        /*param_screenshot_prefix=*/"fullscreen_test");
   }
-  ~FullscreenPixelTest() override = default;
 
   bool ComparePrimaryFullScreen(const std::string& screenshot_name) {
     return GetPixelDiffer()->ComparePrimaryFullScreen(screenshot_name);

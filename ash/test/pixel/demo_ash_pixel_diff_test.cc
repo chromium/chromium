@@ -16,13 +16,11 @@ namespace ash {
 
 class DemoAshPixelDiffTest : public AshTestBase {
  public:
-  DemoAshPixelDiffTest() {
-    PrepareForPixelDiffTest(/*screenshot_prefix=*/"ash_demo_test",
-                            pixel_test::InitParams());
+  // AshTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    return pixel_test::InitParams(/*param_screenshot_prefix=*/"ash_demo_test");
   }
-  DemoAshPixelDiffTest(const DemoAshPixelDiffTest&) = delete;
-  DemoAshPixelDiffTest& operator=(const DemoAshPixelDiffTest&) = delete;
-  ~DemoAshPixelDiffTest() override = default;
 
   // Creates a top level widget with the specified bounds and color.
   std::unique_ptr<views::Widget> CreateWidgetInSolidColor(

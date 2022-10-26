@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 
 namespace ash {
 
@@ -46,9 +47,11 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
 
 class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
  public:
-  LoginShelfViewPixelTest() {
-    PrepareForPixelDiffTest(/*screenshot_prefix=*/"login_shelf_view_pixel",
-                            pixel_test::InitParams());
+  // LoginShelfViewPixelTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    return pixel_test::InitParams(
+        /*param_screenshot_prefix=*/"login_shelf_view_pixel");
   }
 };
 
@@ -110,20 +113,15 @@ class LoginShelfWithPolicyWallpaperPixelTestWithRTL
     : public LoginShelfViewPixelTestBase,
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
-  LoginShelfWithPolicyWallpaperPixelTestWithRTL() {
-    pixel_test::InitParams init_params;
+  // LoginShelfViewPixelTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params(
+        /*param_screenshot_prefix=*/"login_shelf_view_policy_wallpaper_pixel");
     init_params.wallpaper_init_type = pixel_test::WallpaperInitType::kPolicy;
-    if (GetParam())
-      init_params.under_rtl = true;
-    PrepareForPixelDiffTest(
-        /*screenshot_prefix=*/"login_shelf_view_policy_wallpaper_pixel",
-        init_params);
+    init_params.under_rtl = GetParam();
+    return init_params;
   }
-  LoginShelfWithPolicyWallpaperPixelTestWithRTL(
-      const LoginShelfWithPolicyWallpaperPixelTestWithRTL&) = delete;
-  LoginShelfWithPolicyWallpaperPixelTestWithRTL& operator=(
-      const LoginShelfWithPolicyWallpaperPixelTestWithRTL&) = delete;
-  ~LoginShelfWithPolicyWallpaperPixelTestWithRTL() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,

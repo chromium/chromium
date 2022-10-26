@@ -37,11 +37,11 @@ gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
 
 }  // namespace
 
-AshPixelTestHelper::AshPixelTestHelper(const pixel_test::InitParams& params)
-    : params_(params),
+AshPixelTestHelper::AshPixelTestHelper(pixel_test::InitParams params)
+    : params_(std::move(params)),
       scoped_locale_(base::test::ScopedRestoreICUDefaultLocale(kLocale)),
       time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)) {
-  if (params.under_rtl) {
+  if (params_.under_rtl) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         ::switches::kForceUIDirection, ::switches::kForceDirectionRTL);
   }

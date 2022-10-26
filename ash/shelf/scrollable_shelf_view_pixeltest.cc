@@ -26,14 +26,13 @@ class ScrollableShelfViewPixelRTLTest
     : public ScrollableShelfViewPixelRTLTestBase,
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
-  void SetUp() override {
-    pixel_test::InitParams init_params;
-    if (GetParam())
-      init_params.under_rtl = true;
-    PrepareForPixelDiffTest(/*screenshot_prefix=*/"scrollable_shelf_view_pixel",
-                            init_params);
-
-    ScrollableShelfViewPixelRTLTestBase::SetUp();
+  // ScrollableShelfViewPixelRTLTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params(
+        /*param_screenshot_prefix=*/"scrollable_shelf_view_pixel");
+    init_params.under_rtl = GetParam();
+    return init_params;
   }
 };
 
@@ -47,15 +46,19 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 }
 
 class ScrollableShelfViewWithGuestModePixelTest
-    : public ScrollableShelfViewPixelRTLTestBase,
+    : public ScrollableShelfTestBase,
       public testing::WithParamInterface<bool /*use_guest_mode=*/> {
  public:
   // ScrollableShelfTestBase:
+  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    return pixel_test::InitParams(
+        /*param_screenshot_prefix=*/
+        "scrollable_shelf_view_with_guest_mode_pixel");
+  }
+
   void SetUp() override {
     set_start_session(false);
-    PrepareForPixelDiffTest(
-        /*screenshot_prefix=*/"scrollable_shelf_view_with_guest_mode_pixel",
-        pixel_test::InitParams());
 
     ScrollableShelfTestBase::SetUp();
     if (GetParam())

@@ -246,7 +246,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
     // Constructing `pixel_test_helper_` sets the locale. Therefore, building
     // `pixel_test_helper_` before the code that establishes the Ash UI.
     pixel_test_helper_ = std::make_unique<AshPixelTestHelper>(
-        *init_params.pixel_test_init_params);
+        std::move(*init_params.pixel_test_init_params));
   }
 
   // This block of objects are conditionally initialized here rather than in the
@@ -380,10 +380,8 @@ void AshTestHelper::SetUp(InitParams init_params) {
 
   // Call `StabilizeUIForPixelTest()` after the user session is activated (if
   // any) in the test setup.
-  if (pixel_test_helper_) {
-    DCHECK(init_params.pixel_test_init_params);
+  if (pixel_test_helper_)
     StabilizeUIForPixelTest();
-  }
 
   saved_desk_test_helper_ = std::make_unique<SavedDeskTestHelper>();
 }

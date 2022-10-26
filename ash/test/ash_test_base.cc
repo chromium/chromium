@@ -29,6 +29,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/test_shell_delegate.h"
@@ -134,8 +135,15 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.start_session = start_session_;
   params.delegate = std::move(delegate);
   params.local_state = local_state();
-  params.pixel_test_init_params =
-      (pixel_diff_init_params_ ? &*pixel_diff_init_params_ : nullptr);
+
+  // Prepare for a pixel test if having pixel init params.
+  absl::optional<pixel_test::InitParams> pixel_test_init_params =
+      CreatePixelTestInitParams();
+  if (pixel_test_init_params) {
+    PrepareForPixelDiffTest(*pixel_test_init_params);
+    params.pixel_test_init_params = std::move(pixel_test_init_params);
+  }
+
   ash_test_helper_ = std::make_unique<AshTestHelper>();
   ash_test_helper_->SetUp(std::move(params));
 }
@@ -194,6 +202,11 @@ display::Display::Rotation AshTestBase::GetActiveDisplayRotation(int64_t id) {
 // static
 display::Display::Rotation AshTestBase::GetCurrentInternalDisplayRotation() {
   return GetActiveDisplayRotation(display::Display::InternalDisplayId());
+}
+
+absl::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
+    const {
+  return absl::nullopt;
 }
 
 void AshTestBase::UpdateDisplay(const std::string& display_specs) {
@@ -317,40 +330,12 @@ void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
                                         gfx::Rect());
 }
 
-void AshTestBase::PrepareForPixelDiffTest(
-    const std::string& screenshot_prefix,
-    const pixel_test::InitParams& init_params,
-    const std::string& corpus) {
-  // Expect this function to be called before setup. Because the code that
-  // stabilizes the system UI for pixel tests should be executed during setup.
-  CHECK(!setup_called_);
-
-  CHECK(!pixel_diff_init_params_);
-  pixel_diff_init_params_ = init_params;
-
-  // In pixel tests, we want to take screenshots then compare them with the
-  // benchmark images. Therefore, enable pixel output in tests.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnablePixelOutputInTests);
-
-  // Enable the switch so that the time dependent views (such as the time view)
-  // are stable.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kStabilizeTimeDependentViewForTests);
-
-  DCHECK(!pixel_differ_);
-  pixel_differ_ = std::make_unique<AshPixelDiffer>(screenshot_prefix, corpus);
-}
-
 AshPixelDiffer* AshTestBase::GetPixelDiffer() {
   DCHECK(pixel_differ_);
   return pixel_differ_.get();
 }
 
 void AshTestBase::StabilizeUIForPixelTest() {
-  // This function should only be used in a pixel test.
-  CHECK(pixel_diff_init_params_);
-
   ash_test_helper_->StabilizeUIForPixelTest();
 }
 
@@ -580,6 +565,23 @@ display::Display AshTestBase::GetPrimaryDisplay() const {
 
 display::Display AshTestBase::GetSecondaryDisplay() const {
   return ash_test_helper_->GetSecondaryDisplay();
+}
+
+void AshTestBase::PrepareForPixelDiffTest(
+    const pixel_test::InitParams& init_params) {
+  // In pixel tests, we want to take screenshots then compare them with the
+  // benchmark images. Therefore, enable pixel output in tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kEnablePixelOutputInTests);
+
+  // Enable the switch so that the time dependent views (such as the time view)
+  // are stable.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kStabilizeTimeDependentViewForTests);
+
+  DCHECK(!pixel_differ_);
+  pixel_differ_ = std::make_unique<AshPixelDiffer>(
+      init_params.screenshot_prefix, init_params.corpus);
 }
 
 // ============================================================================
