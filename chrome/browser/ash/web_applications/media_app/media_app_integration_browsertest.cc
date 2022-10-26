@@ -60,6 +60,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/entry_info.h"
 #include "media/base/media_switches.h"
@@ -189,6 +190,15 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     EXPECT_EQ(data["did_open_video_in_gallery"], expected_data.open_video);
     EXPECT_EQ(data["clicked_edit_image_in_photos"], expected_data.edit_image);
     EXPECT_EQ(data["clicked_edit_video_in_photos"], expected_data.edit_video);
+  }
+
+  void LaunchAndWait(const ash::SystemAppLaunchParams& params) {
+    content::TestNavigationObserver observer =
+        content::TestNavigationObserver(GURL(ash::kChromeUIMediaAppURL));
+    observer.StartWatchingNewWebContents();
+    ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
+                                 params);
+    observer.Wait();
   }
 
  protected:
@@ -648,8 +658,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // Launch the App for the first time.
   ash::SystemAppLaunchParams audio_params;
   audio_params.launch_paths.push_back(TestFile(kFilePng800x600));
-  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                               audio_params);
+  LaunchAndWait(audio_params);
   Browser* first_browser = chrome::FindBrowserWithActiveWindow();
   content::WebContents* app = PrepareActiveBrowserForTest();
 
@@ -659,8 +668,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   // Launch the App for the second time.
   ash::SystemAppLaunchParams image_params;
   image_params.launch_paths.push_back(TestFile(kFileJpeg640x480));
-  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                               image_params);
+  LaunchAndWait(image_params);
   app = PrepareActiveBrowserForTest(3);
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
 
@@ -675,8 +683,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
   image_params.launch_paths = {TestFile(kFilePng800x600),
                                TestFile(kFileJpeg640x480)};
 
-  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                               image_params);
+  LaunchAndWait(image_params);
 
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(2u, browser_list->size());  // 1 extra for the browser test browser.
@@ -693,8 +700,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
   ash::SystemAppLaunchParams pdf_params;
   pdf_params.launch_paths = {TestFile(kFilePdfTall), TestFile(kFilePdfImg)};
 
-  ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA,
-                               pdf_params);
+  LaunchAndWait(pdf_params);
 
   WaitForBrowserCount(3);  // 1 extra for the browser test browser.
   const BrowserList* browser_list = BrowserList::GetInstance();
