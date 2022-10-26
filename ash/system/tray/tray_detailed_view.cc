@@ -435,17 +435,14 @@ void TrayDetailedView::CreateScrollableList() {
   if (features::IsQsRevampEnabled()) {
     scroller_->SetProperty(views::kMarginsKey,
                            delegate_->GetScrollViewMargin());
-    // TODO(b/253091169): For QsRevamp, use a container view that is a child of
-    // the scroll view contents and apply the background to that container.
-    scroller_->SetBackgroundThemeColorId(cros_tokens::kCrosSysSysOnBase);
     scroller_->SetPaintToLayer();
     scroller_->layer()->SetFillsBoundsOpaquely(false);
     scroller_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kQsScrollViewCornerRadius));
-  } else {
-    // Override the default theme-based color to remove the background.
-    scroller_->SetBackgroundColor(absl::nullopt);
   }
+
+  // Override the default theme-based color to remove the background.
+  scroller_->SetBackgroundColor(absl::nullopt);
 
   box_layout_->SetFlexForView(scroller_, 1);
 }

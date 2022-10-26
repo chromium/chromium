@@ -4,6 +4,8 @@
 
 #include "ash/system/ime_menu/ime_list_view.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
@@ -15,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tray_detailed_view.h"
@@ -269,16 +272,21 @@ void ImeListView::AppendImeListAndProperties(
     const std::vector<ImeInfo>& list,
     const std::vector<ImeMenuItem>& property_list) {
   DCHECK(ime_map_.empty());
+
+  views::View* container = scroll_content();
+  if (features::IsQsRevampEnabled()) {
+    container =
+        scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
+  }
+
   for (size_t i = 0; i < list.size(); i++) {
     const bool selected = current_ime_id == list[i].id;
-    views::View* ime_view = new ImeListItemView(
-        this, list[i].short_name, list[i].name, selected,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorProminent));
-    // TODO(b/253091169): For QsRevamp, we will use a container view that is a
-    // child of the scroll view contents. For now, just use scroll contents.
-    // Ditto for calls to scroll_content()->AddChildView() below.
-    scroll_content()->AddChildView(ime_view);
+    views::View* ime_view =
+        container->AddChildView(std::make_unique<ImeListItemView>(
+            this, list[i].short_name, list[i].name, selected,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorProminent)));
+
     ime_map_[ime_view] = list[i].id;
 
     if (selected)
@@ -287,25 +295,26 @@ void ImeListView::AppendImeListAndProperties(
     // Add the properties, if any, of the currently-selected IME.
     if (selected && !property_list.empty()) {
       // Adds a separator on the top of property items.
-      scroll_content()->AddChildView(
-          TrayPopupUtils::CreateListItemSeparator(true));
+      container->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
 
       const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary);
+
       // Adds the property items.
       for (const auto& property : property_list) {
         ImeListItemView* property_view =
-            new ImeListItemView(this, std::u16string(), property.label,
-                                property.checked, icon_color);
-        scroll_content()->AddChildView(property_view);
+            container->AddChildView(std::make_unique<ImeListItemView>(
+                this, std::u16string(), property.label, property.checked,
+                icon_color));
+
         property_map_[property_view] = property.key;
       }
 
       // Adds a separator on the bottom of property items if there are still
       // other IMEs under the current one.
-      if (i < list.size() - 1)
-        scroll_content()->AddChildView(
-            TrayPopupUtils::CreateListItemSeparator(true));
+      if (i < list.size() - 1) {
+        container->AddChildView(TrayPopupUtils::CreateListItemSeparator(true));
+      }
     }
   }
 }

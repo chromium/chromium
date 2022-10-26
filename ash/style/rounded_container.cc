@@ -29,6 +29,7 @@ RoundedContainer::RoundedContainer(Behavior corner_behavior)
 
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
+  layer()->SetFillsBoundsOpaquely(false);
 }
 
 RoundedContainer::~RoundedContainer() = default;
