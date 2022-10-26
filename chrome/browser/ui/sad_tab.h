@@ -75,6 +75,7 @@ class SadTab {
   // may suggest additional troubleshooting steps.
   bool is_repeatedly_crashing_;
   // True if repeatedly crashing and the browser is Google Chrome branded.
+  // Always false for the ChromeOS kiosk mode.
   bool show_feedback_button_;
   bool recorded_paint_;
 };
