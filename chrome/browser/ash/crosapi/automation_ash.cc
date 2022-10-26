@@ -73,7 +73,7 @@ void AutomationAsh::DispatchAccessibilityLocationChange(
 void AutomationAsh::DispatchTreeDestroyedEvent(
     const base::UnguessableToken& tree_id) {
   extensions::AutomationEventRouter::GetInstance()->DispatchTreeDestroyedEvent(
-      ui::AXTreeID::FromToken(tree_id), nullptr);
+      ui::AXTreeID::FromToken(tree_id));
 }
 
 void AutomationAsh::DispatchActionResult(

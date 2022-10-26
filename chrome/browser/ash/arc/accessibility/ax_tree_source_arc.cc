@@ -496,7 +496,7 @@ void AXTreeSourceArc::Reset() {
   if (!router)
     return;
 
-  router->DispatchTreeDestroyedEvent(ax_tree_id(), nullptr);
+  router->DispatchTreeDestroyedEvent(ax_tree_id());
 }
 
 bool AXTreeSourceArc::NeedReorder(AccessibilityInfoDataWrapper* left,

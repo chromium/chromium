@@ -66,9 +66,7 @@ void AutomationManagerLacros::DispatchAccessibilityLocationChange(
       *tree_id.token(), params.id, params.new_location);
 }
 
-void AutomationManagerLacros::DispatchTreeDestroyedEvent(
-    ui::AXTreeID tree_id,
-    content::BrowserContext* browser_context) {
+void AutomationManagerLacros::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (!tree_id.token())
     return;
 

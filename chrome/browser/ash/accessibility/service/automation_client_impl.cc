@@ -57,9 +57,7 @@ void AutomationClientImpl::DispatchAccessibilityLocationChange(
   // params.id,
   //                                                  params.new_location);
 }
-void AutomationClientImpl::DispatchTreeDestroyedEvent(
-    ui::AXTreeID tree_id,
-    content::BrowserContext* browser_context) {
+void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (!tree_id.token() || !automation_.is_bound())
     return;
   // TODO(crbug.com/1355633): Send to AccessibilityService.

@@ -82,9 +82,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
                                    std::vector<ui::AXEvent> events) override;
   void DispatchAccessibilityLocationChange(
       const ExtensionMsg_AccessibilityLocationChangeParams& params) override;
-  void DispatchTreeDestroyedEvent(
-      ui::AXTreeID tree_id,
-      content::BrowserContext* browser_context) override;
+  void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
   void DispatchActionResult(
       const ui::AXActionData& data,
       bool result,

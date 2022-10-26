@@ -40,9 +40,7 @@ class AutomationEventRouterInterface {
 
   // Notify all automation extensions that an accessibility tree was
   // destroyed. If |browser_context| is null, use the currently active context.
-  virtual void DispatchTreeDestroyedEvent(
-      ui::AXTreeID tree_id,
-      content::BrowserContext* browser_context) = 0;
+  virtual void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) = 0;
 
   // Notify the source extension of the action of an action result.
   virtual void DispatchActionResult(

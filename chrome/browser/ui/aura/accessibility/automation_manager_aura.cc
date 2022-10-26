@@ -103,7 +103,7 @@ void AutomationManagerAura::Disable() {
   if (tree_) {
     if (automation_event_router_interface_)
       automation_event_router_interface_->DispatchTreeDestroyedEvent(
-          tree_->tree_id(), nullptr);
+          tree_->tree_id());
     tree_.reset();
   }
   tree_serializer_.reset();

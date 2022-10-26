@@ -118,25 +118,22 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
   }
 }
 
-void AutomationEventRouter::DispatchTreeDestroyedEvent(
-    ui::AXTreeID tree_id,
-    content::BrowserContext* browser_context) {
+void AutomationEventRouter::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (remote_router_) {
-    remote_router_->DispatchTreeDestroyedEvent(tree_id, browser_context);
+    remote_router_->DispatchTreeDestroyedEvent(tree_id);
     return;
   }
 
   if (listeners_.empty())
     return;
 
-  browser_context = browser_context ? browser_context : active_context_.get();
   auto args(api::automation_internal::OnAccessibilityTreeDestroyed::Create(
       tree_id.ToString()));
   auto event = std::make_unique<Event>(
       events::AUTOMATION_INTERNAL_ON_ACCESSIBILITY_TREE_DESTROYED,
       api::automation_internal::OnAccessibilityTreeDestroyed::kEventName,
-      std::move(args), browser_context);
-  EventRouter::Get(browser_context)->BroadcastEvent(std::move(event));
+      std::move(args), active_context_.get());
+  EventRouter::Get(active_context_.get())->BroadcastEvent(std::move(event));
 }
 
 void AutomationEventRouter::DispatchActionResult(
@@ -311,7 +308,7 @@ void AutomationEventRouter::RemoveAutomationListener(
 }
 
 void AutomationEventRouter::TreeRemoved(ui::AXTreeID ax_tree_id) {
-  DispatchTreeDestroyedEvent(ax_tree_id, nullptr);
+  DispatchTreeDestroyedEvent(ax_tree_id);
 }
 
 void AutomationEventRouter::UpdateActiveProfile() {
