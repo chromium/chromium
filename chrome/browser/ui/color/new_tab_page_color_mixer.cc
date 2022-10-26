@@ -140,9 +140,13 @@ void AddNewTabPageComprehensiveColors(ui::ColorMixer& mixer) {
     mixer[kColorRealboxBackgroundHovered] = {
         kColorToolbarBackgroundSubtleEmphasisHovered};
     mixer[kColorRealboxForeground] = primary_foreground_color;
-    mixer[kColorRealboxPlaceholder] = primary_foreground_color;
+    const ui::ColorTransform secondary_foreground_color =
+        SelectBasedOnWhiteNtpBackground({gfx::kGoogleGrey700},
+                                        primary_foreground_color);
+    mixer[kColorRealboxPlaceholder] = secondary_foreground_color;
     mixer[kColorRealboxResultsBackground] = background_color;
     mixer[kColorRealboxResultsForeground] = primary_foreground_color;
+    mixer[kColorRealboxSearchIconBackground] = secondary_foreground_color;
   }
 }
 
