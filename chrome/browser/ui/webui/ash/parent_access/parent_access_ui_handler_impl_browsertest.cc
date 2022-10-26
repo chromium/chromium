@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_callback.pb.h"
@@ -54,12 +55,15 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   // Make sure the handler isn't null.
   ASSERT_NE(handler, nullptr);
 
-  handler->GetOAuthToken(
-      base::BindOnce([](parent_access_ui::mojom::GetOAuthTokenStatus status,
-                        const std::string& token) -> void {
+  base::RunLoop run_loop;
+  handler->GetOAuthToken(base::BindLambdaForTesting(
+      [&](parent_access_ui::mojom::GetOAuthTokenStatus status,
+          const std::string& token) -> void {
         EXPECT_EQ(parent_access_ui::mojom::GetOAuthTokenStatus::kSuccess,
                   status);
+        run_loop.Quit();
       }));
+  run_loop.Run();
 }
 
 // Verifies that access token fetch errors are recorded.
@@ -81,14 +85,20 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   // Make sure the handler isn't null.
   ASSERT_NE(handler, nullptr);
 
+  base::RunLoop run_loop;
+  handler->GetOAuthToken(base::BindLambdaForTesting(
+      [&](parent_access_ui::mojom::GetOAuthTokenStatus status,
+          const std::string& token) -> void {
+        EXPECT_EQ(parent_access_ui::mojom::GetOAuthTokenStatus::kError, status);
+        run_loop.Quit();
+      }));
+
   // Trigger failure to issue access token.
   identity_test_env_->SetAutomaticIssueOfAccessTokens(false);
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError::FromServiceError("FAKE SERVICE ERROR"));
 
-  handler->GetOAuthToken(
-      base::BindOnce([](parent_access_ui::mojom::GetOAuthTokenStatus status,
-                        const std::string& token) -> void {
-        EXPECT_EQ(parent_access_ui::mojom::GetOAuthTokenStatus::kError, status);
-      }));
+  run_loop.Run();
 }
 
 // Verifies that only one access token fetch is possible at a time.
@@ -110,20 +120,27 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   // Make sure the handler isn't null.
   ASSERT_NE(handler, nullptr);
 
-  handler->GetOAuthToken(
-      base::BindOnce([](parent_access_ui::mojom::GetOAuthTokenStatus status,
-                        const std::string& token) -> void {
+  base::RunLoop success_run_loop;
+  handler->GetOAuthToken(base::BindLambdaForTesting(
+      [&](parent_access_ui::mojom::GetOAuthTokenStatus status,
+          const std::string& token) -> void {
         EXPECT_EQ(parent_access_ui::mojom::GetOAuthTokenStatus::kSuccess,
                   status);
+        success_run_loop.Quit();
       }));
 
-  handler->GetOAuthToken(
-      base::BindOnce([](parent_access_ui::mojom::GetOAuthTokenStatus status,
-                        const std::string& token) -> void {
+  base::RunLoop one_fetch_run_loop;
+  handler->GetOAuthToken(base::BindLambdaForTesting(
+      [&](parent_access_ui::mojom::GetOAuthTokenStatus status,
+          const std::string& token) -> void {
         EXPECT_EQ(
             parent_access_ui::mojom::GetOAuthTokenStatus::kOnlyOneFetchAtATime,
             status);
+        one_fetch_run_loop.Quit();
       }));
+  one_fetch_run_loop.Run();
+
+  success_run_loop.Run();
 }
 
 MATCHER_P(EqualsProto,
@@ -157,17 +174,15 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   ParentAccessDialogProvider provider;
   ParentAccessDialogProvider::ShowError error = provider.Show(
       GetParamsForWebApprovals(),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
             // The dialog result should contain the test token and expire
             // timestamp.
             EXPECT_EQ("TEST_TOKEN", result->parent_access_token);
             EXPECT_EQ(base::Time::FromDoubleT(123456),
                       result->parent_access_token_expire_timestamp);
-            std::move(quit_closure).Run();
-          },
-          show_dialog_run_loop.QuitClosure()));
+            show_dialog_run_loop.Quit();
+          }));
 
   // Verify dialog is showing.
   ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
@@ -188,17 +203,15 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   base::RunLoop run_loop;
   handler->OnParentAccessCallbackReceived(
       encoded_parent_access_callback,
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+      base::BindLambdaForTesting(
+          [&](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
               -> void {
             // Verify the Parent Verified callback is parsed.
             EXPECT_EQ(parent_access_ui::mojom::ParentAccessServerMessageType::
                           kParentVerified,
                       message->type);
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure()));
+            run_loop.Quit();
+          }));
 
   run_loop.Run();
 
@@ -209,9 +222,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   base::RunLoop parent_approved_run_loop;
   handler->OnParentAccessDone(
       parent_access_ui::mojom::ParentAccessResult::kApproved,
-      base::BindOnce([](base::OnceClosure quit_closure)
-                         -> void { std::move(quit_closure).Run(); },
-                     parent_approved_run_loop.QuitClosure()));
+      base::BindLambdaForTesting(
+          [&]() -> void { parent_approved_run_loop.Quit(); }));
 
   parent_approved_run_loop.Run();
 
@@ -230,15 +242,13 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
   ParentAccessDialogProvider provider;
   ParentAccessDialogProvider::ShowError error = provider.Show(
       GetParamsForWebApprovals(),
-      base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
             // The dialog result should contain the test token.
             EXPECT_EQ(ParentAccessDialog::Result::Status::kDeclined,
                       result->status);
-            std::move(quit_closure).Run();
-          },
-          show_dialog_run_loop.QuitClosure()));
+            show_dialog_run_loop.Quit();
+          }));
 
   // Verify dialog is showing.
   ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
@@ -255,9 +265,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
   base::RunLoop parent_denied_run_loop;
   handler->OnParentAccessDone(
       parent_access_ui::mojom::ParentAccessResult::kDeclined,
-      base::BindOnce([](base::OnceClosure quit_closure)
-                         -> void { std::move(quit_closure).Run(); },
-                     parent_denied_run_loop.QuitClosure()));
+      base::BindLambdaForTesting(
+          [&]() -> void { parent_denied_run_loop.Quit(); }));
 
   parent_denied_run_loop.Run();
 
@@ -298,16 +307,19 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   base::Base64Encode(parent_access_callback.SerializeAsString(),
                      &encoded_parent_access_callback);
 
+  base::RunLoop run_loop;
   handler->OnParentAccessCallbackReceived(
       encoded_parent_access_callback,
-      base::BindOnce(
-          [](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+      base::BindLambdaForTesting(
+          [&](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
               -> void {
             // Verify that it is ignored.
             EXPECT_EQ(
                 parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore,
                 message->type);
+            run_loop.Quit();
           }));
+  run_loop.Run();
 }
 
 // Verifies that the OnPageSizeChanged status is ignored.
@@ -339,16 +351,19 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   base::Base64Encode(parent_access_callback.SerializeAsString(),
                      &encoded_parent_access_callback);
 
+  base::RunLoop run_loop;
   handler->OnParentAccessCallbackReceived(
       encoded_parent_access_callback,
-      base::BindOnce(
-          [](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+      base::BindLambdaForTesting(
+          [&](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
               -> void {
             // Verify that it is ignored.
             EXPECT_EQ(
                 parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore,
                 message->type);
+            run_loop.Quit();
           }));
+  run_loop.Run();
 }
 
 // Verifies that the OnCommunicationEstablished status is ignored.
@@ -379,16 +394,19 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   base::Base64Encode(parent_access_callback.SerializeAsString(),
                      &encoded_parent_access_callback);
 
+  base::RunLoop run_loop;
   handler->OnParentAccessCallbackReceived(
       encoded_parent_access_callback,
-      base::BindOnce(
-          [](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+      base::BindLambdaForTesting(
+          [&](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
               -> void {
             // Verify that it is ignored.
             EXPECT_EQ(
                 parent_access_ui::mojom::ParentAccessServerMessageType::kIgnore,
                 message->type);
+            run_loop.Quit();
           }));
+  run_loop.Run();
 }
 
 }  // namespace ash

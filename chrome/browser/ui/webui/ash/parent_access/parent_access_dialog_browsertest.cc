@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/time/time.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -40,14 +40,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   base::RunLoop run_loop;
 
   // Create the callback.
-  ParentAccessDialog::Callback callback = base::BindOnce(
-      [](base::OnceClosure closure,
-         std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
         EXPECT_EQ(result->status,
                   ParentAccessDialog::Result::Status::kCancelled);
-        std::move(closure).Run();
-      },
-      run_loop.QuitClosure());
+        run_loop.Quit();
+      });
 
   // Show the dialog.
   ParentAccessDialogProvider provider;
@@ -95,15 +93,16 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
   expected_result->parent_access_token_expire_timestamp =
       base::Time::FromDoubleT(123456L);
 
+  // Make a copy for use during verification since we std::move() it below.
+  auto expected_result_copy =
+      std::make_unique<ParentAccessDialog::Result>(*expected_result);
+
   // Create the callback.
-  ParentAccessDialog::Callback callback = base::BindOnce(
-      [](base::OnceClosure closure,
-         const ParentAccessDialog::Result* expected_result,
-         std::unique_ptr<ParentAccessDialog::Result> result) -> void {
-        EXPECT_TRUE(DialogResultsEqual(*result, *expected_result));
-        std::move(closure).Run();
-      },
-      run_loop.QuitClosure(), expected_result.get());
+  ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
+      [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {
+        EXPECT_TRUE(DialogResultsEqual(*result, *expected_result_copy));
+        run_loop.Quit();
+      });
 
   // Show the dialog.
   ParentAccessDialogProvider provider;
@@ -133,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New())),
-      base::BindOnce(
-          [](std::unique_ptr<ParentAccessDialog::Result> result) -> void {}));
+      base::DoNothing());
 
   // Verify it is showing.
   ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
@@ -150,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New())),
-      base::BindOnce(
-          [](std::unique_ptr<ParentAccessDialog::Result> result) -> void {}));
+      base::DoNothing());
 
   // Verify an error was returned indicating it can't be shown again.
   EXPECT_EQ(error,
@@ -172,8 +169,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New())),
-      base::BindOnce(
-          [](std::unique_ptr<ParentAccessDialog::Result> result) -> void {}));
+      base::DoNothing());
 
   // Verify it is not showing.
   EXPECT_EQ(error, ParentAccessDialogProvider::ShowError::kNotAChildUser);
