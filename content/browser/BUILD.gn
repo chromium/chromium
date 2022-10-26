@@ -249,7 +249,6 @@ source_set("browser") {
     "//third_party/re2",
     "//third_party/sqlite",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//third_party/wtl",
     "//third_party/zlib",
     "//third_party/zlib/google:zip",
     "//ui/accessibility",
@@ -2727,6 +2726,7 @@ source_set("browser") {
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",
+      "//third_party/wtl",
     ]
     libs += [
       "comctl32.lib",
