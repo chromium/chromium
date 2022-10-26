@@ -117,22 +117,30 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     case DXGI_FORMAT_Y210: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
+      // If device support P010 zero copy, then try P010 firstly.
       if (hdr_output_mode == HDRMode::kSDROnly &&
-          supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
-        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-        output_pixel_format = PIXEL_FORMAT_ARGB;
-
+          supports_fmt(DXGI_FORMAT_P010)) {
+        output_dxgi_format = DXGI_FORMAT_P010;
+        output_pixel_format = PIXEL_FORMAT_P016LE;
         // Gfx::ColorTransform now can handle both PQ/HLG content well for
         // all gpu vendors and also has a better performance when compared with
         // video processor, reset colorspace to use gfx do tone mapping.
         output_color_space.reset();
-
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P016LE";
+      } else if (hdr_output_mode == HDRMode::kSDROnly &&
+                 supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        output_pixel_format = PIXEL_FORMAT_ARGB;
+        // Gfx::ColorTransform now can handle both PQ/HLG content well for
+        // all gpu vendors and also has a better performance when compared with
+        // video processor, reset colorspace to use gfx do tone mapping.
+        output_color_space.reset();
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
       } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_dxgi_format = DXGI_FORMAT_P010;
         output_pixel_format = PIXEL_FORMAT_P016LE;
         output_color_space.reset();
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P010";
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P016LE";
       } else if (supports_fmt(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
         output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         output_pixel_format = PIXEL_FORMAT_RGBAF16;

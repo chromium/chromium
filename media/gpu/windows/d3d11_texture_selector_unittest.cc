@@ -148,9 +148,9 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo10BitRGBInHDR) {
 }
 
 TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo8BitInSDR) {
-  // Should copy to 8 bit RGB if the video processor can do it, if we're not in
-  // HDR mode.
-  AllowFormatCheckerSupportExcept({});
+  // Should copy to 8 bit RGB if the video processor can't handle P010, if we're
+  // not in HDR mode.
+  AllowFormatCheckerSupportExcept({DXGI_FORMAT_P010});
   auto tex_sel =
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);
@@ -164,9 +164,9 @@ TEST_F(D3D11TextureSelectorUnittest, P010CopiesTo8BitInSDR) {
 }
 
 TEST_F(D3D11TextureSelectorUnittest, P010BindsToP010InSDR) {
-  // Should bind P010 if the video processor can't convert to RGB8, if we're not
+  // Should bind P010 if the video processor can handle P010, if we're not
   // int HDR mode.
-  AllowFormatCheckerSupportExcept({DXGI_FORMAT_B8G8R8A8_UNORM});
+  AllowFormatCheckerSupportExcept({});
   auto tex_sel =
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);
