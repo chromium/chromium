@@ -5950,7 +5950,7 @@
       'WebRTC Chromium Android Builder': {},
       'WebRTC Chromium Android Tester': {
         'os_type': 'android',
-        'mixins': ['bullhead', 'marshmallow'],
+        'mixins': ['walleye', 'pie_fleet'],
         'test_suites': {
           'gtest_tests': 'webrtc_android_tests_with_baremetal_tests',
         },
