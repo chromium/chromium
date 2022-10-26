@@ -291,13 +291,6 @@ source_set("browser") {
     "//v8:v8_version",
   ]
 
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/services/machine_learning/public/cpp",
-      "//chromeos/services/machine_learning/public/mojom",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//components/memory_pressure",
@@ -2453,15 +2446,6 @@ source_set("browser") {
     deps += [ "//ui/ozone:buildflags" ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/resources",
-      "//chromeos/resources",
-      "//ui/base/ime/ash",
-      "//ui/chromeos/styles:cros_styles_views",
-    ]
-  }
-
   if (is_linux || is_chromeos) {
     sources += [
       "child_process_launcher_helper_linux.cc",
@@ -2492,7 +2476,6 @@ source_set("browser") {
   }
 
   if (is_chromeos) {
-    deps += [ "//components/value_store:value_store" ]
     sources += [
       "handwriting/handwriting_recognition_service_impl_cros.cc",
       "handwriting/handwriting_recognition_service_impl_cros.h",
@@ -2505,10 +2488,11 @@ source_set("browser") {
       "ml/ml_service_impl_cros.cc",
       "ml/ml_service_impl_cros.h",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "screenlock_monitor/screenlock_monitor_device_source_ash.cc" ]
+    deps += [
+      "//chromeos/services/machine_learning/public/cpp",
+      "//chromeos/services/machine_learning/public/mojom",
+      "//components/value_store",
+    ]
   }
 
   if (is_linux) {
@@ -2522,15 +2506,29 @@ source_set("browser") {
   # ChromeOS also defines linux but their memory-monitors conflict.
   if (is_chromeos_ash) {
     sources += [
+      "gpu/chromeos/delegate_to_browser_gpu_service_accelerator_factory.cc",
+      "gpu/chromeos/video_capture_dependencies.cc",
+      "gpu/chromeos/video_capture_dependencies.h",
+      "screenlock_monitor/screenlock_monitor_device_source_ash.cc",
       "tracing/cros_tracing_agent.cc",
       "tracing/cros_tracing_agent.h",
     ]
     deps += [
+      "//ash/constants",
+      "//chromeos/ash/components/assistant:buildflags",
+      "//chromeos/ash/components/audio",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/debug_daemon",
+      "//chromeos/ash/components/network",
+      "//chromeos/ash/resources",
+      "//chromeos/resources",
+      "//chromeos/system",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
+      "//components/session_manager/core",
       "//services/data_decoder/public/cpp",
       "//services/data_decoder/public/mojom",
+      "//ui/base/ime/ash",
+      "//ui/chromeos/styles:cros_styles_views",
     ]
   }
 
@@ -2698,6 +2696,11 @@ source_set("browser") {
   }
 
   if (is_chromeos_lacros) {
+    sources += [
+      "accessibility/browser_accessibility_state_impl_lacros.cc",
+      "accessibility/browser_accessibility_state_impl_lacros.h",
+      "screenlock_monitor/screenlock_monitor_device_source_lacros.cc",
+    ]
     deps += [
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
@@ -3137,23 +3140,6 @@ source_set("browser") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    sources += [
-      "gpu/chromeos/delegate_to_browser_gpu_service_accelerator_factory.cc",
-      "gpu/chromeos/video_capture_dependencies.cc",
-      "gpu/chromeos/video_capture_dependencies.h",
-    ]
-
-    deps += [
-      "//ash/constants",
-      "//chromeos/ash/components/assistant:buildflags",
-      "//chromeos/ash/components/audio",
-      "//chromeos/ash/components/network",
-      "//chromeos/system",
-      "//components/session_manager/core",
-    ]
-  }
-
   if (use_aura) {
     deps += [
       "//ui/aura",
@@ -3277,14 +3263,6 @@ source_set("browser") {
       "devtools/protocol/native_profiling_handler.cc",
       "devtools/protocol/native_profiling_handler.h",
       "profiling_utils.cc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "accessibility/browser_accessibility_state_impl_lacros.cc",
-      "accessibility/browser_accessibility_state_impl_lacros.h",
-      "screenlock_monitor/screenlock_monitor_device_source_lacros.cc",
     ]
   }
 }
