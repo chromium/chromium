@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -76,6 +77,8 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
     helper_ = std::make_unique<NetworkHandlerTestHelper>();
+
+    scoped_feature_list_.InitAndEnableFeature(kHatsGeneralSurvey.feature);
   }
 
   void TearDown() override {
@@ -109,6 +112,7 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<NetworkHandlerTestHelper> helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HatsNotificationControllerTest, GetFormattedSiteContext) {
