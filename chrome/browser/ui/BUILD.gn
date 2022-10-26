@@ -2064,6 +2064,8 @@ static_library("ui") {
       "app_list/search/app_search_provider.h",
       "app_list/search/app_service_app_result.cc",
       "app_list/search/app_service_app_result.h",
+      "app_list/search/app_zero_state_provider.cc",
+      "app_list/search/app_zero_state_provider.h",
       "app_list/search/arc/arc_app_shortcut_search_result.cc",
       "app_list/search/arc/arc_app_shortcut_search_result.h",
       "app_list/search/arc/arc_app_shortcuts_search_provider.cc",

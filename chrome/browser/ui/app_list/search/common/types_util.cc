@@ -14,6 +14,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Unknown";
     case ash::AppListSearchResultType::kInstalledApp:
       return "Installed app";
+    case ash::AppListSearchResultType::kZeroStateApp:
+      return "Zero state app";
     case ash::AppListSearchResultType::kPlayStoreApp:
       return "Play store app";
     case ash::AppListSearchResultType::kInstantApp:

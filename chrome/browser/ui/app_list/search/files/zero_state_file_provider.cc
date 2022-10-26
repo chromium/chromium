@@ -78,10 +78,6 @@ ash::AppListSearchResultType ZeroStateFileProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateFile;
 }
 
-bool ZeroStateFileProvider::ShouldBlockZeroState() const {
-  return true;
-}
-
 void ZeroStateFileProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
 }

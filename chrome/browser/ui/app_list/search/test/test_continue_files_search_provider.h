@@ -26,7 +26,6 @@ class TestContinueFilesSearchProvider : public SearchProvider {
   // SearchProvider overrides:
   void StartZeroState() override;
   ash::AppListSearchResultType ResultType() const override;
-  bool ShouldBlockZeroState() const override;
 
   void set_count(size_t count) { count_ = count; }
 

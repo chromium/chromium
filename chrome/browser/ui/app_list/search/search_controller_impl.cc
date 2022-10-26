@@ -16,10 +16,12 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
@@ -41,6 +43,10 @@ SearchControllerImpl::SearchControllerImpl(
       mixer_(std::make_unique<Mixer>(model_updater, this)),
       metrics_observer_(
           std::make_unique<SearchMetricsManager>(profile, notifier)),
+      app_search_data_source_(std::make_unique<AppSearchDataSource>(
+          profile,
+          list_controller,
+          base::DefaultClock::GetInstance())),
       list_controller_(list_controller),
       notifier_(notifier) {
   if (notifier_)
@@ -115,6 +121,10 @@ void SearchControllerImpl::InvokeResultAction(
     ash::SearchResultActionType action) {
   // TODO(xiyuan): Hook up with user learning.
   result->InvokeAction(action);
+}
+
+AppSearchDataSource* SearchControllerImpl::GetAppSearchDataSource() {
+  return app_search_data_source_.get();
 }
 
 size_t SearchControllerImpl::AddGroup(size_t max_results) {

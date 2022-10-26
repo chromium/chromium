@@ -44,8 +44,4 @@ void SearchProvider::FireResultChanged() {
   result_changed_callback_.Run();
 }
 
-bool SearchProvider::ShouldBlockZeroState() const {
-  return false;
-}
-
 }  // namespace app_list

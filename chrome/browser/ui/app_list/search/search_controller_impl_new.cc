@@ -15,10 +15,12 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
@@ -34,9 +36,9 @@
 namespace app_list {
 namespace {
 
-void ClearAllResultsExceptContinue(ResultsMap& results) {
+void ClearNonZeroStateResults(ResultsMap& results) {
   for (auto it = results.begin(); it != results.end();) {
-    if (!ash::IsContinueSectionResultType(it->first)) {
+    if (!ash::IsZeroStateResultType(it->first)) {
       it = results.erase(it);
     } else {
       ++it;
@@ -58,6 +60,10 @@ SearchControllerImplNew::SearchControllerImplNew(
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
       metrics_manager_(
           std::make_unique<SearchMetricsManager>(profile, notifier)),
+      app_search_data_source_(std::make_unique<AppSearchDataSource>(
+          profile,
+          list_controller,
+          base::DefaultClock::GetInstance())),
       model_updater_(model_updater),
       list_controller_(list_controller) {}
 
@@ -85,7 +91,7 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   //
   // b) were in search query: do not publish these changes, so that the
   //    old results stay on screen until the new ones are ready.
-  ClearAllResultsExceptContinue(results_);
+  ClearNonZeroStateResults(results_);
   if (last_query_.empty())
     Publish();
 
@@ -189,6 +195,10 @@ void SearchControllerImplNew::InvokeResultAction(
   }
 }
 
+AppSearchDataSource* SearchControllerImplNew::GetAppSearchDataSource() {
+  return app_search_data_source_.get();
+}
+
 size_t SearchControllerImplNew::AddGroup(size_t max_results) {
   // Unused.
   return 0ul;
@@ -197,7 +207,7 @@ size_t SearchControllerImplNew::AddGroup(size_t max_results) {
 void SearchControllerImplNew::AddProvider(
     size_t group_id,
     std::unique_ptr<SearchProvider> provider) {
-  if (provider->ShouldBlockZeroState())
+  if (ash::IsZeroStateResultType(provider->ResultType()))
     ++total_zero_state_blockers_;
   provider->set_controller(this);
   provider->set_result_changed_callback(
@@ -240,7 +250,7 @@ void SearchControllerImplNew::SetZeroStateResults(
     const SearchProvider* provider) {
   Rank(provider->ResultType());
 
-  if (provider->ShouldBlockZeroState())
+  if (ash::IsZeroStateResultType(provider->ResultType()))
     ++returned_zero_state_blockers_;
 
   if (!on_zero_state_done_) {

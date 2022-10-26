@@ -17,9 +17,8 @@ void TestSearchController::StartSearch(const std::u16string& query) {
   // The search controller used when categorical search is enabled clears all
   // results when starging another search query - simulate this behavior in
   // tests when categorical search is enabled.
-  if (!ash::IsContinueSectionResultType(provider_->ResultType())) {
+  if (!ash::IsZeroStateResultType(provider_->ResultType()))
     last_results_.clear();
-  }
   provider_->Start(query);
 }
 
@@ -37,6 +36,10 @@ void TestSearchController::OpenResult(ChromeSearchResult* result,
 void TestSearchController::InvokeResultAction(
     ChromeSearchResult* result,
     ash::SearchResultActionType action) {}
+
+AppSearchDataSource* TestSearchController::GetAppSearchDataSource() {
+  return nullptr;
+}
 
 size_t TestSearchController::AddGroup(size_t max_results) {
   return 0u;

@@ -156,10 +156,6 @@ ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateDrive;
 }
 
-bool ZeroStateDriveProvider::ShouldBlockZeroState() const {
-  return true;
-}
-
 void ZeroStateDriveProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
 }

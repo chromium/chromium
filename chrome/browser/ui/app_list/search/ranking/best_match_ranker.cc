@@ -22,6 +22,7 @@ namespace {
 bool ShouldIgnoreProvider(ProviderType type) {
   switch (type) {
       // Continue providers:
+    case ProviderType::kZeroStateApp:
     case ProviderType::kZeroStateFile:
     case ProviderType::kZeroStateDrive:
       // Low-intent providers:

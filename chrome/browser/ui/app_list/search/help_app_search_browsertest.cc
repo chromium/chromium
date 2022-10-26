@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,
-       ash::AppListSearchResultType::kInstalledApp});
+       ash::AppListSearchResultType::kZeroStateApp});
 
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,
-       ash::AppListSearchResultType::kInstalledApp});
+       ash::AppListSearchResultType::kZeroStateApp});
 
   auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
