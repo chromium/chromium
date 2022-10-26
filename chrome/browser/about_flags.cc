@@ -5834,6 +5834,10 @@ const FeatureEntry kFeatureEntries[] = {
          kJourneysContentClusteringVariations,
          "HistoryJourneysContentClustering")},
 
+    {"history-journeys-images", flag_descriptions::kJourneysImagesName,
+     flag_descriptions::kJourneysImagesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(history_clusters::internal::kJourneysImages)},
+
     {"history-journeys-labels", flag_descriptions::kJourneysLabelsName,
      flag_descriptions::kJourneysLabelsDescription, kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kJourneysLabels,

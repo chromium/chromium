@@ -1751,6 +1751,10 @@ const char kJourneysContentClusteringName[] =
 const char kJourneysContentClusteringDescription[] =
     "Enables clustering page loads using content annotations.";
 
+const char kJourneysImagesName[] = "History Journeys Images";
+const char kJourneysImagesDescription[] =
+    "Enables Images for the History Journeys UI.";
+
 const char kJourneysLabelsName[] = "History Journeys Labels";
 const char kJourneysLabelsDescription[] =
     "Enables labels for Journeys within the History Journeys UI.";
