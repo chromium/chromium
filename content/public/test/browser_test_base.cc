@@ -558,9 +558,18 @@ void BrowserTestBase::SetUp() {
     });
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // For all other platforms, we call ContentMain for browser tests which goes
-  // through the normal browser initialization paths. For Android, we must set
+  auto content_main_params = CopyContentMainParams();
+  content_main_params.created_main_parts_closure =
+      std::move(created_main_parts_closure);
+  content_main_params.ui_task = base::BindOnce(
+      &BrowserTestBase::ProxyRunTestOnMainThreadLoop, base::Unretained(this));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // ContentMain which goes through the normal browser initialization paths
+  // and will invoke `content_main_params.ui_task`, which runs the test.
+  EXPECT_EQ(expected_exit_code_, ContentMain(std::move(content_main_params)));
+#else
+  // Android's equivalent of ContentMain is in Java so browser tests must set
   // things up manually. A meager re-implementation of ContentMainRunnerImpl
   // follows.
 
@@ -572,8 +581,8 @@ void BrowserTestBase::SetUp() {
   base::i18n::AllowMultipleInitializeCallsForTesting();
   base::i18n::InitializeICU();
 
-  ContentMainDelegate* delegate = GetContentMainDelegateForTesting();
   // The delegate should have been set by JNI_OnLoad for the test target.
+  ContentMainDelegate* delegate = content_main_params.delegate;
   DCHECK(delegate);
 
   absl::optional<int> startup_error = delegate->BasicStartupComplete();
@@ -652,16 +661,15 @@ void BrowserTestBase::SetUp() {
     // run.
     base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
 
-    auto ui_task = base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
-                                  base::Unretained(this), loop.QuitClosure(),
-                                  /*wait_retry_left=*/
-                                  TestTimeouts::action_max_timeout());
-
     // The MainFunctionParams must out-live all the startup tasks running.
     MainFunctionParams params(command_line);
-    params.ui_task = std::move(ui_task);
-    params.created_main_parts_closure = std::move(created_main_parts_closure);
+    params.created_main_parts_closure =
+        std::move(content_main_params.created_main_parts_closure);
     params.startup_data = std::move(startup_data);
+    params.ui_task = base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
+                                    base::Unretained(this), loop.QuitClosure(),
+                                    /*wait_retry_left=*/
+                                    TestTimeouts::action_max_timeout());
     // Passing "" as the process type to indicate the browser process.
     auto exit_code = delegate->RunProcess("", std::move(params));
     DCHECK(absl::holds_alternative<int>(exit_code));
@@ -674,11 +682,11 @@ void BrowserTestBase::SetUp() {
     // So when we run the ProxyRunTestOnMainThreadLoop() we no longer can block,
     // but tests should be allowed to. So we undo that blocking inside here.
     base::ScopedAllowUnresponsiveTasksForTesting allow_unresponsive;
-    // Runs the test now that the Java setup is complete. This must be called
-    // directly from the same call stack as RUN_ALL_TESTS(), it may not be
-    // inside a posted task, or it would prevent NonNestable tasks from running
-    // inside tests.
-    ProxyRunTestOnMainThreadLoop();
+    // Runs the test now that the Java setup is complete. The closure must be
+    // invoked directly from the same call stack as RUN_ALL_TESTS(), it may not
+    // be inside a posted task, or it would prevent NonNestable tasks from
+    // running inside tests.
+    std::move(content_main_params.ui_task).Run();
   }
 
   {
@@ -695,14 +703,6 @@ void BrowserTestBase::SetUp() {
 
   base::PostTaskAndroid::SignalNativeSchedulerShutdownForTesting();
   BrowserTaskExecutor::Shutdown();
-
-#else   // BUILDFLAG(IS_ANDROID)
-  auto ui_task = base::BindOnce(&BrowserTestBase::ProxyRunTestOnMainThreadLoop,
-                                base::Unretained(this));
-  auto params = CopyContentMainParams();
-  params.ui_task = std::move(ui_task);
-  params.created_main_parts_closure = std::move(created_main_parts_closure);
-  EXPECT_EQ(expected_exit_code_, ContentMain(std::move(params)));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   TearDownInProcessBrowserTestFixture();

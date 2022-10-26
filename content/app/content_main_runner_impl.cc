@@ -1274,10 +1274,4 @@ std::unique_ptr<ContentMainRunner> ContentMainRunner::Create() {
   return ContentMainRunnerImpl::Create();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-ContentMainDelegate* GetContentMainDelegateForTesting() {
-  return GetContentMainDelegate();
-}
-#endif
-
 }  // namespace content

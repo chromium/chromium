@@ -9,9 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
 #include "content/browser/startup_data_impl.h"
-#include "content/common/content_export.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_runner.h"
 #include "content/public/common/main_function_params.h"
@@ -77,15 +75,6 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   // Received in Initialize(), handed-off in Run().
   absl::optional<ContentMainParams> content_main_params_;
 };
-
-// The BrowserTestBase on Android does not call ContentMain(). It tries instead
-// to reproduce it more or less accurately. This requires to use
-// GetContentMainDelegateForTesting() and GetContentClientForTesting().
-// BrowserTestBase is implemented in content/public and GetContentClient() is
-// only available to the implementation of content. Hence these functions.
-#if BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT ContentMainDelegate* GetContentMainDelegateForTesting();
-#endif
 
 }  // namespace content
 

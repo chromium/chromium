@@ -128,6 +128,7 @@ source_set("app") {
       "android/content_child_process_service_delegate.cc",
       "android/content_jni_onload.cc",
       "android/content_main_android.cc",
+      "android/content_main_android.h",
       "android/library_loader_hooks.cc",
       "android/library_loader_hooks.h",
     ]
