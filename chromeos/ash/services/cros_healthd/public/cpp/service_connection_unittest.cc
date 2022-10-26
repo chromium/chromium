@@ -548,14 +548,17 @@ TEST_F(CrosHealthdServiceConnectionTest, RunNvmeWearLevelRoutine) {
   // Test that we can run the NVMe wear-level routine.
   auto response = MakeRunRoutineResponse();
   FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(response);
-  base::RunLoop run_loop;
-  ServiceConnection::GetInstance()->RunNvmeWearLevelRoutine(
-      /*wear_level_threshold=*/50,
-      base::BindLambdaForTesting([&](mojom::RunRoutineResponsePtr response) {
-        EXPECT_EQ(response, MakeRunRoutineResponse());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  const std::vector<absl::optional<uint32_t>> test_cases = {50, absl::nullopt};
+  for (const auto wear_level_threshold : test_cases) {
+    base::RunLoop run_loop;
+    ServiceConnection::GetInstance()->RunNvmeWearLevelRoutine(
+        wear_level_threshold,
+        base::BindLambdaForTesting([&](mojom::RunRoutineResponsePtr response) {
+          EXPECT_EQ(response, MakeRunRoutineResponse());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CrosHealthdServiceConnectionTest, RunNvmeSelfTestRoutine) {

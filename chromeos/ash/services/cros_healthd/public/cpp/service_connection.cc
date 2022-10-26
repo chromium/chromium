@@ -84,7 +84,7 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::
           RunFloatingPointAccuracyRoutineCallback callback) override;
   void RunNvmeWearLevelRoutine(
-      uint32_t wear_level_threshold,
+      const absl::optional<uint32_t>& wear_level_threshold,
       mojom::CrosHealthdDiagnosticsService::RunNvmeWearLevelRoutineCallback
           callback) override;
   void RunNvmeSelfTestRoutine(
@@ -376,13 +376,18 @@ void ServiceConnectionImpl::RunFloatingPointAccuracyRoutine(
 }
 
 void ServiceConnectionImpl::RunNvmeWearLevelRoutine(
-    uint32_t wear_level_threshold,
+    const absl::optional<uint32_t>& wear_level_threshold,
     mojom::CrosHealthdDiagnosticsService::RunNvmeWearLevelRoutineCallback
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
+  mojom::NullableUint32Ptr routine_parameter;
+  if (wear_level_threshold.has_value()) {
+    routine_parameter =
+        mojom::NullableUint32::New(wear_level_threshold.value());
+  }
   cros_healthd_diagnostics_service_->RunNvmeWearLevelRoutine(
-      wear_level_threshold, std::move(callback));
+      std::move(routine_parameter), std::move(callback));
 }
 
 void ServiceConnectionImpl::RunNvmeSelfTestRoutine(

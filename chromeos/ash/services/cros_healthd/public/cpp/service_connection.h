@@ -121,7 +121,7 @@ class ServiceConnection {
   // src/chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunNvmeWearLevelRoutine(
-      uint32_t wear_level_threshold,
+      const absl::optional<uint32_t>& wear_level_threshold,
       mojom::CrosHealthdDiagnosticsService::RunNvmeWearLevelRoutineCallback
           callback) = 0;
 

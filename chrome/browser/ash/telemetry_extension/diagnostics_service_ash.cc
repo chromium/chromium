@@ -310,7 +310,7 @@ void DiagnosticsServiceAsh::RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
   GetService()->RunNvmeWearLevelRoutine(
-      wear_level_threshold,
+      cros_healthd::mojom::NullableUint32::New(wear_level_threshold),
       base::BindOnce(
           [](crosapi::mojom::DiagnosticsService::RunNvmeWearLevelRoutineCallback
                  callback,

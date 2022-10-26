@@ -632,19 +632,23 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunNvmeWearLevelRoutineSuccess) {
              })));
 }
 
-// Test that leaving out the wearLevelThreshold parameter causes the NVMe wear
-// level routine to fail.
+// Test that the NVMe wear level routine can be run without the
+// wearLevelThreshold parameter.
 TEST_F(DeviceCommandRunRoutineJobTest,
-       RunNvmeWearLevelRoutineMissingWearLevelThreshold) {
+       RunNvmeWearLevelRoutineWithoutWearLevelThreshold) {
+  auto run_routine_response =
+      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
   EXPECT_TRUE(
       RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel,
              std::move(params_dict),
              base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
                std::unique_ptr<std::string> payload = job->GetResultPayload();
                EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
              })));
 }
 

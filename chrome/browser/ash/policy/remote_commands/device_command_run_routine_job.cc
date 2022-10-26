@@ -309,8 +309,8 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
       absl::optional<int> wear_level_threshold =
           params_dict_.FindIntKey(kWearLevelThresholdFieldName);
-      // The NVMe wear level routine expects one integer >= 0.
-      if (!wear_level_threshold.has_value() ||
+      // The NVMe wear level routine expects one optional integer >= 0.
+      if (wear_level_threshold.has_value() &&
           wear_level_threshold.value() < 0) {
         SYSLOG(ERROR) << "Invalid parameters for NVMe wear level routine.";
         base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -321,7 +321,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       }
       ash::cros_healthd::ServiceConnection::GetInstance()
           ->RunNvmeWearLevelRoutine(
-              wear_level_threshold.value(),
+              wear_level_threshold,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),

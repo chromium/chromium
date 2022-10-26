@@ -587,8 +587,18 @@ void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
       callback_delay_);
 }
 
-void FakeCrosHealthd::RunNvmeWearLevelRoutine(
+void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
     uint32_t wear_level_threshold,
+    RunNvmeWearLevelRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_.Clone()),
+      callback_delay_);
+}
+
+void FakeCrosHealthd::RunNvmeWearLevelRoutine(
+    mojom::NullableUint32Ptr wear_level_threshold,
     RunNvmeWearLevelRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kNvmeWearLevel;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
