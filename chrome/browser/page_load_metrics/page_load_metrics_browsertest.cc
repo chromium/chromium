@@ -3969,7 +3969,9 @@ class NavigationPageLoadMetricsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
+// Flaky. See https://crbug.com/1224780.
+IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest,
+                       DISABLED_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -3982,9 +3984,6 @@ IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
 
   // 1) Navigate to url1.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url1));
-
-  // There is no FirstInputDelay in UMA before the simulated mouse click
-  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 0);
   content::RenderFrameHost* rfh_a = RenderFrameHost();
   content::RenderProcessHost* rfh_a_process = rfh_a->GetProcess();
 
@@ -3992,12 +3991,12 @@ IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(100, 100));
-
-  // Run arbitrary script and run tasks in the browser to ensure the input is
+  // Run arbitrary script and run tasks in the brwoser to ensure the input is
   // processed in the renderer.
   EXPECT_TRUE(content::ExecJs(rfh_a, "var foo = 42;"));
   base::RunLoop().RunUntilIdle();
   content::FetchHistogramsFromChildProcesses();
+  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 0);
 
   // 2) Immediately navigate to url2.
   if (GetParam() == "CrossSiteRendererInitiated") {
