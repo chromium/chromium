@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/signin_util.h"
@@ -73,9 +74,11 @@ class PostRestoreAppAgentTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
     browser_state_ = builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     auth_service_ =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     return auth_service_;

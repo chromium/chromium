@@ -31,8 +31,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -245,10 +243,6 @@ class AppStateTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         IOSChromeContentSuggestionsServiceFactory::GetInstance(),
         IOSChromeContentSuggestionsServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
     browser_state_ = test_cbs_builder.Build();
   }
 
