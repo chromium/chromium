@@ -184,13 +184,13 @@ FormDataImporter::AddressProfileImportCandidate::
 
 void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
                                       bool profile_autofill_enabled,
-                                      bool credit_card_autofill_enabled) {
+                                      bool payment_methods_autofill_enabled) {
   bool is_credit_card_upstream_enabled =
       credit_card_save_manager_->IsCreditCardUploadEnabled();
 
   ImportFormDataResult imported_data;
   ImportFormData(submitted_form, profile_autofill_enabled,
-                 credit_card_autofill_enabled,
+                 payment_methods_autofill_enabled,
                  /*should_return_local_card=*/is_credit_card_upstream_enabled,
                  &imported_data);
 
@@ -208,7 +208,7 @@ void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
 
   bool cc_prompt_potentially_shown = ProcessCreditCardImportCandidate(
       submitted_form, imported_data.credit_card_import_candidate,
-      imported_data.imported_upi_id, credit_card_autofill_enabled,
+      imported_data.imported_upi_id, payment_methods_autofill_enabled,
       is_credit_card_upstream_enabled);
   fetched_card_instrument_id_.reset();
 
@@ -280,7 +280,7 @@ void FormDataImporter::SetFetchedCardInstrumentId(int64_t instrument_id) {
 bool FormDataImporter::ImportFormData(
     const FormStructure& submitted_form,
     bool profile_autofill_enabled,
-    bool credit_card_autofill_enabled,
+    bool payment_methods_autofill_enabled,
     bool should_return_local_card,
     ImportFormDataResult* imported_form_data) {
   // We try the same `form` for both credit card and address import/update.
@@ -291,7 +291,7 @@ bool FormDataImporter::ImportFormData(
   // form no matter whether `ImportCreditCard()` is called or not.
   imported_credit_card_record_type_ = ImportedCreditCardRecordType::NO_CARD;
   bool cc_import = false;
-  if (credit_card_autofill_enabled) {
+  if (payment_methods_autofill_enabled) {
     cc_import =
         ImportCreditCard(submitted_form, should_return_local_card,
                          &(imported_form_data->credit_card_import_candidate));
@@ -308,7 +308,7 @@ bool FormDataImporter::ImportFormData(
         submitted_form, &imported_form_data->address_profile_import_candidates);
   }
 
-  if (profile_autofill_enabled && credit_card_autofill_enabled &&
+  if (profile_autofill_enabled && payment_methods_autofill_enabled &&
       base::FeatureList::IsEnabled(features::kAutofillAssociateForms)) {
     auto origin = url::Origin::Create(submitted_form.source_url());
     FormSignature form_signature = submitted_form.form_signature();
@@ -731,10 +731,10 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
     const FormStructure& submitted_form,
     const absl::optional<CreditCard>& credit_card_import_candidate,
     const absl::optional<std::string>& imported_upi_id,
-    bool credit_card_autofill_enabled,
+    bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (imported_upi_id && credit_card_autofill_enabled &&
+  if (imported_upi_id && payment_methods_autofill_enabled &&
       base::FeatureList::IsEnabled(features::kAutofillSaveAndFillVPA)) {
     upi_vpa_save_manager_->OfferLocalSave(*imported_upi_id);
   }

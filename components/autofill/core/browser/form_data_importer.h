@@ -61,12 +61,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
   ~FormDataImporter() override;
 
   // Imports the form data, submitted by the user, into
-  // |personal_data_manager_|. If a new credit card was detected and
-  // |credit_card_autofill_enabled| is set to |true|, also begins the process to
-  // offer local or upload credit card save.
+  // `personal_data_manager_`. If a new credit card was detected and
+  // `payment_methods_autofill_enabled` is set to `true`, also begins the
+  // process to offer local or upload credit card save.
   void ImportFormData(const FormStructure& submitted_form,
                       bool profile_autofill_enabled,
-                      bool credit_card_autofill_enabled);
+                      bool payment_methods_autofill_enabled);
 
   // Extract credit card from the form structure. This function allows for
   // duplicated field types in the form.
@@ -181,10 +181,11 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Returns true if one of the conditions meet:
   // 1) the form includes either sufficient address data for a new profile.
   // 2) ImportCreditCard() returns true
-  // 3) The form contains UPI data and |credit_card_autofill_enabled| is true.
+  // 3) The form contains UPI data and `payment_methods_autofill_enabled` is
+  // true.
   bool ImportFormData(const FormStructure& form,
                       bool profile_autofill_enabled,
-                      bool credit_card_autofill_enabled,
+                      bool payment_methods_autofill_enabled,
                       bool should_return_local_card,
                       ImportFormDataResult* imported_form_data);
 
@@ -228,17 +229,17 @@ class FormDataImporter : public PersonalDataManagerObserver {
       bool should_return_local_card,
       absl::optional<CreditCard>* credit_card_import_candidate);
 
-  // Tries to initiate the saving of the |credit_card_import_candidate|
-  // if applicable. |submitted_form| is the form from which the card was
-  // imported. If a UPI id was found it is stored in |imported_upi_id|.
-  // |credit_card_autofill_enabled| indicates if credit card filling is enabled
-  // and |is_credit_card_upstream_enabled| indicates if server card storage is
-  // enabled. Returns true if a save is initiated.
+  // Tries to initiate the saving of the `credit_card_import_candidate`
+  // if applicable. `submitted_form` is the form from which the card was
+  // imported. If a UPI id was found it is stored in `imported_upi_id`.
+  // `payment_methods_autofill_enabled` indicates if credit card filling is
+  // enabled and `is_credit_card_upstream_enabled` indicates if server card
+  // storage is enabled. Returns true if a save is initiated.
   bool ProcessCreditCardImportCandidate(
       const FormStructure& submitted_form,
       const absl::optional<CreditCard>& credit_card_import_candidate,
       const absl::optional<std::string>& imported_upi_id,
-      bool credit_card_autofill_enabled,
+      bool payment_methods_autofill_enabled,
       bool is_credit_card_upstream_enabled);
 
   // Processes the address profile import candidates.

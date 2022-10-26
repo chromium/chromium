@@ -650,13 +650,13 @@ class FormDataImporterTestBase {
   bool ImportFormDataAndProcessAddressCandidates(
       const FormStructure& form,
       bool profile_autofill_enabled,
-      bool credit_card_autofill_enabled,
+      bool payment_methods_autofill_enabled,
       bool should_return_local_card,
       absl::optional<CreditCard>* credit_card_import_candidate,
       absl::optional<std::string>* imported_upi_id) {
     ImportFormDataResult imported_data;
     bool has_imported_data = form_data_importer().ImportFormData(
-        form, profile_autofill_enabled, credit_card_autofill_enabled,
+        form, profile_autofill_enabled, payment_methods_autofill_enabled,
         should_return_local_card, &imported_data);
 
     form_data_importer().ProcessAddressProfileImportCandidates(
@@ -673,7 +673,7 @@ class FormDataImporterTestBase {
     absl::optional<std::string> unused_imported_upi_id;
     return ImportFormDataAndProcessAddressCandidates(
         form, /*profile_autofill_enabled=*/true,
-        /*credit_card_autofill_enabled=*/true,
+        /*payment_methods_autofill_enabled=*/true,
         /*should_return_local_card=*/true, &unused_credit_card_import_candidate,
         &unused_imported_upi_id);
   }
@@ -2846,7 +2846,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -2870,7 +2870,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<CreditCard> credit_card_import_candidate2;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure2, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate2,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate2);
@@ -2880,8 +2880,8 @@ TEST_P(FormDataImporterTest,
       form_data_importer().imported_credit_card_record_type_for_testing() ==
       FormDataImporter::ImportedCreditCardRecordType::NEW_CARD);
 
-  // Third form is an address form and set |credit_card_autofill_enabled| to be
-  // false so that the ImportCreditCard won't be called.
+  // Third form is an address form and set `payment_methods_autofill_enabled` to
+  // be false so that the ImportCreditCard won't be called.
   // `FormDataImporterTest::imported_credit_card_record_type_` should still be
   // reset even if ImportCreditCard is not called. Simulate a form submission
   // with no card.
@@ -2912,7 +2912,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<CreditCard> credit_card_import_candidate3;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure3, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/false,
+      /*payment_methods_autofill_enabled=*/false,
       /*should_return_local_card=*/true, &credit_card_import_candidate3,
       &imported_upi_id));
   // |imported_credit_card_record_type_| should be NO_CARD because no valid card
@@ -2939,7 +2939,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -2979,7 +2979,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3020,7 +3020,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3060,7 +3060,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3087,7 +3087,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3115,7 +3115,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3144,7 +3144,7 @@ TEST_P(
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3189,7 +3189,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3241,7 +3241,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3329,7 +3329,7 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
   // Still returns true because the credit card import was successful.
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   run_loop.Run();
@@ -3390,7 +3390,7 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressesDisabledOneCreditCard) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3451,7 +3451,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/false,
+      /*payment_methods_autofill_enabled=*/false,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3511,7 +3511,7 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressCreditCardDisabled) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
-      /*credit_card_autofill_enabled=*/false,
+      /*payment_methods_autofill_enabled=*/false,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3567,7 +3567,7 @@ TEST_P(FormDataImporterTest, DuplicateMaskedServerCard) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3606,7 +3606,7 @@ TEST_P(FormDataImporterTest, ImportFormData_HiddenCreditCardFormAfterEntered) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3635,7 +3635,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       *form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/true, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(imported_upi_id.has_value());
@@ -3699,7 +3699,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3757,7 +3757,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3805,7 +3805,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3850,7 +3850,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(credit_card_import_candidate);
@@ -3896,7 +3896,7 @@ TEST_P(
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3941,7 +3941,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -3989,7 +3989,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -4038,7 +4038,7 @@ TEST_P(FormDataImporterTest,
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(credit_card_import_candidate);
@@ -4063,7 +4063,7 @@ TEST_P(FormDataImporterTest, ImportUpiId) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_TRUE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_TRUE(imported_upi_id.has_value());
@@ -4086,7 +4086,7 @@ TEST_P(FormDataImporterTest, ImportUpiIdDisabled) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
-      /*credit_card_autofill_enabled=*/false,
+      /*payment_methods_autofill_enabled=*/false,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(imported_upi_id.has_value());
@@ -4108,7 +4108,7 @@ TEST_P(FormDataImporterTest, ImportUpiIdIgnoreNonUpiId) {
   absl::optional<std::string> imported_upi_id;
   ASSERT_FALSE(ImportFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/false,
-      /*credit_card_autofill_enabled=*/false,
+      /*payment_methods_autofill_enabled=*/false,
       /*should_return_local_card=*/false, &credit_card_import_candidate,
       &imported_upi_id));
   ASSERT_FALSE(imported_upi_id.has_value());
@@ -4565,7 +4565,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
 
   EXPECT_FALSE(form_data_importer().ProcessCreditCardImportCandidate(
       *form_structure, credit_card_import_candidate, imported_upi_id,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
   personal_data_manager_->OnSyncServiceInitialized(nullptr);
 }
@@ -4600,7 +4600,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       .Times(0);
   EXPECT_FALSE(form_data_importer().ProcessCreditCardImportCandidate(
       *form_structure, credit_card_import_candidate, imported_upi_id,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 
   form_data_importer().SetFetchedCardInstrumentId(1111);
@@ -4610,7 +4610,7 @@ TEST_F(FormDataImporterNonParameterizedTest,
       .Times(1);
   EXPECT_TRUE(form_data_importer().ProcessCreditCardImportCandidate(
       *form_structure, credit_card_import_candidate, imported_upi_id,
-      /*credit_card_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/true));
 
   personal_data_manager_->OnSyncServiceInitialized(nullptr);
