@@ -11,6 +11,7 @@
 #include "base/memory/values_equivalent.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/paint/draw_image.h"
@@ -838,8 +839,8 @@ sk_sp<PaintFilter> MatrixConvolutionPaintFilter::SnapshotWithImagesInternal(
 bool MatrixConvolutionPaintFilter::operator==(
     const MatrixConvolutionPaintFilter& other) const {
   return kernel_size_ == other.kernel_size_ &&
-         std::equal(kernel_.container().begin(), kernel_.container().end(),
-                    other.kernel_.container().begin(), AreScalarsEqual) &&
+         base::ranges::equal(kernel_.container(), other.kernel_.container(),
+                             AreScalarsEqual) &&
          PaintOp::AreEqualEvenIfNaN(gain_, other.gain_) &&
          PaintOp::AreEqualEvenIfNaN(bias_, other.bias_) &&
          kernel_offset_ == other.kernel_offset_ &&
