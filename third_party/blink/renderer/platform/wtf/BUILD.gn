@@ -155,6 +155,8 @@ component("wtf") {
     "text/text_codec.cc",
     "text/text_codec.h",
     "text/text_codec_ascii_fast_path.h",
+    "text/text_codec_cjk.cc",
+    "text/text_codec_cjk.h",
     "text/text_codec_icu.cc",
     "text/text_codec_icu.h",
     "text/text_codec_latin1.cc",
@@ -218,6 +220,7 @@ component("wtf") {
   deps = [
     "//base/allocator:buildflags",
     "//build:chromeos_buildflags",
+    "//third_party/blink/public/common:common",
 
     # TODO(tkent): WTF should not depend on it.
     "//third_party/blink/public/common:headers",
@@ -333,6 +336,7 @@ source_set("wtf_unittests_sources") {
     "text/string_impl_test.cc",
     "text/string_to_number_test.cc",
     "text/string_view_test.cc",
+    "text/text_codec_cjk_test.cc",
     "text/text_codec_icu_test.cc",
     "text/text_codec_replacement_test.cc",
     "text/text_codec_test.cc",

@@ -44,22 +44,26 @@ namespace WTF {
 constexpr size_t kJis0208EncodeIndexSize = 7724;
 using Jis0208EncodeIndex =
     std::array<std::pair<uint16_t, UChar>, kJis0208EncodeIndexSize>;
-const WTF_EXPORT Jis0208EncodeIndex& EnsureJis0208EncodeIndex();
+const WTF_EXPORT Jis0208EncodeIndex& EnsureJis0208EncodeIndexForEncode();
+const WTF_EXPORT Jis0208EncodeIndex& EnsureJis0208EncodeIndexForDecode();
 
 constexpr size_t kJis0212EncodeIndexSize = 6067;
 using Jis0212EncodeIndex =
     std::array<std::pair<uint16_t, UChar>, kJis0212EncodeIndexSize>;
-const WTF_EXPORT Jis0212EncodeIndex& EnsureJis0212EncodeIndex();
+const WTF_EXPORT Jis0212EncodeIndex& EnsureJis0212EncodeIndexForEncode();
+const WTF_EXPORT Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode();
 
 constexpr size_t kEucKrEncodeIndexSize = 17048;
 using EucKrEncodeIndex =
     std::array<std::pair<uint16_t, UChar>, kEucKrEncodeIndexSize>;
-const WTF_EXPORT EucKrEncodeIndex& EnsureEucKrEncodeIndex();
+const WTF_EXPORT EucKrEncodeIndex& EnsureEucKrEncodeIndexForEncode();
+const WTF_EXPORT EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode();
 
 constexpr size_t kGb18030EncodeIndexSize = 23940;
 using Gb18030EncodeIndex =
     std::array<std::pair<uint16_t, UChar>, kGb18030EncodeIndexSize>;
 using Gb18030EncodeTable = std::array<UChar, kGb18030EncodeIndexSize>;
+const WTF_EXPORT Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode();
 const WTF_EXPORT Gb18030EncodeTable& EnsureGb18030EncodeTable();
 
 // Functions for using sorted arrays of pairs as a map.

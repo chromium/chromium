@@ -10421,36 +10421,52 @@ bool IsSortedByFirst(const CollectionType& collection) {
 }
 
 TEST(EncodingTables, CheckEncodingTableInvariants) {
-  EXPECT_TRUE(IsSortedByFirst(EnsureJis0208EncodeIndex()));
-  EXPECT_TRUE(SortedFirstsAreUnique(EnsureJis0208EncodeIndex()));
+  EXPECT_TRUE(IsSortedByFirst(EnsureJis0208EncodeIndexForDecode()));
+  EXPECT_TRUE(SortedFirstsAreUnique(EnsureJis0208EncodeIndexForDecode()));
 
-  EXPECT_TRUE(IsSortedByFirst(EnsureJis0212EncodeIndex()));
-  EXPECT_TRUE(SortedFirstsAreUnique(EnsureJis0212EncodeIndex()));
+  EXPECT_TRUE(IsSortedByFirst(EnsureJis0212EncodeIndexForDecode()));
+  EXPECT_TRUE(SortedFirstsAreUnique(EnsureJis0212EncodeIndexForDecode()));
 
-  EXPECT_TRUE(IsSortedByFirst(EnsureEucKrEncodeIndex()));
-  EXPECT_TRUE(SortedFirstsAreUnique(EnsureEucKrEncodeIndex()));
+  EXPECT_TRUE(IsSortedByFirst(EnsureEucKrEncodeIndexForDecode()));
+  EXPECT_TRUE(SortedFirstsAreUnique(EnsureEucKrEncodeIndexForDecode()));
 }
 
-TEST(EncodingTables, EnsureJis0208EncodeIndex) {
-  const Jis0208EncodeIndex& table = EnsureJis0208EncodeIndex();
+TEST(EncodingTables, EnsureJis0208EncodeIndexForEncode) {
+  const Jis0208EncodeIndex& table = EnsureJis0208EncodeIndexForEncode();
+  EXPECT_EQ(table.size(), kJis0208EncodeIndexSize);
+}
+
+TEST(EncodingTables, EnsureJis0208EncodeIndexForDecode) {
+  const Jis0208EncodeIndex& table = EnsureJis0208EncodeIndexForDecode();
   EXPECT_EQ(table.size(), kJis0208EncodeIndexSize);
   EXPECT_EQ(table, kJis0208Reference);
 }
 
-TEST(EncodingTables, EnsureJis0212EncodeIndex) {
-  const Jis0212EncodeIndex& table = EnsureJis0212EncodeIndex();
+TEST(EncodingTables, EnsureJis0212EncodeIndexForDecode) {
+  const Jis0212EncodeIndex& table = EnsureJis0212EncodeIndexForDecode();
   EXPECT_EQ(table.size(), kJis0212EncodeIndexSize);
   EXPECT_EQ(table, kJis0212Reference);
 }
 
-TEST(EncodingTables, EnsureEucKrEncodeIndex) {
-  const EucKrEncodeIndex& table = EnsureEucKrEncodeIndex();
+TEST(EncodingTables, EnsureEucKrEncodeIndexForEncode) {
+  const EucKrEncodeIndex& table = EnsureEucKrEncodeIndexForEncode();
+  EXPECT_EQ(table.size(), kEucKrEncodeIndexSize);
+}
+
+TEST(EncodingTables, EnsureEucKrEncodeIndexForDecode) {
+  const EucKrEncodeIndex& table = EnsureEucKrEncodeIndexForDecode();
   EXPECT_EQ(table.size(), kEucKrEncodeIndexSize);
   EXPECT_EQ(table, kEucKrDecodingIndexReference);
 }
 
+TEST(EncodingTables, EnsureGb18030EncodeIndexForEncode) {
+  const Gb18030EncodeIndex& table = EnsureGb18030EncodeIndexForEncode();
+  EXPECT_EQ(table.size(), kGb18030EncodeIndexSize);
+}
+
 TEST(EncodingTables, EnsureGb18030EncodeTable) {
   const Gb18030EncodeTable& table = EnsureGb18030EncodeTable();
+  EXPECT_EQ(table.size(), kGb18030EncodeIndexSize);
   // Note: ICU4C that WebKit use has difference, but Chromium does not.
   EXPECT_EQ(table[6555], 0x3000);
   EXPECT_EQ(table, kGb18030Reference);

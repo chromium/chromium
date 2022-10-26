@@ -28,9 +28,8 @@ testDecode('gb18030', '%A8%BC', 'U+1E3F');
 testDecode('gb18030', '%A1%AD', 'U+2026');
 testDecode('gb18030', '%A1%AB', 'U+FF5E');
 
-// Replace U+E7C7 with U+1E3F once
-// https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3 is resolved.
-testDecode('gbk', '%A8%BC', 'U+E7C7');
+// See: https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740
+testDecode('gbk', '%A8%BC', 'U+1E3F');
 
 // Test Shift_JIS aliases.
 testDecode('Shift_JIS', '%82%d0', 'U+3072');

@@ -31,11 +31,14 @@
 #include <unicode/ucnv.h>
 #include <unicode/ucnv_cb.h>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace WTF {
@@ -80,6 +83,8 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // apart; ICU treats these names as synonyms.
   registrar("ISO-8859-8-I", "ISO-8859-8-I");
 
+  const bool is_text_codec_cjk_enabled =
+      base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled);
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
@@ -138,6 +143,10 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
       standard_name = "windows-874";
     }
 #endif
+
+    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+      continue;
+    }
 
     registrar(standard_name, standard_name);
 
@@ -258,6 +267,8 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
   // See comment above in registerEncodingNames.
   registrar("ISO-8859-8-I", Create, nullptr);
 
+  const bool is_text_codec_cjk_enabled =
+      base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled);
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
@@ -278,6 +289,9 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
       continue;
     }
 #endif
+    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+      continue;
+    }
     registrar(standard_name, Create, nullptr);
   }
 }

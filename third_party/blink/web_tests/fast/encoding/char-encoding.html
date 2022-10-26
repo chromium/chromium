@@ -14,9 +14,9 @@ testEncode("UTF-8", "0xD800", "%EF%BF%BD"); // U+FFFD (REPLACEMENT CHARACTER)
 testEncode("UTF-8", "0xDC00", "%EF%BF%BD"); // U+FFFD (REPLACEMENT CHARACTER)
 
 //Yen symbol in gbk
-testEncode('GBK', 'U+00A5', '%A3%A4');
-testEncode('gb2312', 'U+00A5', '%A3%A4');
-testEncode('GB_2312-80', 'U+00A5', '%A3%A4');
+testEncode('GBK', 'U+00A5', '%26%23165%3B');
+testEncode('gb2312', 'U+00A5', '%26%23165%3B');
+testEncode('GB_2312-80', 'U+00A5', '%26%23165%3B');
 //Euro symbol in gbk
 testEncode('GBK', 'U+20AC', '%80');
 testEncode('gb2312', 'U+20AC', '%80');

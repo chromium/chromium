@@ -137,7 +137,7 @@ constexpr std::array<std::pair<uint16_t, UChar>, 388> kJis0208Extras{
      {11096, 0x9bb1}, {11097, 0x9bbb}, {11098, 0x9c00}, {11099, 0x9d70},
      {11100, 0x9d6b}, {11101, 0xfa2d}, {11102, 0x9e19}, {11103, 0x9ed1}}};
 
-const Jis0208EncodeIndex& EnsureJis0208EncodeIndex() {
+const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForDecode() {
   // Allocate this at runtime because building it at compile time would make the
   // binary much larger and this is often not used.
   static Jis0208EncodeIndex* array;
@@ -179,7 +179,23 @@ const Jis0208EncodeIndex& EnsureJis0208EncodeIndex() {
   return *array;
 }
 
-const Jis0212EncodeIndex& EnsureJis0212EncodeIndex() {
+const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForEncode() {
+  // Allocate this at runtime because building it at compile time would make the
+  // binary much larger and this is often not used.
+  static Jis0208EncodeIndex* table;
+  LEAK_SANITIZER_IGNORE_OBJECT(table);
+  static std::once_flag once;
+  std::call_once(once, [&] {
+    table = new Jis0208EncodeIndex;
+    auto& index = EnsureJis0208EncodeIndexForDecode();
+    for (size_t i = 0; i < index.size(); ++i)
+      (*table)[i] = {index[i].second, index[i].first};
+    StableSortByFirst(*table);
+  });
+  return *table;
+}
+
+const Jis0212EncodeIndex& EnsureJis0212EncodeIndexForDecode() {
   // Allocate this at runtime because building it at compile time would make the
   // binary much larger and this is often not used.
   static Jis0212EncodeIndex* array;
@@ -223,7 +239,7 @@ const Jis0212EncodeIndex& EnsureJis0212EncodeIndex() {
   return *array;
 }
 
-const EucKrEncodeIndex& EnsureEucKrEncodeIndex() {
+const EucKrEncodeIndex& EnsureEucKrEncodeIndexForDecode() {
   // Allocate this at runtime because building it at compile time would make the
   // binary much larger and this is often not used.
   static EucKrEncodeIndex* array;
@@ -266,6 +282,23 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndex() {
   return *array;
 }
 
+const EucKrEncodeIndex& EnsureEucKrEncodeIndexForEncode() {
+  // Allocate this at runtime because building it at compile time would make the
+  // binary much larger and this is often not used.
+  static EucKrEncodeIndex* table;
+  LEAK_SANITIZER_IGNORE_OBJECT(table);
+  static std::once_flag once;
+  std::call_once(once, [&] {
+    table = new EucKrEncodeIndex;
+    auto& index = EnsureEucKrEncodeIndexForDecode();
+    for (size_t i = 0; i < index.size(); ++i)
+      (*table)[i] = {index[i].second, index[i].first};
+    SortByFirst(*table);
+    DCHECK(SortedFirstsAreUnique(*table));
+  });
+  return *table;
+}
+
 const Gb18030EncodeTable& EnsureGb18030EncodeTable() {
   // Allocate this at runtime because building it at compile time would make the
   // binary much larger and this is often not used.
@@ -297,6 +330,22 @@ const Gb18030EncodeTable& EnsureGb18030EncodeTable() {
     DCHECK_EQ((*array)[6555], 0x3000);
   });
   return *array;
+}
+
+const Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode() {
+  // Allocate this at runtime because building it at compile time would make the
+  // binary much larger and this is often not used.
+  static Gb18030EncodeIndex* table;
+  LEAK_SANITIZER_IGNORE_OBJECT(table);
+  static std::once_flag once;
+  std::call_once(once, [&] {
+    table = new Gb18030EncodeIndex;
+    auto& index = EnsureGb18030EncodeTable();
+    for (uint16_t i = 0; i < index.size(); ++i)
+      (*table)[i] = {index[i], i};
+    StableSortByFirst(*table);
+  });
+  return *table;
 }
 
 }  // namespace WTF

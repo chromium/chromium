@@ -24,10 +24,10 @@ testDecode('EUC-KR', '%FE%A1', 'U+FFFD');
 
 // TODO(jshin): Add more tests for EUC-JP.
 testDecode('EUC-JP', '%8F%A1%A1', 'U+FFFD');
-testDecode('EUC-JP', '%8F%A1%81%22', 'U+FFFD/U+FFFD/U+0022');
-testDecode('EUC-JP', '%8F%A1%22', 'U+FFFD/U+FFFD/U+0022');
-testDecode('EUC-JP', '%8E%8E%A1', 'U+FFFD/U+FF61');
-testDecode('EUC-JP', '%8E%E0', 'U+FFFD/U+FFFD');
+testDecode('EUC-JP', '%8F%A1%81%22', 'U+FFFD/U+0022');
+testDecode('EUC-JP', '%8F%A1%22', 'U+FFFD/U+0022');
+testDecode('EUC-JP', '%8E%8E%A1', 'U+FFFD/U+FFFD');
+testDecode('EUC-JP', '%8E%E0', 'U+FFFD');
 
 testDecode('Big5', '%A1%22', 'U+FFFD/U+0022');
 testDecode('Big5', '%87%66', 'U+FFFD/U+0066');

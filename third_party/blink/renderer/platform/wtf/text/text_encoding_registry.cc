@@ -29,13 +29,16 @@
 #include <atomic>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_latin1.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_replacement.h"
@@ -206,6 +209,11 @@ static void BuildBaseTextCodecMaps() {
 static void ExtendTextCodecMaps() {
   TextCodecReplacement::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecReplacement::RegisterCodecs(AddToTextCodecMap);
+
+  if (base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled)) {
+    TextCodecCJK::RegisterEncodingNames(AddToTextEncodingNameMap);
+    TextCodecCJK::RegisterCodecs(AddToTextCodecMap);
+  }
 
   TextCodecICU::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecICU::RegisterCodecs(AddToTextCodecMap);

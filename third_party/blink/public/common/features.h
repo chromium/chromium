@@ -949,6 +949,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceHighPerformanceGPUForWebGL);
 // Process device and display capture requests on different queues.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSplitUserMediaQueues);
 
+// Use TextCodecCJK for encoding/decoding CJK except for Big5.
+// If the flag is disabled TextCodecICU would be used instead.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kTextCodecCJKEnabled);
+
 }  // namespace features
 }  // namespace blink
 
