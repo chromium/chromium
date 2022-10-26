@@ -39,7 +39,7 @@ constexpr base::TimeDelta kKeyCacheDuration = base::Hours(4);
 constexpr int kMaxRetries = 5;
 constexpr size_t kMaxQueueSize = 100;
 
-const char kKAnonType[] = "test2";
+const char kKAnonType[] = "fledge";
 
 // TODO(behamilton): Change description once indirect (OHTTP) requests are
 // supported.

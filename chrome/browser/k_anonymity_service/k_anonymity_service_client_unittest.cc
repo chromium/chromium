@@ -346,7 +346,7 @@ class KAnonymityServiceClientJoinQueryTest
 
   void RespondWithJoin() {
     SimulateResponseForPendingRequest(
-        "https://chromekanonymity-pa.googleapis.com/v1/types/test2/sets/", "");
+        "https://chromekanonymity-pa.googleapis.com/v1/types/fledge/sets/", "");
   }
 
   void RespondWithQueryKey() {
@@ -466,19 +466,19 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetBadResponse) {
     })",                               // type doesn't match
       R"({
       "kAnonymousSets": [{
-        "type": "test2",
+        "type": "fledge",
         "hashes": {}
       }]
     })",                               // hashes should be a list
       R"({
       "kAnonymousSets": [{
-        "type": "test2",
+        "type": "fledge",
         "hashes": [{},{}]
       }]
     })",                               // hashes should contain strings
       R"({
       "kAnonymousSets": [{
-        "type": "test2",
+        "type": "fledge",
         "hashes": ["asdf/123kj_-+%"]
       }]
     })",                               // hashes should be base64 encoded values
@@ -526,7 +526,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetSignedIn) {
           "hashes": [
             "a4ayc/80/OGda4BO/1o/V0etpOqiLx1JwB5S3beHW0s="
             ],
-          "type":"test2"
+          "type":"fledge"
         }]
       })");
   run_loop.Run();
@@ -562,7 +562,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetMultipleSets) {
   // The first response includes the hashes for "1" and "2".
   RespondWithQuery(R"({
     "kAnonymousSets": [{
-       "type": "test2",
+       "type": "fledge",
        "hashes": [
           "a4ayc/80/OGda4BO/1o/V0etpOqiLx1JwB5S3beHW0s=",
           "1HNeOiZeFu7gP1lxi5tdAwGcB9i2xR+Q2jpmbuwTqzU="
@@ -572,7 +572,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetMultipleSets) {
   // The second response only includes the hash for "2".
   RespondWithQuery(R"({
     "kAnonymousSets": [
-      { "type": "test2",
+      { "type": "fledge",
         "hashes": [
           "1HNeOiZeFu7gP1lxi5tdAwGcB9i2xR+Q2jpmbuwTqzU="
           ]
@@ -611,13 +611,13 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetCoalescesSplitSets) {
           "hashes": [
             "a4ayc/80/OGda4BO/1o/V0etpOqiLx1JwB5S3beHW0s="
             ],
-          "type":"test2"
+          "type":"fledge"
         },
         {
           "hashes": [
             "1HNeOiZeFu7gP1lxi5tdAwGcB9i2xR+Q2jpmbuwTqzU="
           ],
-          "type":"test2"
+          "type":"fledge"
         }]
       })");
   run_loop.Run();
