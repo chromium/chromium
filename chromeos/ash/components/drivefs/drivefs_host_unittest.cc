@@ -276,7 +276,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
 
   void CallMountCallbackSuccess(const std::string& token) {
     std::move(mount_callback_)
-        .Run(ash::MountError::kNone,
+        .Run(ash::MountError::kSuccess,
              {base::StrCat({"drivefs://", token}),
               "/media/drivefsroot/salt-g-ID", ash::MountType::kNetworkStorage});
   }
