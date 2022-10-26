@@ -21,7 +21,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,14 +74,10 @@ std::u16string GetDisplaySize(int64_t display_id) {
 void OnNotificationClicked(absl::optional<int> button_index) {
   DCHECK(!button_index);
 
-  base::RecordAction(
-      base::UserMetricsAction("StatusArea_Display_Notification_Selected"));
   // Settings may be blocked, e.g. at the lock screen.
   if (Shell::Get()->session_controller()->ShouldEnableSettings() &&
       Shell::Get()->system_tray_model()->client()) {
     Shell::Get()->system_tray_model()->client()->ShowDisplaySettings();
-    base::RecordAction(base::UserMetricsAction(
-        "StatusArea_Display_Notification_Show_Settings"));
   }
   message_center::MessageCenter::Get()->RemoveNotification(
       ScreenLayoutObserver::kNotificationId, /*by_user=*/true);
@@ -328,8 +323,6 @@ void ScreenLayoutObserver::CreateOrUpdateNotification(
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_priority(message_center::SYSTEM_PRIORITY);
 
-  base::RecordAction(
-      base::UserMetricsAction("StatusArea_Display_Notification_Created"));
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
 }

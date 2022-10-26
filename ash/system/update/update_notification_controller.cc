@@ -18,7 +18,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -293,8 +292,6 @@ void UpdateNotificationController::RestartForUpdate() {
   }
   // System updates require restarting the device.
   Shell::Get()->session_controller()->RequestRestartForUpdate();
-  base::RecordAction(
-      base::UserMetricsAction("StatusArea_OS_Update_Default_Selected"));
 }
 
 void UpdateNotificationController::RestartCancelled() {

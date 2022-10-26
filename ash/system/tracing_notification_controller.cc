@@ -12,7 +12,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/bind.h"
-#include "base/metrics/user_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -27,8 +26,6 @@ namespace {
 const char kNotifierId[] = "ash.tracing";
 
 void HandleNotificationClick() {
-  base::RecordAction(
-      base::UserMetricsAction("StatusArea_Tracing_Default_Selected"));
   Shell::Get()->system_tray_model()->client()->ShowChromeSlow();
 }
 

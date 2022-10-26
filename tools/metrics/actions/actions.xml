@@ -31440,6 +31440,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Display_Default_Selected">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user selects the display row in the system
@@ -31451,6 +31452,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Display_Default_ShowSettings">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the display settings are opened as a result of
@@ -31459,6 +31461,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Display_Notification_Created">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times a new display notification is added to the
@@ -31467,6 +31470,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Display_Notification_Selected">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user selects the display notification. This
@@ -31479,6 +31483,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Display_Notification_Show_Settings">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the display settings are opened as a result of
@@ -31776,6 +31781,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_ScreenCapture_Default_Stop">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user stops screen capturing via the screen
@@ -31784,6 +31790,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_ScreenCapture_Notification_Stop">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user stops screen capturing via the Screen
@@ -31812,6 +31819,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_SMS_Detailed">
+  <obsolete>
+    Not recorded as of 10/2022. It's unclear when the recording code was
+    deleted.
+  </obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user has opened the &quot;SMS messages &quot;
@@ -31820,6 +31831,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_SMS_Detailed_DismissMsg">
+  <obsolete>
+    Not recorded as of 10/2022. It's unclear when the recording code was
+    deleted.
+  </obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user has dismissed an SMS message from the
@@ -31828,6 +31843,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_SMS_Notification_DismissMsg">
+  <obsolete>
+    Not recorded as of 10/2022. It's unclear when the recording code was
+    deleted.
+  </obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user has dismissed an SMS message
@@ -31887,6 +31906,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Tracing_Default_Selected">
+  <obsolete>Deprecated 10/2022. No longer needed.</obsolete>
   <owner>tbuckley@chromium.org</owner>
   <description>
     Counts the number of times the user selects the tracing row in the system

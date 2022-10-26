@@ -69,10 +69,6 @@ void ScreenSecurityController::CreateNotification(const std::u16string& message,
 
                 if (*button_index == 0) {
                   controller->StopAllSessions(is_capture);
-                  if (is_capture) {
-                    base::RecordAction(base::UserMetricsAction(
-                        "StatusArea_ScreenCapture_Notification_Stop"));
-                  }
                 } else if (*button_index == 1) {
                   controller->ChangeSource();
                   if (is_capture) {
