@@ -7,7 +7,6 @@ package org.chromium.android_webview.variations;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -21,7 +20,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.services.IVariationsSeedServer;
 import org.chromium.android_webview.common.services.IVariationsSeedServerCallback;
-import org.chromium.android_webview.common.services.ServiceHelper;
+import org.chromium.android_webview.common.services.ServiceConnectionDelayRecorder;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
@@ -242,7 +241,7 @@ public class VariationsSeedLoader {
 
     // Connects to VariationsSeedServer service. Sends a file descriptor for our local copy of the
     // seed to the service, to which the service will write a new seed.
-    private class SeedServerConnection implements ServiceConnection {
+    private class SeedServerConnection extends ServiceConnectionDelayRecorder {
         private ParcelFileDescriptor mNewSeedFd;
         private long mOldSeedDate;
 
@@ -253,8 +252,8 @@ public class VariationsSeedLoader {
 
         public void start() {
             try {
-                if (!ServiceHelper.bindService(ContextUtils.getApplicationContext(),
-                            getServerIntent(), this, Context.BIND_AUTO_CREATE)) {
+                if (!bind(ContextUtils.getApplicationContext(), getServerIntent(),
+                            Context.BIND_AUTO_CREATE)) {
                     Log.e(TAG, "Failed to bind to WebView service");
                 }
                 // Connect to nonembedded metrics Service at the same time we connect to variation
@@ -268,7 +267,7 @@ public class VariationsSeedLoader {
         }
 
         @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
+        public void onServiceConnectedImpl(ComponentName name, IBinder service) {
             try {
                 if (mNewSeedFd.getFd() >= 0) {
                     IVariationsSeedServer.Stub.asInterface(service).getSeed(

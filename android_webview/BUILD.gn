@@ -795,6 +795,7 @@ android_library("common_java") {
     "java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java",
     "java/src/org/chromium/android_webview/common/SafeModeAction.java",
     "java/src/org/chromium/android_webview/common/SafeModeController.java",
+    "java/src/org/chromium/android_webview/common/services/ServiceConnectionDelayRecorder.java",
     "java/src/org/chromium/android_webview/common/services/ServiceHelper.java",
     "java/src/org/chromium/android_webview/common/services/ServiceNames.java",
   ]

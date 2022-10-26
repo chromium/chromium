@@ -414,6 +414,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/WebViewModalDialogOverrideTest.java",
     "../javatests/src/org/chromium/android_webview/test/common/crash/CrashInfoEqualityMatcher.java",
     "../javatests/src/org/chromium/android_webview/test/common/crash/CrashInfoTest.java",
+    "../javatests/src/org/chromium/android_webview/test/common/services/ServiceConnectionDelayRecorderTest.java",
     "../javatests/src/org/chromium/android_webview/test/common/variations/VariationsUtilsTest.java",
     "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/AwNonembeddedUmaRecorderTest.java",

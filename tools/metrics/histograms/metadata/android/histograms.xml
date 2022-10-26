@@ -4821,6 +4821,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.Startup.NonblockingServiceConnectionDelay.{ServiceName}"
+    units="ms" expires_after="2023-02-01">
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the delay between calling Context#bindService until the
+    ServiceConnection#onServiceConnected is called. This should give an idea of
+    how long it takes for nonembedded service connections to be established and
+    capture any regressions in this. In the case when a service connection is
+    dropped and then reconnected by the system, the histogram is only recorded
+    for the first connection.
+  </summary>
+  <token key="ServiceName">
+    <variant name="MetricsBridgeService"/>
+    <variant name="VariationsSeedServer"/>
+  </token>
+</histogram>
+
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
     enum="WebViewClientTypeEnum" expires_after="2023-08-23">
   <owner>pbirk@chromium.org</owner>
