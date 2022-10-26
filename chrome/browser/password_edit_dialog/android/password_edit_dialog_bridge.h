@@ -57,16 +57,19 @@ class PasswordEditDialog {
 
   virtual ~PasswordEditDialog();
 
-  // Calls Java side of the bridge to display password save modal dialog.
-  virtual void ShowSavePasswordDialog(const std::u16string& username,
-                                      const std::u16string& password,
-                                      const std::string& account_email) = 0;
+  // Calls Java side of the bridge to display password edit modal dialog.
+  // Called when PasswordEditDialogWithDetails feature is enabled.
+  virtual void ShowPasswordEditDialog(
+      const std::vector<std::u16string>& usernames,
+      const std::u16string& username,
+      const std::u16string& password,
+      const std::string& account_email) = 0;
 
-  // Calls Java side of the bridge to display password update modal dialog.
-  virtual void ShowUpdatePasswordDialog(
+  // Calls Java side of the bridge to display legacy password edit dialog.
+  // Called when PasswordEditDialogWithDetails feature is disabled.
+  virtual void ShowLegacyPasswordEditDialog(
       const std::vector<std::u16string>& usernames,
       int selected_username_index,
-      const std::u16string& password,
       const std::string& account_email) = 0;
 
   // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
@@ -92,16 +95,19 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   PasswordEditDialogBridge(const PasswordEditDialogBridge&) = delete;
   PasswordEditDialogBridge& operator=(const PasswordEditDialogBridge&) = delete;
 
-  // Calls Java side of the bridge to display password save modal dialog.
-  void ShowSavePasswordDialog(const std::u16string& username,
+  // Calls Java side of the bridge to display password edit modal dialog.
+  // Called when PasswordEditDialogWithDetails feature is enabled.
+  void ShowPasswordEditDialog(const std::vector<std::u16string>& usernames,
+                              const std::u16string& username,
                               const std::u16string& password,
                               const std::string& account_email) override;
 
-  // Calls Java side of the bridge to display password update modal dialog.
-  void ShowUpdatePasswordDialog(const std::vector<std::u16string>& usernames,
-                                int selected_username_index,
-                                const std::u16string& password,
-                                const std::string& account_email) override;
+  // Calls Java side of the bridge to display legacy password edit dialog.
+  // Called when PasswordEditDialogWithDetails feature is disabled.
+  void ShowLegacyPasswordEditDialog(
+      const std::vector<std::u16string>& usernames,
+      int selected_username_index,
+      const std::string& account_email) override;
 
   // Dismisses displayed dialog. The owner of PassworDeidtDialogBridge should
   // call this function to correctly dismiss and destroy the dialog. The object

@@ -332,28 +332,15 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
       password_forms = passwords_state_.GetCurrentForms();
   const std::u16string& default_username =
       passwords_state_.form_manager()->GetPendingCredentials().username_value;
-  if (password_forms.size() > 1) {
-    // If multiple credentials can be updated, we display a dropdown with all
-    // the corresponding usernames.
-    for (const auto& form : password_forms) {
-      const std::u16string username =
-          base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)
-              ? form->username_value
-              : GetDisplayUsername(*form);
-      usernames->push_back(std::move(username));
-      if (form->username_value == default_username) {
-        selected_username_index = usernames->size() - 1;
-      }
-    }
-  } else {
+  for (const auto& form : password_forms) {
     const std::u16string username =
         base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)
-            ? passwords_state_.form_manager()
-                  ->GetPendingCredentials()
-                  .username_value
-            : GetDisplayUsername(
-                  passwords_state_.form_manager()->GetPendingCredentials());
+            ? form->username_value
+            : GetDisplayUsername(*form);
     usernames->push_back(username);
+    if (form->username_value == default_username) {
+      selected_username_index = usernames->size() - 1;
+    }
   }
   return selected_username_index;
 }
@@ -390,14 +377,14 @@ void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
   if (!password_edit_dialog_)
     return;
 
-  if (update_password) {
-    std::vector<std::u16string> usernames;
-    int selected_username_index = GetDisplayUsernames(&usernames);
-    password_edit_dialog_->ShowUpdatePasswordDialog(
-        usernames, selected_username_index, current_password, account_email_);
+  std::vector<std::u16string> usernames;
+  int selected_username_index = GetDisplayUsernames(&usernames);
+  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
+    password_edit_dialog_->ShowPasswordEditDialog(
+        usernames, current_username, current_password, account_email_);
   } else {
-    password_edit_dialog_->ShowSavePasswordDialog(
-        current_username, current_password, account_email_);
+    password_edit_dialog_->ShowLegacyPasswordEditDialog(
+        usernames, selected_username_index, account_email_);
   }
 
   DismissSaveUpdatePasswordMessage(messages::DismissReason::SECONDARY_ACTION);

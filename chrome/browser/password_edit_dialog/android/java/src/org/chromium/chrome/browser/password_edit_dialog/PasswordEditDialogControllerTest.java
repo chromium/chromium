@@ -62,7 +62,7 @@ public class PasswordEditDialogControllerTest {
     @Mock
     private PasswordEditDialogWithDetailsView mDialogViewMock;
     @Mock
-    private UsernameSelectionConfirmationView mLegacyDialogMock;
+    private UsernameSelectionConfirmationView mLegacyDialogViewMock;
 
     private PropertyModel mCustomViewModel;
     private PropertyModel mModalDialogModel;
@@ -86,7 +86,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUpdatePasswordDialogPropertiesFeatureDisabled() {
-        createAndShowDialog(true);
+        createAndShowDialog(USERNAMES);
         Resources r = RuntimeEnvironment.getApplication().getResources();
 
         Assert.assertEquals(
@@ -96,8 +96,6 @@ public class PasswordEditDialogControllerTest {
                 mCustomViewModel.get(PasswordEditDialogProperties.USERNAMES), contains(USERNAMES));
         Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME_INDEX,
                 mCustomViewModel.get(PasswordEditDialogProperties.USERNAME_INDEX));
-        Assert.assertEquals("Password doesn't match", INITIAL_PASSWORD,
-                mCustomViewModel.get(PasswordEditDialogProperties.PASSWORD));
         Assert.assertNull(
                 "Footer should be null", mCustomViewModel.get(PasswordEditDialogProperties.FOOTER));
         Assert.assertNull("No title icon is expected",
@@ -111,7 +109,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUpdatePasswordDialogWithMultipleCredentialsPropertiesFeatureEnabled() {
-        createAndShowDialog(true);
+        createAndShowDialog(USERNAMES);
         Resources r = RuntimeEnvironment.getApplication().getResources();
 
         Assert.assertEquals(
@@ -144,7 +142,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUpdatePasswordDialogWithSingleCredentialPropertiesFeatureEnabled() {
-        createUpdatePasswordDialogWithSingleUsername();
+        createAndShowDialog(new String[] {INITIAL_USERNAME});
         Resources r = RuntimeEnvironment.getApplication().getResources();
 
         Assert.assertEquals(
@@ -178,7 +176,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testSavePasswordDialogPropertiesFeatureEnabled() {
-        createAndShowDialog(false);
+        createAndShowDialog(new String[0]);
         Resources r = RuntimeEnvironment.getApplication().getResources();
 
         Assert.assertEquals(
@@ -206,11 +204,11 @@ public class PasswordEditDialogControllerTest {
         }
     }
 
-    /** Tests that the username entered in the layout propagates to the model. */
+    /** Tests that the username index selected in the layout propagates to the model. */
     @Test
     @DisableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testLegacyUsernameSelected() {
-        createAndShowDialog(false);
+        createAndShowDialog(USERNAMES);
 
         Callback<Integer> usernameSelectedCallback =
                 mCustomViewModel.get(PasswordEditDialogProperties.USERNAME_SELECTED_CALLBACK);
@@ -223,7 +221,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testUsernameChanged() {
-        createAndShowDialog(false);
+        createAndShowDialog(USERNAMES);
 
         Callback<String> usernameChangedCallback =
                 mCustomViewModel.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK);
@@ -238,7 +236,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testDialogIsAcceptedWithCorrectUsernameAndPassword() {
-        createAndShowDialog(false);
+        createAndShowDialog(USERNAMES);
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
 
@@ -258,7 +256,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testEmptyPasswordError() {
-        createAndShowDialog(true);
+        createAndShowDialog(USERNAMES);
 
         Callback<String> passwordChangedCallback =
                 mCustomViewModel.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK);
@@ -275,7 +273,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testPasswordChanging() {
-        createAndShowDialog(true);
+        createAndShowDialog(USERNAMES);
 
         Callback<String> passwordChangedCallback =
                 mCustomViewModel.get(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK);
@@ -285,12 +283,58 @@ public class PasswordEditDialogControllerTest {
     }
 
     /**
+     * Tests that button caption changes from "Update" to "Save" when the user changes the username
+     * so that the new one is not known to Password Manager.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testChangesFromUpdateToSave() {
+        createAndShowDialog(new String[] {INITIAL_USERNAME});
+        Resources r = RuntimeEnvironment.getApplication().getResources();
+
+        Assert.assertEquals(r.getString(R.string.password_manager_update_button),
+                mModalDialogManager.getShownDialogModel().get(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+
+        Callback<String> usernameChangedCallback =
+                mCustomViewModel.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK);
+        usernameChangedCallback.onResult(CHANGED_USERNAME);
+
+        Assert.assertEquals(r.getString(R.string.password_manager_save_button),
+                mModalDialogManager.getShownDialogModel().get(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+    }
+
+    /**
+     * Tests that title changes from "Save password?" to "Update password?" when the user
+     * changes the username to the one already stored in the Password Manager.
+     */
+    @Test
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testChangesFromSaveToUpdate() {
+        createAndShowDialog(new String[] {CHANGED_USERNAME});
+        Resources r = RuntimeEnvironment.getApplication().getResources();
+
+        Assert.assertEquals(r.getString(R.string.password_manager_save_button),
+                mModalDialogManager.getShownDialogModel().get(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+
+        Callback<String> usernameChangedCallback =
+                mCustomViewModel.get(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK);
+        usernameChangedCallback.onResult(CHANGED_USERNAME);
+
+        Assert.assertEquals(r.getString(R.string.password_manager_update_button),
+                mModalDialogManager.getShownDialogModel().get(
+                        ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+    }
+
+    /**
      * Tests that the dialog is dismissed when dismiss() is called from native code.
      */
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testDialogDismissedFromNative() {
-        createAndShowDialog(false);
+        createAndShowDialog(USERNAMES);
 
         mDialogCoordinator.dismiss();
         Mockito.verify(mDelegateMock, never()).onDialogAccepted(anyString(), anyString());
@@ -303,7 +347,7 @@ public class PasswordEditDialogControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
     public void testDialogDismissedWithNegativeButton() {
-        createAndShowDialog(true);
+        createAndShowDialog(USERNAMES);
 
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
@@ -318,8 +362,8 @@ public class PasswordEditDialogControllerTest {
     public void testEmptyUsernameNotListed() {
         mDialogCoordinator = new PasswordEditDialogCoordinator(RuntimeEnvironment.getApplication(),
                 mModalDialogManager, mDialogViewMock, mDelegateMock);
-        mDialogCoordinator.showUpdatePasswordDialog(
-                new String[] {INITIAL_USERNAME, ""}, 0, INITIAL_PASSWORD, ACCOUNT_NAME);
+        mDialogCoordinator.showPasswordEditDialog(new String[] {INITIAL_USERNAME, ""},
+                INITIAL_USERNAME, INITIAL_PASSWORD, ACCOUNT_NAME);
 
         mCustomViewModel = mDialogCoordinator.getDialogViewModelForTesting();
 
@@ -331,36 +375,21 @@ public class PasswordEditDialogControllerTest {
      * Helper function that creates {@link PasswordEditDialogCoordinator},
      * and captures property models for modal dialog and custom dialog view.
      *
-     * @param isUpdate Defines whether Save password or Update password dialog will be shown
      */
-    private void createAndShowDialog(boolean isUpdate) {
+    private void createAndShowDialog(String[] savedUserNames) {
         PasswordEditDialogView dialogView =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
                 ? mDialogViewMock
-                : mLegacyDialogMock;
+                : mLegacyDialogViewMock;
         mDialogCoordinator = new PasswordEditDialogCoordinator(RuntimeEnvironment.getApplication(),
                 mModalDialogManager, dialogView, mDelegateMock);
-        if (isUpdate) {
-            mDialogCoordinator.showUpdatePasswordDialog(
-                    USERNAMES, INITIAL_USERNAME_INDEX, INITIAL_PASSWORD, ACCOUNT_NAME);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
+            mDialogCoordinator.showPasswordEditDialog(savedUserNames, INITIAL_USERNAME,
+                    INITIAL_PASSWORD, mIsSignedIn ? ACCOUNT_NAME : null);
         } else {
-            mDialogCoordinator.showSavePasswordDialog(
-                    INITIAL_USERNAME, INITIAL_PASSWORD, mIsSignedIn ? ACCOUNT_NAME : null);
+            mDialogCoordinator.showLegacyPasswordEditDialog(
+                    savedUserNames, INITIAL_USERNAME_INDEX, mIsSignedIn ? ACCOUNT_NAME : null);
         }
-
-        mModalDialogModel = mDialogCoordinator.getDialogModelForTesting();
-        mCustomViewModel = mDialogCoordinator.getDialogViewModelForTesting();
-    }
-
-    private void createUpdatePasswordDialogWithSingleUsername() {
-        PasswordEditDialogView dialogView =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
-                ? mDialogViewMock
-                : mLegacyDialogMock;
-        mDialogCoordinator = new PasswordEditDialogCoordinator(RuntimeEnvironment.getApplication(),
-                mModalDialogManager, dialogView, mDelegateMock);
-        mDialogCoordinator.showUpdatePasswordDialog(
-                new String[] {INITIAL_USERNAME}, 0, INITIAL_PASSWORD, ACCOUNT_NAME);
 
         mModalDialogModel = mDialogCoordinator.getDialogModelForTesting();
         mCustomViewModel = mDialogCoordinator.getDialogViewModelForTesting();

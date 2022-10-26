@@ -30,17 +30,19 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
         mDialogCoordinator = PasswordEditDialogCoordinator.create(windowAndroid, this);
     }
 
+    /** Called when PasswordEditDialogWithDetails feature flag is enabled */
     @CalledByNative
-    void showUpdatePasswordDialog(@NonNull String[] usernames, int selectedUsernameIndex,
+    void showPasswordEditDialog(@NonNull String[] savedUsernames, @NonNull String username,
             @NonNull String password, @Nullable String account) {
-        mDialogCoordinator.showUpdatePasswordDialog(
-                usernames, selectedUsernameIndex, password, account);
+        mDialogCoordinator.showPasswordEditDialog(savedUsernames, username, password, account);
     }
 
+    /** Called when PasswordEditDialogWithDetails feature flag is disabled */
     @CalledByNative
-    void showSavePasswordDialog(
-            @NonNull String username, @NonNull String password, @Nullable String account) {
-        mDialogCoordinator.showSavePasswordDialog(username, password, account);
+    void showLegacyPasswordEditDialog(
+            @NonNull String[] savedUsernames, int selectedUsernameIndex, @Nullable String account) {
+        mDialogCoordinator.showLegacyPasswordEditDialog(
+                savedUsernames, selectedUsernameIndex, account);
     }
 
     @CalledByNative
