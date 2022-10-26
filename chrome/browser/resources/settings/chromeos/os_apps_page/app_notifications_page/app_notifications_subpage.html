@@ -14,7 +14,6 @@
   }
 
   #appNotificationsList {
-    border-top: var(--card-separator);
     margin-top: 24px;
   }
 
@@ -40,7 +39,15 @@
       deep-link-focus-id$="[[Setting.kDoNotDisturbOnOff]]">
   </cr-toggle>
 </div>
-<div id="appNotificationsList">
+<template is="dom-if" if="[[showAppBadgingToggle_]]">
+  <settings-toggle-button
+      id="appBadgingToggleButton"
+      class="hr"
+      label="$i18n{appBadgingToggleLabel}"
+      pref="{{prefs.ash.app_notification_badging_enabled}}">
+  </settings-toggle-button>
+</template>
+<div id="appNotificationsList" class="hr">
   <template is="dom-repeat" items="[[appList_]]" as="app"
       sort="alphabeticalSort_">
     <app-notification-row app="[[app]]"></app-notification-row>

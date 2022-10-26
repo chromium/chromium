@@ -590,6 +590,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[arc::prefs::kArcEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
+  // App Notifications
+  (*s_allowlist)[::ash::prefs::kAppNotificationBadgingEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+
   // Ambient Mode.
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

@@ -170,7 +170,6 @@ class FakeAppNotificationHandler {
   }
 }
 
-
 suite('AppNotificationsSubpageTests', function() {
   /** @type {AppNotificationsSubpage} */
   let page;
@@ -184,6 +183,13 @@ suite('AppNotificationsSubpageTests', function() {
 
   let setQuietModeCounter = 0;
 
+  function createPage() {
+    page = document.createElement('settings-app-notifications-subpage');
+    document.body.appendChild(page);
+    assertTrue(!!page);
+    flush();
+  }
+
   suiteSetup(() => {
     mojoApi_ = new FakeAppNotificationHandler();
     setAppNotificationProviderForTesting(mojoApi_);
@@ -192,10 +198,6 @@ suite('AppNotificationsSubpageTests', function() {
   setup(function() {
     PolymerTest.clearBody;
     loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
-    page = document.createElement('settings-app-notifications-subpage');
-    document.body.appendChild(page);
-    assertTrue(!!page);
-    flush();
   });
 
   teardown(function() {
@@ -239,6 +241,7 @@ suite('AppNotificationsSubpageTests', function() {
   }
 
   test('loadAppListAndClickToggle', async () => {
+    createPage();
     const permission1 = createBoolPermission(
         /**permissionType=*/ 1,
         /**value=*/ false, /**is_managed=*/ false);
@@ -283,6 +286,7 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   test('RemovedApp', async () => {
+    createPage();
     const permission1 = createBoolPermission(
         /**permissionType=*/ 1,
         /**value=*/ false, /**is_managed=*/ false);
@@ -318,6 +322,7 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   test('Each app-notification-row displays correctly', async () => {
+    createPage();
     const appTitle1 = 'Files';
     const appTitle2 = 'Chrome';
     const permission1 = createBoolPermission(
@@ -356,6 +361,7 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   test('toggleDoNotDisturb', function() {
+    createPage();
     const div = page.$.enableDoNotDisturb;
     const dndToggle = page.$.enableDndToggle;
 
@@ -381,6 +387,7 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   test('SetQuietMode being called correctly', function() {
+    createPage();
     const dndToggle = page.$.enableDndToggle;
     // Click the toggle button a certain count.
     const testCount = 3;
@@ -407,6 +414,7 @@ suite('AppNotificationsSubpageTests', function() {
   });
 
   test('changing toggle with OnQuietModeChanged', function() {
+    createPage();
     const dndToggle = page.$.enableDndToggle;
 
     flush();
@@ -424,5 +432,57 @@ suite('AppNotificationsSubpageTests', function() {
         .then(() => {
           assertTrue(dndToggle.checked);
         });
+  });
+
+  suite('App badging', () => {
+    function makeFakePrefs(appBadgingEnabled = false) {
+      return {
+        ash: {
+          app_notification_badging_enabled: {
+            key: 'ash.app_notification_badging_enabled',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: appBadgingEnabled,
+          },
+        },
+      };
+    }
+
+    setup(() => {
+      loadTimeData.overrideValues({showOsSettingsAppBadgingToggle: true});
+    });
+
+    test('App badging toggle is not visible if feature is disabled', () => {
+      loadTimeData.overrideValues({showOsSettingsAppBadgingToggle: false});
+      createPage();
+
+      const appBadgingToggle =
+          page.shadowRoot.querySelector('#appBadgingToggleButton');
+      assertEquals(null, appBadgingToggle);
+    });
+
+    test('App badging toggle is visible if the feature is enabled', () => {
+      createPage();
+      const appBadgingToggle =
+          page.shadowRoot.querySelector('#appBadgingToggleButton');
+      assertTrue(!!appBadgingToggle);
+    });
+
+    test('Clicking the app badging button toggles the pref value', () => {
+      createPage();
+      page.prefs = makeFakePrefs(true);
+
+      const appBadgingToggle =
+          page.shadowRoot.querySelector('#appBadgingToggleButton');
+      assertTrue(appBadgingToggle.checked);
+      assertTrue(page.prefs.ash.app_notification_badging_enabled.value);
+
+      appBadgingToggle.click();
+      assertFalse(appBadgingToggle.checked);
+      assertFalse(page.prefs.ash.app_notification_badging_enabled.value);
+
+      appBadgingToggle.click();
+      assertTrue(appBadgingToggle.checked);
+      assertTrue(page.prefs.ash.app_notification_badging_enabled.value);
+    });
   });
 });
