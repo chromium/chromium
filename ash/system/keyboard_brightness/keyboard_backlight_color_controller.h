@@ -38,7 +38,8 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   ~KeyboardBacklightColorController() override;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  // Register the pref to store keyboard color in the given registry.
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Sets the keyboard backlight color for the user with |account_id|.
   void SetBacklightColor(

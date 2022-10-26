@@ -1360,6 +1360,26 @@ message DeviceKerberosEncryptionTypesProto {
   optional Types types = 1 [default = ENC_TYPES_STRONG];
 }
 
+// Mirrors BacklightColor from the personalization_app.mojom
+message KeyboardBacklightColorProto {
+  enum BacklightColor {
+    BACKLIGHT_UNSPECIFIED = 0;  // Default value for the keyboard color.
+    BACKLIGHT_WHITE = 1;
+    BACKLIGHT_RED = 2;
+    BACKLIGHT_YELLOW = 3;
+    BACKLIGHT_GREEN = 4;
+    BACKLIGHT_BLUE = 5;
+    BACKLIGHT_INDIGO = 6;
+    BACKLIGHT_PURPLE = 7;
+
+    BACKLIGHT_RAINBOW =
+        100;  // Match values in personalization_app.mojom-shared.h
+    // Next ID to use: 101
+  }
+
+  optional BacklightColor color = 1 [default = BACKLIGHT_UNSPECIFIED];
+}
+
 // Specifies how user policy from device GPOs interacts with user policy from
 // user GPOs. In 'MERGE' mode, device GPOs take preference in case of conflicts.
 // Applies to Active Directory management mode only.
@@ -1884,4 +1904,5 @@ message ChromeDeviceSettingsProto {
       device_login_screen_context_aware_access_signals_allowlist = 136;
   optional StringPolicyProto device_printing_client_name_template = 137;
   optional DeviceReportXDREventsProto device_report_xdr_events = 138;
+  optional KeyboardBacklightColorProto keyboard_backlight_color = 139;
 }

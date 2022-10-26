@@ -54,7 +54,7 @@ KeyboardBacklightColorController::~KeyboardBacklightColorController() {
 }
 
 // static
-void KeyboardBacklightColorController::RegisterProfilePrefs(
+void KeyboardBacklightColorController::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kPersonalizationKeyboardBacklightColor,

@@ -20279,5 +20279,56 @@
         }
       }
     ]
+  },
+  "DeviceKeyboardBacklightColor": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.personalization.keyboard_backlight_color": {
+            "location": "local_state",
+            "default_value": 0,
+            "check_for_recommended": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.personalization.keyboard_backlight_color": {
+            "location": "user_profile",
+            "default_value": 0,
+            "check_for_recommended": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceKeyboardBacklightColor": 1
+        },
+        "prefs": {
+          "ash.personalization.keyboard_backlight_color": {
+            "location": "local_state",
+            "value": 1,
+            "check_for_recommended": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceKeyboardBacklightColor": 1
+        },
+        "prefs": {
+          "ash.personalization.keyboard_backlight_color": {
+            "location": "user_profile",
+            "value": 1,
+            "check_for_recommended": true
+          }
+        }
+      }
+    ]
   }
 }

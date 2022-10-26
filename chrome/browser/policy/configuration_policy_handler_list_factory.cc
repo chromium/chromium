@@ -1005,6 +1005,13 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceLoginScreenKeyboardFocusHighlightEnabled,
     nullptr,
     base::Value::Type::BOOLEAN },
+  // Note that this pref exists in both user PrefStore and local_state
+  // PrefStore, and it is intended that the device policy is mapped to
+  // both. See the comment at the definition of
+  // ash::prefs::kPersonalizationKeyboardBacklightColor for details.
+  { key::kDeviceKeyboardBacklightColor,
+    ash::prefs::kPersonalizationKeyboardBacklightColor,
+    base::Value::Type::INTEGER },
   { key::kRebootAfterUpdate,
     prefs::kRebootAfterUpdate,
     base::Value::Type::BOOLEAN },

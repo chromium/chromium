@@ -97,7 +97,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   LoginScreenController::RegisterProfilePrefs(registry, for_test);
   LogoutButtonTray::RegisterProfilePrefs(registry);
   LogoutConfirmationController::RegisterProfilePrefs(registry);
-  KeyboardBacklightColorController::RegisterProfilePrefs(registry);
+  KeyboardBacklightColorController::RegisterPrefs(registry);
   KeyboardControllerImpl::RegisterProfilePrefs(registry);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);
@@ -157,6 +157,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   else
     TopShortcutsView::RegisterLocalStatePrefs(registry);
   glanceables_util::RegisterLocalStatePrefs(registry);
+  KeyboardBacklightColorController::RegisterPrefs(registry);
 }
 
 void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {

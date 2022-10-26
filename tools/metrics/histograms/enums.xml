@@ -33115,6 +33115,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1023" label="DeskAPIThirdPartyAllowlist"/>
   <int value="1024" label="VirtualKeyboardResizesLayoutByDefault"/>
   <int value="1025" label="HindiInscriptLayoutEnabled"/>
+  <int value="1026" label="KeyboardBacklightColor"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

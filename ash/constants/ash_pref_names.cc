@@ -1089,8 +1089,17 @@ const char kFloatingWorkspaceEnabled[] = "ash.floating_workspace_enabled";
 // user.
 const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";
 
-// Integer pref indicating which color for the backlight keyboard is currently
-// selected for a user profile.
+// This integer pref indicates which color for the backlight keyboard is
+// currently selected. A pref with this name is registered in two different
+// contexts:
+// - User profile:
+//   Indicates the color selected by the user for their profile.
+//   Can be "recommended" through device policy DeviceKeyboardBacklightColor.
+// - Local state:
+//   Indicates the color used on the sign-in screen.
+//   Can be "recommended" through device policy DeviceKeyboardBacklightColor
+//   (but as there is no UI to change the color on the sign-in screen,
+//   it's effectively policy-mandated then).
 const char kPersonalizationKeyboardBacklightColor[] =
     "ash.personalization.keyboard_backlight_color";
 
