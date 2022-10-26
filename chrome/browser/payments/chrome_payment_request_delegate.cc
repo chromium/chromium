@@ -160,16 +160,16 @@ const GURL& ChromePaymentRequestDelegate::GetLastCommittedURL() const {
                                     : GURL::EmptyGURL();
 }
 
+autofill::AddressNormalizer*
+ChromePaymentRequestDelegate::GetAddressNormalizer() {
+  return autofill::AddressNormalizerFactory::GetInstance();
+}
+
 autofill::RegionDataLoader*
 ChromePaymentRequestDelegate::GetRegionDataLoader() {
   return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),
                                             GetAddressInputStorage().release(),
                                             GetApplicationLocale());
-}
-
-autofill::AddressNormalizer*
-ChromePaymentRequestDelegate::GetAddressNormalizer() {
-  return autofill::AddressNormalizerFactory::GetInstance();
 }
 
 ukm::UkmRecorder* ChromePaymentRequestDelegate::GetUkmRecorder() {
@@ -328,15 +328,15 @@ ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
   return spc_no_creds_dialog_.get();
 }
 
+const base::WeakPtr<PaymentUIObserver>
+ChromePaymentRequestDelegate::GetPaymentUIObserver() const {
+  return nullptr;
+}
+
 content::BrowserContext* ChromePaymentRequestDelegate::GetBrowserContextOrNull()
     const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   return rfh ? rfh->GetBrowserContext() : nullptr;
-}
-
-const base::WeakPtr<PaymentUIObserver>
-ChromePaymentRequestDelegate::GetPaymentUIObserver() const {
-  return nullptr;
 }
 
 }  // namespace payments
