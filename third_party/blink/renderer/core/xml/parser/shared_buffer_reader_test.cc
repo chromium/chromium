@@ -94,8 +94,7 @@ TEST(SharedBufferReaderTest, readDataInMultiples) {
     EXPECT_EQ(kBytesPerIteration, bytes_read);
   }
 
-  EXPECT_TRUE(std::equal(test_data.begin(), test_data.end(),
-                         destination_vector.begin()));
+  EXPECT_TRUE(base::ranges::equal(test_data, destination_vector));
 }
 
 TEST(SharedBufferReaderTest, clearSharedBufferBetweenCallsToReadData) {

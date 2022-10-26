@@ -27,13 +27,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -59,8 +59,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
       return temp;
     }
     bool operator==(const Iterator& that) const {
-      return std::equal(value_.begin(), value_.end(), that.value_.begin(),
-                        that.value_.end()) &&
+      return base::ranges::equal(value_, that.value_) &&
              buffer_ == that.buffer_;
     }
     bool operator!=(const Iterator& that) const { return !(*this == that); }

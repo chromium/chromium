@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_VARIADIC_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_VARIADIC_H_
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
@@ -36,10 +37,8 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
 
     // We can safely cast here as we know 'other' has the same type as us.
     const auto& other_variadic = static_cast<const CSSMathVariadic&>(other);
-    return std::equal(
-        NumericValues().begin(), NumericValues().end(),
-        other_variadic.NumericValues().begin(),
-        other_variadic.NumericValues().end(),
+    return base::ranges::equal(
+        NumericValues(), other_variadic.NumericValues(),
         [](const auto& a, const auto& b) { return a->Equals(*b); });
   }
 

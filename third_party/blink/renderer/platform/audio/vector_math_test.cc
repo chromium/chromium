@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
-#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <numeric>
 #include <random>
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -76,8 +76,8 @@ class TestVector {
     STACK_ALLOCATED();
 
    public:
-    // These types are used by std::iterator_traits used by std::equal used by
-    // TestVector::operator==.
+    // These types are used by std::iterator_traits used by base::ranges::equal
+    // used by TestVector::operator==.
     using difference_type = ptrdiff_t;
     using iterator_category = std::bidirectional_iterator_tag;
     using pointer = T*;
@@ -140,7 +140,7 @@ class TestVector {
   int stride() const { return static_cast<int>(memory_layout()->stride); }
 
   bool operator==(const TestVector& other) const {
-    return std::equal(begin(), end(), other.begin(), other.end(), Equal);
+    return base::ranges::equal(*this, other, Equal);
   }
   T& operator[](size_t i) const { return p_[i * stride()]; }
 

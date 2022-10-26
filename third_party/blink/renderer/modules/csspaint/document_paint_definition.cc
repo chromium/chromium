@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/csspaint/document_paint_definition.h"
 
+#include "base/ranges/algorithm.h"
+
 namespace blink {
 
 DocumentPaintDefinition::DocumentPaintDefinition(
@@ -36,9 +38,7 @@ bool DocumentPaintDefinition::RegisterAdditionalPaintDefinition(
     const Vector<CSSSyntaxDefinition>& input_argument_types,
     bool alpha) {
   if (native_properties != NativeInvalidationProperties() ||
-      !std::equal(custom_properties.begin(), custom_properties.end(),
-                  CustomInvalidationProperties().begin(),
-                  CustomInvalidationProperties().end()) ||
+      !base::ranges::equal(custom_properties, CustomInvalidationProperties()) ||
       input_argument_types != InputArgumentTypes() || alpha != this->alpha())
     return false;
   registered_definitions_count_++;

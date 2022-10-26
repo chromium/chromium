@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -92,8 +93,7 @@ String CSSVariableData::Serialize() const {
 }
 
 bool CSSVariableData::operator==(const CSSVariableData& other) const {
-  return std::equal(Tokens().begin(), Tokens().end(), other.Tokens().begin(),
-                    other.Tokens().end());
+  return base::ranges::equal(Tokens(), other.Tokens());
 }
 
 void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
