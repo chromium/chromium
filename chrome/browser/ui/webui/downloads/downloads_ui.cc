@@ -62,6 +62,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kDownloadsResources, kDownloadsResourcesSize),
       IDR_DOWNLOADS_DOWNLOADS_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   bool requests_ap_verdicts =
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
