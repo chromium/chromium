@@ -38,7 +38,7 @@ class TryJobStatus(NamedTuple):
     def from_bb_status(bb_status: str) -> 'TryJobStatus':
         """Converts a buildbucket status into a TryJobStatus object."""
         assert bb_status in ('SCHEDULED', 'STARTED', 'SUCCESS', 'FAILURE',
-                             'INFRA_FAILURE', 'CANCELLED')
+                             'INFRA_FAILURE', 'CANCELED')
         if bb_status in ('SCHEDULED', 'STARTED'):
             return TryJobStatus(bb_status, None)
         else:
