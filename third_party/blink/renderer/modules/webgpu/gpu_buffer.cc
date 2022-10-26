@@ -285,17 +285,6 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(
   size_t range_size =
       static_cast<size_t>(std::min(size_defaulted, kGuaranteedBufferOOMSize));
 
-  // The maximum size that can be mapped in JS so that we can ensure we don't
-  // create mappable buffers bigger than it.
-  // This could eventually be upgrade to the max ArrayBuffer size instead of the
-  // max TypedArray size. See crbug.com/951196
-  if (range_size > v8::TypedArray::kMaxLength) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "getMappedRange failed, size is too large for the implementation");
-    return nullptr;
-  }
-
   if (range_size > std::numeric_limits<size_t>::max() - range_offset) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
@@ -331,6 +320,21 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(
     // asynchronous error reporting).
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "getMappedRange failed");
+    return nullptr;
+  }
+
+  // The maximum size that can be mapped in JS so that we can ensure we don't
+  // create mappable buffers bigger than it. According to ECMAScript SPEC, a
+  // RangeError exception will be thrown if it is impossible to allocate an
+  // array buffer.
+  // This could eventually be upgrade to the max ArrayBuffer size instead of the
+  // max TypedArray size. See crbug.com/951196
+  // Note that we put this check after the checks in Dawn because the latest
+  // WebGPU SPEC requires the checks on the buffer state (mapped or not) should
+  // be done before the creation of ArrayBuffer.
+  if (range_size > v8::TypedArray::kMaxLength) {
+    exception_state.ThrowRangeError(
+        "getMappedRange failed, size is too large for the implementation");
     return nullptr;
   }
 
