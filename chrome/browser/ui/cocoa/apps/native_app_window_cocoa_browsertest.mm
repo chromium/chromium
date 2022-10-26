@@ -24,8 +24,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -62,25 +60,21 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
   NativeAppWindowCocoaBrowserTest() = default;
 
   void SetUpAppWithWindows(int num_windows) {
-    app_ = InstallExtension(
+    const extensions::Extension* app = InstallExtension(
         test_data_dir_.AppendASCII("platform_apps").AppendASCII("minimal"), 1);
-    EXPECT_TRUE(app_);
+    EXPECT_TRUE(app);
 
     for (int i = 0; i < num_windows; ++i) {
-      content::WindowedNotificationObserver app_loaded_observer(
-          content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-          content::NotificationService::AllSources());
+      content::CreateAndLoadWebContentsObserver app_loaded_observer;
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->BrowserAppLauncher()
           ->LaunchAppWithParams(apps::AppLaunchParams(
-              app_->id(), apps::LaunchContainer::kLaunchContainerNone,
+              app->id(), apps::LaunchContainer::kLaunchContainerNone,
               WindowOpenDisposition::NEW_WINDOW,
               apps::LaunchSource::kFromTest));
       app_loaded_observer.Wait();
     }
   }
-
-  raw_ptr<const extensions::Extension> app_;
 };
 
 }  // namespace
