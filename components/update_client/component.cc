@@ -82,7 +82,7 @@ void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
                      const base::FilePath& unpack_path,
                      const CrxInstaller::Result& result) {
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      FROM_HERE, kTaskTraits,
       base::BindOnce(
           [](scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              InstallOnBlockingTaskRunnerCompleteCallback callback,
