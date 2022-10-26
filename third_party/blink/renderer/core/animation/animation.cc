@@ -591,10 +591,8 @@ bool Animation::HasLowerCompositeOrdering(
                    originating_element2) &
                Node::kDocumentPositionFollowing;
       } else if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
-        int ida = originating_element1->RecordReplayId();
-        int idb = originating_element2->RecordReplayId();
-        CHECK(!originating_element1 || ida);
-        CHECK(!originating_element2 || idb);
+        int ida = originating_element1 ? originating_element1->RecordReplayId() : 0;
+        int idb = originating_element2 ? originating_element2->RecordReplayId() : 0;
         return ida < idb;
       } else {
         return originating_element1 < originating_element2;
