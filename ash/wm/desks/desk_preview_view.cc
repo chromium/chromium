@@ -234,6 +234,13 @@ void GetLayersData(aura::Window* window,
   if (window->GetProperty(kForceVisibleInMiniViewKey))
     layer_data.should_force_mirror_visible = true;
 
+  // Since floated window is not stored in desk container and will be hidden
+  // when the desk is inactive, we need to make sure it's visible in the desk
+  // mini view at anytime, except when it's minimized (which has been handled
+  // above).
+  if (window_state && window_state->IsFloated() && !window->IsVisible())
+    layer_data.should_force_mirror_visible = true;
+
   // Visible on all desks windows and floated windows aren't children of
   // inactive desk's container so mark them explicitly to clear overview
   // transforms. Additionally, windows in overview mode are transformed into
