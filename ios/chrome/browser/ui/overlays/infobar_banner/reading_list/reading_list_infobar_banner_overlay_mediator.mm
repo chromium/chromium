@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_banner/reading_list/reading_list_infobar_banner_overlay_mediator.h"
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
-#import "ios/chrome/browser/ui/icons/action_icon.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
@@ -59,10 +57,10 @@ NSString* const kReadingListmageName = @"infobar_reading_list";
   [self.consumer setSubtitleText:config->message_text()];
   [self.consumer setButtonText:config->button_text()];
 
-  UIImage* iconImage = UseSymbols()
-                           ? DefaultSymbolTemplateWithPointSize(
-                                 kReadLaterActionSymbol, kSymbolImagePointSize)
-                           : [UIImage imageNamed:kReadingListmageName];
+  UIImage* iconImage =
+      UseSymbols() ? DefaultSymbolTemplateWithPointSize(kReadLaterActionSymbol,
+                                                        kInfobarSymbolPointSize)
+                   : [UIImage imageNamed:kReadingListmageName];
   [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:YES];
 }

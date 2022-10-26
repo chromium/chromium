@@ -39,88 +39,34 @@ source_set("icons") {
   ]
 }
 
-source_set("infobar_icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "infobar_icon.h",
-    "infobar_icon.mm",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("action_icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "action_icon.h",
-    "action_icon.mm",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("download_icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "download_icon.h",
-    "download_icon.mm",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("item_icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "item_icon.h",
-    "item_icon.mm",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("settings_icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "settings_icon.h",
-    "settings_icon.mm",
-  ]
-  deps = [
-    ":buildflags",
-    ":symbols",
-    "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
-    "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
-    "//ios/chrome/browser/ui/icons/resources:checkermark_shield",
-    "//ios/chrome/browser/ui/icons/resources:line_downtrend",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("location_bar_icons") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "location_bar_icon.h",
-    "location_bar_icon.mm",
-  ]
-  deps = [ ":symbols" ]
-  frameworks = [ "UIKit.framework" ]
-}
-
 source_set("symbols") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  public = [ "symbols.h" ]
   sources = [
-    "chrome_symbol.h",
-    "chrome_symbol.mm",
+    "symbol_configurations.h",
+    "symbol_configurations.mm",
+    "symbol_helpers.h",
+    "symbol_helpers.mm",
+    "symbol_names.h",
+    "symbol_names.mm",
   ]
   deps = [
     ":buildflags",
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/icons/resources:arrow_clockwise",
+    "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
     "//ios/chrome/browser/ui/icons/resources:camera",
     "//ios/chrome/browser/ui/icons/resources:camera_fill",
     "//ios/chrome/browser/ui/icons/resources:camera_lens",
+    "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
+    "//ios/chrome/browser/ui/icons/resources:checkermark_shield",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill_ios14",
     "//ios/chrome/browser/ui/icons/resources:language",
     "//ios/chrome/browser/ui/icons/resources:laptopcomputer_and_phone",
+    "//ios/chrome/browser/ui/icons/resources:line_downtrend",
     "//ios/chrome/browser/ui/icons/resources:password",
     "//ios/chrome/browser/ui/icons/resources:password_manager",
     "//ios/chrome/browser/ui/icons/resources:photo_badge_magnifyingglass",
@@ -132,10 +78,6 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:square_number",
     "//ios/chrome/browser/ui/icons/resources:translate",
     ios_branded_icons,
-  ]
-  frameworks = [
-    "CoreGraphics.framework",
-    "UIKit.framework",
   ]
 }
 

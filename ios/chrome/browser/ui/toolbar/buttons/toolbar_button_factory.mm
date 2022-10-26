@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"

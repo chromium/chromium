@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

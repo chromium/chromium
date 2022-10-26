@@ -13,8 +13,6 @@ source_set("reading_list") {
   deps = [
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/ui/icons:action_icons",
-    "//ios/chrome/browser/ui/icons:infobar_icons",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays:coordinators",

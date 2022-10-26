@@ -9,8 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -266,7 +265,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   self.openModalButton = [UIButton buttonWithType:UIButtonTypeSystem];
   UIImage* gearImage = UseSymbols()
                            ? DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                        kSymbolImagePointSize)
+                                                        kInfobarSymbolPointSize)
                            : [UIImage imageNamed:@"infobar_settings_icon"];
   gearImage =
       [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
 
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/download_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

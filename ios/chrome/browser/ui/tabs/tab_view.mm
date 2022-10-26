@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"

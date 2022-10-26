@@ -18,8 +18,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
@@ -344,7 +343,7 @@
       if (UseSymbols()) {
         if (@available(iOS 15, *)) {
           image = CustomPaletteSymbol(
-              kIncognitoCircleFillSymbol, kSymbolImagePointSize,
+              kIncognitoCircleFillSymbol, kInfobarSymbolPointSize,
               UIImageSymbolWeightMedium, UIImageSymbolScaleMedium, @[
                 [UIColor colorNamed:kGrey400Color],
                 [UIColor colorNamed:kGrey100Color]

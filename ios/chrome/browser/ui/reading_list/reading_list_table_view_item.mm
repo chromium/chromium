@@ -10,7 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"

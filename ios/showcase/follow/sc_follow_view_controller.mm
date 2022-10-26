@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"

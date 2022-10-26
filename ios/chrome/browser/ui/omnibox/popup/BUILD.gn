@@ -180,7 +180,6 @@ source_set("popup_ui") {
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/favicon",
-    "//ios/chrome/browser/ui/icons:location_bar_icons",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",

@@ -53,7 +53,6 @@ source_set("toolbar") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/gestures",
-    "//ios/chrome/browser/ui/icons:infobar_icons",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/location_bar",
     "//ios/chrome/browser/ui/main:layout_guide_util",

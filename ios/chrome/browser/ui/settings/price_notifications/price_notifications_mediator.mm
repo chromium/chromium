@@ -5,8 +5,7 @@
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_mediator.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/settings_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/price_notifications_consumer.h"

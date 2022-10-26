@@ -18,7 +18,6 @@ source_set("banners") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/icons:infobar_icons",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",

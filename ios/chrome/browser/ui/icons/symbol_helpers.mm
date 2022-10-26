@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbol_helpers.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/icons/symbol_configurations.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -25,7 +26,6 @@ UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
 // Returns a symbol named `symbol_name` configured with the given
 // `configuration`. `system_symbol` is used to specify if it is a SFSymbol or a
 // custom symbol.
-
 UIImage* SymbolWithConfiguration(NSString* symbol_name,
                                  UIImageConfiguration* configuration,
                                  BOOL system_symbol) {
@@ -43,78 +43,6 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 }
 
 }  // namespace
-
-// Custom symbol names.
-NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
-NSString* const kIncognitoSymbol = @"incognito";
-NSString* const kSquareNumberSymbol = @"square_number";
-NSString* const kTranslateSymbol = @"translate";
-NSString* const kCameraSymbol = @"camera";
-NSString* const kCameraFillSymbol = @"camera_fill";
-NSString* const kPasswordManagerSymbol = @"password_manager";
-NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
-NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
-NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
-NSString* const kPhotoBadgeMagnifyingglassSymbol =
-    @"photo_badge_magnifyingglass";
-NSString* const kReadingListSymbol = @"square_bullet_square";
-NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
-NSString* const kLanguageSymbol = @"language";
-NSString* const kPasswordSymbol = @"password";
-NSString* const kCameraLensSymbol = @"camera_lens";
-NSString* const kDownTrendSymbol = @"line_downtrend";
-NSString* const kIncognitoCircleFilliOS14Symbol =
-    @"incognito_circle_fill_ios14";
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-NSString* const kGoogleShieldSymbol = @"google_shield";
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-NSString* const kShieldSymbol = @"shield";
-
-// Custom symbol names which can be configured a "palette".
-NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
-
-// Default symbol names.
-NSString* const kCreditCardSymbol = @"creditcard";
-NSString* const kMicrophoneFillSymbol = @"mic.fill";
-NSString* const kMicrophoneSymbol = @"mic";
-NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
-NSString* const kPinSymbol = @"pin";
-NSString* const kPinFillSymbol = @"pin.fill";
-NSString* const kIPhoneSymbol = @"iphone";
-NSString* const kIPadSymbol = @"ipad";
-NSString* const kLaptopSymbol = @"laptopcomputer";
-NSString* const kSettingsSymbol = @"gearshape";
-NSString* const kSettingsFilledSymbol = @"gearshape.fill";
-NSString* const kShareSymbol = @"square.and.arrow.up";
-NSString* const kXMarkSymbol = @"xmark";
-NSString* const kPlusSymbol = @"plus";
-NSString* const kSearchSymbol = @"magnifyingglass";
-NSString* const kCheckmarkSymbol = @"checkmark";
-NSString* const kDownloadSymbol = @"arrow.down.circle";
-NSString* const kSecureSymbol = @"lock";
-NSString* const kWarningSymbol = @"exclamationmark.triangle";
-NSString* const kWarningFillSymbol = @"exclamationmark.triangle.fill";
-NSString* const kHelpSymbol = @"questionmark.circle";
-NSString* const kCheckMarkCircleSymbol = @"checkmark.circle";
-NSString* const kCheckMarkCircleFillSymbol = @"checkmark.circle.fill";
-NSString* const kFailMarkCircleFillSymbol = @"exclamationmark.circle.fill";
-NSString* const kTrashSymbol = @"trash";
-NSString* const kInfoCircleSymbol = @"info.circle";
-NSString* const kHistorySymbol = @"clock.arrow.circlepath";
-NSString* const kCheckmarkSealSymbol = @"checkmark.seal";
-NSString* const kWifiSymbol = @"wifi";
-NSString* const kBookmarksSymbol = @"star";
-NSString* const kSyncErrorSymbol =
-    @"exclamationmark.arrow.triangle.2.circlepath";
-NSString* const kMenuSymbol = @"ellipsis";
-NSString* const kSortSymbol = @"arrow.up.arrow.down";
-NSString* const kBackSymbol = @"arrow.backward";
-NSString* const kForwardSymbol = @"arrow.forward";
-NSString* const kPersonFillSymbol = @"person.fill";
-NSString* const kMailFillSymbol = @"envelop.fill";
-NSString* const kPhoneFillSymbol = @"phone.fill";
-
-const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {
@@ -181,4 +109,18 @@ UIImage* CustomPaletteSymbol(NSString* symbol_name,
 
 bool UseSymbols() {
   return base::FeatureList::IsEnabled(kUseSFSymbols);
+}
+
+UIImage* DefaultSettingsRootSymbol(NSString* symbol_name) {
+  return DefaultSymbolWithPointSize(symbol_name,
+                                    kSettingsRootSymbolImagePointSize);
+}
+
+UIImage* CustomSettingsRootSymbol(NSString* symbol_name) {
+  return CustomSymbolWithPointSize(symbol_name,
+                                   kSettingsRootSymbolImagePointSize);
+}
+
+UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name) {
+  return CustomMulticolorSymbol(symbol_name, kSettingsRootSymbolImagePointSize);
 }

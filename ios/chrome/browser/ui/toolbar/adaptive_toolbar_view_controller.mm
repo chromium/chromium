@@ -11,7 +11,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_menus_provider.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view.h"

@@ -2,14 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_
-#define IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_
+#ifndef IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_
+#define IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/icons/buildflags.h"
 
+/// *******
+/// Import `symbols.h` and not this file directly.
+/// *******
+
 // Custom symbol names.
+extern NSString* const kPrivacySymbol;
+extern NSString* const kSyncDisabledSymbol;
+extern NSString* const kSafetyCheckSymbol;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kGoogleIconSymbol;
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
@@ -33,10 +43,41 @@ extern NSString* const kGoogleShieldSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kShieldSymbol;
 
-// Custom symbol names which can be configured a "palette".
+// Custom symbol names which can be configured with a color palette.
 extern NSString* const kIncognitoCircleFillSymbol;
 
 // Default symbol names.
+extern NSString* const kSyncEnabledSymbol;
+extern NSString* const kDefaultBrowserSymbol;
+extern NSString* const kDefaultBrowseriOS14Symbol;
+extern NSString* const kDiscoverSymbol;
+extern NSString* const kBellSymbol;
+extern NSString* const kCachedDataSymbol;
+extern NSString* const kAutofillDataSymbol;
+extern NSString* const kSecureLocationBarSymbol;
+extern NSString* const kNavigateToTabSymbol;
+extern NSString* const kRefineQuerySymbol;
+extern NSString* const kLinkActionSymbol;
+extern NSString* const kQRCodeFinderActionSymbol;
+extern NSString* const kNewTabActionSymbol;
+extern NSString* const kNewTabCircleActionSymbol;
+extern NSString* const kClipboardActionSymbol;
+extern NSString* const kDeleteActionSymbol;
+extern NSString* const kEditActionSymbol;
+extern NSString* const kMarkAsReadActionSymbol;
+extern NSString* const kReadLaterActionSymbol;
+extern NSString* const kAddBookmarkActionSymbol;
+extern NSString* const kCopyActionSymbol;
+extern NSString* const kNewWindowActionSymbol;
+extern NSString* const kHideActionSymbol;
+extern NSString* const kRequestDesktopActionSymbol;
+extern NSString* const kRequestMobileActionSymbol;
+extern NSString* const kFindInPageActionSymbol;
+extern NSString* const kZoomTextActionSymbol;
+extern NSString* const kSaveImageActionSymbol;
+extern NSString* const kOpenImageActionSymbol;
+extern NSString* const kQRCodeSymbol;
+extern NSString* const kPrinterSymbol;
 extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
@@ -75,52 +116,12 @@ extern NSString* const kForwardSymbol;
 extern NSString* const kPersonFillSymbol;
 extern NSString* const kMailFillSymbol;
 extern NSString* const kPhoneFillSymbol;
+extern NSString* const kDownloadPromptFillSymbol;
+extern NSString* const kDownloadPromptFilliOS14Symbol;
+extern NSString* const kDownloadDocFillSymbol;
+extern NSString* const kOpenInDownloadsSymbol;
+extern NSString* const kOpenInDownloadsiOS14Symbol;
+extern NSString* const kExternalLinkSymbol;
+extern NSString* const kChevronForwardSymbol;
 
-// The corner radius of the symbol with a colorful background.
-extern const CGFloat kColorfulBackgroundSymbolCornerRadius;
-
-// Returns a SF symbol named `symbol_name` configured with the given
-// `configuration`.
-UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
-                                        UIImageConfiguration* configuration);
-
-// Returns a custom symbol named `symbol_name` configured with the given
-// `configuration`.
-UIImage* CustomSymbolWithConfiguration(NSString* symbol_name,
-                                       UIImageConfiguration* configuration);
-
-// Returns a SF symbol named `symbol_name` configured with the default
-// configuration and the given `point_size`.
-UIImage* DefaultSymbolWithPointSize(NSString* symbol_name, CGFloat point_size);
-
-// Returns a custom symbol named `symbol_name` configured with the default
-// configuration and the given `point_size`.
-UIImage* CustomSymbolWithPointSize(NSString* symbol_name, CGFloat point_size);
-
-// Returns a SF symbol named `symbol_name` as a template image, configured with
-// the default configuration and the given `point_size`.
-UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbol_name,
-                                            CGFloat point_size);
-
-// Returns a custom symbol named `symbol_name` as a template image, configured
-// with the default configuration and the given `point_size`.
-UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
-                                           CGFloat point_size);
-
-// Returns a custom symbol named `symbol_name`, configured with the default
-// configuration and the given `point_size`.
-UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size);
-
-// Returns a custom symbol named `symbol_name` configured with `point_size`,
-// `weight`, `scale` and set the "Palette" configuration for `colors`.
-UIImage* CustomPaletteSymbol(NSString* symbol_name,
-                             CGFloat point_size,
-                             UIImageSymbolWeight weight,
-                             UIImageSymbolScale scale,
-                             NSArray<UIColor*>* colors)
-    API_AVAILABLE(ios(15.0));
-
-// Returns YES if the kUseSFSymbols flag is enabled.
-bool UseSymbols();
-
-#endif  // IOS_CHROME_BROWSER_UI_ICONS_CHROME_SYMBOL_H_
+#endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_

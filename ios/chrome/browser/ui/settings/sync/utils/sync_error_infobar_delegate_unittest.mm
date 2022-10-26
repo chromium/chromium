@@ -14,8 +14,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -69,7 +68,7 @@ TEST_F(SyncErrorInfobarDelegateTest, IconConfigsUseSymbol) {
   EXPECT_NSEQ([UIColor colorNamed:kRed500Color],
               delegate -> GetIconBackgroundColor());
   EXPECT_NSEQ(DefaultSymbolTemplateWithPointSize(kSyncErrorSymbol,
-                                                 kSymbolImagePointSize),
+                                                 kInfobarSymbolPointSize),
               delegate->GetIcon().GetImage().ToUIImage());
 }
 

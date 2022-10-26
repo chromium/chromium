@@ -9,8 +9,7 @@
 #import "base/notreached.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -123,7 +122,7 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case kBadgeTypeSaveAddressProfile:
       badgeImage = UseSymbols() ? DefaultSymbolWithPointSize(
-                                      kPinFillSymbol, kSymbolImagePointSize)
+                                      kPinFillSymbol, kInfobarSymbolPointSize)
                                 : [UIImage imageNamed:@"ic_place"];
       badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -131,7 +130,7 @@ const CGFloat kBadgeCornerRadius = 5.0;
     case kBadgeTypeSaveCard:
       badgeImage = UseSymbols()
                        ? DefaultSymbolWithPointSize(kCreditCardSymbol,
-                                                    kSymbolImagePointSize)
+                                                    kInfobarSymbolPointSize)
                        : [UIImage imageNamed:@"infobar_save_card_icon"];
       badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -140,7 +139,7 @@ const CGFloat kBadgeCornerRadius = 5.0;
     case kBadgeTypeTranslate:
       badgeImage = UseSymbols()
                        ? CustomSymbolWithPointSize(kTranslateSymbol,
-                                                   kSymbolImagePointSize)
+                                                   kInfobarSymbolPointSize)
                        : [UIImage imageNamed:@"infobar_translate_icon"];
       badgeImage = [badgeImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -151,11 +150,11 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case kBadgeTypePermissionsCamera:
       badgeImage = CustomSymbolTemplateWithPointSize(kCameraSymbol,
-                                                     kSymbolImagePointSize);
+                                                     kInfobarSymbolPointSize);
       break;
     case kBadgeTypePermissionsMicrophone:
       badgeImage = DefaultSymbolTemplateWithPointSize(kMicrophoneSymbol,
-                                                      kSymbolImagePointSize);
+                                                      kInfobarSymbolPointSize);
       break;
     case kBadgeTypeIncognito:
       NOTREACHED()

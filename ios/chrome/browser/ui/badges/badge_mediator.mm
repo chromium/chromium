@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/ui/badges/badge_tappable_item.h"
 #import "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"

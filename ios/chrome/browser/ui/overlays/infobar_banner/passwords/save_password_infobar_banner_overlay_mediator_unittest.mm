@@ -18,8 +18,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -139,6 +138,7 @@ TEST_F(SavePasswordInfobarBannerOverlayMediatorTest,
   mediator.consumer = consumer;
 
   // Verify that the infobar icon was set up properly.
-  EXPECT_NSEQ(CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize),
-              consumer.iconImage);
+  EXPECT_NSEQ(
+      CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize),
+      consumer.iconImage);
 }

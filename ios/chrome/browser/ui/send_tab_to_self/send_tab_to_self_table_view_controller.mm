@@ -15,7 +15,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/target_device_info.h"
 #import "components/sync_device_info/device_info.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"

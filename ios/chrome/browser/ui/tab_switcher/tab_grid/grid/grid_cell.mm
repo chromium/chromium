@@ -11,7 +11,7 @@
 #import "base/feature_list.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

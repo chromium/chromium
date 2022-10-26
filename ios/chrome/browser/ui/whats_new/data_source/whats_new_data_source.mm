@@ -9,7 +9,7 @@
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util_mac.h"

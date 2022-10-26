@@ -7,7 +7,7 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"

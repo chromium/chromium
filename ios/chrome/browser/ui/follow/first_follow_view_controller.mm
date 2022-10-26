@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"

@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_view_controller.h"
 
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -46,7 +45,7 @@
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
   UIImage* gearImage = UseSymbols()
                            ? DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                        kSymbolImagePointSize)
+                                                        kInfobarSymbolPointSize)
                            : [UIImage imageNamed:@"infobar_settings_icon"];
   gearImage =
       [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

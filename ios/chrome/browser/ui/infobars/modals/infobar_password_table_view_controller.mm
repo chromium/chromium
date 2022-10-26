@@ -10,8 +10,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
@@ -119,7 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   UIImage* gearImage = UseSymbols()
                            ? DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                        kSymbolImagePointSize)
+                                                        kInfobarSymbolPointSize)
                            : [UIImage imageNamed:@"infobar_settings_icon"];
   gearImage =
       [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

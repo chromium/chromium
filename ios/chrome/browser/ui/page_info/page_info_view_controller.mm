@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"

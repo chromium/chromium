@@ -8,8 +8,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/icons/infobar_icon.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
@@ -70,7 +69,7 @@ using autofill_address_profile_infobar_overlays::
 
   if (UseSymbols()) {
     [self.consumer setIconImage:DefaultSymbolWithPointSize(
-                                    kPinFillSymbol, kSymbolImagePointSize)];
+                                    kPinFillSymbol, kInfobarSymbolPointSize)];
   } else {
     [self.consumer
         setIconImage:[UIImage imageNamed:self.config->icon_image_name()]];
