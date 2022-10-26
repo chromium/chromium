@@ -121,6 +121,10 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   SupervisedUserPrefStoreFixture fixture(&service_);
   EXPECT_FALSE(fixture.initialization_completed());
 
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_users::kAllowHistoryDeletionForChildAccounts);
+
   // Prefs should not change yet when the service is ready, but not
   // activated yet.
   pref_store_->SetInitializationCompleted();
