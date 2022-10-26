@@ -10,6 +10,7 @@ import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserPr
 import {CrActionMenuElement} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -51,25 +52,24 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   }
 
   /**
-   * Clicks the Undo button and verifies that the correct origin is given to the
-   * browser proxy call.
+   * Clicks the Undo button and verifies that the correct origins are given to
+   * the browser proxy call.
    */
   async function assertUndo(expectedProxyCall: string, index: number) {
-    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const entries = getEntries();
     const expectedOrigin =
         entries[index]!.querySelector(
                            '.site-representation')!.textContent!.trim();
     browserProxy.resetResolver(expectedProxyCall);
     testElement.$.undoToast.querySelector('cr-button')!.click();
-    const origin = await browserProxy.whenCalled(expectedProxyCall);
-    assertEquals(origin, expectedOrigin);
-
+    const origins = await browserProxy.whenCalled(expectedProxyCall);
+    assertEquals(origins[0], expectedOrigin);
     assertNotification(false);
   }
 
   /* Asserts for each row whether or not it is animating. */
   function assertAnimation(expectedAnimation: boolean[]) {
-    const rows = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const rows = getEntries();
 
     assertEquals(
         rows.length, expectedAnimation.length,
@@ -111,23 +111,28 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
    *     open the action menu for.
    */
   function openActionMenu(index: number) {
-    const menu_empty = testElement.shadowRoot!.querySelector(
-                           'cr-action-menu') as CrActionMenuElement;
-    assertFalse(isVisible(menu_empty.getDialog()));
-    const item = testElement.shadowRoot!.querySelectorAll('.cr-row')[index]!;
+    const menu1 = testElement.shadowRoot!.querySelector('cr-action-menu')!;
+    assertFalse(isVisible(menu1.getDialog()));
+
+    const item = getEntries()[index]!;
     (item.querySelector('#actionMenuButton')! as HTMLElement).click();
     flush();
 
-    const menu = testElement.shadowRoot!.querySelector('cr-action-menu')! as
+    const menu2 = testElement.shadowRoot!.querySelector('cr-action-menu')! as
         CrActionMenuElement;
-    assertTrue(isVisible(menu.getDialog()));
+    assertTrue(isVisible(menu2.getDialog()));
+  }
+
+  function getEntries() {
+    return testElement.shadowRoot!.querySelectorAll(
+        '.notification-permissions-list .cr-row');
   }
 
   test('Notification Permission strings', async function() {
     await browserProxy.whenCalled('getNotificationPermissionReview');
     flush();
 
-    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const entries = getEntries();
     assertEquals(2, entries.length);
 
     // Check that the text describing the changed permissions is correct.
@@ -153,7 +158,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await browserProxy.whenCalled('getNotificationPermissionReview');
     flush();
 
-    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const entries = getEntries();
     assertEquals(2, entries.length);
 
     assertNotification(false);
@@ -166,9 +171,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
-    const origin =
-        await browserProxy.whenCalled('blockNotificationPermissionForOrigin');
-    assertEquals(origin, expectedOrigin);
+    const origins =
+        await browserProxy.whenCalled('blockNotificationPermissionForOrigins');
+    assertEquals(origins[0], expectedOrigin);
     assertNotification(
         true,
         testElement.i18n(
@@ -185,7 +190,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await browserProxy.whenCalled('getNotificationPermissionReview');
     flush();
 
-    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const entries = getEntries();
     assertEquals(2, entries.length);
 
     assertNotification(false);
@@ -200,9 +205,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
-    const origin =
-        await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin');
-    assertEquals(origin, expectedOrigin);
+    const origins =
+        await browserProxy.whenCalled('ignoreNotificationPermissionForOrigins');
+    assertEquals(origins[0], expectedOrigin);
     assertNotification(
         true,
         testElement.i18n(
@@ -224,7 +229,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await browserProxy.whenCalled('getNotificationPermissionReview');
     flush();
 
-    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const entries = getEntries();
     assertEquals(2, entries.length);
 
     assertNotification(false);
@@ -238,9 +243,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
-    const origin =
-        await browserProxy.whenCalled('resetNotificationPermissionForOrigin');
-    assertEquals(origin, expectedOrigin);
+    const origins =
+        await browserProxy.whenCalled('resetNotificationPermissionForOrigins');
+    assertEquals(origins[0], expectedOrigin);
     assertNotification(
         true,
         testElement.i18n(
@@ -266,9 +271,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     testElement.shadowRoot!.querySelector<HTMLElement>(
                                '.cr-row #block')!.click();
     assertAnimation([true, false]);
-    await browserProxy.whenCalled('blockNotificationPermissionForOrigin');
+    await browserProxy.whenCalled('blockNotificationPermissionForOrigins');
 
-    await assertUndo('allowNotificationPermissionForOrigin', 0);
+    await assertUndo('allowNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
         'notification-permission-review-list-changed', mockData);
     assertAnimation([false, false]);
@@ -288,9 +293,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     testElement.shadowRoot!.querySelector<HTMLElement>('#ignore')!.click();
     assertAnimation([true, false]);
 
-    await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin');
+    await browserProxy.whenCalled('ignoreNotificationPermissionForOrigins');
 
-    await assertUndo('undoIgnoreNotificationPermissionForOrigin', 0);
+    await assertUndo('undoIgnoreNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
         'notification-permission-review-list-changed', mockData);
     assertAnimation([false, false]);
@@ -310,12 +315,68 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     testElement.shadowRoot!.querySelector<HTMLElement>('#reset')!.click();
     assertAnimation([true, false]);
 
-    await browserProxy.whenCalled('resetNotificationPermissionForOrigin');
+    await browserProxy.whenCalled('resetNotificationPermissionForOrigins');
 
-    await assertUndo('allowNotificationPermissionForOrigin', 0);
+    await assertUndo('allowNotificationPermissionForOrigins', 0);
     webUIListenerCallback(
         'notification-permission-review-list-changed', mockData);
     assertAnimation([false, false]);
+  });
+
+  /**
+   * Tests whether clicking the Block All button will block notifications for
+   * all entries in the list, and whether clicking the Undo button afterwards
+   * will allow the notifications for that same list.
+   */
+  test('Block All Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#blockAllButton')!.click();
+    const origins1 =
+        await browserProxy.whenCalled('blockNotificationPermissionForOrigins');
+    assertEquals(2, origins1.length);
+    assertEquals(
+        JSON.stringify(origins1.sort()), JSON.stringify([origin1, origin2]));
+    const notificationText =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckNotificationPermissionReviewBlockAllToastLabel', 2);
+    assertNotification(true, notificationText);
+
+    // Click undo button.
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#undoToast cr-button')!.click();
+    const origins2 =
+        await browserProxy.whenCalled('allowNotificationPermissionForOrigins');
+    assertEquals(2, origins2.length);
+    assertEquals(
+        JSON.stringify(origins2.sort()), JSON.stringify([origin1, origin2]));
+  });
+
+  test('Block All Click single entry', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    webUIListenerCallback('notification-permission-review-list-changed', [{
+                            origin: origin1,
+                            notificationInfoString: detail1,
+                          }]);
+    await flushTasks();
+
+    const entries = getEntries();
+    assertEquals(1, entries.length);
+
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#blockAllButton')!.click();
+
+    const blockedOrigins =
+        await browserProxy.whenCalled('blockNotificationPermissionForOrigins');
+    assertEquals(blockedOrigins[0], origin1);
+    assertNotification(
+        true,
+        testElement.i18n(
+            'safetyCheckNotificationPermissionReviewBlockedToastLabel',
+            origin1));
   });
 
   test('Completion State', async function() {
@@ -387,7 +448,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await flushTasks();
 
     // Check header string for plural case.
-    let entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    let entries = getEntries();
     assertEquals(2, entries.length);
 
     const headerElement =
@@ -405,7 +466,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
         }]);
     await flushTasks();
 
-    entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    entries = getEntries();
     assertEquals(1, entries.length);
 
     // assertEquals(

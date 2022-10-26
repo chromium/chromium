@@ -68,11 +68,11 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getCookieSettingDescription',
       'getRecentSitePermissions',
       'getNotificationPermissionReview',
-      'blockNotificationPermissionForOrigin',
-      'ignoreNotificationPermissionForOrigin',
-      'resetNotificationPermissionForOrigin',
-      'allowNotificationPermissionForOrigin',
-      'undoIgnoreNotificationPermissionForOrigin',
+      'blockNotificationPermissionForOrigins',
+      'ignoreNotificationPermissionForOrigins',
+      'resetNotificationPermissionForOrigins',
+      'allowNotificationPermissionForOrigins',
+      'undoIgnoreNotificationPermissionForOrigins',
       'getFpsMembershipLabel',
       'getNumCookiesString',
     ]);
@@ -618,24 +618,24 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
     this.reviewNotificationList_ = reviewNotificationList;
   }
 
-  blockNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('blockNotificationPermissionForOrigin', origin);
+  blockNotificationPermissionForOrigins(origins: string[]): void {
+    this.methodCalled('blockNotificationPermissionForOrigins', origins);
   }
 
-  ignoreNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('ignoreNotificationPermissionForOrigin', origin);
+  ignoreNotificationPermissionForOrigins(origins: string[]): void {
+    this.methodCalled('ignoreNotificationPermissionForOrigins', origins);
   }
 
-  resetNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('resetNotificationPermissionForOrigin', origin);
+  resetNotificationPermissionForOrigins(origins: string[]): void {
+    this.methodCalled('resetNotificationPermissionForOrigins', origins);
   }
 
-  allowNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('allowNotificationPermissionForOrigin', origin);
+  allowNotificationPermissionForOrigins(origins: string[]): void {
+    this.methodCalled('allowNotificationPermissionForOrigins', origins);
   }
 
-  undoIgnoreNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('undoIgnoreNotificationPermissionForOrigin', origin);
+  undoIgnoreNotificationPermissionForOrigins(origins: string[]): void {
+    this.methodCalled('undoIgnoreNotificationPermissionForOrigins', origins);
   }
 
   getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {

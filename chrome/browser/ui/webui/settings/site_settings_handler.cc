@@ -700,30 +700,31 @@ void SiteSettingsHandler::RegisterMessages() {
           &SiteSettingsHandler::HandleResetChooserExceptionForSite,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "ignoreNotificationPermissionReviewForOrigin",
-      base::BindRepeating(&SiteSettingsHandler::
-                              HandleIgnoreOriginForNotificationPermissionReview,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "resetNotificationPermissionForOrigin",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleResetNotificationPermissionForOrigin,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "blockNotificationPermissionForOrigin",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleBlockNotificationPermissionForOrigin,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "allowNotificationPermissionForOrigin",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleAllowNotificationPermissionForOrigin,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "undoIgnoreNotificationPermissionReviewForOrigin",
+      "ignoreNotificationPermissionReviewForOrigins",
       base::BindRepeating(
           &SiteSettingsHandler::
-              HandleUndoIgnoreOriginForNotificationPermissionReview,
+              HandleIgnoreOriginsForNotificationPermissionReview,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "resetNotificationPermissionForOrigins",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleResetNotificationPermissionForOrigins,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "blockNotificationPermissionForOrigins",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleBlockNotificationPermissionForOrigins,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "allowNotificationPermissionForOrigins",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleAllowNotificationPermissionForOrigins,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "undoIgnoreNotificationPermissionReviewForOrigins",
+      base::BindRepeating(
+          &SiteSettingsHandler::
+              HandleUndoIgnoreOriginsForNotificationPermissionReview,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "isOriginValid",
@@ -1619,84 +1620,98 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
                                           args[3]);
 }
 
-void SiteSettingsHandler::HandleIgnoreOriginForNotificationPermissionReview(
+void SiteSettingsHandler::HandleIgnoreOriginsForNotificationPermissionReview(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  const ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromString(args[0].GetString());
+  const base::Value::List& origins = args[0].GetList();
 
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   DCHECK(service);
 
-  service->AddPatternToNotificationPermissionReviewBlocklist(
-      primary_pattern, ContentSettingsPattern::Wildcard());
+  for (const auto& origin : origins) {
+    const ContentSettingsPattern primary_pattern =
+        ContentSettingsPattern::FromString(origin.GetString());
+    service->AddPatternToNotificationPermissionReviewBlocklist(
+        primary_pattern, ContentSettingsPattern::Wildcard());
+  }
 
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());
 }
 
-void SiteSettingsHandler::HandleResetNotificationPermissionForOrigin(
+void SiteSettingsHandler::HandleResetNotificationPermissionForOrigins(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  const std::string& origin = args[0].GetString();
+
+  const base::Value::List& origins = args[0].GetList();
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  map->SetContentSettingCustomScope(ContentSettingsPattern::FromString(origin),
-                                    ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsType::NOTIFICATIONS,
-                                    CONTENT_SETTING_DEFAULT);
+
+  for (const auto& origin : origins) {
+    map->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString(origin.GetString()),
+        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+        CONTENT_SETTING_DEFAULT);
+  }
 
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());
 }
 
-void SiteSettingsHandler::HandleBlockNotificationPermissionForOrigin(
+void SiteSettingsHandler::HandleBlockNotificationPermissionForOrigins(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  const std::string& origin = args[0].GetString();
+  const base::Value::List& origins = args[0].GetList();
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  map->SetContentSettingCustomScope(ContentSettingsPattern::FromString(origin),
-                                    ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsType::NOTIFICATIONS,
-                                    CONTENT_SETTING_BLOCK);
+  for (const auto& origin : origins) {
+    map->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString(origin.GetString()),
+        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+        CONTENT_SETTING_BLOCK);
+  }
 
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());
 }
 
-void SiteSettingsHandler::HandleAllowNotificationPermissionForOrigin(
+void SiteSettingsHandler::HandleAllowNotificationPermissionForOrigins(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  const std::string& origin = args[0].GetString();
+  const base::Value::List& origins = args[0].GetList();
 
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  map->SetContentSettingCustomScope(ContentSettingsPattern::FromString(origin),
-                                    ContentSettingsPattern::Wildcard(),
-                                    ContentSettingsType::NOTIFICATIONS,
-                                    CONTENT_SETTING_ALLOW);
+
+  for (const auto& origin : origins) {
+    map->SetContentSettingCustomScope(
+        ContentSettingsPattern::FromString(origin.GetString()),
+        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+        CONTENT_SETTING_ALLOW);
+  }
 
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());
 }
 
-void SiteSettingsHandler::HandleUndoIgnoreOriginForNotificationPermissionReview(
-    const base::Value::List& args) {
+void SiteSettingsHandler::
+    HandleUndoIgnoreOriginsForNotificationPermissionReview(
+        const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  const ContentSettingsPattern& primary_pattern =
-      ContentSettingsPattern::FromString(args[0].GetString());
-
+  const base::Value::List& origins = args[0].GetList();
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   DCHECK(service);
 
-  service->RemovePatternFromNotificationPermissionReviewBlocklist(
-      primary_pattern, ContentSettingsPattern::Wildcard());
-
+  for (const auto& origin : origins) {
+    const ContentSettingsPattern& primary_pattern =
+        ContentSettingsPattern::FromString(origin.GetString());
+    service->RemovePatternFromNotificationPermissionReviewBlocklist(
+        primary_pattern, ContentSettingsPattern::Wildcard());
+  }
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());
 }
