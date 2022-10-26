@@ -29,6 +29,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
@@ -120,9 +121,9 @@ ALWAYS_INLINE void AtomicSetDidExtendTextCodecMaps() {
 }
 }  // namespace
 
-#if ERROR_DISABLED
+#if !DCHECK_IS_ON()
 
-static inline void checkExistingName(const char*, const char*) {}
+static inline void CheckExistingName(const char*, const char*) {}
 
 #else
 
