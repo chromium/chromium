@@ -65,6 +65,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -108,6 +109,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -803,6 +805,64 @@ public class TabGridDialogTest {
             openDialogFromStripAndVerify(cta, 2, null);
             testTitleTextFocus(cta);
         }
+    }
+
+    // Regression test for https://crbug.com/1378226.
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
+            ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void
+    testTabGroupNaming_afterMergeWithSelectionEditorV2() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 4);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 4);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog and modify group title.
+        openDialogFromTabSwitcherAndVerify(cta, 4,
+                cta.getResources().getQuantityString(
+                        R.plurals.bottom_tab_grid_title_placeholder, 4, 4));
+        editDialogTitle(cta, CUSTOMIZED_TITLE1);
+
+        // Verify the title is updated in both tab switcher and dialog.
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimation(cta);
+        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
+        openDialogFromTabSwitcherAndVerify(cta, 4, CUSTOMIZED_TITLE1);
+        openSelectionEditorV2AndVerify(cta, 4);
+
+        // Ungroup tab.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Ungroup tabs");
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+
+        // Verify the ungroup occurred.
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimation(cta);
+        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
+        verifyTabSwitcherCardCount(cta, 3);
+
+        enterTabSelectionEditorV2(cta);
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Group tabs");
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+
+        // Verify the group worked and the title remained.
+        verifyFirstCardTitle(CUSTOMIZED_TITLE1);
+        openDialogFromTabSwitcherAndVerify(cta, 4, CUSTOMIZED_TITLE1);
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimation(cta);
     }
 
     @Test
@@ -1553,5 +1613,10 @@ public class TabGridDialogTest {
             boolean isFocused = titleTextView.isFocused();
             return (!shouldFocus ^ isFocused) && (!shouldFocus ^ keyboardVisible);
         });
+    }
+
+    private void enterTabSelectionEditorV2(ChromeTabbedActivity cta) {
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
     }
 }

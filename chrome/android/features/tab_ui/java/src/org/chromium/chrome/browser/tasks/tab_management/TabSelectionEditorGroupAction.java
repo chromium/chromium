@@ -82,7 +82,9 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
             sortedTabs.add(tab);
         }
 
-        tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, false, true);
+        // Use true for "isSameGroup" to avoid updating the title multiple times.
+        tabGroupModelFilter.mergeListOfTabsToGroup(
+                sortedTabs, destinationTab, /*isSameGroup=*/true, /*notify=*/true);
 
         RecordUserAction.record("TabMultiSelectV2.GroupTabs");
         RecordUserAction.record("TabGroup.Created.TabMultiSelect");
