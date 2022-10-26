@@ -8512,6 +8512,7 @@ domain Page
       SameSiteCrossOriginNavigation
       SameSiteCrossOriginRedirectNotOptIn
       SameSiteCrossOriginNavigationNotOptIn
+      ActivationNavigationParameterMismatch
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

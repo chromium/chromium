@@ -65,7 +65,11 @@ enum class PrerenderFinalStatus {
   kSameSiteCrossOriginNavigation = 47,
   kSameSiteCrossOriginRedirectNotOptIn = 48,
   kSameSiteCrossOriginNavigationNotOptIn = 49,
-  kMaxValue = kSameSiteCrossOriginNavigationNotOptIn,
+  // The prediction is correct, and we are almost ready to activate this
+  // PrerenderHost, but the activation navigation's parameters are different
+  // from the initial prerendering navigation so Prerender fails to activate it.
+  kActivationNavigationParameterMismatch = 50,
+  kMaxValue = kActivationNavigationParameterMismatch,
 };
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_

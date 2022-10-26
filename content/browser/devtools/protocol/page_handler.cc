@@ -1565,6 +1565,9 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
       return Page::PrerenderFinalStatusEnum::
           SameSiteCrossOriginNavigationNotOptIn;
+    case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
+      return Page::PrerenderFinalStatusEnum::
+          ActivationNavigationParameterMismatch;
   }
 }
 

@@ -99,6 +99,8 @@ const char* FinalStatusToString(PrerenderFinalStatus final_status) {
       return "SameSiteCrossOriginRedirectNotOptIn";
     case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
       return "SameSiteCrossOriginNavigationNotOptIn";
+    case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
+      return "ActivationNavigationParameterMismatch";
   }
   NOTREACHED();
   return "";

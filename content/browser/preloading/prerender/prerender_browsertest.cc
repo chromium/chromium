@@ -8000,7 +8000,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   NavigatePrimaryPage(prerendering_url);
   host_observer.WaitForDestroyed();
 
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kActivationNavigationParameterMismatch);
 }
 
 class PrerenderPreloaderHoldbackBrowserTest : public PrerenderBrowserTest {
