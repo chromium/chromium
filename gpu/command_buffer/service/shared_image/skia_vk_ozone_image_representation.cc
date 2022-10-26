@@ -117,14 +117,10 @@ sk_sp<SkPromiseImageTexture> SkiaVkOzoneImageRepresentation::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SkiaVkOzoneImageRepresentation::EndWriteAccess(sk_sp<SkSurface> surface) {
+void SkiaVkOzoneImageRepresentation::EndWriteAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
-  if (surface) {
-    DCHECK_EQ(surface.get(), surface_.get());
-
-    surface.reset();
+  if (surface_)
     DCHECK(surface_->unique());
-  }
   EndAccess(false /* readonly */);
 }
 

@@ -92,6 +92,7 @@ sk_sp<SkSurface> ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
         VK_IMAGE_LAYOUT_UNDEFINED, VK_QUEUE_FAMILY_EXTERNAL);
   }
 
+  write_surface_ = surface;
   return surface;
 }
 
@@ -125,15 +126,14 @@ ExternalVkImageSkiaImageRepresentation::BeginWriteAccess(
   return promise_texture;
 }
 
-void ExternalVkImageSkiaImageRepresentation::EndWriteAccess(
-    sk_sp<SkSurface> surface) {
+void ExternalVkImageSkiaImageRepresentation::EndWriteAccess() {
   if (access_mode_ != kWrite) {
     LOG(DFATAL) << "BeginWriteAccess is not called mode=" << access_mode_;
     return;
   }
-  if (surface) {
-    surface->getCanvas()->restoreToCount(1);
-    surface = nullptr;
+  if (write_surface_) {
+    write_surface_->getCanvas()->restoreToCount(1);
+    write_surface_.reset();
     DCHECK(backing_impl()->context_state()->CachedSkSurfaceIsUnique(
         backing_impl()->promise_texture().get()));
   }

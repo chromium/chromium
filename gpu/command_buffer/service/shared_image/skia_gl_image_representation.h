@@ -38,7 +38,7 @@ class GPU_GLES2_EXPORT SkiaGLImageRepresentation
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  void EndWriteAccess(sk_sp<SkSurface> surface) override;
+  void EndWriteAccess() override;
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,

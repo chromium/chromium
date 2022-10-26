@@ -359,7 +359,7 @@ class WrappedSkImage::SkiaImageRepresentationImpl
       return nullptr;
     [[maybe_unused]] int save_count = surface->getCanvas()->save();
     DCHECK_EQ(1, save_count);
-    write_surface_ = surface.get();
+    write_surface_ = surface;
     return surface;
   }
 
@@ -370,13 +370,10 @@ class WrappedSkImage::SkiaImageRepresentationImpl
     return wrapped_sk_image()->promise_texture();
   }
 
-  void EndWriteAccess(sk_sp<SkSurface> surface) override {
-    if (surface) {
-      DCHECK_EQ(surface.get(), write_surface_);
-      surface->getCanvas()->restoreToCount(1);
-      surface.reset();
-      write_surface_ = nullptr;
-
+  void EndWriteAccess() override {
+    if (write_surface_) {
+      write_surface_->getCanvas()->restoreToCount(1);
+      write_surface_.reset();
       DCHECK(wrapped_sk_image()->SkSurfaceUnique(context_state_));
     }
   }
@@ -401,7 +398,7 @@ class WrappedSkImage::SkiaImageRepresentationImpl
     return static_cast<WrappedSkImage*>(backing());
   }
 
-  raw_ptr<SkSurface> write_surface_ = nullptr;
+  sk_sp<SkSurface> write_surface_;
   scoped_refptr<SharedContextState> context_state_;
 };
 

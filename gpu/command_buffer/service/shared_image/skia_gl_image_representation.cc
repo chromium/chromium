@@ -126,12 +126,9 @@ sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SkiaGLImageRepresentation::EndWriteAccess(sk_sp<SkSurface> surface) {
+void SkiaGLImageRepresentation::EndWriteAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
-  if (surface) {
-    DCHECK(surface_);
-    DCHECK_EQ(surface.get(), surface_.get());
-    surface.reset();
+  if (surface_) {
     DCHECK(surface_->unique());
   }
 

@@ -108,15 +108,11 @@ sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SkiaVkAndroidImageRepresentation::EndWriteAccess(
-    sk_sp<SkSurface> surface) {
+void SkiaVkAndroidImageRepresentation::EndWriteAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
-  if (surface) {
-    DCHECK_EQ(surface.get(), surface_.get());
-
-    surface.reset();
+  if (surface_)
     DCHECK(surface_->unique());
-  }
+
   // TODO(penghuang): reset canvas cached in |surface_|, when skia provides an
   // API to do it.
   // Currently, the |surface_| is only used with SkSurface::draw(ddl), it

@@ -91,7 +91,7 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
 
     return SkPromiseImageTexture::Make(backend_tex());
   }
-  void EndWriteAccess(sk_sp<SkSurface> surface) override {}
+  void EndWriteAccess() override {}
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,

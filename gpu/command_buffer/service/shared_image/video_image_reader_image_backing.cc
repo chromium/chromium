@@ -325,7 +325,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
     return nullptr;
   }
 
-  void EndWriteAccess(sk_sp<SkSurface> surface) override { NOTIMPLEMENTED(); }
+  void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,

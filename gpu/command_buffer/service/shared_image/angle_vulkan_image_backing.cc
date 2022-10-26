@@ -101,13 +101,14 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     [[maybe_unused]] int count = surface->getCanvas()->save();
     DCHECK_EQ(count, 1);
 
+    write_surface_ = surface;
     return surface;
   }
 
-  void EndWriteAccess(sk_sp<SkSurface> surface) override {
-    if (surface) {
-      surface->getCanvas()->restoreToCount(1);
-      surface = nullptr;
+  void EndWriteAccess() override {
+    if (write_surface_) {
+      write_surface_->getCanvas()->restoreToCount(1);
+      write_surface_.reset();
       DCHECK(backing_impl()->context_state_->CachedSkSurfaceIsUnique(
           backing_impl()->promise_texture_.get()));
     }
@@ -118,6 +119,8 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
   AngleVulkanImageBacking* backing_impl() const {
     return static_cast<AngleVulkanImageBacking*>(backing());
   }
+
+  sk_sp<SkSurface> write_surface_;
 };
 
 AngleVulkanImageBacking::AngleVulkanImageBacking(

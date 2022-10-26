@@ -151,7 +151,10 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
       base::debug::DumpWithoutCrashing();
   }
 
-  representation()->EndWriteAccess(std::move(surface_));
+  // Ensure no one uses `surface_` by dropping the reference before calling
+  // EndWriteAccess.
+  surface_.reset();
+  representation()->EndWriteAccess();
 }
 
 std::unique_ptr<GrBackendSurfaceMutableState>

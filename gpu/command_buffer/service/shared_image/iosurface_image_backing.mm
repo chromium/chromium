@@ -146,7 +146,7 @@ sk_sp<SkSurface> SkiaIOSurfaceRepresentation::BeginWriteAccess(
       surface_origin(), final_msaa_count, sk_color_type,
       backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
       &surface_props);
-  write_surface_ = surface.get();
+  write_surface_ = surface;
   return surface;
 }
 
@@ -165,13 +165,12 @@ sk_sp<SkPromiseImageTexture> SkiaIOSurfaceRepresentation::BeginWriteAccess(
   return promise_texture_;
 }
 
-void SkiaIOSurfaceRepresentation::EndWriteAccess(sk_sp<SkSurface> surface) {
-  if (surface) {
-    DCHECK_EQ(surface.get(), write_surface_);
-    DCHECK(surface->unique());
+void SkiaIOSurfaceRepresentation::EndWriteAccess() {
+  if (write_surface_) {
+    DCHECK(write_surface_->unique());
     CheckContext();
     // TODO(ericrk): Keep the surface around for re-use.
-    write_surface_ = nullptr;
+    write_surface_.reset();
   }
 
   if (client_)

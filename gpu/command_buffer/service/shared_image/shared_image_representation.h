@@ -278,6 +278,8 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
                       std::unique_ptr<GrBackendSurfaceMutableState> end_state);
     ~ScopedWriteAccess();
 
+    // NOTE: All references to the `surface_` must be destroyed before
+    // ScopedWriteAccess is destroyed.
     SkSurface* surface() const { return surface_.get(); }
     SkPromiseImageTexture* promise_image_texture() const {
       return promise_image_texture_.get();
@@ -366,7 +368,7 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) = 0;
   // TODO(jochin): Ensure each implementation accounts for null a SkSurface.
-  virtual void EndWriteAccess(sk_sp<SkSurface> surface) = 0;
+  virtual void EndWriteAccess() = 0;
 
   // Begin the read access. The implementations should insert semaphores into
   // begin_semaphores vector which client will wait on before reading the

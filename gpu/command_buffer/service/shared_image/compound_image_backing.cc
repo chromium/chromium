@@ -195,9 +195,7 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
     return wrapped_->BeginWriteAccess(begin_semaphores, end_semaphores,
                                       end_state);
   }
-  void EndWriteAccess(sk_sp<SkSurface> surface) final {
-    wrapped_->EndWriteAccess(std::move(surface));
-  }
+  void EndWriteAccess() final { wrapped_->EndWriteAccess(); }
 
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,

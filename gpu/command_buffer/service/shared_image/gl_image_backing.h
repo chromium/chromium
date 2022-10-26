@@ -106,7 +106,7 @@ class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphore,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override;
-  void EndWriteAccess(sk_sp<SkSurface> surface) override;
+  void EndWriteAccess() override;
   sk_sp<SkPromiseImageTexture> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
@@ -119,8 +119,7 @@ class SkiaGLCommonRepresentation : public SkiaImageRepresentation {
   const raw_ptr<GLTextureImageRepresentationClient> client_ = nullptr;
   scoped_refptr<SharedContextState> context_state_;
   sk_sp<SkPromiseImageTexture> promise_texture_;
-
-  raw_ptr<SkSurface> write_surface_ = nullptr;
+  sk_sp<SkSurface> write_surface_;
 #if DCHECK_IS_ON()
   raw_ptr<gl::GLContext> context_ = nullptr;
 #endif
