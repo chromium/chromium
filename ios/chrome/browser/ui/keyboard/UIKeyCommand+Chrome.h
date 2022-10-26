@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showPreviousTab_2;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showNextTab_3;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showPreviousTab_3;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_showBookmarks;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_addToBookmarks;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reload;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_goBack;
@@ -59,7 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showTab6;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showTab7;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showLastTab;
-@property(class, nonatomic, readonly) UIKeyCommand* cr_showBookmarks;
 
 // Returns a symbolic description of the key command. For example: ⇧⌘T.
 @property(nonatomic, readonly) NSString* cr_symbolicDescription;
