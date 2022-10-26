@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/browser_state/ios_chrome_io_thread.h"
 
 #import "components/variations/net/variations_http_headers.h"
 #import "ios/chrome/browser/net/ios_chrome_network_delegate.h"

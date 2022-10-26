@@ -15,8 +15,6 @@ source_set("browser") {
   sources = [
     "chrome_constants.cc",
     "chrome_constants.h",
-    "ios_chrome_io_thread.h",
-    "ios_chrome_io_thread.mm",
   ]
 
   deps = [

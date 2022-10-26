@@ -12,7 +12,6 @@
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"

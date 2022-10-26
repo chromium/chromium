@@ -41,6 +41,26 @@ source_set("browser_state") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("ios_thread") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_chrome_io_thread.h",
+    "ios_chrome_io_thread.mm",
+  ]
+
+  deps = [
+    "//components/variations/net",
+    "//ios/chrome/browser/net",
+    "//ios/chrome/common",
+    "//ios/components/io_thread",
+    "//ios/web/public/init",
+    "//ios/web/public/thread",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
 source_set("browser_state_impl") {
   sources = [
     "bookmark_model_loaded_observer.cc",
@@ -67,6 +87,7 @@ source_set("browser_state_impl") {
 
   deps = [
     ":browser_state",
+    ":ios_thread",
     "//base",
     "//base:i18n",
     "//components/bookmarks/browser",

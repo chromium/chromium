@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_io_data.h"
-#include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/cookies/cookie_store.h"
