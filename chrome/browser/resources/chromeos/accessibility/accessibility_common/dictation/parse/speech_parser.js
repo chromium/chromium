@@ -9,6 +9,7 @@
 import {InputController} from '../input_controller.js';
 import {LocaleInfo} from '../locale_info.js';
 import {Macro} from '../macros/macro.js';
+import {MetricsUtils} from '../metrics_utils.js';
 
 import {InputTextStrategy} from './input_text_strategy.js';
 import {ParseStrategy} from './parse_strategy.js';
@@ -52,11 +53,13 @@ export class SpeechParser {
     // `pumpkinParseStrategy_` fails, then `simpleParseStrategy_` will also
     // fail.
     if (this.pumpkinParseStrategy_.isEnabled()) {
+      MetricsUtils.recordPumpkinUsed(true);
       const macro = await this.pumpkinParseStrategy_.parse(text);
       if (macro) {
         return macro;
       }
     } else if (this.simpleParseStrategy_.isEnabled()) {
+      MetricsUtils.recordPumpkinUsed(false);
       return await /** @type {!Promise<!Macro>} */ (
           this.simpleParseStrategy_.parse(text));
     }

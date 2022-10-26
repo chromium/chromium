@@ -40,6 +40,11 @@ export class MetricsUtils {
         MetricsUtils.MACRO_FAILED_METRIC, macro.getMacroName());
   }
 
+  /** @param {boolean} used */
+  static recordPumpkinUsed(used) {
+    chrome.metricsPrivate.recordBoolean(MetricsUtils.PUMPKIN_METRIC, used);
+  }
+
   /** Records metrics when speech recognition starts. */
   recordSpeechRecognitionStarted() {
     chrome.metricsPrivate.recordBoolean(
@@ -120,3 +125,10 @@ MetricsUtils.MACRO_SUCCEEDED_METRIC =
  * @const {string}
  */
 MetricsUtils.MACRO_FAILED_METRIC = 'Accessibility.CrosDictation.MacroFailed';
+
+/**
+ * The metric used to record whether or not Pumpkin was used for command
+ * parsing.
+ * @const {string}
+ */
+MetricsUtils.PUMPKIN_METRIC = 'Accessibility.CrosDictation.UsedPumpkin';

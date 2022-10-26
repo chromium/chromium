@@ -91,6 +91,7 @@ const char* kNetworkListeningDurationMetric =
 const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
 const char* kOnDeviceSpeechMetric =
     "Accessibility.CrosDictation.UsedOnDeviceSpeech";
+const char* kPumpkinMetric = "Accessibility.CrosDictation.UsedPumpkin";
 const char* kMacroRecognizedMetric =
     "Accessibility.CrosDictation.MacroRecognized";
 const char* kMacroSucceededMetric =
@@ -1569,6 +1570,19 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartDeletePhraseLongContent) {
   SendFinalResultAndWaitForTextAreaValue("delete familiaris", final_value);
 }
 
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, Metrics) {
+  base::HistogramTester histogram_tester_;
+  HistogramWaiter waiter(kPumpkinMetric);
+  SendFinalResultAndWait("Undo");
+  waiter.Wait();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
+                                       /*sample=*/false,
+                                       /*expected_bucket_count=*/1);
+}
+
 // Tests the behavior of the Dictation bubble UI.
 class DictationUITest : public DictationTest {
  protected:
@@ -2020,6 +2034,19 @@ IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, UndoAndRedo) {
   SendFinalResultAndWaitForTextAreaValue("Lyra", "The constellation lyra");
   SendFinalResultAndWaitForTextAreaValue("undo that", "The constellation");
   SendFinalResultAndWaitForTextAreaValue("redo that", "The constellation lyra");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {
+  base::HistogramTester histogram_tester_;
+  HistogramWaiter waiter(kPumpkinMetric);
+  SendFinalResultAndWaitForTextAreaValue("dictate hello", "Hello");
+  waiter.Wait();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester_.ExpectUniqueSample(/*name=*/kPumpkinMetric,
+                                       /*sample=*/true,
+                                       /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash

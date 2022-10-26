@@ -569,6 +569,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosDictation.UsedPumpkin" enum="BooleanUsage"
+    expires_after="2023-10-24">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether Pumpkin was used to parse a command. If Pumpkin was not
+    used, then regex parsing was used. This histogram is recorded each time
+    Dictation parses a command.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosDockedMagnifier" enum="BooleanEnabled"
     expires_after="2023-04-10">
   <owner>dtseng@chromium.org</owner>
