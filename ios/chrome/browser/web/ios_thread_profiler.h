@@ -7,8 +7,8 @@
 // TODO(crbug.com/1229530): remove this once //chrome/common/profiler is moved
 // to components/profiler.
 
-#ifndef IOS_CHROME_BROWSER_IOS_THREAD_PROFILER_H_
-#define IOS_CHROME_BROWSER_IOS_THREAD_PROFILER_H_
+#ifndef IOS_CHROME_BROWSER_WEB_IOS_THREAD_PROFILER_H_
+#define IOS_CHROME_BROWSER_WEB_IOS_THREAD_PROFILER_H_
 
 #include <memory>
 
@@ -152,4 +152,4 @@ class IOSThreadProfiler {
   base::WeakPtrFactory<IOSThreadProfiler> weak_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_IOS_THREAD_PROFILER_H_
+#endif  // IOS_CHROME_BROWSER_WEB_IOS_THREAD_PROFILER_H_

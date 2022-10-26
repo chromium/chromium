@@ -4,7 +4,7 @@
 
 // Adapted from chrome/common/profiler/thread_profiler.cc
 
-#include "ios/chrome/browser/ios_thread_profiler.h"
+#include "ios/chrome/browser/web/ios_thread_profiler.h"
 
 #include <string>
 #include <utility>
