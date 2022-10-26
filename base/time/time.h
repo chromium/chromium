@@ -485,7 +485,7 @@ class TimeBase {
   constexpr explicit TimeBase(int64_t us) : us_(us) {}
 
   // Time value in a microsecond timebase.
-  int64_t us_;
+  ClampedNumeric<int64_t> us_;
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -960,7 +960,7 @@ constexpr TimeDelta TimeBase<TimeClass>::since_origin() const {
 template <class TimeClass>
 constexpr TimeDelta TimeBase<TimeClass>::operator-(
     const TimeBase<TimeClass>& other) const {
-  return Microseconds(ClampSub(us_, other.us_));
+  return Microseconds(us_ - other.us_);
 }
 
 template <class TimeClass>
