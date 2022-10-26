@@ -335,6 +335,7 @@ message SystemProfileProto {
       FORM_FACTOR_PHONE = 2;
       FORM_FACTOR_TABLET = 3;
       FORM_FACTOR_TV = 4;
+      FORM_FACTOR_MEET_DEVICE = 5;
     }
     optional FormFactor form_factor = 22;
 
@@ -1024,6 +1025,7 @@ message SystemProfileProto {
     CRL_SET = 10;
     SUBRESOURCE_FILTER = 11;
     SW_REPORTER = 12;
+    // Software Decryption CDM on all platforms of Chrome
     WIDEVINE_CDM = 13;
     EPSON_INKJET_PRINTER_ESCPR = 14;
     CROS_TERMINA = 15;
@@ -1041,6 +1043,8 @@ message SystemProfileProto {
     ZXCVBN_DATA = 27;
     AUTOFILL_REGEX_CONSTANTS = 28;
     WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST = 29;
+    // Hardware Decryption CDM only for Chrome on Windows.
+    MEDIA_FOUNDATION_WIDEVINE_CDM = 30;
   }
 
   // Information about what Chrome components are registered and at which
