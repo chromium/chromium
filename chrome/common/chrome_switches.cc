@@ -543,7 +543,8 @@ const char kStartMaximized[] = "start-maximized";
 const char kStartStackProfiler[] = "start-stack-profiler";
 
 // Browser test mode for the |kStartStackProfiler| switch. Limits the profile
-// durations to be significantly less than the test timeout.
+// durations to be significantly less than the test timeout. On ChromeOS,
+// forces the stack sampling profiler to run on all processes as well.
 const char kStartStackProfilerBrowserTest[] = "browser-test";
 
 // Interval, in minutes, used for storage pressure notification throttling.
