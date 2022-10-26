@@ -22,6 +22,7 @@
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_interned_data_index.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_active_processes.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_histogram_sample.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_user_event.pbzero.h"
@@ -87,16 +88,16 @@ void CustomEventRecorder::EmitRecurringUpdates() {
   auto* instance = CustomEventRecorder::GetInstance();
   if (instance && instance->active_processes_callback_) {
     const auto pids = instance->active_processes_callback_.Run();
-    TRACE_EVENT_INSTANT(
-        "__metadata", "ActiveProcesses", perfetto::Track::Global(0),
-        [&pids](perfetto::EventContext ctx) {
-          auto* active_processes =
-              ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                  ->set_active_processes();
-          for (const auto& pid : pids) {
-            active_processes->add_pid(pid);
-          }
-        });
+    TRACE_EVENT_INSTANT("__metadata", "ActiveProcesses",
+                        perfetto::Track::Global(0),
+                        [&pids](perfetto::EventContext ctx) {
+                          auto* active_processes =
+                              ctx.event<perfetto::protos::pbzero::TrackEvent>()
+                                  ->set_chrome_active_processes();
+                          for (const auto& pid : pids) {
+                            active_processes->add_pid(pid);
+                          }
+                        });
   }
 #if BUILDFLAG(IS_ANDROID)
   static const ChromeProcessDescriptor::ProcessType process_type =
