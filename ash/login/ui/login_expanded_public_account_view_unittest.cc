@@ -14,10 +14,13 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/types/event_type.h"
 #include "ui/views/controls/link_fragment.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/test/combobox_test_api.h"
@@ -173,6 +176,10 @@ TEST_P(LoginExpandedPublicAccountViewTest, ToggleAdvancedView) {
 
   // Advanced view is shown and the overall size does not change.
   EXPECT_TRUE(test_api.advanced_view()->GetVisible());
+  ui::MouseEvent fake_event(ui::EventType::ET_MOUSE_MOVED, gfx::Point(),
+                            gfx::Point(), base::TimeTicks(), 0, 0);
+  EXPECT_EQ(test_api.advanced_view_button()->GetCursor(fake_event),
+            ui::mojom::CursorType::kHand);
   EXPECT_EQ(public_account_->width(), initial_width);
   EXPECT_EQ(public_account_->height(), initial_height);
 

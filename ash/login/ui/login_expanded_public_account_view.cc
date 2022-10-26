@@ -33,6 +33,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -152,6 +153,7 @@ class SelectionButtonView : public LoginButton {
     };
 
     auto* label_container = new NonAccessibleView();
+    label_container->SetCanProcessEventsWithinSubtree(false);
     views::BoxLayout* label_layout =
         label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal));
@@ -166,6 +168,7 @@ class SelectionButtonView : public LoginButton {
     label_container->AddChildView(label_);
 
     auto* icon_container = new NonAccessibleView();
+    icon_container->SetCanProcessEventsWithinSubtree(false);
     views::BoxLayout* icon_layout =
         icon_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal));
@@ -192,6 +195,10 @@ class SelectionButtonView : public LoginButton {
   // height based on its child height.
   int GetHeightForWidth(int w) const override {
     return GetPreferredSize().height();
+  }
+
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override {
+    return ui::mojom::CursorType::kHand;
   }
 
   void SetMargins(int left, int right) {
