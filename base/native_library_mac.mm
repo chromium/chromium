@@ -76,7 +76,6 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
   NativeLibrary native_lib = new NativeLibraryStruct();
   native_lib->type = BUNDLE;
   native_lib->bundle = bundle;
-  native_lib->bundle_resource_ref = CFBundleOpenBundleResourceMap(bundle);
   native_lib->objc_status = OBJC_UNKNOWN;
   return native_lib;
 }
@@ -84,8 +83,6 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
 void UnloadNativeLibrary(NativeLibrary library) {
   if (library->objc_status == OBJC_NOT_PRESENT) {
     if (library->type == BUNDLE) {
-      CFBundleCloseBundleResourceMap(library->bundle,
-                                     library->bundle_resource_ref);
       CFRelease(library->bundle);
     } else {
       dlclose(library->dylib);
