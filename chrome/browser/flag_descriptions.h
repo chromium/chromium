@@ -423,6 +423,9 @@ extern const char kDisruptiveNotificationPermissionRevocationDescription[];
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 
+extern const char kMerchantWidePromotionsName[];
+extern const char kMerchantWidePromotionsDescription[];
+
 extern const char kUseDMSAAForTilesName[];
 extern const char kUseDMSAAForTilesDescription[];
 

@@ -9200,6 +9200,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kDiscountConsentV2,
                                     kDiscountConsentV2Variations,
                                     "DiscountConsentV2")},
+
+    {"enable-merchant-wide-promotions",
+     flag_descriptions::kMerchantWidePromotionsName,
+     flag_descriptions::kMerchantWidePromotionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kMerchantWidePromotion)},
+
 #endif
 
     {"autofill-enable-unmask-card-request-set-instrument-id",

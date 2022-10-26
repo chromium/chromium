@@ -791,6 +791,11 @@ const char kDoubleBufferCompositingDescription[] =
     "Latency should be reduced in some cases. On the other hand, more skipped "
     "frames are expected.";
 
+const char kMerchantWidePromotionsName[] = "Merchant wide promotions";
+const char kMerchantWidePromotionsDescription[] =
+    "Enables the discount consent for all merchants, and show merchant wide "
+    "promotions if they are available";
+
 const char kFontAccessAPIName[] = "Font Access APIs";
 const char kFontAccessAPIDescription[] =
     "Enables the experimental Font Access APIs, giving websites access "

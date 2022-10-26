@@ -57468,6 +57468,7 @@ from previous Chrome versions.
   <int value="-2003097010" label="TerminalSftp:enabled"/>
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
+  <int value="-2000862180" label="MerchantWidePromotion:disabled"/>
   <int value="-2000567059" label="SimplifyHttpsIndicator:enabled"/>
   <int value="-2000177300" label="JourneysLabel:disabled"/>
   <int value="-1999892428" label="force-ui-direction"/>
@@ -58935,6 +58936,7 @@ from previous Chrome versions.
   <int value="-1160730312" label="WebRTC-FrameBuffer3:enabled"/>
   <int value="-1160097262" label="WebAuthenticationCableSecondFactor:enabled"/>
   <int value="-1160026273" label="enable-web-notification-custom-layouts"/>
+  <int value="-1159681213" label="MerchantWidePromotion:enabled"/>
   <int value="-1159563774" label="enable-accessibility-script-injection"/>
   <int value="-1159369873" label="TabGroupsUiImprovementsAndroid:disabled"/>
   <int value="-1159154050" label="FilesSinglePartitionFormat:enabled"/>
