@@ -586,8 +586,10 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     private void clickActionView(int id) throws TimeoutException {
         onViewWaiting(
-                allOf(withId(id), isDescendantOfA(withId(R.id.action_view_layout)), isDisplayed()))
-                .perform(click());
+                allOf(withId(id), isDescendantOfA(withId(R.id.action_view_layout)), isDisplayed()));
+        // On Android 12 perform(click()) sometimes fails to trigger the click so force the click on
+        // the view object instead.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.findViewById(id).performClick(); });
     }
 
     private void clickMenuItem(String text) throws TimeoutException {
