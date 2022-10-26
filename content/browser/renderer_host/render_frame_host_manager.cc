@@ -1129,7 +1129,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
 
   bool is_same_site =
       render_frame_host_->IsNavigationSameSite(request->GetUrlInfo());
-  if (frame_tree_node_->IsMainFrame()) {
+  if (frame_tree_node_->IsOutermostMainFrame()) {
     // Same-site navigations could swap BrowsingInstance as well. But we only
     // want to clear window.name on cross-site cross-BrowsingInstance main frame
     // navigations.
