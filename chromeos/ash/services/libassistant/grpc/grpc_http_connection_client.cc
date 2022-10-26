@@ -11,8 +11,6 @@
 #include "chromeos/assistant/internal/grpc_transport/streaming/bidi_streaming_rpc_call.h"
 #include "chromeos/assistant/internal/grpc_transport/streaming/streaming_write_queue.h"
 #include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
-
-#include "third_party/grpc/src/include/grpc/grpc_security_constants.h"
 #include "third_party/grpc/src/include/grpc/impl/codegen/grpc_types.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/grpc/src/include/grpcpp/security/credentials.h"
