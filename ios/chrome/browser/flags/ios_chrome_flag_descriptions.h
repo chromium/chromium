@@ -548,6 +548,15 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 
+// Title and description for the zero-suggest prefetching on the Search Results
+// Page.
+extern const char kOmniboxZeroSuggestPrefetchingOnSRPName[];
+extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
+
+// Title and description for the zero-suggest prefetching on any Web Page.
+extern const char kOmniboxZeroSuggestPrefetchingOnWebName[];
+extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
+
 // Title and description for the use of in-memory zero-suggest caching.
 extern const char kOmniboxZeroSuggestInMemoryCachingName[];
 extern const char kOmniboxZeroSuggestInMemoryCachingDescription[];
