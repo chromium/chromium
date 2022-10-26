@@ -3694,6 +3694,7 @@
         resolver: "horizontal",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "overscroll-behavior-y",
@@ -3708,6 +3709,7 @@
         resolver: "vertical",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "padding-bottom",
@@ -4029,6 +4031,7 @@
       type_name: "mojom::blink::ScrollBehavior",
       keywords: ["auto", "smooth"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "scroll-margin-block-end",
@@ -4050,6 +4053,7 @@
       default_value: "scroll_customization::kScrollDirectionNone",
       include_paths: ["third_party/blink/renderer/core/scroll/scroll_customization.h"],
       runtime_flag: "ScrollCustomization",
+      readonly: true,
     },
     {
       name: "scroll-margin-block-start",
@@ -4074,6 +4078,7 @@
         resolver: "bottom",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-margin-inline-end",
@@ -4107,6 +4112,7 @@
         resolver: "left",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-margin-right",
@@ -4122,6 +4128,7 @@
         resolver: "right",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-margin-top",
@@ -4137,6 +4144,7 @@
         resolver: "top",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-padding-block-end",
@@ -4178,6 +4186,7 @@
         resolver: "bottom",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-padding-inline-end",
@@ -4219,6 +4228,7 @@
         resolver: "left",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-padding-right",
@@ -4234,6 +4244,7 @@
         resolver: "right",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-padding-top",
@@ -4249,6 +4260,7 @@
         resolver: "top",
       },
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-snap-align",
@@ -4263,6 +4275,7 @@
       keywords: ["none", "start", "end", "center"],
       typedom_types: ["Keyword"],
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-snap-stop",
@@ -4272,6 +4285,7 @@
       default_value: "normal",
       typedom_types: ["Keyword"],
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-snap-type",
@@ -4286,6 +4300,7 @@
       keywords: ["none", "x", "y", "block", "inline", "both", "mandatory", "proximity"],
       typedom_types: ["Keyword"],
       computable: false,
+      readonly: true,
     },
     {
       name: "scroll-timeline-axis",

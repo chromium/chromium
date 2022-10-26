@@ -1510,36 +1510,41 @@ TEST_F(ComputedStyleTest, DebugDiffFields) {
 #endif  // #if DCHECK_IS_ON()
 
 TEST_F(ComputedStyleTest, LogicalScrollPaddingUtils) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
 
   Length left = Length::Fixed(1.0f);
   Length right = Length::Fixed(2.0f);
   Length top = Length::Fixed(3.0f);
   Length bottom = Length::Fixed(4.0f);
 
-  style->SetScrollPaddingLeft(left);
-  style->SetScrollPaddingRight(right);
-  style->SetScrollPaddingTop(top);
-  style->SetScrollPaddingBottom(bottom);
+  builder.SetScrollPaddingLeft(left);
+  builder.SetScrollPaddingRight(right);
+  builder.SetScrollPaddingTop(top);
+  builder.SetScrollPaddingBottom(bottom);
 
   // ltr
 
-  style->SetDirection(TextDirection::kLtr);
-  style->SetWritingMode(WritingMode::kHorizontalTb);
+  builder.SetDirection(TextDirection::kLtr);
+  builder.SetWritingMode(WritingMode::kHorizontalTb);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(left, style->ScrollPaddingInlineStart());
   EXPECT_EQ(right, style->ScrollPaddingInlineEnd());
   EXPECT_EQ(top, style->ScrollPaddingBlockStart());
   EXPECT_EQ(bottom, style->ScrollPaddingBlockEnd());
 
-  style->SetDirection(TextDirection::kLtr);
-  style->SetWritingMode(WritingMode::kVerticalLr);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetDirection(TextDirection::kLtr);
+  builder.SetWritingMode(WritingMode::kVerticalLr);
+  style = builder.TakeStyle();
   EXPECT_EQ(top, style->ScrollPaddingInlineStart());
   EXPECT_EQ(bottom, style->ScrollPaddingInlineEnd());
   EXPECT_EQ(left, style->ScrollPaddingBlockStart());
   EXPECT_EQ(right, style->ScrollPaddingBlockEnd());
 
-  style->SetDirection(TextDirection::kLtr);
-  style->SetWritingMode(WritingMode::kVerticalRl);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetDirection(TextDirection::kLtr);
+  builder.SetWritingMode(WritingMode::kVerticalRl);
+  style = builder.TakeStyle();
   EXPECT_EQ(top, style->ScrollPaddingInlineStart());
   EXPECT_EQ(bottom, style->ScrollPaddingInlineEnd());
   EXPECT_EQ(right, style->ScrollPaddingBlockStart());
@@ -1547,22 +1552,28 @@ TEST_F(ComputedStyleTest, LogicalScrollPaddingUtils) {
 
   // rtl
 
-  style->SetDirection(TextDirection::kRtl);
-  style->SetWritingMode(WritingMode::kHorizontalTb);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetDirection(TextDirection::kRtl);
+  builder.SetWritingMode(WritingMode::kHorizontalTb);
+  style = builder.TakeStyle();
   EXPECT_EQ(right, style->ScrollPaddingInlineStart());
   EXPECT_EQ(left, style->ScrollPaddingInlineEnd());
   EXPECT_EQ(top, style->ScrollPaddingBlockStart());
   EXPECT_EQ(bottom, style->ScrollPaddingBlockEnd());
 
-  style->SetDirection(TextDirection::kRtl);
-  style->SetWritingMode(WritingMode::kVerticalLr);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetDirection(TextDirection::kRtl);
+  builder.SetWritingMode(WritingMode::kVerticalLr);
+  style = builder.TakeStyle();
   EXPECT_EQ(bottom, style->ScrollPaddingInlineStart());
   EXPECT_EQ(top, style->ScrollPaddingInlineEnd());
   EXPECT_EQ(left, style->ScrollPaddingBlockStart());
   EXPECT_EQ(right, style->ScrollPaddingBlockEnd());
 
-  style->SetDirection(TextDirection::kRtl);
-  style->SetWritingMode(WritingMode::kVerticalRl);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetDirection(TextDirection::kRtl);
+  builder.SetWritingMode(WritingMode::kVerticalRl);
+  style = builder.TakeStyle();
   EXPECT_EQ(bottom, style->ScrollPaddingInlineStart());
   EXPECT_EQ(top, style->ScrollPaddingInlineEnd());
   EXPECT_EQ(right, style->ScrollPaddingBlockStart());
