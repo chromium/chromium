@@ -6,39 +6,21 @@
 
 import argparse
 import logging
-import os
 import pathlib
 import subprocess
 from typing import List, Optional
 
 _SRC_PATH = pathlib.Path(__file__).parents[3].resolve()
+_CLANK_PATH = _SRC_PATH / 'clank'
 _OUTPUT_DIR_ROOT = _SRC_PATH / 'out'
 _AUTONINJA_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'autoninja'
 _NINJA_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'ninja'
 _GN_PATH = _SRC_PATH / 'third_party' / 'depot_tools' / 'gn'
-_CHROMECAST_EXTRA_ARGS = ['is_cast_android=true', 'enable_cast_receiver=true']
-
-
-def gen_args_gn_content(use_goma: bool = False,
-                        *,
-                        extra_args: Optional[List[str]] = None) -> str:
-    args = []
-    if use_goma:
-        args.append('use_goma=true')
-    args.append('target_os="android"')
-    # Lint prints out all errors when generating baseline files, so avoid
-    # failing on output.
-    args.append('treat_warnings_as_errors=false')
-    # Both cronet and chromecast require this line to be built.
-    args.append('is_component_build=false')
-    if extra_args:
-        args.extend(extra_args)
-    return '\n'.join(args)
 
 
 def build_all_lint_targets(out_dir: pathlib.Path,
-                           args_gn_content: str,
-                           prefix: Optional[str],
+                           args_list: List[str],
+                           *,
                            verbose: bool,
                            built_targets: Optional[List[str]] = None
                            ) -> List[str]:
@@ -46,6 +28,7 @@ def build_all_lint_targets(out_dir: pathlib.Path,
     out_dir.mkdir(parents=True, exist_ok=True)
 
     args_gn_path = out_dir / 'args.gn'
+    args_gn_content = '\n'.join(args_list)
     logging.info(f'Populating {args_gn_path}:\n{args_gn_content}')
     with open(args_gn_path, 'w') as f:
         f.write(args_gn_content)
@@ -71,10 +54,6 @@ def build_all_lint_targets(out_dir: pathlib.Path,
                 logging.info(
                     f'> Skipping {ninja_target} since it was already built.')
                 continue
-            if prefix and not ninja_target.startswith(prefix):
-                logging.info(
-                    f'> Skipping {ninja_target} due to --prefix={prefix}')
-                continue
             logging.info(f'> Found {ninja_target}')
             target_names.append(ninja_target)
 
@@ -96,18 +75,6 @@ def main():
 
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument(
-        '--prefix',
-        help='Only lint targets starting with this prefix will be re-built. '
-        'For example, setting --prefix="clank" will only build lint targets '
-        'under the //clank sub-directory.')
-    parser.add_argument(
-        '--git-root',
-        default=_SRC_PATH,
-        help='Defaults to //src, allows overriding which repo git runs in.')
-    parser.add_argument('--use-goma',
-                        action='store_true',
-                        help='Turn on goma (useful for local runs).')
     parser.add_argument('-v',
                         '--verbose',
                         action='store_true',
@@ -127,34 +94,71 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)7d %(message)s')
 
-    logging.info(f'Removing "lint-baseline.xml" files under {args.git_root}.')
+    include_clank = _CLANK_PATH.exists()
 
-    git_root = pathlib.Path(args.git_root)
-    repo_file_paths = subprocess.run(
-        ['git', '-C', str(git_root), 'ls-files'],
-        check=True,
-        capture_output=True,
-        text=True).stdout.splitlines()
+    git_roots = [_SRC_PATH]
+    if include_clank:
+        git_roots.append(_CLANK_PATH)
 
-    for repo_path in repo_file_paths:
+    logging.info(f'Removing "lint-baseline.xml" files under {git_roots}.')
+
+    repo_file_paths = []
+    for git_root in git_roots:
+        git_file_paths = subprocess.run(
+            ['git', '-C', str(git_root), 'ls-files'],
+            check=True,
+            capture_output=True,
+            text=True).stdout.splitlines()
+        repo_file_paths.extend((git_root, p) for p in git_file_paths)
+
+    for git_root, repo_path in repo_file_paths:
         path = git_root / repo_path
-        if path.name == 'lint-baseline.xml':
+        if path.name == 'lint-baseline.xml' and path.exists():
             logging.info(f'> Deleting: {path}')
             path.unlink()
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Default'
+    gn_args = [
+        'use_goma=true',
+        'target_os="android"',
+        'treat_warnings_as_errors=false',
+        'is_component_build=false',
+        'enable_chrome_android_internal=false',
+    ]
     built_targets = build_all_lint_targets(out_dir,
-                                           gen_args_gn_content(args.use_goma),
-                                           args.prefix, args.verbose)
+                                           gn_args,
+                                           verbose=args.verbose)
+
+    if include_clank:
+        out_dir = _OUTPUT_DIR_ROOT / 'Lint-Clank'
+        gn_args = [
+            'use_goma=true',
+            'target_os="android"',
+            'treat_warnings_as_errors=false',
+            'is_component_build=false',
+        ]
+        built_targets = build_all_lint_targets(out_dir,
+                                               gn_args,
+                                               verbose=args.verbose,
+                                               built_targets=built_targets)
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Cast'
-    built_targets = build_all_lint_targets(
-        out_dir,
-        gen_args_gn_content(args.use_goma, extra_args=_CHROMECAST_EXTRA_ARGS),
-        args.prefix, args.verbose, built_targets)
+    gn_args = [
+        'use_goma=true',
+        'target_os="android"',
+        'treat_warnings_as_errors=false',
+        'is_component_build=false',
+        'enable_chrome_android_internal=false',
+        'is_cast_android=true',
+        'enable_cast_receiver=true',
+    ]
+    built_targets = build_all_lint_targets(out_dir,
+                                           gn_args,
+                                           verbose=args.verbose,
+                                           built_targets=built_targets)
 
     logging.info('Adding new lint-baseline.xml files to git.')
-    for repo_path in repo_file_paths:
+    for git_root, repo_path in repo_file_paths:
         path = git_root / repo_path
         if path.name == 'lint-baseline.xml':
             # Since we are passing -C to git, the relative path is needed
