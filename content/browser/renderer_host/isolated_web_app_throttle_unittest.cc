@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/isolated_app_throttle.h"
+#include "content/browser/renderer_host/isolated_web_app_throttle.h"
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
@@ -37,7 +37,7 @@ static constexpr RenderFrameHost::WebExposedIsolationLevel
     kMaybeIsolatedApplication =
         RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication;
 
-class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
@@ -82,7 +82,7 @@ class IsolatedAppContentBrowserClient : public ContentBrowserClient {
 
 }  // namespace
 
-class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
+class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -170,7 +170,9 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
     return coop_coep_headers_;
   }
 
-  IsolatedAppContentBrowserClient& GetBrowserClient() { return test_client_; }
+  IsolatedWebAppContentBrowserClient& GetBrowserClient() {
+    return test_client_;
+  }
 
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers() {
     return corp_coep_headers_;
@@ -205,13 +207,13 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
     CHECK_EQ(GURL(url), rfh->GetLastCommittedURL());
   }
 
-  IsolatedAppContentBrowserClient test_client_;
+  IsolatedWebAppContentBrowserClient test_client_;
   raw_ptr<ContentBrowserClient> old_client_;
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers_;
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers_;
 };
 
-TEST_F(IsolatedAppThrottleTest, AllowNavigationWithinNonApp) {
+TEST_F(IsolatedWebAppThrottleTest, AllowNavigationWithinNonApp) {
   CommitBrowserInitiatedNavigation(kNonAppUrl);
   EXPECT_EQ(kNotIsolated, GetWebExposedIsolationLevel(main_frame_id()));
 
@@ -219,7 +221,7 @@ TEST_F(IsolatedAppThrottleTest, AllowNavigationWithinNonApp) {
   EXPECT_EQ(kNotIsolated, GetWebExposedIsolationLevel(main_frame_id()));
 }
 
-TEST_F(IsolatedAppThrottleTest, BlockNavigationIntoIsolatedApp) {
+TEST_F(IsolatedWebAppThrottleTest, BlockNavigationIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kNonAppUrl);
   EXPECT_EQ(kNotIsolated, GetWebExposedIsolationLevel(main_frame_id()));
 
@@ -229,13 +231,13 @@ TEST_F(IsolatedAppThrottleTest, BlockNavigationIntoIsolatedApp) {
   EXPECT_EQ(NavigationThrottle::BLOCK_REQUEST, start_result.action());
 }
 
-TEST_F(IsolatedAppThrottleTest, AllowNavigationIfNoPreviousPage) {
+TEST_F(IsolatedWebAppThrottleTest, AllowNavigationIfNoPreviousPage) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
 }
 
-TEST_F(IsolatedAppThrottleTest, AllowNavigationWithinIsolatedApp) {
+TEST_F(IsolatedWebAppThrottleTest, AllowNavigationWithinIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -246,7 +248,7 @@ TEST_F(IsolatedAppThrottleTest, AllowNavigationWithinIsolatedApp) {
             GetWebExposedIsolationLevel(main_frame_id()));
 }
 
-TEST_F(IsolatedAppThrottleTest, CancelCrossOriginNavigation) {
+TEST_F(IsolatedWebAppThrottleTest, CancelCrossOriginNavigation) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -270,7 +272,7 @@ TEST_F(IsolatedAppThrottleTest, CancelCrossOriginNavigation) {
       ui::PageTransition::PAGE_TRANSITION_LINK));
 }
 
-TEST_F(IsolatedAppThrottleTest, BlockRedirectOutOfIsolatedApp) {
+TEST_F(IsolatedWebAppThrottleTest, BlockRedirectOutOfIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -291,7 +293,7 @@ TEST_F(IsolatedAppThrottleTest, BlockRedirectOutOfIsolatedApp) {
       ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT));
 }
 
-TEST_F(IsolatedAppThrottleTest, AllowIframeNavigationOutOfApp) {
+TEST_F(IsolatedWebAppThrottleTest, AllowIframeNavigationOutOfApp) {
   CommitBrowserInitiatedNavigation(kAppUrl);
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -304,8 +306,8 @@ TEST_F(IsolatedAppThrottleTest, AllowIframeNavigationOutOfApp) {
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
 }
 
-TEST_F(IsolatedAppThrottleTest,
-       BlockIframeRendererInitiatedNavigationIntoIsolatedApp) {
+TEST_F(IsolatedWebAppThrottleTest,
+       BlockIframeRendererInitiatedNavigationIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -321,8 +323,8 @@ TEST_F(IsolatedAppThrottleTest,
   EXPECT_EQ(NavigationThrottle::BLOCK_REQUEST, start_result.action());
 }
 
-TEST_F(IsolatedAppThrottleTest,
-       AllowIframeBrowserInitiatedNavigationIntoIsolatedApp) {
+TEST_F(IsolatedWebAppThrottleTest,
+       AllowIframeBrowserInitiatedNavigationIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl);
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -351,7 +353,8 @@ TEST_F(IsolatedAppThrottleTest,
   EXPECT_EQ(NavigationThrottle::PROCEED, commit_result.action());
 }
 
-TEST_F(IsolatedAppThrottleTest, BlockIframeRedirectOutThenIntoIsolatedApp) {
+TEST_F(IsolatedWebAppThrottleTest,
+       BlockIframeRedirectOutThenIntoIsolatedWebApp) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -377,7 +380,7 @@ TEST_F(IsolatedAppThrottleTest, BlockIframeRedirectOutThenIntoIsolatedApp) {
   EXPECT_EQ(NavigationThrottle::BLOCK_REQUEST, redirect_result2.action());
 }
 
-TEST_F(IsolatedAppThrottleTest, BlockIsolatedIframeInNonIsolatedIframe) {
+TEST_F(IsolatedWebAppThrottleTest, BlockIsolatedIframeInNonIsolatedIframe) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));
@@ -396,7 +399,7 @@ TEST_F(IsolatedAppThrottleTest, BlockIsolatedIframeInNonIsolatedIframe) {
   EXPECT_EQ(NavigationThrottle::BLOCK_REQUEST, start_result.action());
 }
 
-TEST_F(IsolatedAppThrottleTest, AllowHistoryNavigationFromErrorPage) {
+TEST_F(IsolatedWebAppThrottleTest, AllowHistoryNavigationFromErrorPage) {
   CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kMaybeIsolatedApplication,
             GetWebExposedIsolationLevel(main_frame_id()));

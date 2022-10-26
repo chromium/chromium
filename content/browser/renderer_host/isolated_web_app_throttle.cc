@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/isolated_app_throttle.h"
+#include "content/browser/renderer_host/isolated_web_app_throttle.h"
 
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -23,11 +23,11 @@ namespace content {
 
 namespace {
 
-// Stores the origin of the isolated application that a WebContents is bound to.
+// Stores the origin of the Isolated Web App that a WebContents is bound to.
 // Every WebContents will have an instance of this class assigned to it during
 // its first navigation, which will determine whether the WebContents hosts an
-// isolated app for its lifetime. Note that activating an alternative frame tree
-// (e.g. preloading or portals) will NOT override this state.
+// Isolated Web App for its lifetime. Note that activating an alternative frame
+// tree (e.g. preloading or portals) will NOT override this state.
 class WebContentsIsolationInfo
     : public WebContentsUserData<WebContentsIsolationInfo> {
  public:
@@ -64,21 +64,22 @@ absl::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
 }  // namespace
 
 // static
-std::unique_ptr<IsolatedAppThrottle>
-IsolatedAppThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
+std::unique_ptr<IsolatedWebAppThrottle>
+IsolatedWebAppThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
   if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
-    return std::make_unique<IsolatedAppThrottle>(handle);
+    return std::make_unique<IsolatedWebAppThrottle>(handle);
   }
   return nullptr;
 }
 
-IsolatedAppThrottle::IsolatedAppThrottle(NavigationHandle* navigation_handle)
+IsolatedWebAppThrottle::IsolatedWebAppThrottle(
+    NavigationHandle* navigation_handle)
     : NavigationThrottle(navigation_handle) {}
 
-IsolatedAppThrottle::~IsolatedAppThrottle() = default;
+IsolatedWebAppThrottle::~IsolatedWebAppThrottle() = default;
 
 NavigationThrottle::ThrottleCheckResult
-IsolatedAppThrottle::WillStartRequest() {
+IsolatedWebAppThrottle::WillStartRequest() {
   bool requests_app_isolation = embedder_requests_app_isolation();
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   dest_origin_ = navigation_request->GetTentativeOriginAtRequestTime();
@@ -103,7 +104,7 @@ IsolatedAppThrottle::WillStartRequest() {
 }
 
 NavigationThrottle::ThrottleCheckResult
-IsolatedAppThrottle::WillRedirectRequest() {
+IsolatedWebAppThrottle::WillRedirectRequest() {
   // On redirects, the old destination origin becomes the new previous origin.
   auto* navigation_request = NavigationRequest::From(navigation_handle());
   prev_origin_ = dest_origin_;
@@ -114,7 +115,7 @@ IsolatedAppThrottle::WillRedirectRequest() {
 }
 
 NavigationThrottle::ThrottleCheckResult
-IsolatedAppThrottle::WillProcessResponse() {
+IsolatedWebAppThrottle::WillProcessResponse() {
   // Update |dest_origin_| to point to the final origin, which may have changed
   // since the last WillStartRequest/WillRedirectRequest call.
   auto* navigation_request = NavigationRequest::From(navigation_handle());
@@ -128,7 +129,7 @@ IsolatedAppThrottle::WillProcessResponse() {
                     NavigationThrottle::BLOCK_RESPONSE);
 }
 
-bool IsolatedAppThrottle::OpenUrlExternal(const GURL& url) {
+bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
   NavigationRequest* navigation_request =
       NavigationRequest::From(navigation_handle());
   const FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
@@ -152,14 +153,14 @@ bool IsolatedAppThrottle::OpenUrlExternal(const GURL& url) {
       /*initiator_document=*/nullptr, &loader_factory);
 }
 
-NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
+NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(
     bool needs_app_isolation,
     NavigationThrottle::ThrottleAction block_action) {
   auto* web_contents_isolation_info = WebContentsIsolationInfo::FromWebContents(
       navigation_handle()->GetWebContents());
   DCHECK(web_contents_isolation_info);
 
-  // Block navigations into isolated apps from non-isolated app contexts.
+  // Block navigations into Isolated Web Apps (IWA) from non-IWA contexts.
   if (!web_contents_isolation_info->is_isolated_application()) {
     return needs_app_isolation ? block_action : NavigationThrottle::PROCEED;
   }
@@ -230,8 +231,8 @@ NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
     }
   }
 
-  // At this point we know the navigation is same-tuple within an isolated app.
-  // If the new page isn't isolated, block the navigation.
+  // At this point we know the navigation is same-tuple within an Isolated Web
+  // App. If the new page isn't isolated, block the navigation.
   if (!needs_app_isolation) {
     return block_action;
   }
@@ -239,7 +240,7 @@ NavigationThrottle::ThrottleCheckResult IsolatedAppThrottle::DoThrottle(
   return NavigationThrottle::PROCEED;
 }
 
-bool IsolatedAppThrottle::embedder_requests_app_isolation() {
+bool IsolatedWebAppThrottle::embedder_requests_app_isolation() {
   BrowserContext* browser_context = NavigationRequest::From(navigation_handle())
                                         ->frame_tree_node()
                                         ->navigator()
@@ -249,8 +250,8 @@ bool IsolatedAppThrottle::embedder_requests_app_isolation() {
       browser_context, navigation_handle()->GetURL());
 }
 
-const char* IsolatedAppThrottle::GetNameForLogging() {
-  return "IsolatedAppThrottle";
+const char* IsolatedWebAppThrottle::GetNameForLogging() {
+  return "IsolatedWebAppThrottle";
 }
 
 }  // namespace content

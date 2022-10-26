@@ -14,7 +14,7 @@
 #include "content/browser/renderer_host/ancestor_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
 #include "content/browser/renderer_host/http_error_navigation_throttle.h"
-#include "content/browser/renderer_host/isolated_app_throttle.h"
+#include "content/browser/renderer_host/isolated_web_app_throttle.h"
 #include "content/browser/renderer_host/mixed_content_navigation_throttle.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
@@ -172,8 +172,8 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   AddThrottle(
       PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
 
-  // Prevent navigations to/from isolated apps.
-  AddThrottle(IsolatedAppThrottle::MaybeCreateThrottleFor(request));
+  // Prevent navigations to/from Isolated Web Apps.
+  AddThrottle(IsolatedWebAppThrottle::MaybeCreateThrottleFor(request));
 
   for (auto& throttle :
        devtools_instrumentation::CreateNavigationThrottles(request)) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_ISOLATED_APP_THROTTLE_H_
-#define CONTENT_BROWSER_RENDERER_HOST_ISOLATED_APP_THROTTLE_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_ISOLATED_WEB_APP_THROTTLE_H_
+#define CONTENT_BROWSER_RENDERER_HOST_ISOLATED_WEB_APP_THROTTLE_H_
 
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -12,17 +12,17 @@
 
 namespace content {
 
-// Blocks navigations into or out of isolated apps.
-class CONTENT_EXPORT IsolatedAppThrottle : public NavigationThrottle {
+// Blocks navigations into or out of Isolated Web Apps.
+class CONTENT_EXPORT IsolatedWebAppThrottle : public NavigationThrottle {
  public:
-  static std::unique_ptr<IsolatedAppThrottle> MaybeCreateThrottleFor(
+  static std::unique_ptr<IsolatedWebAppThrottle> MaybeCreateThrottleFor(
       NavigationHandle* handle);
 
-  explicit IsolatedAppThrottle(NavigationHandle* navigation_handle);
-  ~IsolatedAppThrottle() override;
-  IsolatedAppThrottle() = delete;
-  IsolatedAppThrottle(const IsolatedAppThrottle&) = delete;
-  IsolatedAppThrottle& operator=(const IsolatedAppThrottle&) = delete;
+  explicit IsolatedWebAppThrottle(NavigationHandle* navigation_handle);
+  ~IsolatedWebAppThrottle() override;
+  IsolatedWebAppThrottle() = delete;
+  IsolatedWebAppThrottle(const IsolatedWebAppThrottle&) = delete;
+  IsolatedWebAppThrottle& operator=(const IsolatedWebAppThrottle&) = delete;
 
  private:
   NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
@@ -49,4 +49,4 @@ class CONTENT_EXPORT IsolatedAppThrottle : public NavigationThrottle {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_ISOLATED_APP_THROTTLE_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_ISOLATED_WEB_APP_THROTTLE_H_

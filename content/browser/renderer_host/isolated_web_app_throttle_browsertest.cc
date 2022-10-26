@@ -32,9 +32,9 @@ static constexpr RenderFrameHost::WebExposedIsolationLevel
 const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "other.com";
 
-class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
-  explicit IsolatedAppContentBrowserClient(
+  explicit IsolatedWebAppContentBrowserClient(
       net::EmbeddedTestServer* embedded_https_server) {
     GURL app_url = embedded_https_server->GetURL(kAppHost, "/");
     app_origin_ = url::Origin::Create(app_url);
@@ -87,13 +87,13 @@ class HttpsBrowserTest : public ContentBrowserTest {
   ContentMockCertVerifier mock_cert_verifier_;
 };
 
-class IsolatedAppThrottleBrowserTest : public HttpsBrowserTest {
+class IsolatedWebAppThrottleBrowserTest : public HttpsBrowserTest {
  public:
   void SetUpOnMainThread() override {
     HttpsBrowserTest::SetUpOnMainThread();
 
     test_client_ =
-        std::make_unique<IsolatedAppContentBrowserClient>(https_server());
+        std::make_unique<IsolatedWebAppContentBrowserClient>(https_server());
     old_client_ = SetBrowserClientForTesting(test_client_.get());
   }
 
@@ -163,11 +163,11 @@ class IsolatedAppThrottleBrowserTest : public HttpsBrowserTest {
   WebContents* web_contents() { return shell()->web_contents(); }
 
  private:
-  std::unique_ptr<IsolatedAppContentBrowserClient> test_client_;
+  std::unique_ptr<IsolatedWebAppContentBrowserClient> test_client_;
   raw_ptr<ContentBrowserClient> old_client_;
 };
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        BlockMainFrameNavigationIntoApp) {
   EXPECT_TRUE(NavigateToURL(web_contents(), GetNonAppURL("/simple_page.html")));
   EXPECT_EQ(kNotIsolated, main_rfh()->GetWebExposedIsolationLevel());
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
             navigation_observer.last_net_error_code());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        CancelCrossOriginNavigationInApp) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
   EXPECT_EQ(app_url, main_rfh()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        IframeInitiatedIframeNavigationIntoAppBlocked) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
             navigation_observer->last_net_error_code());
 }
 
-IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        AppInitiatedIframeNavigationIntoAppAllowed) {
   GURL app_url = GetAppURL("/cross-origin-isolated.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));

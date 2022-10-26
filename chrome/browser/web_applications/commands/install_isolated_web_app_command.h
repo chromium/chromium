@@ -56,7 +56,7 @@ struct InstallIsolatedWebAppCommandError {
 //  * no cross-origin navigation
 //  * content should never be loaded in normal tab
 //
-// |content::IsolatedAppThrottle| enforces that. The requirements prevent
+// |content::IsolatedWebAppThrottle| enforces that. The requirements prevent
 // re-using web contents.
 class InstallIsolatedWebAppCommand : public WebAppCommand {
  public:
