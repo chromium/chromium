@@ -24,20 +24,6 @@ namespace {
 static constexpr float kSearchTermsScore = 100.0;
 static constexpr float kScoreEpsilon = 1e-8;
 
-bool IsKeywordSimilarToVisitHost(
-    const std::vector<std::u16string>& lowercase_host_parts,
-    const std::u16string& keyword) {
-  std::u16string lowercase_keyword = base::ToLowerASCII(keyword);
-  if (base::Contains(lowercase_host_parts, keyword))
-    return true;
-
-  // Now check if the whitespace-stripped keyword is part of the host.
-  std::u16string stripped_lowercase_keyword;
-  base::RemoveChars(lowercase_keyword, base::kWhitespaceASCIIAs16,
-                    &stripped_lowercase_keyword);
-  return base::Contains(lowercase_host_parts, stripped_lowercase_keyword);
-}
-
 // Computes an keyword score per cluster visit by mulitplying its visit-wise
 // weight and cluster visit score, and applying a weight factor.
 float ComputeKeywordScorePerClusterVisit(int visit_keyword_weight,
@@ -178,31 +164,6 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
           }
           keyword_to_data_map[alias].entity_collections =
               keyword_to_data_map[keyword_u16str].entity_collections;
-        }
-      }
-
-      if (!GetConfig().keyword_filter_on_visit_hosts) {
-        std::vector<std::u16string> lowercase_host_parts = base::SplitString(
-            base::ToLowerASCII(
-                base::UTF8ToUTF16(visit.annotated_visit.url_row.url().host())),
-            u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-        // If we do not want any keywords associated with the visit host, make
-        // sure that none of the keywords associated with the entity look like
-        // they are for the visit host.
-        bool clear_entity_keywords = false;
-        for (const auto& entity_keyword : entity_keywords) {
-          if (IsKeywordSimilarToVisitHost(lowercase_host_parts,
-                                          entity_keyword)) {
-            // One of the keywords is likely for the visit host, so clear out
-            // the keywords for the whole entity.
-            clear_entity_keywords = true;
-            break;
-          }
-        }
-        if (clear_entity_keywords) {
-          for (const auto& keyword : entity_keywords) {
-            keyword_to_data_map.erase(keyword);
-          }
         }
       }
     }

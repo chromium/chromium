@@ -229,10 +229,6 @@ struct Config {
   // If enabled, adds the search terms of the visits that have them.
   bool keyword_filter_on_search_terms = false;
 
-  // If enabled, adds the keywords of detected entities that may be for
-  // the visit's host.
-  bool keyword_filter_on_visit_hosts = true;
-
   // Maximum number of keywords to keep per cluster.
   size_t max_num_keywords_per_cluster = 20;
 

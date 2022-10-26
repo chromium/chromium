@@ -44,8 +44,6 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
     config_.keyword_filter_on_noisy_visits = false;
     config_.keyword_filter_on_entity_aliases = false;
     config_.keyword_filter_on_search_terms = false;
-    config_.keyword_filter_on_visit_hosts =
-        false;  // Drop keywords match host names.
     SetConfigForTesting(config_);
   }
 
@@ -88,9 +86,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
       testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 1},
-      {"otherentity", 1},
-      {"baz", 1} /*should be filtered due to host*/};
+      {"github", 1}, {"otherentity", 1}};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
   visit3.annotated_visit.content_annotations.search_terms = u"search";
@@ -125,7 +121,6 @@ class KeywordClusterFinalizerIncludeAllTest
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 1;
     config_.keyword_filter_on_search_terms = true;
-    config_.keyword_filter_on_visit_hosts = true;
     config_.max_num_keywords_per_cluster = 7;
     SetConfigForTesting(config_);
   }
