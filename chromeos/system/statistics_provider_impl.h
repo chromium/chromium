@@ -15,11 +15,11 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/values.h"
 #include "chromeos/system/name_value_pairs_parser.h"
 #include "chromeos/system/statistics_provider.h"
 
@@ -95,7 +95,6 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
 
  private:
   using MachineFlags = std::map<std::string, bool>;
-  using RegionDataExtractor = bool (*)(const base::Value&, std::string*);
 
   explicit StatisticsProviderImpl(StatisticsSources sources);
 
@@ -124,26 +123,24 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
   void LoadOemManifestFromFile(const base::FilePath& file);
 
   // Loads regional data off of disk. Runs on the file thread.
-  void LoadRegionsFile(const base::FilePath& filename);
+  void LoadRegionsFile(const base::FilePath& filename,
+                       base::StringPiece region);
 
   // Extracts known data from regional_data_;
   // Returns true on success;
   bool GetRegionalInformation(const std::string& name,
                               std::string* result) const;
 
-  // Returns extractor from regional_data_extractors_ or nullptr.
-  RegionDataExtractor GetRegionalDataExtractor(const std::string& name) const;
-
   StatisticsSources sources_;
 
   bool load_statistics_started_;
   NameValuePairsParser::NameValueMap machine_info_;
   MachineFlags machine_flags_;
+  // Statistics extracted from region file and associated with `kRegionKey`
+  // region.
+  base::flat_map<std::string, std::string> region_info_;
   base::AtomicFlag cancellation_flag_;
   bool oem_manifest_loaded_;
-  std::string region_;
-  base::Value region_dict_;
-  base::flat_map<std::string, RegionDataExtractor> regional_data_extractors_;
 
   // Stores VPD partitions status.
   // VPD partition or partitions are considered in invalid state if:
