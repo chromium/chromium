@@ -318784,7 +318784,7 @@
     },
     "canvas": {
      "DIR_METADATA": [
-      "43096d5e3f23002dc54a8181361f88d4bcce822f",
+      "ab76b6227db42798d91c09a8f9f772f64ae67d9c",
       []
      ],
      "META.yml": [
@@ -326909,6 +326909,10 @@
        }
       },
       "media-elements": {
+       "DIR_METADATA": [
+        "672ea355b505d0280084c26506ff98a640bfb36e",
+        []
+       ],
        "autoplay-allowed-by-feature-policy.https.sub.html.headers": [
         "08461fadc2888cbcdfcda533f2928f14a52ab44e",
         []
@@ -327441,6 +327445,10 @@
        }
       },
       "the-audio-element": {
+       "DIR_METADATA": [
+        "4a4d0c998e0d0b772051919750136bd0ff91f2fc",
+        []
+       ],
        "audio_content-ref.htm": [
         "ef5964496dd1d3928f9359adf843f7e1b077948a",
         []
@@ -327449,6 +327457,10 @@
       "the-canvas-element": {
        "2d.scaled.png": [
         "875407769ff19385c8be8b1dfd4eafc8a2e285be",
+        []
+       ],
+       "DIR_METADATA": [
+        "ab76b6227db42798d91c09a8f9f772f64ae67d9c",
         []
        ],
        "imagedata-expected.txt": [
@@ -328251,6 +328263,10 @@
        ]
       },
       "the-video-element": {
+       "DIR_METADATA": [
+        "4069fda1d1abc9cfa3172454d234e485eac0d33a",
+        []
+       ],
        "intrinsic_sizes-expected.txt": [
         "7416b5fa0226aeddf8414b54859235df9d7eca49",
         []
@@ -342824,11 +342840,11 @@
       []
      ],
      "orientation-utils.js": [
-      "2283158923a89a1c6f5fb3b64b558058fa58f258",
+      "0353e01c81736298700544c01e50c29daa1082a1",
       []
      ],
      "sandboxed-iframe-locking.html": [
-      "7f5496b3f3fb1c3c6da600559634de5b87a2438e",
+      "74f6ec9261000272c7f7ea87aa16423c821b6ac8",
       []
      ]
     }
@@ -547141,7 +547157,7 @@
      ]
     ],
     "lock-sandboxed-iframe.html": [
-     "1ce1039895684063e3881783d4b5f875ca094895",
+     "ab954f04b4c5d9043d893e36892c4061ed446661",
      [
       null,
       {
@@ -547177,7 +547193,7 @@
      ]
     ],
     "onchange-event-subframe.html": [
-     "4295e3f5e2328eb72672c64ad6cc198d2e0e8d7b",
+     "1b4b8cd428a639295bf5c988a4b1e242daf5350e",
      [
       null,
       {
