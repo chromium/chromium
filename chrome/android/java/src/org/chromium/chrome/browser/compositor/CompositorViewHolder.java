@@ -780,7 +780,7 @@ public class CompositorViewHolder extends FrameLayout
     /**
      * Aggregated supplier for whether the compositor's content is moving. Currently tracking in
      * touch event and in scroll event. Performance is critical while this supplier returns true,
-     * and clients that have expensive operations may consider defering until after the motion is
+     * and clients that have expensive operations may consider deferring until after the motion is
      * over.
      */
     public ObservableSupplier<Boolean> getInMotionSupplier() {
