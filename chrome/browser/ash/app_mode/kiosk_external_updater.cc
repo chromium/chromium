@@ -112,7 +112,7 @@ void KioskExternalUpdater::OnMountEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (mount_info.mount_type != MountType::kDevice ||
-      error_code != MountError::kNone) {
+      error_code != MountError::kSuccess) {
     return;
   }
 
