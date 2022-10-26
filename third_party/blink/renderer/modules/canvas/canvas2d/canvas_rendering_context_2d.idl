@@ -112,15 +112,15 @@ interface CanvasRenderingContext2D {
     [RuntimeEnabled=Canvas2dScrollPathIntoView] void scrollPathIntoView(optional Path2D path);
     void clip(optional CanvasFillRule winding);
     void clip(Path2D path, optional CanvasFillRule winding);
-    boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
-    boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
-    boolean isPointInStroke(unrestricted double x, unrestricted double y);
-    boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
+    [HighEntropy] boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [HighEntropy] boolean isPointInPath(Path2D path, unrestricted double x, unrestricted double y, optional CanvasFillRule winding);
+    [HighEntropy] boolean isPointInStroke(unrestricted double x, unrestricted double y);
+    [HighEntropy] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
 
     // text (see also the CanvasDrawingStyles interface)
     [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
-    TextMetrics measureText(DOMString text);
+    [HighEntropy] TextMetrics measureText(DOMString text);
 
     // Render entire FormattedText with line wrapping (one-shot)
     [RuntimeEnabled=FormattedText, RaisesException] void drawFormattedText(FormattedText formattedText, double x, double y);
@@ -134,8 +134,8 @@ interface CanvasRenderingContext2D {
     [RaisesException] ImageData createImageData(ImageData imagedata);
     [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh);
     [RaisesException] ImageData createImageData([EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
-    [RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
-    [RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
+    [HighEntropy, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
+    [HighEntropy, RaisesException] ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh, ImageDataSettings imageDataSettings);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy);
     [RaisesException] void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
 
