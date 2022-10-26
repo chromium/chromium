@@ -39,6 +39,18 @@ struct MEDIA_EXPORT H264Metadata final {
   bool layer_sync = false;
 };
 
+// Metadata for H265 bitstream buffer.
+//  |temporal_idx|  indicates the temporal index of this frame.
+//  |spatial_idx|   indicates the spatial index of this frame.
+//  |layer_sync|    is true iff this frame has |temporal_idx| > 0 and does NOT
+//                  reference any reference buffer containing a frame with
+//                  temporal_idx > 0.
+struct MEDIA_EXPORT H265Metadata final {
+  uint8_t temporal_idx = 0;
+  uint8_t spatial_idx = 0;
+  bool layer_sync = false;
+};
+
 //  Metadata for a VP8 bitstream buffer.
 //  |non_reference| is true iff this frame does not update any reference buffer,
 //                  meaning dropping this frame still results in a decodable
@@ -136,6 +148,7 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   absl::optional<Vp8Metadata> vp8;
   absl::optional<Vp9Metadata> vp9;
   absl::optional<Av1Metadata> av1;
+  absl::optional<H265Metadata> h265;
 };
 
 // Video encoder interface.
@@ -439,6 +452,7 @@ MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
                              const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
+MEDIA_EXPORT bool operator==(const Av1Metadata& l, const Av1Metadata& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,
                              const BitstreamBufferMetadata& r);
 MEDIA_EXPORT bool operator==(

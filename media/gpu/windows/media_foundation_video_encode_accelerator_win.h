@@ -26,6 +26,9 @@
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/h264_parser.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#include "media/video/h265_nalu_parser.h"
+#endif
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -169,6 +172,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // This parser is used to assign temporalId.
   H264Parser h264_parser_;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  H265NaluParser h265_nalu_parser_;
+#endif
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_;

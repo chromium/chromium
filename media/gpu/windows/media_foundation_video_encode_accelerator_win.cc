@@ -404,7 +404,14 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   if (pp_activate) {
     for (UINT32 i = 0; i < encoder_count; i++) {
       if (pp_activate[i]) {
-        if (!svc_supported && IsSvcSupported(pp_activate[i]))
+        // crbug.com/1373780: Nvidia HEVC encoder reports supporting 3 temporal
+        // layers, but will fail initialization if configured to encoded with
+        // more than one temporal layers, thus we block Nvidia HEVC encoder for
+        // temporal SVC encoding.
+        bool flawy_svc =
+            (codec == VideoCodec::kHEVC) &&
+            (GetDriverVendor(pp_activate[i]) == DriverVendor::kNvidia);
+        if (!svc_supported && !flawy_svc && IsSvcSupported(pp_activate[i]))
           svc_supported = true;
 
         // Release the enumerated instances if any.
@@ -1293,6 +1300,29 @@ bool MediaFoundationVideoEncodeAccelerator::AssignTemporalId(
       }
     }
   }
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  else if (codec_ == VideoCodec::kHEVC) {
+    // See section 7.3.1.1, NAL unit syntax in H265 spec.
+    // https://www.itu.int/rec/T-REC-H.265
+    // Unlike AVC, HEVC stores the temporal ID information in VCL NAL unit
+    // header instead of using prefix NAL unit.
+    MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
+    h265_nalu_parser_.SetStream(scoped_buffer.get(), size);
+    H265NALU nalu;
+    H265NaluParser::Result result;
+    while ((result = h265_nalu_parser_.AdvanceToNextNALU(&nalu)) !=
+           H265NaluParser::kEOStream) {
+      if (result == H265NaluParser::Result::kInvalidStream) {
+        return false;
+      }
+      // We only check VCL NAL units
+      if (nalu.nal_unit_type <= H265NALU::RSV_VCL31) {
+        *temporal_id = nalu.nuh_temporal_id_plus1 - 1;
+        return true;
+      }
+    }
+  }
+#endif
 
   // If we run to this point, it means that we have not assigned temporalId
   // through parsing stream, we always return true once we parse out temporalId.
@@ -1392,8 +1422,13 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   output_data_buffer.pSample = nullptr;
 
   BitstreamBufferMetadata md(size, keyframe, timestamp);
-  if (codec_ == VideoCodec::kH264 && temporalScalableCoding())
-    md.h264.emplace().temporal_idx = temporal_id;
+  if (temporalScalableCoding()) {
+    if (codec_ == VideoCodec::kH264) {
+      md.h264.emplace().temporal_idx = temporal_id;
+    } else if (codec_ == VideoCodec::kHEVC) {
+      md.h265.emplace().temporal_idx = temporal_id;
+    }
+  }
   main_client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, main_client_,
                                 buffer_ref->id, md));

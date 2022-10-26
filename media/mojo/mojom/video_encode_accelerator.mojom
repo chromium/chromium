@@ -199,8 +199,9 @@ interface VideoEncodeAccelerator {
   Flush() => (bool result);
 };
 
-// H264Metadata, Vp8Metadata, Vp9Metadata define mojo transport formats for
-// media::H264Metadata, media::Vp8Metadata and media::Vp9Metadata, respectively.
+// H264Metadata, H265metadata, Vp8Metadata, Vp9Metadata and Av1Metadata define
+// mojo transport formats for media::H264Metadata, H265Metadata,
+// media::Vp8Metadata, media::Vp9Metadata and media::Av1Metadata, respectively.
 // See the structures defined video_encode_accelerator.h for the descriptions of
 // the variables.
 // Either of them is filled in GPU process only in the case of temporal/spatial
@@ -212,6 +213,12 @@ interface VideoEncodeAccelerator {
 // process in BitstreamBufferReady() call.
 struct H264Metadata {
   uint8 temporal_idx;
+  bool layer_sync;
+};
+
+struct H265Metadata {
+  uint8 temporal_idx;
+  uint8 spatial_idx;
   bool layer_sync;
 };
 
@@ -246,6 +253,7 @@ struct Av1Metadata {
 // Codec specific metadata.
 union CodecMetadata {
   H264Metadata h264;
+  H265Metadata h265;
   Vp8Metadata vp8;
   Vp9Metadata vp9;
   Av1Metadata av1;

@@ -283,6 +283,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
           EXPECT_EQ(output.temporal_id, 1);
         else if (output.timestamp == base::Milliseconds(3))
           EXPECT_EQ(output.temporal_id, 2);
+        else if (output.timestamp == base::Milliseconds(4))
+          EXPECT_EQ(output.temporal_id, 2);
         else
           EXPECT_EQ(output.temporal_id, 2);
 
@@ -302,9 +304,12 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
         } else if (frame->timestamp() == base::Milliseconds(3)) {
           result.vp9 = Vp9Metadata();
           result.vp9->temporal_idx = 2;
-        } else {
+        } else if (frame->timestamp() == base::Milliseconds(4)) {
           result.av1 = Av1Metadata();
           result.av1->temporal_idx = 2;
+        } else {
+          result.h265 = H265Metadata();
+          result.h265->temporal_idx = 2;
         }
         return result;
       }));
@@ -319,6 +324,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(3));
   auto frame4 =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(4));
+  auto frame5 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(5));
   adapter()->Encode(frame1, true, ValidatingStatusCB());
   RunUntilIdle();
   adapter()->Encode(frame2, true, ValidatingStatusCB());
@@ -327,7 +334,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   RunUntilIdle();
   adapter()->Encode(frame4, true, ValidatingStatusCB());
   RunUntilIdle();
-  EXPECT_EQ(outputs_count, 4);
+  adapter()->Encode(frame5, true, ValidatingStatusCB());
+  RunUntilIdle();
+  EXPECT_EQ(outputs_count, 5);
 }
 
 TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {

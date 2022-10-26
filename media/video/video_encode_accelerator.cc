@@ -208,6 +208,11 @@ bool operator==(const H264Metadata& l, const H264Metadata& r) {
   return l.temporal_idx == r.temporal_idx && l.layer_sync == r.layer_sync;
 }
 
+bool operator==(const H265Metadata& l, const H265Metadata& r) {
+  return l.temporal_idx == r.temporal_idx && l.spatial_idx == r.spatial_idx &&
+         l.layer_sync == r.layer_sync;
+}
+
 bool operator==(const Vp8Metadata& l, const Vp8Metadata& r) {
   return l.non_reference == r.non_reference &&
          l.temporal_idx == r.temporal_idx && l.layer_sync == r.layer_sync;
@@ -238,7 +243,8 @@ bool operator==(const BitstreamBufferMetadata& l,
                 const BitstreamBufferMetadata& r) {
   return l.payload_size_bytes == r.payload_size_bytes &&
          l.key_frame == r.key_frame && l.timestamp == r.timestamp &&
-         l.vp8 == r.vp8 && l.vp9 == r.vp9;
+         l.vp8 == r.vp8 && l.vp9 == r.vp9 && l.h264 == r.h264 &&
+         l.av1 == r.av1 && l.h265 == r.h265;
 }
 
 bool operator==(const VideoEncodeAccelerator::Config::SpatialLayer& l,

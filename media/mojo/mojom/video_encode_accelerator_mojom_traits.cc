@@ -214,6 +214,9 @@ bool UnionTraits<media::mojom::CodecMetadataDataView,
     case media::mojom::CodecMetadataDataView::Tag::kAv1: {
       return data.ReadAv1(&out->av1);
     }
+    case media::mojom::CodecMetadataDataView::Tag::kH265: {
+      return data.ReadH265(&out->h265);
+    }
   }
   NOTREACHED();
   return false;
@@ -239,6 +242,16 @@ bool StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata>::
     Read(media::mojom::H264MetadataDataView data,
          media::H264Metadata* out_metadata) {
   out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->layer_sync = data.layer_sync();
+  return true;
+}
+
+// static
+bool StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata>::
+    Read(media::mojom::H265MetadataDataView data,
+         media::H265Metadata* out_metadata) {
+  out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->spatial_idx = data.spatial_idx();
   out_metadata->layer_sync = data.layer_sync();
   return true;
 }
