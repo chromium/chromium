@@ -4,6 +4,8 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
+#include <algorithm>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"

@@ -264,8 +264,8 @@ TEST(StringOrdinalTest, Sort) {
   std::vector<StringOrdinal> ordinals = sorted_ordinals;
   base::RandomShuffle(ordinals.begin(), ordinals.end());
   base::ranges::sort(ordinals, StringOrdinal::LessThanFn());
-  EXPECT_TRUE(std::equal(ordinals.begin(), ordinals.end(),
-                         sorted_ordinals.begin(), StringOrdinal::EqualsFn()));
+  EXPECT_TRUE(base::ranges::equal(ordinals, sorted_ordinals,
+                                  StringOrdinal::EqualsFn()));
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -554,8 +555,7 @@ void PolicyMap::LoadFrom(const base::Value::Dict& policies,
 }
 
 bool PolicyMap::Equals(const PolicyMap& other) const {
-  return other.size() == size() &&
-         std::equal(begin(), end(), other.begin(), MapEntryEquals);
+  return base::ranges::equal(*this, other, MapEntryEquals);
 }
 
 bool PolicyMap::empty() const {

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -299,7 +299,7 @@ TEST_F(BookmarkProviderTest, Positions) {
       {"def", 2, {{{2, 5}, {0, 0}}, {{4, 7}, {0, 0}}}},
       {"ghi jkl", 2, {{{0, 7}, {0, 0}}, {{0, 3}, {4, 7}, {0, 0}}}},
       // NB: GetBookmarksMatching(...) uses exact match for "a" in title or URL.
-      {"a", 2, {{{0, 1}, {0, 0}}, {{0, 0}}}},
+      {"a", 2, {{{0, 1}, {0, 0}}, {{0, 1}, {0, 0}}}},
       {"a d", 0, {{{0, 0}}}},
       {"carry carbon", 1, {{{0, 12}, {0, 0}}}},
       // NB: GetBookmarksMatching(...) sorts the match positions.
@@ -347,9 +347,8 @@ TEST_F(BookmarkProviderTest, Positions) {
           PositionsFromExpectations(query_data[i].positions[j]));
       TestBookmarkPositions actual_positions(
           PositionsFromAutocompleteMatch(matches[j]));
-      EXPECT_TRUE(std::equal(expected_positions.begin(),
-                             expected_positions.end(), actual_positions.begin(),
-                             TestBookmarkPositionsEqual))
+      EXPECT_TRUE(base::ranges::equal(expected_positions, actual_positions,
+                                      TestBookmarkPositionsEqual))
           << "EXPECTED: " << TestBookmarkPositionsAsString(expected_positions)
           << "ACTUAL:   " << TestBookmarkPositionsAsString(actual_positions)
           << "    for query: '" << query_data[i].query << "'.";

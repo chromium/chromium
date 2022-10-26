@@ -4,8 +4,7 @@
 
 #include "components/download/internal/background_service/entry_utils.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "components/download/internal/background_service/test/entry_utils.h"
 #include "components/download/internal/background_service/test/test_download_driver.h"
 #include "components/download/public/background_service/clients.h"
@@ -63,9 +62,7 @@ TEST(DownloadServiceEntryUtilsTest, MapEntriesToClients) {
   EXPECT_EQ(mapped1.end(), mapped1.find(DownloadClient::TEST));
 
   auto list1 = mapped1.find(DownloadClient::INVALID)->second;
-  EXPECT_EQ(5U, list1.size());
-  EXPECT_TRUE(
-      std::equal(expected_list.begin(), expected_list.end(), list1.begin()));
+  EXPECT_TRUE(base::ranges::equal(expected_list, list1));
 
   // If DownloadClient::TEST is a valid Client, it should have the associated
   // entries.
@@ -77,9 +74,7 @@ TEST(DownloadServiceEntryUtilsTest, MapEntriesToClients) {
   EXPECT_EQ(mapped2.end(), mapped2.find(DownloadClient::INVALID));
 
   auto list2 = mapped2.find(DownloadClient::TEST)->second;
-  EXPECT_EQ(5U, list2.size());
-  EXPECT_TRUE(
-      std::equal(expected_list.begin(), expected_list.end(), list2.begin()));
+  EXPECT_TRUE(base::ranges::equal(expected_list, list2));
 }
 
 TEST(DownloadServiceEntryUtilsTest, GetSchedulingCriteria) {

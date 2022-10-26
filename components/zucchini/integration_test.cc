@@ -4,13 +4,13 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/patch_writer.h"
@@ -77,8 +77,7 @@ void TestGenApply(const std::string& old_filename,
                                                  patched_new_buffer.size()}));
 
   // Note that |new_region| and |patched_new_buffer| are the same size.
-  EXPECT_TRUE(std::equal(new_region.begin(), new_region.end(),
-                         patched_new_buffer.begin()));
+  EXPECT_TRUE(base::ranges::equal(new_region, patched_new_buffer));
 }
 
 TEST(EndToEndTest, GenApplyRaw) {

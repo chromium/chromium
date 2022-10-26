@@ -4,6 +4,7 @@
 
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
@@ -57,9 +58,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
 
   // Check the magic bytes.
   const auto magic = input.ReadBytes(sizeof(kIntegrityBlockMagicBytes));
-  if (!magic || !std::equal(magic->begin(), magic->end(),
-                            std::begin(kIntegrityBlockMagicBytes),
-                            std::end(kIntegrityBlockMagicBytes))) {
+  if (!magic || !base::ranges::equal(*magic, kIntegrityBlockMagicBytes)) {
     RunErrorCallbackAndDestroy("Wrong array size or magic bytes.");
     return;
   }
@@ -72,9 +71,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
     return;
   }
 
-  if (std::equal(version->begin(), version->end(),
-                 std::begin(kIntegrityBlockVersionMagicBytes),
-                 std::end(kIntegrityBlockVersionMagicBytes))) {
+  if (base::ranges::equal(*version, kIntegrityBlockVersionMagicBytes)) {
     signature_stack_ =
         std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>();
   } else {
@@ -238,9 +235,8 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyKey(
     return;
   }
 
-  if (!std::equal(attribute_name->begin(), attribute_name->end(),
-                  std::begin(kSignatureAttributesPublicKeyWithCBORHeader),
-                  std::end(kSignatureAttributesPublicKeyWithCBORHeader))) {
+  if (!base::ranges::equal(*attribute_name,
+                           kSignatureAttributesPublicKeyWithCBORHeader)) {
     RunErrorCallbackAndDestroy(
         "The signature stack entry's attribute must have 'ed25519PublicKey' as "
         "its key.");

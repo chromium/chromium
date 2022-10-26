@@ -324,10 +324,8 @@ void FaviconHandler::OnUpdateCandidates(
   // |candidates| or |manifest_url| could have been modified via Javascript. If
   // neither changed, ignore the call.
   if (candidates_received_ && manifest_url_ == manifest_url &&
-      (non_manifest_original_candidates_.size() == candidates.size() &&
-       std::equal(candidates.begin(), candidates.end(),
-                  non_manifest_original_candidates_.begin(),
-                  &FaviconURLEquals))) {
+      base::ranges::equal(candidates, non_manifest_original_candidates_,
+                          &FaviconURLEquals)) {
     return;
   }
 

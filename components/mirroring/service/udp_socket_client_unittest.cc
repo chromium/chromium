@@ -4,11 +4,11 @@
 
 #include "components/mirroring/service/udp_socket_client.h"
 
-#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -100,8 +100,7 @@ TEST_F(UdpSocketClientTest, SendAndReceive) {
   }
 
   // The packet is expected to be received.
-  EXPECT_TRUE(
-      std::equal(packet2.begin(), packet2.end(), received_packet_->begin()));
+  EXPECT_TRUE(base::ranges::equal(packet2, *received_packet_));
 
   udp_transport_client_->StopReceiving();
 }

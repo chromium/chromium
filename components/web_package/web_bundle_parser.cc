@@ -314,9 +314,7 @@ class WebBundleParser::MetadataParser
 
     // Check the magic bytes "48 F0 9F 8C 90 F0 9F 93 A6".
     const auto magic = input.ReadBytes(sizeof(kBundleMagicBytes));
-    if (!magic ||
-        !std::equal(magic->begin(), magic->end(), std::begin(kBundleMagicBytes),
-                    std::end(kBundleMagicBytes))) {
+    if (!magic || !base::ranges::equal(*magic, kBundleMagicBytes)) {
       RunErrorCallbackAndDestroy("Wrong magic bytes.");
       return;
     }
@@ -327,13 +325,9 @@ class WebBundleParser::MetadataParser
       RunErrorCallbackAndDestroy("Cannot read version bytes.");
       return;
     }
-    if (!std::equal(version->begin(), version->end(),
-                    std::begin(kVersionB2MagicBytes),
-                    std::end(kVersionB2MagicBytes))) {
+    if (!base::ranges::equal(*version, kVersionB2MagicBytes)) {
       const char* message;
-      if (std::equal(version->begin(), version->end(),
-                     std::begin(kVersionB1MagicBytes),
-                     std::end(kVersionB1MagicBytes))) {
+      if (base::ranges::equal(*version, kVersionB1MagicBytes)) {
         message =
             "Bundle format version is 'b1' which is no longer supported."
             " Currently supported version is: 'b2'";

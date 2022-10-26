@@ -9,6 +9,7 @@
 #include "base/base64url.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -166,10 +167,7 @@ bool Ecdsa::ValidateResponse(const base::StringPiece& response_body,
   // request hash. (This is a quick rejection test; the signature test is
   // authoritative, but slower.)
   DCHECK_EQ(request_hash_.size(), crypto::kSHA256Length);
-  if (observed_request_hash.size() != crypto::kSHA256Length)
-    return false;
-  if (!std::equal(observed_request_hash.begin(), observed_request_hash.end(),
-                  request_hash_.begin()))
+  if (!base::ranges::equal(observed_request_hash, request_hash_))
     return false;
 
   // Next, build the buffer that the server will have signed on its end:

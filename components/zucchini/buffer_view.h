@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {
@@ -160,7 +160,7 @@ class BufferViewBase {
   BufferRegion local_region() const { return BufferRegion{0, size()}; }
 
   bool equals(BufferViewBase other) const {
-    return size() == other.size() && std::equal(begin(), end(), other.begin());
+    return base::ranges::equal(*this, other);
   }
 
   // Modifiers

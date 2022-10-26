@@ -19,6 +19,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -381,16 +382,10 @@ void InMemoryURLIndexTest::ExpectPrivateDataEqual(
     ASSERT_TRUE(actual_starts != actual.word_starts_map_.end());
     const RowWordStarts& expected_word_starts(expected_starts.second);
     const RowWordStarts& actual_word_starts(actual_starts->second);
-    EXPECT_EQ(expected_word_starts.url_word_starts_.size(),
-              actual_word_starts.url_word_starts_.size());
-    EXPECT_TRUE(std::equal(expected_word_starts.url_word_starts_.begin(),
-                           expected_word_starts.url_word_starts_.end(),
-                           actual_word_starts.url_word_starts_.begin()));
-    EXPECT_EQ(expected_word_starts.title_word_starts_.size(),
-              actual_word_starts.title_word_starts_.size());
-    EXPECT_TRUE(std::equal(expected_word_starts.title_word_starts_.begin(),
-                           expected_word_starts.title_word_starts_.end(),
-                           actual_word_starts.title_word_starts_.begin()));
+    EXPECT_TRUE(base::ranges::equal(expected_word_starts.url_word_starts_,
+                                    actual_word_starts.url_word_starts_));
+    EXPECT_TRUE(base::ranges::equal(expected_word_starts.title_word_starts_,
+                                    actual_word_starts.title_word_starts_));
   }
 }
 

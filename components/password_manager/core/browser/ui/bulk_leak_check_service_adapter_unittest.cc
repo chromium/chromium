@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
@@ -49,21 +50,20 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 MATCHER_P(CredentialsAre, credentials, "") {
-  return std::equal(arg.begin(), arg.end(), credentials.get().begin(),
-                    credentials.get().end(),
-                    [](const auto& lhs, const auto& rhs) {
-                      return lhs.username() == rhs.username() &&
-                             lhs.password() == rhs.password();
-                    });
+  return base::ranges::equal(arg, credentials.get(),
+                             [](const auto& lhs, const auto& rhs) {
+                               return lhs.username() == rhs.username() &&
+                                      lhs.password() == rhs.password();
+                             });
 }
 
 MATCHER_P(SavedPasswordsAre, passwords, "") {
-  return std::equal(arg.begin(), arg.end(), passwords.begin(), passwords.end(),
-                    [](const auto& lhs, const auto& rhs) {
-                      return lhs.signon_realm == rhs.signon_realm &&
-                             lhs.username_value == rhs.username_value &&
-                             lhs.password_value == rhs.password_value;
-                    });
+  return base::ranges::equal(
+      arg, passwords, [](const auto& lhs, const auto& rhs) {
+        return lhs.signon_realm == rhs.signon_realm &&
+               lhs.username_value == rhs.username_value &&
+               lhs.password_value == rhs.password_value;
+      });
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,

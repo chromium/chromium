@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -148,8 +149,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromNoFile_SaveToDiskAfterDelay) {
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
   EXPECT_TRUE(observed_state_loaded());
@@ -182,8 +182,7 @@ TEST_F(BrowsingTopicsStateTest,
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + base::Days(7));
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 
   EXPECT_TRUE(state.HasScheduledSaveForTesting());
 
@@ -259,8 +258,7 @@ TEST_F(BrowsingTopicsStateTest, AddEpoch) {
 
   // The `next_scheduled_calculation_time` and `hmac_key` are unaffected.
   EXPECT_EQ(state.next_scheduled_calculation_time(), base::Time());
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, EpochsForSite_Empty) {
@@ -396,8 +394,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_CorruptedHmacKey) {
 
   EXPECT_EQ(state.epochs().size(), 0u);
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kZeroKey.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kZeroKey));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", false,
@@ -422,8 +419,7 @@ TEST_F(BrowsingTopicsStateTest, InitFromPreexistingFile_SameConfigVersion) {
   EXPECT_FALSE(state.epochs()[0].empty());
   EXPECT_EQ(state.epochs()[0].model_version(), kModelVersion);
   EXPECT_EQ(state.next_scheduled_calculation_time(), kTime2);
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey2.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -447,8 +443,7 @@ TEST_F(BrowsingTopicsStateTest,
 
   EXPECT_TRUE(state.epochs().empty());
   EXPECT_TRUE(state.next_scheduled_calculation_time().is_null());
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey2.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey2));
 
   histograms.ExpectUniqueSample(
       "BrowsingTopics.BrowsingTopicsState.LoadFinishStatus", true,
@@ -482,8 +477,7 @@ TEST_F(BrowsingTopicsStateTest, ClearOneEpoch) {
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + base::Days(7));
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
@@ -510,8 +504,7 @@ TEST_F(BrowsingTopicsStateTest, ClearAllTopics) {
 
   EXPECT_EQ(state.next_scheduled_calculation_time(),
             base::Time::Now() + base::Days(7));
-  EXPECT_TRUE(std::equal(state.hmac_key().begin(), state.hmac_key().end(),
-                         kTestKey.begin()));
+  EXPECT_TRUE(base::ranges::equal(state.hmac_key(), kTestKey));
 }
 
 TEST_F(BrowsingTopicsStateTest, ClearTopic) {

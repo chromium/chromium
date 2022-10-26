@@ -4,6 +4,7 @@
 
 #include "components/mirroring/service/fake_network_service.h"
 
+#include "base/ranges/algorithm.h"
 #include "media/cast/test/utility/net_utility.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -66,8 +67,7 @@ void MockUdpSocket::OnReceivedPacket(const media::cast::Packet& packet) {
 }
 
 void MockUdpSocket::VerifySendingPacket(const media::cast::Packet& packet) {
-  EXPECT_TRUE(
-      std::equal(packet.begin(), packet.end(), sending_packet_->begin()));
+  EXPECT_TRUE(base::ranges::equal(packet, *sending_packet_));
 }
 
 MockNetworkContext::MockNetworkContext(

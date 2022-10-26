@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -61,16 +62,8 @@ void RunOrPostGetMostVisitedURLsCallback(
 // Checks if the titles stored in `old_list` and `new_list` have changes.
 bool DoTitlesDiffer(const MostVisitedURLList& old_list,
                     const MostVisitedURLList& new_list) {
-  // If the two lists have different sizes, the most visited titles are
-  // considered to have changes.
-  if (old_list.size() != new_list.size())
-    return true;
-
-  return !std::equal(std::begin(old_list), std::end(old_list),
-                     std::begin(new_list),
-                     [](const auto& old_item_ptr, const auto& new_item_ptr) {
-                       return old_item_ptr.title == new_item_ptr.title;
-                     });
+  return !base::ranges::equal(old_list, new_list, std::equal_to<>(),
+                              &MostVisitedURL::title, &MostVisitedURL::title);
 }
 
 // Transforms |number| in the range given by |max| and |min| to a number in the

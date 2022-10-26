@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/span.h"

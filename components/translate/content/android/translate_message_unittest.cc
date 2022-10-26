@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -285,11 +286,9 @@ class TranslateMessageTest : public ::testing::Test {
               std::vector<bool> actual_vector;
               base::android::JavaBooleanArrayToBoolVector(env, actual,
                                                           &actual_vector);
-              return std::equal(expected_items.begin(), expected_items.end(),
-                                actual_vector.begin(), actual_vector.end(),
-                                [](const SecondaryMenuItem& lhs, bool rhs) {
-                                  return lhs.has_checkmark == rhs;
-                                });
+              return base::ranges::equal(expected_items, actual_vector,
+                                         std::equal_to<>(),
+                                         &SecondaryMenuItem::has_checkmark);
             }),
             /*overflow_menu_item_ids=*/
             Truly([env, expected_items](
@@ -298,11 +297,11 @@ class TranslateMessageTest : public ::testing::Test {
               std::vector<int> actual_vector;
               base::android::JavaIntArrayToIntVector(env, actual,
                                                      &actual_vector);
-              return std::equal(expected_items.begin(), expected_items.end(),
-                                actual_vector.begin(), actual_vector.end(),
-                                [](const SecondaryMenuItem& lhs, int rhs) {
-                                  return static_cast<int>(lhs.id) == rhs;
-                                });
+              return base::ranges::equal(expected_items, actual_vector,
+                                         std::equal_to<>(),
+                                         [](const SecondaryMenuItem& item) {
+                                           return static_cast<int>(item.id);
+                                         });
             }),
             /*language_codes=*/
             Truly([env, expected_items](
@@ -311,12 +310,9 @@ class TranslateMessageTest : public ::testing::Test {
               std::vector<std::string> actual_vector;
               base::android::AppendJavaStringArrayToStringVector(
                   env, actual, &actual_vector);
-              return std::equal(
-                  expected_items.begin(), expected_items.end(),
-                  actual_vector.begin(), actual_vector.end(),
-                  [](const SecondaryMenuItem& lhs, const std::string& rhs) {
-                    return lhs.language_code == rhs;
-                  });
+              return base::ranges::equal(expected_items, actual_vector,
+                                         std::equal_to<>(),
+                                         &SecondaryMenuItem::language_code);
             })))
         .WillOnce(Return(return_value));
   }
