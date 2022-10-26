@@ -213,7 +213,7 @@ void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
     MountError error_code,
     const DiskMountManager::MountPoint& mount_info) {
-  if (error_code != MountError::kNone)
+  if (error_code != MountError::kSuccess)
     return;
 
   if (!IsEligibleForAndroidStorage(mount_info.source_path))
