@@ -65,33 +65,36 @@ overlay without overflow
 
 <script>
   const mouse = GestureSourceType.MOUSE_INPUT;
-  const pixelsToScroll = 10;
+  const pixelsToScroll = pixelsPerTick();
 
-  async function testScrollable(div_id, can_scroll) {
+  async function testScrollable(div_id, scroll_expected) {
     let div = document.getElementById(div_id);
     div.scrollIntoView({ block: 'start', inline: 'start', behavior: 'instant' });
     await waitForCompositorCommit();
 
     let x = div.offsetLeft - window.scrollX + 5;
     let y = div.offsetTop - window.scrollY + 5
-    const expectedScroll = calculateExpectedScroll(div, pixelsToScroll, pixelsToScroll);
     await mouseMoveTo(x, y);
 
     await smoothScroll(pixelsToScroll, x, y, mouse, 'down',
                        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     let assertDescription = `${div_id} vertical scroll failed`;
-    if (can_scroll)
-      assert_approx_equals(div.scrollTop, expectedScroll.y, 0.01, assertDescription);
-    else {
+    if (scroll_expected) {
+      waitFor(() => div.scrollTop > 0, assertDescription);
+    } else {
+      await raf();
+      await raf();
       assert_equals(div.scrollTop, 0, assertDescription);
     }
 
     await smoothScroll(pixelsToScroll, x, y, mouse, 'right',
                        SPEED_INSTANT, false /* precise_scrolling_deltas */);
     assertDescription = `${div_id} horizontal scroll failed`;
-    if (can_scroll) {
-      assert_approx_equals(div.scrollLeft, expectedScroll.x, 0.01, assertDescription);
+    if (scroll_expected) {
+      waitFor(() => div.scrollLeft > 0, assertDescription);
     } else {
+      await raf();
+      await raf();
       assert_equals(div.scrollLeft, 0, assertDescription);
     }
   }
