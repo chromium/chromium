@@ -288,7 +288,8 @@
       <div slot="button-container">
         <paper-spinner-lite active="[[clearingInProgress_]]">
         </paper-spinner-lite>
-        <cr-button class="cancel-button" disabled="[[clearingInProgress_]]"
+        <cr-button class="cancel-button" autofocus
+            disabled="[[clearingInProgress_]]"
             on-click="onCancelTap_">$i18n{cancel}</cr-button>
         <cr-button id="clearBrowsingDataConfirm"
             class="action-button" on-click="onClearBrowsingDataClick_"
