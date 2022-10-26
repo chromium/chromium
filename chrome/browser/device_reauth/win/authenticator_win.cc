@@ -129,7 +129,7 @@ AuthenticatorWin::AuthenticatorWin() = default;
 AuthenticatorWin::~AuthenticatorWin() = default;
 
 bool AuthenticatorWin::AuthenticateUser(const std::u16string& message) {
-  Browser* browser = chrome::FindBrowserWithActiveWindow();
+  Browser* browser = chrome::FindLastActive();
   if (!browser)
     return false;
 
