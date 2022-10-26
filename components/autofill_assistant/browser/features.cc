@@ -121,12 +121,6 @@ BASE_FEATURE(kAutofillAssistantProactiveHelp,
              "AutofillAssistantProactiveHelp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables assistant UI (once the feature is enabled, scripts need to use the
-// USE_ASSISTANT_UI=true flag to use the assistant UI).
-BASE_FEATURE(kAutofillAssistantRemoteAssistantUi,
-             "AutofillAssistantRemoteAssistantUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Send the Semantic model version in the client context.
 BASE_FEATURE(kAutofillAssistantSendModelVersionInClientContext,
              "AutofillAssistantSendModelVersionInClientContext",

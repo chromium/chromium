@@ -111,10 +111,6 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"CALLER", "3"},
        {"SOURCE", "4"},
        {"EXPERIMENT_IDS", "123,456,789"},
-       {"FIELD_TRIAL_1", "1234"},
-       {"FIELD_TRIAL_3", "5555"},
-       {"RUN_HEADLESS", "true"},
-       {"USE_ASSISTANT_UI", "false"},
        {"DISABLE_RPC_SIGNING", "true"},
        {"DETAILS_SHOW_INITIAL", "true"},
        {"DETAILS_TITLE", "title"},
@@ -142,11 +138,6 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
   EXPECT_THAT(
       parameters.GetExperiments(),
       UnorderedElementsAreArray(std::vector<std::string>{"123", "456", "789"}));
-  EXPECT_THAT(parameters.GetFieldTrialGroup(1), Eq("1234"));
-  EXPECT_THAT(parameters.GetFieldTrialGroup(3), Eq("5555"));
-  EXPECT_THAT(parameters.GetFieldTrialGroup(2).has_value(), Eq(false));
-  EXPECT_THAT(parameters.GetRunHeadless(), Eq(true));
-  EXPECT_THAT(parameters.GetUseAssistantUi(), Eq(false));
   EXPECT_THAT(parameters.GetDisableRpcSigning(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsShowInitial(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsTitle(), Eq("title"));

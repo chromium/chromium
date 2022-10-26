@@ -26,8 +26,6 @@ static_library("android") {
     "assistant_qr_code_image_picker_model_wrapper.h",
     "assistant_qr_code_native_delegate.cc",
     "assistant_qr_code_native_delegate.h",
-    "assistant_ui_action_delegate.cc",
-    "assistant_ui_action_delegate.h",
     "client_android.cc",
     "client_android.h",
     "features_android.cc",
@@ -68,8 +66,6 @@ static_library("android") {
     "//components/autofill_assistant/browser:proto",
     "//components/autofill_assistant/browser/public",
     "//components/autofill_assistant/browser/public:password_change",
-    "//components/autofill_assistant/browser/public:proto",
-    "//components/autofill_assistant/browser/public/assistant_ui/proto:proto",
     "//components/autofill_assistant/content/browser",
     "//components/image_fetcher:android",
     "//components/keyed_service/content",
@@ -104,21 +100,5 @@ static_library("dependencies_android") {
     "//components/password_manager/core/browser",
     "//components/variations/service",
     "//content/public/browser",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "assistant_ui_action_delegate_unittest.cc" ]
-  deps = [
-    ":android",
-    "//base",
-    "//base/test:test_support",
-    "//components/autofill_assistant/browser:proto",
-    "//components/autofill_assistant/browser/public:proto",
-    "//components/autofill_assistant/browser/public:public",
-    "//components/autofill_assistant/browser/public/assistant_ui/proto:proto",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 }

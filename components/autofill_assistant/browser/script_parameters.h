@@ -71,7 +71,6 @@ class ScriptParameters {
   bool GetDisableRpcSigning() const;
   bool GetSendAnnotateDomModelVersion() const;
   bool GetRunHeadless() const;
-  bool GetUseAssistantUi() const;
   absl::optional<std::string> GetFieldTrialGroup(
       const int field_trial_slot) const;
   absl::optional<bool> GetIsNoRoundtrip() const;

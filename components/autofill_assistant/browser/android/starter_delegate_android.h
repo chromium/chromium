@@ -11,7 +11,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/android/assistant_ui_action_delegate.h"
 #include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/metrics.h"
@@ -147,7 +146,6 @@ class StarterDelegateAndroid
   const std::unique_ptr<const DependenciesAndroid> dependencies_;
   PreferenceManager preference_manager_;
   std::unique_ptr<HeadlessScriptController> headless_script_controller_;
-  std::unique_ptr<AssistantUiActionDelegate> assistant_ui_delegate_;
   // Can change based on activity attachment.
   base::android::ScopedJavaGlobalRef<jobject> java_dependencies_;
 
