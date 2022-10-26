@@ -857,6 +857,27 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalizationWithComma) {
   WaitForRecognitionStopped();
 }
 
+// Note: this test runs the SMART_DELETE_PHRASE macro and at first glance
+// should be categorized as a DictationCommandsTest. However, this test stops
+// speech recognition in the middle of the test, which directly conflicts with
+// DictationCommandsTest's behavior to automatically stop speech recognition
+// during teardown. Thus we need this to be a DictationTest so that we don't
+// try to stop speech recognition when it's already been stopped.
+IN_PROC_BROWSER_TEST_P(DictationTest, SmartDeletePhraseNoChange) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  SendFinalResultAndWait("delete banana");
+  SendFinalResultAndWait("cancel");
+  WaitForRecognitionStopped();
+  // The text area value isn't changed because Dictation parses 'delete banana'
+  // as the SMART_DELETE_PHRASE macro. Since there is no instance of 'banana' in
+  // the text field, the macro does nothing and the text area value remains
+  // unchanged. In the future, we can verify that context-checking failed and an
+  // error was surfaced to the user.
+  ASSERT_EQ("Hello world", GetEditableValue());
+}
+
 class DictationWithAutoclickTest : public DictationTestBase {
  public:
   DictationWithAutoclickTest() = default;
