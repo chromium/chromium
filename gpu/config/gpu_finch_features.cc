@@ -339,7 +339,7 @@ BASE_FEATURE(kReduceOpsTaskSplitting,
 // discardable memory.
 BASE_FEATURE(kNoDiscardableMemoryForGpuDecodePath,
              "NoDiscardableMemoryForGpuDecodePath",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use a 100-command limit before forcing context switch per command buffer
 // instead of 20.
