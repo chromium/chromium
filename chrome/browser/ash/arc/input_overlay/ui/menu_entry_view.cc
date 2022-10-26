@@ -38,7 +38,7 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
 
 void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
   if (!beta_)
-    return;
+    return views::Button::OnGestureEvent(event);
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       OnDragStart(*event);
