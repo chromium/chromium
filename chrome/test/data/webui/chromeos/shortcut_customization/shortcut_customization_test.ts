@@ -16,7 +16,7 @@ import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/a
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeSubCategories} from 'chrome://shortcut-customization/js/fake_data.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {AcceleratorInfo, AcceleratorKeys, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorInfo, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -273,7 +273,7 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorInfo =
         (accelViewElement as AcceleratorViewElement).acceleratorInfo as
         AcceleratorInfo;
-    const actualAccelerator = acceleratorInfo.accelerator as AcceleratorKeys;
+    const actualAccelerator = acceleratorInfo.accelerator as Accelerator;
     assertEquals(Modifier.ALT, actualAccelerator!.modifiers);
     assertEquals(221, actualAccelerator!.key);
     assertEquals(']', actualAccelerator!.keyDisplay);

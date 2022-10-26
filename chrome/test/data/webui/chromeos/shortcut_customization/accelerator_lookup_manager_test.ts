@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
@@ -38,29 +38,29 @@ suite('acceleratorLookupManagerTest', function() {
   }
 
   function replaceAndVerify(
-      source: AcceleratorSource, action: number, oldKeys: AcceleratorKeys,
-      newKeys: AcceleratorKeys) {
-    const uuid = getManager().getAcceleratorFromKeys(JSON.stringify(oldKeys));
-    getManager().replaceAccelerator(source, action, oldKeys, newKeys);
+      source: AcceleratorSource, action: number, oldAccel: Accelerator,
+      newAccel: Accelerator) {
+    const uuid = getManager().getAcceleratorFromKeys(JSON.stringify(oldAccel));
+    getManager().replaceAccelerator(source, action, oldAccel, newAccel);
 
     // Verify that the old accelerator is no longer part of the reverse
     // lookup.
     assertEquals(
         undefined,
-        getManager().getAcceleratorFromKeys(JSON.stringify(oldKeys)));
+        getManager().getAcceleratorFromKeys(JSON.stringify(oldAccel)));
     // Verify the replacement accelerator is in the reverse lookup.
     assertEquals(
-        uuid, getManager().getAcceleratorFromKeys(JSON.stringify(newKeys)));
+        uuid, getManager().getAcceleratorFromKeys(JSON.stringify(newAccel)));
   }
 
   function addAndVerify(
-      source: AcceleratorSource, action: number, newKeys: AcceleratorKeys) {
-    getManager().addAccelerator(source, action, newKeys);
+      source: AcceleratorSource, action: number, newAccel: Accelerator) {
+    getManager().addAccelerator(source, action, newAccel);
 
     // Verify that the new accelerator is in the reverse lookup.
     assertEquals(
         `${source}-${action}`,
-        getManager().getAcceleratorFromKeys(JSON.stringify(newKeys)));
+        getManager().getAcceleratorFromKeys(JSON.stringify(newAccel)));
   }
 
   test('AcceleratorLookupDefaultFake', () => {
@@ -116,11 +116,11 @@ suite('acceleratorLookupManagerTest', function() {
       // Modifier.Alt + key::221 (']')
       const oldAccel = snapWindowRightAccels[0]!.accelerator;
 
-      const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
+      const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
         key: 79,
         keyDisplay: 'o',
-      });
+      };
 
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
@@ -142,11 +142,11 @@ suite('acceleratorLookupManagerTest', function() {
           JSON.stringify(lookup[1]!.accelerator));
 
       // Replace the new accelerator with the "ALT + ]" default accelerator.
-      const expectedNewDefaultAccel = /** @type {!AcceleratorKeys} */ ({
+      const expectedNewDefaultAccel: Accelerator = {
         modifiers: Modifier.ALT,
         key: 221,
         keyDisplay: ']',
-      });
+      };
 
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
@@ -220,11 +220,11 @@ suite('acceleratorLookupManagerTest', function() {
       // Get Snap Window Right accelerator from kAsh[1]!.
       const expectedAction = 1;
 
-      const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
+      const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
         key: 79,
         keyDisplay: 'o',
-      });
+      };
 
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
@@ -329,11 +329,11 @@ suite('acceleratorLookupManagerTest', function() {
           getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
       assertEquals(1, lookup.length);
 
-      const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
+      const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
         key: 79,
         keyDisplay: 'o',
-      });
+      };
 
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(

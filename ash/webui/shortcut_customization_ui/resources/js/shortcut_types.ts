@@ -52,14 +52,14 @@ export enum AcceleratorConfigResult {
   DUPLICATE,
 }
 
-export interface AcceleratorKeys {
+export interface Accelerator {
   modifiers: number;
   key: number;
   keyDisplay: string;
 }
 
 export interface AcceleratorInfo {
-  accelerator: AcceleratorKeys;
+  accelerator: Accelerator;
   type: AcceleratorType;
   state: AcceleratorState;
   locked: boolean;
@@ -115,12 +115,11 @@ export interface ShortcutProviderInterface {
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
   removeAccelerator(
       source: AcceleratorSource, action: number,
-      accelerator: AcceleratorKeys): Promise<AcceleratorConfigResult>;
+      accelerator: Accelerator): Promise<AcceleratorConfigResult>;
   replaceAccelerator(
-      source: AcceleratorSource, action: number,
-      oldAccelerator: AcceleratorKeys,
-      newAccelerator: AcceleratorKeys): Promise<AcceleratorConfigResult>;
+      source: AcceleratorSource, action: number, oldAccelerator: Accelerator,
+      newAccelerator: Accelerator): Promise<AcceleratorConfigResult>;
   addUserAccelerator(
       source: AcceleratorSource, action: number,
-      accelerator: AcceleratorKeys): Promise<AcceleratorConfigResult>;
+      accelerator: Accelerator): Promise<AcceleratorConfigResult>;
 }
