@@ -96,6 +96,8 @@ void InstallablePaymentAppCrawler::Start(
     return;
   }
 
+  // May cause this InstallablePaymentAppCrawler object to be synchronously
+  // deleted in the last iteration, so no code should come after the loop.
   number_of_payment_method_manifest_to_download_ = manifests_to_download.size();
   for (const auto& url : manifests_to_download) {
     downloader_->DownloadPaymentMethodManifest(
@@ -173,17 +175,20 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
   // to be deleted, so no code should be run after this loop.
   //
   // Note that only the last iteration of the loop can result in a deletion, as
-  // `number_of_web_app_manifest_to_download_` must be zero.
+  // `number_of_web_app_manifest_to_download_` must be zero for this to happen.
+  number_of_web_app_manifest_to_download_ += default_applications.size();
   for (const auto& web_app_manifest_url : default_applications) {
     if (downloaded_web_app_manifests_.find(web_app_manifest_url) !=
         downloaded_web_app_manifests_.end()) {
       // Do not download the same web app manifest again since a web app could
       // be the default application of multiple payment methods.
+      number_of_web_app_manifest_to_download_--;
       continue;
     }
 
     if (!IsSameOriginWith(method_manifest_url_after_redirects,
                           web_app_manifest_url)) {
+      number_of_web_app_manifest_to_download_--;
       std::string error_message = base::ReplaceStringPlaceholders(
           errors::kCrossOriginWebAppManifestNotAllowed,
           {web_app_manifest_url.spec(),
@@ -199,13 +204,18 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
                 url::Origin::Create(web_app_manifest_url))
             .status != blink::mojom::PermissionStatus::GRANTED) {
       // Do not download the web app manifest if it is blocked.
+      number_of_web_app_manifest_to_download_--;
       continue;
     }
 
-    number_of_web_app_manifest_to_download_++;
     downloaded_web_app_manifests_.insert(web_app_manifest_url);
 
     if (method_manifest_url_after_redirects == web_app_manifest_url) {
+      // For this to happen, the payment manifest must have been valid which
+      // means its content should have been non-empty. If somehow we get here
+      // but content is empty, it would cause a synchronous deletion of 'this',
+      // so guard against that.
+      CHECK(!content.empty());
       OnPaymentWebAppManifestDownloaded(
           method_manifest_url, web_app_manifest_url, web_app_manifest_url,
           content, /*error_message=*/"");
@@ -213,7 +223,7 @@ void InstallablePaymentAppCrawler::OnPaymentMethodManifestParsed(
     }
 
     // May cause this InstallablePaymentAppCrawler object to be synchronously
-    // deleted.
+    // deleted in the last iteration of the loop.
     downloader_->DownloadWebAppManifest(
         url::Origin::Create(method_manifest_url_after_redirects),
         web_app_manifest_url,
