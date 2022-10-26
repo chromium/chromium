@@ -222,7 +222,7 @@ AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUi', function() {
 });
 
 // This represents how Google Docs renders Canvas accessibility as of
-// October 2022.
+// October 24 2022.
 AX_TEST_F(
     'SelectToSpeakUiManagerUnitTest', 'UpdatesUiMultipleNodesInBlock',
     function() {
@@ -231,7 +231,7 @@ AX_TEST_F(
         location: {left: 0, top: 0, width: 500, height: 50},
       };
       const group = {
-        role: 'group',
+        role: 'paragraph',
         parent: root,
         display: 'inline',
         location: {left: 20, top: 10, width: 200, height: 10},
