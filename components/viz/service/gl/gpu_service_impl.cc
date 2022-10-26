@@ -579,13 +579,13 @@ void GpuServiceImpl::InitializeWithHost(
     bool thread_safe_manager = display_context_on_another_thread;
     // Raw draw needs to access shared image backing on the compositor thread.
     thread_safe_manager |= features::IsUsingRawDraw();
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     thread_safe_manager |= features::ShouldUseRealBuffersForPageFlipTest();
 #endif
     owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
         thread_safe_manager, display_context_on_another_thread);
     shared_image_manager = owned_shared_image_manager_.get();
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   } else {
     // With this feature enabled, we don't expect to receive an external
     // SharedImageManager.

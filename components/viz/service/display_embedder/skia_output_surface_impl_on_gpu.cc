@@ -96,7 +96,7 @@
 #endif
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_window_surface.h"
@@ -155,13 +155,13 @@ void FailedSkiaFlush(base::StringPiece msg) {
 #if BUILDFLAG(ENABLE_VULKAN)
 // Returns whether SkiaOutputDeviceX11 can be instantiated on this platform.
 bool MayFallBackToSkiaOutputDeviceX11() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   return ui::OzonePlatform::GetInstance()
       ->GetPlatformProperties()
       .skia_can_fall_back_to_x11;
 #else
   return false;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
@@ -483,7 +483,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
 
     // Draw will only fail if the SkSurface and SkDDL are incompatible.
     bool draw_success = scoped_output_device_paint_->Draw(ddl);
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     if (!draw_success)
       DLOG(ERROR) << "output_sk_surface()->draw() failed.";
 #else
@@ -1654,13 +1654,13 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
   TRACE_EVENT1("viz", "SkiaOutputSurfaceImplOnGpu::Initialize",
                "is_using_vulkan", is_using_vulkan());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if defined(USE_OZONE)
-    gpu::SurfaceHandle surface_handle = dependency_->GetSurfaceHandle();
-    if (surface_handle != gpu::kNullSurfaceHandle) {
-      window_surface_ = ui::OzonePlatform::GetInstance()
-                            ->GetSurfaceFactoryOzone()
-                            ->CreatePlatformWindowSurface(surface_handle);
-    }
+#if BUILDFLAG(IS_OZONE)
+  gpu::SurfaceHandle surface_handle = dependency_->GetSurfaceHandle();
+  if (surface_handle != gpu::kNullSurfaceHandle) {
+    window_surface_ = ui::OzonePlatform::GetInstance()
+                          ->GetSurfaceFactoryOzone()
+                          ->CreatePlatformWindowSurface(surface_handle);
+  }
 #endif
 
   context_state_ = dependency_->GetSharedContextState();

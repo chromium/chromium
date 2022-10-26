@@ -32,7 +32,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/switches.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -52,7 +52,7 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
 
   std::unique_ptr<base::Thread> thread;
   base::Thread::Options thread_options;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   auto* platform = ui::OzonePlatform::GetInstance();
   thread_options.message_pump_type =
       platform->GetPlatformProperties().message_pump_type_for_viz_compositor;

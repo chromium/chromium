@@ -36,9 +36,9 @@
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 namespace {
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
@@ -142,7 +142,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
       presenter_(std::move(presenter)),
       context_state_(deps->GetSharedContextState()),
       representation_factory_(representation_factory) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   capabilities_.needs_background_image = ui::OzonePlatform::GetInstance()
                                              ->GetPlatformRuntimeProperties()
                                              .needs_background_image;
@@ -150,7 +150,7 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
       ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_non_backed_solid_color_buffers;
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.preserve_buffer_content = true;
@@ -382,7 +382,7 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 
   for (const auto& overlay : overlays) {
     auto mailbox = overlay.mailbox;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     if (overlay.is_solid_color) {
       DCHECK(overlay.color.has_value());
       DCHECK(capabilities_.supports_non_backed_solid_color_overlays);
@@ -575,7 +575,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
 
   std::vector<gpu::Mailbox> released_overlays;
   auto on_overlay_release =
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
       [&released_overlays](const OverlayData& overlay) {
         // Right now, only macOS needs to return maliboxes of released
         // overlays, so SkiaRenderer can unlock resources for them.

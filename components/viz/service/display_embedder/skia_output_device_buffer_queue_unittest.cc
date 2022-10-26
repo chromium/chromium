@@ -30,7 +30,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gl/gl_surface_stub.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 

@@ -26,7 +26,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -39,12 +39,12 @@ namespace viz {
 namespace {
 
 bool MustSignalGmbConfigReadyForTest() {
-#if defined(USE_OZONE)
-    // Some Ozone platforms (Ozone/X11) require GPU process initialization to
-    // determine GMB support.
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .fetch_buffer_formats_for_gmb_on_gpu;
+#if BUILDFLAG(IS_OZONE)
+  // Some Ozone platforms (Ozone/X11) require GPU process initialization to
+  // determine GMB support.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .fetch_buffer_formats_for_gmb_on_gpu;
 #else
   return false;
 #endif
@@ -294,10 +294,10 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
   // Mac and some Ozone platforms). Abort the test in those platforms.
   bool IsNativePixmapConfigSupported() {
     bool native_pixmap_supported = false;
-#if defined(USE_OZONE)
-      native_pixmap_supported =
-          ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ);
+#if BUILDFLAG(IS_OZONE)
+    native_pixmap_supported =
+        ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+            gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ);
 #elif BUILDFLAG(IS_ANDROID)
     native_pixmap_supported =
         base::AndroidHardwareBufferCompat::IsSupportAvailable();

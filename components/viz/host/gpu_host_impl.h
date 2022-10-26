@@ -101,7 +101,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
     virtual void BindInterface(
         const std::string& interface_name,
         mojo::ScopedMessagePipeHandle interface_pipe) = 0;
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
     virtual void TerminateGpuProcess(const std::string& message) = 0;
 #endif
 
@@ -217,10 +217,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
  private:
   friend class GpuHostImplTestApi;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   void InitOzone();
   void TerminateGpuProcess(const std::string& message);
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   std::string GetShaderPrefixKey();
 

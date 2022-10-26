@@ -64,7 +64,7 @@ class SyncPointClientState;
 }  // namespace gpu
 
 namespace ui {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 class PlatformWindowSurface;
 #endif
 }  // namespace ui
@@ -465,7 +465,7 @@ class SkiaOutputSurfaceImplOnGpu
   ReleaseCallback CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
       std::unique_ptr<gpu::SkiaImageRepresentation> representation);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // This should outlive gl_surface_ and vulkan_surface_.
   std::unique_ptr<ui::PlatformWindowSurface> window_surface_;
 #endif

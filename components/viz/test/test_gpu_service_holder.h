@@ -15,7 +15,7 @@
 #include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/vulkan/buildflags.h"
 
-#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
 #include "mojo/public/cpp/bindings/binder_map.h"
 #endif
 
@@ -135,7 +135,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   void DeleteOnGpuThread();
 
 // TODO(crbug.com/1267788): Fuchsia crashes. See details in the crbug.
-#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   void BindInterface(const std::string& interface_name,
                      mojo::ScopedMessagePipeHandle interface_pipe);
   void BindInterfaceOnGpuThread(const std::string& interface_name,
@@ -158,7 +158,7 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
 #endif
 
-#if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   // Bound interfaces.
   mojo::BinderMap binders_;
 #endif

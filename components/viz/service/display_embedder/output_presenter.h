@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "build/build_config.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -121,7 +122,7 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) = 0;
-#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_OZONE)
   using OverlayPlaneCandidate = OverlayCandidate;
 #elif BUILDFLAG(IS_APPLE)
   using OverlayPlaneCandidate = CALayerOverlay;

@@ -57,7 +57,7 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "components/viz/service/display/overlay_processor_delegated.h"
 #include "ui/base/ui_base_features.h"
 #endif
@@ -4539,7 +4539,7 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
   }
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 
 TileDrawQuad* CreateTileCandidateQuadAt(
     DisplayResourceProvider* parent_resource_provider,

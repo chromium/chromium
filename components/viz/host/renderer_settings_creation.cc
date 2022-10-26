@@ -18,7 +18,7 @@
 #include "components/viz/common/switches.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -75,19 +75,19 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
-#if defined(USE_OZONE)
-    if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {
-      renderer_settings.overlay_strategies = ParseOverlayStrategies(
-          command_line->GetSwitchValueASCII(switches::kEnableHardwareOverlays));
-    } else {
-      auto& host_properties =
-          ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
-      if (host_properties.supports_overlays) {
-        renderer_settings.overlay_strategies = {OverlayStrategy::kFullscreen,
-                                                OverlayStrategy::kSingleOnTop,
-                                                OverlayStrategy::kUnderlay};
-      }
+#if BUILDFLAG(IS_OZONE)
+  if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {
+    renderer_settings.overlay_strategies = ParseOverlayStrategies(
+        command_line->GetSwitchValueASCII(switches::kEnableHardwareOverlays));
+  } else {
+    auto& host_properties =
+        ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
+    if (host_properties.supports_overlays) {
+      renderer_settings.overlay_strategies = {OverlayStrategy::kFullscreen,
+                                              OverlayStrategy::kSingleOnTop,
+                                              OverlayStrategy::kUnderlay};
     }
+  }
 #endif
 
   return renderer_settings;

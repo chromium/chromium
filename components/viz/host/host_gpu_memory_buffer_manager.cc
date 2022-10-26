@@ -14,6 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -23,7 +24,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -32,7 +33,7 @@ namespace viz {
 namespace {
 
 bool WillGetGmbConfigFromGpu() {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Ozone/X11 cannot get buffer formats in the browser process and requires gpu
   // initialization to be done before it can determine what formats gmb can use.
   // This limitation comes from the requirement to have GLX bindings

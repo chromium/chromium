@@ -56,7 +56,7 @@ class VIZ_COMMON_EXPORT RendererSettings {
   gfx::ColorSpace color_space;
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // A list of overlay strategies that should be tried. If the list is empty
   // then overlays aren't supported.
   std::vector<OverlayStrategy> overlay_strategies;

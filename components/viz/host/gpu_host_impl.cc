@@ -38,7 +38,7 @@
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -141,9 +141,9 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
       std::move(discardable_manager_remote), activity_flags_.CloneRegion(),
       GetFontRenderParams().Get()->subpixel_rendering);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   InitOzone();
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 GpuHostImpl::~GpuHostImpl() {
@@ -374,7 +374,7 @@ mojom::InfoCollectionGpuService* GpuHostImpl::info_collection_gpu_service() {
 }
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 
 void GpuHostImpl::InitOzone() {
   // Ozone needs to send the primary DRM device to GPU service as early as
@@ -399,7 +399,7 @@ void GpuHostImpl::TerminateGpuProcess(const std::string& message) {
   delegate_->TerminateGpuProcess(message);
 }
 
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 std::string GpuHostImpl::GetShaderPrefixKey() {
   if (shader_prefix_key_.empty()) {

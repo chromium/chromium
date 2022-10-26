@@ -555,7 +555,7 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
   }
 }
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 struct SkiaRenderer::RenderPassOverlayParams {
   AggregatedRenderPassId render_pass_id;
   RenderPassBacking render_pass_backing;
@@ -792,7 +792,7 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                      resource_provider,
                      overlay_processor),
       skia_output_surface_(skia_output_surface),
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
       can_skip_render_pass_overlay_(
           base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
 #endif
@@ -851,9 +851,9 @@ void SkiaRenderer::FinishDrawingFrame() {
 
   swap_buffer_rect_ = current_frame()->root_damage_rect;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   MaybeScheduleBackgroundImage(current_frame()->overlay_list);
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   // TODO(weiliangc): Remove this once OverlayProcessor schedules overlays.
   if (current_frame()->output_surface_plane) {
@@ -934,7 +934,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 
   FlushOutputSurface();
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   // Delete render pass overlay backings from the previous frame that will not
   // be used again.
   for (auto& overlay : available_render_pass_overlay_backings_) {
@@ -942,9 +942,9 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
         overlay.render_pass_backing.mailbox);
   }
   available_render_pass_overlay_backings_.clear();
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // Clear cached solid color buffers that weren't reused.
   base::EraseIf(solid_color_buffers_, [this](auto entry) {
     SolidColorBuffer& color_buffer = entry.second;
@@ -954,7 +954,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     }
     return false;
   });
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 }
 
 void SkiaRenderer::SwapBuffersSkipped() {
@@ -962,9 +962,9 @@ void SkiaRenderer::SwapBuffersSkipped() {
   if (use_partial_swap_)
     root_pass_damage_rect.Intersect(swap_buffer_rect_);
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   MaybeDecrementSolidColorBuffers(pending_overlay_locks_.back());
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   pending_overlay_locks_.pop_back();
   skia_output_surface_->SwapBuffersSkipped(root_pass_damage_rect);
@@ -1001,19 +1001,19 @@ void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
         std::make_move_iterator(committed_overlay_locks_.end()));
   }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   MaybeDecrementSolidColorBuffers(committed_overlay_locks_);
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
   // Right now, only macOS and Ozone need to return mailboxes of released
   // overlays, so we should not release |committed_overlay_locks_| here. The
   // resources in it will be released in DidReceiveReleasedOverlays() later.
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   for (auto lock_iter = committed_overlay_locks_.begin();
        lock_iter != read_fence_lock_iter; ++lock_iter) {
     awaiting_release_overlay_locks_.insert(std::move(*lock_iter));
   }
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
   // Current pending locks should have been committed by the next time
   // SwapBuffers() is completed.
@@ -1034,7 +1034,7 @@ void SkiaRenderer::BuffersPresented() {
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
   // This method is only called on macOS and Ozone right now.
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   for (const auto& mailbox : released_overlays) {
     // If this mailbox is for render pass overlay, mark the released render pass
     // overlay backing as available to be re-used.
@@ -1052,17 +1052,17 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
                                    &OverlayLock::mailbox);
     if (iter == awaiting_release_overlay_locks_.end()) {
 // TODO(crbug.com/1299794): Re-enable this DCHECK on Ozone.
-#if !defined(USE_OZONE)
+#if !BUILDFLAG(IS_OZONE)
       // The released overlay should always be found as awaiting to be released.
       DLOG(FATAL) << "Got an unexpected mailbox";
-#endif  // !defined(USE_OZONE)
+#endif  // !BUILDFLAG(IS_OZONE)
       continue;
     }
     awaiting_release_overlay_locks_.erase(iter);
   }
 #else
   NOTREACHED();
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -2715,7 +2715,7 @@ void SkiaRenderer::ScheduleOverlays() {
     ca_layer_overlay.mailbox = lock.mailbox();
     DCHECK(!ca_layer_overlay.mailbox.IsZero());
   }
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
   // Only Wayland uses this code path.
   for (auto& overlay : current_frame()->overlay_list) {
     if (overlay.is_root_render_pass) {
@@ -3211,7 +3211,7 @@ void SkiaRenderer::FlushOutputSurface() {
   lock_set_for_external_use_->UnlockResources(sync_token);
 }
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 bool SkiaRenderer::CanSkipRenderPassOverlay(
     AggregatedRenderPassId render_pass_id,
     const AggregatedRenderPassDrawQuad* rpdq,
@@ -3571,7 +3571,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // Adjust |bounds_rect| to contain the whole buffer and at the right location.
   overlay->bounds_rect.set_origin(gfx::PointF(filter_bounds.origin()));
   overlay->bounds_rect.set_size(gfx::SizeF(buffer_size));
-#else   // defined(USE_OZONE)
+#else   // BUILDFLAG(IS_OZONE)
   // Adjust |display_rect| to be include the expanded |filter_bounds|, and
   // transformed.
   // TODO(fangzhoug): Merge Ozone and Apple code paths of delegated compositing.
@@ -3591,7 +3591,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   }
 #endif  // BUILDFLAG(IS_APPLE)
 }
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
 void SkiaRenderer::EndPaint(bool failed) {
   base::OnceClosure on_finished_callback;
@@ -3731,7 +3731,7 @@ gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   }
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 const gpu::Mailbox SkiaRenderer::GetImageMailboxForColor(
     const SkColor4f& color) {
   // Currently the Wayland protocol does not have protocol to support solid
@@ -3788,7 +3788,7 @@ void SkiaRenderer::MaybeDecrementSolidColorBuffers(
     }
   }
 }
-#endif  // defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_OZONE)
 
 SkiaRenderer::OverlayLock::OverlayLock(
     DisplayResourceProvider* resource_provider,
@@ -3801,23 +3801,23 @@ SkiaRenderer::OverlayLock::~OverlayLock() = default;
 SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer::OverlayLock&& other) {
   resource_lock = std::move(other.resource_lock);
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   render_pass_lock = std::move(other.render_pass_lock);
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 }
 
 SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
     SkiaRenderer::OverlayLock&& other) {
   resource_lock = std::move(other.resource_lock);
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   render_pass_lock = std::move(other.render_pass_lock);
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
   return *this;
 }
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 SkiaRenderer::OverlayLock::OverlayLock(gpu::Mailbox mailbox) {
   render_pass_lock.emplace(mailbox);
 }
@@ -3827,6 +3827,6 @@ bool SkiaRenderer::OverlayLockComparator::operator()(
     const OverlayLock& rhs) const {
   return lhs.mailbox() < rhs.mailbox();
 }
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
 }  // namespace viz

@@ -32,7 +32,7 @@
 #include "ui/gl/gl_surface_egl_surface_control.h"
 #endif
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -108,7 +108,7 @@ gl::OverlayImage PresenterImageGL::GetOverlayImage(
   if (fence) {
     *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFence());
   }
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   return scoped_overlay_read_access_->GetNativePixmap();
 #else
   return scoped_overlay_read_access_->gl_image();
@@ -366,8 +366,8 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   // Note that |overlay_plane_candidate| has different types on different
   // platforms. On Android and Ozone it is an OverlayCandidate, on Windows it is
   // a DCLayerOverlay, and on macOS it is a CALayeroverlay.
-#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/1366808): Add ScopedOverlayAccess::GetOverlayImage() that
   // works on all platforms.
   gl::OverlayImage overlay_image = access ? access->GetNativePixmap() : nullptr;

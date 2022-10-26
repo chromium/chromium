@@ -54,7 +54,7 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kMacCAOverlayQuad);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kMacCAOverlayQuadMaxNum;
 #endif
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanSkipRenderPassOverlay);
 #endif
 

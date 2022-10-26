@@ -25,7 +25,7 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_gpu_test_helper.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
@@ -118,9 +118,9 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   std::unique_ptr<ui::PlatformWindow> CreatePlatformWindow(
       const gfx::Rect& bounds) {
     ui::PlatformWindowInitProperties props(bounds);
-#if defined(USE_OZONE)
-      return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
-          this, std::move(props));
+#if BUILDFLAG(IS_OZONE)
+    return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
+        this, std::move(props));
 #elif BUILDFLAG(IS_WIN)
     return std::make_unique<ui::WinWindow>(this, props.bounds);
 #else
@@ -195,7 +195,7 @@ int DemoMain() {
   return 0;
 }
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 std::unique_ptr<ui::OzoneGpuTestHelper> gpu_helper;
 
 static void SetupOzone(base::WaitableEvent* done) {
@@ -211,7 +211,7 @@ static void SetupOzone(base::WaitableEvent* done) {
 }  // namespace
 
 int main(int argc, char** argv) {
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   base::CommandLine command_line(argc, argv);
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->InitializeFromCommandLine(
@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
   InitMojo mojo;
   InitUI ui;
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForUI(params);

@@ -25,7 +25,7 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display/overlay_processor_android.h"
 #include "components/viz/service/display/overlay_processor_surface_control.h"
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
 #include "components/viz/service/display/overlay_processor_delegated.h"
 #include "components/viz/service/display/overlay_processor_ozone.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
@@ -116,7 +116,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
                                   .supports_two_yuv_hardware_overlays
                               ? 2
                               : 1));
-#elif defined(USE_OZONE)
+#elif BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(IS_CASTOS)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
   // For CastOS, we always need OverlayProcessorOzone.

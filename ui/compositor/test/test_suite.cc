@@ -11,7 +11,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -41,7 +41,7 @@ void CompositorTestSuite::Initialize() {
   base::TestSuite::Initialize();
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
-#if defined(USE_OZONE)
+#if BUILDFLAG(IS_OZONE)
   OzonePlatform::InitParams params;
   params.single_process = true;
   OzonePlatform::InitializeForUI(params);
