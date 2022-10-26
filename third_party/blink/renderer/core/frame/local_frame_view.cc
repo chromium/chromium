@@ -268,7 +268,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       update_plugins_timer_(frame.GetTaskRunner(TaskType::kInternalLoading),
                             this,
                             &LocalFrameView::UpdatePluginsTimerFired),
-      first_layout_(true),
       base_background_color_(Color::kWhite),
       media_type_(media_type_names::kScreen),
       visually_non_empty_character_count_(0),
@@ -719,9 +718,10 @@ void LocalFrameView::PerformLayout() {
       }
     }
 
-    if (first_layout_) {
-      first_layout_ = false;
+    first_layout_ = false;
 
+    if (first_layout_with_body_ && body) {
+      first_layout_with_body_ = false;
       mojom::blink::ScrollbarMode h_mode;
       mojom::blink::ScrollbarMode v_mode;
       GetLayoutView()->CalculateScrollbarModes(h_mode, v_mode);
@@ -735,7 +735,7 @@ void LocalFrameView::PerformLayout() {
 
     size_ = LayoutSize(GetLayoutSize());
 
-    if (old_size != size_ && !first_layout_) {
+    if (old_size != size_) {
       LayoutBox* root_layout_object =
           document->documentElement()
               ? document->documentElement()->GetLayoutBox()
