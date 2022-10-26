@@ -162,12 +162,16 @@ class SimpleDevToolsProtocolClientEventHandlerTraceTest
     received_events_.push_back(*params.FindString("method"));
   }
 
+  void OnEventX(const base::Value::Dict& params) {
+    received_events_.push_back(*params.FindString("method"));
+  }
+
   std::vector<std::string> received_events_;
 };
 
 TEST_F(SimpleDevToolsProtocolClientEventHandlerTraceTest,
        AddRemoveEventHandler) {
-  EXPECT_EQ(event_map_.size(), 0ul);
+  EXPECT_EQ(event_handler_map_.size(), 0ul);
 
   EventCallback event1_handler1 = base::BindRepeating(
       &SimpleDevToolsProtocolClientEventHandlerTraceTest::OnEvent1,
@@ -180,11 +184,11 @@ TEST_F(SimpleDevToolsProtocolClientEventHandlerTraceTest,
       base::Unretained(this));
 
   AddEventHandler("event1", event1_handler1);
-  EXPECT_EQ(event_map_.size(), 1ul);
+  EXPECT_EQ(event_handler_map_.size(), 1ul);
   AddEventHandler("event1", event1_handler2);
-  EXPECT_EQ(event_map_.size(), 1ul);
+  EXPECT_EQ(event_handler_map_.size(), 1ul);
   AddEventHandler("event2", event2_handler);
-  EXPECT_EQ(event_map_.size(), 2ul);
+  EXPECT_EQ(event_handler_map_.size(), 2ul);
 
   // Event1 is received by two handlers, and event2 by one.
   SendEvent("event1");
@@ -196,7 +200,7 @@ TEST_F(SimpleDevToolsProtocolClientEventHandlerTraceTest,
   RemoveEventHandler("event1", event1_handler1);
   SendEvent("event1");
   SendEvent("event2");
-  EXPECT_EQ(event_map_.size(), 2ul);
+  EXPECT_EQ(event_handler_map_.size(), 2ul);
   EXPECT_THAT(received_events_, ElementsAre("event1", "event2"));
   received_events_.clear();
 
@@ -204,7 +208,7 @@ TEST_F(SimpleDevToolsProtocolClientEventHandlerTraceTest,
   RemoveEventHandler("event1", event1_handler2);
   SendEvent("event1");
   SendEvent("event2");
-  EXPECT_EQ(event_map_.size(), 1ul);
+  EXPECT_EQ(event_handler_map_.size(), 1ul);
   EXPECT_THAT(received_events_, ElementsAre("event2"));
   received_events_.clear();
 
@@ -212,13 +216,13 @@ TEST_F(SimpleDevToolsProtocolClientEventHandlerTraceTest,
   RemoveEventHandler("event2", event2_handler);
   SendEvent("event1");
   SendEvent("event2");
-  EXPECT_EQ(event_map_.size(), 0ul);
+  EXPECT_EQ(event_handler_map_.size(), 0ul);
   EXPECT_TRUE(received_events_.empty());
 }
 
 TEST_F(SimpleDevToolsProtocolClientEventHandlerTraceTest,
        AddRemoveAllEventHandlers) {
-  EXPECT_EQ(event_map_.size(), 0ul);
+  EXPECT_EQ(event_handler_map_.size(), 0ul);
 
   EventCallback event1_handler1 = base::BindRepeating(
       &SimpleDevToolsProtocolClientEventHandlerTraceTest::OnEvent1,

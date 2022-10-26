@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -27,6 +28,8 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
   typedef base::RepeatingCallback<void(const base::Value::Dict&)> EventCallback;
 
   SimpleDevToolsProtocolClient();
+  explicit SimpleDevToolsProtocolClient(const std::string& session_id);
+
   ~SimpleDevToolsProtocolClient() override;
 
   void AttachClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
@@ -35,26 +38,24 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
   void AttachToBrowser();
   void AttachToWebContents(content::WebContents* web_contents);
 
+  std::unique_ptr<SimpleDevToolsProtocolClient> CreateSession(
+      const std::string& session_id);
+
   void AddEventHandler(const std::string& event_name,
                        EventCallback event_callback);
   void RemoveEventHandler(const std::string& event_name,
                           const EventCallback& event_callback);
 
-  void SendSessionCommand(const std::string method,
-                          base::Value::Dict params,
-                          const std::string session_id,
-                          ResponseCallback response_callback);
-
-  void SendCommand(const std::string method,
+  void SendCommand(const std::string& method,
                    base::Value::Dict params,
                    ResponseCallback response_callback);
 
-  void SendCommand(const std::string method,
+  void SendCommand(const std::string& method,
                    ResponseCallback response_callback);
 
-  void SendCommand(const std::string method, base::Value::Dict params);
+  void SendCommand(const std::string& method, base::Value::Dict params);
 
-  void SendCommand(const std::string method);
+  void SendCommand(const std::string& method);
 
  protected:
   // content::DevToolsAgentHostClient implementation.
@@ -62,12 +63,20 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
                                base::span<const uint8_t> json_message) override;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
 
+  void DispatchProtocolMessage(base::Value::Dict message);
+
+  void SendProtocolMessage(base::Value::Dict message);
+
   bool HasEventHandler(const std::string& event_name,
                        const EventCallback& event_callback);
 
+  const std::string session_id_;
+  base::raw_ptr<SimpleDevToolsProtocolClient> parent_client_ = nullptr;
+  base::flat_map<std::string, SimpleDevToolsProtocolClient*> sessions_;
+
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   base::flat_map<int, ResponseCallback> pending_response_map_;
-  base::flat_map<std::string, std::vector<EventCallback>> event_map_;
+  base::flat_map<std::string, std::vector<EventCallback>> event_handler_map_;
 };
 
 }  // namespace simple_devtools_protocol_client
