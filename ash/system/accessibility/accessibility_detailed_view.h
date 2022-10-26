@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_ACCESSIBILITY_TRAY_ACCESSIBILITY_H_
-#define ASH_SYSTEM_ACCESSIBILITY_TRAY_ACCESSIBILITY_H_
+#ifndef ASH_SYSTEM_ACCESSIBILITY_ACCESSIBILITY_DETAILED_VIEW_H_
+#define ASH_SYSTEM_ACCESSIBILITY_ACCESSIBILITY_DETAILED_VIEW_H_
 
 #include <stdint.h>
 
@@ -134,4 +134,4 @@ class ASH_EXPORT AccessibilityDetailedView
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_ACCESSIBILITY_TRAY_ACCESSIBILITY_H_
+#endif  // ASH_SYSTEM_ACCESSIBILITY_ACCESSIBILITY_DETAILED_VIEW_H_

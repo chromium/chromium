@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/system/accessibility/tray_accessibility.h"
 #include "ash/system/tray/actionable_view.h"
 #include "base/bind.h"
 #include "ui/gfx/font.h"

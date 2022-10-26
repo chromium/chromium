@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/accessibility/tray_accessibility.h"
+#include "ash/system/accessibility/accessibility_detailed_view.h"
+
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -119,6 +120,7 @@ speech::LanguageCode fr_fr() {
 
 }  // namespace
 
+// TODO(jamescook): Rename this to AccessibilityDetailedViewTest.
 class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
  public:
   TrayAccessibilityTest() = default;
