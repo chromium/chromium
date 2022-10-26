@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -63,7 +64,12 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
             }
           }
 
-          double time = (args.frame_time - base::TimeTicks()).InMillisecondsF();
+          auto* global_scope =
+              DynamicTo<WorkerGlobalScope>(provider->context_.Get());
+          DCHECK(global_scope);
+          double time = Performance::ClampTimeResolution(
+              base::TimeTicks::Now() - global_scope->TimeOrigin(),
+              provider->context_->CrossOriginIsolatedCapability());
           provider->callback_collection_.ExecuteFrameCallbacks(time, time);
         }
         provider->begin_frame_provider_->FinishBeginFrame(args);
