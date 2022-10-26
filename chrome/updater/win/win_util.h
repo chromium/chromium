@@ -312,6 +312,15 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // processes exited cleanly.
 bool StopGoogleUpdateProcesses(UpdaterScope scope);
 
+// Returns `true` if:
+//* `arch` is empty, or
+// * `arch` matches the current architecture, or
+// * `arch` is supported on the machine, as determined by
+// `::IsWow64GuestMachineSupported()`.
+//   * If `::IsWow64GuestMachineSupported()` is not available, returns `true`
+//     if `arch` is x86.
+bool IsArchitectureSupported(const std::string& arch);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_UTIL_H_

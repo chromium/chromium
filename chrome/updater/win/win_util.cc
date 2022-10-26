@@ -21,6 +21,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -38,6 +39,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
@@ -987,6 +989,46 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
   PathPrefixProcessFilter path_prefix_filter(target->DirName());
   return base::CleanupProcesses(kLegacyExeName, kShutdownWaitSeconds, -1,
                                 &path_prefix_filter);
+}
+
+bool IsArchitectureSupported(const std::string& arch) {
+  // TODO(crbug.com/1375366) : use `GetArchitecture` after CL 3979988 lands.
+
+  if (arch.empty())
+    return true;
+
+  // Offline manifests have `arch` as "x64", but
+  // `base::SysInfo().OperatingSystemArchitecture()` returns "x86_64" for amd64.
+  const std::string current_arch =
+      base::SysInfo().OperatingSystemArchitecture();
+  if (arch == current_arch || (arch == "x64" && current_arch == "x86_64"))
+    return true;
+
+  using IsWow64GuestMachineSupportedFunc = HRESULT(WINAPI*)(USHORT, BOOL*);
+  const IsWow64GuestMachineSupportedFunc is_wow64_guest_machine_supported =
+      reinterpret_cast<IsWow64GuestMachineSupportedFunc>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "IsWow64GuestMachineSupported"));
+
+  if (is_wow64_guest_machine_supported) {
+    const base::flat_map<std::string, int> kNativeArchitectureStringsToImages =
+        {
+            {"x86", IMAGE_FILE_MACHINE_I386},
+            {"x64", IMAGE_FILE_MACHINE_AMD64},
+            {"x86_64", IMAGE_FILE_MACHINE_AMD64},
+            {"arm64", IMAGE_FILE_MACHINE_ARM64},
+        };
+
+    const auto image = kNativeArchitectureStringsToImages.find(arch);
+    if (image != kNativeArchitectureStringsToImages.end()) {
+      BOOL is_machine_supported = false;
+      if (SUCCEEDED(is_wow64_guest_machine_supported(
+              static_cast<USHORT>(image->second), &is_machine_supported))) {
+        return is_machine_supported;
+      }
+    }
+  }
+
+  return arch == "x86";
 }
 
 }  // namespace updater

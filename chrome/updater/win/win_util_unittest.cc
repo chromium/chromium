@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
@@ -340,6 +341,14 @@ TEST(WinUtil, StopGoogleUpdateProcesses) {
   // TODO(crbug.com/1290496) perhaps some comprehensive tests for
   // `StopGoogleUpdateProcesses`?
   EXPECT_TRUE(StopGoogleUpdateProcesses(GetTestScope()));
+}
+
+TEST(WinUtil, IsArchitectureSupported) {
+  EXPECT_TRUE(IsArchitectureSupported({}));
+  EXPECT_TRUE(IsArchitectureSupported("x86"));
+
+  const std::string arch = base::SysInfo().OperatingSystemArchitecture();
+  EXPECT_TRUE(IsArchitectureSupported(arch)) << arch;
 }
 
 }  // namespace updater
