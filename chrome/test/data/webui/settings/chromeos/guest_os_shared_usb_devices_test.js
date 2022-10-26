@@ -8,6 +8,7 @@ import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.j
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -252,11 +253,11 @@ suite('SharedUsbDevicesMultiContainer', function() {
             .shadowRoot.querySelector('#selectContainer');
     assertEquals(2, selectContainer.options.length);
 
+    const dialogClose = eventToPromise('close', dialog);
     dialog.shadowRoot.querySelector('#cancel').click();
-    flush();
-    await flushTasks();
 
     // Dialog should close.
+    await dialogClose;
     assertEquals(
         null,
         page.shadowRoot.querySelector(
@@ -271,11 +272,11 @@ suite('SharedUsbDevicesMultiContainer', function() {
         'settings-guest-os-shared-usb-devices-add-dialog');
 
     // Add the first device to the first guest (termina:penguin).
+    const dialogClose = eventToPromise('close', dialog);
     dialog.shadowRoot.querySelector('#continue').click();
-    flush();
-    await flushTasks();
 
     // Dialog should close.
+    await dialogClose;
     assertEquals(
         null,
         page.shadowRoot.querySelector(
@@ -339,11 +340,11 @@ suite('SharedUsbDevicesMultiContainer', function() {
     assertTrue(!!reassignDialog && reassignDialog.open);
 
     // Clicking continue will reassign the device.
+    const dialogClose = eventToPromise('close', dialog);
     reassignDialog.querySelector('#continue').click();
-    flush();
-    await flushTasks();
 
     // All dialogs should close.
+    await dialogClose;
     assertEquals(null, dialog.shadowRoot.querySelector('#reassignDialog'));
     assertEquals(
         null,
