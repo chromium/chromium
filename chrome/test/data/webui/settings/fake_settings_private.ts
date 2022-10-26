@@ -4,6 +4,7 @@
 
 // clang-format off
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 // clang-format on
 
@@ -21,13 +22,18 @@ function deepCopy(obj: object): object {
  * CrSettingsPrefs.deferInitialization to true, then passing a
  * FakeSettingsPrivate to settings-prefs#initialize().
  */
-export class FakeSettingsPrivate {
+export class FakeSettingsPrivate extends TestBrowserProxy {
   private disallowSetPref_: boolean = false;
   private failNextSetPref_: boolean = false;
   prefs: {[key: string]: chrome.settingsPrivate.PrefObject} = {};
   onPrefsChanged: FakeChromeEvent = new FakeChromeEvent();
 
   constructor(initialPrefs?: chrome.settingsPrivate.PrefObject[]) {
+    super([
+      'setPref',
+      'getPref',
+    ]);
+
     if (!initialPrefs) {
       return;
     }
@@ -50,37 +56,34 @@ export class FakeSettingsPrivate {
     setTimeout(callback.bind(null, prefs));
   }
 
-  setPref(
-      key: string, value: any, _pageId: string,
-      callback: (param: boolean) => void) {
+  setPref(key: string, value: any, _pageId: string): Promise<boolean> {
+    this.methodCalled('setPref', {key, value});
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
     assertEquals(typeof value, typeof pref!.value);
     assertEquals(Array.isArray(value), Array.isArray(pref!.value));
 
     if (this.failNextSetPref_) {
-      callback(false);
       this.failNextSetPref_ = false;
-      return;
+      return Promise.resolve(false);
     }
     assertNotEquals(true, this.disallowSetPref_);
 
     const changed = JSON.stringify(pref!.value) !== JSON.stringify(value);
     pref!.value = deepCopy(value);
-    callback(true);
-
     // Like chrome.settingsPrivate, send a notification when prefs change.
     if (changed) {
       this.sendPrefChanges([{key: key, value: deepCopy(value)}]);
     }
+    return Promise.resolve(true);
   }
 
-  getPref(
-      key: string,
-      callback: (pref: chrome.settingsPrivate.PrefObject) => void) {
+  getPref(key: string): Promise<chrome.settingsPrivate.PrefObject> {
+    this.methodCalled('getPref', key);
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
-    callback(deepCopy(pref!) as chrome.settingsPrivate.PrefObject);
+    return Promise.resolve(
+        deepCopy(pref!) as chrome.settingsPrivate.PrefObject);
   }
 
   // Functions used by tests.

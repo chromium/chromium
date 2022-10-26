@@ -219,10 +219,15 @@ export class SettingsPrefsElement extends PolymerElement {
       }));
       // </if>
 
-      this.settingsApi_.setPref(
-          key, prefObj.value,
-          /* pageId */ '',
-          /* callback */ this.setPrefCallback_.bind(this, key));
+      this.settingsApi_
+          .setPref(
+              key, prefObj.value,
+              /* pageId */ '')
+          .then(success => {
+            if (!success) {
+              this.refresh(key);
+            }
+          });
     }
   }
 
@@ -246,22 +251,11 @@ export class SettingsPrefsElement extends PolymerElement {
   }
 
   /**
-   * Checks the result of calling settingsPrivate.setPref.
-   * @param key The key used in the call to setPref.
-   * @param success True if setting the pref succeeded.
-   */
-  private setPrefCallback_(key: string, success: boolean) {
-    if (!success) {
-      this.refresh(key);
-    }
-  }
-
-  /**
    * Get the current pref value from chrome.settingsPrivate to ensure the UI
    * stays up to date.
    */
   refresh(key: string) {
-    this.settingsApi_.getPref(key, pref => {
+    this.settingsApi_.getPref(key).then(pref => {
       this.updatePrefs_([pref]);
     });
   }

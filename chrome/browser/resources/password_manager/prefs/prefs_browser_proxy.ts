@@ -42,18 +42,11 @@ export class PrefsBrowserProxyImpl implements PrefsBrowserProxy {
   }
 
   getPref(key: string): Promise<chrome.settingsPrivate.PrefObject> {
-    return new Promise<chrome.settingsPrivate.PrefObject>(resolve => {
-      chrome.settingsPrivate.getPref(key, resolve);
-    });
+    return chrome.settingsPrivate.getPref(key);
   }
 
   setPref(key: string, value: any): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      chrome.settingsPrivate.setPref(
-          key, value,
-          /* pageId */ '',
-          /* callback */ resolve);
-    });
+    return chrome.settingsPrivate.setPref(key, value, /* pageId */ '');
   }
 
   static getInstance(): PrefsBrowserProxy {

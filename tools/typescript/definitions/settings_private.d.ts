@@ -62,11 +62,9 @@ declare global {
       type PrefsCallback = (prefs: PrefObject[]) => void;
 
       export function getAllPrefs(callback: PrefsCallback): void;
-      export function getPref(
-          name: string, callback: (pref: PrefObject) => void): void;
-      export function setPref(
-          name: string, value: any, pageId?: string,
-          callback?: (success: boolean) => void): void;
+      export function getPref(name: string): Promise<PrefObject>;
+      export function setPref(name: string, value: any, pageId?: string):
+          Promise<boolean>;
 
       export function getDefaultZoom(): Promise<number>;
       export function setDefaultZoom(zoom: number): void;

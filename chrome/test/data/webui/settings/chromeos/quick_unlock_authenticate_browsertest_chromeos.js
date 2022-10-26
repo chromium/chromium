@@ -235,24 +235,24 @@ function registerLockScreenTests() {
 
     /**
      * Returns the lock screen pref value.
-     * @return {boolean}
+     * @return {!Promise<boolean>}
      */
     function getLockScreenPref() {
-      let result;
-      fakeSettings.getPref(ENABLE_LOCK_SCREEN_PREF, function(value) {
-        result = value;
+      return fakeSettings.getPref(ENABLE_LOCK_SCREEN_PREF).then((result) => {
+        assertNotEquals(undefined, result);
+        return result.value;
       });
-      assertNotEquals(undefined, result);
-      return result.value;
     }
 
     /**
      * Changes the lock screen pref value using the settings API; this is like
      * the pref got changed from an unknown source such as another tab.
      * @param {boolean} value
+     * @return {!Promise<void>}
      */
     function setLockScreenPref(value) {
-      fakeSettings.setPref(ENABLE_LOCK_SCREEN_PREF, value, '', assertTrue);
+      return fakeSettings.setPref(ENABLE_LOCK_SCREEN_PREF, value, '')
+          .then(assertTrue);
     }
 
     function isSetupPinButtonVisible() {
@@ -337,8 +337,8 @@ function registerLockScreenTests() {
 
     // Showing the choose method screen does not make any destructive pref or
     // quickUnlockPrivate calls.
-    test('ShowingScreenDoesNotModifyPrefs', function() {
-      assertTrue(getLockScreenPref());
+    test('ShowingScreenDoesNotModifyPrefs', async function() {
+      assertTrue(await getLockScreenPref());
       assertRadioButtonChecked(passwordRadioButton);
       assertDeepEquals([], quickUnlockPrivateApi.activeModes);
     });
@@ -375,7 +375,7 @@ function registerLockScreenTests() {
 
     // The various radio buttons update internal state and do not modify
     // prefs.
-    test('TappingButtonsChangesUnderlyingState', function() {
+    test('TappingButtonsChangesUnderlyingState', async function() {
       function togglePin() {
         assertRadioButtonChecked(passwordRadioButton);
 
@@ -397,14 +397,14 @@ function registerLockScreenTests() {
       testElement.authToken = quickUnlockPrivateApi.getFakeToken();
 
       // Verify toggling PIN on/off does not disable screen lock.
-      setLockScreenPref(true);
+      await setLockScreenPref(true);
       togglePin();
-      assertTrue(getLockScreenPref());
+      assertTrue(await getLockScreenPref());
 
       // Verify toggling PIN on/off does not enable screen lock.
-      setLockScreenPref(false);
+      await setLockScreenPref(false);
       togglePin();
-      assertFalse(getLockScreenPref());
+      assertFalse(await getLockScreenPref());
     });
 
     // If quick unlock is changed by another settings page the radio button

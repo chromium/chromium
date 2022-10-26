@@ -111,7 +111,7 @@ suite('CrSettingsPrefs', function() {
     }
   });
 
-  test('forwards pref changes to API', function testSetPrefs() {
+  test('forwards pref changes to API', async function testSetPrefs() {
     // Test that settings-prefs uses the setPref API.
     for (const testCase of prefsTestCases) {
       prefs.set(
@@ -124,12 +124,22 @@ suite('CrSettingsPrefs', function() {
     // Test that when setPref fails, the pref is reverted locally.
     for (const testCase of prefsTestCases) {
       fakeApi.failNextSetPref();
+      fakeApi.resetResolver('getPref');
+      fakeApi.resetResolver('setPref');
       prefs.set(
           'prefs.' + testCase.pref.key + '.value',
           deepCopy(testCase.nextValues[1]));
+      if (testCase.nextValues[0] !== testCase.nextValues[1]) {
+        const key1 = (await fakeApi.whenCalled('setPref')).key;
+        assertEquals(testCase.pref.key, key1);
+        const key2 = await fakeApi.whenCalled('getPref');
+        assertEquals(testCase.pref.key, key2);
+      }
+      const expectedValue = JSON.stringify(testCase.nextValues[0]);
+      const actualValue =
+          JSON.stringify(prefs.get('prefs.' + testCase.pref.key + '.value'));
+      assertEquals(expectedValue, actualValue);
     }
-
-    assertPrefsSet(0);
 
     // Test that setPref is not called when the pref doesn't change.
     fakeApi.disallowSetPref();

@@ -56,33 +56,32 @@ export class FakeSettingsPrivate {
     setTimeout(callback.bind(null, prefs));
   }
 
-  setPref(key, value, pageId, callback) {
+  setPref(key, value, pageId) {
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
     assertEquals(typeof value, typeof pref.value);
     assertEquals(Array.isArray(value), Array.isArray(pref.value));
 
     if (this.failNextSetPref_) {
-      callback(false);
       this.failNextSetPref_ = false;
-      return;
+      return Promise.resolve(false);
     }
     assertNotEquals(true, this.disallowSetPref_);
 
     const changed = JSON.stringify(pref.value) !== JSON.stringify(value);
     pref.value = deepCopy(value);
-    callback(true);
 
     // Like chrome.settingsPrivate, send a notification when prefs change.
     if (changed) {
       this.sendPrefChanges([{key: key, value: deepCopy(value)}]);
     }
+    return Promise.resolve(true);
   }
 
-  getPref(key, callback) {
+  getPref(key) {
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
-    callback(
+    return Promise.resolve(
         /** @type {!chrome.settingsPrivate.PrefObject} */ (deepCopy(pref)));
   }
 
