@@ -12,9 +12,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/fusebox/fusebox.pb.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
-#include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
