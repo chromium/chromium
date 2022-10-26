@@ -38,20 +38,6 @@ DIPSCookieMode DIPSTabHelper::GetCookieMode() const {
       service_->ShouldBlockThirdPartyCookies());
 }
 
-void DIPSTabHelper::FlushForTesting(base::OnceClosure flushed) {
-  service_->storage()
-      ->AsyncCall(&DIPSStorage::DoNothing)
-      .Then(std::move(flushed));
-}
-
-void DIPSTabHelper::StateForURLForTesting(const GURL& url,
-                                          StateForURLCallback callback) {
-  service_->storage()
-      ->AsyncCall(&DIPSStorage::Read)
-      .WithArgs(url)
-      .Then(std::move(callback));
-}
-
 /* static */
 base::Clock* DIPSTabHelper::SetClockForTesting(base::Clock* clock) {
   return std::exchange(g_clock, clock);

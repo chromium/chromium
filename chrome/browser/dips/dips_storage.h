@@ -47,9 +47,6 @@ class DIPSStorage {
 
   // Utility Methods -----------------------------------------------------------
 
-  // Empty method intended for testing use only.
-  void DoNothing() {}
-
   static size_t SetPrepopulateChunkSizeForTesting(size_t size);
 
   // For each site in |sites|, set the interaction and storage timestamps to

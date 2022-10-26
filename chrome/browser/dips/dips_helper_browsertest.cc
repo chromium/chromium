@@ -9,6 +9,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -66,6 +69,8 @@ class CookieAccessObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+using StateForURLCallback = base::OnceCallback<void(const DIPSState&)>;
+
 // Histogram names
 constexpr char kTimeToInteraction[] =
     "Privacy.DIPS.TimeFromStorageToInteraction.Standard";
@@ -91,7 +96,6 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
-    helper_ = DIPSTabHelper::FromWebContents(GetActiveWebContents());
   }
 
   void TearDownInProcessBrowserTestFixture() override {
@@ -102,24 +106,33 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  DIPSTabHelper* dips_helper() { return helper_; }
-
   void BlockUntilHelperProcessesPendingRequests() {
-    base::RunLoop run_loop;
-    helper_->FlushForTesting(run_loop.QuitClosure());
-    run_loop.Run();
+    base::SequenceBound<DIPSStorage>* storage =
+        DIPSServiceFactory::GetForBrowserContext(
+            GetActiveWebContents()->GetBrowserContext())
+            ->storage();
+    storage->FlushPostedTasksForTesting();
   }
 
   void SetDIPSTime(base::Time time) { test_clock_.SetNow(time); }
 
+  void StateForURL(const GURL& url, StateForURLCallback callback) {
+    DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+        GetActiveWebContents()->GetBrowserContext());
+    dips_service->storage()
+        ->AsyncCall(&DIPSStorage::Read)
+        .WithArgs(url)
+        .Then(std::move(callback));
+  }
+
   absl::optional<StateValue> GetDIPSState(const GURL& url) {
     absl::optional<StateValue> state;
 
-    helper_->StateForURLForTesting(
-        url, base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
-          if (loaded_state.was_loaded())
-            state = loaded_state.ToStateValue();
-        }));
+    StateForURL(url,
+                base::BindLambdaForTesting([&](const DIPSState& loaded_state) {
+                  if (loaded_state.was_loaded())
+                    state = loaded_state.ToStateValue();
+                }));
     BlockUntilHelperProcessesPendingRequests();
 
     return state;
@@ -127,7 +140,6 @@ class DIPSTabHelperBrowserTest : public InProcessBrowserTest {
 
  private:
   base::SimpleTestClock test_clock_;
-  raw_ptr<DIPSTabHelper, DanglingUntriaged> helper_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
@@ -147,7 +159,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
       base::BindRepeating(&content::FrameIsChildOfMainFrame));
   // Wait until we can click on the iframe.
   content::WaitForHitTestData(iframe);
-  BlockUntilHelperProcessesPendingRequests();
 
   // Before clicking, no DIPS state for either site.
   EXPECT_FALSE(GetDIPSState(url_a).has_value());
@@ -158,7 +169,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   UserActivationObserver observer(web_contents, iframe);
   content::SimulateMouseClickOrTapElementWithId(web_contents, kIframeId);
   observer.Wait();
-  BlockUntilHelperProcessesPendingRequests();
 
   // User interaction is recorded for a.test (the top-level frame).
   absl::optional<StateValue> state_a = GetDIPSState(url_a);
@@ -183,7 +193,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
   content::WaitForHitTestData(frame);  // Wait until we can click.
-  BlockUntilHelperProcessesPendingRequests();
 
   // Before clicking, there's no DIPS state for the site.
   EXPECT_FALSE(GetDIPSState(url).has_value());
@@ -191,7 +200,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   UserActivationObserver observer1(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer1.Wait();
-  BlockUntilHelperProcessesPendingRequests();
 
   // One instance of user interaction is recorded.
   absl::optional<StateValue> state_1 = GetDIPSState(url);
@@ -205,7 +213,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest,
   UserActivationObserver observer_2(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer_2.Wait();
-  BlockUntilHelperProcessesPendingRequests();
 
   // A second, different, instance of user interaction is recorded for the same
   // site.
@@ -252,7 +259,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
       iframe, "document.cookie = 'foo=bar; SameSite=None; Secure';",
       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
-  BlockUntilHelperProcessesPendingRequests();
 
   // Nothing recorded for a.test (the top-level frame).
   absl::optional<StateValue> state_a = GetDIPSState(url_a);
@@ -271,7 +277,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  BlockUntilHelperProcessesPendingRequests();
 
   // One instance of site storage is recorded.
   absl::optional<StateValue> state_1 = GetDIPSState(url);
@@ -284,7 +289,6 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   SetDIPSTime(time + base::Seconds(10));
   // Navigate to the URL again to rewrite the cookie.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  BlockUntilHelperProcessesPendingRequests();
 
   // A second, different, instance of site storage is recorded for the same
   // site.
