@@ -16,7 +16,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/shared_password_controller.h"
@@ -705,10 +704,6 @@ BOOL gChromeContextMenuEnabled = NO;
   ios_web_view::WebViewBrowserState* browserState =
       ios_web_view::WebViewBrowserState::FromBrowserState(
           _webState->GetBrowserState());
-  language::IOSLanguageDetectionTabHelper::CreateForWebState(
-      _webState.get(),
-      ios_web_view::WebViewUrlLanguageHistogramFactory::GetForBrowserState(
-          browserState));
   auto translateClient = ios_web_view::WebViewTranslateClient::Create(
       browserState, _webState.get());
   return [[CWVTranslationController alloc]

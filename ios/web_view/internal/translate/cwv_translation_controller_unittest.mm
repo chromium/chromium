@@ -17,6 +17,7 @@
 #import "components/translate/core/browser/mock_translate_ranker.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -51,14 +52,17 @@ NSString* const kTestPageHost = @"www.chromium.org";
 
 class MockWebViewTranslateClient : public WebViewTranslateClient {
  public:
-  MockWebViewTranslateClient(PrefService* pref_service,
-                             translate::TranslateRanker* translate_ranker,
-                             language::LanguageModel* language_model,
-                             web::WebState* web_state,
-                             language::AcceptLanguagesService* accept_languages)
+  MockWebViewTranslateClient(
+      PrefService* pref_service,
+      translate::TranslateRanker* translate_ranker,
+      language::LanguageModel* language_model,
+      language::UrlLanguageHistogram* url_language_histogram,
+      web::WebState* web_state,
+      language::AcceptLanguagesService* accept_languages)
       : WebViewTranslateClient(pref_service,
                                translate_ranker,
                                language_model,
+                               url_language_histogram,
                                web_state,
                                accept_languages) {}
   MOCK_METHOD3(TranslatePage,
@@ -77,10 +81,6 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     web::WebState::CreateParams params(&browser_state_);
     web_state_ = web::WebState::Create(params);
     web_state_->SetKeepRenderProcessAlive(true);
-
-    language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        web_state_.get(),
-        /*url_language_histogram=*/nullptr);
 
     pref_service_.registry()->RegisterStringPref(
         language::prefs::kAcceptLanguages, "en");
@@ -121,8 +121,14 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
     accept_languages_ = std::make_unique<language::AcceptLanguagesService>(
         &pref_service_, language::prefs::kAcceptLanguages);
 
+    language::IOSLanguageDetectionTabHelper::CreateForWebState(
+        web_state_.get(),
+        /*url_language_histogram=*/nullptr, &language_detection_model_,
+        &pref_service_);
+
     auto translate_client = std::make_unique<MockWebViewTranslateClient>(
-        &pref_service_, &translate_ranker_, &language_model_, web_state_.get(),
+        &pref_service_, &translate_ranker_, &language_model_,
+        /*url_language_histogram=*/nullptr, web_state_.get(),
         accept_languages_.get());
     translate_client_ = translate_client.get();
 
@@ -155,6 +161,7 @@ class CWVTranslationControllerTest : public TestWithLocaleAndResources {
   MockWebViewTranslateClient* translate_client_;
   CWVTranslationController* translation_controller_;
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_;
+  translate::LanguageDetectionModel language_detection_model_;
 };
 
 // Tests CWVTranslationController invokes can offer delegate method.

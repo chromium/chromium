@@ -20,7 +20,6 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
-#import "components/translate/ios/browser/language_detection_controller.h"
 #include "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_controller.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
@@ -49,6 +48,7 @@ const char kAutoDetectionLanguage[] = "auto";
 IOSTranslateDriver::IOSTranslateDriver(
     web::WebState* web_state,
     TranslateManager* translate_manager,
+    language::UrlLanguageHistogram* url_language_histogram,
     LanguageDetectionModelService* language_detection_model_service)
     : web_state_(web_state),
       translate_manager_(translate_manager->GetWeakPtr()),
@@ -59,21 +59,18 @@ IOSTranslateDriver::IOSTranslateDriver(
   DCHECK(web_state_);
 
   web_state_->AddObserver(this);
+
   LanguageDetectionModel* language_detection_model = nullptr;
   if (language_detection_model_service_ && IsTFLiteLanguageDetectionEnabled()) {
     language_detection_model =
         language_detection_model_service_->GetLanguageDetectionModel();
   }
 
-  language::IOSLanguageDetectionTabHelper* language_detection_tab_helper =
-      language::IOSLanguageDetectionTabHelper::FromWebState(web_state_);
-  language_detection_tab_helper->AddObserver(this);
-
-  // Create the language detection controller.
-  language_detection_controller_ =
-      std::make_unique<LanguageDetectionController>(
-          web_state, language_detection_model,
-          translate_manager_->translate_client()->GetPrefs());
+  language::IOSLanguageDetectionTabHelper::CreateForWebState(
+      web_state_, url_language_histogram, language_detection_model,
+      translate_manager_->translate_client()->GetPrefs());
+  language::IOSLanguageDetectionTabHelper::FromWebState(web_state_)
+      ->AddObserver(this);
 
   TranslateController::CreateForWebState(
       web_state, JSTranslateWebFrameManagerFactory::GetInstance());

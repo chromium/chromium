@@ -34,6 +34,7 @@ class WebViewTranslateClient : public translate::TranslateClient {
       PrefService* pref_service,
       translate::TranslateRanker* translate_ranker,
       language::LanguageModel* language_model,
+      language::UrlLanguageHistogram* url_language_histogram,
       web::WebState* web_state,
       language::AcceptLanguagesService* accept_languages);
 

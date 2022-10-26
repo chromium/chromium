@@ -162,6 +162,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/reading_list/core",
     "//components/translate/core/browser",
+    "//components/translate/core/language_detection",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",

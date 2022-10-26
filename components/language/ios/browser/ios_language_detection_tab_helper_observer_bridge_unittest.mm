@@ -8,6 +8,10 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#import "base/test/task_environment.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest_mac.h"
@@ -45,8 +49,12 @@
 class IOSLanguageDetectionTabHelperObserverBridgeTest : public PlatformTest {
  protected:
   IOSLanguageDetectionTabHelperObserverBridgeTest() {
+    pref_service_.registry()->RegisterBooleanPref(
+        translate::prefs::kOfferTranslateEnabled, true);
+
     language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        &web_state_, /*url_language_histogram=*/nullptr);
+        &web_state_, /*url_language_histogram=*/nullptr,
+        /*language_detection_model=*/nullptr, &pref_service_);
     tab_helper_ =
         language::IOSLanguageDetectionTabHelper::FromWebState(&web_state_);
     observer_ = [[TestIOSLanguageDetectionTabHelperObserver alloc] init];
@@ -60,6 +68,8 @@ class IOSLanguageDetectionTabHelperObserverBridgeTest : public PlatformTest {
   TestIOSLanguageDetectionTabHelperObserver* observer() { return observer_; }
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   web::FakeWebState web_state_;
   language::IOSLanguageDetectionTabHelper* tab_helper_;
   TestIOSLanguageDetectionTabHelperObserver* observer_;

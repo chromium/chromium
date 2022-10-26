@@ -10,11 +10,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
-#import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/translate/core/browser/translate_metrics_logger.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
-#import "components/translate/ios/browser/language_detection_controller.h"
 #import "components/translate/ios/browser/language_detection_model_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -50,8 +48,6 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     web_state_.SetBrowserState(browser_state_.get());
-    language::IOSLanguageDetectionTabHelper::CreateForWebState(
-        &web_state_, /*url_language_histogram=*/nullptr);
     ChromeIOSTranslateClient::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
@@ -158,26 +154,4 @@ TEST_F(ChromeIOSTranslateClientTest, PageTranslationCorrectlyUpdatesMetrics) {
                                        base::HashMetricName("ko"), 1);
   histogram_tester_.ExpectUniqueSample("Translate.PageLoad.NumTranslations", 1,
                                        1);
-}
-
-TEST_F(ChromeIOSTranslateClientTest, TFLiteLanguageDetectionDurationRecorded) {
-  ChromeIOSTranslateClient* translate_client =
-      ChromeIOSTranslateClient::FromWebState(&web_state_);
-
-  histogram_tester_.ExpectTotalCount(
-      "Translate.LanguageDetection.TFLiteModelEvaluationDuration", 0);
-
-  translate::LanguageDetectionController* language_detection_controller =
-      translate_client->GetTranslateDriver()->language_detection_controller();
-  language_detection_controller->language_detection_model_->UpdateWithFile(
-      GetValidModelFile());
-  EXPECT_TRUE(
-      language_detection_controller->language_detection_model_->IsAvailable());
-
-  base::Value text_content("hello world");
-  language_detection_controller->OnTextRetrieved(true, "en", "en", GURL(""),
-                                                 &text_content);
-
-  histogram_tester_.ExpectTotalCount(
-      "Translate.LanguageDetection.TFLiteModelEvaluationDuration", 1);
 }

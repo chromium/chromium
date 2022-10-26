@@ -16,8 +16,13 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/language/core/browser",
+    "//components/prefs",
+    "//components/translate/core/browser:translate_pref_names",
     "//components/translate/core/common",
-    "//ios/web",
+    "//components/translate/core/language_detection",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//net",
   ]
 }
@@ -27,11 +32,17 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_language_detection_tab_helper_observer_bridge_unittest.mm",
+    "ios_language_detection_tab_helper_unittest.mm",
     "string_clipping_util_unittest.cc",
   ]
   deps = [
     ":browser",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/translate/core/browser:translate_pref_names",
     "//components/translate/core/common",
+    "//components/translate/core/language_detection",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]

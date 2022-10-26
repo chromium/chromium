@@ -12,9 +12,12 @@
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
-#include "components/translate/ios/browser/language_detection_controller.h"
 #include "components/translate/ios/browser/translate_controller.h"
 #include "ios/web/public/web_state_observer.h"
+
+namespace language {
+class UrlLanguageHistogram;
+}  // namespace language
 
 namespace web {
 class WebState;
@@ -35,6 +38,7 @@ class IOSTranslateDriver
   IOSTranslateDriver(
       web::WebState* web_state,
       TranslateManager* translate_manager,
+      language::UrlLanguageHistogram* url_language_histogram,
       LanguageDetectionModelService* language_detection_model_service);
 
   IOSTranslateDriver(const IOSTranslateDriver&) = delete;
@@ -42,10 +46,9 @@ class IOSTranslateDriver
 
   ~IOSTranslateDriver() override;
 
-  LanguageDetectionController* language_detection_controller() {
-    return language_detection_controller_.get();
+  TranslateController* translate_controller() {
+    return translate_controller_.get();
   }
-
   void OnLanguageModelFileAvailabilityChanged(bool available);
 
   // web::WebStateObserver methods.
@@ -106,7 +109,7 @@ class IOSTranslateDriver
   web::WebState* web_state_ = nullptr;
 
   base::WeakPtr<TranslateManager> translate_manager_;
-  std::unique_ptr<LanguageDetectionController> language_detection_controller_;
+  std::unique_ptr<TranslateController> translate_controller_;
 
   LanguageDetectionModelService* language_detection_model_service_ = nullptr;
 

@@ -528,6 +528,7 @@ test("ios_web_view_unittests") {
     "//components/sync:test_support",
     "//components/sync_device_info:test_support",
     "//components/translate/core/browser:test_support",
+    "//components/translate/core/language_detection",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",

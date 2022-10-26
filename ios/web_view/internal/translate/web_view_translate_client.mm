@@ -17,6 +17,7 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 #import "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
+#import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #import "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 #import "url/gurl.h"
 
@@ -36,6 +37,7 @@ std::unique_ptr<WebViewTranslateClient> WebViewTranslateClient::Create(
       WebViewTranslateRankerFactory::GetForBrowserState(browser_state),
       WebViewLanguageModelManagerFactory::GetForBrowserState(browser_state)
           ->GetPrimaryModel(),
+      WebViewUrlLanguageHistogramFactory::GetForBrowserState(browser_state),
       web_state,
       WebViewAcceptLanguagesServiceFactory::GetForBrowserState(browser_state));
 }
@@ -44,13 +46,15 @@ WebViewTranslateClient::WebViewTranslateClient(
     PrefService* pref_service,
     translate::TranslateRanker* translate_ranker,
     language::LanguageModel* language_model,
+    language::UrlLanguageHistogram* url_language_histogram,
     web::WebState* web_state,
     language::AcceptLanguagesService* accept_languages)
     : pref_service_(pref_service),
       translate_manager_(this, translate_ranker, language_model),
       translate_driver_(web_state,
                         &translate_manager_,
-                        /*translate_model_service*/ nullptr),
+                        url_language_histogram,
+                        /*translate_model_service=*/nullptr),
       accept_languages_(accept_languages) {
   DCHECK(pref_service_);
   DCHECK(accept_languages_);

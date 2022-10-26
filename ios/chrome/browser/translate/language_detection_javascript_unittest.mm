@@ -10,7 +10,7 @@
 #import "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
-#import "components/translate/ios/browser/language_detection_controller.h"
+#import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/common/string_util.h"
@@ -97,7 +97,7 @@ class JsLanguageDetectionManagerTest : public PlatformTest {
     NSString* script = [[NSString alloc]
         initWithFormat:
             @"__gCrWeb.languageDetection.getTextContent(document.body, %lu);",
-            translate::kMaxIndexChars];
+            language::kMaxIndexChars];
     InjectJsAndVerify(script, expected_text_content);
   }
 
@@ -227,7 +227,7 @@ TEST_F(JsLanguageDetectionManagerTest, ExtractWhitespace) {
 // kMaxIndexChars number of characters even if the text content is very large.
 TEST_F(JsLanguageDetectionManagerTest, LongTextContent) {
   // Very long string.
-  NSUInteger kLongStringLength = translate::kMaxIndexChars - 5;
+  NSUInteger kLongStringLength = language::kMaxIndexChars - 5;
   NSMutableString* long_string = [GetLongString(kLongStringLength) mutableCopy];
   [long_string appendString:@" b cdefghijklmnopqrstuvwxyz"];
 
@@ -239,9 +239,9 @@ TEST_F(JsLanguageDetectionManagerTest, LongTextContent) {
   NSString* script = [[NSString alloc]
       initWithFormat:
           @"__gCrWeb.languageDetection.getTextContent(document.body, %lu);",
-          translate::kMaxIndexChars];
+          language::kMaxIndexChars];
   NSString* result = web::test::ExecuteJavaScript(script, web_state());
-  EXPECT_EQ(translate::kMaxIndexChars, [result length]);
+  EXPECT_EQ(language::kMaxIndexChars, [result length]);
 }
 
 // Tests if `__gCrWeb.languageDetection.retrieveBufferedTextContent` correctly
