@@ -71,6 +71,8 @@ class TabDragContext : public TabDragContextBase {
   virtual void OwnDragController(
       std::unique_ptr<TabDragController> controller) = 0;
 
+  virtual views::ScrollView* GetScrollView() = 0;
+
   // Releases ownership of the current TabDragController.
   [[nodiscard]] virtual std::unique_ptr<TabDragController>
   ReleaseDragController() = 0;

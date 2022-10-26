@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -42,6 +43,29 @@ class TabDragContext;
 class TabSlotView;
 class TabStripModel;
 class WindowFinder;
+class TabStripScrollSession;
+
+class TabDragWithScrollManager {
+ public:
+  virtual ~TabDragWithScrollManager() = default;
+  // Check if the current DragState is `kDraggingTabs`.
+  virtual bool IsDraggingTabState() = 0;
+  // Handles dragging tabs while the tabs are attached. `just_attached` should
+  // be true iff this is the first call to MoveAttached after attaching. This
+  // also starts a scroll session if needed.
+  // TODO(crbug.com/1378679): Make this an observer of the scroll_session class.
+  virtual void MoveAttached(const gfx::Point& point_in_screen,
+                            bool just_attached) = 0;
+  // Returns a rect starting from the origin of the first dragged tab
+  // to the end of the last dragged tab.
+  virtual gfx::Rect GetEnclosingRectForDraggedTabs() = 0;
+  // Returns the point in screen when the last drag occurred.
+  virtual gfx::Point GetLastPointInScreen() = 0;
+  // Returns the `attached_context_`.
+  virtual views::View* GetAttachedContext() = 0;
+  // Get Scroll View from the `attached_context_`.
+  virtual views::ScrollView* GetScrollView() = 0;
+};
 
 // TabDragController is responsible for managing the tab dragging session. When
 // the user presses the mouse on a tab a new TabDragController is created and
@@ -54,7 +78,8 @@ class WindowFinder;
 // that the tabs should be moved out of the tab strip a new Browser is created
 // and RunMoveLoop() is invoked on the Widget to drag the browser around. This
 // is the default on aura.
-class TabDragController : public views::WidgetObserver {
+class TabDragController : public views::WidgetObserver,
+                          public TabDragWithScrollManager {
  public:
   // Amount above or below the tabstrip the user has to drag before detaching.
   static const int kTouchVerticalDetachMagnetism;
@@ -104,6 +129,12 @@ class TabDragController : public views::WidgetObserver {
   // Returns the pointer of |source_context_|.
   static TabDragContext* GetSourceContext();
 
+  enum class ScrollWithDragStrategy {
+    kConstantSpeed = 1,
+    kVariableSpeed = 2,
+    kDisabled = 3
+  };
+
   ui::mojom::DragEventSource event_source() const { return event_source_; }
 
   // See description above fields for details on these.
@@ -141,6 +172,10 @@ class TabDragController : public views::WidgetObserver {
 
   // Set a callback to be called when the nested drag loop finishes.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
+
+  TabStripScrollSession* GetTabStripScrollSessionForTesting() {
+    return tab_strip_scroll_session_.get();
+  }
 
  private:
   friend class TabDragControllerTest;
@@ -292,6 +327,15 @@ class TabDragController : public views::WidgetObserver {
   // in |GetWindowCreatePoint|. This should only be invoked from |Init|.
   void InitWindowCreatePoint();
 
+  // TabDragWithScrollManager:
+  gfx::Point GetLastPointInScreen() override;
+  views::View* GetAttachedContext() override;
+  views::ScrollView* GetScrollView() override;
+  bool IsDraggingTabState() override;
+  gfx::Rect GetEnclosingRectForDraggedTabs() override;
+  void MoveAttached(const gfx::Point& point_in_screen,
+                    bool just_attached) override;
+
   // Returns the point where a detached window should be created given the
   // current mouse position |origin|.
   gfx::Point GetWindowCreatePoint(const gfx::Point& origin) const;
@@ -325,10 +369,6 @@ class TabDragController : public views::WidgetObserver {
   // supported and no drag session is currently running.
   Liveness StartSystemDragAndDropSessionIfNecessary(
       const gfx::Point& point_in_screen);
-
-  // Handles dragging tabs while the tabs are attached. |just_attached| should
-  // be true iff this is the first call to MoveAttached after attaching.
-  void MoveAttached(const gfx::Point& point_in_screen, bool just_attached);
 
   // Returns the compatible TabDragContext to drag to at the
   // specified point (screen coordinates), or nullptr if there is none.
@@ -614,9 +654,9 @@ class TabDragController : public views::WidgetObserver {
   // a drag begins and ends within this same window.
   std::unique_ptr<views::ViewTracker> old_focused_view_tracker_;
 
-  // The horizontal position of the mouse cursor in screen coordinates at the
-  // time of the last re-order event.
-  int last_move_screen_loc_;
+  // The horizontal position of the mouse cursor in `attached_context_`
+  // coordinates at the time of the last re-order event.
+  int last_move_attached_context_loc_ = 0;
 
   // Timer used to bring the window under the cursor to front. If the user
   // stops moving the mouse for a brief time over a browser window, it is
@@ -653,7 +693,7 @@ class TabDragController : public views::WidgetObserver {
   DetachBehavior detach_behavior_;
 
   // Last location used in screen coordinates.
-  gfx::Point last_point_in_screen_;
+  gfx::Point last_point_in_screen_ = gfx::Point();
 
   // The following are needed when detaching into a browser
   // (|detach_into_browser_| is true).
@@ -726,6 +766,12 @@ class TabDragController : public views::WidgetObserver {
   // or not they destroy `this` might depend on platform behavior or other
   // external factors. Destruction while this is true will DCHECK.
   bool expect_stay_alive_ = false;
+  ScrollWithDragStrategy drag_with_scroll_mode_ =
+      ScrollWithDragStrategy::kDisabled;
+
+  // the scrolling session that handles scrolling when the tabs are dragged
+  // to the scrollable regions of the tab_strip.
+  std::unique_ptr<TabStripScrollSession> tab_strip_scroll_session_ = nullptr;
 
   base::WeakPtrFactory<TabDragController> weak_factory_{this};
 };

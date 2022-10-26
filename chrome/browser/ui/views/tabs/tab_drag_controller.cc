@@ -17,6 +17,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -55,6 +57,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_tracker.h"
@@ -433,7 +436,6 @@ TabDragController::TabDragController()
       can_release_capture_(true),
       offset_to_width_ratio_(0),
       old_focused_view_tracker_(std::make_unique<views::ViewTracker>()),
-      last_move_screen_loc_(0),
       source_view_index_(std::numeric_limits<size_t>::max()),
       initial_move_(true),
       detach_behavior_(DETACHABLE),
@@ -495,7 +497,6 @@ void TabDragController::Init(TabDragContext* source_context,
   event_source_ = event_source;
   mouse_offset_ = mouse_offset;
   last_point_in_screen_ = start_point_in_screen_;
-  last_move_screen_loc_ = start_point_in_screen_.x();
   // Detachable tabs are not supported on Mac if the window is an out-of-process
   // (remote_cocoa) window, i.e. a PWA window.
   // TODO(https://crbug.com/1076777): Make detachable tabs work in PWAs on Mac.
@@ -506,6 +507,12 @@ void TabDragController::Init(TabDragContext* source_context,
     detach_behavior_ = NOT_DETACHABLE;
   }
 #endif
+
+  gfx::Point start_point_in_source_context =
+      gfx::Point(start_point_in_screen_.x(), start_point_in_screen_.y());
+  views::View::ConvertPointFromScreen(source_context,
+                                      &start_point_in_source_context);
+  last_move_attached_context_loc_ = start_point_in_source_context.x();
 
   source_context_emptiness_tracker_ =
       std::make_unique<SourceTabStripEmptinessTracker>(
@@ -550,6 +557,33 @@ void TabDragController::Init(TabDragContext* source_context,
   }
 
   window_finder_ = std::make_unique<WindowFinder>();
+
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
+      base::FeatureList::IsEnabled(features::kScrollableTabStripWithDragging)) {
+    const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
+        features::kScrollableTabStripWithDragging,
+        features::kTabScrollingWithDraggingModeName, 1);
+
+    switch (drag_with_scroll_mode) {
+      case static_cast<int>(ScrollWithDragStrategy::kConstantSpeed):
+        drag_with_scroll_mode_ = ScrollWithDragStrategy::kConstantSpeed;
+        tab_strip_scroll_session_ =
+            std::make_unique<TabStripScrollSessionWithTimer>(
+                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
+                           kConstantTimer);
+        break;
+      case static_cast<int>(ScrollWithDragStrategy::kVariableSpeed):
+        drag_with_scroll_mode_ = ScrollWithDragStrategy::kVariableSpeed;
+        tab_strip_scroll_session_ =
+            std::make_unique<TabStripScrollSessionWithTimer>(
+                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
+                           kVariableTimer);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
 }
 
 // static
@@ -711,6 +745,9 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 
 void TabDragController::EndDrag(EndDragReason reason) {
   TRACE_EVENT0("views", "TabDragController::EndDrag");
+
+  if (tab_strip_scroll_session_)
+    tab_strip_scroll_session_->Stop();
 
   // Some drags need to react to the model being mutated before the model can
   // change its state.
@@ -1148,6 +1185,39 @@ TabDragController::StartSystemDragAndDropSessionIfNecessary(
   return ref ? Liveness::ALIVE : Liveness::DELETED;
 }
 
+gfx::Rect TabDragController::GetEnclosingRectForDraggedTabs() {
+  CHECK_GT(drag_data_.size(), 0UL);
+
+  const TabSlotView* const last_tab = drag_data_.back().attached_view;
+  const TabSlotView* const first_tab = drag_data_.front().attached_view;
+
+  DCHECK(attached_context_);
+  DCHECK(first_tab->parent() == attached_context_);
+
+  const gfx::Point right_point_of_last_tab = last_tab->bounds().bottom_right();
+  const gfx::Point left_point_of_first_tab = first_tab->bounds().origin();
+
+  return gfx::Rect(left_point_of_first_tab.x(), 0,
+                   right_point_of_last_tab.x() - left_point_of_first_tab.x(),
+                   0);
+}
+
+gfx::Point TabDragController::GetLastPointInScreen() {
+  return last_point_in_screen_;
+}
+
+bool TabDragController::IsDraggingTabState() {
+  return current_state_ == DragState::kDraggingTabs;
+}
+
+views::View* TabDragController::GetAttachedContext() {
+  return attached_context_;
+}
+
+views::ScrollView* TabDragController::GetScrollView() {
+  return attached_context_->GetScrollView();
+}
+
 void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
                                      bool just_attached) {
   DCHECK(attached_context_);
@@ -1162,13 +1232,20 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
     views[i] = drag_data_[i].attached_view;
 
   bool did_layout = false;
+
+  gfx::Point point_in_attached_context =
+      gfx::Point(point_in_screen.x(), point_in_screen.y());
+  views::View::ConvertPointFromScreen(attached_context_,
+                                      &point_in_attached_context);
+
   // Update the model, moving the WebContents from one index to another. Do this
   // only if we have moved a minimum distance since the last reorder (to prevent
   // jitter), or if this the first move and the tabs are not consecutive, or if
   // we have just attached to a new tabstrip and need to move to the correct
   // initial position.
   if (just_attached ||
-      (abs(point_in_screen.x() - last_move_screen_loc_) > threshold) ||
+      (abs(point_in_attached_context.x() - last_move_attached_context_loc_) >
+       threshold) ||
       (initial_move_ && !AreTabsConsecutive())) {
     TabStripModel* attached_model = attached_context_->GetTabStripModel();
     int to_index = attached_context_->GetInsertionIndexForDraggedBounds(
@@ -1199,12 +1276,16 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
 
     // Move may do nothing in certain situations (such as when dragging pinned
     // tabs). Make sure the tabstrip actually changed before updating
-    // last_move_screen_loc_.
+    // `last_move_attached_context_loc_`.
     if (index_of_last_item !=
         attached_model->GetIndexOfWebContents(last_contents)) {
-      last_move_screen_loc_ = point_in_screen.x();
+      last_move_attached_context_loc_ = point_in_attached_context.x();
     }
   }
+
+  // Let stop be handled by the callback of `tab_strip_scroll_session_`
+  if (tab_strip_scroll_session_)
+    tab_strip_scroll_session_->MaybeStart();
 
   if (!did_layout) {
     attached_context_->LayoutDraggedViewsAt(

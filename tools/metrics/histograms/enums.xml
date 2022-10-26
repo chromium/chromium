@@ -59108,6 +59108,7 @@ from previous Chrome versions.
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1053496936" label="WebViewSendVariationsHeaders:disabled"/>
+  <int value="-1053198238" label="kScrollableTabStripWithDragging:enabled"/>
   <int value="-1052831253" label="ChromeKioskEnableLacros:enabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
   <int value="-1052415111" label="malware-interstitial-v2"/>
@@ -63175,6 +63176,7 @@ from previous Chrome versions.
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399950951" label="AutofillTokenPrefixMatching:disabled"/>
+  <int value="1402940985" label="kScrollableTabStripWithDragging:disabled"/>
   <int value="1403195370" label="ArcCupsApi:enabled"/>
   <int value="1403792475" label="ShareMenu:enabled"/>
   <int value="1404726271" label="ReduceHorizontalFlingVelocity:enabled"/>

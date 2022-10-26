@@ -2601,6 +2601,14 @@ const char kTabScrollingButtonPositionName[] = "Tab Scrolling Buttons";
 const char kTabScrollingButtonPositionDescription[] =
     "Enables buttons on the tab strip to scroll left and right when full";
 
+const char kScrollableTabStripWithDraggingFlagId[] =
+    "scrollable-tabstrip-with-dragging";
+const char kScrollableTabStripWithDraggingName[] =
+    "Tab Scrolling With Dragging";
+const char kScrollableTabStripWithDraggingDescription[] =
+    "Scrolls the tabstrip while dragging tabs towards the end of the visible "
+    "view.";
+
 const char kSplitTabStripName[] = "Split TabStrip";
 const char kSplitTabStripDescription[] =
     "Splits pinned and unpinned tabs into separate TabStrips under the hood. "

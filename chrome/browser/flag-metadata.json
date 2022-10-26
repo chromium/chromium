@@ -6035,6 +6035,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "scrollable-tabstrip-with-dragging",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "shibalik" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "sct-auditing",
     "owners": [ "cthomp", "estark", "jdeblasio" ],
     "expiry_milestone": 92

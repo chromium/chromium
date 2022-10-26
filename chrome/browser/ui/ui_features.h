@@ -64,6 +64,9 @@ BASE_DECLARE_FEATURE(kQuickCommands);
 BASE_DECLARE_FEATURE(kScrollableTabStrip);
 extern const char kMinimumTabWidthFeatureParameterName[];
 
+BASE_DECLARE_FEATURE(kScrollableTabStripWithDragging);
+extern const char kTabScrollingWithDraggingModeName[];
+
 BASE_DECLARE_FEATURE(kSplitTabStrip);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);

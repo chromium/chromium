@@ -1661,6 +1661,19 @@ const FeatureEntry::FeatureVariation kTabScrollingButtonPositionVariations[] = {
     {" - on both sides of the tabstrip", kTabScrollingButtonPositionSplit,
      std::size(kTabScrollingButtonPositionSplit), nullptr}};
 
+const FeatureEntry::FeatureParam kTabScrollingWithDraggingWithConstantSpeed[] =
+    {{features::kTabScrollingWithDraggingModeName, "1"}};
+const FeatureEntry::FeatureParam kTabScrollingWithDraggingWithVariableSpeed[] =
+    {{features::kTabScrollingWithDraggingModeName, "2"}};
+
+const FeatureEntry::FeatureVariation kTabScrollingWithDraggingVariations[] = {
+    {" - tabs scrolling with constant speed",
+     kTabScrollingWithDraggingWithConstantSpeed,
+     std::size(kTabScrollingWithDraggingWithConstantSpeed), nullptr},
+    {" - tabs scrolling with variable speed region",
+     kTabScrollingWithDraggingWithVariableSpeed,
+     std::size(kTabScrollingWithDraggingWithVariableSpeed), nullptr}};
+
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdSmall[] = {
     {features::kTabSearchSearchThresholdName, "0.3"}};
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdMedium[] = {
@@ -6025,6 +6038,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabScrollingButtonPosition,
                                     kTabScrollingButtonPositionVariations,
                                     "TabScrollingButtonPosition")},
+
+    {flag_descriptions::kScrollableTabStripWithDraggingFlagId,
+     flag_descriptions::kScrollableTabStripWithDraggingName,
+     flag_descriptions::kScrollableTabStripWithDraggingDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStripWithDragging,
+                                    kTabScrollingWithDraggingVariations,
+                                    "TabScrollingWithDragging")},
 
     {"split-tabstrip", flag_descriptions::kSplitTabStripName,
      flag_descriptions::kSplitTabStripDescription, kOsDesktop,

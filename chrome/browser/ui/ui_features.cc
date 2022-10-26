@@ -173,6 +173,13 @@ BASE_FEATURE(kTabScrollingButtonPosition,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kTabScrollingButtonPositionParameterName[] = "buttonPosition";
 
+// Enables tab scrolling while dragging tabs in tabstrip
+// https://crbug.com/1145747
+BASE_FEATURE(kScrollableTabStripWithDragging,
+             "kScrollableTabStripWithDragging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kTabScrollingWithDraggingModeName[] = "tabScrollWithDragMode";
+
 // Splits pinned and unpinned tabs into separate TabStrips.
 // https://crbug.com/1346019
 BASE_FEATURE(kSplitTabStrip,
