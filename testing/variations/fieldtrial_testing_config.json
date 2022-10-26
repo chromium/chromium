@@ -12407,6 +12407,25 @@
             ]
         }
     ],
+    "WebRtcUnshipDeprecatedStats": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledV1",
+                    "enable_features": [
+                        "WebRtcUnshipDeprecatedStats"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIBrandingUpdate": [
         {
             "platforms": [
