@@ -419,7 +419,7 @@ class Libpci3Builder(InstrumentedPackageBuilder):
 class MesonBuilder(InstrumentedPackageBuilder):
   def build_and_install(self):
     meson_flags = {
-      'prefix': '/usr',
+      'prefix': '/',
       'libdir': self._libdir,
       'sbindir': 'bin',
     }
@@ -438,11 +438,6 @@ class MesonBuilder(InstrumentedPackageBuilder):
                     {**self._build_env, 'DESTDIR': self.temp_dir()},
                     cwd=self._source_dir)
     self.post_install()
-
-  # LIBDIR is always relative to the prefix (/usr), so that needs to be added
-  # unlike when using configure.
-  def temp_libdir(self):
-    return os.path.join(self.temp_dir(), 'usr', self._libdir)
 
 
 class CmakeBuilder(InstrumentedPackageBuilder):
