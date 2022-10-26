@@ -7,6 +7,7 @@ import 'chrome://intro/dice_app.js';
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
 import {IntroAppElement} from 'chrome://intro/dice_app.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestIntroBrowserProxy} from './test_intro_browser_proxy.js';
 
@@ -21,6 +22,7 @@ suite('DiceAppTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('intro-app');
     document.body.appendChild(testElement);
+    return waitBeforeNextRender(testElement);
   });
 
   teardown(function() {

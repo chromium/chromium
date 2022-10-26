@@ -22,6 +22,7 @@ export interface IntroAppElement {
   $: {
     acceptSignInButton: CrButtonElement,
     declineSignInButton: CrButtonElement,
+    safeZone: HTMLElement,
     viewManager: CrViewManagerElement,
   };
 }
@@ -75,11 +76,17 @@ export class IntroAppElement extends IntroAppElementBase {
   private benefitCards_: BenefitCard[];
   private browserProxy_: IntroBrowserProxy =
       IntroBrowserProxyImpl.getInstance();
+  private resizeObserver_: ResizeObserver|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-
+    this.addResizeObserver_();
     this.setupViewManager_();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.resizeObserver_!.disconnect();
   }
 
   private async setupViewManager_() {
@@ -101,6 +108,15 @@ export class IntroAppElement extends IntroAppElementBase {
 
   private onContinueWithoutAccountClick_() {
     this.browserProxy_.continueWithoutAccount();
+  }
+
+  private addResizeObserver_() {
+    const safeZone = this.$.safeZone;
+    this.resizeObserver_ = new ResizeObserver(() => {
+      this.shadowRoot!.querySelector('#safeZone')!.classList.toggle(
+          'division-line', safeZone.scrollHeight > safeZone.clientHeight);
+    });
+    this.resizeObserver_.observe(safeZone);
   }
 }
 
