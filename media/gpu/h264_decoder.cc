@@ -4,7 +4,6 @@
 
 #include "media/gpu/h264_decoder.h"
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -14,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "media/base/media_switches.h"
 #include "media/video/h264_level_limits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -531,8 +531,7 @@ void H264Decoder::ConstructReferencePicListsB() {
 
   // If lists identical, swap first two entries in RefPicList1 (spec 8.2.4.2.3)
   if (ref_pic_list_b1_.size() > 1 &&
-      std::equal(ref_pic_list_b0_.begin(), ref_pic_list_b0_.end(),
-                 ref_pic_list_b1_.begin()))
+      base::ranges::equal(ref_pic_list_b0_, ref_pic_list_b1_))
     std::swap(ref_pic_list_b1_[0], ref_pic_list_b1_[1]);
 }
 

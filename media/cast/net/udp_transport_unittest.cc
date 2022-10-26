@@ -4,13 +4,13 @@
 
 #include "media/cast/net/udp_transport_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -119,12 +119,10 @@ TEST_F(UdpTransportImplTest, PacketSenderSendAndReceive) {
   std::unique_ptr<Packet> received_packet =
       packet_receiver_on_sender.TakePacket();
   EXPECT_TRUE(received_packet);
-  EXPECT_TRUE(
-      std::equal(packet.begin(), packet.end(), received_packet->begin()));
+  EXPECT_TRUE(base::ranges::equal(packet, *received_packet));
   received_packet = packet_receiver_on_receiver.TakePacket();
   EXPECT_TRUE(received_packet);
-  EXPECT_TRUE(
-      std::equal(packet.begin(), packet.end(), (*received_packet).begin()));
+  EXPECT_TRUE(base::ranges::equal(packet, *received_packet));
 }
 
 // Test the sending/receiving functions as a UdpTransport.
@@ -153,12 +151,10 @@ TEST_F(UdpTransportImplTest, UdpTransportSendAndReceive) {
   std::unique_ptr<Packet> received_packet =
       packet_receiver_on_sender.TakePacket();
   EXPECT_TRUE(received_packet);
-  EXPECT_TRUE(
-      std::equal(packet.begin(), packet.end(), received_packet->begin()));
+  EXPECT_TRUE(base::ranges::equal(packet, *received_packet));
   received_packet = packet_receiver_on_receiver.TakePacket();
   EXPECT_TRUE(received_packet);
-  EXPECT_TRUE(
-      std::equal(packet.begin(), packet.end(), (*received_packet).begin()));
+  EXPECT_TRUE(base::ranges::equal(packet, *received_packet));
 }
 
 }  // namespace cast

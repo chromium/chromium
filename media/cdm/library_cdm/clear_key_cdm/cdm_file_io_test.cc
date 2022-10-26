@@ -4,6 +4,7 @@
 
 #include "media/cdm/library_cdm/clear_key_cdm/cdm_file_io_test.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/bind.h"

@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <sys/system_properties.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -20,6 +19,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
@@ -552,7 +552,7 @@ bool MediaDrmBridge::IsSecureCodecRequired() {
   // TODO(xhwang): This is specific to Widevine. See http://crbug.com/459400.
   // To fix it, we could call MediaCrypto.requiresSecureDecoderComponent().
   // See http://crbug.com/727918.
-  if (std::equal(scheme_uuid_.begin(), scheme_uuid_.end(), kWidevineUuid))
+  if (base::ranges::equal(scheme_uuid_, kWidevineUuid))
     return SECURITY_LEVEL_1 == GetSecurityLevel();
 
   // For other key systems, assume true.
