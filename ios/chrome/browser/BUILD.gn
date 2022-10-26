@@ -11,90 +11,12 @@ import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("browser") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_constants.cc",
-    "chrome_constants.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/autofill/core/browser",
-    "//components/autofill/ios/browser",
-    "//components/content_settings/core/browser",
-    "//components/dom_distiller/core",
-    "//components/feature_engagement",
-    "//components/flags_ui",
-    "//components/flags_ui:switches",
-    "//components/handoff",
-    "//components/invalidation/impl:impl",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
-    "//components/metrics",
-    "//components/metrics_services_manager",
-    "//components/net_log",
-    "//components/ntp_tiles",
-    "//components/omnibox/browser",
-    "//components/password_manager/core/common",
-    "//components/pref_registry",
-    "//components/prefs",
-    "//components/proxy_config",
-    "//components/proxy_config/ios",
-    "//components/reading_list/ios",
-    "//components/search_engines",
-    "//components/security_state/core",
-    "//components/send_tab_to_self",
-    "//components/strings",
-    "//components/sync",
-    "//components/translate/core/browser",
-    "//components/unified_consent",
-    "//components/url_formatter",
-    "//components/variations/net",
-    "//components/variations/service",
-    "//components/version_info",
-    "//components/webdata_services",
-    "//google_apis",
-    "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/complex_tasks",
-    "//ios/chrome/browser/content_settings",
-    "//ios/chrome/browser/download/background_service",
-    "//ios/chrome/browser/itunes_urls",
-    "//ios/chrome/browser/resources:settings_resources",
-    "//ios/chrome/browser/sync/glue",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/omnibox",
-    "//ios/chrome/browser/ui/toolbar_container:feature_flags",
-    "//ios/chrome/browser/url",
-    "//ios/chrome/browser/url:constants",
-    "//ios/chrome/browser/web:feature_flags",
-    "//ios/chrome/common",
-    "//ios/components/io_thread",
-    "//ios/components/webui:url_constants",
-    "//ios/net",
-    "//ios/public/provider/chrome/browser",
-    "//ios/web",
-    "//ios/web/common",
-    "//ios/web/public",
-    "//net",
-    "//rlz/buildflags",
-    "//url",
-  ]
+  # Will be removed later. Used for compatibility.
   public_deps = [
     ":utils",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs:pref_names",
-  ]
-  allow_circular_includes_from = [
-    "//ios/chrome/browser/sync/glue",
-    "//ios/chrome/browser/browser_state",
-  ]
-  frameworks = [
-    "UIKit.framework",
-    "Foundation.framework",
   ]
 }
 
@@ -109,31 +31,5 @@ source_set("utils") {
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/ui:feature_flags",
-  ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "url/url_util_unittest.mm" ]
-  deps = [
-    ":browser",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//components/proxy_config",
-    "//components/variations",
-    "//ios/chrome/browser/url",
-    "//ios/chrome/browser/url:constants",
-    "//ios/components/webui:url_constants",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/signin",
-    "//ios/web/public/test",
-    "//net",
-    "//net:test_support",
-    "//testing/gtest",
-    "//third_party/ocmock",
-    "//url",
   ]
 }

@@ -87,6 +87,7 @@ source_set("browser_state_impl") {
 
   deps = [
     ":browser_state",
+    ":constants",
     ":ios_thread",
     "//base",
     "//base:i18n",
@@ -199,6 +200,15 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync/glue",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

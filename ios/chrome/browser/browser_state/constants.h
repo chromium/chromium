@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CHROME_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_CHROME_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_STATE_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_BROWSER_STATE_CONSTANTS_H_
 
 // A handful of resource-like constants related to the Chrome application.
 
@@ -18,4 +18,4 @@ extern const base::FilePath::CharType kIOSChromeCRLSetFilename[];
 extern const base::FilePath::CharType
     kIOSChromeNetworkPersistentStateFilename[];
 
-#endif  // IOS_CHROME_BROWSER_CHROME_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CONSTANTS_H_

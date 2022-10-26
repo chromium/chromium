@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/chrome_constants.h"
+#include "ios/chrome/browser/browser_state/constants.h"
 
 const char kIOSChromeInitialBrowserState[] = "Default";
 const char kIOSChromeMultiBrowserStatePrefix[] = "Profile ";
