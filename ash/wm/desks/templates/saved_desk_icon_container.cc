@@ -4,18 +4,24 @@
 
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 
+#include <algorithm>
+#include <cstdint>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_icon_view.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -151,6 +157,16 @@ SavedDeskIconContainer::SavedDeskIconContainer() {
 
 SavedDeskIconContainer::~SavedDeskIconContainer() = default;
 
+void SavedDeskIconContainer::Layout() {
+  views::BoxLayoutView::Layout();
+
+  // At this point we can not guarantee whether the child icon view has done
+  // its icon loading yet, but `SortIconsAndUpdateOverflowIcon()` will be
+  // invoked as an `OnceCallback` to ensure the newly loaded default icon gets
+  // moved to the end, and the overflow icon updates correctly.
+  SortIconsAndUpdateOverflowIcon();
+}
+
 void SavedDeskIconContainer::PopulateIconContainerFromTemplate(
     const DeskTemplate* desk_template) {
   const app_restore::RestoreData* restore_data =
@@ -207,56 +223,43 @@ void SavedDeskIconContainer::PopulateIconContainerFromWindows(
       SortIconIdentifierToIconInfo(std::move(icon_identifier_to_icon_info)));
 }
 
-void SavedDeskIconContainer::Layout() {
-  views::BoxLayoutView::Layout();
+std::vector<SavedDeskIconView*> SavedDeskIconContainer::GetIconViews() const {
+  std::vector<SavedDeskIconView*> icon_views;
+  icon_views.reserve(children().size());
+  base::ranges::for_each(children(), [&icon_views](views::View* view) {
+    icon_views.emplace_back(static_cast<SavedDeskIconView*>(view));
+  });
 
-  // At this point we can not guarantee whether the child icon view has done
-  // its icon loading yet, but `SortIconsAndUpdateOverflowIcon()` will be
-  // invoked as an `OnceCallback` to ensure the newly loaded default icon gets
-  // moved to the end, and the overflow icon updates correctly.
+  DCHECK(!icon_views.empty());
+  DCHECK(overflow_icon_view_);
+  DCHECK(overflow_icon_view_ == icon_views.back());
+
+  return icon_views;
+}
+
+void SavedDeskIconContainer::OnViewLoaded(views::View* view_loaded) {
+  auto it = base::ranges::find(children(), view_loaded);
+  DCHECK(it != children().end());
+
   SortIconsAndUpdateOverflowIcon();
 }
 
 void SavedDeskIconContainer::SortIconsAndUpdateOverflowIcon() {
   if (overflow_icon_view_) {
-    MoveDefaultIconsToBack();
+    SortIcons();
     UpdateOverflowIcon();
   }
 }
 
-void SavedDeskIconContainer::MoveDefaultIconsToBack() {
-  auto& icon_views = children();
-  DCHECK(overflow_icon_view_);
-  DCHECK(overflow_icon_view_ == icon_views.back());
+void SavedDeskIconContainer::SortIcons() {
+  // Make a cope of child icon views and sort them using
+  // `SavedDeskIconView::key`.
+  std::vector<SavedDeskIconView*> icon_views = GetIconViews();
+  base::ranges::sort(icon_views, {}, &SavedDeskIconView::GetSortingKey);
 
-  // There is at least one overflow icon view in `icon_views`. Do not reorder if
-  // no non-overflow icons.
-  if (icon_views.size() < 2)
-    return;
-
-  // Do not reorder if no misplaced default icons.
-  bool misplaced_default_icon = false, seen_default_icon = false;
-  for (auto it = icon_views.begin(); it != icon_views.end() - 1; it++) {
-    SavedDeskIconView* icon_view = static_cast<SavedDeskIconView*>(*it);
-    if (icon_view->is_showing_default_icon()) {
-      seen_default_icon = true;
-    } else if (seen_default_icon) {
-      misplaced_default_icon = true;
-      break;
-    }
-  }
-  if (!misplaced_default_icon)
-    return;
-
-  // Move default icons to the back but before the overflow icon.
-  std::vector<views::View*> default_icons;
-  for (auto it = icon_views.begin(); *it != overflow_icon_view_; it++) {
-    if (static_cast<SavedDeskIconView*>(*it)->is_showing_default_icon())
-      default_icons.push_back(*it);
-  }
-  int i = default_icons.size() - 1, j = icon_views.size() - 2;
-  while (i >= 0)
-    ReorderChildView(default_icons[i--], j--);
+  // Update child views to their expected index.
+  for (size_t i = 0; i < icon_views.size(); i++)
+    ReorderChildView(icon_views[i], i);
 
   // Notify the a11y API so that the spoken feedback order matches the view
   // order.
@@ -264,26 +267,26 @@ void SavedDeskIconContainer::MoveDefaultIconsToBack() {
 }
 
 void SavedDeskIconContainer::UpdateOverflowIcon() {
-  auto& icon_views = children();
-  DCHECK(overflow_icon_view_);
-  DCHECK(overflow_icon_view_ == icon_views.back());
+  std::vector<SavedDeskIconView*> icon_views = GetIconViews();
 
+  int num_hidden_apps = uncreated_app_count_;
+  int num_shown_icons = icon_views.size() - 1;
+  SavedDeskIconView* overflow_icon_view =
+      static_cast<SavedDeskIconView*>(overflow_icon_view_);
   const int available_width = bounds().width();
   int used_width = -kIconSpacingDp;
-  for (auto it = icon_views.begin(); *it != overflow_icon_view_; it++)
-    used_width += (*it)->GetPreferredSize().width() + kIconSpacingDp;
-  int num_hidden_apps = uncreated_app_count_;
-  int num_shown_icons = children().size() - 1;
-  auto* overflow_icon_view =
-      static_cast<SavedDeskIconView*>(overflow_icon_view_);
+  base::ranges::for_each(
+      icon_views, [&used_width](SavedDeskIconView* icon_view) {
+        if (!icon_view->is_overflow_icon())
+          used_width += icon_view->GetPreferredSize().width() + kIconSpacingDp;
+      });
 
   // Go through all non-overflow icons from back to front, and hide if:
   //   1) needed width is greater than given;
   //   2) number of shown icons is greater than `kMaxIcons`;
   // During the scan, the width needed for overflow icon is adjusted based on
   // count, and visibility of all icons will be reset.
-  auto it = ++icon_views.rbegin();
-  while (it != icon_views.rend()) {
+  for (int i = static_cast<int>(icon_views.size()) - 2; i >= 0; i--) {
     int needed_overflow_icon_width = 0;
     if (overflow_icon_view->count()) {
       needed_overflow_icon_width =
@@ -291,17 +294,16 @@ void SavedDeskIconContainer::UpdateOverflowIcon() {
     }
     if (used_width + needed_overflow_icon_width > available_width ||
         num_shown_icons > kMaxIcons) {
-      if ((*it)->GetVisible())
-        (*it)->SetVisible(false);
-      used_width -= ((*it)->GetPreferredSize().width() + kIconSpacingDp);
-      num_hidden_apps += static_cast<SavedDeskIconView*>((*it))->count();
+      if (icon_views[i]->GetVisible())
+        icon_views[i]->SetVisible(false);
+      used_width -= icon_views[i]->GetPreferredSize().width() + kIconSpacingDp;
+      num_hidden_apps += icon_views[i]->count();
       num_shown_icons--;
       overflow_icon_view->UpdateCount(num_hidden_apps);
     } else {
-      if (!((*it)->GetVisible()))
-        (*it)->SetVisible(true);
+      if (!icon_views[i]->GetVisible())
+        icon_views[i]->SetVisible(true);
     }
-    it++;
   }
 
   if (num_hidden_apps == 0)
@@ -320,35 +322,38 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
 
   auto* delegate = Shell::Get()->desks_templates_delegate();
   uncreated_app_count_ = 0;
-  for (const auto& [icon_identifier, icon_info] :
-       icon_identifier_to_icon_info) {
+  for (size_t i = 0; i < icon_identifier_to_icon_info.size(); i++) {
+    const auto& [icon_identifier, icon_info] = icon_identifier_to_icon_info[i];
     // Don't create new icons if the app is unavailable (uninstalled or
     // unsupported). Count the amount of skipped apps so we know what to display
     // on the overflow. In addition, dialog popups may show incognito window
     // icons. Saved desks will not have incognito window icon identifiers and
-    // will not count them here.
+    // will not count them here. For `sorting_key`, use `i` because we would
+    // like to preserve the original order.
     if (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
         delegate->IsAppAvailable(icon_info.app_id)) {
       AddChildView(std::make_unique<SavedDeskIconView>(
-          incognito_window_color_provider_, icon_identifier,
-          icon_info.app_title, icon_info.count,
+          /*incognito_window_color_provider=*/incognito_window_color_provider_,
+          /*icon_identifier=*/icon_identifier,
+          /*app_title=*/icon_info.app_title,
+          /*count=*/icon_info.count,
           /*show_plus=*/true,
-          base::BindOnce(
-              &SavedDeskIconContainer::SortIconsAndUpdateOverflowIcon,
-              weak_ptr_factory_.GetWeakPtr())));
+          /*sorting_key=*/i,
+          /*on_icon_loaded=*/
+          base::BindOnce(&SavedDeskIconContainer::OnViewLoaded,
+                         weak_ptr_factory_.GetWeakPtr())));
     } else {
       uncreated_app_count_ += icon_info.count;
     }
   }
 
-  // If no child views were added, the icon container contains only unavailable
-  // apps so we should *not* show plus.
-  const bool show_plus = !children().empty();
-
   // Always add a `SavedDeskIconView` overflow counter in case the width
-  // of the view changes. It will be hidden if not needed.
+  // of the view changes. It will be hidden if not needed. For `show_plus`, If
+  // no child views were added, the icon container contains only unavailable
+  // apps so we should *not* show plus.
   overflow_icon_view_ = AddChildView(std::make_unique<SavedDeskIconView>(
-      /*count=*/uncreated_app_count_, show_plus));
+      /*count=*/uncreated_app_count_,
+      /*show_plus=*/!children().empty()));
 }
 
 BEGIN_METADATA(SavedDeskIconContainer, views::BoxLayoutView)

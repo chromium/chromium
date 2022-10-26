@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_VIEW_H_
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_VIEW_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -36,13 +37,16 @@ class SavedDeskIconView : public views::View {
   // determines what views need to be created and starts loading the icon
   // specified by `icon_identifier`. `show_plus` indicates whether to show "+"
   // before the count for normal overflow icons, or none for all unavailable
-  // icons. `on_icon_loaded` is the callback for updating the icon container.
+  // icons. `sorting_key` is the key that is used for sorting by the icon
+  // container. `on_icon_loaded` is the callback for updating the icon
+  // container.
   SavedDeskIconView(const ui::ColorProvider* incognito_window_color_provider,
                     const std::string& icon_identifier,
                     const std::string& app_title,
                     int count,
                     bool show_plus,
-                    base::OnceCallback<void()> on_icon_loaded);
+                    size_t sorting_key,
+                    base::OnceCallback<void(views::View*)> on_icon_loaded);
 
   // Create an icon view that only has a count and an optional plus.
   SavedDeskIconView(int count, bool show_plus);
@@ -71,14 +75,22 @@ class SavedDeskIconView : public views::View {
 
   bool is_overflow_icon() const { return icon_identifier_.empty(); }
 
-  // Sets `count_` to `count` and updates the `count_label_`. Please note,
-  // currently it does not support update on non-overflow icon.
-  void UpdateCount(int count);
-
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void OnThemeChanged() override;
+
+  // Sorting key that is used by the container for sorting all icons. Icon with
+  // higher keys will be displayed at the end in the icon container.
+  // Values are designed as follows:
+  //   - Non-default icon: index from its original order, starting from 0
+  //   - Default icon:  `kDefaultIconSortingKey`
+  //   - Overflow icon: `kOverflowIconSortingKey`
+  size_t GetSortingKey() const;
+
+  // Sets `count_` to `count` and updates the `count_label_`. Please note,
+  // currently it does not support update on non-overflow icon.
+  void UpdateCount(int count);
 
  private:
   friend class SavedDeskIconViewTestApi;
@@ -110,9 +122,12 @@ class SavedDeskIconView : public views::View {
   // True if this icon view is showing the default (fallback) icon.
   bool is_showing_default_icon_ = false;
 
+  // Sorting key that is used for sorting icons in the container.
+  size_t sorting_key_;
+
   // Callback from the icon container that updates the icon order and overflow
   // icon.
-  base::OnceCallback<void()> on_icon_loaded_;
+  base::OnceCallback<void(views::View*)> on_icon_loaded_;
 
   // Owned by the views hierarchy.
   views::Label* count_label_ = nullptr;

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/wm/desks/templates/saved_desk_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -22,10 +23,10 @@ namespace ash {
 
 class DeskTemplate;
 
-// This class for determines which app icons/favicons to show for a desk
-// template and creates the according SavedDeskIconView's for them.
-// The last SavedDeskIconView in the layout is used for storing the
-// overflow count of icons. Not every view in the container is visible.
+// This class determines which app icons/favicons to show for a saved desk and
+// creates the according SavedDeskIconView's. The last SavedDeskIconView in the
+// layout is used for storing the overflow count of icons. Not every view in the
+// container is visible.
 //   _______________________________________________________________________
 //   |  _________  _________   _________________   _________   _________   |
 //   |  |       |  |       |   |       |       |   |       |   |       |   |
@@ -60,6 +61,9 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
   // The maximum number of icons that can be displayed.
   static constexpr int kMaxIcons = 4;
 
+  // views::BoxLayoutView:
+  void Layout() override;
+
   // Given a saved desk, determine which icons to show in this and create
   // the according SavedDeskIconView's.
   void PopulateIconContainerFromTemplate(const DeskTemplate* desk_template);
@@ -69,18 +73,22 @@ class SavedDeskIconContainer : public views::BoxLayoutView {
   void PopulateIconContainerFromWindows(
       const std::vector<aura::Window*>& windows);
 
-  // views::BoxLayoutView:
-  void Layout() override;
-
  private:
-  // Sort icons to the expected order. When it's necessary or `force_update` is
-  // true, update the overflow icon.
+  // Return a copy of child icon views.
+  std::vector<SavedDeskIconView*> GetIconViews() const;
+
+  // Function that runs when a child view finishes loading its icon. Sort child
+  // icons and the overflow icon.
+  void OnViewLoaded(views::View* icon_view);
+
+  // Sort child icons and update overflow icon.
   void SortIconsAndUpdateOverflowIcon();
 
-  // Move all default icons to the back but before the overflow icon. Sorting is
-  // stable for non-default icons, i.e. it preserves the original order. Return
-  // true if any icons are moved to the end; if no change, return false.
-  void MoveDefaultIconsToBack();
+  // Sort all child icons using its key. Please note, the overflow icon will
+  // always stay at the end. Default icons will always come after non-default
+  // icons. The order of non-default icons will be stable, i.e. it preserves the
+  // original order.
+  void SortIcons();
 
   // Update icon visibility and the overflow icon depending on the available
   // space.
