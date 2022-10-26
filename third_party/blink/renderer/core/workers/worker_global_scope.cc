@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -584,7 +585,12 @@ WorkerGlobalScope::WorkerGlobalScope(
               thread->GetIsolate(),
               (creation_params->agent_cluster_id.is_empty()
                    ? base::UnguessableToken::Create()
-                   : creation_params->agent_cluster_id)),
+                   : creation_params->agent_cluster_id),
+              base::FeatureList::IsEnabled(
+                  scheduler::kMicrotaskQueuePerWorkerAgent)
+                  ? v8::MicrotaskQueue::New(thread->GetIsolate(),
+                                            v8::MicrotasksPolicy::kScoped)
+                  : nullptr),
           creation_params->global_scope_name,
           creation_params->parent_devtools_token,
           creation_params->v8_cache_options,

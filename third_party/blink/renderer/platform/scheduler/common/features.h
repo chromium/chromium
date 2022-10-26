@@ -187,6 +187,10 @@ BASE_FEATURE(kMicrotaskQueuePerAudioWorklet,
              "BlinkSchedulerMicroTaskQueuePerAudioWorklet",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMicrotaskQueuePerWorkerAgent,
+             "BlinkSchedulerMicroTaskQueuePerWorkerAgent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace scheduler
 }  // namespace blink
 
