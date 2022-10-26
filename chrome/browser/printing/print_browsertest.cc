@@ -2950,6 +2950,8 @@ class SystemAccessProcessSandboxedServicePrintBrowserTest
   bool SandboxService() override { return true; }
 };
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+
 class SystemAccessProcessServicePrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
       public testing::WithParamInterface<bool> {
@@ -2964,6 +2966,8 @@ class SystemAccessProcessServicePrintBrowserTest
 INSTANTIATE_TEST_SUITE_P(All,
                          SystemAccessProcessServicePrintBrowserTest,
                          testing::Bool());
+
+#endif
 
 class SystemAccessProcessInBrowserPrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase {
