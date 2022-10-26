@@ -149,9 +149,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize"
-    units="bytes" expires_after="2022-12-08">
-  <owner>horo@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
+    units="bytes" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The length of cached metadata of scripts which are stored to the
@@ -161,9 +160,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.CacheStorageInstalledScript.CachedMetadataTotalSize"
-    units="bytes" expires_after="2023-04-23">
-  <owner>horo@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
+    units="bytes" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The total length of cached metadata of scripts which are stored to the
@@ -172,9 +170,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.CacheStorageInstalledScript.Count" units="count"
-    expires_after="2023-04-16">
-  <owner>horo@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
+    expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
   <summary>
     The counts of scripts which are stored to the CacheStorage by the installing
     service worker.
@@ -182,9 +180,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.CacheStorageInstalledScript.ScriptSize"
-    units="bytes" expires_after="2022-12-08">
-  <owner>horo@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
+    units="bytes" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The length of scripts which are stored to the CacheStorage by the installing
@@ -193,9 +190,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.CacheStorageInstalledScript.ScriptTotalSize"
-    units="bytes" expires_after="2022-12-08">
-  <owner>horo@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
+    units="bytes" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The total length of scripts which are stored to the CacheStorage by the
