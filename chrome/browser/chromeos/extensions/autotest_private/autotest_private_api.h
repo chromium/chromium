@@ -1716,6 +1716,17 @@ class AutotestPrivateRemoveFuseboxTempDirFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateRemoveComponentExtensionFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.removeComponentExtension",
+                             AUTOTESTPRIVATE_REMOVECOMPONENTEXTENSION)
+
+ private:
+  ~AutotestPrivateRemoveComponentExtensionFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

@@ -114,6 +114,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
@@ -6226,6 +6227,27 @@ AutotestPrivateRemoveFuseboxTempDirFunction::Run() {
     return RespondNow(Error("Fusebox server instance not available"));
   }
   server->RemoveTempDir(params->fusebox_file_path);
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateRemoveComponentExtension
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateRemoveComponentExtensionFunction::
+    ~AutotestPrivateRemoveComponentExtensionFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateRemoveComponentExtensionFunction::Run() {
+  std::unique_ptr<api::autotest_private::RemoveComponentExtension::Params>
+      params(api::autotest_private::RemoveComponentExtension::Params::Create(
+          args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(browser_context())->extension_service();
+  extension_service->component_loader()->Remove(params->extension_id);
+
   return RespondNow(NoArguments());
 }
 

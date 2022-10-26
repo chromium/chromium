@@ -36272,6 +36272,7 @@ Called by update_extension_histograms.py.-->
   <int value="1726" label="PASSWORDSPRIVATE_SHOWADDSHORTCUTDIALOG"/>
   <int value="1727" label="ACTION_GETBADGETEXTCOLOR"/>
   <int value="1728" label="ACTION_SETBADGETEXTCOLOR"/>
+  <int value="1729" label="AUTOTESTPRIVATE_REMOVECOMPONENTEXTENSION"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -1789,6 +1789,7 @@ enum HistogramValue {
   PASSWORDSPRIVATE_SHOWADDSHORTCUTDIALOG = 1726,
   ACTION_GETBADGETEXTCOLOR = 1727,
   ACTION_SETBADGETEXTCOLOR = 1728,
+  AUTOTESTPRIVATE_REMOVECOMPONENTEXTENSION = 1729,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

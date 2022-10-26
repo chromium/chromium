@@ -1499,6 +1499,10 @@ namespace autotestPrivate {
     [supportsPromises] static void removeFuseboxTempDir(
         DOMString fuseboxFilePath,
         RemoveFuseboxTempDirCallback callback);
+
+    // Remove the specified component extension.
+    [supportsPromises] static void removeComponentExtension(
+        DOMString extensionId, VoidCallback callback);
   };
 
   interface Events {
