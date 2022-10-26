@@ -25,10 +25,6 @@ namespace syncer {
 class ModelTypeChangeProcessor;
 }  // namespace syncer
 
-namespace sync_pb {
-class WorkspaceDeskSpecifics;
-}  // namespace sync_pb
-
 namespace ash {
 class DeskTemplate;
 enum class DeskTemplateType;
@@ -46,10 +42,6 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   DeskSyncBridge(const DeskSyncBridge&) = delete;
   DeskSyncBridge& operator=(const DeskSyncBridge&) = delete;
   ~DeskSyncBridge() override;
-
-  // Converts a WorkspaceDesk proto to its corresponding ash::DeskTemplate.
-  static std::unique_ptr<ash::DeskTemplate> FromSyncProto(
-      const sync_pb::WorkspaceDeskSpecifics& pb_entry);
 
   // syncer::ModelTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -94,11 +86,6 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
       const base::GUID& uuid) const override;
 
   // Other helper methods.
-
-  // Converts an ash::DeskTemplate to its corresponding WorkspaceDesk proto.
-  sync_pb::WorkspaceDeskSpecifics ToSyncProto(
-      const ash::DeskTemplate* desk_template);
-
   bool HasUuid(const base::GUID& uuid) const;
 
   const ash::DeskTemplate* GetUserEntryByUUID(const base::GUID& uuid) const;

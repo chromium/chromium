@@ -54,27 +54,14 @@ base::Value SerializeDeskTemplateAsPolicy(
     const ash::DeskTemplate* desk_template,
     apps::AppRegistryCache* app_cache);
 
-// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
-// This value is cast to int32_t by the caller to be assigned to the
-// `disposition` field in AppRestoreData.
-WindowOpenDisposition ToBaseWindowOpenDisposition(
-    SyncWindowOpenDisposition disposition);
+// Converts a WorkspaceDesk proto to its corresponding ash::DeskTemplate
+std::unique_ptr<ash::DeskTemplate> FromSyncProto(
+    const sync_pb::WorkspaceDeskSpecifics& pb_entry);
 
-// Convert sync proto WindowOpenDisposition to base's WindowOpenDisposition.
-// This value is cast to int32_t by the caller to be assigned to the
-// `disposition` field in AppRestoreData.
-SyncWindowOpenDisposition FromBaseWindowOpenDisposition(
-    WindowOpenDisposition disposition);
-
-// Convert from apps::LaunchContainer to sunc proto LaunchContainer.
-// Assumes caller has cast `container` from int32_t to
-// apps::LaunchContainer.
-SyncLaunchContainer FromLaunchContainer(apps::LaunchContainer container);
-
-// Convert sync proto LaunchContainer to apps::LaunchContainer
-// used in the AppRestoreData `container` field.  This value is cast to
-// int32_t by the caller to be assigned to the field in AppRestoreData.
-apps::LaunchContainer ToLaunchContainer(SyncLaunchContainer container);
+// Converts an ash::DeskTemplate to its corresponding WorkspaceDesk proto.
+sync_pb::WorkspaceDeskSpecifics ToSyncProto(
+    const ash::DeskTemplate* desk_template,
+    apps::AppRegistryCache* app_cache);
 
 }  // namespace desk_template_conversion
 

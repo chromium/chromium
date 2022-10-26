@@ -31,11 +31,11 @@ base::Value PerformPolicyRoundtrip(const base::Value& expected,
   EXPECT_TRUE(policy_dt != nullptr);
 
   sync_pb::WorkspaceDeskSpecifics proto_desk =
-      bridge->ToSyncProto(policy_dt.get());
+      desk_template_conversion::ToSyncProto(policy_dt.get(), cache);
 
   // Convert back to original format.
   return desk_template_conversion::SerializeDeskTemplateAsPolicy(
-      DeskSyncBridge::FromSyncProto(proto_desk).get(), cache);
+      desk_template_conversion::FromSyncProto(proto_desk).get(), cache);
 }
 
 }  // namespace

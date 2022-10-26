@@ -615,7 +615,8 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   EntityData MakeEntityData(const DeskTemplate& desk_template) {
-    return MakeEntityData(bridge()->ToSyncProto(&desk_template));
+    return MakeEntityData(
+        desk_template_conversion::ToSyncProto(&desk_template, app_cache()));
   }
 
   // Helper method to reduce duplicated code between tests. Wraps the given
@@ -638,11 +639,11 @@ class DeskSyncBridgeTest : public testing::Test {
 
   void AddTwoTemplates() {
     auto desk_template1 =
-        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+        desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeTestUuid(TestUuidId(1)).AsLowercaseString(), "template 1",
             AdvanceAndGetTime()));
     auto desk_template2 =
-        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+        desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeTestUuid(TestUuidId(2)).AsLowercaseString(), "template 2",
             AdvanceAndGetTime()));
 
@@ -671,11 +672,11 @@ class DeskSyncBridgeTest : public testing::Test {
     // These two templates will have new UUIDs but with names that collides with
     // "template 1"
     auto desk_template1 =
-        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+        desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeTestUuid(TestUuidId(8)).AsLowercaseString(), "template 1",
             AdvanceAndGetTime()));
     auto desk_template2 =
-        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+        desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeTestUuid(TestUuidId(9)).AsLowercaseString(), "template 1",
             AdvanceAndGetTime()));
 
@@ -702,7 +703,7 @@ class DeskSyncBridgeTest : public testing::Test {
 
   void SetOneAdminTemplate() {
     auto admin_template1 =
-        DeskSyncBridge::FromSyncProto(ExampleWorkspaceDeskSpecifics(
+        desk_template_conversion::FromSyncProto(ExampleWorkspaceDeskSpecifics(
             MakeAdminTestUuid(TestUuidId(1)).AsLowercaseString(),
             "admin template 1", AdvanceAndGetTime()));
 
@@ -759,12 +760,12 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateConversionShouldBeLossless) {
       MakeTestUuid(TestUuidId(1)).AsLowercaseString(), "template 1");
 
   std::unique_ptr<DeskTemplate> desk_template =
-      DeskSyncBridge::FromSyncProto(desk_proto);
+      desk_template_conversion::FromSyncProto(desk_proto);
   WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
 
   std::unique_ptr<DeskTemplate> converted_desk_template =
-      DeskSyncBridge::FromSyncProto(converted_desk_proto);
+      desk_template_conversion::FromSyncProto(converted_desk_proto);
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
 }
@@ -776,7 +777,7 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateJsonConversionShouldBeLossless) {
       MakeTestUuid(TestUuidId(1)).AsLowercaseString(), "template 1");
 
   std::unique_ptr<DeskTemplate> desk_template =
-      DeskSyncBridge::FromSyncProto(desk_proto);
+      desk_template_conversion::FromSyncProto(desk_proto);
 
   base::Value template_value =
       desk_template_conversion::SerializeDeskTemplateAsPolicy(
@@ -790,7 +791,8 @@ TEST_F(DeskSyncBridgeTest, DeskTemplateJsonConversionShouldBeLossless) {
             converted_desk_template->desk_restore_data()->ConvertToValue());
 
   WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(converted_desk_template.get());
+      desk_template_conversion::ToSyncProto(converted_desk_template.get(),
+                                            app_cache());
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
 }
@@ -822,10 +824,10 @@ TEST_F(DeskSyncBridgeTest, AppNameConversionShouldBeLossless) {
       ->set_app_name("app name 5");
 
   std::unique_ptr<DeskTemplate> desk_template =
-      DeskSyncBridge::FromSyncProto(desk_proto);
+      desk_template_conversion::FromSyncProto(desk_proto);
 
   WorkspaceDeskSpecifics converted_desk_proto =
-      bridge()->ToSyncProto(desk_template.get());
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
 
   EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
 }
@@ -845,10 +847,10 @@ TEST_F(DeskSyncBridgeTest, WindowOpenDispositionConversionShouldBeLossless) {
         ->set_disposition(test_value);
 
     std::unique_ptr<DeskTemplate> desk_template =
-        DeskSyncBridge::FromSyncProto(desk_proto);
+        desk_template_conversion::FromSyncProto(desk_proto);
 
     WorkspaceDeskSpecifics converted_desk_proto =
-        bridge()->ToSyncProto(desk_template.get());
+        desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
 
     EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
   }
@@ -869,10 +871,10 @@ TEST_F(DeskSyncBridgeTest, LaunchContainerConversionShouldBeLossless) {
         ->set_container(test_value);
 
     std::unique_ptr<DeskTemplate> desk_template =
-        DeskSyncBridge::FromSyncProto(desk_proto);
+        desk_template_conversion::FromSyncProto(desk_proto);
 
     WorkspaceDeskSpecifics converted_desk_proto =
-        bridge()->ToSyncProto(desk_template.get());
+        desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
 
     EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
   }
@@ -904,10 +906,10 @@ TEST_F(DeskSyncBridgeTest, TabGroupInfoConversionShouldBeLossless) {
         test_color_value);
 
     std::unique_ptr<DeskTemplate> desk_template =
-        DeskSyncBridge::FromSyncProto(desk_proto);
+        desk_template_conversion::FromSyncProto(desk_proto);
 
     WorkspaceDeskSpecifics converted_desk_proto =
-        bridge()->ToSyncProto(desk_template.get());
+        desk_template_conversion::ToSyncProto(desk_template.get(), app_cache());
 
     EXPECT_THAT(converted_desk_proto, EqualsSpecifics(desk_proto));
 
@@ -933,9 +935,10 @@ TEST_F(DeskSyncBridgeTest, EnsureAshBrowserWindowsSavedProperly) {
                                    GURL(base::StringPrintf(kTestUrlFormat, 2))})
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreateBrowserTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time())));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreateBrowserTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureLacrosBrowserWindowsCanBeSavedProperly) {
@@ -953,9 +956,10 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosBrowserWindowsCanBeSavedProperly) {
                                  GURL(base::StringPrintf(kTestUrlFormat, 2))})
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreateBrowserTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time())));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreateBrowserTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsurePwaInAshChromeCanBeSavedProperly) {
@@ -969,9 +973,10 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInAshChromeCanBeSavedProperly) {
                               base::StringPrintf(kTestUrlFormat, 1))
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreatePwaTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time())));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreatePwaTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsurePwaInLacrosChromeCanBeSavedProperly) {
@@ -985,9 +990,10 @@ TEST_F(DeskSyncBridgeTest, EnsurePwaInLacrosChromeCanBeSavedProperly) {
                                  base::StringPrintf(kTestUrlFormat, 1))
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreatePwaTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time())));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreatePwaTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time())));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
@@ -1001,10 +1007,11 @@ TEST_F(DeskSyncBridgeTest, EnsureChromeAppCanBeSavedProperly) {
                               desk_test_util::kTestChromeAppId)
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time(),
-                  kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time(),
+          kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
@@ -1018,10 +1025,11 @@ TEST_F(DeskSyncBridgeTest, EnsureLacrosChromeAppCanBeSavedProperly) {
                               desk_test_util::kTestLacrosChromeAppId)
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time(),
-                  kChromeAppWindowId, desk_test_util::kTestLacrosChromeAppId)));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time(),
+          kChromeAppWindowId, desk_test_util::kTestLacrosChromeAppId)));
 }
 
 TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
@@ -1038,10 +1046,11 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
                                desk_test_util::kTestUnsupportedAppId)
           .Build();
 
-  EXPECT_THAT(bridge()->ToSyncProto(desk_template.get()),
-              EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
-                  kDefaultTemplateIndex, desk_template->created_time(),
-                  kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
+  EXPECT_THAT(
+      desk_template_conversion::ToSyncProto(desk_template.get(), app_cache()),
+      EqualsSpecifics(CreateChromeAppTemplateExpectedValue(
+          kDefaultTemplateIndex, desk_template->created_time(),
+          kChromeAppWindowId, desk_test_util::kTestChromeAppId)));
 }
 
 // Tests that the sync bridge appropriately handles explicitly unknown desk type
@@ -1049,7 +1058,7 @@ TEST_F(DeskSyncBridgeTest, EnsureUnsupportedAppCanBeIgnored) {
 TEST_F(DeskSyncBridgeTest, EnsureGracefulHandlingOfUnknownDeskTypes) {
   WorkspaceDeskSpecifics unknown_desk = CreateUnknownDeskType();
   std::unique_ptr<DeskTemplate> desk_template =
-      DeskSyncBridge::FromSyncProto(unknown_desk);
+      desk_template_conversion::FromSyncProto(unknown_desk);
 
   EXPECT_EQ(desk_template, nullptr);
 }
@@ -1059,7 +1068,7 @@ TEST_F(DeskSyncBridgeTest, EnsureGracefulHandlingOfUnknownDeskTypes) {
 TEST_F(DeskSyncBridgeTest, EnsureHandlingOfMissingDeskTypes) {
   WorkspaceDeskSpecifics unknown_desk = CreateWorkspaceDeskWithoutDeskType();
   std::unique_ptr<DeskTemplate> desk_template =
-      DeskSyncBridge::FromSyncProto(unknown_desk);
+      desk_template_conversion::FromSyncProto(unknown_desk);
 
   EXPECT_EQ(desk_template->type(), DeskType::kTemplate);
 }
@@ -1096,15 +1105,17 @@ TEST_F(DeskSyncBridgeTest, InitializationWithLocalDataAndMetadata) {
 
   // Verify both local specifics are loaded correctly.
   EXPECT_EQ(template1.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template1.uuid())))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template1.uuid())),
+                app_cache())
                 .SerializeAsString());
 
   EXPECT_EQ(template2.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template2.uuid())))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template2.uuid())),
+                app_cache())
                 .SerializeAsString());
 }
 
@@ -1156,7 +1167,7 @@ TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {
 
   base::RunLoop loop1;
   bridge()->AddOrUpdateEntry(
-      DeskSyncBridge::FromSyncProto(specifics1),
+      desk_template_conversion::FromSyncProto(specifics1),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
         loop1.Quit();
@@ -1165,7 +1176,7 @@ TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {
 
   base::RunLoop loop2;
   bridge()->AddOrUpdateEntry(
-      DeskSyncBridge::FromSyncProto(specifics2),
+      desk_template_conversion::FromSyncProto(specifics2),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
         loop2.Quit();
@@ -1176,15 +1187,15 @@ TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {
 
   // Verify the added desk template content.
   EXPECT_EQ(specifics1.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(
-                    bridge()->GetUserEntryByUUID(MakeTestUuid(TestUuidId(1))))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(MakeTestUuid(TestUuidId(1))),
+                app_cache())
                 .SerializeAsString());
 
   EXPECT_EQ(specifics2.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(
-                    bridge()->GetUserEntryByUUID(MakeTestUuid(TestUuidId(2))))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(MakeTestUuid(TestUuidId(2))),
+                app_cache())
                 .SerializeAsString());
 }
 
@@ -1205,7 +1216,7 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenEntryIsTooLarge) {
 
   base::RunLoop loop;
   bridge()->AddOrUpdateEntry(
-      DeskSyncBridge::FromSyncProto(specifics),
+      desk_template_conversion::FromSyncProto(specifics),
       base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
         EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge);
         loop.Quit();
@@ -1522,14 +1533,16 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
   EXPECT_EQ(2ul, bridge()->GetAllEntryUuids().size());
   // Template 1 should be updated to new content.
   EXPECT_EQ(updated_template1.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template1.uuid())))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template1.uuid())),
+                app_cache())
                 .SerializeAsString());
   EXPECT_EQ(template2.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template2.uuid())))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template2.uuid())),
+                app_cache())
                 .SerializeAsString());
 }
 
@@ -1558,9 +1571,10 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
   // Verify that we only have template 2.
   EXPECT_EQ(1ul, bridge()->GetAllEntryUuids().size());
   EXPECT_EQ(template2.SerializeAsString(),
-            bridge()
-                ->ToSyncProto(bridge()->GetUserEntryByUUID(
-                    base::GUID::ParseCaseInsensitive(template2.uuid())))
+            desk_template_conversion::ToSyncProto(
+                bridge()->GetUserEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template2.uuid())),
+                app_cache())
                 .SerializeAsString());
 }
 
