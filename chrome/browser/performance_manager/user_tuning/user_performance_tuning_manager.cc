@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/values.h"
+#include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -28,13 +29,32 @@ class FrameThrottlingDelegateImpl
  public:
   void StartThrottlingAllFrameSinks() override {
     content::StartThrottlingAllFrameSinks(base::Hertz(30));
+    NotifyPageTimelineMonitor(/*battery_saver_mode_enabled=*/true);
   }
 
   void StopThrottlingAllFrameSinks() override {
     content::StopThrottlingAllFrameSinks();
+    NotifyPageTimelineMonitor(/*battery_saver_mode_enabled=*/false);
   }
 
   ~FrameThrottlingDelegateImpl() override = default;
+
+ private:
+  void NotifyPageTimelineMonitor(bool battery_saver_mode_enabled) {
+    performance_manager::PerformanceManager::CallOnGraph(
+        FROM_HERE,
+        base::BindOnce(
+            [](bool enabled, performance_manager::Graph* graph) {
+              auto* monitor = graph->GetRegisteredObjectAs<
+                  performance_manager::metrics::PageTimelineMonitor>();
+              // It's possible for this to be null if the PageTimeline finch
+              // feature is disabled.
+              if (monitor) {
+                monitor->SetBatterySaverEnabled(enabled);
+              }
+            },
+            battery_saver_mode_enabled));
+  }
 };
 
 class HighEfficiencyModeToggleDelegateImpl

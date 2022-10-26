@@ -116,6 +116,10 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
   }
 }
 
+bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
+  return high_efficiency_mode_enabled_;
+}
+
 void HighEfficiencyModePolicy::StartDiscardTimerIfEnabled(
     const PageNode* page_node,
     base::TimeDelta time_before_discard) {
@@ -149,10 +153,6 @@ void HighEfficiencyModePolicy::DiscardPageTimerCallback(
 
   PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardSpecificPage(
       page_node);
-}
-
-bool HighEfficiencyModePolicy::IsHighEfficiencyDiscardingEnabled() const {
-  return high_efficiency_mode_enabled_;
 }
 
 }  // namespace performance_manager::policies

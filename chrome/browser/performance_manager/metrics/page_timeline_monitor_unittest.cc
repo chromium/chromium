@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-shared.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -21,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
@@ -37,23 +36,16 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
   void SetUp() override {
     GraphTestHarness::SetUp();
+
     std::unique_ptr<PageTimelineMonitor> monitor =
         std::make_unique<PageTimelineMonitor>(
             base::BindRepeating([]() { return true; }));
     monitor_ = monitor.get();
     graph()->PassToGraph(std::move(monitor));
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-#if !BUILDFLAG(IS_ANDROID)
-    performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
-        local_state_.registry());
-    environment_.SetUp(&local_state_);
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   void TearDown() override {
-#if !BUILDFLAG(IS_ANDROID)
-    environment_.TearDown();
-#endif  // !BUILDFLAG(IS_ANDROID)
     test_ukm_recorder_.reset();
     GraphTestHarness::TearDown();
   }
@@ -69,13 +61,6 @@ class PageTimelineMonitorUnitTest : public GraphTestHarness {
 
  private:
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // The UserPerformanceTuningManager doesn't exist on Android
-  TestingPrefServiceSimple local_state_;
-  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
-      environment_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
@@ -184,6 +169,68 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdateLifecycleState) {
       monitor()->page_node_info_map_[mock_graph.page.get()]->current_lifecycle,
       mojom::LifecycleState::kFrozen);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PageTimelineMonitorUnitTest, TestHighEfficiencyMode) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetIsVisible(true);
+  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
+
+  // Collecting without an installed HEM policy reports it as disabled.
+  TriggerCollectSlice();
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_EQ(entries.size(), 1UL);
+  test_ukm_recorder()->ExpectEntryMetric(entries[0], "HighEfficiencyMode", 0);
+
+  graph()->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::HighEfficiencyModePolicy>());
+
+  TriggerCollectSlice();
+  entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_EQ(entries.size(), 2UL);
+  test_ukm_recorder()->ExpectEntryMetric(entries[1], "HighEfficiencyMode", 0);
+
+  performance_manager::policies::HighEfficiencyModePolicy::GetInstance()
+      ->OnHighEfficiencyModeChanged(true);
+
+  TriggerCollectSlice();
+  entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_EQ(entries.size(), 3UL);
+
+  test_ukm_recorder()->ExpectEntryMetric(entries[2], "HighEfficiencyMode", 1);
+}
+
+TEST_F(PageTimelineMonitorUnitTest, TestBatterySaverMode) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetIsVisible(true);
+  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kRunning);
+
+  TriggerCollectSlice();
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_EQ(entries.size(), 1UL);
+  test_ukm_recorder()->ExpectEntryMetric(entries[0], "BatterySaverMode", 0);
+
+  monitor()->SetBatterySaverEnabled(true);
+
+  TriggerCollectSlice();
+  entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
+  EXPECT_EQ(entries.size(), 2UL);
+
+  test_ukm_recorder()->ExpectEntryMetric(entries[1], "BatterySaverMode", 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PageTimelineMonitorUnitTest, TestHasNotificationsPermission) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
