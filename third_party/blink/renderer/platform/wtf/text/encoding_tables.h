@@ -69,21 +69,6 @@ const WTF_EXPORT Gb18030EncodeTable& EnsureGb18030EncodeTable();
 // Functions for using sorted arrays of pairs as a map.
 // FIXME: Consider moving these functions to std_lib_extras.h for uses other
 // than encoding tables.
-template <typename CollectionType>
-void SortByFirst(CollectionType&);
-template <typename CollectionType>
-void StableSortByFirst(CollectionType&);
-template <typename CollectionType>
-bool SortedFirstsAreUnique(const CollectionType&);
-template <typename CollectionType, typename KeyType>
-static auto FindFirstInSortedPairs(const CollectionType& sortedPairsCollection,
-                                   const KeyType&)
-    -> absl::optional<decltype(std::begin(sortedPairsCollection)->second)>;
-template <typename CollectionType, typename KeyType>
-static auto FindInSortedPairs(const CollectionType& sortedPairsCollection,
-                              const KeyType&)
-    -> std::pair<decltype(std::begin(sortedPairsCollection)),
-                 decltype(std::begin(sortedPairsCollection))>;
 
 struct CompareFirst {
   template <typename TypeA, typename TypeB>
@@ -122,17 +107,6 @@ struct SecondAdapter {
 template <typename T>
 SecondAdapter<T> MakeSecondAdapter(const T& value) {
   return {value};
-}
-
-template <typename CollectionType>
-void SortByFirst(CollectionType& collection) {
-  std::sort(std::begin(collection), std::end(collection), CompareFirst{});
-}
-
-template <typename CollectionType>
-void StableSortByFirst(CollectionType& collection) {
-  std::stable_sort(std::begin(collection), std::end(collection),
-                   CompareFirst{});
 }
 
 template <typename CollectionType>

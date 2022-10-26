@@ -30,6 +30,7 @@
 
 #include <unicode/ucnv.h>
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
@@ -190,7 +191,7 @@ const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForEncode() {
     auto& index = EnsureJis0208EncodeIndexForDecode();
     for (size_t i = 0; i < index.size(); ++i)
       (*table)[i] = {index[i].second, index[i].first};
-    StableSortByFirst(*table);
+    base::ranges::stable_sort(*table, CompareFirst{});
   });
   return *table;
 }
@@ -293,7 +294,7 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForEncode() {
     auto& index = EnsureEucKrEncodeIndexForDecode();
     for (size_t i = 0; i < index.size(); ++i)
       (*table)[i] = {index[i].second, index[i].first};
-    SortByFirst(*table);
+    base::ranges::sort(*table, CompareFirst{});
     DCHECK(SortedFirstsAreUnique(*table));
   });
   return *table;
@@ -343,7 +344,7 @@ const Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode() {
     auto& index = EnsureGb18030EncodeTable();
     for (uint16_t i = 0; i < index.size(); ++i)
       (*table)[i] = {index[i], i};
-    StableSortByFirst(*table);
+    base::ranges::stable_sort(*table, CompareFirst{});
   });
   return *table;
 }
