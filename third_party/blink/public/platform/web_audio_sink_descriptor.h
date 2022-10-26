@@ -22,7 +22,7 @@ class WebAudioSinkDescriptor {
     kAudible,
     // A sink type that is driven by a fake audio device. (e.g. worker thread)
     kSilent,
-    kLastValue
+    kLastValue = kSilent
   };
 
   // For an "audible" sink with a user-selected identifier. The empty string
