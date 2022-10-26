@@ -32,7 +32,6 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/inspect.h"
-#include "components/fuchsia_legacymetrics/legacymetrics_client.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -61,6 +60,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "components/fuchsia_legacymetrics/legacymetrics_client.h"  // nogncheck
 #include "fuchsia_web/webengine/common/cast_streaming.h"  // nogncheck
 #endif
 
@@ -72,6 +72,7 @@ fidl::InterfaceRequest<fuchsia::web::Context>& GetTestRequest() {
   return *request;
 }
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
 constexpr base::TimeDelta kMetricsReportingInterval = base::Minutes(1);
 
 constexpr base::TimeDelta kChildProcessHistogramFetchTimeout =
@@ -87,6 +88,7 @@ void FetchHistogramsFromChildProcesses(
                      std::vector<fuchsia::legacymetrics::Event>()),
       kChildProcessHistogramFetchTimeout);
 }
+#endif
 
 template <typename KeySystemInterface>
 fidl::InterfaceHandle<fuchsia::media::drm::KeySystem> ConnectToKeySystem() {
@@ -223,6 +225,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   devtools_controller_ =
       WebEngineDevToolsController::CreateFromCommandLine(*command_line);
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   if (command_line->HasSwitch(switches::kUseLegacyMetricsService)) {
     legacy_metrics_client_ =
         std::make_unique<fuchsia_legacymetrics::LegacyMetricsClient>();
@@ -234,6 +237,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
     legacy_metrics_client_->Start(kMetricsReportingInterval);
   }
+#endif
 
   // Configure SysInfo to report total/free space under "/data" based on the
   // requested soft-quota, if any. This only affects persistent instances.
@@ -318,7 +322,9 @@ void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
   // These resources must be freed while a MessageLoop is still available, so
   // that they may post cleanup tasks during teardown.
   // NOTE: Objects are destroyed in the reverse order of their creation.
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   legacy_metrics_client_.reset();
+#endif
   intl_profile_watcher_.reset();
 
   base::ImportantFileWriterCleaner::GetInstance().Stop();

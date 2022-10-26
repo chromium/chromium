@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromecast_buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "fuchsia_web/webengine/browser/context_impl.h"
 #include "fuchsia_web/webengine/browser/web_engine_browser_context.h"
@@ -29,9 +30,11 @@ namespace content {
 class ContentBrowserClient;
 }
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
 namespace fuchsia_legacymetrics {
 class LegacyMetricsClient;
 }
+#endif
 
 namespace media {
 class FuchsiaCdmManager;
@@ -135,8 +138,12 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
       frame_host_bindings_;
 
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<fuchsia_legacymetrics::LegacyMetricsClient>
       legacy_metrics_client_;
+#endif
+
   std::unique_ptr<media::FuchsiaCdmManager> cdm_manager_;
 
   // Used to respond to changes to the system's current locale.

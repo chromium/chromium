@@ -35,12 +35,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
@@ -982,26 +982,28 @@ TEST_F(CastRunnerIntegrationTest, LegacyMetricsRedirect) {
   GURL app_url = test_server().GetURL(kBlankAppUrl);
   component.app_config_manager()->AddApp(kTestAppId, app_url);
 
-  auto component_url = base::StrCat({"cast:", kTestAppId});
-  component.CreateComponentContext(component_url);
-  EXPECT_TRUE(component.component_context());
-
-  base::RunLoop run_loop;
+  bool connected_to_metrics_recorder_service = false;
 
   // Add MetricsRecorder the the component's incoming_services.
-  ASSERT_EQ(
-      component.component_services()->AddPublicService(
-          std::make_unique<vfs::Service>(
-              [&run_loop](zx::channel request, async_dispatcher_t* dispatcher) {
-                run_loop.Quit();
-              }),
-          fuchsia::legacymetrics::MetricsRecorder::Name_),
-      ZX_OK);
+  ASSERT_EQ(component.component_services()->AddPublicService(
+                std::make_unique<vfs::Service>(
+                    [&connected_to_metrics_recorder_service](
+                        zx::channel request, async_dispatcher_t* dispatcher) {
+                      connected_to_metrics_recorder_service = true;
+                    }),
+                fuchsia::legacymetrics::MetricsRecorder::Name_),
+            ZX_OK);
 
-  component.StartCastComponent(component_url);
-
-  // Wait until we see the CastRunner connect to the MetricsRecorder service.
-  run_loop.Run();
+  // If the Component is going to connect to the MetricsRecorder service, it
+  // will have done so by the time the Component is responding.
+  component.CreateComponentContextAndStartComponent();
+  ASSERT_EQ(connected_to_metrics_recorder_service,
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+            true
+#else
+            false
+#endif
+  );
 }
 
 // Verifies that the ApplicationContext::OnApplicationTerminated() is notified

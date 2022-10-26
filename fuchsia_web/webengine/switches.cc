@@ -14,7 +14,6 @@ const char kIncognito[] = "incognito";
 const char kPlayreadyKeySystem[] = "playready-key-system";
 const char kEnableRemoteDebugMode[] = "remote-debug-mode";
 const char kUserAgentProductAndVersion[] = "user-agent-product";
-const char kUseLegacyMetricsService[] = "use-legacy-metrics-service";
 const char kCorsExemptHeaders[] = "cors-exempt-headers";
 const char kEnableCastStreamingReceiver[] = "enable-cast-streaming-receiver";
 const char kCdmDataDirectory[] = "cdm-data-directory";
@@ -26,6 +25,7 @@ const char kEnableCfv2[] = "enable-cfv2";
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 const char kAllowRunningInsecureContent[] = "allow-running-insecure-content";
+const char kUseLegacyMetricsService[] = "use-legacy-metrics-service";
 #endif
 
 }  // namespace switches

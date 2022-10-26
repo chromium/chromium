@@ -229,6 +229,7 @@ test("cast_runner_integration_tests") {
     ":cast_runner_core",
     ":cast_runner_test_core",
     "//base/test:test_support",
+    "//build:chromecast_buildflags",
     "//components/cast/message_port",
     "//fuchsia_web/common",
     "//fuchsia_web/common/test:run_all_integration_tests",

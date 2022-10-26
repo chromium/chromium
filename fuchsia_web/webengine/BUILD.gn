@@ -158,7 +158,6 @@ component("web_engine_core") {
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/fuchsia_component_support",
-    "//components/fuchsia_legacymetrics",
     "//components/keyed_service/content",
     "//components/media_control/browser",
     "//components/media_control/renderer",
@@ -222,6 +221,10 @@ component("web_engine_core") {
     "//ui/wm",
     "//ui/wm/public",
   ]
+
+  if (enable_cast_receiver) {
+    deps += [ "//components/fuchsia_legacymetrics" ]
+  }
 
   # Technically the PAK files are only data dependencies, but specifying them
   # as |data_deps| causes metadata (.info) files to also be pulled-in to the

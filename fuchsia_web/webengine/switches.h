@@ -36,11 +36,11 @@ extern const char kUserAgentProductAndVersion[];
 // TODO(crbug.com/1023514): Remove this switch when it is no longer
 // necessary.
 extern const char kAllowRunningInsecureContent[];
-#endif
 
 // Enables use of the fuchsia.legacymetrics.MetricsRecorder service for
 // telemetry.
 extern const char kUseLegacyMetricsService[];
+#endif
 
 // Specifies a comma-separated list of HTTP headers to exempt from CORS checks.
 extern const char kCorsExemptHeaders[];

@@ -411,10 +411,12 @@ std::vector<std::string> GetRequiredServicesForConfig(
                     });
   }
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   if ((features & fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) ==
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) {
     services.emplace_back("fuchsia.legacymetrics.MetricsRecorder");
   }
+#endif
 
   if ((features & fuchsia::web::ContextFeatureFlags::KEYBOARD) ==
       fuchsia::web::ContextFeatureFlags::KEYBOARD) {
@@ -500,7 +502,11 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
 
   if ((features & fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) ==
       fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) {
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
     launch_args.AppendSwitch(switches::kUseLegacyMetricsService);
+#else
+    LOG(WARNING) << "LEGACYMETRICS is not supported.";
+#endif
   }
 
   const bool enable_vulkan =

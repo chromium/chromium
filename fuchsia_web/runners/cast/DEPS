@@ -20,8 +20,12 @@ specific_include_rules = {
     "+fuchsia_web/webengine/test/frame_for_test.h",
     "+fuchsia_web/webengine/test/web_engine_browser_test.h",
   ],
+  "cast_runner_integration_test\.cc": [
+    # The expeted behavior of some tests depends on ENABLE_CAST_RECEIVER.
+    "+build/chromecast_buildflags.h",
+  ],
   "main.cc": [
     # Allow logging when !ENABLE_CAST_RECEIVER.
     "+build/chromecast_buildflags.h",
-  ]
+  ],
 }
