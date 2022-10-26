@@ -27,6 +27,7 @@ source_set("context_menu") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/lens:lens_availability",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/util",

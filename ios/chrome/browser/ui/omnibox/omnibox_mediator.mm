@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -13,10 +14,13 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
@@ -31,6 +35,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -46,6 +51,9 @@ using base::UserMetricsAction;
 
 // Whether the current default search engine supports search-by-image.
 @property(nonatomic, assign) BOOL searchEngineSupportsSearchByImage;
+
+// Whether the current default search engine supports Lens.
+@property(nonatomic, assign) BOOL searchEngineSupportsLens;
 
 // The latest URL used to fetch the favicon.
 @property(nonatomic, assign) GURL latestFaviconURL;
@@ -67,6 +75,7 @@ using base::UserMetricsAction;
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
+    _searchEngineSupportsLens = NO;
     _isIncognito = isIncognito;
   }
   return self;
@@ -84,6 +93,8 @@ using base::UserMetricsAction;
   _templateURLService = templateURLService;
   self.searchEngineSupportsSearchByImage =
       search_engines::SupportsSearchByImage(templateURLService);
+  self.searchEngineSupportsLens =
+      search_engines::SupportsSearchImageWithLens(templateURLService);
   if (_templateURLService) {
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
@@ -103,11 +114,23 @@ using base::UserMetricsAction;
   }
 }
 
+- (void)setSearchEngineSupportsLens:(BOOL)searchEngineSupportsLens {
+  BOOL supportChanged =
+      self.searchEngineSupportsLens != searchEngineSupportsLens;
+  _searchEngineSupportsLens = searchEngineSupportsLens;
+  if (supportChanged) {
+    [self.consumer updateLensImageSupported:searchEngineSupportsLens];
+  }
+}
+
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
+  TemplateURLService* templateUrlService = self.templateURLService;
   self.searchEngineSupportsSearchByImage =
-      search_engines::SupportsSearchByImage(self.templateURLService);
+      search_engines::SupportsSearchByImage(templateUrlService);
+  self.searchEngineSupportsLens =
+      search_engines::SupportsSearchImageWithLens(templateUrlService);
   self.currentDefaultSearchEngineFavicon = nil;
   [self updateConsumerEmptyTextImage];
 }
@@ -279,6 +302,7 @@ using base::UserMetricsAction;
 - (void)updateConsumerEmptyTextImage {
   [_consumer
       updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
+  [_consumer updateLensImageSupported:self.searchEngineSupportsLens];
 
   // Show Default Search Engine favicon.
   // Remember what is the Default Search Engine provider that the icon is
@@ -305,7 +329,7 @@ using base::UserMetricsAction;
           }
         });
       };
-  auto imageCompletion =
+  auto imageSearchCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
           UIImage* image = static_cast<UIImage*>(providedItem);
@@ -315,14 +339,31 @@ using base::UserMetricsAction;
           }
         });
       };
+  auto lensCompletion =
+      ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+          UIImage* image = base::mac::ObjCCast<UIImage>(providedItem);
+          if (image) {
+            [weakSelf lensImage:image];
+          }
+        });
+      };
   for (NSItemProvider* itemProvider in itemProviders) {
-    if (self.searchEngineSupportsSearchByImage &&
-        [itemProvider canLoadObjectOfClass:[UIImage class]]) {
-      RecordAction(
-          UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
-      [itemProvider loadObjectOfClass:[UIImage class]
-                    completionHandler:imageCompletion];
-      break;
+    if ([itemProvider canLoadObjectOfClass:[UIImage class]]) {
+      // Either provide a Lens option or a reverse-image-search option.
+      if ([self shouldUseLens]) {
+        RecordAction(
+            UserMetricsAction("Mobile.OmniboxPasteButton.LensCopiedImage"));
+        [itemProvider loadObjectOfClass:[UIImage class]
+                      completionHandler:lensCompletion];
+        break;
+      } else if (self.searchEngineSupportsSearchByImage) {
+        RecordAction(
+            UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedImage"));
+        [itemProvider loadObjectOfClass:[UIImage class]
+                      completionHandler:imageSearchCompletion];
+        break;
+      }
     } else if ([itemProvider canLoadObjectOfClass:[NSURL class]]) {
       RecordAction(
           UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedLink"));
@@ -385,6 +426,18 @@ using base::UserMetricsAction;
       }));
 }
 
+- (void)didTapLensCopiedImage {
+  __weak __typeof(self) weakSelf = self;
+  ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+        if (!optionalImage) {
+          return;
+        }
+        UIImage* image = optionalImage.value().ToUIImage();
+        [weakSelf lensImage:image];
+      }));
+}
+
 #pragma mark - Private methods
 
 // Logs that user pasted a link into the omnibox.
@@ -407,6 +460,24 @@ using base::UserMetricsAction;
                                                     self.templateURLService);
   UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
   self.URLLoadingBrowserAgent->Load(params);
+}
+
+// Performs a Lens search on the given `image`.
+- (void)lensImage:(UIImage*)image {
+  DCHECK(image);
+
+  SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+      initWithImage:image
+         entryPoint:LensEntrypoint::OmniboxPostCapture];
+  [self.lensCommandsHandler searchImageWithLens:command];
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
+}
+
+// Returns whether or not to use Lens for copied images.
+- (BOOL)shouldUseLens {
+  return ios::provider::IsLensSupported() &&
+         base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
+         self.searchEngineSupportsLens;
 }
 
 @end

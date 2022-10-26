@@ -27,6 +27,9 @@
 // Whether the current default search engine supports search by image.
 @property(nonatomic, assign) BOOL searchEngineSupportsSearchByImage;
 
+// Whether the current default search engine supports Lens.
+@property(nonatomic, assign) BOOL searchEngineSupportsLens;
+
 @end
 
 @implementation LocationBarMediator {
@@ -38,6 +41,7 @@
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
+    _searchEngineSupportsLens = NO;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
   }
   return self;
@@ -56,6 +60,8 @@
 - (void)searchEngineChanged {
   self.searchEngineSupportsSearchByImage =
       search_engines::SupportsSearchByImage(self.templateURLService);
+  self.searchEngineSupportsLens =
+      search_engines::SupportsSearchImageWithLens(self.templateURLService);
 }
 
 #pragma mark - Setters
@@ -64,6 +70,7 @@
   _consumer = consumer;
   [consumer
       updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
+  [consumer updateLensImageSupported:self.searchEngineSupportsLens];
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
@@ -82,6 +89,14 @@
   if (supportChanged) {
     [self.consumer
         updateSearchByImageSupported:searchEngineSupportsSearchByImage];
+  }
+}
+
+- (void)setSearchEngineSupportsLens:(BOOL)searchEngineSupportsLens {
+  BOOL supportChanged = _searchEngineSupportsLens != searchEngineSupportsLens;
+  _searchEngineSupportsLens = searchEngineSupportsLens;
+  if (supportChanged) {
+    [self.consumer updateLensImageSupported:searchEngineSupportsLens];
   }
 }
 

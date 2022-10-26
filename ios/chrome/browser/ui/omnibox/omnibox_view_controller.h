@@ -36,6 +36,8 @@ class OmniboxTextChangeDelegate;
 - (void)didTapSearchCopiedText;
 // User tapped on the Search Copied Image from the omnibox menu.
 - (void)didTapSearchCopiedImage;
+// User tapped on the Lens Image from the omnibox menu.
+- (void)didTapLensCopiedImage;
 // User tapped on the Visit Copied Link from the omnibox menu.
 - (void)didTapVisitCopiedLink;
 

@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -432,8 +433,9 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   id<LensCommands> handler =
       HandlerForProtocol(_browser->GetCommandDispatcher(), LensCommands);
   UIImage* image = [UIImage imageWithData:imageData];
-  SearchImageWithLensCommand* command =
-      [[SearchImageWithLensCommand alloc] initWithImage:image];
+  SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+      initWithImage:image
+         entryPoint:LensEntrypoint::ContextMenu];
   [handler searchImageWithLens:command];
 }
 

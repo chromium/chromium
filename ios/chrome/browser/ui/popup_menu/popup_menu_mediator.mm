@@ -47,9 +47,12 @@
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_navigation_item.h"
@@ -72,6 +75,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/common/features.h"
@@ -602,7 +606,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     return;
   // The mediator can be destroyed when this callback is executed. So it is not
   // possible to use a weak self.
-  __weak id<BrowserCommands> weakDispatcher = self.dispatcher;
+  __weak id<BrowserCommands> weakBrowserCommandsHandler =
+      self.browserCommandsHandler;
   GURL visibleURL = self.webState->GetVisibleURL();
   NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
   activity_services::RetrieveCanonicalUrl(self.webState, ^(const GURL& URL) {
@@ -612,7 +617,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
     ReadingListAddCommand* command =
         [[ReadingListAddCommand alloc] initWithURL:pageURL title:title];
-    [weakDispatcher addToReadingList:command];
+    [weakBrowserCommandsHandler addToReadingList:command];
   });
 }
 
@@ -645,20 +650,22 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 }
 
 - (void)searchCopiedImage {
+  __weak PopupMenuMediator* weakSelf = self;
   ClipboardRecentContent* clipboardRecentContent =
       ClipboardRecentContent::GetInstance();
   clipboardRecentContent->GetRecentImageFromClipboard(
       base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
-        if (!optionalImage) {
-          return;
-        }
-        UIImage* image = [optionalImage.value().ToUIImage() copy];
-        web::NavigationManager::WebLoadParams webParams =
-            ImageSearchParamGenerator::LoadParamsForImage(
-                image, self.templateURLService);
-        UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+        [weakSelf searchCopiedImage:optionalImage usingLens:NO];
+      }));
+}
 
-        self.URLLoadingBrowserAgent->Load(params);
+- (void)lensCopiedImage {
+  __weak PopupMenuMediator* weakSelf = self;
+  ClipboardRecentContent* clipboardRecentContent =
+      ClipboardRecentContent::GetInstance();
+  clipboardRecentContent->GetRecentImageFromClipboard(
+      base::BindOnce(^(absl::optional<gfx::Image> optionalImage) {
+        [weakSelf searchCopiedImage:optionalImage usingLens:YES];
       }));
 }
 
@@ -913,6 +920,44 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 #pragma mark - Item creation (Private)
 
+- (void)setPopupMenuItemsOnClipboardItemsReceived:
+    (const std::set<ClipboardContentType>&)types {
+  NSMutableArray* items = [NSMutableArray array];
+  // The consumer is expecting an array of arrays of items. Each sub array
+  // represent a section in the popup menu. Having one sub array means
+  // having all the items in the same section.
+  PopupMenuToolsItem* copiedContentItem = nil;
+  if (search_engines::SupportsSearchImageWithLens(self.templateURLService) &&
+      ios::provider::IsLensSupported() &&
+      base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
+      base::Contains(types, ClipboardContentType::Image)) {
+    copiedContentItem = CreateTableViewItem(
+        IDS_IOS_TOOLS_MENU_LENS_COPIED_IMAGE, PopupMenuActionLensCopiedImage,
+        @"popup_menu_paste_and_go", kToolsMenuLensCopiedImage);
+  } else if (search_engines::SupportsSearchByImage(self.templateURLService) &&
+             base::Contains(types, ClipboardContentType::Image)) {
+    copiedContentItem = CreateTableViewItem(
+        IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE,
+        PopupMenuActionSearchCopiedImage, @"popup_menu_paste_and_go",
+        kToolsMenuCopiedImageSearch);
+  } else if (base::Contains(types, ClipboardContentType::URL)) {
+    copiedContentItem = CreateTableViewItem(
+        IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK, PopupMenuActionVisitCopiedLink,
+        @"popup_menu_paste_and_go", kToolsMenuPasteAndGo);
+  } else if (base::Contains(types, ClipboardContentType::Text)) {
+    copiedContentItem = CreateTableViewItem(
+        IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT, PopupMenuActionSearchCopiedText,
+        @"popup_menu_paste_and_go", kToolsMenuPasteAndGo);
+  }
+  if (copiedContentItem) {
+    [items addObject:@[ copiedContentItem ]];
+  }
+
+  [items addObject:[self searchMenuStaticItems]];
+  self.items = items;
+  [self.popupMenu setPopupMenuItems:self.items];
+}
+
 - (void)createNavigationItemsForType:(PopupMenuType)type {
   DCHECK(type == PopupMenuTypeNavigationForward ||
          type == PopupMenuTypeNavigationBackward);
@@ -986,43 +1031,12 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   clipboard_types.insert(ClipboardContentType::Text);
   clipboard_types.insert(ClipboardContentType::Image);
 
+  __weak PopupMenuMediator* weakSelf = self;
   clipboardRecentContent->HasRecentContentFromClipboard(
       clipboard_types,
       base::BindOnce(^(std::set<ClipboardContentType> matched_types) {
-        __block NSMutableArray* items = [NSMutableArray array];
-        // The consumer is expecting an array of arrays of items. Each sub array
-        // represent a section in the popup menu. Having one sub array means
-        // having all the items in the same section.
-        PopupMenuToolsItem* copiedContentItem = nil;
-        if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-            matched_types.find(ClipboardContentType::Image) !=
-                matched_types.end()) {
-          copiedContentItem = CreateTableViewItem(
-              IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE,
-              PopupMenuActionSearchCopiedImage, @"popup_menu_paste_and_go",
-              kToolsMenuCopiedImageSearch);
-        } else if (matched_types.find(ClipboardContentType::URL) !=
-                   matched_types.end()) {
-          copiedContentItem = CreateTableViewItem(
-              IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK,
-              PopupMenuActionVisitCopiedLink, @"popup_menu_paste_and_go",
-              kToolsMenuPasteAndGo);
-        } else if (matched_types.find(ClipboardContentType::Text) !=
-                   matched_types.end()) {
-          copiedContentItem = CreateTableViewItem(
-              IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT,
-              PopupMenuActionSearchCopiedText, @"popup_menu_paste_and_go",
-              kToolsMenuPasteAndGo);
-        }
-        if (copiedContentItem) {
-          [items addObject:@[ copiedContentItem ]];
-        }
-
-        [items addObject:[self searchMenuStaticItems]];
-        self.items = items;
-
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self.popupMenu setPopupMenuItems:self.items];
+          [weakSelf setPopupMenuItemsOnClipboardItemsReceived:matched_types];
         });
       }));
 }
@@ -1324,6 +1338,29 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
          self.isIncognito &&
          base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
+}
+
+// Searches the copied image. If `usingLens` is set, then the search will be
+// performed with Lens.
+- (void)searchCopiedImage:(absl::optional<gfx::Image>)optionalImage
+                usingLens:(BOOL)usingLens {
+  if (!optionalImage)
+    return;
+
+  UIImage* image = optionalImage->ToUIImage();
+  if (usingLens) {
+    SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+        initWithImage:image
+           entryPoint:LensEntrypoint::OmniboxPostCapture];
+    [self.lensCommandsHandler searchImageWithLens:command];
+  } else {
+    web::NavigationManager::WebLoadParams webParams =
+        ImageSearchParamGenerator::LoadParamsForImage(image,
+                                                      self.templateURLService);
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+
+    self.URLLoadingBrowserAgent->Load(params);
+  }
 }
 
 @end

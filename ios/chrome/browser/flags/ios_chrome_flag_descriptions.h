@@ -726,6 +726,11 @@ extern const char kEnableLensInKeyboardDescription[];
 extern const char kEnableLensInNTPName[];
 extern const char kEnableLensInNTPDescription[];
 
+// Title and description for the flag to enable using Lens to search using
+// copied images in the omnibox.
+extern const char kEnableLensInOmniboxCopiedImageName[];
+extern const char kEnableLensInOmniboxCopiedImageDescription[];
+
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.
