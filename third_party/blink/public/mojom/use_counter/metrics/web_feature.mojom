@@ -3697,6 +3697,8 @@ enum WebFeature {
   kEligibleForImageLoadingPrioritizationFix = 4376,
   kExecutedNonTrivialJavaScriptURL = 4377,
   kStorageBucketsOpen = 4378,
+  kPerformanceEntryBufferSwaps = 4379,
+  kClearPerformanceEntries = 4380,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -76,9 +76,22 @@ class UserTiming final : public GarbageCollected<UserTiming> {
                                const V8UnionDoubleOrString* mark_or_time,
                                ExceptionState&);
 
+  void InsertPerformanceEntry(PerformanceEntryMap& performance_entry_map,
+                              PerformanceEntryVector& performance_entry_buffer,
+                              PerformanceEntry& entry);
+
+  void ClearPerformanceEntries(PerformanceEntryMap& performance_entry_map,
+                               PerformanceEntryVector& performance_entry_buffer,
+                               const AtomicString& name);
+
   Member<Performance> performance_;
   PerformanceEntryMap marks_map_;
   PerformanceEntryMap measures_map_;
+
+  // Maintain vectors to improve fetch time for marks/measures in exchange for
+  // memory.
+  PerformanceEntryVector marks_buffer_;
+  PerformanceEntryVector measures_buffer_;
 };
 
 }  // namespace blink

@@ -307,6 +307,9 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
+  void InsertEntryIntoSortedBuffer(PerformanceEntryVector& vector,
+                                   PerformanceEntry& entry);
+
   void Trace(Visitor*) const override;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
@@ -332,6 +335,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
                                         ExceptionState& exception_state);
 
   void CopySecondaryBuffer();
+
   PerformanceEntryVector getEntriesByTypeInternal(
       PerformanceEntry::EntryType type);
 
