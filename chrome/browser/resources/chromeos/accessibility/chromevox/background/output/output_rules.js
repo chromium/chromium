@@ -15,6 +15,77 @@
  */
 export let OutputRuleSpecifier;
 
+export class OutputRule {
+  constructor() {
+    /** @private {string|undefined} */
+    this.event_;
+    /** @private {string|undefined} */
+    this.role_;
+    /** @private {string|undefined} */
+    this.navigation_;
+    /** @private {string|undefined} */
+    this.output_;
+  }
+
+  /** @return {!OutputRuleSpecifier} */
+  get specifier() {
+    if (this.event_ === undefined || this.role_ === undefined) {
+      throw new Error(
+          'Cannot have a completed rule without both an event and a role.');
+    }
+    return /** @type {!OutputRuleSpecifier} */ ({
+      event: this.event_,
+      role: this.role_,
+      navigation: this.navigation_,
+      output: this.output_,
+    });
+  }
+
+  // The following setter functions are a temporary measure.
+  // TODO(anastasi): move the logic for determining the below properties into
+  // this class.
+
+  /** @param {string} event */
+  set event(event) {
+    this.event_ = event;
+  }
+  /** @param {string|undefined} role */
+  set role(role) {
+    this.role_ = role;
+  }
+  /** @param {string|undefined} navigation */
+  set navigation(navigation) {
+    this.navigation_ = navigation;
+  }
+  /** @param {string|undefined} output */
+  set output(output) {
+    this.output_ = output;
+  }
+
+  /** @return {string} */
+  get event() {
+    if (!this.event_) {
+      throw new Error('Cannot get the value of event before it has been set');
+    }
+    return this.event_;
+  }
+  /** @return {string} */
+  get role() {
+    if (!this.role_) {
+      throw new Error('Cannot get the value of role before it has been set');
+    }
+    return this.role_;
+  }
+  /** @return {string|undefined} */
+  get navigation() {
+    return this.navigation_;
+  }
+  /** @return {string|undefined} */
+  get output() {
+    return this.output_;
+  }
+}
+
 /**
  * Rules specifying format of AutomationNodes for output.
  * @type {!Object<Object<Object<string>>>}
@@ -28,7 +99,7 @@ export let OutputRuleSpecifier;
  * leaf range. endOf: The rule applied for each ancestor diff of a range and its
  * next leaf range.
  */
-export const OUTPUT_RULES = {
+OutputRule.RULES = {
   navigate: {
     'default': {
       speak: `$name $node(activeDescendant) $value $state $restriction $role

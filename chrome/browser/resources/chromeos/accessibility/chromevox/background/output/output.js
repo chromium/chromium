@@ -29,7 +29,7 @@ import {OutputFormatParser, OutputFormatParserObserver} from './output_format_pa
 import {OutputFormatTree} from './output_format_tree.js';
 import {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
-import {OUTPUT_RULES, OutputRuleSpecifier} from './output_rules.js';
+import {OutputRule, OutputRuleSpecifier} from './output_rules.js';
 import * as outputTypes from './output_types.js';
 
 const AriaCurrentState = chrome.automation.AriaCurrentState;
@@ -1918,12 +1918,11 @@ export class Output {
   ancestryHelper_(args) {
     let {node, prevNode, buff, formatLog, type, ancestors, formatName} = args;
 
-    /** Following types are contained: {event, role, navigation, output} */
-    const rule = {};
+    const rule = new OutputRule();
     // First, look up the event type's format block.
     // Navigate is the default event.
-    rule.event = OUTPUT_RULES[type] ? type : 'navigate';
-    const eventBlock = OUTPUT_RULES[rule.event];
+    rule.event = OutputRule.RULES[type] ? type : 'navigate';
+    const eventBlock = OutputRule.RULES[rule.event];
 
     const excludeRoles =
         args.exclude ? new Set(args.exclude.map(node => node.role)) : new Set();
@@ -1963,7 +1962,7 @@ export class Output {
         }
 
         excludeRoles.add(formatNode.role);
-        formatLog.writeRule /** @type {OutputRuleSpecifier} */ ((rule));
+        formatLog.writeRule(rule.specifier);
         const enterFormat = rule.output ?
             eventBlock[rule.role][formatName][rule.output] :
             eventBlock[rule.role][formatName];
@@ -2002,16 +2001,16 @@ export class Output {
       formatLog.bufferClear();
     }
 
-    const rule = {};
+    const rule = new OutputRule();
 
     // Navigate is the default event.
-    rule.event = OUTPUT_RULES[type] ? type : 'navigate';
-    const eventBlock = OUTPUT_RULES[rule.event];
+    rule.event = OutputRule.RULES[type] ? type : 'navigate';
+    const eventBlock = OutputRule.RULES[rule.event];
     const parentRole = (OutputRoleInfo[node.role] || {}).inherits || '';
     /**
-     * Use OUTPUT_RULES for node.role if exists.
-     * If not, use OUTPUT_RULES for parentRole if exists.
-     * If not, use OUTPUT_RULES for 'default'.
+     * Use OutputRule.RULES for node.role if exists.
+     * If not, use OutputRule.RULES for parentRole if exists.
+     * If not, use OutputRule.RULES for 'default'.
      */
     if (node.role && (eventBlock[node.role] || {}).speak !== undefined) {
       rule.role = node.role;
@@ -2031,7 +2030,7 @@ export class Output {
         rule.output = 'braille';
       }
     }
-    formatLog.writeRule(rule);
+    formatLog.writeRule(rule.specifier);
     this.format_({
       node,
       outputFormat: eventBlock[rule.role][rule.output],
