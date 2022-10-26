@@ -32,9 +32,6 @@ class DlpDragDropNotifier : public DlpDataTransferNotifier {
   void ProceedPressed(views::Widget* widget);
 
   void CancelPressed(views::Widget* widget);
-
-  // views::WidgetObserver
-  void OnWidgetDestroying(views::Widget* widget) override;
 };
 
 }  // namespace policy

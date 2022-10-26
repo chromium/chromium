@@ -8,9 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/notreached.h"
-#include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -68,10 +65,6 @@ void DlpDragDropNotifier::ProceedPressed(views::Widget* widget) {
 
 void DlpDragDropNotifier::CancelPressed(views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kCancelButtonClicked);
-}
-
-void DlpDragDropNotifier::OnWidgetDestroying(views::Widget* widget) {
-  DlpDataTransferNotifier::OnWidgetDestroying(widget);
 }
 
 }  // namespace policy
