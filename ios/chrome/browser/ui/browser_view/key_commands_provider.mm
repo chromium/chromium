@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
@@ -84,6 +85,37 @@
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
+  if (IsKeyboardShortcutsMenuEnabled()) {
+    // Return the key commands that are not already present in the menu (see
+    // i/c/b/ui/keyboard/menu_builder.h).
+    return @[
+      UIKeyCommand.cr_openNewRegularTab,
+      UIKeyCommand.cr_showNextTab_2,
+      UIKeyCommand.cr_showPreviousTab_2,
+      UIKeyCommand.cr_showNextTab_3,
+      UIKeyCommand.cr_showPreviousTab_3,
+      UIKeyCommand.cr_dismissModalDialogs,
+      UIKeyCommand.cr_goBack_2,
+      UIKeyCommand.cr_goForward_2,
+      UIKeyCommand.cr_showDownloadsFolder_2,
+      UIKeyCommand.cr_showTab1,
+      UIKeyCommand.cr_showTab2,
+      UIKeyCommand.cr_showTab3,
+      UIKeyCommand.cr_showTab4,
+      UIKeyCommand.cr_showTab5,
+      UIKeyCommand.cr_showTab6,
+      UIKeyCommand.cr_showTab7,
+    ];
+  } else {
+    return [self noKeyboardShortcutsMenuKeyCommands];
+  }
+}
+
+// Returns the set of key commands supported when the KeyboardShortcutsMenu
+// feature is not enabled.
+- (NSArray<UIKeyCommand*>*)noKeyboardShortcutsMenuKeyCommands {
+  DCHECK(!IsKeyboardShortcutsMenuEnabled());
+
   NSMutableArray<UIKeyCommand*>* keyCommands = [NSMutableArray array];
 
   // List the commands that always appear in the HUD. They appear in the HUD

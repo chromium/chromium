@@ -149,6 +149,7 @@ source_set("tab_grid_ui") {
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/keyboard:features",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
