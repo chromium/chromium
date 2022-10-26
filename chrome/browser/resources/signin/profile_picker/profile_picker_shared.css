@@ -24,16 +24,20 @@ html {
   font-family: roboto;
 }
 
-h2 {
+.title {
   color: var(--cr-primary-text-color);
   font-size: 1.85em;
   font-weight: normal;
+  margin-block-end: 20px;
+  margin-block-start: 20px;
 }
 
-h3 {
+.subtitle {
   color: var(--cr-secondary-text-color);
   font-size: var(--text-font-size);
   font-weight: normal;
+  margin-block-end: 15px;
+  margin-block-start: 15px;
 }
 
 .profile-card-info {

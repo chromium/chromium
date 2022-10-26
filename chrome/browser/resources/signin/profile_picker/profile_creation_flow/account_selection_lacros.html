@@ -34,7 +34,7 @@
     margin-inline-start: 50px;
   }
 
-  #textContainer h2 {
+  .title {
     color: var(--cr-primary-text-color);
     font-family: 'Google Sans', Roboto, sans-serif;
     font-size: 24px;
@@ -43,7 +43,7 @@
     margin-top: 0;
   }
 
-  #textContainer h3 {
+  .subtitle {
     color: var(--cr-secondary-text-color);
     font-family: Roboto;
     font-size: 14px;
@@ -179,8 +179,8 @@
               chrome://theme/current-channel-logo@2x 2x"
       role="presentation">
   <div id="textContainer">
-    <h2>$i18n{accountSelectionLacrosTitle}</h2>
-    <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
+    <h1 class="title">$i18n{accountSelectionLacrosTitle}</h1>
+    <div class="subtitle">$i18n{accountSelectionLacrosSubtitle}</div>
   </div>
   <button id="other-account-button" class="account-button"
           on-click="onOtherAccountClick_" disabled$="[[accountSelected_]]">
