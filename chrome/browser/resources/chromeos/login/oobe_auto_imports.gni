@@ -116,6 +116,7 @@ oobe_migrated_imports = [
   "chrome/browser/resources/chromeos/login/components/gaia_dialog.html",
   "chrome/browser/resources/chromeos/login/components/hd_iron_icon.html",
   "chrome/browser/resources/chromeos/login/components/notification_card.html",
+  "chrome/browser/resources/chromeos/login/components/oobe_apps_list.html",
   "chrome/browser/resources/chromeos/login/components/oobe_a11y_option.html",
   "chrome/browser/resources/chromeos/login/components/oobe_carousel.html",
   "chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.html",

@@ -4,205 +4,205 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/cros_color_overrides.css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/ash/common/cr_scrollable_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-
-<link rel="import" href="./behaviors/oobe_i18n_behavior.html">
-
 <!--
   OOBE polymer element which is used to show a list of recommended apps.
 -->
 
-<dom-module id="oobe-apps-list">
-  <template>
-    <style include="cros-color-overrides">
-      :host {
-        --checkbox-column-width: 40px;
-        --checkbox-size: 18px;
-      }
+<style include="cros-color-overrides">
+  :host {
+    --checkbox-column-width: 40px;
+    --checkbox-size: 18px;
+  }
 
-      #appsListContainer {
-        display: grid;
-        gap: 8px 0;
-        grid-auto-flow: row;
-        grid-template-rows: 40px 1fr;
-        height: 100%;
-      }
+  #appsListContainer {
+    display: grid;
+    gap: 8px 0;
+    grid-auto-flow: row;
+    grid-template-rows: 40px 1fr;
+    height: 100%;
+  }
 
-      #appsList {
-        height: 100%;
-        overflow-y: auto;
-      }
+  #appsList {
+    height: 100%;
+    overflow-y: auto;
+  }
 
-      #appsListContainer .app-item {
-        display: grid;
-        gap: 4px 16px;
-        grid-template-areas:
-          '.        .    title       .     '
-          'checkbox icon category    .     '
-          '.        .    description expand';
-        grid-auto-flow: column;
-        grid-template-columns: var(--checkbox-column-width) 48px 1fr 26px;
-        grid-template-rows: 22px 22px auto;
-        padding-bottom: 16px;
-        padding-top: 16px;
-      }
+  #appsListContainer .app-item {
+    display: grid;
+    gap: 4px 16px;
+    grid-template-areas:
+      '.        .    title       .     '
+      'checkbox icon category    .     '
+      '.        .    description expand';
+    grid-auto-flow: column;
+    grid-template-columns: var(--checkbox-column-width) 48px 1fr 26px;
+    grid-template-rows: 22px 22px auto;
+    padding-bottom: 16px;
+    padding-top: 16px;
+  }
 
-      #appsListContainer .app-item:not(:first-child) {
-        border-top: 1px solid var(--cros-color-primary-dark);
-      }
+  #appsListContainer .app-item:not(:first-child) {
+    border-top: 1px solid var(--cros-color-primary-dark);
+  }
 
-      cr-checkbox {
-        --cr-checkbox-checked-box-background-color: none;
-        --cr-checkbox-mark-color: var(--cr-checked-color);
-        --cr-checkbox-size: var(--checkbox-size);
-      }
+  cr-checkbox {
+    --cr-checkbox-checked-box-background-color: none;
+    --cr-checkbox-mark-color: var(--cr-checked-color);
+    --cr-checkbox-size: var(--checkbox-size);
+  }
 
-      #selectAll {
-        margin-inline-start:
-            calc((var(--checkbox-column-width) - var(--checkbox-size)) / 2);
-      }
+  #selectAll {
+    margin-inline-start: calc(
+      (var(--checkbox-column-width) - var(--checkbox-size)) / 2
+    );
+  }
 
-      #unselectAll {
-        border-bottom: solid 2px var(--cr-checked-color);
-        height: 19px;
-        margin-inline-start: calc((var(--checkbox-column-width) -
-            var(--checkbox-size)) / 2 + 4px);
-        position: absolute;
-        width: 10px;
-      }
+  #unselectAll {
+    border-bottom: solid 2px var(--cr-checked-color);
+    height: 19px;
+    margin-inline-start: calc(
+      (var(--checkbox-column-width) - var(--checkbox-size)) / 2 + 4px
+    );
+    position: absolute;
+    width: 10px;
+  }
 
-      cr-checkbox.some-selected {
-        --cr-checkbox-unchecked-box-color: var(--cr-checked-color);
-      }
+  cr-checkbox.some-selected {
+    --cr-checkbox-unchecked-box-color: var(--cr-checked-color);
+  }
 
-      .app-item cr-checkbox {
-        align-self: center;
-        grid-area: checkbox;
-        height: var(--checkbox-size);
-        justify-self: center;
-        width: var(--checkbox-size);
-      }
+  .app-item cr-checkbox {
+    align-self: center;
+    grid-area: checkbox;
+    height: var(--checkbox-size);
+    justify-self: center;
+    width: var(--checkbox-size);
+  }
 
-      webview.app-icon {
-        align-items: center;
-        align-self: center;
-        grid-area: icon;
-        height: 48px;
-        user-select: none;
-        width: 48px;
-      }
+  webview.app-icon {
+    align-items: center;
+    align-self: center;
+    grid-area: icon;
+    height: 48px;
+    user-select: none;
+    width: 48px;
+  }
 
-      .app-title {
-        color: var(--oobe-header-text-color);
-        font-size: var(--oobe-modal-dialog-header-font-size);
-        font-weight: var(--oobe-modal-dialog-header-font-weight);
-        grid-area: title;
-        line-height: 22px;
-      }
+  .app-title {
+    color: var(--oobe-header-text-color);
+    font-size: var(--oobe-modal-dialog-header-font-size);
+    font-weight: var(--oobe-modal-dialog-header-font-weight);
+    grid-area: title;
+    line-height: 22px;
+  }
 
-      .secondary-text {
-        color: var(--oobe-text-color);
-        font-family: var(--oobe-default-font-family);
-        font-size: 12px;
-        font-weight: var(--oobe-default-font-weight);
-        line-height: 18px;
-      }
+  .secondary-text {
+    color: var(--oobe-text-color);
+    font-family: var(--oobe-default-font-family);
+    font-size: 12px;
+    font-weight: var(--oobe-default-font-weight);
+    line-height: 18px;
+  }
 
-      .app-tags {
-        grid-area: category;
-      }
+  .app-tags {
+    grid-area: category;
+  }
 
-      .app-tags ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
+  .app-tags ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-      .app-tags li {
-        display: inline-block;
-      }
+  .app-tags li {
+    display: inline-block;
+  }
 
-      .app-tags ul>li::before {
-        content: '|' / '';
-        margin-inline-end: 6px;
-        margin-inline-start: 6px;
-      }
+  .app-tags ul > li::before {
+    content: '|' / '';
+    margin-inline-end: 6px;
+    margin-inline-start: 6px;
+  }
 
-      .app-tags ul>li:first-of-type::before {
-        content: '';
-        margin: 0;
-      }
+  .app-tags ul > li:first-of-type::before {
+    content: '';
+    margin: 0;
+  }
 
-      .app-description {
-        grid-area: description;
-      }
+  .app-description {
+    grid-area: description;
+  }
 
-      .truncated {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+  .truncated {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-      .expand-button {
-        align-items: flex-start;
-        display: flex;
-        grid-area: expand;
-      }
+  .expand-button {
+    align-items: flex-start;
+    display: flex;
+    grid-area: expand;
+  }
 
-      cr-expand-button {
-        --cr-icon-button-margin-start: 0;
-        --cr-icon-button-margin-end: 0;
-        --cr-expand-button-icon-size: 20px;
-        --cr-expand-button-size: 20px;
-        --cr-section-vertical-padding: 0;
-        height: 20px;
-        width: 20px;
-      }
-    </style>
-    <div id="appsListContainer">
-      <div id="unselectAll" hidden="[[unselectSymbolHidden_(appsSelected)]]">
+  cr-expand-button {
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
+    --cr-expand-button-icon-size: 20px;
+    --cr-expand-button-size: 20px;
+    --cr-section-vertical-padding: 0;
+    height: 20px;
+    width: 20px;
+  }
+</style>
+<div id="appsListContainer">
+  <div id="unselectAll" hidden="[[unselectSymbolHidden_(appsSelected)]]"></div>
+  <cr-checkbox
+    id="selectAll"
+    checked="{{allSelected_}}"
+    on-change="updateSelection_"
+  >
+    <slot name="selectAllTitle"></slot>
+  </cr-checkbox>
+  <div id="appsList">
+    <template is="dom-repeat" items="[[appList]]">
+      <div class="app-item">
+        <cr-checkbox
+          id="[[item.package_name]]"
+          checked="{{item.checked}}"
+          class="no-label"
+          aria-description="[[item.title]]"
+          on-change="updateCount_"
+        >
+        </cr-checkbox>
+        <webview
+          role="img"
+          class="app-icon"
+          src="[[getWrappedIcon_(item.icon_url)]]"
+          aria-hidden="true"
+          tabindex="-1"
+          on-contentload="onImageLoaded_"
+        >
+        </webview>
+        <div class="app-title">[[item.title]]</div>
+        <div class="app-tags secondary-text truncated">
+          <ul>
+            <template is="dom-repeat" items="[[item.tags]]">
+              <li>[[item]]</li>
+            </template>
+          </ul>
+        </div>
+        <div class="app-description secondary-text truncated">
+          [[item.description]]
+        </div>
+        <div class="expand-button">
+          <cr-expand-button
+            on-click="onExpandClicked_"
+            aria-label="[[getExpandButtonAriaLabel_(item.title)]]"
+          >
+          </cr-expand-button>
+        </div>
       </div>
-      <cr-checkbox id="selectAll" checked="{{allSelected_}}"
-          on-change="updateSelection_">
-        <slot name="selectAllTitle"></slot>
-      </cr-checkbox>
-      <div id="appsList">
-        <template is="dom-repeat" items="[[appList]]">
-          <div class="app-item">
-            <cr-checkbox id="[[item.package_name]]" checked="{{item.checked}}"
-                class="no-label" aria-description="[[item.title]]"
-                on-change="updateCount_">
-            </cr-checkbox>
-            <webview role="img" class="app-icon"
-                src="[[getWrappedIcon_(item.icon_url)]]" aria-hidden="true"
-                tabindex="-1" on-contentload="onImageLoaded_">
-            </webview>
-            <div class="app-title">[[item.title]]</div>
-            <div class="app-tags secondary-text truncated">
-              <ul>
-                <template is="dom-repeat" items="[[item.tags]]">
-                  <li>[[item]]</li>
-                </template>
-              </ul>
-            </div>
-            <div class="app-description secondary-text truncated">
-              [[item.description]]
-            </div>
-            <div class="expand-button">
-              <cr-expand-button on-click="onExpandClicked_"
-                  aria-label="[[getExpandButtonAriaLabel_(item.title)]]">
-              </cr-expand-button>
-            </div>
-          </div>
-        </template>
-      </div>
-    </div>
-  </template>
-  <script src="oobe_apps_list.js"></script>
-</dom-module>
+    </template>
+  </div>
+</div>
