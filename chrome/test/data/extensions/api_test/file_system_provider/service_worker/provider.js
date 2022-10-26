@@ -87,6 +87,14 @@ export class TestFileSystemProvider {
      * @private {!Entry}
      */
     this.root = Entry.dir('', new Date(2014, 4, 28, 10, 39, 15), [
+      // Directory with actions.
+      Entry.dir(
+          TestFileSystemProvider.DIR_WITH_ACTIONS,
+          new Date(2014, 1, 25, 7, 36, 12), []),
+      // Directory with no actions.
+      Entry.dir(
+          TestFileSystemProvider.DIR_WITH_NO_ACTIONS,
+          new Date(2014, 1, 25, 7, 36, 12), []),
       // Read error
       Entry.file(
           TestFileSystemProvider.FILE_FAIL, new Date(2014, 1, 25, 7, 36, 12),
@@ -217,6 +225,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onDeleteEntryRequested', true);
     this.setHandlerEnabled('onExecuteActionRequested', true);
+    this.setHandlerEnabled('onGetActionsRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
     this.setHandlerEnabled('onMountRequested', true);
     this.setHandlerEnabled('onMoveEntryRequested', true);
@@ -680,6 +689,37 @@ export class TestFileSystemProvider {
   }
 
   /**
+   * FSP: implementation for returning a list of actions for the requested
+   * entry.
+   *
+   * @param {chrome.fileSystemProvider.GetActionsRequestedOptions} options
+   *     Options.
+   * @param {function(Array<Object>)} onSuccess Success callback with a list of
+   *     actions.
+   * @param {function(string)} onError Error callback with an error code.
+   */
+  onGetActionsRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.entryPaths.indexOf(
+            '/' + TestFileSystemProvider.DIR_WITH_NO_ACTIONS) !== -1) {
+      onSuccess([]);
+      return;
+    }
+
+    if (options.entryPaths.indexOf(
+            '/' + TestFileSystemProvider.DIR_WITH_ACTIONS) !== -1) {
+      onSuccess(TestFileSystemProvider.ACTIONS);
+      return;
+    }
+
+    onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+  }
+
+  /**
    * FSP: implementation for the metadata request event.
    *
    * @param {chrome.fileSystemProvider.GetMetadataRequestedOptions} options
@@ -1136,6 +1176,18 @@ export class TestFileSystemProvider {
  * @type {string}
  * @const
  */
+TestFileSystemProvider.DIR_WITH_ACTIONS = 'actions';
+
+/**
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.DIR_WITH_NO_ACTIONS = 'no-actions';
+
+/**
+ * @type {string}
+ * @const
+ */
 TestFileSystemProvider.FILESYSTEM_ID = 'test-fs';
 
 /**
@@ -1278,6 +1330,13 @@ TestFileSystemProvider.VALID_THUMBNAIL =
  * @const
  */
 TestFileSystemProvider.ACTION_ID = 'test-action-id';
+
+/**
+ * @type {Array<Object>}
+ * @const
+ */
+TestFileSystemProvider.ACTIONS = Object.freeze(
+    [{id: 'SHARE'}, {id: 'SomeCustomAction', title: 'Do something custom'}]);
 
 // Service worker entry point.
 export function serviceWorkerMain(serviceWorker) {

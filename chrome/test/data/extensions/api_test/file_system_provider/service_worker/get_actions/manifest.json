@@ -1,0 +1,24 @@
+{
+    // chrome-extension://pkplfbidichfdicaijlchgnapepdginl
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtDfX9dHNh948bt00YhZBm3P6E5QLaOt+v8kXVtibQfiPtOD2FTScB/f0wX/EQWVO7BkaSOsRkTPcPIgocyMPYr2FLgqGLFlYT9nQpKJZUFNF5oJ5rG6Nv7ppf4zEB3j6da1IBRTz2yOZ+6O1TMZxol/V62/QcqrJeggsHTEPGLdr9Ua4b1Ka0xKJnJngZljsbw93FI1o+P9dAh5BS6wTPiZI/vmJVjvMTkSTnaZ3n9Go2t7A0XLcSxLcVyuLAd2mAvSN0mIviOukdM66wr7llif71nKuUt+4qvlr/r9HfwzN6pA4jkwhtS1UD+3CmB+wsHwsnohNcuu4FIQ6rgq/7QIDAQAB",
+    "name": "chrome.fileSystemProvider.onGetActionsRequested",
+    "version": "0.1",
+    "manifest_version": 3,
+    "description":
+        "Test for chrome.fileSystemProvider.onGetActionsRequested() in service worker.",
+    "permissions": [
+      "fileSystemProvider",
+      {
+        "fileSystem": ["requestFileSystem", "write"]
+      },
+      "fileManagerPrivate"
+    ],
+    "file_system_provider_capabilities": {
+      "source": "device"
+    },
+    "background": {
+        "service_worker": "sw.js",
+        "type": "module"
+      }
+  }
+  

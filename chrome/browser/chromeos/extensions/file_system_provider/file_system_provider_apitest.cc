@@ -409,6 +409,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ExecuteAction) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, GetActions) {
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/get_actions",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, GetAll) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/get_all",
                                {.extension_url = "test.html"},
