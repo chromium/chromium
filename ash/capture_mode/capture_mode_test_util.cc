@@ -14,6 +14,7 @@
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
@@ -145,7 +146,7 @@ CaptureModeBarView* GetCaptureModeBarView() {
   return CaptureModeSessionTestApi(session).GetCaptureModeBarView();
 }
 
-CaptureModeToggleButton* GetFullscreenToggleButton() {
+IconButton* GetFullscreenToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   return GetCaptureModeBarView()
@@ -153,7 +154,7 @@ CaptureModeToggleButton* GetFullscreenToggleButton() {
       ->fullscreen_toggle_button();
 }
 
-CaptureModeToggleButton* GetRegionToggleButton() {
+IconButton* GetRegionToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   return GetCaptureModeBarView()->capture_source_view()->region_toggle_button();

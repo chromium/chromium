@@ -11,7 +11,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
-#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
@@ -23,7 +22,6 @@
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
-#include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
@@ -51,6 +49,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
@@ -262,19 +261,19 @@ class CaptureModeTest : public AshTestBase {
     return CaptureModeSessionTestApi(session).IsAllUisVisible();
   }
 
-  CaptureModeToggleButton* GetImageToggleButton() const {
+  IconButton* GetImageToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()->capture_type_view()->image_toggle_button();
   }
 
-  CaptureModeToggleButton* GetVideoToggleButton() const {
+  IconButton* GetVideoToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()->capture_type_view()->video_toggle_button();
   }
 
-  CaptureModeToggleButton* GetWindowToggleButton() const {
+  IconButton* GetWindowToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()
@@ -282,13 +281,13 @@ class CaptureModeTest : public AshTestBase {
         ->window_toggle_button();
   }
 
-  CaptureModeToggleButton* GetSettingsButton() const {
+  IconButton* GetSettingsButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()->settings_button();
   }
 
-  CaptureModeButton* GetCloseButton() const {
+  IconButton* GetCloseButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()->close_button();
@@ -547,11 +546,11 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
-  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
-  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
-  EXPECT_TRUE(GetFullscreenToggleButton()->GetToggled());
-  EXPECT_FALSE(GetRegionToggleButton()->GetToggled());
-  EXPECT_FALSE(GetWindowToggleButton()->GetToggled());
+  EXPECT_FALSE(GetImageToggleButton()->toggled());
+  EXPECT_TRUE(GetVideoToggleButton()->toggled());
+  EXPECT_TRUE(GetFullscreenToggleButton()->toggled());
+  EXPECT_FALSE(GetRegionToggleButton()->toggled());
+  EXPECT_FALSE(GetWindowToggleButton()->toggled());
 
   ClickOnView(GetCloseButton(), GetEventGenerator());
   EXPECT_FALSE(controller->IsActive());
@@ -562,24 +561,24 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
-  EXPECT_TRUE(GetImageToggleButton()->GetToggled());
-  EXPECT_FALSE(GetVideoToggleButton()->GetToggled());
+  EXPECT_TRUE(GetImageToggleButton()->toggled());
+  EXPECT_FALSE(GetVideoToggleButton()->toggled());
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetVideoToggleButton(), event_generator);
-  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
-  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
+  EXPECT_FALSE(GetImageToggleButton()->toggled());
+  EXPECT_TRUE(GetVideoToggleButton()->toggled());
   EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
 
   ClickOnView(GetWindowToggleButton(), event_generator);
-  EXPECT_FALSE(GetFullscreenToggleButton()->GetToggled());
-  EXPECT_FALSE(GetRegionToggleButton()->GetToggled());
-  EXPECT_TRUE(GetWindowToggleButton()->GetToggled());
+  EXPECT_FALSE(GetFullscreenToggleButton()->toggled());
+  EXPECT_FALSE(GetRegionToggleButton()->toggled());
+  EXPECT_TRUE(GetWindowToggleButton()->toggled());
   EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
 
   ClickOnView(GetFullscreenToggleButton(), event_generator);
-  EXPECT_TRUE(GetFullscreenToggleButton()->GetToggled());
-  EXPECT_FALSE(GetRegionToggleButton()->GetToggled());
-  EXPECT_FALSE(GetWindowToggleButton()->GetToggled());
+  EXPECT_TRUE(GetFullscreenToggleButton()->toggled());
+  EXPECT_FALSE(GetRegionToggleButton()->toggled());
+  EXPECT_FALSE(GetWindowToggleButton()->toggled());
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
@@ -2411,7 +2410,9 @@ TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
   // Tab six times, `Settings` button should be focused.
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-  EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                  test_api.GetCaptureModeBarView()->settings_button())
+                  ->has_focus());
 
   // Tab the space key and the settings menu will be opened.
   SendKey(ui::VKEY_SPACE, event_generator, ui::EF_NONE);
@@ -2422,7 +2423,9 @@ TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
   SendKey(ui::VKEY_ESCAPE, event_generator, ui::EF_NONE);
   EXPECT_FALSE(test_api.GetCaptureModeSettingsView());
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-  EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                  test_api.GetCaptureModeBarView()->settings_button())
+                  ->has_focus());
 
   // Tab the space key to open the settings menu again and tab to focus on the
   // settings menu item.
@@ -2435,7 +2438,9 @@ TEST_F(CaptureModeTest, ReturnFocusToSettingsButtonAfterSettingsMenuIsClosed) {
   SendKey(ui::VKEY_ESCAPE, event_generator, ui::EF_NONE);
   EXPECT_FALSE(test_api.GetCaptureModeSettingsView());
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-  EXPECT_TRUE(test_api.GetCaptureModeBarView()->settings_button()->has_focus());
+  EXPECT_TRUE(CaptureModeSessionFocusCycler::HighlightHelper::Get(
+                  test_api.GetCaptureModeBarView()->settings_button())
+                  ->has_focus());
 }
 
 // Tests that minimized window(s) will be ignored whereas four corners occluded
@@ -4117,7 +4122,9 @@ TEST_F(CaptureModeTest, ReverseTabbingTest) {
     // Reverse tabbing once and the focus should be on the close button.
     SendKey(ui::VKEY_TAB, event_generator, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-    EXPECT_TRUE(GetCloseButton()->has_focus());
+    EXPECT_TRUE(
+        CaptureModeSessionFocusCycler::HighlightHelper::Get(GetCloseButton())
+            ->has_focus());
     controller->Stop();
   }
 }
@@ -4364,14 +4371,14 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
   EXPECT_EQ(CaptureModeType::kImage, controller->type());
-  EXPECT_TRUE(GetImageToggleButton()->GetToggled());
-  EXPECT_FALSE(GetVideoToggleButton()->GetToggled());
+  EXPECT_TRUE(GetImageToggleButton()->toggled());
+  EXPECT_FALSE(GetVideoToggleButton()->toggled());
   EXPECT_FALSE(GetVideoToggleButton()->GetEnabled());
 
   // Clicking on the video button should do nothing.
   ClickOnView(GetVideoToggleButton(), GetEventGenerator());
-  EXPECT_TRUE(GetImageToggleButton()->GetToggled());
-  EXPECT_FALSE(GetVideoToggleButton()->GetToggled());
+  EXPECT_TRUE(GetImageToggleButton()->toggled());
+  EXPECT_FALSE(GetVideoToggleButton()->toggled());
   EXPECT_EQ(CaptureModeType::kImage, controller->type());
 
   // Things should go back to normal when there's no recording going on.
@@ -4379,8 +4386,8 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   EXPECT_EQ(CaptureModeType::kVideo, controller->type());
-  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
-  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
+  EXPECT_FALSE(GetImageToggleButton()->toggled());
+  EXPECT_TRUE(GetVideoToggleButton()->toggled());
   EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
 }
 
@@ -4397,10 +4404,10 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityBasic) {
   // opens/closes the settings menu.
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
-  EXPECT_TRUE(GetSettingsButton()->GetToggled());
+  EXPECT_TRUE(GetSettingsButton()->toggled());
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
-  EXPECT_FALSE(GetSettingsButton()->GetToggled());
+  EXPECT_FALSE(GetSettingsButton()->toggled());
 }
 
 // Tests how interacting with the rest of the screen (i.e. clicking outside of
@@ -4418,11 +4425,11 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
   ClickOnView(GetSettingsButton(), event_generator);
   ClickOnView(GetCaptureModeSettingsView(), event_generator);
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
-  EXPECT_TRUE(GetSettingsButton()->GetToggled());
+  EXPECT_TRUE(GetSettingsButton()->toggled());
   CaptureModeSettingsTestApi test_api;
   ClickOnView(test_api.GetAudioOffOption(), event_generator);
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
-  EXPECT_TRUE(GetSettingsButton()->GetToggled());
+  EXPECT_TRUE(GetSettingsButton()->toggled());
 
   // Test clicking on the capture bar closes the settings menu.
   event_generator->MoveMouseTo(
@@ -4430,7 +4437,7 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
       gfx::Vector2d(0, 2));
   event_generator->ClickLeftButton();
   EXPECT_FALSE(GetCaptureModeSettingsWidget());
-  EXPECT_FALSE(GetSettingsButton()->GetToggled());
+  EXPECT_FALSE(GetSettingsButton()->toggled());
 
   // Test clicking on a different source closes the settings menu.
   ClickOnView(GetSettingsButton(), event_generator);
@@ -5347,7 +5354,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   // button should be enabled and active.
   EXPECT_FALSE(GetImageToggleButton());
   EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
+  EXPECT_TRUE(GetVideoToggleButton()->toggled());
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {

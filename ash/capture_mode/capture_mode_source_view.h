@@ -12,7 +12,8 @@
 
 namespace ash {
 
-class CaptureModeToggleButton;
+class IconButton;
+class IconSwitch;
 
 // A view that is part of the CaptureBar view, from which the user can toggle
 // between the three available capture sources (fullscreen, region, and window).
@@ -26,15 +27,11 @@ class ASH_EXPORT CaptureModeSourceView : public views::View {
   CaptureModeSourceView& operator=(const CaptureModeSourceView&) = delete;
   ~CaptureModeSourceView() override;
 
-  CaptureModeToggleButton* fullscreen_toggle_button() const {
+  IconButton* fullscreen_toggle_button() const {
     return fullscreen_toggle_button_;
   }
-  CaptureModeToggleButton* region_toggle_button() const {
-    return region_toggle_button_;
-  }
-  CaptureModeToggleButton* window_toggle_button() const {
-    return window_toggle_button_;
-  }
+  IconButton* region_toggle_button() const { return region_toggle_button_; }
+  IconButton* window_toggle_button() const { return window_toggle_button_; }
 
   // Called when the capture source changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
@@ -47,10 +44,14 @@ class ASH_EXPORT CaptureModeSourceView : public views::View {
   void OnRegionToggle();
   void OnWindowToggle();
 
-  // Owned by the views hierarchy.
-  CaptureModeToggleButton* fullscreen_toggle_button_;
-  CaptureModeToggleButton* region_toggle_button_;
-  CaptureModeToggleButton* window_toggle_button_;
+  // Owned by the view hierarchy. Contains fullscreen, region, and window toggle
+  // buttons.
+  IconSwitch* capture_source_switch_;
+
+  // Owned by the `capture_source_switch_`.
+  IconButton* fullscreen_toggle_button_;
+  IconButton* region_toggle_button_;
+  IconButton* window_toggle_button_;
 };
 
 }  // namespace ash

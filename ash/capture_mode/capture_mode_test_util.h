@@ -35,9 +35,9 @@ class View;
 
 namespace ash {
 
+class IconButton;
 class CaptureModeController;
 class CaptureModeBarView;
-class CaptureModeToggleButton;
 
 // Starts the capture mode session with given `source` and `type`.
 CaptureModeController* StartCaptureSession(CaptureModeSource source,
@@ -96,9 +96,9 @@ void ClickOrTapView(const views::View* view,
 
 CaptureModeBarView* GetCaptureModeBarView();
 
-CaptureModeToggleButton* GetFullscreenToggleButton();
+IconButton* GetFullscreenToggleButton();
 
-CaptureModeToggleButton* GetRegionToggleButton();
+IconButton* GetRegionToggleButton();
 
 UserNudgeController* GetUserNudgeController();
 

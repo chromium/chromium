@@ -16,9 +16,8 @@ class Separator;
 
 namespace ash {
 
-class CaptureModeButton;
+class IconButton;
 class CaptureModeSourceView;
-class CaptureModeToggleButton;
 class CaptureModeTypeView;
 class SystemShadow;
 
@@ -36,9 +35,9 @@ class SystemShadow;
 //   |  +----------------+  |  ^                 ^  |  ^      ^      |
 //   +--^----------------------|-----------------|-----|------|------+
 //   ^  |                      +-----------------+     |      |
-//   |  |                      |                       |      CaptureModeButton
+//   |  |                      |                       |      IconButton
 //   |  |                      |                       |
-//   |  |                      |                       CaptureModeToggleButton
+//   |  |                      |                       IconButton
 //   |  |                      CaptureModeSourceView
 //   |  CaptureModeTypeView
 //   |
@@ -59,8 +58,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   CaptureModeSourceView* capture_source_view() const {
     return capture_source_view_;
   }
-  CaptureModeToggleButton* settings_button() const { return settings_button_; }
-  CaptureModeButton* close_button() const { return close_button_; }
+  IconButton* settings_button() const { return settings_button_; }
+  IconButton* close_button() const { return close_button_; }
 
   // Gets the ideal bounds in screen coordinates of the bar of widget on the
   // given `root` window. The `image_toggle_button` will not be shown in the bar
@@ -84,8 +83,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   views::Separator* separator_1_;
   CaptureModeSourceView* capture_source_view_;
   views::Separator* separator_2_;
-  CaptureModeToggleButton* settings_button_;
-  CaptureModeButton* close_button_;
+  IconButton* settings_button_;
+  IconButton* close_button_;
   std::unique_ptr<SystemShadow> shadow_;
 };
 

@@ -6,13 +6,12 @@
 
 #include <memory>
 
-#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
-#include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -21,12 +20,13 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/system_shadow.h"
 #include "base/bind.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
@@ -66,15 +66,22 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
       separator_2_(AddChildView(std::make_unique<views::Separator>())),
-      settings_button_(AddChildView(std::make_unique<CaptureModeToggleButton>(
+      settings_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&CaptureModeBarView::OnSettingsButtonPressed,
                               base::Unretained(this)),
-          kCaptureModeSettingsIcon,
-          kColorAshControlBackgroundColorInactive))),
-      close_button_(AddChildView(std::make_unique<CaptureModeButton>(
+          IconButton::Type::kSmallFloating,
+          &kCaptureModeSettingsIcon,
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS),
+          /*is_togglable=*/true,
+          /*has_border=*/true))),
+      close_button_(AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
-          kCaptureModeCloseIcon))),
+          IconButton::Type::kSmallFloating,
+          &kCaptureModeCloseIcon,
+          l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE),
+          /*is_togglable=*/false,
+          /*has_border=*/true))),
       shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
           this,
           SystemShadow::Type::kElevation12)) {
@@ -91,20 +98,19 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  settings_button_->SetToggledImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kCaptureModeSettingsIcon,
-                                     kColorAshButtonIconColor));
-  settings_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS));
+  // Customize the settings button toggled color.
+  settings_button_->SetIconToggledColorId(kColorAshButtonIconColor);
+  settings_button_->SetBackgroundToggledColorId(
+      kColorAshControlBackgroundColorInactive);
+
+  // Add highlight helper to settings button and close button.
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(settings_button_);
+  CaptureModeSessionFocusCycler::HighlightHelper::Install(close_button_);
 
   separator_1_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_1_->SetPreferredLength(kSeparatorHeight);
   separator_2_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   separator_2_->SetPreferredLength(kSeparatorHeight);
-
-  close_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
 
   if (features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -163,7 +169,7 @@ void CaptureModeBarView::SetSettingsMenuShown(bool shown) {
 
 void CaptureModeBarView::OnSettingsButtonPressed() {
   CaptureModeController::Get()->capture_mode_session()->SetSettingsMenuShown(
-      !settings_button_->GetToggled());
+      !settings_button_->toggled());
 }
 
 void CaptureModeBarView::OnCloseButtonPressed() {

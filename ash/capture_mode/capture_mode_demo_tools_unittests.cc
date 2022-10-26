@@ -10,9 +10,9 @@
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
-#include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
@@ -55,7 +55,7 @@ class CaptureModeDemoToolsTest : public AshTestBase {
     return controller;
   }
 
-  CaptureModeToggleButton* GetSettingsButton() const {
+  IconButton* GetSettingsButton() const {
     return GetCaptureModeBarView()->settings_button();
   }
 

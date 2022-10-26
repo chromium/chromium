@@ -11,16 +11,15 @@
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
-#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
-#include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
@@ -29,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/base/class_property.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -36,9 +36,17 @@
 #include "ui/views/view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(
+    ash::CaptureModeSessionFocusCycler::HighlightHelper*)
+
 namespace ash {
 
 namespace {
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(
+    CaptureModeSessionFocusCycler::HighlightHelper,
+    kCaptureModeHighlightHelper,
+    nullptr)
 
 // The focusable items for the FocusGroup::kSelection group.
 constexpr std::array<FineTunePosition, 9> kSelectionTabbingOrder = {
@@ -261,7 +269,11 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   // for children of HighlightableView, so it will not replace any other style
   // of FocusRing.
   if (!focus_ring_) {
-    focus_ring_ = StyleUtil::SetUpFocusRingForView(view);
+    // If the view has a preset focus ring, use it instead of creating a new
+    // one.
+    auto* preset_focus_ring = views::FocusRing::Get(view);
+    focus_ring_ = preset_focus_ring ? preset_focus_ring
+                                    : StyleUtil::SetUpFocusRingForView(view);
     // Use a custom focus predicate as the default one checks if |view| actually
     // has focus which won't be happening since our widgets are not activatable.
     focus_ring_->SetHasFocusPredicate(
@@ -344,6 +356,33 @@ void CaptureModeSessionFocusCycler::HighlightableWindow::OnWindowDestroying(
     aura::Window* window) {
   session_->focus_cycler_->highlightable_windows_.erase(window);
   // `this` will be deleted after the above operation.
+}
+
+// -----------------------------------------------------------------------------
+// CaptureModeSessionFocusCycler::HighlightHelper:
+
+CaptureModeSessionFocusCycler::HighlightHelper::HighlightHelper(
+    views::View* view)
+    : view_(view) {}
+
+CaptureModeSessionFocusCycler::HighlightHelper::~HighlightHelper() = default;
+
+// static
+void CaptureModeSessionFocusCycler::HighlightHelper::Install(
+    views::View* view) {
+  DCHECK(view);
+  view->SetProperty(kCaptureModeHighlightHelper, new HighlightHelper(view));
+}
+
+// static
+CaptureModeSessionFocusCycler::HighlightHelper*
+CaptureModeSessionFocusCycler::HighlightHelper::Get(views::View* view) {
+  DCHECK(view);
+  return view->GetProperty(kCaptureModeHighlightHelper);
+}
+
+views::View* CaptureModeSessionFocusCycler::HighlightHelper::GetView() {
+  return view_;
 }
 
 // -----------------------------------------------------------------------------
@@ -688,16 +727,17 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
       CaptureModeTypeView* type_view = bar_view->capture_type_view();
       CaptureModeSourceView* source_view = bar_view->capture_source_view();
-      items = {type_view->image_toggle_button(),
-               type_view->video_toggle_button(),
-               source_view->fullscreen_toggle_button(),
-               source_view->region_toggle_button(),
-               source_view->window_toggle_button()};
-
-      base::EraseIf(items,
-                    [](CaptureModeSessionFocusCycler::HighlightableView* item) {
-                      return !item || !item->GetView()->GetEnabled();
-                    });
+      for (auto* button :
+           {type_view->image_toggle_button(), type_view->video_toggle_button(),
+            source_view->fullscreen_toggle_button(),
+            source_view->region_toggle_button(),
+            source_view->window_toggle_button()}) {
+        if (button && button->GetEnabled()) {
+          auto* highlight_helper = HighlightHelper::Get(button);
+          DCHECK(highlight_helper);
+          items.push_back(highlight_helper);
+        }
+      }
       break;
     }
     case FocusGroup::kCaptureButton: {
@@ -724,7 +764,12 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
     }
     case FocusGroup::kSettingsClose: {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
-      items = {bar_view->settings_button(), bar_view->close_button()};
+      for (auto* button :
+           {bar_view->settings_button(), bar_view->close_button()}) {
+        auto* highlight_helper = HighlightHelper::Get(button);
+        DCHECK(highlight_helper);
+        items.push_back(highlight_helper);
+      }
       break;
     }
     case FocusGroup::kSettingsMenu: {

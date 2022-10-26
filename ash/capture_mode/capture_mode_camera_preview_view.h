@@ -8,9 +8,9 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/capture_mode/camera_video_frame_renderer.h"
-#include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "ash/style/icon_button.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -36,7 +36,9 @@ class CaptureModeCameraController;
 class ScopedA11yOverrideWindowSetter;
 
 // Resize button inside the camera preview view.
-class CameraPreviewResizeButton : public CaptureModeButton {
+class CameraPreviewResizeButton
+    : public IconButton,
+      public CaptureModeSessionFocusCycler::HighlightableView {
  public:
   METADATA_HEADER(CameraPreviewResizeButton);
 
@@ -49,6 +51,7 @@ class CameraPreviewResizeButton : public CaptureModeButton {
   ~CameraPreviewResizeButton() override;
 
   // CaptureModeSessionFocusCycler::HighlightableView:
+  views::View* GetView() override;
   void PseudoFocus() override;
   void PseudoBlur() override;
 

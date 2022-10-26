@@ -91,6 +91,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     virtual void ClickView();
 
    protected:
+    virtual ~HighlightableView() = default;
+
     // TODO(crbug.com/1182456): This can result in multiple of these objects
     // thinking they have focus if CaptureModeSessionFocusCycler does not call
     // PseudoFocus or PseudoBlur properly. Investigate if there is a better
@@ -124,6 +126,27 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
    private:
     aura::Window* const window_;
     CaptureModeSession* const session_;
+  };
+
+  // A helper class that creates a highlightable object for a given view. The
+  // helper is mainly used for the views that need to be created by other
+  // classes, such as the `IconButton` created by `IconSwitch`.
+  class HighlightHelper
+      : public CaptureModeSessionFocusCycler::HighlightableView {
+   public:
+    explicit HighlightHelper(views::View* view);
+    HighlightHelper(const HighlightHelper&) = delete;
+    HighlightHelper& operator=(const HighlightHelper&) = delete;
+    ~HighlightHelper() override;
+
+    static void Install(views::View* view);
+    static HighlightHelper* Get(views::View* view);
+
+    // CaptureModeSessionFocusCycler::HighlightableView:
+    views::View* GetView() override;
+
+   private:
+    views::View* const view_;
   };
 
   explicit CaptureModeSessionFocusCycler(CaptureModeSession* session);

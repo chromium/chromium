@@ -9,50 +9,69 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
+#include "ash/style/icon_switch.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
 CaptureModeSourceView::CaptureModeSourceView()
-    : fullscreen_toggle_button_(
-          AddChildView(std::make_unique<CaptureModeToggleButton>(
-              base::BindRepeating(&CaptureModeSourceView::OnFullscreenToggle,
-                                  base::Unretained(this)),
-              kCaptureModeFullscreenIcon))),
-      region_toggle_button_(
-          AddChildView(std::make_unique<CaptureModeToggleButton>(
-              base::BindRepeating(&CaptureModeSourceView::OnRegionToggle,
-                                  base::Unretained(this)),
-              kCaptureModeRegionIcon))),
-      window_toggle_button_(
-          AddChildView(std::make_unique<CaptureModeToggleButton>(
-              base::BindRepeating(&CaptureModeSourceView::OnWindowToggle,
-                                  base::Unretained(this)),
-              kCaptureModeWindowIcon))) {
-  auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      capture_mode::kBetweenChildSpacing));
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+    : capture_source_switch_(AddChildView(
+          std::make_unique<IconSwitch>(/*has_background=*/false,
+                                       /*inside_border_insets=*/gfx::Insets(),
+                                       capture_mode::kBetweenChildSpacing))),
+      fullscreen_toggle_button_(capture_source_switch_->AddButton(
+          base::BindRepeating(&CaptureModeSourceView::OnFullscreenToggle,
+                              base::Unretained(this)),
+          &kCaptureModeFullscreenIcon,
+          // Tooltip text will be set in `OnCaptureTypeChanged`.
+          /*tooltip_text=*/u"")),
+      region_toggle_button_(capture_source_switch_->AddButton(
+          base::BindRepeating(&CaptureModeSourceView::OnRegionToggle,
+                              base::Unretained(this)),
+          &kCaptureModeRegionIcon,
+          // Tooltip text will be set in `OnCaptureTypeChanged`.
+          /*tooltip_text=*/u"")),
+      window_toggle_button_(capture_source_switch_->AddButton(
+          base::BindRepeating(&CaptureModeSourceView::OnWindowToggle,
+                              base::Unretained(this)),
+          &kCaptureModeWindowIcon,
+          // Tooltip text will be set in `OnCaptureTypeChanged`.
+          /*tooltip_text=*/u"")) {
+  // Add highlight helper to each toggle button.
+  for (auto* button : {fullscreen_toggle_button_, region_toggle_button_,
+                       window_toggle_button_}) {
+    CaptureModeSessionFocusCycler::HighlightHelper::Install(button);
+  }
+
   auto* controller = CaptureModeController::Get();
   OnCaptureSourceChanged(controller->source());
   OnCaptureTypeChanged(controller->type());
+
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
 CaptureModeSourceView::~CaptureModeSourceView() = default;
 
 void CaptureModeSourceView::OnCaptureSourceChanged(
     CaptureModeSource new_source) {
-  fullscreen_toggle_button_->SetToggled(new_source ==
-                                        CaptureModeSource::kFullscreen);
-  region_toggle_button_->SetToggled(new_source == CaptureModeSource::kRegion);
-  window_toggle_button_->SetToggled(new_source == CaptureModeSource::kWindow);
+  switch (new_source) {
+    case CaptureModeSource::kFullscreen:
+      fullscreen_toggle_button_->SetToggled(true);
+      break;
+    case CaptureModeSource::kRegion:
+      region_toggle_button_->SetToggled(true);
+      break;
+    case CaptureModeSource::kWindow:
+      window_toggle_button_->SetToggled(true);
+      break;
+  }
 }
 
 void CaptureModeSourceView::OnCaptureTypeChanged(CaptureModeType new_type) {
