@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -366,11 +367,10 @@ void PrerenderHostRegistry::CancelHosts(
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHosts",
                "frame_tree_node_ids", frame_tree_node_ids);
 
-  for (int host_id : frame_tree_node_ids) {
-    // Cancel must not be requested during activation.
-    CHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
-                          host_id));
+  // Cancel must not be requested during activation.
+  CHECK(!reserved_prerender_host_);
 
+  for (int host_id : frame_tree_node_ids) {
     // Look up the id in the non-reserved host map.
     auto iter = prerender_host_by_frame_tree_node_id_.find(host_id);
     if (iter == prerender_host_by_frame_tree_node_id_.end())
@@ -402,8 +402,7 @@ bool PrerenderHostRegistry::CancelHost(int frame_tree_node_id,
                "frame_tree_node_id", frame_tree_node_id);
 
   // Cancel must not be requested during activation.
-  CHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
-                        frame_tree_node_id));
+  CHECK(!reserved_prerender_host_);
 
   // Look up the id in the non-reserved host map, remove it from the map, and
   // record the cancellation reason.
@@ -430,8 +429,8 @@ bool PrerenderHostRegistry::CancelHost(int frame_tree_node_id,
 }
 
 void PrerenderHostRegistry::CancelAllHosts(PrerenderFinalStatus final_status) {
-  // Should not have an activating host. See comments in CancelHost.
-  CHECK(reserved_prerender_host_by_frame_tree_node_id_.empty());
+  // Cancel must not be requested during activation.
+  CHECK(!reserved_prerender_host_);
 
   auto prerender_host_map = std::move(prerender_host_by_frame_tree_node_id_);
   for (auto& iter : prerender_host_map) {
@@ -484,31 +483,30 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   DCHECK_EQ(host_id, host->frame_tree_node_id());
 
   // Reserve the host for activation.
-  auto result = reserved_prerender_host_by_frame_tree_node_id_.emplace(
-      host_id, std::move(host));
-  DCHECK(result.second);
+  DCHECK(!reserved_prerender_host_);
+  reserved_prerender_host_ = std::move(host);
 
   return host_id;
 }
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
     int frame_tree_node_id) {
-  auto iter =
-      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (iter == reserved_prerender_host_by_frame_tree_node_id_.end()) {
+  if (!reserved_prerender_host_)
     return nullptr;
-  }
-  return iter->second->GetPrerenderedMainFrameHost();
+
+  DCHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
+
+  return reserved_prerender_host_->GetPrerenderedMainFrameHost();
 }
 
 std::unique_ptr<StoredPage> PrerenderHostRegistry::ActivateReservedHost(
     int frame_tree_node_id,
     NavigationRequest& navigation_request) {
-  auto iter =
-      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  CHECK(iter != reserved_prerender_host_by_frame_tree_node_id_.end());
-  std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
-  reserved_prerender_host_by_frame_tree_node_id_.erase(iter);
+  CHECK(reserved_prerender_host_);
+  CHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
+
+  std::unique_ptr<PrerenderHost> prerender_host =
+      std::move(reserved_prerender_host_);
   return prerender_host->Activate(navigation_request);
 }
 
@@ -516,7 +514,12 @@ void PrerenderHostRegistry::OnActivationFinished(int frame_tree_node_id) {
   // OnActivationFinished() should not be called for non-reserved hosts.
   DCHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
                          frame_tree_node_id));
-  reserved_prerender_host_by_frame_tree_node_id_.erase(frame_tree_node_id);
+
+  if (!reserved_prerender_host_)
+    return;
+
+  DCHECK_EQ(frame_tree_node_id, reserved_prerender_host_->frame_tree_node_id());
+  reserved_prerender_host_.reset();
 }
 
 PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
@@ -529,11 +532,13 @@ PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
 
 PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
     int frame_tree_node_id) {
-  auto iter =
-      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (iter == reserved_prerender_host_by_frame_tree_node_id_.end())
+  if (!reserved_prerender_host_)
     return nullptr;
-  return iter->second.get();
+
+  if (frame_tree_node_id != reserved_prerender_host_->frame_tree_node_id())
+    return nullptr;
+
+  return reserved_prerender_host_.get();
 }
 
 std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
@@ -541,9 +546,9 @@ std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
   for (auto& i : prerender_host_by_frame_tree_node_id_) {
     result.push_back(&i.second->GetPrerenderFrameTree());
   }
-  for (auto& i : reserved_prerender_host_by_frame_tree_node_id_) {
-    result.push_back(&i.second->GetPrerenderFrameTree());
-  }
+  if (reserved_prerender_host_)
+    result.push_back(&reserved_prerender_host_->GetPrerenderFrameTree());
+
   return result;
 }
 
@@ -557,8 +562,8 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
 }
 
 void PrerenderHostRegistry::CancelAllHostsForTesting() {
-  DCHECK(reserved_prerender_host_by_frame_tree_node_id_.empty())
-      << "It is not possible to cancel reserved hosts, so they must not exist "
+  DCHECK(!reserved_prerender_host_)
+      << "It is not possible to cancel a reserved host, so they must not exist "
          "when trying to cancel all hosts";
 
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
@@ -583,9 +588,8 @@ void PrerenderHostRegistry::ForEachPrerenderHost(
     callback.Run(*iter.second);
   }
 
-  for (auto& iter : reserved_prerender_host_by_frame_tree_node_id_) {
-    callback.Run(*iter.second);
-  }
+  if (reserved_prerender_host_)
+    callback.Run(*reserved_prerender_host_);
 }
 
 void PrerenderHostRegistry::DidFinishNavigation(

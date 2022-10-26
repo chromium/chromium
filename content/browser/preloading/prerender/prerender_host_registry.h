@@ -152,9 +152,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
-  // Cancels all hosts. Since reserved hosts can't be canceled, this will
-  // DCHECK when `reserved_prerender_host_by_frame_tree_node_id_` is not empty.
-  // This will cancel all hosts in `prerender_host_by_frame_tree_node_id_`.
+  // Cancels all hosts.
   void CancelAllHostsForTesting();
 
   // Gets the trigger type from the reserved PrerenderHost.
@@ -234,13 +232,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   base::flat_map<int, std::unique_ptr<PrerenderHost>>
       prerender_host_by_frame_tree_node_id_;
 
-  // Hosts that are reserved for activation.
-  // TODO(crbug.com/1375942): Change this flat map into a single unique pointer
-  // to a reserved PrerenderHost because now the activation sequence
-  // synchronously proceeds so we don't have a chance to have multiple reserved
-  // hosts at the same time.
-  base::flat_map<int, std::unique_ptr<PrerenderHost>>
-      reserved_prerender_host_by_frame_tree_node_id_;
+  // The host that is reserved for activation.
+  std::unique_ptr<PrerenderHost> reserved_prerender_host_;
 
   // Hosts that are scheduled to be deleted asynchronously.
   // Design note: PrerenderHostRegistry should explicitly manage the hosts to be
