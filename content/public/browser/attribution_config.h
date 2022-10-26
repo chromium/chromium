@@ -77,7 +77,7 @@ struct CONTENT_EXPORT AttributionConfig {
 
     // Controls how many reports can be in the storage per attribution
     // destination.
-    int max_reports_per_destination = 100;
+    int max_reports_per_destination = 1024;
 
     // Controls the maximum sum of the contributions (values) across all buckets
     // per source.
