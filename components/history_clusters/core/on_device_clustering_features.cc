@@ -38,5 +38,9 @@ BASE_FEATURE(kOnDeviceClusteringCategoryFiltering,
              "JourneysCategoryFiltering",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDeviceClusteringVisitRanking,
+             "JourneysOnDeviceClusteringVisitRanking",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace history_clusters

@@ -32,6 +32,9 @@ BASE_DECLARE_FEATURE(kOnDeviceClusteringKeywordFiltering);
 // Specifies how categories get used for filtering.
 BASE_DECLARE_FEATURE(kOnDeviceClusteringCategoryFiltering);
 
+// Specifies how visits within clusters are ranked.
+BASE_DECLARE_FEATURE(kOnDeviceClusteringVisitRanking);
+
 }  // namespace features
 }  // namespace history_clusters
 

@@ -262,22 +262,6 @@ struct Config {
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
 
-  // Returns the weight to use for the visit duration when ranking visits within
-  // a cluster. Will always be greater than or equal to 0.
-  float visit_duration_ranking_weight = 1.0;
-
-  // Returns the weight to use for the foreground duration when ranking visits
-  // within a cluster. Will always be greater than or equal to 0.
-  float foreground_duration_ranking_weight = 1.5;
-
-  // Returns the weight to use for bookmarked visits when ranking visits within
-  // a cluster. Will always be greater than or equal to 0.
-  float bookmark_ranking_weight = 1.0;
-
-  // Returns the weight to use for visits that are search results pages ranking
-  // visits within a cluster. Will always be greater than or equal to 0.
-  float search_results_page_ranking_weight = 2.0;
-
   // Whether to determine whether to show/hide clusters on prominent UI surfaces
   // based on categories annotated for a visit.
   bool should_use_categories_to_filter_on_prominent_ui_surfaces = false;
@@ -339,6 +323,24 @@ struct Config {
 
   // Use host instead of heavily-stripped URL as URL for deduping.
   bool use_host_for_visit_deduping = false;
+
+  // The `kOnDeviceClusteringVisitRanking` feature and child params.
+
+  // Returns the weight to use for the visit duration when ranking visits within
+  // a cluster. Will always be greater than or equal to 0.
+  float visit_duration_ranking_weight = 1.0;
+
+  // Returns the weight to use for the foreground duration when ranking visits
+  // within a cluster. Will always be greater than or equal to 0.
+  float foreground_duration_ranking_weight = 1.5;
+
+  // Returns the weight to use for bookmarked visits when ranking visits within
+  // a cluster. Will always be greater than or equal to 0.
+  float bookmark_ranking_weight = 1.0;
+
+  // Returns the weight to use for visits that are search results pages ranking
+  // visits within a cluster. Will always be greater than or equal to 0.
+  float search_results_page_ranking_weight = 2.0;
 
   // Lonely features without child params.
 
