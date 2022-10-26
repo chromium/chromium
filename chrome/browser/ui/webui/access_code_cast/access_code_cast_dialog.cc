@@ -17,8 +17,6 @@
 #include "ui/views/layout/layout_provider.h"
 #include "url/gurl.h"
 
-// TODO(b/223434114): Add tests for AccessCodeCastDialog
-
 namespace media_router {
 
 namespace {

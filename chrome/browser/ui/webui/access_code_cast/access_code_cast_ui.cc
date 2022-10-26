@@ -21,8 +21,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-// TODO(b/223434114): Add tests for AccessCodeCastUI
-
 namespace media_router {
 
 AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
