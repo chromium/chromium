@@ -1301,6 +1301,7 @@
       default_value: "auto",
       valid_for_highlight_legacy: true,
       computable: false,
+      readonly: true,
     },
     {
       name: "-webkit-locale",
@@ -1402,11 +1403,10 @@
       computed_style_custom_functions: ["getter"],
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
-      converter: "ConvertStyleColor",
-      style_builder_template: "color",
+      converter: "ConvertStyleAutoColor",
       default_value: "StyleAutoColor::AutoColor()",
-      style_builder_custom_functions: ["initial", "inherit", "value"],
       computable: true,
+      readonly: true,
     },
     {
       name: "align-content",
@@ -1594,6 +1594,7 @@
       is_background: true,
       is_highlight_colors: true,
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "background-image",
@@ -1734,6 +1735,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "border-bottom-left-radius",
@@ -1914,6 +1916,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "border-left-style",
@@ -1977,6 +1980,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "border-right-style",
@@ -2040,6 +2044,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "border-top-left-radius",
@@ -2231,10 +2236,11 @@
       default_value: "StyleAutoColor::AutoColor()",
       type_name: "StyleAutoColor",
       computed_style_custom_functions: ["getter"],
-      style_builder_custom_functions: ["initial", "inherit", "value"],
+      converter: "ConvertStyleAutoColor",
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
       valid_for_highlight_legacy: true,
+      readonly: true,
     },
     {
       name: "clear",
@@ -2300,6 +2306,7 @@
       keywords: ["auto", "srgb", "linearrgb"],
       default_value: "srgb",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "color-interpolation-filters",
@@ -2311,6 +2318,7 @@
       keywords: ["auto", "srgb", "linearrgb"],
       default_value: "linearrgb",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "color-rendering",
@@ -2321,6 +2329,7 @@
       keywords: ["auto", "optimizespeed", "optimizequality"],
       default_value: "auto",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "color-scheme",
@@ -2334,6 +2343,7 @@
       field_template: "external",
       valid_for_highlight_legacy: true,
       computable: false,
+      readonly: true,
     },
     {
       name: "column-fill",
@@ -3518,6 +3528,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_cue: true,
+      readonly: true,
     },
     {
       name: "outline-offset",
@@ -3556,7 +3567,7 @@
       include_paths: ["third_party/blink/renderer/platform/geometry/layout_unit.h"],
       default_value: "LayoutUnit(3)",
       type_name: "LayoutUnit",
-      computed_style_custom_functions: ["getter", "setter"],
+      computed_style_custom_functions: ["getter"],
       converter: "ConvertBorderWidth",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
@@ -4615,6 +4626,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      readonly: true,
     },
     {
       name: "text-decoration-line",
@@ -5293,6 +5305,7 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
+      readonly: true,
     },
     {
       name: "column-rule-style",
@@ -5591,6 +5604,7 @@
       type_name: "StyleColor",
       default_value: "StyleColor(LayoutTheme::TapHighlightColor())",
       converter: "ConvertStyleColor",
+      readonly: true,
     },
     {
       name: "-webkit-text-combine",
@@ -5616,6 +5630,7 @@
       valid_for_marker: true,
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      readonly: true,
     },
     {
       name: "text-emphasis-position",
@@ -5674,6 +5689,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_highlight_legacy: true,
+      readonly: true,
     },
     {
       name: "-webkit-text-stroke-width",

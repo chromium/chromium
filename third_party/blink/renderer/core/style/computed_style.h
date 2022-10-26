@@ -738,7 +738,6 @@ class ComputedStyle : public ComputedStyleBase,
       return LayoutUnit();
     return OutlineWidthInternal();
   }
-  void SetOutlineWidth(float v) { SetOutlineWidthInternal(LayoutUnit(v)); }
 
   // For history and compatibility reasons, we draw outline:auto (for focus
   // rings) and normal style outline differently.
@@ -843,14 +842,6 @@ class ComputedStyle : public ComputedStyleBase,
   ShapeValue* ShapeOutside() const { return ShapeOutsideInternal().Get(); }
   bool ShapeOutsideDataEquivalent(const ComputedStyle& other) const {
     return base::ValuesEquivalent(ShapeOutside(), other.ShapeOutside());
-  }
-
-  // touch-action
-  TouchAction GetEffectiveTouchAction() const {
-    return EffectiveTouchActionInternal();
-  }
-  void SetEffectiveTouchAction(TouchAction t) {
-    return SetEffectiveTouchActionInternal(t);
   }
 
   // vertical-align
@@ -1741,50 +1732,6 @@ class ComputedStyle : public ComputedStyleBase,
   CORE_EXPORT void AdjustDiffForBackgroundVisuallyEqual(
       const ComputedStyle& o,
       StyleDifference& diff) const;
-
-  void ResetBorder() {
-    ResetBorderImage();
-    ResetBorderTop();
-    ResetBorderRight();
-    ResetBorderBottom();
-    ResetBorderLeft();
-    ResetBorderTopLeftRadius();
-    ResetBorderTopRightRadius();
-    ResetBorderBottomLeftRadius();
-    ResetBorderBottomRightRadius();
-  }
-
-  void ResetBorderTop() {
-    SetBorderTopStyle(EBorderStyle::kNone);
-    SetBorderTopWidth(LayoutUnit(3));
-    SetBorderTopColor(StyleColor::CurrentColor());
-  }
-  void ResetBorderRight() {
-    SetBorderRightStyle(EBorderStyle::kNone);
-    SetBorderRightWidth(LayoutUnit(3));
-    SetBorderRightColor(StyleColor::CurrentColor());
-  }
-  void ResetBorderBottom() {
-    SetBorderBottomStyle(EBorderStyle::kNone);
-    SetBorderBottomWidth(LayoutUnit(3));
-    SetBorderBottomColor(StyleColor::CurrentColor());
-  }
-  void ResetBorderLeft() {
-    SetBorderLeftStyle(EBorderStyle::kNone);
-    SetBorderLeftWidth(LayoutUnit(3));
-    SetBorderLeftColor(StyleColor::CurrentColor());
-  }
-
-  void SetBorderRadius(const LengthSize& s) {
-    SetBorderTopLeftRadius(s);
-    SetBorderTopRightRadius(s);
-    SetBorderBottomLeftRadius(s);
-    SetBorderBottomRightRadius(s);
-  }
-  void SetBorderRadius(const gfx::Size& s) {
-    SetBorderRadius(
-        LengthSize(Length::Fixed(s.width()), Length::Fixed(s.height())));
-  }
 
   bool CanRenderBorderImage() const;
 

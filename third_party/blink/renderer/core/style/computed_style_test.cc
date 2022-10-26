@@ -288,14 +288,22 @@ TEST_F(ComputedStyleTest,
 }
 
 TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_FALSE(style->HasOutline());
   EXPECT_FALSE(style->HasOutlineWithCurrentColor());
-  style->SetOutlineColor(StyleColor::CurrentColor());
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOutlineColor(StyleColor::CurrentColor());
+  builder.SetOutlineWidth(LayoutUnit(5));
+  style = builder.TakeStyle();
   EXPECT_FALSE(style->HasOutlineWithCurrentColor());
-  style->SetOutlineWidth(5);
-  EXPECT_FALSE(style->HasOutlineWithCurrentColor());
-  style->SetOutlineStyle(EBorderStyle::kSolid);
+
+  builder = CreateComputedStyleBuilder();
+  builder.SetOutlineColor(StyleColor::CurrentColor());
+  builder.SetOutlineWidth(LayoutUnit(5));
+  builder.SetOutlineStyle(EBorderStyle::kSolid);
+  style = builder.TakeStyle();
   EXPECT_TRUE(style->HasOutlineWithCurrentColor());
 }
 
@@ -1194,36 +1202,35 @@ TEST_F(ComputedStyleTest,
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
-  scoped_refptr<const ComputedStyle> initial =
-      document.GetStyleResolver().InitialStyleForElement();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        text-decoration: underline solid green 5px;
+        text-underline-offset: 2px;
+        text-underline-position: under;
+      }
+    </style>
+    <div id="style"></div>
+    <div id="clone"></div>
+    <div id="other" style="text-decoration-color: blue;"></div>
+  )HTML",
+                                ASSERT_NO_EXCEPTION);
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(document, *document.documentElement(),
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial.get()));
+  const ComputedStyle* style =
+      document.getElementById("style")->GetComputedStyle();
+  const ComputedStyle* clone =
+      document.getElementById("clone")->GetComputedStyle();
+  const ComputedStyle* other =
+      document.getElementById("other")->GetComputedStyle();
 
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-
-  // Set up the initial text decoration properties
-  style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
-  style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
-  style->SetTextDecorationThickness(
-      TextDecorationThickness(Length(5, Length::Type::kFixed)));
-  style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
-  style->SetTextUnderlinePosition(kTextUnderlinePositionUnder);
-  state.SetStyle(style);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
   StyleDifference diff1;
-  style->UpdatePropertySpecificDifferences(*other, diff1);
+  style->UpdatePropertySpecificDifferences(*clone, diff1);
   EXPECT_FALSE(diff1.NeedsRecomputeVisualOverflow());
 
-  // Change the color, and it should not invalidate
-  other->SetTextDecorationColor(StyleColor(CSSValueID::kBlue));
-  state.SetStyle(other);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
+  // Different color, should not invalidate.
   StyleDifference diff2;
   style->UpdatePropertySpecificDifferences(*other, diff2);
   EXPECT_FALSE(diff2.NeedsRecomputeVisualOverflow());
@@ -1235,70 +1242,61 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
-  scoped_refptr<const ComputedStyle> initial =
-      document.GetStyleResolver().InitialStyleForElement();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      div {
+        text-decoration: underline solid green 5px;
+        text-underline-offset: 2px;
+        text-underline-position: under;
+      }
+    </style>
+    <div id="style"></div>
+    <div id="wavy" style="text-decoration-style: wavy;"></div>
+    <div id="overline" style="text-decoration-line: overline;"></div>
+    <div id="thickness" style="text-decoration-thickness: 3px;"></div>
+    <div id="offset" style="text-underline-offset: 4px;"></div>
+    <div id="position" style="text-underline-position: left;"></div>
+  )HTML",
+                                ASSERT_NO_EXCEPTION);
+  document.View()->UpdateAllLifecyclePhasesForTest();
 
-  StyleResolverState state(document, *document.documentElement(),
-                           nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial.get()));
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-
-  // Set up the initial text decoration properties
-  style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
-  style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
-  style->SetTextDecorationThickness(
-      TextDecorationThickness(Length(5, Length::Type::kFixed)));
-  style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
-  style->SetTextUnderlinePosition(kTextUnderlinePositionUnder);
-  state.SetStyle(style);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
+  const ComputedStyle* style =
+      document.getElementById("style")->GetComputedStyle();
+  const ComputedStyle* wavy =
+      document.getElementById("wavy")->GetComputedStyle();
+  const ComputedStyle* overline =
+      document.getElementById("overline")->GetComputedStyle();
+  const ComputedStyle* thickness =
+      document.getElementById("thickness")->GetComputedStyle();
+  const ComputedStyle* offset =
+      document.getElementById("offset")->GetComputedStyle();
+  const ComputedStyle* position =
+      document.getElementById("position")->GetComputedStyle();
 
   // Change decoration style
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-  other->SetTextDecorationStyle(ETextDecorationStyle::kWavy);
-  state.SetStyle(other);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_decoration_style;
-  style->UpdatePropertySpecificDifferences(*other, diff_decoration_style);
+  style->UpdatePropertySpecificDifferences(*wavy, diff_decoration_style);
   EXPECT_TRUE(diff_decoration_style.NeedsRecomputeVisualOverflow());
 
   // Change decoration line
-  other = ComputedStyle::Clone(*style);
-  other->SetTextDecorationLine(TextDecorationLine::kOverline);
-  state.SetStyle(other);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_decoration_line;
-  style->UpdatePropertySpecificDifferences(*other, diff_decoration_line);
+  style->UpdatePropertySpecificDifferences(*overline, diff_decoration_line);
   EXPECT_TRUE(diff_decoration_line.NeedsRecomputeVisualOverflow());
 
   // Change decoration thickness
-  other = ComputedStyle::Clone(*style);
-  other->SetTextDecorationThickness(
-      TextDecorationThickness(Length(3, Length::Type::kFixed)));
-  state.SetStyle(other);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_decoration_thickness;
-  style->UpdatePropertySpecificDifferences(*other, diff_decoration_thickness);
+  style->UpdatePropertySpecificDifferences(*thickness,
+                                           diff_decoration_thickness);
   EXPECT_TRUE(diff_decoration_thickness.NeedsRecomputeVisualOverflow());
 
   // Change underline offset
-  other = ComputedStyle::Clone(*style);
-  other->SetTextUnderlineOffset(Length(4, Length::Type::kFixed));
-  state.SetStyle(other);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_underline_offset;
-  style->UpdatePropertySpecificDifferences(*other, diff_underline_offset);
+  style->UpdatePropertySpecificDifferences(*offset, diff_underline_offset);
   EXPECT_TRUE(diff_underline_offset.NeedsRecomputeVisualOverflow());
 
   // Change underline position
-  other = ComputedStyle::Clone(*style);
-  other->SetTextUnderlinePosition(kTextUnderlinePositionLeft);
-  state.SetStyle(other);
-  StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_underline_position;
-  style->UpdatePropertySpecificDifferences(*other, diff_underline_position);
+  style->UpdatePropertySpecificDifferences(*position, diff_underline_position);
   EXPECT_TRUE(diff_underline_position.NeedsRecomputeVisualOverflow());
 }
 

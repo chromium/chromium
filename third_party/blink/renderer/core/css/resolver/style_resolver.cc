@@ -1084,7 +1084,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
     state.Style()->SetInsideLink(state.ElementLinkState());
     state.Style()->SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
-    state.Style()->SetForcedColorAdjust(
+    state.StyleBuilder().SetForcedColorAdjust(
         style_request.originating_element_style->ForcedColorAdjust());
     state.Style()->SetFont(style_request.originating_element_style->GetFont());
     state.Style()->SetLineHeight(
@@ -1562,14 +1562,15 @@ float StyleResolver::InitialZoom() const {
 scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   StyleEngine& engine = GetDocument().GetStyleEngine();
 
-  scoped_refptr<ComputedStyle> initial_style = CreateComputedStyle();
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  ComputedStyle* initial_style = builder.MutableInternalStyle();
 
-  initial_style->SetRtlOrdering(
-      GetDocument().VisuallyOrdered() ? EOrder::kVisual : EOrder::kLogical);
-  initial_style->SetZoom(InitialZoom());
-  initial_style->SetEffectiveZoom(initial_style->Zoom());
-  initial_style->SetInForcedColorsMode(GetDocument().InForcedColorsMode());
-  initial_style->SetTapHighlightColor(
+  builder.SetRtlOrdering(GetDocument().VisuallyOrdered() ? EOrder::kVisual
+                                                         : EOrder::kLogical);
+  builder.SetZoom(InitialZoom());
+  initial_style->SetEffectiveZoom(InitialZoom());
+  builder.SetInForcedColorsMode(GetDocument().InForcedColorsMode());
+  builder.SetTapHighlightColor(
       ComputedStyleInitialValues::InitialTapHighlightColor());
 
   initial_style->SetUsedColorScheme(engine.GetPageColorSchemes(),
@@ -1592,7 +1593,7 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   if (initial_data)
     initial_style->SetInitialData(std::move(initial_data));
 
-  return initial_style;
+  return builder.TakeStyle();
 }
 
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForText(
@@ -2265,10 +2266,10 @@ StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
 #define PROPAGATE_FROM(source, getter, setter, initial) \
   PROPAGATE_VALUE(source ? source->getter() : initial, getter, setter);
 
-#define PROPAGATE_VALUE(value, getter, setter)     \
-  if ((new_viewport_style->getter()) != (value)) { \
-    new_viewport_style->setter(value);             \
-    changed = true;                                \
+#define PROPAGATE_VALUE(value, getter, setter)            \
+  if ((new_viewport_style_builder.getter()) != (value)) { \
+    new_viewport_style_builder.setter(value);             \
+    changed = true;                                       \
   }
 
 namespace {
@@ -2276,7 +2277,7 @@ namespace {
 bool PropagateScrollSnapStyleToViewport(
     Document& document,
     const ComputedStyle* document_element_style,
-    ComputedStyle* new_viewport_style) {
+    ComputedStyleBuilder& new_viewport_style_builder) {
   bool changed = false;
   // We only propagate the properties related to snap container since viewport
   // defining element cannot be a snap area.
@@ -2339,8 +2340,9 @@ void StyleResolver::PropagateStyleToViewport() {
 
   const ComputedStyle& viewport_style =
       GetDocument().GetLayoutView()->StyleRef();
-  scoped_refptr<ComputedStyle> new_viewport_style =
-      ComputedStyle::Clone(viewport_style);
+  ComputedStyleBuilder new_viewport_style_builder(viewport_style);
+  ComputedStyle* new_viewport_style =
+      new_viewport_style_builder.MutableInternalStyle();
   bool changed = false;
   bool update_scrollbar_style = false;
 
@@ -2394,7 +2396,8 @@ void StyleResolver::PropagateStyleToViewport() {
         viewport_style.BackgroundLayers() != background_layers ||
         viewport_style.ImageRendering() != image_rendering) {
       changed = true;
-      new_viewport_style->SetBackgroundColor(StyleColor(background_color));
+      new_viewport_style_builder.SetBackgroundColor(
+          StyleColor(background_color));
       new_viewport_style->AccessBackgroundLayers() = background_layers;
       new_viewport_style->SetImageRendering(image_rendering);
     }
@@ -2495,7 +2498,7 @@ void StyleResolver::PropagateStyleToViewport() {
 
   // Misc
   {
-    PROPAGATE_FROM(document_element_style, GetEffectiveTouchAction,
+    PROPAGATE_FROM(document_element_style, EffectiveTouchAction,
                    SetEffectiveTouchAction, TouchAction::kAuto);
     PROPAGATE_FROM(document_element_style, GetScrollBehavior, SetScrollBehavior,
                    mojom::blink::ScrollBehavior::kAuto);
@@ -2510,14 +2513,16 @@ void StyleResolver::PropagateStyleToViewport() {
   }
 
   changed |= PropagateScrollSnapStyleToViewport(
-      GetDocument(), document_element_style, new_viewport_style.get());
+      GetDocument(), document_element_style, new_viewport_style_builder);
 
   if (changed) {
     new_viewport_style->UpdateFontOrientation();
     FontBuilder(&GetDocument()).CreateInitialFont(*new_viewport_style);
   }
-  if (changed || update_scrollbar_style)
-    GetDocument().GetLayoutView()->SetStyle(new_viewport_style);
+  if (changed || update_scrollbar_style) {
+    GetDocument().GetLayoutView()->SetStyle(
+        new_viewport_style_builder.TakeStyle());
+  }
 }
 #undef PROPAGATE_VALUE
 #undef PROPAGATE_FROM

@@ -665,7 +665,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     const ComputedStyle& parent_style,
     Element* element,
     bool is_svg_root) {
-  TouchAction inherited_action = parent_style.GetEffectiveTouchAction();
+  TouchAction inherited_action = parent_style.EffectiveTouchAction();
 
   bool is_replaced_canvas = element && IsA<HTMLCanvasElement>(element) &&
                             element->GetExecutionContext() &&
@@ -752,7 +752,7 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     Frame* content_frame = frame_owner->ContentFrame();
     if (content_frame) {
       content_frame->SetInheritedEffectiveTouchAction(
-          style.GetEffectiveTouchAction());
+          style.EffectiveTouchAction());
     }
   }
 }
@@ -783,16 +783,17 @@ static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
   }
 }
 
-void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
+void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style,
+                                              ComputedStyleBuilder& builder) {
   if (!style.InForcedColorsMode() ||
       style.ForcedColorAdjust() != EForcedColorAdjust::kAuto)
     return;
 
   style.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
   style.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
-  style.SetColorScheme({"light", "dark"});
+  builder.SetColorScheme({"light", "dark"});
   if (style.ShouldForceColor(style.AccentColor()))
-    style.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
+    builder.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
   if (!style.HasUrlBackgroundImage())
     style.ClearBackgroundImage();
 }
@@ -806,7 +807,7 @@ void StyleAdjuster::AdjustForSVGTextElement(ComputedStyle& style,
       ComputedStyleInitialValues::InitialColumnRuleStyle());
   style.SetColumnRuleWidthInternal(
       LayoutUnit(ComputedStyleInitialValues::InitialColumnRuleWidth()));
-  style.SetColumnRuleColor(
+  builder.SetColumnRuleColor(
       ComputedStyleInitialValues::InitialColumnRuleColor());
   builder.SetInternalVisitedColumnRuleColor(
       ComputedStyleInitialValues::InitialInternalVisitedColumnRuleColor());
@@ -954,7 +955,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   // A subset of CSS properties should be forced at computed value time:
   // https://drafts.csswg.org/css-color-adjust-1/#forced-colors-properties.
-  AdjustForForcedColorsMode(style);
+  AdjustForForcedColorsMode(style, builder);
 
   // Let the theme also have a crack at adjusting the style.
   LayoutTheme::GetTheme().AdjustStyle(element, style, builder);

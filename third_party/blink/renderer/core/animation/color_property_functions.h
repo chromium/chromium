@@ -45,7 +45,6 @@ class ColorPropertyFunctions {
   static OptionalStyleColor GetVisitedColor(const CSSProperty&,
                                             const ComputedStyle&);
   static void SetUnvisitedColor(const CSSProperty&,
-                                ComputedStyle&,
                                 ComputedStyleBuilder&,
                                 const Color&);
   static void SetVisitedColor(const CSSProperty&,

@@ -36,13 +36,13 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedAcrossIframes) {
 
   Element* target = ChildDocument().getElementById("target");
   EXPECT_EQ(TouchAction::kNone,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* owner = GetDocument().getElementById("owner");
   owner->setAttribute(html_names::kStyleAttr, "touch-action: auto");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPinchZoom,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionPanningReEnabledByScrollers) {
@@ -59,7 +59,7 @@ TEST_F(StyleAdjusterTest, TouchActionPanningReEnabledByScrollers) {
   Element* target = GetDocument().getElementById("target");
   EXPECT_EQ(TouchAction::kManipulation | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
@@ -76,13 +76,13 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
   Element* target = GetDocument().getElementById("target");
   EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* ancestor = GetDocument().getElementById("ancestor");
   ancestor->setAttribute(html_names::kStyleAttr, "touch-action: pan-y");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* potential_scroller =
       GetDocument().getElementById("potential-scroller");
@@ -90,7 +90,7 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPan | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
@@ -106,14 +106,14 @@ TEST_F(StyleAdjusterTest, TouchActionRestrictedByLowerAncestor) {
   Element* target = GetDocument().getElementById("target");
   EXPECT_EQ(TouchAction::kPanRight | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 
   Element* parent = GetDocument().getElementById("parent");
   parent->setAttribute(html_names::kStyleAttr, "touch-action: auto");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanX | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
@@ -136,36 +136,36 @@ TEST_F(StyleAdjusterTest, TouchActionContentEditableArea) {
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("editable1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("input1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("textarea1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
             GetDocument()
                 .getElementById("editable2")
                 ->GetComputedStyle()
-                ->GetEffectiveTouchAction());
+                ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
             GetDocument()
                 .getElementById("input2")
                 ->GetComputedStyle()
-                ->GetEffectiveTouchAction());
+                ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
             GetDocument()
                 .getElementById("textarea2")
                 ->GetComputedStyle()
-                ->GetEffectiveTouchAction());
+                ->EffectiveTouchAction());
 
   Element* target = GetDocument().getElementById("editable1");
   target->setAttribute(html_names::kContenteditableAttr, "true");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kAuto & ~TouchAction::kInternalPanXScrolls,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
@@ -182,12 +182,12 @@ TEST_F(StyleAdjusterTest, TouchActionNoPanXScrollsWhenNoPanX) {
 
   Element* target = GetDocument().getElementById("target");
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 
   target->setAttribute(html_names::kContenteditableAttr, "true");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TouchAction::kPanY | TouchAction::kInternalNotWritable,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, TouchActionNotWritableReEnabledByScrollers) {
@@ -206,7 +206,7 @@ TEST_F(StyleAdjusterTest, TouchActionNotWritableReEnabledByScrollers) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById("target");
-  EXPECT_TRUE((target->GetComputedStyle()->GetEffectiveTouchAction() &
+  EXPECT_TRUE((target->GetComputedStyle()->EffectiveTouchAction() &
                TouchAction::kInternalNotWritable) != TouchAction::kNone);
 }
 
@@ -231,19 +231,19 @@ TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("editable1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("input1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("password1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
   EXPECT_EQ(TouchAction::kAuto, GetDocument()
                                     .getElementById("textarea1")
                                     ->GetComputedStyle()
-                                    ->GetEffectiveTouchAction());
+                                    ->EffectiveTouchAction());
 
   TouchAction expected_input_action =
       (TouchAction::kAuto & ~TouchAction::kInternalNotWritable);
@@ -256,25 +256,25 @@ TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
   EXPECT_EQ(expected_input_action, GetDocument()
                                        .getElementById("editable2")
                                        ->GetComputedStyle()
-                                       ->GetEffectiveTouchAction());
+                                       ->EffectiveTouchAction());
   EXPECT_EQ(expected_input_action, GetDocument()
                                        .getElementById("input2")
                                        ->GetComputedStyle()
-                                       ->GetEffectiveTouchAction());
+                                       ->EffectiveTouchAction());
   EXPECT_EQ(expected_pwd_action, GetDocument()
                                      .getElementById("password2")
                                      ->GetComputedStyle()
-                                     ->GetEffectiveTouchAction());
+                                     ->EffectiveTouchAction());
   EXPECT_EQ(expected_input_action, GetDocument()
                                        .getElementById("textarea2")
                                        ->GetComputedStyle()
-                                       ->GetEffectiveTouchAction());
+                                       ->EffectiveTouchAction());
 
   Element* target = GetDocument().getElementById("editable1");
   target->setAttribute(html_names::kContenteditableAttr, "true");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(expected_input_action,
-            target->GetComputedStyle()->GetEffectiveTouchAction());
+            target->GetComputedStyle()->EffectiveTouchAction());
 }
 
 TEST_F(StyleAdjusterTest, OverflowClipUseCount) {

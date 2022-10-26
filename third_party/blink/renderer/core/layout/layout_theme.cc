@@ -105,6 +105,26 @@ ControlPart AutoAppearanceFor(const Element& element) {
   return kNoControlPart;
 }
 
+void ResetBorder(ComputedStyleBuilder& builder) {
+  builder.ResetBorderImage();
+  builder.ResetBorderTopStyle();
+  builder.ResetBorderTopWidth();
+  builder.ResetBorderTopColor();
+  builder.ResetBorderRightStyle();
+  builder.ResetBorderRightWidth();
+  builder.ResetBorderRightColor();
+  builder.ResetBorderBottomStyle();
+  builder.ResetBorderBottomWidth();
+  builder.ResetBorderBottomColor();
+  builder.ResetBorderLeftStyle();
+  builder.ResetBorderLeftWidth();
+  builder.ResetBorderLeftColor();
+  builder.ResetBorderTopLeftRadius();
+  builder.ResetBorderTopRightRadius();
+  builder.ResetBorderBottomLeftRadius();
+  builder.ResetBorderBottomRightRadius();
+}
+
 }  // namespace
 
 LayoutTheme& LayoutTheme::GetTheme() {
@@ -232,7 +252,7 @@ void LayoutTheme::AdjustStyle(const Element* element,
   // After this point, a Node must be non-null Element if
   // EffectiveAppearance() != kNoControlPart.
 
-  AdjustControlPartStyle(style);
+  AdjustControlPartStyle(style, builder);
 
   // Call the appropriate style adjustment method based off the appearance
   // value.
@@ -401,22 +421,24 @@ bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
   return true;
 }
 
-void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style) const {
+void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style,
+                                      ComputedStyleBuilder& builder) const {
   // padding - not honored by WinIE, needs to be removed.
   style.ResetPadding();
 
   // border - honored by WinIE, but looks terrible (just paints in the control
   // box and turns off the Windows XP theme) for now, we will not honor it.
-  style.ResetBorder();
+  ResetBorder(builder);
 }
 
-void LayoutTheme::AdjustRadioStyle(ComputedStyle& style) const {
+void LayoutTheme::AdjustRadioStyle(ComputedStyle& style,
+                                   ComputedStyleBuilder& builder) const {
   // padding - not honored by WinIE, needs to be removed.
   style.ResetPadding();
 
   // border - honored by WinIE, but looks terrible (just paints in the control
   // box and turns off the Windows XP theme) for now, we will not honor it.
-  style.ResetBorder();
+  ResetBorder(builder);
 }
 
 void LayoutTheme::AdjustButtonStyle(ComputedStyle& style) const {}
@@ -785,14 +807,15 @@ bool LayoutTheme::SupportsCalendarPicker(const AtomicString& type) const {
          type == input_type_names::kMonth || type == input_type_names::kWeek;
 }
 
-void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style) {
+void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style,
+                                         ComputedStyleBuilder& builder) {
   // Call the appropriate style adjustment method based off the appearance
   // value.
   switch (style.EffectiveAppearance()) {
     case kCheckboxPart:
-      return AdjustCheckboxStyle(style);
+      return AdjustCheckboxStyle(style, builder);
     case kRadioPart:
-      return AdjustRadioStyle(style);
+      return AdjustRadioStyle(style, builder);
     case kPushButtonPart:
     case kSquareButtonPart:
     case kButtonPart:

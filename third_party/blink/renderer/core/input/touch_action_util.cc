@@ -13,7 +13,7 @@ namespace touch_action_util {
 
 TouchAction ComputeEffectiveTouchAction(const Node& node) {
   if (node.GetComputedStyle())
-    return node.GetComputedStyle()->GetEffectiveTouchAction();
+    return node.GetComputedStyle()->EffectiveTouchAction();
 
   return TouchAction::kAuto;
 }

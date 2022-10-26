@@ -1483,20 +1483,6 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
                                                     CSSValuePhase::kUsedValue);
 }
 
-void CaretColor::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetCaretColor(StyleAutoColor::AutoColor());
-}
-
-void CaretColor::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetCaretColor(state.ParentStyle()->CaretColor());
-}
-
-void CaretColor::ApplyValue(StyleResolverState& state,
-                            const CSSValue& value) const {
-  state.Style()->SetCaretColor(
-      StyleBuilderConverter::ConvertStyleAutoColor(state, value));
-}
-
 const CSSValue* Clear::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -1770,7 +1756,7 @@ void ApplyColorSchemeValue(StyleResolverState& state,
     flags = document.GetStyleEngine().GetPageColorSchemes();
   }
 
-  state.StyleRef().SetColorScheme(std::move(color_schemes));
+  state.StyleBuilder().SetColorScheme(std::move(color_schemes));
 
   state.StyleRef().SetUsedColorScheme(
       flags, document.GetStyleEngine().GetPreferredColorScheme(),
@@ -1793,9 +1779,10 @@ void ColorScheme::ApplyInitial(StyleResolverState& state) const {
 }
 
 void ColorScheme::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetColorScheme(state.ParentStyle()->ColorScheme());
-  state.Style()->SetDarkColorScheme(state.ParentStyle()->DarkColorScheme());
-  state.Style()->SetColorSchemeForced(state.ParentStyle()->ColorSchemeForced());
+  ComputedStyleBuilder& builder = state.StyleBuilder();
+  builder.SetColorScheme(state.ParentStyle()->ColorScheme());
+  builder.SetDarkColorScheme(state.ParentStyle()->DarkColorScheme());
+  builder.SetColorSchemeForced(state.ParentStyle()->ColorSchemeForced());
 }
 
 void ColorScheme::ApplyValue(StyleResolverState& state,
@@ -5316,20 +5303,6 @@ const CSSValue* AccentColor::CSSValueFromComputedStyleInternal(
 
   return ComputedStyleUtils::ValueForStyleAutoColor(
       style, style.AccentColor(), CSSValuePhase::kComputedValue);
-}
-
-void AccentColor::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetAccentColor(StyleAutoColor::AutoColor());
-}
-
-void AccentColor::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetAccentColor(state.ParentStyle()->AccentColor());
-}
-
-void AccentColor::ApplyValue(StyleResolverState& state,
-                             const CSSValue& value) const {
-  state.Style()->SetAccentColor(
-      StyleBuilderConverter::ConvertStyleAutoColor(state, value));
 }
 
 const blink::Color OutlineColor::ColorIncludingFallback(
