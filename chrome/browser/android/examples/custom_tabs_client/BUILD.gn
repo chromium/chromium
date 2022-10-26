@@ -87,7 +87,6 @@ android_apk("custom_tabs_client_example_apk") {
 
   deps = [
     ":chrome_tabs_client_example_apk_resources",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
