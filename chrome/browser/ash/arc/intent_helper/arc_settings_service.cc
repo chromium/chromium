@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/backup_settings.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -186,6 +187,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncConsumerAutoUpdateToggle() const;
   void SyncDockedMagnifierEnabled() const;
   void SyncFocusHighlightEnabled() const;
+  void SyncGIOBetaEnabled() const;
   void SyncLocale() const;
   void SyncLocationServiceEnabled() const;
   void SyncProxySettings() const;
@@ -460,6 +462,7 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   SyncConsumerAutoUpdateToggle();
   SyncDockedMagnifierEnabled();
   SyncFocusHighlightEnabled();
+  SyncGIOBetaEnabled();
   SyncProxySettings();
   SyncReportingConsent(/*initial_sync=*/false);
   SyncPictureInPictureEnabled();
@@ -751,6 +754,12 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   extras.Set("use24HourClock", use24HourClock);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_USE_24_HOUR_CLOCK",
                         extras);
+}
+
+void ArcSettingsServiceImpl::SyncGIOBetaEnabled() const {
+  SendBoolValueSettingsBroadcast(
+      ash::features::IsArcInputOverlayBetaEnabled(), /*managed=*/false,
+      "org.chromium.arc.intent_helper.ACTION_SET_GIO_BETA_ENABLED");
 }
 
 void ArcSettingsServiceImpl::SyncConsumerAutoUpdateToggle() const {
