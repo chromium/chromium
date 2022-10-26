@@ -213,7 +213,7 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
       False,
     ),
     BanRule(
-      r'/(?<!\bsuper\.)(?<!\bIntent )registerReceiver\(',
+      r'/(?<!\bsuper\.)(?<!\bIntent )\bregisterReceiver\(',
       (
        'Do not call android.content.Context.registerReceiver (or an override) '
        'directly. Use one of the wrapper methods defined in '
