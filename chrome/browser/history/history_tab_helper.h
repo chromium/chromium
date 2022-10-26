@@ -12,6 +12,7 @@
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace history {
 struct HistoryAddPageArgs;
@@ -109,6 +110,14 @@ class HistoryTabHelper
   // a certain time period after the page load is complete will be saved to the
   // history system. Only applies to the main frame of the page.
   base::TimeTicks last_load_completion_;
+
+  // Some cached state about the current navigation, used to identify it again
+  // once a new navigation has happened.
+  struct NavigationState {
+    int nav_entry_id;
+    GURL url;
+  };
+  absl::optional<NavigationState> cached_navigation_state_;
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligible_tab_for_testing_ = false;

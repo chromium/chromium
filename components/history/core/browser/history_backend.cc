@@ -817,9 +817,6 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       UpdateSegments(request.url, from_visit_id, last_visit_id, t,
                      request.time);
     }
-
-    // Update the referrer's duration.
-    UpdateVisitDuration(from_visit_id, request.time);
   } else {
     // Redirect case. Add the redirect chain.
 
@@ -943,9 +940,6 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
           UpdateSegments(redirects[redirect_index], from_visit_id,
                          last_visit_id, t, request.time);
         }
-
-        // Update the referrer's duration.
-        UpdateVisitDuration(from_visit_id, request.time);
       }
 
       // Subsequent transitions in the redirect list must all be server

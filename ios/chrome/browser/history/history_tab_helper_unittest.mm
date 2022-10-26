@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -36,6 +37,10 @@ class HistoryTabHelperTest : public PlatformTest {
         ios::HistoryServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
 
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    navigation_manager_ = navigation_manager.get();
+    web_state_.SetNavigationManager(std::move(navigation_manager));
+
     web_state_.SetBrowserState(chrome_browser_state_.get());
     HistoryTabHelper::CreateForWebState(&web_state_);
   }
@@ -49,9 +54,10 @@ class HistoryTabHelperTest : public PlatformTest {
 
     base::RunLoop loop;
     service->QueryURL(
-        url, false,
+        url, /*want_visits=*/true,
         base::BindLambdaForTesting([&](history::QueryURLResult result) {
           latest_row_result_ = std::move(result.row);
+          latest_visits_result_ = std::move(result.visits);
           loop.Quit();
         }),
         &tracker_);
@@ -72,10 +78,12 @@ class HistoryTabHelperTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   web::FakeWebState web_state_;
+  web::FakeNavigationManager* navigation_manager_;
   base::CancelableTaskTracker tracker_;
 
   // Cached data from the last call to `QueryURL()`.
   history::URLRow latest_row_result_;
+  history::VisitVector latest_visits_result_;
 };
 
 }  // namespace
@@ -224,6 +232,62 @@ TEST_F(HistoryTabHelperTest, TestFileNotAdded) {
   AddVisitForURL(file_url);
   QueryURL(file_url);
   EXPECT_NE(file_url, latest_row_result_.url());
+}
+
+TEST_F(HistoryTabHelperTest, ShouldUpdateVisitDurationInHistory) {
+  const GURL url1("https://url1.com");
+  const GURL url2("https://url2.com");
+
+  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(helper);
+
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
+  navigation_context.SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 234 OK\r\n\r\n"));
+
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  navigation_manager_->SetLastCommittedItem(item.get());
+
+  // Navigate to `url1`.
+  item->SetURL(url1);
+  item->SetTimestamp(base::Time::Now());
+  navigation_context.SetUrl(url1);
+  static_cast<web::WebStateObserver*>(helper)->DidFinishNavigation(
+      &web_state_, &navigation_context);
+
+  // Make sure the visit showed up.
+  QueryURL(url1);
+  ASSERT_EQ(latest_row_result_.url(), url1);
+  ASSERT_FALSE(latest_visits_result_.empty());
+  // The duration shouldn't be set yet, since the visit is still open.
+  EXPECT_TRUE(latest_visits_result_.back().visit_duration.is_zero());
+
+  // Once the user navigates on, the duration of the first visit should be
+  // populated.
+  item->SetURL(url2);
+  item->SetTimestamp(base::Time::Now());
+  navigation_context.SetUrl(url2);
+  static_cast<web::WebStateObserver*>(helper)->DidFinishNavigation(
+      &web_state_, &navigation_context);
+
+  // The duration of the first visit should be populated now.
+  QueryURL(url1);
+  ASSERT_EQ(latest_row_result_.url(), url1);
+  ASSERT_FALSE(latest_visits_result_.empty());
+  EXPECT_FALSE(latest_visits_result_.back().visit_duration.is_zero());
+  // ...but not the duration of the second visit yet.
+  QueryURL(url2);
+  ASSERT_EQ(latest_row_result_.url(), url2);
+  ASSERT_FALSE(latest_visits_result_.empty());
+  EXPECT_TRUE(latest_visits_result_.back().visit_duration.is_zero());
+
+  // Closing the tab should finish the second visit and populate its duration.
+  static_cast<web::WebStateObserver*>(helper)->WebStateDestroyed(&web_state_);
+  QueryURL(url2);
+  ASSERT_EQ(latest_row_result_.url(), url2);
+  ASSERT_FALSE(latest_visits_result_.empty());
+  EXPECT_FALSE(latest_visits_result_.back().visit_duration.is_zero());
 }
 
 TEST_F(HistoryTabHelperTest,

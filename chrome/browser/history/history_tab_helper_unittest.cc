@@ -83,6 +83,8 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         /*referrer=*/GURL(), history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
         history::SOURCE_BROWSED, /*did_replace_entry=*/false);
     HistoryTabHelper::CreateForWebContents(web_contents());
+    HistoryTabHelper::FromWebContents(web_contents())
+        ->SetForceEligibleTabForTesting(true);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -111,6 +113,23 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         &tracker_);
     loop.Run();
     return title;
+  }
+
+  base::TimeDelta QueryLastVisitDurationFromHistory(const GURL& url) {
+    base::TimeDelta visit_duration;
+    base::RunLoop loop;
+    history_service_->QueryURL(
+        url, /*want_visits=*/true,
+        base::BindLambdaForTesting([&](history::QueryURLResult result) {
+          EXPECT_TRUE(result.success);
+          if (!result.visits.empty()) {
+            visit_duration = result.visits.back().visit_duration;
+          }
+          loop.Quit();
+        }),
+        &tracker_);
+    loop.Run();
+    return visit_duration;
   }
 
   history::MostVisitedURLList QueryMostVisitedURLs() {
@@ -176,6 +195,25 @@ TEST_F(HistoryTabHelperTest, ShouldLimitTitleUpdatesPerPage) {
   // Further updates should be ignored.
   web_contents()->UpdateTitleForEntry(entry, u"title11");
   EXPECT_EQ("title10", QueryPageTitleFromHistory(page_url_));
+}
+
+TEST_F(HistoryTabHelperTest, ShouldUpdateVisitDurationInHistory) {
+  const GURL url1("https://url1.com");
+  const GURL url2("https://url2.com");
+
+  web_contents_tester()->NavigateAndCommit(url1);
+  // The duration shouldn't be set yet, since the visit is still open.
+  EXPECT_TRUE(QueryLastVisitDurationFromHistory(url1).is_zero());
+
+  // Once the user navigates on, the duration of the first visit should be
+  // populated.
+  web_contents_tester()->NavigateAndCommit(url2);
+  EXPECT_FALSE(QueryLastVisitDurationFromHistory(url1).is_zero());
+  EXPECT_TRUE(QueryLastVisitDurationFromHistory(url2).is_zero());
+
+  // Closing the tab should finish the second visit and populate its duration.
+  DeleteContents();
+  EXPECT_FALSE(QueryLastVisitDurationFromHistory(url2).is_zero());
 }
 
 TEST_F(HistoryTabHelperTest, CreateAddPageArgsReferringURLMainFrameNoReferrer) {

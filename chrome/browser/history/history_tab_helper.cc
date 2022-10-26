@@ -174,9 +174,23 @@ HistoryTabHelper::~HistoryTabHelper() = default;
 
 void HistoryTabHelper::UpdateHistoryForNavigation(
     const history::HistoryAddPageArgs& add_page_args) {
-  history::HistoryService* hs = GetHistoryService();
-  if (hs)
-    hs->AddPage(add_page_args);
+  history::HistoryService* history_service = GetHistoryService();
+  if (!history_service)
+    return;
+
+  // Update the previous navigation's end time.
+  if (cached_navigation_state_) {
+    history_service->UpdateWithPageEndTime(
+        history::ContextIDForWebContents(web_contents()),
+        cached_navigation_state_->nav_entry_id, cached_navigation_state_->url,
+        base::Time::Now());
+  }
+  // Cache the relevant fields of the current navigation, so we can later update
+  // its end time too.
+  cached_navigation_state_ = {add_page_args.nav_entry_id, add_page_args.url};
+
+  // Now, actually add the new navigation to history.
+  history_service->AddPage(add_page_args);
 }
 
 history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
@@ -469,23 +483,23 @@ history::HistoryService* HistoryTabHelper::GetHistoryService() {
 void HistoryTabHelper::WebContentsDestroyed() {
   translate_observation_.Reset();
 
-  // We update the history for this URL.
-  WebContents* tab = web_contents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  if (profile->IsOffTheRecord())
+  history::HistoryService* history_service = GetHistoryService();
+  if (!history_service)
     return;
 
-  history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::IMPLICIT_ACCESS);
-  if (hs) {
-    NavigationEntry* entry = tab->GetController().GetLastCommittedEntry();
-    history::ContextID context_id = history::ContextIDForWebContents(tab);
-    if (entry) {
-      hs->UpdateWithPageEndTime(context_id, entry->GetUniqueID(),
-                                tab->GetLastCommittedURL(), base::Time::Now());
-    }
-    hs->ClearCachedDataForContextID(context_id);
+  history::ContextID context_id =
+      history::ContextIDForWebContents(web_contents());
+
+  // If there is a current history-eligible navigation in this tab (i.e.
+  // `cached_navigation_state_` exists), that visit is concluded now, so update
+  // its end time.
+  if (cached_navigation_state_) {
+    history_service->UpdateWithPageEndTime(
+        context_id, cached_navigation_state_->nav_entry_id,
+        cached_navigation_state_->url, base::Time::Now());
   }
+
+  history_service->ClearCachedDataForContextID(context_id);
 }
 
 bool HistoryTabHelper::IsEligibleTab(

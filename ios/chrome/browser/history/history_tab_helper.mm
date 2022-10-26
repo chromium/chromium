@@ -47,6 +47,26 @@ HistoryTabHelper::~HistoryTabHelper() {
   DCHECK(!web_state_);
 }
 
+void HistoryTabHelper::UpdateHistoryForNavigation(
+    const history::HistoryAddPageArgs& add_page_args) {
+  history::HistoryService* history_service = GetHistoryService();
+  if (!history_service)
+    return;
+
+  // Update the previous navigation's end time.
+  if (cached_navigation_state_) {
+    history_service->UpdateWithPageEndTime(
+        /*context_id=*/this, cached_navigation_state_->nav_entry_id,
+        cached_navigation_state_->url, base::Time::Now());
+  }
+  // Cache the relevant fields of the current navigation, so we can later update
+  // its end time too.
+  cached_navigation_state_ = {add_page_args.nav_entry_id, add_page_args.url};
+
+  // Now, actually add the new navigation to history.
+  history_service->AddPage(add_page_args);
+}
+
 void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
   DCHECK(!delay_notification_);
 
@@ -136,7 +156,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   context_annotations.response_code = http_response_code;
 
   return history::HistoryAddPageArgs(
-      url, last_committed_item->GetTimestamp(), this,
+      url, last_committed_item->GetTimestamp(), /*context_id=*/this,
       last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
       hidden, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
@@ -154,11 +174,8 @@ void HistoryTabHelper::SetDelayHistoryServiceNotification(
     return;
   }
 
-  history::HistoryService* history_service = GetHistoryService();
-  if (history_service) {
-    for (const auto& add_page_args : recorded_navigations_) {
-      history_service->AddPage(add_page_args);
-    }
+  for (const auto& add_page_args : recorded_navigations_) {
+    UpdateHistoryForNavigation(add_page_args);
   }
 
   std::vector<history::HistoryAddPageArgs> empty_vector;
@@ -256,11 +273,8 @@ void HistoryTabHelper::DidFinishNavigation(
   } else {
     DCHECK(recorded_navigations_.empty());
 
-    history::HistoryService* history_service = GetHistoryService();
-    if (history_service) {
-      history_service->AddPage(add_page_args);
-      UpdateHistoryPageTitle(*last_committed_item);
-    }
+    UpdateHistoryForNavigation(add_page_args);
+    UpdateHistoryPageTitle(*last_committed_item);
   }
 }
 
@@ -300,6 +314,20 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
 
   translate_observation_.Reset();
+
+  history::HistoryService* history_service = GetHistoryService();
+  if (history_service) {
+    // If there is a current history-eligible navigation in this tab (i.e.
+    // `cached_navigation_state_` exists), that visit is concluded now, so
+    // update its end time.
+    if (cached_navigation_state_) {
+      history_service->UpdateWithPageEndTime(
+          /*context_id=*/this, cached_navigation_state_->nav_entry_id,
+          cached_navigation_state_->url, base::Time::Now());
+    }
+
+    history_service->ClearCachedDataForContextID(/*context_id=*/this);
+  }
 
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
