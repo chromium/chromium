@@ -239,7 +239,7 @@ class RTCVideoDecoderAdapterWrapper : public webrtc::VideoDecoder {
 
 }  // namespace
 
-class RTCVideoDecoderAdapterTest : public ::testing::Test {
+class RTCVideoDecoderAdapterTest : public ::testing::TestWithParam<bool> {
  public:
   RTCVideoDecoderAdapterTest(const RTCVideoDecoderAdapterTest&) = delete;
   RTCVideoDecoderAdapterTest& operator=(const RTCVideoDecoderAdapterTest&) =
@@ -276,9 +276,14 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
               return std::move(owned_video_decoder_);
             });
     EXPECT_CALL(gpu_factories_, CreateVideoDecoder(_, _)).Times(AtLeast(0));
+    std::vector<base::test::FeatureRef> enable_features;
 #if BUILDFLAG(IS_WIN)
-    feature_list_.InitAndEnableFeature(::media::kD3D11Vp9kSVCHWDecoding);
+    enable_features.emplace_back(::media::kD3D11Vp9kSVCHWDecoding);
 #endif
+    if (GetParam())
+      enable_features.emplace_back(features::kWebRtcDecoderAdapterSyncDecode);
+    if (!enable_features.empty())
+      feature_list_.InitWithFeatures(enable_features, {});
   }
 
   ~RTCVideoDecoderAdapterTest() override {
@@ -287,6 +292,10 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   }
 
  protected:
+  bool SyncDecodingIsEnabled() const {
+    return base::FeatureList::IsEnabled(
+        features::kWebRtcDecoderAdapterSyncDecode);
+  }
   bool BasicSetup() {
     if (!CreateAndInitialize())
       return false;
@@ -459,13 +468,13 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
   int spatial_index_;
 };
 
-TEST_F(RTCVideoDecoderAdapterTest, Create_UnknownFormat) {
+TEST_P(RTCVideoDecoderAdapterTest, Create_UnknownFormat) {
   ASSERT_FALSE(RTCVideoDecoderAdapterWrapper::Create(
       &gpu_factories_, webrtc::SdpVideoFormat(webrtc::CodecTypeToPayloadString(
                            webrtc::kVideoCodecGeneric))));
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, Create_UnsupportedFormat) {
+TEST_P(RTCVideoDecoderAdapterTest, Create_UnsupportedFormat) {
   EXPECT_CALL(gpu_factories_, IsDecoderConfigSupported(_))
       .WillRepeatedly(
           Return(media::GpuVideoAcceleratorFactories::Supported::kFalse));
@@ -474,16 +483,16 @@ TEST_F(RTCVideoDecoderAdapterTest, Create_UnsupportedFormat) {
                            webrtc::kVideoCodecVP9))));
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, Lifecycle) {
+TEST_P(RTCVideoDecoderAdapterTest, Lifecycle) {
   ASSERT_TRUE(BasicSetup());
   ASSERT_TRUE(BasicTeardown());
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, InitializationFailure) {
+TEST_P(RTCVideoDecoderAdapterTest, InitializationFailure) {
   ASSERT_FALSE(CreateAndInitialize(false));
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, Decode) {
+TEST_P(RTCVideoDecoderAdapterTest, Decode) {
   ASSERT_TRUE(BasicSetup());
 
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
@@ -497,7 +506,7 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode) {
   media_thread_.FlushForTesting();
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, Decode_Error) {
+TEST_P(RTCVideoDecoderAdapterTest, Decode_Error) {
   ASSERT_TRUE(BasicSetup());
 
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
@@ -510,7 +519,7 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode_Error) {
   ASSERT_EQ(Decode(1), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, Decode_Hang_Short) {
+TEST_P(RTCVideoDecoderAdapterTest, Decode_Hang_Short) {
   ASSERT_TRUE(BasicSetup());
 
   // Ignore Decode() calls.
@@ -533,7 +542,7 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode_Hang_Short) {
   FAIL();
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, Decode_Hang_Long) {
+TEST_P(RTCVideoDecoderAdapterTest, Decode_Hang_Long) {
   ASSERT_TRUE(BasicSetup());
 
   // Ignore Decode() calls.
@@ -551,7 +560,7 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode_Hang_Long) {
   FAIL();
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
+TEST_P(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
   SetSdpFormat(webrtc::SdpVideoFormat(
       "VP9", {{webrtc::kVP9FmtpProfileId,
                webrtc::VP9ProfileToString(webrtc::VP9Profile::kProfile2)}}));
@@ -587,7 +596,7 @@ TEST_F(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
   media_thread_.FlushForTesting();
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, HandlesReinitializeFailure) {
+TEST_P(RTCVideoDecoderAdapterTest, HandlesReinitializeFailure) {
   SetSdpFormat(webrtc::SdpVideoFormat(
       "VP9", {{webrtc::kVP9FmtpProfileId,
                webrtc::VP9ProfileToString(webrtc::VP9Profile::kProfile2)}}));
@@ -609,7 +618,7 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesReinitializeFailure) {
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
+TEST_P(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
   SetSdpFormat(webrtc::SdpVideoFormat(
       "VP9", {{webrtc::kVP9FmtpProfileId,
                webrtc::VP9ProfileToString(webrtc::VP9Profile::kProfile2)}}));
@@ -626,7 +635,7 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
+TEST_P(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
   // If the count is nonzero, then fail immediately -- the test isn't sane.
   ASSERT_EQ(GetCurrentDecoderCount(), 0);
 
@@ -650,7 +659,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
   EXPECT_EQ(GetCurrentDecoderCount(), 0);
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
+TEST_P(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   // Make sure that low-resolution decoders fall back if there are too many.
   webrtc::VideoDecoder::Settings decoder_settings;
   decoder_settings.set_codec_type(webrtc::kVideoCodecVP9);
@@ -674,10 +683,15 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   // The check about the number of concurrent instances decoding small
   // resolutions is executed on media thread and its check failure is notified
   // on the second frame.
-  ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
-  media_thread_.FlushForTesting();
-  EXPECT_EQ(Decode(1), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
-  media_thread_.FlushForTesting();
+  if (SyncDecodingIsEnabled()) {
+    EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+    media_thread_.FlushForTesting();
+  } else {
+    ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+    media_thread_.FlushForTesting();
+    EXPECT_EQ(Decode(1), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+    media_thread_.FlushForTesting();
+  }
   // It should not increment the count, else more decoders might fall back.
   const auto max_decoder_instances =
       RTCVideoDecoderAdapter::kMaxDecoderInstances;
@@ -693,7 +707,7 @@ TEST_F(RTCVideoDecoderAdapterTest, FallsBackForLowResolution) {
   EXPECT_EQ(GetCurrentDecoderCount(), 0);
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
+TEST_P(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
   // Make sure that high-resolution decoders don't fall back.
   webrtc::VideoDecoder::Settings decoder_settings;
   decoder_settings.set_codec_type(webrtc::kVideoCodecVP9);
@@ -725,7 +739,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
     DecrementCurrentDecoderCount();
 }
 
-TEST_F(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
+TEST_P(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
   ASSERT_TRUE(BasicSetup());
   webrtc::EncodedImage input_image = GetEncodedImageWithSingleSpatialLayer(0);
   scoped_refptr<media::DecoderBuffer> decoder_buffer;
@@ -746,7 +760,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
+TEST_P(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   video_decoder_->SetDecoderType(media::VideoDecoderType::kD3D11);
   ASSERT_TRUE(BasicSetup());
   SetSpatialIndex(2);
@@ -765,7 +779,7 @@ TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
 // ChromeOS has the ability to decode VP9 kSVC Stream. Other cases should
 // fallback to sw decoder.
 #if !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS))
-TEST_F(RTCVideoDecoderAdapterTest,
+TEST_P(RTCVideoDecoderAdapterTest,
        FallbackToSWSinceDecodeVP9kSVCStreamWithoutD3D11) {
   ASSERT_TRUE(BasicSetup());
   EXPECT_FALSE(base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding));
@@ -779,4 +793,7 @@ TEST_F(RTCVideoDecoderAdapterTest,
 }
 #endif
 
+INSTANTIATE_TEST_SUITE_P(RTCVideoDecoderAdapterTest,
+                         RTCVideoDecoderAdapterTest,
+                         ::testing::Values(false, true));
 }  // namespace blink

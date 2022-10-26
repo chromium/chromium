@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -28,6 +29,10 @@ class GpuVideoAcceleratorFactories;
 }  // namespace media
 
 namespace blink {
+
+namespace features {
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kWebRtcDecoderAdapterSyncDecode);
+}
 
 // This class decodes video for WebRTC using a media::VideoDecoder. In
 // particular, MojoVideoDecoder are used to provide access to hardware decoding
