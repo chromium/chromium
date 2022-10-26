@@ -26,7 +26,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 2, NextIndex: 21
+// NextMinVersion: 3, NextIndex: 22
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -50,6 +50,7 @@ enum ProbeCategoryEnum {
   kNetworkInterface = 18,
   kInput = 19,
   [MinVersion=1] kAudioHardware = 20,
+  [MinVersion=2] kSensor = 21,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -1653,6 +1654,74 @@ struct InputDevice {
   bool is_enabled@3;
 };
 
+// Sensor result.
+[Stable]
+union SensorResult {
+  // Valid SensorInfo.
+  SensorInfo sensor_info;
+  // The error that occurred attempting to retrieve the SensorInfo.
+  ProbeError error;
+};
+
+// Sensor information and related metrics.
+//
+// NextMinVersion: 2, NextIndex: 2
+[Stable]
+struct SensorInfo {
+  // Angle between lid and base.
+  NullableUint16? lid_angle@0;
+  // Information about the device's sensors.
+  [MinVersion=1] array<Sensor>? sensors@1;
+};
+
+// Data of a sensor.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+struct Sensor {
+  // The name of sensor.
+  string? name@0;
+  // The ID of sensor.
+  int32 device_id@1;
+
+  // The supported sensor types.
+  //
+  // NextMinVersion: 2, NextIndex: 7
+  [Stable, Extensible]
+  enum Type {
+    // For mojo backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Accelerometer.
+    kAccel = 1,
+    // Light sensor.
+    kLight = 2,
+    // Angular velocity sensor, also known as Gyro sensor.
+    kGyro = 3,
+    // Angle sensor.
+    kAngle = 4,
+    // Gravity sensor.
+    kGravity = 5,
+    // Magnetometer.
+    [MinVersion=1] kMagn = 6,
+  };
+  Type type@2;
+
+  // The location of sensor.
+  //
+  // NextMinVersion: 1, NextIndex: 5
+  [Stable, Extensible]
+  enum Location {
+    // For mojo backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Unknown location.
+    kUnknown = 1,
+    kBase = 2,
+    kLid = 3,
+    kCamera = 4,
+  };
+  Location location@3;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -1661,7 +1730,7 @@ struct InputDevice {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// NextMinVersion: 5, NextIndex: 21
+// NextMinVersion: 6, NextIndex: 22
 [Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -1730,4 +1799,6 @@ struct TelemetryInfo {
   // Information about audio hardware. Only present when kAudioHardware was
   // included.
   [MinVersion=4] AudioHardwareResult? audio_hardware_result@20;
+  // Information about sensor. Only present when kSensor was included.
+  [MinVersion=5] SensorResult? sensor_result@21;
 };
