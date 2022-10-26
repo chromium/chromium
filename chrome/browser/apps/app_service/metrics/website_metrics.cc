@@ -614,6 +614,9 @@ void WebsiteMetrics::RecordUsageTimeFromPref() {
       profile_->GetPrefs()->GetDict(kWebsiteUsageTime);
 
   for (const auto [url, url_info_value] : usage_time) {
+    if (url.empty()) {
+      continue;
+    }
     auto url_info = std::make_unique<UrlInfo>(url_info_value);
     if (!url_info->running_time_in_two_hours.is_zero()) {
       EmitUkm(GURL(url), url_info->running_time_in_two_hours.InMilliseconds(),
