@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -122,8 +123,8 @@ RemoteConsentResolutionData& RemoteConsentResolutionData::operator=(
 
 bool RemoteConsentResolutionData::operator==(
     const RemoteConsentResolutionData& rhs) const {
-  return url == rhs.url && std::equal(cookies.begin(), cookies.end(),
-                                      rhs.cookies.begin(), &AreCookiesEqual);
+  return url == rhs.url &&
+         base::ranges::equal(cookies, rhs.cookies, &AreCookiesEqual);
 }
 
 OAuth2MintTokenFlow::Parameters::Parameters() : mode(MODE_ISSUE_ADVICE) {}
