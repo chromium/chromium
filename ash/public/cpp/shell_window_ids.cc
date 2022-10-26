@@ -47,22 +47,14 @@ constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
 // List of desk container IDs. Can't use desks_util since we're in ash/public
 // here.
 constexpr std::array<int, 16> kDeskContainerIds = {
-    kShellWindowId_DefaultContainerDeprecated,
-    kShellWindowId_DeskContainerB,
-    kShellWindowId_DeskContainerC,
-    kShellWindowId_DeskContainerD,
-    kShellWindowId_DeskContainerE,
-    kShellWindowId_DeskContainerF,
-    kShellWindowId_DeskContainerG,
-    kShellWindowId_DeskContainerH,
-    kShellWindowId_DeskContainerI,
-    kShellWindowId_DeskContainerJ,
-    kShellWindowId_DeskContainerK,
-    kShellWindowId_DeskContainerL,
-    kShellWindowId_DeskContainerM,
-    kShellWindowId_DeskContainerN,
-    kShellWindowId_DeskContainerO,
-    kShellWindowId_DeskContainerP,
+    kShellWindowId_DeskContainerA, kShellWindowId_DeskContainerB,
+    kShellWindowId_DeskContainerC, kShellWindowId_DeskContainerD,
+    kShellWindowId_DeskContainerE, kShellWindowId_DeskContainerF,
+    kShellWindowId_DeskContainerG, kShellWindowId_DeskContainerH,
+    kShellWindowId_DeskContainerI, kShellWindowId_DeskContainerJ,
+    kShellWindowId_DeskContainerK, kShellWindowId_DeskContainerL,
+    kShellWindowId_DeskContainerM, kShellWindowId_DeskContainerN,
+    kShellWindowId_DeskContainerO, kShellWindowId_DeskContainerP,
 };
 
 }  // namespace

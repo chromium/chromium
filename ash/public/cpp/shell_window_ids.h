@@ -66,11 +66,10 @@ enum ShellWindowId {
   //   - There are no direct mapping between `kShellWindowId_DeskContainerA` and
   //     Desk 1, or `kShellWindowId_DeskContainerB` and Desk 2. The containers
   //     are reused as desks are created and deleted.
+  //   - Keep the desk container IDs sequential here.
   //   - **DO NOT** use these container IDs directly, instead use
   //     `desks_util::GetActiveDeskContainerId()`.
-  // TODO(afakhry): Rename this container, unexpose it, and add the rest of the
-  // containers.
-  kShellWindowId_DefaultContainerDeprecated,
+  kShellWindowId_DeskContainerA,
   kShellWindowId_DeskContainerB,
   kShellWindowId_DeskContainerC,
   kShellWindowId_DeskContainerD,

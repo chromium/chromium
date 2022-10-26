@@ -50,24 +50,15 @@ WindowRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
 
 // The list of possible app window parents.
 constexpr ShellWindowId kAppParentContainers[19] = {
-    kShellWindowId_DefaultContainerDeprecated,
-    kShellWindowId_DeskContainerB,
-    kShellWindowId_DeskContainerC,
-    kShellWindowId_DeskContainerD,
-    kShellWindowId_DeskContainerE,
-    kShellWindowId_DeskContainerF,
-    kShellWindowId_DeskContainerG,
-    kShellWindowId_DeskContainerH,
-    kShellWindowId_DeskContainerI,
-    kShellWindowId_DeskContainerJ,
-    kShellWindowId_DeskContainerK,
-    kShellWindowId_DeskContainerL,
-    kShellWindowId_DeskContainerM,
-    kShellWindowId_DeskContainerN,
-    kShellWindowId_DeskContainerO,
-    kShellWindowId_DeskContainerP,
-    kShellWindowId_AlwaysOnTopContainer,
-    kShellWindowId_FloatContainer,
+    kShellWindowId_DeskContainerA,       kShellWindowId_DeskContainerB,
+    kShellWindowId_DeskContainerC,       kShellWindowId_DeskContainerD,
+    kShellWindowId_DeskContainerE,       kShellWindowId_DeskContainerF,
+    kShellWindowId_DeskContainerG,       kShellWindowId_DeskContainerH,
+    kShellWindowId_DeskContainerI,       kShellWindowId_DeskContainerJ,
+    kShellWindowId_DeskContainerK,       kShellWindowId_DeskContainerL,
+    kShellWindowId_DeskContainerM,       kShellWindowId_DeskContainerN,
+    kShellWindowId_DeskContainerO,       kShellWindowId_DeskContainerP,
+    kShellWindowId_AlwaysOnTopContainer, kShellWindowId_FloatContainer,
     kShellWindowId_UnparentedContainer,
 };
 

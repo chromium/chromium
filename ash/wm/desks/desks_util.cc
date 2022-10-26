@@ -27,22 +27,14 @@ namespace desks_util {
 namespace {
 
 constexpr std::array<int, kDesksUpperLimit> kDesksContainersIds = {
-    kShellWindowId_DefaultContainerDeprecated,
-    kShellWindowId_DeskContainerB,
-    kShellWindowId_DeskContainerC,
-    kShellWindowId_DeskContainerD,
-    kShellWindowId_DeskContainerE,
-    kShellWindowId_DeskContainerF,
-    kShellWindowId_DeskContainerG,
-    kShellWindowId_DeskContainerH,
-    kShellWindowId_DeskContainerI,
-    kShellWindowId_DeskContainerJ,
-    kShellWindowId_DeskContainerK,
-    kShellWindowId_DeskContainerL,
-    kShellWindowId_DeskContainerM,
-    kShellWindowId_DeskContainerN,
-    kShellWindowId_DeskContainerO,
-    kShellWindowId_DeskContainerP,
+    kShellWindowId_DeskContainerA, kShellWindowId_DeskContainerB,
+    kShellWindowId_DeskContainerC, kShellWindowId_DeskContainerD,
+    kShellWindowId_DeskContainerE, kShellWindowId_DeskContainerF,
+    kShellWindowId_DeskContainerG, kShellWindowId_DeskContainerH,
+    kShellWindowId_DeskContainerI, kShellWindowId_DeskContainerJ,
+    kShellWindowId_DeskContainerK, kShellWindowId_DeskContainerL,
+    kShellWindowId_DeskContainerM, kShellWindowId_DeskContainerN,
+    kShellWindowId_DeskContainerO, kShellWindowId_DeskContainerP,
 };
 
 // Default max number of desks (that is, enable-16-desks is off).
@@ -77,7 +69,7 @@ const char* GetDeskContainerName(int container_id) {
   DCHECK(IsDeskContainerId(container_id));
 
   switch (container_id) {
-    case kShellWindowId_DefaultContainerDeprecated:
+    case kShellWindowId_DeskContainerA:
       return "Desk_Container_A";
 
     case kShellWindowId_DeskContainerB:
@@ -137,7 +129,7 @@ bool IsDeskContainer(const aura::Window* container) {
 }
 
 bool IsDeskContainerId(int id) {
-  return id == kShellWindowId_DefaultContainerDeprecated ||
+  return id == kShellWindowId_DeskContainerA ||
          id == kShellWindowId_DeskContainerB ||
          id == kShellWindowId_DeskContainerC ||
          id == kShellWindowId_DeskContainerD ||
