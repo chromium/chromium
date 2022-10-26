@@ -62,6 +62,18 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("", default_resource);
 }
 
+void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
+      "require-trusted-types-for 'script';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types parse-html-subset sanitize-inner-html static-types "
+      "webui-test-script "
+      // Add TrustedTypes policies necessary for using Polymer.
+      "polymer-html-literal polymer-template-event-attribute-policy;");
+}
+
 void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id) {

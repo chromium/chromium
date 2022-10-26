@@ -35,6 +35,13 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const ResourcePath> resources,
                           int default_resource);
 
+// Enables the 'trusted-types' CSP for the given WebUIDataSource. Normally this
+// is disabled by default as part of SetJSModuleDefaults() or
+// SetupWebUIDataSource().
+// TODO(crbug.com/1098690): Make this the default configuration as more WebUIs
+// become TrustedTypes compliant.
+void EnableTrustedTypesCSP(content::WebUIDataSource* source);
+
 // Adds string for |id| to |source| and removes & from the string to allow for
 // reuse of generic strings.
 void AddLocalizedString(content::WebUIDataSource* source,

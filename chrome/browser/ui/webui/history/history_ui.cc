@@ -130,6 +130,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kHistoryResources, kHistoryResourcesSize),
       IDR_HISTORY_HISTORY_HTML);
+  webui::EnableTrustedTypesCSP(source);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

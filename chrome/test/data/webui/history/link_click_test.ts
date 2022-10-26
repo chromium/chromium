@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl, listenForPrivilegedLinkClicks} from 'chrome://history/history.js';
+import {BrowserServiceImpl, getTrustedHTML, listenForPrivilegedLinkClicks} from 'chrome://history/history.js';
 import {$} from 'chrome://resources/js/util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -15,7 +15,7 @@ suite('listenForPrivilegedLinkClicks unit test', function() {
     BrowserServiceImpl.setInstance(testService);
 
     listenForPrivilegedLinkClicks();
-    document.body.innerHTML = `
+    document.body.innerHTML = getTrustedHTML`
       <a id="file" href="file:///path/to/file">File</a>
       <a id="chrome" href="about:chrome">Chrome</a>
       <a href="about:blank"><b id="blank">Click me</b></a>
