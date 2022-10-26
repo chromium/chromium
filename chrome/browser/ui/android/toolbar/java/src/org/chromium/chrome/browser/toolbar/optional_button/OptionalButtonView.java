@@ -29,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.OneShotPreDrawListener;
+import androidx.core.view.ViewCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -153,6 +155,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
      *         attributes. If null then this view starts a hide transition.
      */
     void updateButtonWithAnimation(@Nullable ButtonData buttonData) {
+        // If the button hasn't been laid out then try again before the next draw. This may happen
+        // if the view gets initialized while the activity is not visible (e.g. when a setting
+        // change forces an activity reset).
+        if (!ViewCompat.isLaidOut(this)) {
+            OneShotPreDrawListener.add(this, () -> updateButtonWithAnimation(buttonData));
+            return;
+        }
+
         // If we receive the same button with the same visibility then there's no need to update.
         if (buttonData != null
                 && mCurrentButtonVariant == buttonData.getButtonSpec().getButtonVariant()

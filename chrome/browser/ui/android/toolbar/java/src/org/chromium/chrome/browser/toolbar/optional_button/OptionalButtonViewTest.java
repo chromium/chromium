@@ -34,7 +34,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.OneShotPreDrawListener;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -45,7 +47,11 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
@@ -59,11 +65,13 @@ import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonViewTest.ShadowOneShotPreDrawListener;
 
 /**
  * Unit tests for OptionalButtonView.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowOneShotPreDrawListener.class})
 public class OptionalButtonViewTest {
     private Context mActivity;
 
@@ -88,10 +96,11 @@ public class OptionalButtonViewTest {
         FeatureList.setTestValues(testValues);
 
         mOptionalButtonView = (OptionalButtonView) LayoutInflater.from(mActivity).inflate(
-                R.layout.optional_button_layout, null, false);
+                R.layout.optional_button_layout, null);
         mOptionalButtonView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mOptionalButtonView.setIsAnimationAllowedPredicate(mMockAnimationChecker);
+        mOptionalButtonView.layout(10, 10, 10, 10);
 
         mMockBeginDelayedTransition = Mockito.mock(Callback.class);
 
@@ -689,5 +698,49 @@ public class OptionalButtonViewTest {
         // Button shouldn't be wider than the established maximum.
         Assert.assertThat(mOptionalButtonView.getLayoutParams().width,
                 Matchers.lessThanOrEqualTo(maxActionChipWidth));
+    }
+
+    @Test
+    public void testUpdateButton_shouldWaitUntilButtonIsLaidOut() {
+        ButtonDataImpl buttonData = getDataForPriceTrackingActionChip();
+        ViewGroup transitionRoot = mock(ViewGroup.class);
+        ShadowViewGroup shadowOptionalButtonView = Shadows.shadowOf(mOptionalButtonView);
+        // Detach and re-attach to window to reset the isLaidOut() flag.
+        shadowOptionalButtonView.callOnDetachedFromWindow();
+        shadowOptionalButtonView.callOnAttachedToWindow();
+
+        mOptionalButtonView.setTransitionRoot(transitionRoot);
+        // Try to update the button before it's laid out.
+        mOptionalButtonView.updateButtonWithAnimation(buttonData);
+
+        // We shouldn't begin a transition yet.
+        verify(mMockBeginDelayedTransition, never()).onResult(any());
+
+        // We should have set a pre draw listener instead.
+        Assert.assertNotNull(ShadowOneShotPreDrawListener.getRunnable());
+
+        // Run that listener once the view is laid out.
+        mOptionalButtonView.layout(100, 50, 10, 10);
+        ShadowOneShotPreDrawListener.getRunnable().run();
+
+        // Now we should begin our transition.
+        verify(mMockBeginDelayedTransition).onResult(any());
+    }
+
+    @Implements(OneShotPreDrawListener.class)
+    static class ShadowOneShotPreDrawListener {
+        private static Runnable sRunnable;
+
+        @Implementation
+        protected static OneShotPreDrawListener add(
+                @NonNull View view, @NonNull Runnable runnable) {
+            sRunnable = runnable;
+
+            return null;
+        }
+
+        static Runnable getRunnable() {
+            return sRunnable;
+        }
     }
 }
