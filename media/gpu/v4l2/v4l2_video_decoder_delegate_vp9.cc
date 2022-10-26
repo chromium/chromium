@@ -152,9 +152,11 @@ V4L2VideoDecoderDelegateVP9::V4L2VideoDecoderDelegateVP9(
   DCHECK(surface_handler_);
   DCHECK(device_);
 
-  // This control was landed in v5.17 and is pretty much a marker that the
+  // This control, originally landed in v5.17, is pretty much a marker that the
   // driver supports the stable API.
-  DCHECK(device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME));
+  const bool supports_stable_api =
+      device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
+  DCHECK(supports_stable_api);
 }
 
 V4L2VideoDecoderDelegateVP9::~V4L2VideoDecoderDelegateVP9() = default;

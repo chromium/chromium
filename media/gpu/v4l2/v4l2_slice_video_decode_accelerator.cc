@@ -293,14 +293,6 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
         config.container_color_space);
   } else if (video_profile_ >= VP9PROFILE_MIN &&
              video_profile_ <= VP9PROFILE_MAX) {
-    // TODO(mcasas): Remove this ifndef when V4L2_CID_STATELESS_VP9_FRAME is
-    // known in all kernels.
-#ifndef V4L2_CID_STATELESS_VP9_FRAME
-#define V4L2_CID_STATELESS_VP9_FRAME (0x00a40900 + 300)
-#endif
-    const bool supports_stable_api =
-        device_->IsCtrlExposed(V4L2_CID_STATELESS_VP9_FRAME);
-    CHECK(supports_stable_api);
     decoder_ = std::make_unique<VP9Decoder>(
         std::make_unique<V4L2VideoDecoderDelegateVP9>(this, device_.get()),
         video_profile_, config.container_color_space);
