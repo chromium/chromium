@@ -42,6 +42,9 @@ const CGFloat kIconSize = 50;
 - (void)configureCell:(WhatsNewTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
+
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+
   cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
   cell.iconView.image = self.iconImage;

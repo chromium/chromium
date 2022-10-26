@@ -45,6 +45,8 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
       base::mac::ObjCCastStrict<WhatsNewTableViewBannerCell>(tableCell);
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+
   cell.sectionTextLabel.text = self.sectionTitle;
   cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
@@ -86,6 +88,8 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    self.isAccessibilityElement = YES;
+
     // Banner image.
     _bannerImageView = [[UIImageView alloc] init];
     _bannerImageView.translatesAutoresizingMaskIntoConstraints = NO;
