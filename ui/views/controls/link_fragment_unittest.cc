@@ -87,7 +87,7 @@ TEST_F(LinkFragmentTest, Metadata) {
 // Tests that hovering and unhovering a link adds and removes an underline
 // under all connected fragments.
 TEST_F(LinkFragmentTest, TestUnderlineOnHover) {
-  // A non-hovered link fragment should not be underlined.
+  // A link fragment should be underlined.
   const gfx::Point point_outside =
       GetBoundsForFragment(2).bottom_right() + gfx::Vector2d(1, 1);
   event_generator()->MoveMouseTo(point_outside);
@@ -97,7 +97,17 @@ TEST_F(LinkFragmentTest, TestUnderlineOnHover) {
     return !!(fragment(index)->font_list().GetFontStyle() &
               gfx::Font::UNDERLINE);
   };
+  EXPECT_TRUE(is_underlined(0));
+  EXPECT_TRUE(is_underlined(1));
+  EXPECT_TRUE(is_underlined(2));
+
+  // A non-hovered link fragment should not be underlined.
+  fragment(0)->SetForceUnderline(false);
+  fragment(1)->SetForceUnderline(false);
+  fragment(2)->SetForceUnderline(false);
   EXPECT_FALSE(is_underlined(0));
+  EXPECT_FALSE(is_underlined(1));
+  EXPECT_FALSE(is_underlined(2));
 
   // Hovering the first link fragment underlines it.
   event_generator()->MoveMouseTo(GetBoundsForFragment(0).CenterPoint());

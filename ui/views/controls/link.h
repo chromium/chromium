@@ -105,7 +105,7 @@ class VIEWS_EXPORT Link : public Label {
 
   // Whether the link text should use underline style regardless of enabled or
   // focused state.
-  bool force_underline_ = false;
+  bool force_underline_ = true;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Link, Label)

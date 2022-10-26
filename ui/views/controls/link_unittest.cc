@@ -90,7 +90,7 @@ TEST_F(LinkTest, TestLinkTap) {
 
 // Tests that hovering and unhovering a link adds and removes an underline.
 TEST_F(LinkTest, TestUnderlineOnHover) {
-  // A non-hovered link should not be underlined.
+  // A link should be underlined.
   const gfx::Rect link_bounds = link()->GetBoundsInScreen();
   const gfx::Point off_link = link_bounds.bottom_right() + gfx::Vector2d(1, 1);
   event_generator()->MoveMouseTo(off_link);
@@ -98,6 +98,12 @@ TEST_F(LinkTest, TestUnderlineOnHover) {
   const auto link_underlined = [link = link()]() {
     return !!(link->font_list().GetFontStyle() & gfx::Font::UNDERLINE);
   };
+  EXPECT_TRUE(link_underlined());
+
+  // A non-hovered link should should be underlined.
+  // For a11y, A link should be underlined by default. If forcefuly remove an
+  // underline, the underline appears according to hovering.
+  link()->SetForceUnderline(false);
   EXPECT_FALSE(link_underlined());
 
   // Hovering the link should underline it.
