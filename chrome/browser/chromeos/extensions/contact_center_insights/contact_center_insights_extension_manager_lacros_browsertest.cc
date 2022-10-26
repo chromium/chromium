@@ -4,11 +4,13 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_main_parts.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,14 +42,16 @@ void SetupUserDeviceAffiliation() {
 
 // Browser test that validates extension installation status when the
 // `InsightsExtensionEnabled` policy is set/unset on Lacros.
-//
-// TODO (crbug.com/1362037): Disabled for flakiness.
-class DISABLED_ContactCenterInsightsExtensionManagerBrowserTest
+class ContactCenterInsightsExtensionManagerBrowserTest
     : public ::extensions::ExtensionBrowserTest {
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    ::extensions::ExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_parts) override {
+    // We need to set up user device affiliation before the
+    // `ContactCenterInsightsExtensionManager` is initialized, which happens
+    // right after profile init.
     SetupUserDeviceAffiliation();
+    ::extensions::ExtensionBrowserTest::CreatedBrowserMainParts(browser_parts);
   }
 
   void SetPrefValue(bool value) {
@@ -56,24 +60,21 @@ class DISABLED_ContactCenterInsightsExtensionManagerBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(
-    DISABLED_ContactCenterInsightsExtensionManagerBrowserTest,
-    ExtensionUnloadedByDefault) {
+IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
+                       ExtensionUnloadedByDefault) {
   EXPECT_FALSE(extension_registry()->GetInstalledExtension(
       ::extension_misc::kContactCenterInsightsExtensionId));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DISABLED_ContactCenterInsightsExtensionManagerBrowserTest,
-    InstallExtensionWhenPrefSet) {
+IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
+                       InstallExtensionWhenPrefSet) {
   SetPrefValue(true);
   EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(
       ::extension_misc::kContactCenterInsightsExtensionId));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DISABLED_ContactCenterInsightsExtensionManagerBrowserTest,
-    ExtensionUninstalledWhenPrefUnset) {
+IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
+                       ExtensionUninstalledWhenPrefUnset) {
   // Set pref to enable extension.
   SetPrefValue(true);
   EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(
