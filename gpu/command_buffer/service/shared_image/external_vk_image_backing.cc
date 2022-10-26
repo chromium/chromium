@@ -79,6 +79,7 @@ static const struct GLFormatInfo {
     {GL_BGRA, GL_UNSIGNED_INT_2_10_10_10_REV, 4},  // BGRA_1010102
     {GL_ZERO, GL_ZERO, 0},                         // YVU_420
     {GL_ZERO, GL_ZERO, 0},                         // YUV_420_BIPLANAR
+    {GL_ZERO, GL_ZERO, 0},                         // YUVA_420_TRIPLANAR
     {GL_ZERO, GL_ZERO, 0},                         // P010
 };
 static_assert(std::size(kFormatTable) == (viz::RESOURCE_FORMAT_MAX + 1),

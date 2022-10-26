@@ -86,6 +86,8 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
     cv_format = kCVPixelFormatType_420YpCbCr8Planar;
   } else if (video_frame_format == PIXEL_FORMAT_NV12) {
     cv_format = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+  } else if (video_frame_format == PIXEL_FORMAT_NV12A) {
+    cv_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
   } else {
     DLOG(ERROR) << " unsupported frame format: " << video_frame_format;
     return pixel_buffer;

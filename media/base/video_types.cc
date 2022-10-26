@@ -85,6 +85,8 @@ std::string VideoPixelFormatToString(VideoPixelFormat format) {
       return "PIXEL_FORMAT_YUV422AP10";
     case PIXEL_FORMAT_YUV444AP10:
       return "PIXEL_FORMAT_YUV444AP10";
+    case PIXEL_FORMAT_NV12A:
+      return "PIXEL_FORMAT_NV12A";
   }
   NOTREACHED() << "Invalid VideoPixelFormat provided: " << format;
   return "";
@@ -129,6 +131,7 @@ bool IsYuvPlanar(VideoPixelFormat format) {
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV420P10:
@@ -186,6 +189,7 @@ bool IsRGB(VideoPixelFormat format) {
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_YUY2:
@@ -241,6 +245,7 @@ bool IsOpaque(VideoPixelFormat format) {
     case PIXEL_FORMAT_XB30:
       return true;
     case PIXEL_FORMAT_I420A:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_BGRA:
@@ -266,6 +271,7 @@ size_t BitDepth(VideoPixelFormat format) {
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_YUY2:
     case PIXEL_FORMAT_UYVY:

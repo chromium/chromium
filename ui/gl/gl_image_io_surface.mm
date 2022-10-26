@@ -76,6 +76,7 @@ bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
     case BufferFormat::BGRA_1010102:
       break;
     case BufferFormat::YUV_420_BIPLANAR:
+    case BufferFormat::YUVA_420_TRIPLANAR:
     case BufferFormat::P010:
     case BufferFormat::BGR_565:
     case BufferFormat::RGBA_4444:

@@ -177,6 +177,7 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
          PIXEL_FORMAT_XB30 == video_frame->format() ||
          PIXEL_FORMAT_XR30 == video_frame->format() ||
          PIXEL_FORMAT_NV12 == video_frame->format() ||
+         PIXEL_FORMAT_NV12A == video_frame->format() ||
          PIXEL_FORMAT_RGBAF16 == video_frame->format())
       << "Format: " << VideoPixelFormatToString(video_frame->format());
 
@@ -642,6 +643,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
 
     case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_YUY2:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_BGRA:

@@ -56,6 +56,8 @@ const char* SharedImageFormat::ToString() const {
       return "YVU_420";
     case ResourceFormat::YUV_420_BIPLANAR:
       return "YUV_420_BIPLANAR";
+    case ResourceFormat::YUVA_420_TRIPLANAR:
+      return "YUVA_420_TRIPLANAR";
     case ResourceFormat::P010:
       return "P010";
   }

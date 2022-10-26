@@ -20,7 +20,8 @@ const BufferFormat kBufferFormats[] = {
     BufferFormat::BGRX_8888,    BufferFormat::BGRA_1010102,
     BufferFormat::RGBA_1010102, BufferFormat::BGRA_8888,
     BufferFormat::RGBA_F16,     BufferFormat::YUV_420_BIPLANAR,
-    BufferFormat::YVU_420,      BufferFormat::P010};
+    BufferFormat::YVU_420,      BufferFormat::YUVA_420_TRIPLANAR,
+    BufferFormat::P010};
 
 static_assert(std::size(kBufferFormats) ==
                   (static_cast<int>(BufferFormat::LAST) + 1),
@@ -43,6 +44,7 @@ size_t AlphaBitsForBufferFormat(BufferFormat format) {
     case BufferFormat::RGBA_1010102:
       return 2;
     case BufferFormat::BGRA_8888:
+    case BufferFormat::YUVA_420_TRIPLANAR:
       return 8;
     case BufferFormat::RGBA_F16:
       return 16;
@@ -82,6 +84,7 @@ size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format) {
     case BufferFormat::P010:
       return 2;
     case BufferFormat::YVU_420:
+    case BufferFormat::YUVA_420_TRIPLANAR:
       return 3;
   }
   NOTREACHED();
@@ -112,6 +115,11 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::YUV_420_BIPLANAR:
     case BufferFormat::P010: {
       constexpr size_t factor[] = {1, 2};
+      DCHECK_LT(plane, std::size(factor));
+      return factor[plane];
+    }
+    case BufferFormat::YUVA_420_TRIPLANAR: {
+      constexpr size_t factor[] = {1, 2, 1};
       DCHECK_LT(plane, std::size(factor));
       return factor[plane];
     }
@@ -156,6 +164,7 @@ size_t BytesPerPixelForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::YVU_420:
       return 1;
     case BufferFormat::YUV_420_BIPLANAR:
+    case BufferFormat::YUVA_420_TRIPLANAR:
       return SubsamplingFactorForBufferFormat(format, plane);
     case BufferFormat::P010:
       return 2 * SubsamplingFactorForBufferFormat(format, plane);
@@ -184,6 +193,7 @@ size_t RowByteAlignmentForBufferFormat(BufferFormat format, size_t plane) {
     case BufferFormat::YVU_420:
       return 1;
     case BufferFormat::YUV_420_BIPLANAR:
+    case BufferFormat::YUVA_420_TRIPLANAR:
     case BufferFormat::P010:
       return BytesPerPixelForBufferFormat(format, plane);
   }
@@ -288,6 +298,7 @@ size_t BufferOffsetForBufferFormat(const Size& size,
       return 0;
     case BufferFormat::YVU_420:
     case BufferFormat::YUV_420_BIPLANAR:
+    case BufferFormat::YUVA_420_TRIPLANAR:
     case BufferFormat::P010: {
       size_t offset = 0;
       for (size_t i = 0; i < plane; i++) {
@@ -332,6 +343,8 @@ const char* BufferFormatToString(BufferFormat format) {
       return "YVU_420";
     case BufferFormat::YUV_420_BIPLANAR:
       return "YUV_420_BIPLANAR";
+    case BufferFormat::YUVA_420_TRIPLANAR:
+      return "YUVA_420_TRIPLANAR";
     case BufferFormat::P010:
       return "P010";
   }
@@ -353,6 +366,8 @@ const char* BufferPlaneToString(BufferPlane format) {
       return "U";
     case BufferPlane::V:
       return "V";
+    case BufferPlane::A:
+      return "A";
   }
   NOTREACHED() << "Invalid BufferPlane: "
                << static_cast<typename std::underlying_type<BufferPlane>::type>(

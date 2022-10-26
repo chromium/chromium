@@ -73,6 +73,7 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_I444:
       case PIXEL_FORMAT_RGB24:
       case PIXEL_FORMAT_MJPEG:
+      case PIXEL_FORMAT_NV12A:
       case PIXEL_FORMAT_YUV420P9:
       case PIXEL_FORMAT_YUV420P10:
       case PIXEL_FORMAT_YUV422P9:
@@ -116,6 +117,7 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_XRGB:
       case PIXEL_FORMAT_RGB24:
       case PIXEL_FORMAT_MJPEG:
+      case PIXEL_FORMAT_NV12A:
       case PIXEL_FORMAT_YUV420P9:
       case PIXEL_FORMAT_YUV420P10:
       case PIXEL_FORMAT_YUV422P9:

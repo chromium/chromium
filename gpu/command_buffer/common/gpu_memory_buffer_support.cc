@@ -46,6 +46,7 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
       return true;
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
     case gfx::BufferFormat::P010:
 #if BUILDFLAG(IS_CHROMEOS)
       // Allow odd size for CrOS.
@@ -74,6 +75,9 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV ||
+             plane == gfx::BufferPlane::A;
     default:
       return plane == gfx::BufferPlane::DEFAULT;
   }
@@ -86,6 +90,9 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return plane == gfx::BufferPlane::DEFAULT ||
              plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV ||
+             plane == gfx::BufferPlane::A;
     default:
       return plane == gfx::BufferPlane::DEFAULT;
   }
@@ -101,7 +108,8 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       return format;
     case gfx::BufferPlane::Y:
       if (format == gfx::BufferFormat::YVU_420 ||
-          format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+          format == gfx::BufferFormat::YUV_420_BIPLANAR ||
+          format == gfx::BufferFormat::YUVA_420_TRIPLANAR) {
         return gfx::BufferFormat::R_8;
       }
       if (format == gfx::BufferFormat::P010) {
@@ -109,7 +117,8 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       }
       break;
     case gfx::BufferPlane::UV:
-      if (format == gfx::BufferFormat::YUV_420_BIPLANAR)
+      if (format == gfx::BufferFormat::YUV_420_BIPLANAR ||
+          format == gfx::BufferFormat::YUVA_420_TRIPLANAR)
         return gfx::BufferFormat::RG_88;
       if (format == gfx::BufferFormat::P010)
         return gfx::BufferFormat::RG_1616;
@@ -122,16 +131,36 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       if (format == gfx::BufferFormat::YVU_420)
         return gfx::BufferFormat::R_8;
       break;
+    case gfx::BufferPlane::A:
+      if (format == gfx::BufferFormat::YUVA_420_TRIPLANAR)
+        return gfx::BufferFormat::R_8;
+      break;
   }
 
   NOTREACHED();
   return format;
 }
 
+int32_t GetPlaneIndex(gfx::BufferPlane plane, gfx::BufferFormat format) {
+  switch (plane) {
+    case gfx::BufferPlane::DEFAULT:
+    case gfx::BufferPlane::Y:
+      return 0;
+    case gfx::BufferPlane::U:
+    case gfx::BufferPlane::UV:
+      return 1;
+    case gfx::BufferPlane::V:
+      return 2;
+    case gfx::BufferPlane::A:
+      return format == gfx::BufferFormat::YUVA_420_TRIPLANAR ? 2 : 3;
+  }
+}
+
 gfx::Size GetPlaneSize(gfx::BufferPlane plane, const gfx::Size& size) {
   switch (plane) {
     case gfx::BufferPlane::DEFAULT:
     case gfx::BufferPlane::Y:
+    case gfx::BufferPlane::A:
       return size;
     case gfx::BufferPlane::U:
     case gfx::BufferPlane::V:

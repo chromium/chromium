@@ -53,6 +53,7 @@ GLint DataRowLength(size_t stride, gfx::BufferFormat format) {
       return base::checked_cast<GLint>(stride);
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
     case gfx::BufferFormat::P010:
       NOTREACHED() << gfx::BufferFormatToString(format);
       return 0;
@@ -180,6 +181,7 @@ absl::optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
     }
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
     case gfx::BufferFormat::P010:
       NOTREACHED() << gfx::BufferFormatToString(format);
       return absl::nullopt;
@@ -483,6 +485,7 @@ bool GLImageMemory::ValidFormat(gfx::BufferFormat format) {
       return true;
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
     case gfx::BufferFormat::P010:
       return false;
   }

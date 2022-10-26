@@ -115,6 +115,7 @@ bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
     case viz::ResourceFormat::LUMINANCE_F16:
     case viz::ResourceFormat::YVU_420:
     case viz::ResourceFormat::YUV_420_BIPLANAR:
+    case viz::ResourceFormat::YUVA_420_TRIPLANAR:
     case viz::ResourceFormat::P010:
       return false;
   }

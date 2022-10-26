@@ -66,6 +66,11 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
       DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR: {
+      constexpr int32_t bytes_per_element[] = {1, 2, 1};
+      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
+      return bytes_per_element[plane];
+    }
     case gfx::BufferFormat::P010: {
       constexpr int32_t bytes_per_element[] = {2, 4};
       DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
@@ -106,6 +111,8 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
       return 'RGhA';
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return '420v';
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return 'v0a8';
     case gfx::BufferFormat::P010:
       return 'x420';
     case gfx::BufferFormat::BGR_565:

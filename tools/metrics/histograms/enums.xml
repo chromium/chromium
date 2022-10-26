@@ -101633,6 +101633,12 @@ Full version information for the fingerprint enum values:
   <int value="31" label="XB30"/>
   <int value="32" label="BGRA"/>
   <int value="33" label="RGBAF16"/>
+  <int value="34" label="I422A"/>
+  <int value="35" label="I444A"/>
+  <int value="36" label="YUV420AP10"/>
+  <int value="37" label="YUV422AP10"/>
+  <int value="38" label="YUV444AP10"/>
+  <int value="39" label="NV12A"/>
 </enum>
 
 <enum name="VideoPlayerCastAPIExtensionStatus">

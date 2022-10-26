@@ -57,6 +57,7 @@ InternalFormatType BufferFormatToInternalFormatType(BufferFormat format) {
     case BufferFormat::RGBA_1010102:
     case BufferFormat::YVU_420:
     case BufferFormat::YUV_420_BIPLANAR:
+    case BufferFormat::YUVA_420_TRIPLANAR:
     case BufferFormat::P010:
       break;
       return {GL_NONE, GL_NONE};

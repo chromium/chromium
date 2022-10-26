@@ -121,7 +121,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
       return gfx::Size(1, 1);
 
     case kUPlane:  // and kUVPlane:
-    case kVPlane:
+    case kVPlane:  // and kAPlaneTriPlanar:
       switch (format) {
         case PIXEL_FORMAT_I444:
         case PIXEL_FORMAT_YUV444P9:
@@ -151,6 +151,9 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_P016LE:
         case PIXEL_FORMAT_YUV420AP10:
           return gfx::Size(2, 2);
+
+        case PIXEL_FORMAT_NV12A:
+          return plane == kUVPlane ? gfx::Size(2, 2) : gfx::Size(1, 1);
 
         case PIXEL_FORMAT_UYVY:
         case PIXEL_FORMAT_UNKNOWN:
@@ -200,6 +203,7 @@ static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
     case PIXEL_FORMAT_RGBAF16:
       return false;
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_MJPEG:
@@ -273,6 +277,19 @@ static absl::optional<VideoFrameLayout> GetDefaultLayout(
       planes = std::vector<ColorPlaneLayout>{
           ColorPlaneLayout(coded_size.width(), 0, coded_size.GetArea()),
           ColorPlaneLayout(uv_stride, coded_size.GetArea(), uv_size),
+      };
+      break;
+    }
+
+    case PIXEL_FORMAT_NV12A: {
+      int uv_width = (coded_size.width() + 1) / 2;
+      int uv_height = (coded_size.height() + 1) / 2;
+      int uv_stride = uv_width * 2;
+      int uv_size = uv_stride * uv_height;
+      planes = std::vector<ColorPlaneLayout>{
+          ColorPlaneLayout(coded_size.width(), 0, coded_size.GetArea()),
+          ColorPlaneLayout(uv_stride, coded_size.GetArea(), uv_size),
+          ColorPlaneLayout(coded_size.width(), 0, coded_size.GetArea()),
       };
       break;
     }
@@ -364,11 +381,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   if (format != PIXEL_FORMAT_ARGB && format != PIXEL_FORMAT_XRGB &&
-      format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_I420 &&
-      format != PIXEL_FORMAT_ABGR && format != PIXEL_FORMAT_XBGR &&
-      format != PIXEL_FORMAT_XR30 && format != PIXEL_FORMAT_XB30 &&
-      format != PIXEL_FORMAT_P016LE && format != PIXEL_FORMAT_RGBAF16 &&
-      format != PIXEL_FORMAT_YV12) {
+      format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_NV12A &&
+      format != PIXEL_FORMAT_I420 && format != PIXEL_FORMAT_ABGR &&
+      format != PIXEL_FORMAT_XBGR && format != PIXEL_FORMAT_XR30 &&
+      format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P016LE &&
+      format != PIXEL_FORMAT_RGBAF16 && format != PIXEL_FORMAT_YV12) {
     DLOG(ERROR) << "Unsupported pixel format: "
                 << VideoPixelFormatToString(format);
     return nullptr;
@@ -795,10 +812,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapCVPixelBuffer(
     format = PIXEL_FORMAT_I420;
   } else if (cv_format == kCVPixelFormatType_444YpCbCr8) {
     format = PIXEL_FORMAT_I444;
-  } else if (cv_format == '420v') {
-    // TODO(jfroy): Use kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange when the
-    // minimum OS X and iOS SDKs permits it.
+  } else if (cv_format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
     format = PIXEL_FORMAT_NV12;
+  } else if (cv_format ==
+             kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar) {
+    format = PIXEL_FORMAT_NV12A;
   } else {
     DLOG(ERROR) << "CVPixelBuffer format not supported: " << cv_format;
     return nullptr;
@@ -1068,6 +1086,11 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV21: {
       static const int bytes_per_element[] = {1, 2};
+      DCHECK_LT(plane, std::size(bytes_per_element));
+      return bytes_per_element[plane];
+    }
+    case PIXEL_FORMAT_NV12A: {
+      static const int bytes_per_element[] = {1, 2, 1};
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane];
     }

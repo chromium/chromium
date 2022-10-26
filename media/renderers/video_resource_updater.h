@@ -51,6 +51,7 @@ class VideoFrame;
 enum class VideoFrameResourceType {
   NONE,
   YUV,
+  YUVA,
   RGB,
   RGBA_PREMULTIPLIED,
   RGBA,

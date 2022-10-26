@@ -400,6 +400,9 @@ enum VideoPixelFormat {
   [MinVersion=1] kPixelFormatYUV420AP10 = 36,
   [MinVersion=1] kPixelFormatYUV422AP10 = 37,
   [MinVersion=1] kPixelFormatYUV444AP10 = 38,
+
+  // 20bpp YUVA planar 1x1 Y, 2x2 interleaved UV, 1x1 A samples.
+  [MinVersion=2] kPixelFormatNV12A = 39,
 };
 
 // Based on |media.mojom.EosVideoFrameData|.

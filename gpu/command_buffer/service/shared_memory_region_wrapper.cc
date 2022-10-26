@@ -43,7 +43,8 @@ bool ValidateStride(const gfx::Size size,
     case 4:
       break;
     default:
-      // YVU420 and YUV_420_BIPLANAR format aren't supported.
+      // YVU420, YUV_420_BIPLANAR, and YUVA_420_TRIPLANAR format aren't
+      // supported.
       NOTREACHED();
       return false;
   }

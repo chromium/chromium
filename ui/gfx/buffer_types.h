@@ -29,6 +29,7 @@ enum class BufferFormat {
   RGBA_F16,
   YVU_420,
   YUV_420_BIPLANAR,
+  YUVA_420_TRIPLANAR,
   P010,
 
   LAST = P010
@@ -81,20 +82,22 @@ struct BufferUsageAndFormat {
 // SharedImage.
 enum class BufferPlane {
   // For single-plane GpuMemoryBuffer, this refers to that single plane. For
-  // YUV_420, YUV_420_BIPLANAR, and P010 GpuMemoryBuffers, this refers to an
-  // RGB representation of the planes (either bound directly as a texture or
-  // created through an extra copy).
+  // YUV_420, YUV_420_BIPLANAR, YUVA_420_TRIPLANAR, and P010 GpuMemoryBuffers,
+  // this refers to an RGB representation of the planes (either bound directly
+  // as a texture or created through an extra copy).
   DEFAULT,
-  // The Y plane for YUV_420, YUV_420_BIPLANAR, and P010.
+  // The Y plane for YUV_420, YUV_420_BIPLANAR, YUVA_420_TRIPLANAR, and P010.
   Y,
-  // The UV plane for YUV_420_BIPLANAR and P010.
+  // The UV plane for YUV_420_BIPLANAR, YUVA_420_TRIPLANAR and P010.
   UV,
   // The U plane for YUV_420.
   U,
   // The V plane for YUV_420.
   V,
+  // The A plane for YUVA_420_TRIPLANAR.
+  A,
 
-  LAST = V
+  LAST = A
 };
 
 }  // namespace gfx

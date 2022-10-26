@@ -34,6 +34,9 @@ absl::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return PIXEL_FORMAT_NV12;
 
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return PIXEL_FORMAT_NV12A;
+
     case gfx::BufferFormat::P010:
       return PIXEL_FORMAT_P016LE;
 
@@ -58,6 +61,9 @@ absl::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
 
     case PIXEL_FORMAT_NV12:
       return gfx::BufferFormat::YUV_420_BIPLANAR;
+
+    case PIXEL_FORMAT_NV12A:
+      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
 
     case PIXEL_FORMAT_ABGR:
       return gfx::BufferFormat::RGBA_8888;

@@ -1313,6 +1313,8 @@ struct EnumTraits<media::stable::mojom::VideoPixelFormat,
         return media::stable::mojom::VideoPixelFormat::kPixelFormatYUV422AP10;
       case ::media::VideoPixelFormat::PIXEL_FORMAT_YUV444AP10:
         return media::stable::mojom::VideoPixelFormat::kPixelFormatYUV444AP10;
+      case ::media::VideoPixelFormat::PIXEL_FORMAT_NV12A:
+        return media::stable::mojom::VideoPixelFormat::kPixelFormatNV12A;
     }
 
     NOTREACHED();
@@ -1431,6 +1433,9 @@ struct EnumTraits<media::stable::mojom::VideoPixelFormat,
         return true;
       case media::stable::mojom::VideoPixelFormat::kPixelFormatYUV444AP10:
         *output = ::media::VideoPixelFormat::PIXEL_FORMAT_YUV444AP10;
+        return true;
+      case media::stable::mojom::VideoPixelFormat::kPixelFormatNV12A:
+        *output = ::media::VideoPixelFormat::PIXEL_FORMAT_NV12A;
         return true;
     }
 

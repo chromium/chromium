@@ -149,7 +149,7 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
   if (color_space.IsValid())
     image->SetColorSpace(color_space);
 
-  uint32_t io_surface_plane = (plane == gfx::BufferPlane::UV) ? 1 : 0;
+  uint32_t io_surface_plane = GetPlaneIndex(plane, format);
   if (!image->Initialize(io_surface, io_surface_plane, handle.id,
                          plane_format)) {
     DLOG(ERROR) << "Failed to initialize GLImage for IOSurface.";

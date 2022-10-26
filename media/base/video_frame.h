@@ -68,6 +68,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     kUPlane = 1,
     kUVPlane = kUPlane,
     kVPlane = 2,
+    kAPlaneTriPlanar = kVPlane,
     kAPlane = 3,
   };
 

@@ -63,6 +63,11 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
       DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
 #endif
       return kRGB_888x_SkColorType;
+    case YUVA_420_TRIPLANAR:
+#if BUILDFLAG(IS_MAC)
+      DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
+#endif
+      return kRGBA_8888_SkColorType;
     case RED_8:
       return kAlpha_8_SkColorType;
     case R16_EXT:
@@ -140,6 +145,8 @@ int BitsPerPixel(ResourceFormat format) {
     case P010:
     case RG16_EXT:
       return 32;
+    case YUVA_420_TRIPLANAR:
+      return 20;
     case RGBA_4444:
     case RGB_565:
     case LUMINANCE_F16:
@@ -168,6 +175,7 @@ bool HasAlpha(ResourceFormat format) {
     case BGRA_8888:
     case ALPHA_8:
     case RGBA_F16:
+    case YUVA_420_TRIPLANAR:
       return true;
     case LUMINANCE_8:
     case RGB_565:
@@ -214,6 +222,7 @@ unsigned int GLDataType(ResourceFormat format) {
       GL_UNSIGNED_INT_2_10_10_10_REV_EXT,  // BGRA_1010102
       GL_ZERO,                             // YVU_420
       GL_ZERO,                             // YUV_420_BIPLANAR
+      GL_ZERO,                             // YUVA_420_TRIPLANAR
       GL_ZERO,                             // P010
   };
   static_assert(std::size(format_gl_data_type) == (RESOURCE_FORMAT_MAX + 1),
@@ -245,6 +254,7 @@ unsigned int GLDataFormat(ResourceFormat format) {
       GL_RGBA,       // BGRA_1010102
       GL_ZERO,       // YVU_420
       GL_ZERO,       // YUV_420_BIPLANAR
+      GL_ZERO,       // YUVA_420_TRIPLANAR
       GL_ZERO,       // P010
   };
   static_assert(std::size(format_gl_data_format) == (RESOURCE_FORMAT_MAX + 1),
@@ -305,6 +315,8 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
       return gfx::BufferFormat::YVU_420;
     case YUV_420_BIPLANAR:
       return gfx::BufferFormat::YUV_420_BIPLANAR;
+    case YUVA_420_TRIPLANAR:
+      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
     case P010:
       return gfx::BufferFormat::P010;
     case ETC1:
@@ -370,6 +382,11 @@ unsigned int TextureStorageFormat(ResourceFormat format,
       DLOG(ERROR) << "Sampling of YUV_420 resources must be done per-plane.";
 #endif
       return GL_RGB8_OES;
+    case YUVA_420_TRIPLANAR:
+#if BUILDFLAG(IS_MAC)
+      DLOG(ERROR) << "Sampling of YUVA_420 resources must be done per-plane.";
+#endif
+      return GL_RGBA8_OES;
     default:
       break;
   }
@@ -417,6 +434,7 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     case RG16_EXT:
     case YVU_420:
     case YUV_420_BIPLANAR:
+    case YUVA_420_TRIPLANAR:
     case P010:
       return false;
   }
@@ -447,6 +465,7 @@ bool IsBitmapFormatSupported(ResourceFormat format) {
     case BGRA_1010102:
     case YVU_420:
     case YUV_420_BIPLANAR:
+    case YUVA_420_TRIPLANAR:
     case P010:
       return false;
   }
@@ -486,6 +505,8 @@ ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
       return YVU_420;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return YUV_420_BIPLANAR;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return YUVA_420_TRIPLANAR;
     case gfx::BufferFormat::P010:
       return P010;
   }
@@ -498,6 +519,7 @@ bool GLSupportsFormat(ResourceFormat format) {
     case BGR_565:
     case YVU_420:
     case YUV_420_BIPLANAR:
+    case YUVA_420_TRIPLANAR:
     case P010:
       return false;
     default:
@@ -550,6 +572,7 @@ VkFormat ToVkFormatInternal(ResourceFormat format) {
     case LUMINANCE_F16:
       return VK_FORMAT_R16_SFLOAT;
     case P010:
+    case YUVA_420_TRIPLANAR:
       break;
   }
   return VK_FORMAT_UNDEFINED;
@@ -587,6 +610,9 @@ wgpu::TextureFormat ToDawnFormat(ResourceFormat format) {
       return wgpu::TextureFormat::RGB10A2Unorm;
     case YUV_420_BIPLANAR:
       return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
+    // TODO(crbug.com/1175525): Add a R8BG8A8Triplanar420Unorm
+    // format for dawn.
+    case YUVA_420_TRIPLANAR:
     case RGBA_4444:
     case RGB_565:
     case BGR_565:

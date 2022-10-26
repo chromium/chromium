@@ -424,6 +424,8 @@ gfx::BufferPlane GetSharedImageBufferPlane(
           return gfx::BufferPlane::Y;
         case 1:
           return gfx::BufferPlane::UV;
+        case 2:
+          return gfx::BufferPlane::A;
         default:
           NOTREACHED();
           break;
@@ -758,6 +760,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
       break;
     // Unsupported cases.
     case PIXEL_FORMAT_I422:

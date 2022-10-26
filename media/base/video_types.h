@@ -88,9 +88,12 @@ enum VideoPixelFormat {
   PIXEL_FORMAT_YUV422AP10 = 37,
   PIXEL_FORMAT_YUV444AP10 = 38,
 
+  // 20bpp YUVA planar 1x1 Y, 2x2 interleaved UV, 1x1 A samples.
+  PIXEL_FORMAT_NV12A = 39,
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_YUV444AP10,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_NV12A,  // Must always be equal to largest entry logged.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

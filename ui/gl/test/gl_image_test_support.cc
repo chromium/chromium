@@ -259,6 +259,36 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
       }
       return;
     }
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR: {
+      DCHECK_LT(plane, 3);
+      DCHECK_EQ(0, height % 2);
+      DCHECK_EQ(0, width % 2);
+      uint8_t yuv[4] = {};
+      rgb_to_yuv(color[0], color[1], color[2], &yuv[0], &yuv[1], &yuv[2]);
+      yuv[3] = color[3];
+
+      if (plane == 0) {
+        for (int y = 0; y < height; ++y) {
+          for (int x = 0; x < width; ++x) {
+            data[stride * y + x] = yuv[0];
+          }
+        }
+      } else if (plane == 1) {
+        for (int y = 0; y < height / 2; ++y) {
+          for (int x = 0; x < width / 2; ++x) {
+            data[stride * y + x * 2] = yuv[1];
+            data[stride * y + x * 2 + 1] = yuv[2];
+          }
+        }
+      } else {
+        for (int y = 0; y < height; ++y) {
+          for (int x = 0; x < width; ++x) {
+            data[stride * y + x] = yuv[3];
+          }
+        }
+      }
+      return;
+    }
     case gfx::BufferFormat::P010: {
       DCHECK_LT(plane, 3);
       DCHECK_EQ(0, height % 2);

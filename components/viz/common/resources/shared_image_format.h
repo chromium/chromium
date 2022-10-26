@@ -41,8 +41,9 @@ class SharedImageFormat {
    * RGBA                     0:R,    1:G, 2:B, 3:A
    */
   enum class PlaneConfig : uint8_t {
-    kY_V_U,  ///< Plane 0: Y, Plane 1: V,  Plane 2: U
-    kY_UV,   ///< Plane 0: Y, Plane 1: UV
+    kY_V_U,   ///< Plane 0: Y, Plane 1: V,  Plane 2: U
+    kY_UV,    ///< Plane 0: Y, Plane 1: UV
+    kY_UV_A,  ///< Plane 0: Y, Plane 1: UV, Plane 2: A
   };
 
   /**

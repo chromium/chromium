@@ -162,6 +162,13 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       buffer_formats[1] = gfx::BufferFormat::RG_88;
       return VideoFrameResourceType::YUV;
 
+    case PIXEL_FORMAT_NV12A:
+      DCHECK_EQ(num_textures, 3u);
+      buffer_formats[0] = gfx::BufferFormat::R_8;
+      buffer_formats[1] = gfx::BufferFormat::RG_88;
+      buffer_formats[2] = gfx::BufferFormat::R_8;
+      return VideoFrameResourceType::YUVA;
+
     case PIXEL_FORMAT_P016LE:
       DCHECK_EQ(num_textures, 2u);
       // TODO(mcasas): Support other formats such as e.g. P012.
@@ -562,7 +569,8 @@ void VideoResourceUpdater::ObtainFrameResources(
       CreateExternalResourcesFromVideoFrame(video_frame);
   frame_resource_type_ = external_resources.type;
 
-  if (external_resources.type == VideoFrameResourceType::YUV) {
+  if (external_resources.type == VideoFrameResourceType::YUV ||
+      external_resources.type == VideoFrameResourceType::YUVA) {
     frame_resource_offset_ = external_resources.offset;
     frame_resource_multiplier_ = external_resources.multiplier;
     frame_bits_per_channel_ = external_resources.bits_per_channel;
@@ -651,6 +659,37 @@ void VideoResourceUpdater::AppendQuads(
                                       : frame_resources_[1].id,
           frame_resources_.size() > 3 ? frame_resources_[3].id
                                       : viz::kInvalidResourceId,
+          frame->ColorSpace(), frame_resource_offset_,
+          frame_resource_multiplier_, frame_bits_per_channel_,
+          ProtectedVideoTypeFromMetadata(frame->metadata()),
+          frame->hdr_metadata());
+
+      for (viz::ResourceId resource_id : yuv_video_quad->resources) {
+        resource_provider_->ValidateResource(resource_id);
+      }
+      break;
+    }
+    case VideoFrameResourceType::YUVA: {
+      DCHECK_EQ(frame_resources_.size(),
+                VideoFrame::NumPlanes(frame->format()));
+      if (frame->HasTextures()) {
+        DCHECK_EQ(frame->format(), PIXEL_FORMAT_NV12A);
+      }
+
+      // Get the scaling factor of the YA texture relative to the UV texture.
+      const gfx::Size uv_sample_size =
+          VideoFrame::SampleSize(frame->format(), VideoFrame::kUPlane);
+
+      auto* yuv_video_quad =
+          render_pass->CreateAndAppendDrawQuad<viz::YUVVideoDrawQuad>();
+      yuv_video_quad->SetNew(
+          shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
+          coded_size, visible_rect, uv_sample_size, frame_resources_[0].id,
+          frame_resources_[1].id,
+          frame_resources_.size() > 3 ? frame_resources_[2].id
+                                      : frame_resources_[1].id,
+          frame_resources_.size() > 3 ? frame_resources_[3].id
+                                      : frame_resources_[2].id,
           frame->ColorSpace(), frame_resource_offset_,
           frame_resource_multiplier_, frame_bits_per_channel_,
           ProtectedVideoTypeFromMetadata(frame->metadata()),

@@ -199,6 +199,7 @@ bool GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(
       return true;
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
     case gfx::BufferFormat::P010: {
       size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
       for (size_t i = 0; i < num_planes; ++i) {

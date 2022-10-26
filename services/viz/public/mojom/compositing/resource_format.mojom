@@ -26,5 +26,6 @@ enum ResourceFormat {
   BGRX_1010102,
   YVU_420,
   YUV_420_BIPLANAR,
+  YUVA_420_TRIPLANAR,
   P010,
 };

@@ -159,6 +159,8 @@ EnumTraits<media::mojom::VideoCapturePixelFormat,
       return media::mojom::VideoCapturePixelFormat::YUV422AP10;
     case media::VideoPixelFormat::PIXEL_FORMAT_YUV444AP10:
       return media::mojom::VideoCapturePixelFormat::YUV444AP10;
+    case media::VideoPixelFormat::PIXEL_FORMAT_NV12A:
+      return media::mojom::VideoCapturePixelFormat::NV12A;
   }
   NOTREACHED();
   return media::mojom::VideoCapturePixelFormat::I420;
@@ -277,6 +279,9 @@ bool EnumTraits<media::mojom::VideoCapturePixelFormat,
       return true;
     case media::mojom::VideoCapturePixelFormat::YUV444AP10:
       *output = media::PIXEL_FORMAT_YUV444AP10;
+      return true;
+    case media::mojom::VideoCapturePixelFormat::NV12A:
+      *output = media::PIXEL_FORMAT_NV12A;
       return true;
   }
   NOTREACHED();

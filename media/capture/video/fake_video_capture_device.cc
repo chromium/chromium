@@ -140,6 +140,7 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_NV12A:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV420P10:

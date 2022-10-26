@@ -61,6 +61,11 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
 GPU_EXPORT gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
                                                   gfx::BufferFormat format);
 
+// Return the index for |plane| of |format|. E.g, for the Y plane of
+// YUV_420_BIPLANAR, return 0. for the A plane of YUVA_420_TRIPLANAR return 2.
+GPU_EXPORT int32_t GetPlaneIndex(gfx::BufferPlane plane,
+                                 gfx::BufferFormat format);
+
 // Return the size for |plane| with image |size|. E.g, for the Y plane of
 // YUV_420_BIPLANAR, return size subsampled by a factor of 2. Assumes
 // IsPlaneValidForGpuMemoryBufferFormat returns true for the provided arguments.

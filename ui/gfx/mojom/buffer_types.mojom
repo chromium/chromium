@@ -23,6 +23,7 @@ enum BufferFormat {
   RGBA_F16,
   YVU_420,
   YUV_420_BIPLANAR,
+  YUVA_420_TRIPLANAR,
   P010,
 };
 
@@ -52,6 +53,7 @@ enum BufferPlane {
   UV,
   U,
   V,
+  A,
 };
 
 // gfx::GpuMemoryBufferId

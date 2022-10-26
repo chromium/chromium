@@ -304,6 +304,8 @@ VideoFrameYUVMailboxesHolder::VideoPixelFormatToSkiaValues(
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_P016LE:
       return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
+    case PIXEL_FORMAT_NV12A:
+      return {SkYUVAInfo::PlaneConfig::kY_UV_A, SkYUVAInfo::Subsampling::k420};
     case PIXEL_FORMAT_I420:
       return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420};
     case PIXEL_FORMAT_I420A:

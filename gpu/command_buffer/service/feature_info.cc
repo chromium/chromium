@@ -1279,6 +1279,13 @@ void FeatureInfo::InitializeFeatures() {
     feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::P010);
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsAtLeastOS11()) {
+    feature_flags_.gpu_memory_buffer_formats.Add(
+        gfx::BufferFormat::YUVA_420_TRIPLANAR);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   // TODO(gman): Add support for these extensions.
   //     GL_OES_depth32
 

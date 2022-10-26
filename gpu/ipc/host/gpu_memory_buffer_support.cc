@@ -34,6 +34,7 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
       gfx::BufferFormat::RGBA_F16,
       gfx::BufferFormat::YVU_420,
       gfx::BufferFormat::YUV_420_BIPLANAR,
+      gfx::BufferFormat::YUVA_420_TRIPLANAR,
       gfx::BufferFormat::P010};
 
   const gfx::BufferUsage kUsages[] = {

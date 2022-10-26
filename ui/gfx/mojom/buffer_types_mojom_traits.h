@@ -53,6 +53,8 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         return gfx::mojom::BufferFormat::YVU_420;
       case gfx::BufferFormat::YUV_420_BIPLANAR:
         return gfx::mojom::BufferFormat::YUV_420_BIPLANAR;
+      case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+        return gfx::mojom::BufferFormat::YUVA_420_TRIPLANAR;
       case gfx::BufferFormat::P010:
         return gfx::mojom::BufferFormat::P010;
     }
@@ -107,6 +109,9 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         return true;
       case gfx::mojom::BufferFormat::YUV_420_BIPLANAR:
         *out = gfx::BufferFormat::YUV_420_BIPLANAR;
+        return true;
+      case gfx::mojom::BufferFormat::YUVA_420_TRIPLANAR:
+        *out = gfx::BufferFormat::YUVA_420_TRIPLANAR;
         return true;
       case gfx::mojom::BufferFormat::P010:
         *out = gfx::BufferFormat::P010;
@@ -255,6 +260,8 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         return gfx::mojom::BufferPlane::U;
       case gfx::BufferPlane::V:
         return gfx::mojom::BufferPlane::V;
+      case gfx::BufferPlane::A:
+        return gfx::mojom::BufferPlane::A;
     }
     NOTREACHED();
     return gfx::mojom::BufferPlane::kMinValue;
@@ -276,6 +283,9 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         return true;
       case gfx::mojom::BufferPlane::V:
         *out = gfx::BufferPlane::V;
+        return true;
+      case gfx::mojom::BufferPlane::A:
+        *out = gfx::BufferPlane::A;
         return true;
     }
     NOTREACHED();

@@ -84,6 +84,7 @@ EGLint FourCC(gfx::BufferFormat format) {
       return DRM_FORMAT_P010;
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBA_F16:
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
       return 0;
   }
 
