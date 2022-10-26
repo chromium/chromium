@@ -1079,6 +1079,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // by app dragging reorders. This does not track reorders due to sort.
   absl::optional<ui::ThroughputTracker> item_reorder_animation_tracker_;
 
+  // Whether an ideal bounds animation is being setup. Used to prevent item
+  // layers from being deleted during setup.
+  bool setting_up_ideal_bounds_animation_ = false;
+
   base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };
 

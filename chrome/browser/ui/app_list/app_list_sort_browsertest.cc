@@ -1527,14 +1527,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
 
 // Verifies that the active account switch works as expected when the app list
 // is under temporary sort.
-// TODO(crbug.com/1378187): Re-enable.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SwitchUnderTemporarySort DISABLED_SwitchUnderTemporarySort
-#else
-#define MAYBE_SwitchUnderTemporarySort SwitchUnderTemporarySort
-#endif
-IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
-                       MAYBE_SwitchUnderTemporarySort) {
+IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest, SwitchUnderTemporarySort) {
   LoginUser(account_id1_);
 
   // Reorder has been triggered in the pretest so the toast should not show.

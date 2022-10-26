@@ -1360,6 +1360,8 @@ void AppsGridView::AnimateToIdealBounds() {
     return animation;
   };
 
+  base::AutoReset<bool> auto_reset(&setting_up_ideal_bounds_animation_, true);
+
   for (size_t i = 0; i < view_model_.view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
     const gfx::Rect& target_bounds = view_model_.ideal_bounds(i);
@@ -2630,6 +2632,9 @@ bool AppsGridView::ItemViewsRequireLayers() const {
   // Folder position is changing after folder closure - this involves animating
   // folder item view layer out and in, and changing other view's bounds.
   if (reordering_folder_view_)
+    return true;
+
+  if (setting_up_ideal_bounds_animation_)
     return true;
 
   return false;
