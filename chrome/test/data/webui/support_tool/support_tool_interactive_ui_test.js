@@ -8,7 +8,7 @@ GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for Polymer Support Tool element. */
-const SupportToolInteractiveTest = class extends PolymerInteractiveUITest {
+const SupportToolInteractiveUITest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
     return 'chrome://support-tool';
@@ -25,7 +25,9 @@ const SupportToolInteractiveTest = class extends PolymerInteractiveUITest {
   }
 };
 
-var SupportToolTest = class extends SupportToolInteractiveTest {
+// js2gtest.js requires using var (see crbug/1033337 for details).
+// eslint-disable-next-line no-var
+var SupportToolTest = class extends SupportToolInteractiveUITest {
   /** @override */
   get browsePreload() {
     return 'chrome://support-tool/test_loader.html?' +

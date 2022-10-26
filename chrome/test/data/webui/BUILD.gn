@@ -47,6 +47,10 @@ if (include_js_tests) {
       sources += [ "tab_strip/tab_strip_interactive_ui_tests.js" ]
     }
 
+    if (!is_android) {
+      sources += [ "support_tool/support_tool_interactive_ui_test.js" ]
+    }
+
     gen_include_files = [
       "polymer_browser_test_base.js",
       "polymer_interactive_ui_test.js",
@@ -199,10 +203,7 @@ if (include_js_tests) {
       sources += [ "tab_strip/tab_strip_browsertest.js" ]
     }
     if (!is_android) {
-      sources += [
-        "commander/commander_browsertest.js",
-        "support_tool/support_tool_browsertest.js",
-      ]
+      sources += [ "commander/commander_browsertest.js" ]
     }
     if (is_cfm) {
       sources += [
