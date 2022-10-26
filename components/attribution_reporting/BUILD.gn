@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 component("attribution_reporting") {
   sources = [
     "parse.cc",
@@ -30,4 +32,14 @@ source_set("unit_tests") {
     ":attribution_reporting",
     "//testing/gtest",
   ]
+}
+
+fuzzer_test("os_trigger_parse_fuzzer") {
+  sources = [ "os_trigger_parse_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+  ]
+
+  seed_corpus = "//components/attribution_reporting/os_trigger_fuzzer_corpus/"
 }
