@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +20,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -797,12 +797,9 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
     const SSLConfig& ssl_config) {
   SSLSocketDataProvider* next_ssl_data = mock_ssl_data_.GetNext();
   if (next_ssl_data->next_protos_expected_in_ssl_config.has_value()) {
-    EXPECT_EQ(next_ssl_data->next_protos_expected_in_ssl_config.value().size(),
-              ssl_config.alpn_protos.size());
-    EXPECT_TRUE(std::equal(
-        next_ssl_data->next_protos_expected_in_ssl_config.value().begin(),
-        next_ssl_data->next_protos_expected_in_ssl_config.value().end(),
-        ssl_config.alpn_protos.begin()));
+    EXPECT_TRUE(base::ranges::equal(
+        next_ssl_data->next_protos_expected_in_ssl_config.value(),
+        ssl_config.alpn_protos));
   }
 
   // The protocol version used is a combination of the per-socket SSLConfig and

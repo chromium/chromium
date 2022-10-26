@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -163,7 +164,7 @@ bool IPAddressBytes::operator<(const IPAddressBytes& other) const {
 }
 
 bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
-  return size_ == other.size_ && std::equal(begin(), end(), other.begin());
+  return base::ranges::equal(*this, other);
 }
 
 bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {

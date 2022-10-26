@@ -13,10 +13,10 @@
 
 #include "net/ntlm/ntlm.h"
 
-#include <algorithm>
 #include <iterator>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,8 +60,7 @@ TEST(NtlmTest, MapHashToDesKeysAllOnes) {
   // is undefined, so clear it to do memcmp.
   ClearLsb(result);
 
-  EXPECT_TRUE(std::equal(std::begin(expected), std::end(expected),
-                         std::begin(result), std::end(result)));
+  EXPECT_TRUE(base::ranges::equal(expected, result));
 }
 
 TEST(NtlmTest, MapHashToDesKeysAllZeros) {
@@ -75,8 +74,7 @@ TEST(NtlmTest, MapHashToDesKeysAllZeros) {
   // is undefined, so clear it to do memcmp.
   ClearLsb(result);
 
-  EXPECT_TRUE(std::equal(std::begin(expected), std::end(expected),
-                         std::begin(result), std::end(result)));
+  EXPECT_TRUE(base::ranges::equal(expected, result));
 }
 
 TEST(NtlmTest, MapHashToDesKeysAlternatingBits) {
@@ -93,8 +91,7 @@ TEST(NtlmTest, MapHashToDesKeysAlternatingBits) {
   // is undefined, so clear it to do memcmp.
   ClearLsb(result);
 
-  EXPECT_TRUE(std::equal(std::begin(expected), std::end(expected),
-                         std::begin(result), std::end(result)));
+  EXPECT_TRUE(base::ranges::equal(expected, result));
 }
 
 TEST(NtlmTest, GenerateNtlmHashV1PasswordSpecTests) {
