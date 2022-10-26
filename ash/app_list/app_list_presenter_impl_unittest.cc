@@ -14,13 +14,11 @@
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "ui/aura/client/focus_client.h"
@@ -81,84 +79,6 @@ class AppListPresenterImplTest : public AshTestBase {
     return presenter()->IsShowingEmbeddedAssistantUI();
   }
 };
-
-// Tests of clamshell mode. These can be deleted when ProductivityLauncher is
-// the default because AppListPresenterImpl will only be used for tablet mode.
-class AppListPresenterImplClamshellTest : public AppListPresenterImplTest {
- public:
-  AppListPresenterImplClamshellTest() {
-    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that app launcher is dismissed when focus moves to another window.
-TEST_F(AppListPresenterImplClamshellTest, HideOnFocusOut) {
-  // Show the app list and focus it.
-  ShowAppList();
-  aura::client::FocusClient* focus_client =
-      aura::client::GetFocusClient(presenter()->GetWindow());
-  focus_client->FocusWindow(presenter()->GetWindow());
-  EXPECT_TRUE(presenter()->GetTargetVisibility());
-
-  // Focus a different window.
-  std::unique_ptr<aura::Window> window = CreateTestWindow();
-  focus_client->FocusWindow(window.get());
-
-  // App list closes.
-  EXPECT_FALSE(presenter()->GetTargetVisibility());
-}
-
-// Tests that the app list is dismissed when the app list's widget is destroyed.
-TEST_F(AppListPresenterImplClamshellTest, WidgetDestroyed) {
-  ShowAppList();
-  EXPECT_TRUE(presenter()->GetTargetVisibility());
-  presenter()->GetView()->GetWidget()->CloseNow();
-  EXPECT_FALSE(presenter()->GetTargetVisibility());
-}
-
-// Test that clicking on app list context menus doesn't close the app list.
-TEST_F(AppListPresenterImplClamshellTest, ClickingContextMenuDoesNotDismiss) {
-  // Populate some apps since we will show the context menu over a view.
-  AppListModel* model = AppListModelProvider::Get()->model();
-  model->AddItem(std::make_unique<AppListItem>("item 1"));
-  model->AddItem(std::make_unique<AppListItem>("item 2"));
-
-  // Show the app list on the primary display.
-  ShowAppList();
-  aura::Window* window = presenter()->GetWindow();
-  ASSERT_TRUE(window);
-
-  // Show a context menu for the first app list item view.
-  AppListView::TestApi test_api(presenter()->GetView());
-  PagedAppsGridView* grid_view = test_api.GetRootAppsGridView();
-  AppListItemView* item_view = grid_view->GetItemViewAt(0);
-  DCHECK(item_view);
-  item_view->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);
-
-  // Find the context menu.
-  aura::Window* menu_container =
-      Shell::GetPrimaryRootWindow()->GetChildById(kShellWindowId_MenuContainer);
-  ASSERT_EQ(1u, menu_container->children().size());
-  aura::Window* menu = menu_container->children()[0];
-
-  // Press the left mouse button on the menu window, it should not close the
-  // app list nor the context menu on this pointer event.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(
-      menu->GetBoundsInScreen().origin());
-  event_generator->PressLeftButton();
-
-  // Check that the window and the app list are still open.
-  ASSERT_EQ(window, presenter()->GetWindow());
-  EXPECT_EQ(1u, menu_container->children().size());
-
-  // Close app list so that views are destructed and unregistered from the
-  // model's observer list.
-  presenter()->Dismiss(base::TimeTicks());
-  base::RunLoop().RunUntilIdle();
-}
 
 // Tests, in tablet mode, that when specific container id widgets are focused,
 // that the shelf background type remains in kHomeLauncher and does not change
