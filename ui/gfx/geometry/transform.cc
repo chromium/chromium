@@ -38,18 +38,18 @@ struct SinCos {
 };
 
 SinCos SinCosDegrees(double degrees) {
-  degrees = std::fmod(degrees, 360.0);
-  if (degrees < 0)
-    degrees += 360.0;
   double n90degrees = degrees / 90.0;
   int n = static_cast<int>(n90degrees);
   if (n == n90degrees) {
-    DCHECK_GE(n, 0);
-    DCHECK_LT(n, 4);
+    n %= 4;
+    if (n < 0)
+      n += 4;
     constexpr SinCos kSinCosN90[] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
     return kSinCosN90[n];
   }
-  return SinCos{std::sin(DegToRad(degrees)), std::cos(DegToRad(degrees))};
+  // fmod is to reduce errors of DegToRad() with large |degrees|.
+  double rad = DegToRad(std::fmod(degrees, 360.0));
+  return SinCos{std::sin(rad), std::cos(rad)};
 }
 
 inline bool ApproximatelyZero(double x, double tolerance) {

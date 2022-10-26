@@ -2987,6 +2987,10 @@ TEST(XFormTest, Rotate90NDegrees) {
   EXPECT_TRUE(t2.IsIdentity());
   EXPECT_TRUE(t3.IsIdentity());
   EXPECT_TRUE(t4.IsIdentity());
+
+  // This should not crash. https://crbug.com/1378323.
+  Transform t;
+  t.Rotate(-1e-30);
 }
 
 TEST(XFormTest, MapPoint) {
