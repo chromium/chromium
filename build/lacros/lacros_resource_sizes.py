@@ -302,17 +302,12 @@ def _run_resource_sizes(args):
         _Group(paths=['nacl_irt_x86_64.nexe'],
                title='File: nacl_irt_x86_64.nexe'))
   # Architecture arm32 requires artifact nacl_irt_arm.nexe.
-  elif args.arch == 'arm32':
+  elif args.arch == 'arm32' or args.arch == 'arm64':
     tracked_groups.append(
         _Group(paths=['nacl_irt_arm.nexe'], title='File: nacl_irt_arm.nexe'))
     tracked_groups.append(
         _Group(paths=['nacl_helper_bootstrap'],
                title='File: nacl_helper_bootstrap'))
-  # TODO(https://crbug.com/1356761): remove the following part once nacl files
-  # are available.
-  elif args.arch == 'arm64':
-    tracked_groups.remove(
-        _Group(paths=['nacl_helper'], title='File: nacl_helper'))
   for g in tracked_groups:
     sizes = sum(
         map(_get_catagorized_filesizes, _visit_paths(args.out_dir, g.paths)),

@@ -13,6 +13,9 @@
             "libEGL.so",
             "libGLESv2.so",
             "metadata.json",
+            "nacl_helper",
+            "nacl_helper_bootstrap",
+            "nacl_irt_arm.nexe",
             "resources.pak",
             "snapshot_blob.bin"
          ],
