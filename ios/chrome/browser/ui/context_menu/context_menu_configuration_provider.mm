@@ -66,6 +66,9 @@ namespace {
 const NSUInteger kContextMenuMaxURLTitleLength = 100;
 // Character to append to context menut titles that are truncated.
 NSString* const kContextMenuEllipsis = @"…";
+// Maximum length for a context menu title formed from an address, date or phone
+// number experience.
+const NSUInteger kContextMenuMaxTitleLength = 30;
 
 }  // namespace
 
@@ -339,6 +342,10 @@ NSString* const kContextMenuEllipsis = @"…";
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;
+    if (menuTitle.length > kContextMenuMaxTitleLength) {
+      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxTitleLength - 1]
+          stringByAppendingString:kContextMenuEllipsis];
+    }
   }
 
   if (menuElements.count == 0) {
