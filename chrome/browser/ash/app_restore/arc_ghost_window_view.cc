@@ -27,6 +27,7 @@
 namespace {
 
 constexpr char kGhostWindowTypeHistogram[] = "Arc.GhostWindowViewType";
+constexpr int kThrobberDiameterOriginalStyle = 24;
 
 // Ghost window view type enumeration; Used for UMA counter.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -74,17 +75,15 @@ class Throbber : public views::View {
 namespace ash::full_restore {
 
 ArcGhostWindowView::ArcGhostWindowView(arc::GhostWindowType type,
-                                       int throbber_diameter,
                                        uint32_t theme_color) {
   // TODO(sstan): Show different content for different type.
-  InitLayout(type, theme_color, throbber_diameter);
+  InitLayout(type, theme_color);
 }
 
 ArcGhostWindowView::~ArcGhostWindowView() = default;
 
 void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
-                                    uint32_t theme_color,
-                                    int diameter) {
+                                    uint32_t theme_color) {
   SetBackground(views::CreateSolidBackground(theme_color));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -100,7 +99,8 @@ void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
 
   auto* throbber = AddChildView(std::make_unique<Throbber>(
       color_utils::GetColorWithMaxContrast(theme_color)));
-  throbber->SetPreferredSize(gfx::Size(diameter, diameter));
+  throbber->SetPreferredSize(gfx::Size(kThrobberDiameterOriginalStyle,
+                                       kThrobberDiameterOriginalStyle));
   throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
 
   SetType(type);

@@ -20,7 +20,6 @@
 #include "ui/views/window/caption_button_types.h"
 
 namespace {
-constexpr int kDiameter = 24;
 
 bool IsMaximizedState(
     const absl::optional<chromeos::WindowStateType>& window_state) {
@@ -184,8 +183,7 @@ exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
 
 void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
                                                     uint32_t theme_color) {
-  auto view =
-      std::make_unique<ArcGhostWindowView>(type_, kDiameter, theme_color);
+  auto view = std::make_unique<ArcGhostWindowView>(type_, theme_color);
   view_observer_ = view.get();
   view->LoadIcon(app_id);
   exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(view));

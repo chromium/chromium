@@ -29,9 +29,7 @@ class ArcGhostWindowView : public views::View {
  public:
   METADATA_HEADER(ArcGhostWindowView);
 
-  ArcGhostWindowView(arc::GhostWindowType type,
-                     int throbber_diameter,
-                     uint32_t theme_color);
+  ArcGhostWindowView(arc::GhostWindowType type, uint32_t theme_color);
   ArcGhostWindowView(const ArcGhostWindowView&) = delete;
   ArcGhostWindowView operator=(const ArcGhostWindowView&) = delete;
   ~ArcGhostWindowView() override;
@@ -44,9 +42,7 @@ class ArcGhostWindowView : public views::View {
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, FixupMessageTest);
 
-  void InitLayout(arc::GhostWindowType type,
-                  uint32_t theme_color,
-                  int diameter);
+  void InitLayout(arc::GhostWindowType type, uint32_t theme_color);
   void OnIconLoaded(apps::IconValuePtr icon_value);
 
   views::ImageView* icon_view_ = nullptr;

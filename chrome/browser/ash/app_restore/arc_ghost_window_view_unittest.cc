@@ -86,11 +86,8 @@ class ArcGhostWindowViewTest : public testing::Test {
                  false /* should_notify_initialized */);
   }
 
-  void CreateView(arc::GhostWindowType type,
-                  int throbber_diameter,
-                  uint32_t theme_color) {
-    view_ = std::make_unique<ArcGhostWindowView>(type, throbber_diameter,
-                                                 theme_color);
+  void CreateView(arc::GhostWindowType type, uint32_t theme_color) {
+    view_ = std::make_unique<ArcGhostWindowView>(type, theme_color);
   }
 
   ArcGhostWindowView* view() { return view_.get(); }
@@ -112,13 +109,12 @@ class ArcGhostWindowViewTest : public testing::Test {
 };
 
 TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
-  const int kDiameter = 24;
   const uint32_t kThemeColor = SK_ColorWHITE;
   const std::string kAppId = "test_app";
   InstallApp(kAppId);
 
   int count = 0;
-  CreateView(arc::GhostWindowType::kFullRestore, kDiameter, kThemeColor);
+  CreateView(arc::GhostWindowType::kFullRestore, kThemeColor);
   EXPECT_EQ(count, 0);
 
   view()->icon_loaded_cb_for_testing_ = base::BindLambdaForTesting(
@@ -128,12 +124,11 @@ TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
 }
 
 TEST_F(ArcGhostWindowViewTest, FixupMessageTest) {
-  const int kDiameter = 24;
   const uint32_t kThemeColor = SK_ColorWHITE;
   const std::string kAppId = "test_app";
   InstallApp(kAppId);
 
-  CreateView(arc::GhostWindowType::kFixup, kDiameter, kThemeColor);
+  CreateView(arc::GhostWindowType::kFixup, kThemeColor);
 
   EXPECT_NE(view()->message_label_, nullptr);
   EXPECT_EQ(view()->message_label_->GetText(),
