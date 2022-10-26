@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_handler.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -14,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -73,7 +75,8 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
     theme->has_custom_background =
         theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
     theme->id = profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
-    most_visited->use_title_pill = true;
+    most_visited->use_title_pill =
+        !base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim);
   }
   theme->most_visited = std::move(most_visited);
   page_->SetTheme(std::move(theme));

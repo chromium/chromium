@@ -160,6 +160,13 @@ new_tab_page::mojom::ThemePtr MakeTheme(
       ntp_custom_background_service
           ? ntp_custom_background_service->GetCustomBackground()
           : absl::nullopt;
+  const bool remove_scrim =
+      base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim);
+  const bool apply_custom_background_theming =
+      custom_background.has_value() ||
+      (remove_scrim &&
+       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND));
+
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   SkColor text_color;
   if (base::FeatureList::IsEnabled(ntp_features::kNtpComprehensiveTheming) &&
@@ -171,7 +178,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
             ThemeProperties::NTP_LOGO_ALTERNATE) == 1) {
       theme->logo_color = color_provider.GetColor(kColorNewTabPageLogo);
     }
-  } else if (custom_background.has_value()) {
+  } else if (apply_custom_background_theming) {
     text_color = color_provider.GetColor(kColorNewTabPageTextUnthemed);
     most_visited->background_color = color_provider.GetColor(
         kColorNewTabPageMostVisitedTileBackgroundUnthemed);
@@ -198,7 +205,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     background_image->url = custom_background->custom_background_url;
   } else if (theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
     theme->is_custom_background = false;
-    most_visited->use_title_pill = true;
+    most_visited->use_title_pill = !remove_scrim;
     auto theme_id = theme_service->GetThemeID();
     background_image->url = GURL(base::StrCat(
         {"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND?", theme_id}));
@@ -248,8 +255,7 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     background_image = nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpRemoveScrim) &&
-      background_image) {
+  if (remove_scrim && background_image) {
     // If a background image is defined and the scrim removal flag is active
     // disable the scrim.
     background_image->scrim_display = "none";
