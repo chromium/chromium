@@ -131,17 +131,17 @@ class TestReaction : public CustomElementReaction {
 class ResetCustomElementReactionStackForTest final {
   STACK_ALLOCATED();
  public:
-  explicit ResetCustomElementReactionStackForTest(Agent& agent)
-      : stack_(MakeGarbageCollected<CustomElementReactionStack>(agent)),
-        old_stack_(CustomElementReactionStack::Swap(agent, stack_)),
-        agent_(agent) {}
+  ResetCustomElementReactionStackForTest()
+      : stack_(MakeGarbageCollected<CustomElementReactionStack>()),
+        old_stack_(
+            CustomElementReactionStackTestSupport::SetCurrentForTest(stack_)) {}
   ResetCustomElementReactionStackForTest(
       const ResetCustomElementReactionStackForTest&) = delete;
   ResetCustomElementReactionStackForTest& operator=(
       const ResetCustomElementReactionStackForTest&) = delete;
 
   ~ResetCustomElementReactionStackForTest() {
-    CustomElementReactionStack::Swap(agent_, old_stack_);
+    CustomElementReactionStackTestSupport::SetCurrentForTest(old_stack_);
   }
 
   CustomElementReactionStack& Stack() { return *stack_; }
@@ -149,7 +149,6 @@ class ResetCustomElementReactionStackForTest final {
  private:
   CustomElementReactionStack* stack_;
   CustomElementReactionStack* old_stack_;
-  Agent& agent_;
 };
 
 }  // namespace blink

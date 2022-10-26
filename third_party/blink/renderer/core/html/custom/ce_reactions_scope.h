@@ -13,7 +13,6 @@ namespace blink {
 
 class Agent;
 class CustomElementReaction;
-class CustomElementReactionStack;
 class Element;
 class ExecutionContext;
 
@@ -22,6 +21,8 @@ class CORE_EXPORT CEReactionsScope final {
   STACK_ALLOCATED();
 
  public:
+  static CEReactionsScope* Current() { return top_of_stack_; }
+
   explicit CEReactionsScope(ExecutionContext* execution_context);
   explicit CEReactionsScope(Agent& agent);
   ~CEReactionsScope();
@@ -32,7 +33,12 @@ class CORE_EXPORT CEReactionsScope final {
   void EnqueueToCurrentQueue(Element&, CustomElementReaction&);
 
  private:
-  CustomElementReactionStack& stack_;
+  static CEReactionsScope* top_of_stack_;
+
+  void InvokeReactions();
+
+  CEReactionsScope* prev_;
+  bool work_to_do_;
 };
 
 }  // namespace blink

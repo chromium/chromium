@@ -85,13 +85,15 @@ CustomElementRegistry* CustomElementRegistry::Create(
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
       owner_(owner),
-      upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()) {}
+      upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()),
+      reaction_stack_(&CustomElementReactionStack::Current()) {}
 
 void CustomElementRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(definitions_);
   visitor->Trace(owner_);
   visitor->Trace(upgrade_candidates_);
   visitor->Trace(when_defined_promise_map_);
+  visitor->Trace(reaction_stack_);
   ScriptWrappable::Trace(visitor);
 }
 

@@ -400,8 +400,9 @@ TEST_F(CustomElementRegistryTest, adoptedCallback) {
       static_cast<LogUpgradeDefinition*>(Registry().DefinitionForName("a-a"));
 
   definition->Clear();
+  ScopedNullExecutionContext execution_context;
   auto* other_document =
-      HTMLDocument::CreateForTest(*GetDocument().GetExecutionContext());
+      HTMLDocument::CreateForTest(execution_context.GetExecutionContext());
   {
     CEReactionsScope reactions(element->GetDocument().GetExecutionContext());
     other_document->adoptNode(element, ASSERT_NO_EXCEPTION);
