@@ -1,3 +1,7 @@
-monorail {
-  component: "FamilyExperiences"
-}
+# Enterprise
+mixins: "//components/policy/COMMON_METADATA"
+# Chrome Browser
+mixins: "//chrome/browser/supervised_user/android/COMMON_METADATA"
+# ChromeOS
+mixins: "//chrome/browser/supervised_user/chromeos/COMMON_METADATA"
+
