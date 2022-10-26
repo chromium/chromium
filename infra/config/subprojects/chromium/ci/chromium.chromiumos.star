@@ -72,7 +72,6 @@ ci.builder(
         },
     },
     goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -361,8 +360,6 @@ ci.builder(
         short_name = "a64",
     ),
     main_console_view = "main",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
