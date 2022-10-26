@@ -19,11 +19,14 @@
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/thread_annotations.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
@@ -198,8 +201,10 @@ class Storage::KeyDelivery {
   const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
   // List of all request callbacks (protected by |sequenced_task_runner_|).
-  base::OnceCallbackList<void(Status)> callbacks_;
-  std::vector<base::CallbackListSubscription> callback_subscriptions_;
+  base::OnceCallbackList<void(Status)> callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<base::CallbackListSubscription> callback_subscriptions_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
@@ -622,14 +627,16 @@ void Storage::Create(
         base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> callback)
         : TaskRunnerContext<StatusOr<scoped_refptr<Storage>>>(
               std::move(callback),
-              base::ThreadPool::CreateSequencedTaskRunner(
-                  {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
+              storage->sequenced_task_runner_),  // Same runner as the Storage!
           queues_options_(queues_options),
           storage_(std::move(storage)) {}
 
    private:
     // Context can only be deleted by calling Response method.
-    ~StorageInitContext() override { DCHECK_EQ(count_, 0); }
+    ~StorageInitContext() override {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
+      DCHECK_EQ(count_, 0u);
+    }
 
     void OnStart() override {
       CheckOnValidSequence();
@@ -683,6 +690,7 @@ void Storage::Create(
       CheckOnValidSequence();
 
       // Construct all queues.
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
       count_ = queues_options_.size();
       for (const auto& queue_options : queues_options_) {
         StorageQueue::Create(
@@ -709,6 +717,7 @@ void Storage::Create(
     void AddQueue(Priority priority,
                   StatusOr<scoped_refptr<StorageQueue>> storage_queue_result) {
       CheckOnValidSequence();
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
       if (storage_queue_result.ok()) {
         auto add_result = storage_->queues_.emplace(
             priority, storage_queue_result.ValueOrDie());
@@ -720,8 +729,8 @@ void Storage::Create(
           final_status_ = storage_queue_result.status();
         }
       }
-      DCHECK_GT(count_, 0);
-      if (--count_ > 0) {
+      DCHECK_GT(count_, 0u);
+      if (--count_ > 0u) {
         return;
       }
       if (!final_status_.ok()) {
@@ -732,6 +741,7 @@ void Storage::Create(
       // in an ascending priorities order. The lowest priority queue has
       // an empty vector.
       std::vector<scoped_refptr<StorageQueue>> degradation_queues;
+      DCHECK_EQ(storage_->queues_.size(), queues_options_.size());
       for (const auto& queue_options : queues_options_) {
         const auto queue_or_error = storage_->GetQueue(queue_options.first);
         DCHECK(queue_or_error.ok()) << queue_or_error.status();
@@ -746,7 +756,7 @@ void Storage::Create(
 
     const StorageOptions::QueuesOptionsList queues_options_;
     const scoped_refptr<Storage> storage_;
-    int32_t count_ = 0;
+    size_t count_ GUARDED_BY_CONTEXT(storage_->sequence_checker_) = 0;
     Status final_status_;
   };
 
@@ -774,61 +784,77 @@ Storage::Storage(const StorageOptions& options,
           options.directory())),
       async_start_upload_cb_(async_start_upload_cb),
       pipeline_id_in_storage_(
-          std::make_unique<PipelineIdInStorage>(options.directory())) {}
+          std::make_unique<PipelineIdInStorage>(options.directory())),
+      sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 Storage::~Storage() = default;
 
 void Storage::Write(Priority priority,
                     Record record,
                     base::OnceCallback<void(Status)> completion_cb) {
-  // Note: queues_ never change after initialization is finished, so there is
-  // no need to protect or serialize access to it.
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
-                                     completion_cb, GetQueue(priority));
-
-  if (EncryptionModuleInterface::is_enabled() &&
-      !encryption_module_->has_encryption_key()) {
-    // Key was not found at startup time. Note that if the key is outdated,
-    // we still can't use it, and won't load it now. So this processing can
-    // only happen after Storage is initialized (until the first successful
-    // delivery of a key). After that we will resume the write into the queue.
-    KeyDelivery::RequestCallback action = base::BindOnce(
-        [](scoped_refptr<StorageQueue> queue, Record record,
-           base::OnceCallback<void(Status)> completion_cb, Status status) {
-          if (!status.ok()) {
-            std::move(completion_cb).Run(status);
-            return;
-          }
-          queue->Write(std::move(record), std::move(completion_cb));
-        },
-        queue, std::move(record), std::move(completion_cb));
-    key_delivery_->Request(std::move(action));
-    return;
-  }
-
-  // Otherwise we can write into the queue right away.
-  queue->Write(std::move(record), std::move(completion_cb));
+  AsyncGetQueueAndProceed(
+      priority,
+      base::BindOnce(
+          [](scoped_refptr<Storage> self, Priority priority, Record record,
+             scoped_refptr<StorageQueue> queue,
+             base::OnceCallback<void(Status)> completion_cb) {
+            if (EncryptionModuleInterface::is_enabled() &&
+                !self->encryption_module_->has_encryption_key()) {
+              // Key was not found at startup time. Note that if the key is
+              // outdated, we still can't use it, and won't load it now. So
+              // this processing can only happen after Storage is initialized
+              // (until the first successful delivery of a key). After that we
+              // will resume the write into the queue.
+              KeyDelivery::RequestCallback action = base::BindOnce(
+                  [](scoped_refptr<StorageQueue> queue, Record record,
+                     base::OnceCallback<void(Status)> completion_cb,
+                     Status status) {
+                    if (!status.ok()) {
+                      std::move(completion_cb).Run(status);
+                      return;
+                    }
+                    queue->Write(std::move(record), std::move(completion_cb));
+                  },
+                  queue, std::move(record), std::move(completion_cb));
+              self->key_delivery_->Request(std::move(action));
+              return;
+            }
+            // Otherwise we can write into the queue right away.
+            queue->Write(std::move(record), std::move(completion_cb));
+          },
+          base::WrapRefCounted(this), priority, std::move(record)),
+      std::move(completion_cb));
 }
 
 void Storage::Confirm(SequenceInformation sequence_information,
                       bool force,
                       base::OnceCallback<void(Status)> completion_cb) {
-  // Note: queues_ never change after initialization is finished, so there is
-  // no need to protect or serialize access to it.
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
-                                     completion_cb,
-                                     GetQueue(sequence_information.priority()));
-  queue->Confirm(std::move(sequence_information), force,
-                 std::move(completion_cb));
+  const Priority priority = sequence_information.priority();
+  AsyncGetQueueAndProceed(
+      priority,
+      base::BindOnce(
+          [](SequenceInformation sequence_information, bool force,
+             scoped_refptr<StorageQueue> queue,
+             base::OnceCallback<void(Status)> completion_cb) {
+            queue->Confirm(std::move(sequence_information), force,
+                           std::move(completion_cb));
+          },
+          std::move(sequence_information), force),
+      std::move(completion_cb));
 }
 
 void Storage::Flush(Priority priority,
                     base::OnceCallback<void(Status)> completion_cb) {
-  // Note: queues_ never change after initialization is finished, so there is
-  // no need to protect or serialize access to it.
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
-                                     completion_cb, GetQueue(priority));
-  queue->Flush(std::move(completion_cb));
+  AsyncGetQueueAndProceed(
+      priority,
+      base::BindOnce([](scoped_refptr<StorageQueue> queue,
+                        base::OnceCallback<void(Status)> completion_cb) {
+        queue->Flush(std::move(completion_cb));
+      }),
+      std::move(completion_cb));
 }
 
 void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
@@ -873,8 +899,38 @@ void Storage::UpdateEncryptionKey(SignedEncryptionInfo signed_encryption_key) {
           std::move(signed_encryption_key), base::WrapRefCounted(this)));
 }
 
+void Storage::AsyncGetQueueAndProceed(
+    Priority priority,
+    base::OnceCallback<void(scoped_refptr<StorageQueue>,
+                            base::OnceCallback<void(Status)>)> queue_action,
+    base::OnceCallback<void(Status)> completion_cb) {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<Storage> self, Priority priority,
+             base::OnceCallback<void(scoped_refptr<StorageQueue>,
+                                     base::OnceCallback<void(Status)>)>
+                 queue_action,
+             base::OnceCallback<void(Status)> completion_cb) {
+            // Attempt to get queue by priority on the Storage task runner.
+            auto queue_result = self->GetQueue(priority);
+            if (!queue_result.ok()) {
+              // Queue not found, abort.
+              std::move(completion_cb).Run(queue_result.status());
+              return;
+            }
+            // Queue found, execute the action (it should relocate on
+            // queue thread soon, to not block Storage task runner).
+            std::move(queue_action)
+                .Run(queue_result.ValueOrDie(), std::move(completion_cb));
+          },
+          base::WrapRefCounted(this), priority, std::move(queue_action),
+          std::move(completion_cb)));
+}
+
 StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(
     Priority priority) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = queues_.find(priority);
   if (it == queues_.end()) {
     return Status(
