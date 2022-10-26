@@ -1,48 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-/**
- * A blocking queue to allow the remote test interact with the FSP
- * implementation asynchronously.
- */
-class Queue {
-  constructor() {
-    /** @type {!Array<!Object>} */
-    this.items = [];
-    /** @type {!Array<function(!Object)>} */
-    this.readers = [];
-  }
-
-  /**
-   * Pushes an item into the queue and unblocks the first waiting reader if
-   * there are any. This method returns immediately and will never block.
-   *
-   * @param {!Object} item
-   */
-  push(item) {
-    if (this.readers.length > 0) {
-      this.readers.shift()(item);
-      return;
-    }
-    this.items.push(item);
-  }
-
-  /**
-   * Pops the first item from the queue. If the queue is empty, will wait until
-   * an item is available.
-   *
-   * @returns {!Object}
-   */
-  async pop() {
-    if (this.items.length > 0) {
-      return this.items.shift();
-    }
-    return new Promise(resolve => {
-      this.readers.push(resolve);
-    });
-  }
-};
+import {promisifyWithLastError, Queue} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 
 /**
  * Splits the path into dir name and base name, e.g. '/a/b/c' -> '/a/b', 'c'.
@@ -216,7 +175,8 @@ export class TestFileSystemProvider {
     this.maxOpenedFiles = 0;
 
     /**
-     * A queue of recorded event per event name.
+     * A queue of recorded event per event name. Allows the remote test to read
+     * the events happening in the FSP implementation asynchronously.
      *
      * @private {!Object<string, !Queue>}
      */
@@ -351,6 +311,23 @@ export class TestFileSystemProvider {
   }
 
   /**
+   * Called by the test. Causes a change notification to be sent for an entry.
+   *
+   * @param {string} entryPath
+   * @param {boolean} recursive
+   * @param {string} tag
+   */
+  async triggerNotify(entryPath, recursive, tag) {
+    return promisifyWithLastError(chrome.fileSystemProvider.notify, {
+      fileSystemId: this.fileSystemId,
+      observedPath: entryPath,
+      recursive,
+      changeType: 'CHANGED',
+      tag,
+    });
+  }
+
+  /**
    * Called by the test. Gets the least recent event recorded for a given event
    * name. Will block until there is at least one in the queue.
    *
@@ -371,7 +348,7 @@ export class TestFileSystemProvider {
    * @returns {number}
    */
   getEventCount(eventName) {
-    return this.getEventQueue(eventName).items.length;
+    return this.getEventQueue(eventName).size();
   }
 
   /**

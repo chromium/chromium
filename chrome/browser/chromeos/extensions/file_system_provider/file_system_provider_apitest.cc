@@ -449,6 +449,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, MoveEntry) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Notify) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/notify",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ReadDirectory) {
   ASSERT_TRUE(RunExtensionTest(
       "file_system_provider/service_worker/read_directory",

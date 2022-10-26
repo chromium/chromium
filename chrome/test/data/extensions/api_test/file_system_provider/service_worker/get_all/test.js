@@ -12,7 +12,7 @@ async function main() {
   chrome.test.runTests([
     // Verifies if getAll() returns the mounted file system.
     async function mountSuccess() {
-      const fileSystem = await mountTestFileSystem(/*openedFileLimit*/ 2);
+      const fileSystem = await mountTestFileSystem({openedFilesLimit: 2});
       // Start a read so we have at least one file open.
       const fileEntry = await fileSystem.getFileEntry(
           TestFileSystemProvider.FILE_BLOCKS_FOREVER, {create: false});

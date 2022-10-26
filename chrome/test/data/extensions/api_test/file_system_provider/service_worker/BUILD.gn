@@ -46,6 +46,8 @@ js_library("service_worker") {
     "mount/test.js",
     "move_entry/sw.js",
     "move_entry/test.js",
+    "notify/sw.js",
+    "notify/test.js",
     "provider.js",
     "read_directory/sw.js",
     "read_directory/test.js",

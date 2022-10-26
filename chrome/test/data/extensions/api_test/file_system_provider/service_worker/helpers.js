@@ -3,6 +3,61 @@
 // found in the LICENSE file.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
+/** A blocking queue implementation.  */
+export class Queue {
+  constructor() {
+    /**
+     * Items currently in the queue.
+     * @private {!Array<!Object>}
+     */
+    this.items_ = [];
+    /**
+     * Readers waiting for an item to be pushed to the queue.
+     * @private {!Array<function(!Object)>}
+     */
+    this.readers = [];
+  }
+
+  /**
+   * Pushes an item into the queue and unblocks the first waiting reader if
+   * there are any. This method returns immediately and will never block.
+   *
+   * @param {!Object} item
+   */
+  push(item) {
+    if (this.readers.length > 0) {
+      this.readers.shift()(item);
+      return;
+    }
+    this.items_.push(item);
+  }
+
+  /**
+   * Pops the first item from the queue. If the queue is empty, will wait until
+   * an item is available.
+   *
+   * @returns {!Object}
+   */
+  async pop() {
+    if (this.items_.length > 0) {
+      return this.items_.shift();
+    }
+    return new Promise(resolve => {
+      this.readers.push(resolve);
+    });
+  }
+
+  clear() {
+    this.items_ = [];
+  }
+
+  /** @returns {number} */
+  size() {
+    return this.items_.length;
+  }
+};
+
+
 /**
  * @param {function(...?)} fn
  * @param {...?} args
@@ -107,26 +162,25 @@ export async function getFsInfoById(fileSystemId) {
 }
 
 /**
- * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
- *     unspecified, then not limited.
+ * @param {{
+ *    openedFilesLimit: (number|undefined),
+ *    supportsNotifyTag:(boolean|undefined)
+ * }=} optionsOverride
  * @returns {!Promise<{fileSystem: !FileSystem, volumeInfo:
  *     !chrome.fileManagerPrivate.VolumeMetadata}>} information about the
  *     mounted filesystem instance.
  */
-async function mount(openedFilesLimit) {
-  const fileSystemId = TestFileSystemProvider.FILESYSTEM_ID;
+async function mount(optionsOverride) {
   const options = {
-    fileSystemId,
+    fileSystemId: TestFileSystemProvider.FILESYSTEM_ID,
     displayName: 'Test Filesystem',
     writable: true,
+    ...optionsOverride,
   };
-  if (openedFilesLimit) {
-    options.openedFilesLimit = openedFilesLimit;
-  }
   await promisifyWithLastError(chrome.fileSystemProvider.mount, options);
-  const volumeInfo = await getVolumeInfo(fileSystemId);
+  const volumeInfo = await getVolumeInfo(options.fileSystemId);
   if (!volumeInfo) {
-    throw new Error(`volume not found for filesystem: ${fileSystemId}`);
+    throw new Error(`volume not found for filesystem: ${options.fileSystemId}`);
   }
   const fileSystem = await promisifyWithLastError(
       chrome.fileSystem.requestFileSystem,
@@ -188,7 +242,7 @@ export class MountedTestFileSystem {
     await promisifyWithLastError(chrome.fileSystemProvider.unmount, {
       fileSystemId: TestFileSystemProvider.FILESYSTEM_ID,
     });
-    const {fileSystem, volumeInfo} = await mount(openedFilesLimit);
+    const {fileSystem, volumeInfo} = await mount({openedFilesLimit});
     this.fileSystem = fileSystem;
     this.volumeInfo = volumeInfo;
   }
@@ -225,12 +279,14 @@ export class MountedTestFileSystem {
 /**
  * Create a mounted test filesystem instance.
  *
- * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
- *     unspecified, then not limited.
+ * @param {{
+ *    openedFilesLimit: (number|undefined),
+ *    supportsNotifyTag: (boolean|undefined)
+ * }=} optionsOverride
  * @return {!Promise<!MountedTestFileSystem>}
  */
-export async function mountTestFileSystem(openedFilesLimit) {
-  const {fileSystem, volumeInfo} = await mount(openedFilesLimit);
+export async function mountTestFileSystem(optionsOverride) {
+  const {fileSystem, volumeInfo} = await mount(optionsOverride);
   return new MountedTestFileSystem(fileSystem, volumeInfo);
 }
 
@@ -304,6 +360,13 @@ export const remoteProvider = {
    * @returns {!Promise<number>}
    */
   getOpenedFiles: async () => callServiceWorker('getOpenedFiles'),
+  /**
+   * @param {string} entryPath
+   * @param {boolean} recursive
+   * @param {string} tag
+   */
+  triggerNotify: async (entryPath, recursive, tag) =>
+      callServiceWorker('triggerNotify', entryPath, recursive, tag),
   /**
    * @param {string} key
    * @param {?} value
