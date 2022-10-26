@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
+
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -205,12 +207,9 @@ void ValidateManagedPreference(
           static_cast<SafeBrowsingSetting>(value.GetInt()));
     }
   }
-  ASSERT_EQ(pref_user_selectable_values.size(),
-            test_case.expected_user_selectable_values.size());
 
-  EXPECT_TRUE(std::equal(pref_user_selectable_values.begin(),
-                         pref_user_selectable_values.end(),
-                         test_case.expected_user_selectable_values.begin()));
+  EXPECT_TRUE(base::ranges::equal(pref_user_selectable_values,
+                                  test_case.expected_user_selectable_values));
 }
 
 }  // namespace

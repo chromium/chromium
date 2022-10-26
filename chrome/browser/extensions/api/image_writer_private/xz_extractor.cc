@@ -4,12 +4,12 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
@@ -42,14 +42,9 @@ bool XzExtractor::IsXzFile(const base::FilePath& image_path) {
     return false;
 
   constexpr size_t kExpectedSize = sizeof(kExpectedMagic);
-  char actual_magic[kExpectedSize] = {};
-  if (infile.ReadAtCurrentPos(actual_magic, kExpectedSize) != kExpectedSize)
-    return false;
-
-  return std::equal(
-      reinterpret_cast<const char*>(kExpectedMagic),
-      reinterpret_cast<const char*>(kExpectedMagic + kExpectedSize),
-      actual_magic);
+  uint8_t actual_magic[kExpectedSize] = {};
+  return infile.ReadAtCurrentPosAndCheck(actual_magic) &&
+         base::ranges::equal(kExpectedMagic, actual_magic);
 }
 
 // static

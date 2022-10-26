@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/net/nss_service.h"
@@ -47,8 +48,7 @@ void IsCertInNSSDatabaseOnIOThreadWithCertList(
     net::ScopedCERTCertificateList certs) {
   for (const net::ScopedCERTCertificate& cert : certs) {
     auto cert_der = base::make_span(cert->derCert.data, cert->derCert.len);
-    if (std::equal(cert_der.begin(), cert_der.end(),
-                   expected_cert_der.begin())) {
+    if (base::ranges::equal(cert_der, expected_cert_der)) {
       *out_cert_found = true;
       break;
     }

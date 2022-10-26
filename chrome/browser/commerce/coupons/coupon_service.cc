@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/commerce/coupons/coupon_service.h"
+
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/coupon_db_content.pb.h"
 
@@ -40,11 +42,10 @@ bool CompareCouponList(
         coupon_list_a,
     const std::vector<std::unique_ptr<autofill::AutofillOfferData>>&
         coupon_list_b) {
-  return std::equal(coupon_list_a.begin(), coupon_list_a.end(),
-                    coupon_list_b.begin(),
-                    [](const auto& coupon_a, const auto& coupon_b) {
-                      return *coupon_a == *coupon_b;
-                    });
+  return base::ranges::equal(
+      coupon_list_a, coupon_list_b, std::equal_to<>(),
+      &std::unique_ptr<autofill::AutofillOfferData>::operator*,
+      &std::unique_ptr<autofill::AutofillOfferData>::operator*);
 }
 
 }  // namespace

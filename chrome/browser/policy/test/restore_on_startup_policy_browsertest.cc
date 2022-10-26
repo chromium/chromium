@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/url_blocking_policy_test_utils.h"
@@ -67,8 +68,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
     base::CommandLine::StringVector argv = command_line->argv();
     base::EraseIf(argv, IsNonSwitchArgument);
     command_line->InitFromArgv(argv);
-    ASSERT_TRUE(
-        std::equal(argv.begin(), argv.end(), command_line->argv().begin()));
+    ASSERT_TRUE(base::ranges::equal(argv, command_line->argv()));
   }
 
   void ListOfURLs() {

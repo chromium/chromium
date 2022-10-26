@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 
-#include <algorithm>
 #include <list>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -82,9 +82,8 @@ class DlpConfidentialContents {
   // in titles, even if the set of the confidential contents hasn't changed.
   friend bool EqualWithTitles(const DlpConfidentialContents& a,
                               const DlpConfidentialContents& b) {
-    return std::equal(
-        a.contents_.begin(), a.contents_.end(), b.contents_.begin(),
-        b.contents_.end(),
+    return base::ranges::equal(
+        a.contents_, b.contents_,
         [](const DlpConfidentialContent& x, const DlpConfidentialContent& y) {
           return x == y && x.title == y.title;
         });

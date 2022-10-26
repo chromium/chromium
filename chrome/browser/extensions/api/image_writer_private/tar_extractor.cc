@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/threading/sequenced_task_runner_handle.h"

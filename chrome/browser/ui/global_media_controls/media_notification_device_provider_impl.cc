@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
 
+#include <algorithm>
+
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_monitor.h"
 #include "content/public/browser/audio_service.h"

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -55,14 +56,12 @@ class FakeCloudPolicyClient : public testing::NiceMock<MockCloudPolicyClient> {
 bool RequestsAreEqual(
     const enterprise_management::UploadEuiccInfoRequest& lhs,
     const enterprise_management::UploadEuiccInfoRequest& rhs) {
+  const auto proj = [](const auto& profile) {
+    return std::tie(profile.iccid(), profile.smdp_address());
+  };
   return lhs.euicc_count() == rhs.euicc_count() &&
-         std::equal(std::begin(lhs.esim_profiles()),
-                    std::end(lhs.esim_profiles()),
-                    std::begin(rhs.esim_profiles()),
-                    [](const auto& u, const auto& v) {
-                      return std::tie(u.iccid(), u.smdp_address()) ==
-                             std::tie(v.iccid(), v.smdp_address());
-                    }) &&
+         base::ranges::equal(lhs.esim_profiles(), rhs.esim_profiles(),
+                             std::equal_to<>(), proj, proj) &&
          lhs.clear_profile_list() == rhs.clear_profile_list();
 }
 

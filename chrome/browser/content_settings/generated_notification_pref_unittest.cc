@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/content_settings/generated_notification_pref.h"
+
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -226,16 +228,9 @@ void ValidateManagedPreference(
           static_cast<NotificationSetting>(value.GetInt()));
     }
   }
-  EXPECT_EQ(pref_user_selectable_values.size(),
-            test_case.expected_user_selectable_values.size());
 
-  // Avoid crashing the test if the previous check fails.
-  if (pref_user_selectable_values.size() ==
-      test_case.expected_user_selectable_values.size()) {
-    EXPECT_TRUE(std::equal(pref_user_selectable_values.begin(),
-                           pref_user_selectable_values.end(),
-                           test_case.expected_user_selectable_values.begin()));
-  }
+  EXPECT_TRUE(base::ranges::equal(pref_user_selectable_values,
+                                  test_case.expected_user_selectable_values));
 }
 
 }  // namespace

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_device_monitor.h"
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -127,11 +127,8 @@ void PollingDeviceMonitorImpl::OnDeviceDescriptionsRecieved(
   if (!is_monitoring_)
     return;
 
-  if (!std::equal(descriptions.cbegin(), descriptions.cend(),
-                  device_ids_.cbegin(), device_ids_.cend(),
-                  [](const auto& description, const auto& id) {
-                    return description.unique_id == id;
-                  })) {
+  if (!base::ranges::equal(descriptions, device_ids_, std::equal_to<>(),
+                           &media::AudioDeviceDescription::unique_id)) {
     device_ids_.clear();
     std::transform(descriptions.begin(), descriptions.end(),
                    std::back_inserter(device_ids_), [](auto& description) {

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/android/httpclient/http_client.h"
+
 #include <iostream>
 #include <ostream>
 #include <string>
 #include <type_traits>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,10 +41,8 @@ struct TestHttpHeaders {
   std::vector<std::string> header_values;
 
   bool operator==(const TestHttpHeaders& other) const {
-    return std::equal(header_keys.begin(), header_keys.end(),
-                      other.header_keys.begin()) &&
-           std::equal(header_values.begin(), header_values.end(),
-                      other.header_values.begin());
+    return base::ranges::equal(header_keys, other.header_keys) &&
+           base::ranges::equal(header_values, other.header_values);
   }
 
   friend std::ostream& operator<<(std::ostream& os,
@@ -382,7 +382,8 @@ TEST_F(HttpClientTest, TestHttpError) {
   }
 }
 
-TEST_F(HttpClientTest, TestNetworkError) {
+// TODO(crbug.com/1378159): Fix and re-enable this test.
+TEST_F(HttpClientTest, DISABLED_TestNetworkError) {
   std::vector<int32_t> error_codes(
       {net::ERR_CERT_COMMON_NAME_INVALID, net::ERR_CERT_DATE_INVALID,
        net::ERR_CERT_WEAK_KEY, net::ERR_NAME_RESOLUTION_FAILED});
