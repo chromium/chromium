@@ -6,7 +6,11 @@
 
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -359,6 +363,77 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPageMV3) {
 
   ASSERT_TRUE(RunExtensionTest(
       dir.UnpackedPath(), {.extension_url = "test.html"}, /*load_options=*/{}));
+}
+
+// Simple test for chrome.runtime.requestUpdateCheck using promises and
+// callbacks. The actual behaviors and responses are more thoroughly tested in
+// chrome_runtime_api_delegate_unittest.cc
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, RuntimeRequestUpdateCheck) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "requestUpdateCheck",
+        "version": "1.0",
+        "background": {
+          "service_worker": "worker.js"
+        },
+        "manifest_version": 3
+      })";
+
+  static constexpr char kWorker[] = R"(
+    chrome.test.runTests([
+      // Note: when called with a callback, the callback will receive two
+      // parameters, but when called with a promise they will come back as
+      // parameters on a single object.
+      function noUpdateCallback() {
+        chrome.runtime.requestUpdateCheck((status, details) => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq('no_update', status);
+          chrome.test.assertEq({version: ''}, details);
+
+          // Another call soon after will be throttled.
+          chrome.runtime.requestUpdateCheck((status, details) => {
+            chrome.test.assertNoLastError();
+            chrome.test.assertEq('throttled', status);
+            chrome.test.assertEq({version: ''}, details);
+            chrome.test.succeed();
+          });
+        });
+      },
+
+      async function noUpdate() {
+        // Advance the throttle clock so the requests in the previous test don't
+        // result in this getting a throttled response.
+        await chrome.test.sendMessage('Advance');
+        let result = await chrome.runtime.requestUpdateCheck();
+        chrome.test.assertEq({status:'no_update', version: ''}, result);
+
+        result = await chrome.runtime.requestUpdateCheck();
+        chrome.test.assertEq({status:'throttled', version: ''}, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+  base::SimpleTestTickClock clock;
+  ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(&clock);
+
+  ExtensionTestMessageListener message_listener("Advance",
+                                                ReplyBehavior::kWillReply);
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+  // In the test environment we need this to be a packed extension.
+  base::FilePath crx_path = PackExtension(dir.UnpackedPath());
+  ASSERT_FALSE(crx_path.empty());
+
+  auto OnMessage = [&](const std::string& message) {
+    // Advance the clock past the point it will be throttled.
+    clock.Advance(base::Days(1));
+    message_listener.Reply("");
+  };
+  message_listener.SetOnSatisfied(base::BindLambdaForTesting(OnMessage));
+
+  ASSERT_TRUE(RunExtensionTest(crx_path, {}, {}));
 }
 
 // Tests that updating a terminated extension sends runtime.onInstalled event

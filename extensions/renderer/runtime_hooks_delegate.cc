@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/runtime_hooks_delegate.h"
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +25,7 @@
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_renderer_messaging_service.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/v8_helpers.h"
 #include "gin/converter.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-function-callback.h"
@@ -80,6 +82,7 @@ constexpr char kSendMessage[] = "runtime.sendMessage";
 constexpr char kSendNativeMessage[] = "runtime.sendNativeMessage";
 constexpr char kGetBackgroundPage[] = "runtime.getBackgroundPage";
 constexpr char kGetPackageDirectoryEntry[] = "runtime.getPackageDirectoryEntry";
+constexpr char kRequestUpdateCheck[] = "runtime.requestUpdateCheck";
 
 // The custom callback supplied to runtime.getBackgroundPage to find and return
 // the background page to the original callback.
@@ -107,6 +110,44 @@ void GetBackgroundPageCallback(
   v8::Local<v8::Value> args[] = {background_page};
   script_context->SafeCallFunction(info[0].As<v8::Function>(), std::size(args),
                                    args);
+}
+
+// Function used by runtime.requestUpdateCheck to modify the arguments returned
+// for an asynchronous request, splitting the returned object into separate
+// arguments for callback based requests, with the version wrapped in a details
+// object.
+// Note: This is to allow the promise version of the API to return a single
+// object, while still supporting the previous callback version which expects
+// multiple parameters to be passed to the callback.
+std::vector<v8::Local<v8::Value>> MassageRequestUpdateCheckResults(
+    const std::vector<v8::Local<v8::Value>>& result_args,
+    v8::Local<v8::Context> context,
+    binding::AsyncResponseType async_type) {
+  // If this is not a callback based API call, we don't need to modify anything.
+  if (async_type != binding::AsyncResponseType::kCallback) {
+    return result_args;
+  }
+
+  DCHECK_EQ(1u, result_args.size());
+  DCHECK(result_args[0]->IsObject());
+  v8::Local<v8::Object> result_obj = result_args[0].As<v8::Object>();
+
+  // The object sent back has two properties on it which we need to split into
+  // two separate arguments.
+  v8::Local<v8::Value> status;
+  bool success =
+      v8_helpers::GetProperty(context, result_obj, "status", &status);
+  DCHECK(success);
+  v8::Local<v8::Value> version;
+  success = v8_helpers::GetProperty(context, result_obj, "version", &version);
+  DCHECK(success);
+
+  // Version is wrapped as a parameter on a details object.
+  v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::Object> details = v8::Object::New(isolate);
+  auto key = gin::StringToV8(isolate, "version");
+  details->CreateDataProperty(context, key, version).Check();
+  return {status, details};
 }
 
 }  // namespace
@@ -167,6 +208,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
       {&RuntimeHooksDelegate::HandleGetBackgroundPage, kGetBackgroundPage},
       {&RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback,
        kGetPackageDirectoryEntry},
+      {&RuntimeHooksDelegate::HandleRequestUpdateCheck, kRequestUpdateCheck},
   };
 
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
@@ -501,6 +543,14 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
   RequestResult result(RequestResult::NOT_HANDLED);
   result.custom_callback = callback.As<v8::Function>();
   return result;
+}
+
+RequestResult RuntimeHooksDelegate::HandleRequestUpdateCheck(
+    ScriptContext* script_context,
+    const APISignature::V8ParseResult& parse_result) {
+  return RequestResult(RequestResult::NOT_HANDLED,
+                       v8::Local<v8::Function>() /*custom_callback*/,
+                       base::BindOnce(MassageRequestUpdateCheckResults));
 }
 
 }  // namespace extensions

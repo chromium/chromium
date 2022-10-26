@@ -248,32 +248,29 @@
       {
         "name": "requestUpdateCheck",
         "type": "function",
-        "description": "<p>Requests an immediate update check be done for this app/extension.</p> <p><b>Important</b>: Most extensions/apps should <b>not</b> use this method, since Chrome already does automatic checks every few hours, and you can listen for the $(ref:runtime.onUpdateAvailable) event without needing to call requestUpdateCheck.</p><p>This method is only appropriate to call in very limited circumstances, such as if your extension/app talks to a backend service, and the backend service has determined that the client extension/app version is very far out of date and you'd like to prompt a user to update. Most other uses of requestUpdateCheck, such as calling it unconditionally based on a repeating timer, probably only serve to waste client, network, and server resources.</p>",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "status",
-                "$ref": "RequestUpdateCheckStatus",
-                "description": "Result of the update check."
-              },
-              {
-                "name": "details",
-                "type": "object",
-                "optional": true,
-                "properties": {
-                  "version": {
-                    "type": "string",
-                    "description": "The version of the available update."
-                  }
+        "description": "<p>Requests an immediate update check be done for this app/extension.</p> <p><b>Important</b>: Most extensions/apps should <b>not</b> use this method, since Chrome already does automatic checks every few hours, and you can listen for the $(ref:runtime.onUpdateAvailable) event without needing to call requestUpdateCheck.</p><p>This method is only appropriate to call in very limited circumstances, such as if your extension/app talks to a backend service, and the backend service has determined that the client extension/app version is very far out of date and you'd like to prompt a user to update. Most other uses of requestUpdateCheck, such as calling it unconditionally based on a repeating timer, probably only serve to waste client, network, and server resources.</p><p>Note: When called with a callback, instead of returning an object this function will return the two properties as separate arguments passed to the callback.</p>",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "object",
+              "name": "result",
+              "description": "RequestUpdateCheckResult object that holds the status of the update check and any details of the result if there is an update available",
+              "properties": {
+                "status": {
+                  "$ref": "RequestUpdateCheckStatus",
+                  "description": "Result of the update check."
                 },
-                "description": "If an update is available, this contains more information about the available update."
+                "version": {
+                  "type": "string",
+                  "optional": true,
+                  "description": "If an update is available, this contains the version of the available update."
+                }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "restart",

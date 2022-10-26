@@ -71,6 +71,9 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   APIBindingHooks::RequestResult HandleGetPackageDirectoryEntryCallback(
       ScriptContext* script_context,
       const APISignature::V8ParseResult& parse_result);
+  APIBindingHooks::RequestResult HandleRequestUpdateCheck(
+      ScriptContext* script_context,
+      const APISignature::V8ParseResult& parse_result);
 
   // The messaging service to handle connect() and sendMessage() calls.
   // Guaranteed to outlive this object.

@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/version.h"
+#include "extensions/common/api/runtime.h"
 
 class GURL;
 
@@ -15,12 +16,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-
-namespace api {
-namespace runtime {
-struct PlatformInfo;
-}
-}
 
 class Extension;
 class UpdateObserver;
@@ -31,12 +26,10 @@ class UpdateObserver;
 class RuntimeAPIDelegate {
  public:
   struct UpdateCheckResult {
-    bool success;
-    std::string response;
+    api::runtime::RequestUpdateCheckStatus status;
     std::string version;
 
-    UpdateCheckResult(bool success,
-                      const std::string& response,
+    UpdateCheckResult(const api::runtime::RequestUpdateCheckStatus& status,
                       const std::string& version);
   };
 

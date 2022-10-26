@@ -652,15 +652,10 @@ ExtensionFunction::ResponseAction RuntimeRequestUpdateCheckFunction::Run() {
 
 void RuntimeRequestUpdateCheckFunction::CheckComplete(
     const RuntimeAPIDelegate::UpdateCheckResult& result) {
-  if (result.success) {
-    base::Value::Dict details;
-    details.Set("version", result.version);
-    Respond(TwoArguments(base::Value(result.response),
-                         base::Value(std::move(details))));
-  } else {
-    // HMM(kalman): Why does !success not imply Error()?
-    Respond(OneArgument(base::Value(result.response)));
-  }
+  api::runtime::RequestUpdateCheck::Results::Result return_result;
+  return_result.status = result.status;
+  return_result.version = absl::optional<std::string>(result.version);
+  Respond(OneArgument(base::Value(return_result.ToValue())));
 }
 
 ExtensionFunction::ResponseAction RuntimeRestartFunction::Run() {

@@ -461,6 +461,95 @@ TEST_F(RuntimeHooksDelegateMV3Test, SendMessageUsingPromise) {
   }
 }
 
+// Test that the asynchronous return from runtime.requestUpdateCheck differs in
+// structure for callback based calls vs promise based calls.
+// Note: This doesn't exercise the actual implementation of the API, just that
+// the bindings modify the structure of the result.
+TEST_F(RuntimeHooksDelegateMV3Test, RequestUpdateCheck) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  constexpr char kUpdateAvailableAPIResponse[] =
+      R"([{"status": "update_available", "version": "2.0"}])";
+
+  // Calling requestUpdateCheck without a callback should return a promise that
+  // gets fulfilled with an object with the results as properties on it.
+  {
+    v8::Local<v8::Function> func = FunctionFromString(
+        context,
+        "(function() { return chrome.runtime.requestUpdateCheck(); })");
+    v8::Local<v8::Value> result = RunFunction(func, context, 0, nullptr);
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    bindings_system()->HandleResponse(
+        last_params().request_id,
+        /*success=*/true, ListValueFromString(kUpdateAvailableAPIResponse),
+        /*error=*/std::string());
+
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    // Note that the object here differs slightly from the response, in that it
+    // is not array wrapped and any keys become alphabetized.
+    EXPECT_EQ(R"({"status":"update_available","version":"2.0"})",
+              V8ToString(promise->Result(), context));
+  }
+
+  // Calling requestUpdateCheck with a callback should end up with the callback
+  // being called with multiple parameters rather than a single object and the
+  // version info as a parameter on a details object.
+  {
+    constexpr char kFunctionCall[] =
+        R"((function(api) {
+             chrome.runtime.requestUpdateCheck((status, details) => {
+               this.argument1 = status;
+               this.argument2 = details;
+             });
+           }))";
+    v8::Local<v8::Function> func = FunctionFromString(context, kFunctionCall);
+    RunFunctionOnGlobal(func, context, 0, nullptr);
+
+    bindings_system()->HandleResponse(
+        last_params().request_id,
+        /*success=*/true, ListValueFromString(kUpdateAvailableAPIResponse),
+        /*error=*/std::string());
+
+    EXPECT_EQ(
+        R"("update_available")",
+        GetStringPropertyFromObject(context->Global(), context, "argument1"));
+    EXPECT_EQ(
+        R"({"version":"2.0"})",
+        GetStringPropertyFromObject(context->Global(), context, "argument2"));
+  }
+
+  constexpr char kNoUpdateAPIResponse[] =
+      R"([{"status": "no_update", "version": ""}])";
+
+  // If version is specified as an empty string, it will still be sent along to
+  // the callback wrapped in an object.
+  {
+    constexpr char kFunctionCall[] =
+        R"((function(api) {
+             chrome.runtime.requestUpdateCheck((status, details) => {
+               this.argument1 = status;
+               this.argument2 = details;
+             });
+           }))";
+    v8::Local<v8::Function> func = FunctionFromString(context, kFunctionCall);
+    RunFunctionOnGlobal(func, context, 0, nullptr);
+
+    bindings_system()->HandleResponse(last_params().request_id,
+                                      /*success=*/true,
+                                      ListValueFromString(kNoUpdateAPIResponse),
+                                      /*error=*/std::string());
+
+    EXPECT_EQ(R"("no_update")", GetStringPropertyFromObject(
+                                    context->Global(), context, "argument1"));
+    EXPECT_EQ(
+        R"({"version":""})",
+        GetStringPropertyFromObject(context->Global(), context, "argument2"));
+  }
+}
+
 class RuntimeHooksDelegateNativeMessagingMV3Test
     : public RuntimeHooksDelegateTest {
  public:

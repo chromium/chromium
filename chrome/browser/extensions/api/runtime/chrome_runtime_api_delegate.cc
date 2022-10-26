@@ -56,10 +56,6 @@ using extensions::api::runtime::PlatformInfo;
 
 namespace {
 
-const char kUpdateThrottled[] = "throttled";
-const char kUpdateNotFound[] = "no_update";
-const char kUpdateFound[] = "update_available";
-
 // If an extension reloads itself within this many milliseconds of reloading
 // itself, the reload is considered suspiciously fast.
 const int kFastReloadTime = 10000;
@@ -247,10 +243,10 @@ bool ChromeRuntimeAPIDelegate::CheckForUpdates(const std::string& extension_id,
   // If not enough time has elapsed, or we have 10 or more outstanding calls,
   // return a status of throttled.
   if (info.backoff->ShouldRejectRequest() || info.callbacks.size() >= 10) {
+    UpdateCheckResult result = UpdateCheckResult(
+        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_THROTTLED, "");
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       UpdateCheckResult(true, kUpdateThrottled, "")));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
   } else {
     info.callbacks.push_back(std::move(callback));
 
@@ -370,8 +366,10 @@ void ChromeRuntimeAPIDelegate::Observe(
   const base::Version& version =
       content::Details<UpdateDetails>(details)->second;
   if (version.IsValid()) {
-    CallUpdateCallbacks(
-        id, UpdateCheckResult(true, kUpdateFound, version.GetString()));
+    UpdateCheckResult result = UpdateCheckResult(
+        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_UPDATE_AVAILABLE,
+        version.GetString());
+    CallUpdateCallbacks(id, std::move(result));
   }
 }
 
@@ -401,12 +399,14 @@ void ChromeRuntimeAPIDelegate::UpdateCheckComplete(
   info.backoff->InformOfRequest(false);
 
   if (update) {
-    CallUpdateCallbacks(
-        extension_id,
-        UpdateCheckResult(true, kUpdateFound, update->VersionString()));
+    UpdateCheckResult result = UpdateCheckResult(
+        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_UPDATE_AVAILABLE,
+        update->VersionString());
+    CallUpdateCallbacks(extension_id, std::move(result));
   } else {
-    CallUpdateCallbacks(extension_id,
-                        UpdateCheckResult(true, kUpdateNotFound, ""));
+    UpdateCheckResult result = UpdateCheckResult(
+        extensions::api::runtime::REQUEST_UPDATE_CHECK_STATUS_NO_UPDATE, "");
+    CallUpdateCallbacks(extension_id, std::move(result));
   }
 }
 
