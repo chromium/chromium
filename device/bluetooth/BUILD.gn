@@ -473,6 +473,7 @@ component("bluetooth") {
         "floss/floss_manager_client.h",
         "floss/floss_socket_manager.cc",
         "floss/floss_socket_manager.h",
+        "floss/test_helpers.h",
       ]
       if (is_chromeos) {
         import("//chromeos/dbus/config/use_real_dbus_clients.gni")

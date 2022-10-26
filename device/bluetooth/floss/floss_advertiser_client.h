@@ -16,6 +16,9 @@
 
 namespace floss {
 
+constexpr char kAdvertisingSetCallbackPath[] =
+    "/org/chromium/bluetooth/advertising_set_callback";
+
 // Represents type of address to advertise.
 enum class OwnAddressType {
   kDefault = -1,
@@ -38,7 +41,7 @@ struct AdvertisingSetParameters {
 };
 
 // Represents the data to be advertised.
-struct AdvertiseData {
+struct DEVICE_BLUETOOTH_EXPORT AdvertiseData {
   std::vector<device::BluetoothUUID> service_uuids;
   std::vector<device::BluetoothUUID> solicit_uuids;
   std::vector<std::vector<uint8_t>> transport_discovery_data;
@@ -268,10 +271,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdvertiserClient
     CallMethod(std::move(callback), bus_, service_name_, kGattInterface,
                gatt_adapter_path_, member, args...);
   }
-
-  // Object path for exported callbacks registered against the advertising set
-  // callback interface.
-  static const char kExportedCallbacksPath[];
 
   // Exported callbacks for interacting with daemon.
   ExportedCallbackManager<FlossAdvertiserClientObserver>

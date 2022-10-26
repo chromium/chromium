@@ -125,10 +125,6 @@ const DBusTypeInfo& GetDBusTypeInfo(const AdvertisingStatus*) {
 }
 
 // static
-const char FlossAdvertiserClient::kExportedCallbacksPath[] =
-    "/org/chromium/bluetooth/advertising_set_callback";
-
-// static
 std::unique_ptr<FlossAdvertiserClient> FlossAdvertiserClient::Create() {
   return std::make_unique<FlossAdvertiserClient>();
 }
@@ -142,7 +138,7 @@ FlossAdvertiserClient::FlossAdvertiserClient() = default;
 FlossAdvertiserClient::~FlossAdvertiserClient() {
   if (bus_) {
     exported_callback_manager_.UnexportCallback(
-        dbus::ObjectPath(kExportedCallbacksPath));
+        dbus::ObjectPath(kAdvertisingSetCallbackPath));
   }
 }
 
@@ -193,7 +189,7 @@ void FlossAdvertiserClient::Init(dbus::Bus* bus,
       &FlossAdvertiserClientObserver::OnPeriodicAdvertisingEnabled);
 
   if (!exported_callback_manager_.ExportCallback(
-          dbus::ObjectPath(kExportedCallbacksPath),
+          dbus::ObjectPath(kAdvertisingSetCallbackPath),
           weak_ptr_factory_.GetWeakPtr())) {
     LOG(ERROR)
         << "Unable to successfully export FlossAdvertiserClientObserver.";
@@ -205,7 +201,7 @@ void FlossAdvertiserClient::Init(dbus::Bus* bus,
   dbus::MethodCall register_callback(kGattInterface,
                                      advertiser::kRegisterCallback);
   dbus::MessageWriter writer(&register_callback);
-  writer.AppendObjectPath(dbus::ObjectPath(kExportedCallbacksPath));
+  writer.AppendObjectPath(dbus::ObjectPath(kAdvertisingSetCallbackPath));
   object_proxy->CallMethodWithErrorResponse(
       &register_callback, kDBusTimeoutMs,
       base::BindOnce(&FlossAdvertiserClient::CompleteRegisterCallback,

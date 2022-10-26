@@ -21,17 +21,13 @@
 #include "dbus/object_path.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_manager_client.h"
+#include "device/bluetooth/floss/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 using testing::_;
-
-// Matches a dbus::MethodCall based on the method name (member).
-MATCHER_P(HasMemberOf, member, "") {
-  return arg->GetMember() == member;
-}
 
 constexpr char kTestMethod0[] = "TestMethod0";
 constexpr char kTestMethod1[] = "TestMethod1";
