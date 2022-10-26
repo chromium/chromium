@@ -193,6 +193,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                            base::TimeDelta delay,
                            Thread::IdleTask) override;
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;
+  scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override;
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override;
   AgentGroupScheduler* CreateAgentGroupScheduler() override;
   AgentGroupScheduler* GetCurrentAgentGroupScheduler() override;

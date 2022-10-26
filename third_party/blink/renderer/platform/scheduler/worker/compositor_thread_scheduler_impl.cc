@@ -77,6 +77,11 @@ CompositorThreadSchedulerImpl::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+CompositorThreadSchedulerImpl::CleanupTaskRunner() {
+  return DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadSchedulerImpl::InputTaskRunner() {
   return GetHelper().InputTaskRunner();
 }

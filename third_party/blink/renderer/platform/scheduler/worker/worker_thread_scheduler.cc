@@ -148,6 +148,11 @@ WorkerThreadScheduler::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+WorkerThreadScheduler::CleanupTaskRunner() {
+  return DefaultTaskQueue()->GetTaskRunnerWithDefaultTaskType();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 WorkerThreadScheduler::CompositorTaskRunner() {
   DCHECK(initialized_);
   return compositor_task_runner_;

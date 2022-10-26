@@ -37,6 +37,9 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
     return nullptr;
   }
+  scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override {
+    return nullptr;
+  }
   void Shutdown() override {}
   bool ShouldYieldForHighPriorityWork() override { return should_yield_; }
   void PostIdleTask(const base::Location&,

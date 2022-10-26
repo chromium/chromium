@@ -673,6 +673,11 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::V8TaskQueue() {
   return v8_task_queue_;
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+MainThreadSchedulerImpl::CleanupTaskRunner() {
+  return DefaultTaskRunner();
+}
+
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::ControlTaskQueue() {
   return helper_.ControlMainThreadTaskQueue();
 }

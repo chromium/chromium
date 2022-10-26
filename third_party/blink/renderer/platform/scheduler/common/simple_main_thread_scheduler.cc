@@ -44,6 +44,11 @@ SimpleMainThreadScheduler::V8TaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+SimpleMainThreadScheduler::CleanupTaskRunner() {
+  return base::ThreadTaskRunnerHandle::Get();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 SimpleMainThreadScheduler::NonWakingTaskRunner() {
   return base::ThreadTaskRunnerHandle::Get();
 }

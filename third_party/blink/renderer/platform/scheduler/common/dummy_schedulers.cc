@@ -265,6 +265,11 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return base::ThreadTaskRunnerHandle::Get();
   }
 
+  scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override {
+    DCHECK(WTF::IsMainThread());
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
   std::unique_ptr<MainThread> CreateMainThread() override {
     return std::make_unique<SimpleThread>(this);
   }

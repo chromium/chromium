@@ -70,6 +70,12 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 
+  // Returns a task runner for tasks to deallocate objects on the appropriate
+  // thread. This runner should only be used for freeing of resources.
+  // Execution of javascript will be prevented in the future on this task
+  // runner.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() = 0;
+
   // Returns the current time recognized by the scheduler, which may perhaps
   // be based on a real or virtual time domain. Used by Timer.
   virtual base::TimeTicks MonotonicallyIncreasingVirtualTime() = 0;
