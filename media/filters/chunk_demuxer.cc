@@ -918,6 +918,17 @@ bool ChunkDemuxer::AppendData(const std::string& id,
 
   Ranges<base::TimeDelta> ranges;
 
+  if (length == 0u) {
+    // We don't DCHECK that |state_| != ENDED here, since |state_| is protected
+    // by |lock_|. However, transition into ENDED can happen only on
+    // MarkEndOfStream called by the MediaSource object on parse failure or on
+    // app calling endOfStream(). In case that contract is violated for
+    // nonzero-length appends, we still DCHECK within the lock, below.
+    return true;
+  }
+
+  DCHECK(data);
+
   {
     base::AutoLock auto_lock(lock_);
     DCHECK_NE(state_, ENDED);
@@ -925,11 +936,6 @@ bool ChunkDemuxer::AppendData(const std::string& id,
     // Capture if any of the SourceBuffers are waiting for data before we start
     // parsing.
     bool old_waiting_for_data = IsSeekWaitingForData_Locked();
-
-    if (length == 0u)
-      return true;
-
-    DCHECK(data);
 
     switch (state_) {
       case INITIALIZING:
