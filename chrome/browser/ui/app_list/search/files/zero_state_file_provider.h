@@ -42,6 +42,7 @@ class ZeroStateFileProvider : public SearchProvider,
   void Start(const std::u16string& query) override;
   void StartZeroState() override;
   ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
  private:
   // Called when file suggestion data are fetched from the service.

@@ -375,18 +375,16 @@ enum class AppListSearchResultType {
   kGames,                  // Game sarch results.
   kPersonalization,        // Personalization search results.
   kZeroStateHelpApp,       // Help App (aka Explore) results for zero-state.
-  kZeroStateApp,           // App recommendations for zero-state / recent apps.
   // Add new values here.
-  kMaxValue = kZeroStateApp,
+  kMaxValue = kZeroStateHelpApp,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
     AppListSearchResultType result_type);
 
 // Returns whether the result type is a type of result shown in launcher
-// apps page, i.e. results shown in launcher "continue" section and among recent
-// apps.
-ASH_PUBLIC_EXPORT bool IsZeroStateResultType(
+// continue section.
+ASH_PUBLIC_EXPORT bool IsContinueSectionResultType(
     AppListSearchResultType result_type);
 
 // The different categories a search result can be part of. Every search result

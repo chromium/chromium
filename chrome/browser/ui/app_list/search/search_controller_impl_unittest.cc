@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
-#include "chrome/test/base/testing_profile.h"
 
 namespace app_list::test {
 
@@ -37,15 +36,14 @@ class SearchControllerImplTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
     search_controller_ = std::make_unique<SearchControllerImpl>(
-        /*model_updater=*/nullptr, &list_controller_,
-        /*notifier=*/nullptr, &profile_);
+        /*model_updater=*/nullptr, &list_controller_, /*profile=*/nullptr,
+        /*notifier=*/nullptr);
   }
   SearchController& search_controller() { return *search_controller_; }
   TestAppListControllerDelegate& list_controller() { return list_controller_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestingProfile profile_;
   TestAppListControllerDelegate list_controller_;
   std::unique_ptr<SearchControllerImpl> search_controller_;
 };

@@ -18,7 +18,6 @@ RankingItemType RankingItemTypeFromSearchResult(
     const ChromeSearchResult& result) {
   switch (result.result_type()) {
     case ash::AppListSearchResultType::kInstalledApp:
-    case ash::AppListSearchResultType::kZeroStateApp:
     case ash::AppListSearchResultType::kInternalApp:
     case ash::AppListSearchResultType::kGames:
       return RankingItemType::kApp;
