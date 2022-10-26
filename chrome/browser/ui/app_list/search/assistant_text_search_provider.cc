@@ -132,10 +132,10 @@ void AssistantTextSearchProvider::UpdateResults() {
     SwapResults(&empty);
     return;
   }
-  if (query_.empty()) {
-    ClearResults();
+
+  if (query_.empty())
     return;
-  }
+
   SearchProvider::Results results;
   results.push_back(std::make_unique<AssistantTextSearchResult>(query_));
   SwapResults(&results);

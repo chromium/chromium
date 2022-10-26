@@ -33,10 +33,6 @@ void SearchProvider::SwapResults(Results* new_results) {
   FireResultChanged();
 }
 
-void SearchProvider::ClearResults() {}
-
-void SearchProvider::ClearResultsSilently() {}
-
 void SearchProvider::FireResultChanged() {
   if (result_changed_callback_.is_null())
     return;

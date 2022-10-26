@@ -52,7 +52,6 @@ AppSearchProvider::AppSearchProvider(Profile* profile,
 AppSearchProvider::~AppSearchProvider() = default;
 
 void AppSearchProvider::Start(const std::u16string& query) {
-  ClearResultsSilently();
   query_ = query;
   query_start_time_ = base::TimeTicks::Now();
   // We only need to record app search latency for queries started by user.
@@ -70,7 +69,6 @@ void AppSearchProvider::Start(const std::u16string& query) {
 }
 
 void AppSearchProvider::StartZeroState() {
-  ClearResultsSilently();
   query_.clear();
   query_start_time_ = base::TimeTicks::Now();
   record_query_uma_ = true;
@@ -83,15 +81,6 @@ void AppSearchProvider::StartZeroState() {
   }
 
   UpdateResults();
-}
-
-void AppSearchProvider::ViewClosing() {
-  // Clear search results asynchronously to keep the search results and prevent
-  // the search results, e.g. AppServiceContextMenu, from being deleted when
-  // executing their functions.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&AppSearchProvider::ClearResultsSilently,
-                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 ash::AppListSearchResultType AppSearchProvider::ResultType() const {

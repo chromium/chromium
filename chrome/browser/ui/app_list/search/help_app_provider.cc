@@ -128,8 +128,6 @@ HelpAppProvider::HelpAppProvider(Profile* profile)
 HelpAppProvider::~HelpAppProvider() = default;
 
 void HelpAppProvider::Start(const std::u16string& query) {
-  ClearResultsSilently();
-
   if (query.size() < kMinQueryLength) {
     // Do not do a list search for queries that are too short because the
     // results generally aren't meaningful. This isn't worth logging as a list
@@ -166,7 +164,6 @@ void HelpAppProvider::Start(const std::u16string& query) {
 }
 
 void HelpAppProvider::StartZeroState() {
-  ClearResultsSilently();
   last_query_.clear();
 }
 

@@ -149,17 +149,8 @@ HelpAppZeroStateProvider::~HelpAppZeroStateProvider() {
     notifier_->RemoveObserver(this);
 }
 
-void HelpAppZeroStateProvider::Start(const std::u16string& query) {
-  // TODO(crbug.com/1258415): Remove this when non-categorical search is
-  // removed. With categorical search enabled, `ClearResultsSilently()` is
-  // actually no-op, and the search controller already clears all results
-  // that need to be cleared when search query is updated.
-  ClearResultsSilently();
-}
-
 void HelpAppZeroStateProvider::StartZeroState() {
   SearchProvider::Results search_results;
-  ClearResultsSilently();
 
   if (ShouldShowDiscoverTabSuggestionChip(profile_)) {
     search_results.emplace_back(std::make_unique<HelpAppZeroStateResult>(

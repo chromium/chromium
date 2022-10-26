@@ -217,8 +217,6 @@ void OsSettingsProvider::Start(const std::u16string& query) {
     return;
   }
 
-  ClearResultsSilently();
-
   // Do not return results for queries that are too short, as the results
   // generally aren't meaningful. Note this provider never provides zero-state
   // results.

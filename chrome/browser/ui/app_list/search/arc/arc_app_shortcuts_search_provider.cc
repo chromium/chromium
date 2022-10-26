@@ -39,7 +39,6 @@ void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
                 GetAppShortcutGlobalQueryItems)
           : nullptr;
 
-  ClearResultsSilently();
   if (!app_instance)
     return;
   last_query_ = query;

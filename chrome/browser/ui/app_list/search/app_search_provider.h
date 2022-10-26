@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 
@@ -45,7 +44,6 @@ class AppSearchProvider : public SearchProvider {
   // SearchProvider overrides:
   void Start(const std::u16string& query) override;
   void StartZeroState() override;
-  void ViewClosing() override;
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
 
@@ -80,8 +78,6 @@ class AppSearchProvider : public SearchProvider {
   bool updates_blocked_ = false;
 
   base::CallbackListSubscription app_updates_subscription_;
-
-  base::WeakPtrFactory<AppSearchProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace app_list

@@ -98,7 +98,6 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
 OmniboxProvider::~OmniboxProvider() {}
 
 void OmniboxProvider::Start(const std::u16string& query) {
-  ClearResultsSilently();
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kCamelCase);
 

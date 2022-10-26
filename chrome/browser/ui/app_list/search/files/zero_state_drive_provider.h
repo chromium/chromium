@@ -57,7 +57,6 @@ class ZeroStateDriveProvider : public SearchProvider,
       const power_manager::ScreenIdleState& proto) override;
 
   // SearchProvider:
-  void Start(const std::u16string& query) override;
   void StartZeroState() override;
   void ViewClosing() override;
   ash::AppListSearchResultType ResultType() const override;

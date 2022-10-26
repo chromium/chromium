@@ -93,8 +93,6 @@ void PersonalizationProvider::Start(const std::u16string& query) {
   if (!search_handler_)
     return;
 
-  ClearResultsSilently();
-
   if (query.size() < kMinQueryLength) {
     return;
   }

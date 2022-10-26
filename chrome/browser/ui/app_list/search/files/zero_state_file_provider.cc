@@ -82,13 +82,8 @@ bool ZeroStateFileProvider::ShouldBlockZeroState() const {
   return true;
 }
 
-void ZeroStateFileProvider::Start(const std::u16string& query) {
-  ClearResultsSilently();
-}
-
 void ZeroStateFileProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
-  ClearResultsSilently();
 
   // Despite this being for zero-state _local_ files only, we disable all
   // results in the Continue section if Drive is disabled.

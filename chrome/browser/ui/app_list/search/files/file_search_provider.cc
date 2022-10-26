@@ -150,8 +150,6 @@ void FileSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   query_start_time_ = base::TimeTicks::Now();
 
-  // Clear results and cancel any outgoing requests.
-  ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
 
   last_query_ = query;

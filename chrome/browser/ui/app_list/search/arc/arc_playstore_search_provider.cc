@@ -93,8 +93,6 @@ ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() const {
 
 void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
-  // Clear any results from the previous query.
-  ClearResultsSilently();
 
   arc::mojom::AppInstance* app_instance =
       arc::ArcServiceManager::Get()
@@ -120,7 +118,6 @@ void ArcPlayStoreSearchProvider::OnResults(
     arc::ArcPlayStoreSearchRequestState state,
     std::vector<arc::mojom::AppDiscoveryResultPtr> results) {
   if (state != arc::ArcPlayStoreSearchRequestState::SUCCESS) {
-    ClearResults();
     DCHECK(
         state ==
             arc::ArcPlayStoreSearchRequestState::PHONESKY_RESULT_INVALID_DATA ||

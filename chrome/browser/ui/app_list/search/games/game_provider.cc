@@ -187,8 +187,6 @@ void GameProvider::Start(const std::u16string& query) {
     return;
   }
 
-  // Clear results and discard any existing searches.
-  ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
