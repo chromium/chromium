@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -73,6 +72,7 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
@@ -3841,7 +3841,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   // Tests that the window ordering remains the same as before we minimize.
   auto new_order =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  EXPECT_TRUE(std::equal(ordering.begin(), ordering.end(), new_order.begin()));
+  EXPECT_TRUE(base::ranges::equal(ordering, new_order));
 }
 
 // Tests that going home will end split view mode.
