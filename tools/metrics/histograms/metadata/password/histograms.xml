@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut"
-    units="accounts" expires_after="2022-12-04">
+    units="accounts" expires_after="2023-04-16">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -499,7 +499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
-    units="credentials" expires_after="2022-12-04">
+    units="credentials" expires_after="2023-04-16">
   <owner>treib@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
