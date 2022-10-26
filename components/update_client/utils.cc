@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "components/update_client/component.h"
@@ -36,9 +37,15 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
+
+#include "base/win/windows_version.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace update_client {
+
+const char kArchAmd64[] = "x86_64";
+const char kArchIntel[] = "x86";
+const char kArchArm64[] = "arm64";
 
 bool HasDiffUpdate(const Component& component) {
   return !component.crx_diffurls().empty();
@@ -178,6 +185,17 @@ bool CreateSecureTempDirectory(const base::FilePath::StringType& prefix,
   return base::PathService::Get(path_key, &parent_dir)
              ? base::CreateTemporaryDirInDir(parent_dir, prefix, temp_dir)
              : false;
+}
+
+std::string GetArchitecture() {
+#if BUILDFLAG(IS_WIN)
+  const base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
+  return (os_info->IsWowX86OnARM64() || os_info->IsWowAMD64OnARM64())
+             ? kArchArm64
+             : base::SysInfo().OperatingSystemArchitecture();
+#else   // BUILDFLAG(IS_WIN)
+  return base::SysInfo().OperatingSystemArchitecture();
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace update_client

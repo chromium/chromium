@@ -25,6 +25,10 @@ namespace update_client {
 class Component;
 struct CrxComponent;
 
+extern const char kArchAmd64[];
+extern const char kArchIntel[];
+extern const char kArchArm64[];
+
 // Defines a name-value pair that represents an installer attribute.
 // Installer attributes are component-specific metadata, which may be serialized
 // in an update check request.
@@ -91,6 +95,14 @@ CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
 // under %ProgramFiles% if the caller is admin, so it is secure.
 bool CreateSecureTempDirectory(const base::FilePath::StringType& prefix,
                                base::FilePath* temp_dir);
+
+// Returns a string representation of the processor architecture. Uses
+// `base::win::OSInfo::IsWowX86OnARM64` and
+// `base::win::OSInfo::IsWowAMD64OnARM64` if available on Windows (more
+// accurate).
+// If not, or not Windows, falls back to
+// `base::SysInfo().OperatingSystemArchitecture`.
+std::string GetArchitecture();
 
 }  // namespace update_client
 

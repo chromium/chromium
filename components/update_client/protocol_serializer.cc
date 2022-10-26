@@ -150,7 +150,7 @@ protocol_request::Request MakeProtocolRequest(
   request.os.platform = os_long_name;
   request.os.version = GetOSVersion();
   request.os.service_pack = GetServicePack();
-  request.os.arch = base::SysInfo().OperatingSystemArchitecture();
+  request.os.arch = GetArchitecture();
 
   if (!updater_state_attributes.empty()) {
     request.updater = absl::make_optional<protocol_request::Updater>();
