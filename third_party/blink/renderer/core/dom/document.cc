@@ -2937,7 +2937,7 @@ void Document::UpdateUseShadowTreesIfNeeded() {
       elements_vector.push_back(element);
     }
     std::sort(elements_vector.begin(), elements_vector.end(),
-              recordreplay::CompareMemberByPointerId<Member<SVGUseElement>>());
+              recordreplay::CompareMemberByRecordReplayId<Member<SVGUseElement>>());
     for (SVGUseElement* element : elements_vector)
       element->BuildPendingResource();
   }

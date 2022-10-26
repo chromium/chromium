@@ -551,7 +551,7 @@ void SVGElement::InvalidateRelativeLengthClients(
   }
   std::sort(elements_with_relative_lengths_vector.begin(),
             elements_with_relative_lengths_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGElement>>());
 
   for (SVGElement* element : elements_with_relative_lengths_vector) {
     element->InvalidateRelativeLengthClients(layout_scope);
@@ -1107,7 +1107,7 @@ void SVGElement::SetNeedsStyleRecalcForInstances(
   std::vector<SVGElement*> members;
   for (SVGElement* instance : set)
     members.push_back(instance);
-  std::sort(members.begin(), members.end(), recordreplay::CompareByPointerId());
+  std::sort(members.begin(), members.end(), recordreplay::CompareByRecordReplayId());
 
   for (SVGElement* instance : members)
     instance->SetNeedsStyleRecalc(change_type, reason);

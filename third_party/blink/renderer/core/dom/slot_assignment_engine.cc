@@ -51,7 +51,7 @@ void SlotAssignmentEngine::RecalcSlotAssignments() {
     shadow_roots_vector.push_back(shadow_root);
   }
   std::sort(shadow_roots_vector.begin(), shadow_roots_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<ShadowRoot>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<ShadowRoot>>());
 
   for (auto& shadow_root : shadow_roots_vector) {
     DCHECK(shadow_root->isConnected());

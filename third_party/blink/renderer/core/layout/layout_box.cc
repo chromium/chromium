@@ -130,6 +130,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   void* pointers[4];
   Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
   Persistent<void*> rare_data;
+  int record_replay_id;
 };
 
 ASSERT_SIZE(LayoutBox, SameSizeAsLayoutBox);
@@ -424,16 +425,13 @@ LayoutBox::LayoutBox(ContainerNode* node)
       intrinsic_content_logical_height_(-1),
       intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()),
       inline_box_wrapper_(nullptr) {
-  // Pointer registration is needed for storing in SnapCoordinator::UpdateSnapContainerData.
-  recordreplay::RegisterPointer("LayoutBox", this);
+  record_replay_id_ = recordreplay::NewIdMainThread("LayoutBox");
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
     SetIsHTMLLegendElement();
 }
 
-LayoutBox::~LayoutBox() {
-  recordreplay::UnregisterPointer(this);
-}
+LayoutBox::~LayoutBox() {}
 
 PaintLayerType LayoutBox::LayerTypeRequired() const {
   NOT_DESTROYED();
@@ -858,7 +856,7 @@ void LayoutBox::UpdateFromStyle() {
 void LayoutBox::LayoutSubtreeRoot() {
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("LayoutBox::LayoutSubtreeRoot Start %d",
-                       recordreplay::PointerId(this));
+                       RecordReplayId());
 
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGEnabled() &&

@@ -56,9 +56,7 @@ class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
-  virtual ~ScriptWrappable() {
-    recordreplay::UnregisterPointer(this);
-  }
+  virtual ~ScriptWrappable() {}
 
   // The following methods may override lifetime of ScriptWrappable objects when
   // needed. In particular if |HasPendingActivity| or |HasEventListeners|
@@ -146,11 +144,11 @@ class PLATFORM_EXPORT ScriptWrappable
 
   bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
 
+  int RecordReplayId() const { return record_replay_id_; }
+
  protected:
   ScriptWrappable() {
-    // Register wrappables so that we have a consistent identifier that can be
-    // used in assertions.
-    recordreplay::RegisterPointer("ScriptWrappable", this);
+    record_replay_id_ = recordreplay::NewIdAnyThread("ScriptWrappable");
   }
 
  private:
@@ -168,6 +166,10 @@ class PLATFORM_EXPORT ScriptWrappable
       "TraceWrapperV8Reference<v8::Object> should be trivially destructible.");
 
   TraceWrapperV8Reference<v8::Object> main_world_wrapper_;
+
+  // A deterministic ID is used for deterministically iterating collections of
+  // ScriptWrappables in many places.
+  int record_replay_id_ = 0;
 
   // These classes are exceptionally allowed to directly interact with the main
   // world wrapper.

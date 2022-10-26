@@ -51,6 +51,7 @@ extern "C" int V8RecordReplayPointerId(const void* ptr);
 extern "C" void* V8RecordReplayIdPointer(int id);
 extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
 extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
+extern "C" bool V8IsMainThread();
 
 bool IsRecordingOrReplaying(const char* feature) {
   return OP2(V8IsRecordingOrReplaying(feature), false);
@@ -223,6 +224,30 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
   } else {
     lock_.Acquire();
   }
+}
+
+static int gNextMainThreadId = 1;
+
+int NewIdMainThread(const char* name) {
+  if (IsRecordingOrReplaying()) {
+    if (!V8IsMainThread()) {
+      fprintf(stderr, "NewIdMainThread not main thread: %s\n", name);
+      CHECK(V8IsMainThread());
+    }
+    Assert("NewId %s", name);
+    return gNextMainThreadId++;
+  }
+  return 0;
+}
+
+static std::atomic<int> gNextAnyThreadId{1};
+
+int NewIdAnyThread(const char* name) {
+  if (IsRecordingOrReplaying()) {
+    Assert("NewId %s", name);
+    return RecordReplayValue("NewId", gNextAnyThreadId++);
+  }
+  return 0;
 }
 
 } // namespace recordreplay

@@ -79,6 +79,11 @@ void UnregisterPointer(const void* ptr);
 int PointerId(const void* ptr);
 void* IdPointer(int id);
 
+// Create new identifiers, as with RegisterPointer/PointerId but with less
+// overhead and requiring manual storage.
+int NewIdMainThread(const char* name);
+int NewIdAnyThread(const char* name);
+
 // stl comparator that uses pointer IDs to compare elements when recording/replaying,
 // giving a deterministic sort order.
 struct CompareByPointerId {
@@ -87,6 +92,20 @@ struct CompareByPointerId {
     if (IsRecordingOrReplaying("pointer-ids")) {
       int ida = PointerId(a);
       int idb = PointerId(b);
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return (uintptr_t)a < (uintptr_t)b;
+  }
+};
+
+// stl comparator for classes that have a RecordReplayId() method.
+struct CompareByRecordReplayId {
+  template <typename T>
+  bool operator()(const T* a, const T* b) const {
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ida = a->RecordReplayId();
+      int idb = b->RecordReplayId();
       CHECK(ida && idb);
       return ida < idb;
     }
@@ -108,6 +127,20 @@ struct CompareRefptrByPointerId {
   }
 };
 
+// For use with scoped_refptr and similar.
+template <typename T>
+struct CompareRefptrByRecordReplayId {
+  bool operator()(const T& a, const T& b) const {
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ida = a.get()->RecordReplayId();
+      int idb = b.get()->RecordReplayId();
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 // For use with blink WeakMember and Member.
 template <typename T>
 struct CompareMemberByPointerId {
@@ -115,6 +148,20 @@ struct CompareMemberByPointerId {
     if (IsRecordingOrReplaying("pointer-ids")) {
       int ida = PointerId(a.Get());
       int idb = PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
+// For use with blink WeakMember and Member.
+template <typename T>
+struct CompareMemberByRecordReplayId {
+  bool operator()(const T& a, const T& b) const {
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ida = a.Get()->RecordReplayId();
+      int idb = b.Get()->RecordReplayId();
       CHECK(ida && idb);
       return ida < idb;
     }

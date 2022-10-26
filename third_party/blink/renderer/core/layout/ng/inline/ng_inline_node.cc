@@ -159,7 +159,7 @@ class ReusingTextShaper final {
                                    unsigned end_offset) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("ReusingTextShaper::Shape %d %u",
-                         recordreplay::PointerId(start_item.GetLayoutObject()),
+                         start_item.GetLayoutObject()->RecordReplayId(),
                          end_offset);
 
     const unsigned start_offset = start_item.StartOffset();
@@ -248,7 +248,7 @@ class ReusingTextShaper final {
                                      unsigned end_offset) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("ReusingTextShaper::Reshape %d %u %u",
-                         recordreplay::PointerId(start_item.GetLayoutObject()),
+                         start_item.GetLayoutObject()->RecordReplayId(),
                          start_offset, end_offset);
 
     DCHECK_LT(start_offset, end_offset);
@@ -881,7 +881,7 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 const NGInlineNodeData& NGInlineNode::EnsureData() const {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineNode::EnsureData Start %d",
-                       recordreplay::PointerId(GetLayoutBox()));
+                       GetLayoutBox()->RecordReplayId());
 
   PrepareLayoutIfNeeded();
 
@@ -1171,7 +1171,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const Vector<NGInlineItem>* previous_items) const {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineNode::ShapeText %d",
-                       recordreplay::PointerId(GetLayoutBox()));
+                       GetLayoutBox()->RecordReplayId());
 
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
@@ -1189,7 +1189,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineNode::ShapeText #1 %d",
-                         recordreplay::PointerId(start_item.GetLayoutObject()));
+                         start_item.GetLayoutObject()->RecordReplayId());
 
     if (start_item.Type() != NGInlineItem::kText || !start_item.Length()) {
       index++;
@@ -1227,7 +1227,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
       // https://linear.app/replay/issue/RUN-480
       recordreplay::Assert("NGInlineNode::ShapeText #3 %d %d %u %u",
-                           recordreplay::PointerId(item.GetLayoutObject()),
+                           item.GetLayoutObject()->RecordReplayId(),
                            item.Type(), item.Length(), item.EndOffset());
 
       if (item.Type() == NGInlineItem::kControl) {

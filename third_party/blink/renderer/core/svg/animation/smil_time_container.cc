@@ -123,7 +123,7 @@ SMILTimeContainer::TimingUpdate::~TimingUpdate() {
     updated_elements_vector.push_back(entry.key);
   }
   std::sort(updated_elements_vector.begin(), updated_elements_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGSMILElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGSMILElement>>());
   for (const Member<SVGSMILElement>& element : updated_elements_vector) {
     auto iter = updated_elements_.find(element);
     CHECK(iter != updated_elements_.end());
@@ -601,7 +601,7 @@ void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
     animated_targets_vector.push_back(entry.key);
   }
   std::sort(animated_targets_vector.begin(), animated_targets_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGElement>>());
 
   bool did_apply_effects = false;
   for (auto& entry : animated_targets_vector) {

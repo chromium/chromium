@@ -1192,7 +1192,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
     bool should_use_fixed_block_size) {
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("NGOutOfFlowLayoutPart::GenerateFragment Start %d",
-                       recordreplay::PointerId(node.GetLayoutBox()));
+                       node.GetLayoutBox()->RecordReplayId());
 
   const auto& style = node.Style();
 

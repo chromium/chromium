@@ -56,7 +56,7 @@ void SVGDocumentExtensions::ServiceAnimations() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
   std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers)
     container->TimeContainer()->ServiceAnimations();
 
@@ -83,7 +83,7 @@ void SVGDocumentExtensions::StartAnimations() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
   std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers) {
     SMILTimeContainer* time_container = container->TimeContainer();
     if (!time_container->IsStarted())
@@ -100,7 +100,7 @@ void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
   std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers) {
     SVGSVGElement* outer_svg = container.Get();
     if (!outer_svg->IsOutermostSVGSVGElement())
@@ -142,7 +142,7 @@ void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents(
   for (SVGSVGElement* element : relative_length_svg_roots_)
     relative_length_svg_roots_vector.push_back(element);
   std::sort(relative_length_svg_roots_vector.begin(), relative_length_svg_roots_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
+            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
 
   for (SVGSVGElement* element : relative_length_svg_roots_vector)
     element->InvalidateRelativeLengthClients(scope);

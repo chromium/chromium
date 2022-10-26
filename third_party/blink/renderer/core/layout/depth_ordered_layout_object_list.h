@@ -29,17 +29,7 @@ struct LayoutObjectWithDepth {
   LayoutObject& operator*() const { return *object; }
   LayoutObject* operator->() const { return object; }
 
-  bool operator<(const LayoutObjectWithDepth& other) const {
-    if (depth != other.depth)
-      return depth > other.depth;
-
-    // When recording/replaying, ensure that sorted arrays of objects are
-    // ordered deterministically when their depths are the same.
-    if (recordreplay::IsRecordingOrReplaying("pointer-ids"))
-      return recordreplay::PointerId(object) < recordreplay::PointerId(other.object);
-
-    return false;
-  }
+  bool operator<(const LayoutObjectWithDepth& other) const;
 
   void operator=(LayoutObject* obj) {
     object = obj;

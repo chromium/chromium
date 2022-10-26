@@ -339,7 +339,7 @@ LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
                                          LegacyLayout legacy) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("Text::CreateTextLayoutObject %d %zu",
-                       recordreplay::PointerId(this), data().length());
+                       RecordReplayId(), data().length());
 
   if (IsSVGText(this))
     return new LayoutSVGInlineText(this, DataImpl());
@@ -353,7 +353,7 @@ LayoutText* Text::CreateTextLayoutObject(const ComputedStyle& style,
 void Text::AttachLayoutTree(AttachContext& context) {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("Text::AttachLayoutTree %d",
-                       recordreplay::PointerId(this));
+                       RecordReplayId());
 
   if (context.parent) {
     ContainerNode* style_parent = LayoutTreeBuilderTraversal::Parent(*this);

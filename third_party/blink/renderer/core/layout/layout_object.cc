@@ -219,6 +219,7 @@ struct SameSizeAsLayoutObject : ImageResourceObserver, DisplayItemClient {
   // The following fields are in FragmentData.
   PhysicalOffset paint_offset_;
   std::unique_ptr<int> rare_data_;
+  int record_replay_id_;
 #if DCHECK_IS_ON()
   bool is_destroyed_;
 #endif
@@ -339,17 +340,13 @@ LayoutObject::LayoutObject(Node* node)
       parent_(nullptr),
       previous_(nullptr),
       next_(nullptr) {
-  // Pointer registration is needed for hashing in the following places:
-  // FragmentPaintPropertyTreeBuilder::UpdateTransform
-  // LayoutObjectWithDepth ordering
-  recordreplay::RegisterPointer("LayoutObject", this);
+  record_replay_id_ = recordreplay::NewIdMainThread("LayoutObject");
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();
 }
 
 LayoutObject::~LayoutObject() {
-  recordreplay::UnregisterPointer(this);
 #if DCHECK_IS_ON()
   DCHECK(!has_ax_object_);
   DCHECK(BeingDestroyed());

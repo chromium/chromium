@@ -2069,6 +2069,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // (which is responsible for painting the tickmarks).
   void InvalidatePaintForTickmarks();
 
+  int RecordReplayId() const { return record_replay_id_; }
+
  protected:
   ~LayoutBox() override;
 
@@ -2373,6 +2375,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   };
 
   Persistent<LayoutBoxRareData> rare_data_;
+
+  // A deterministic ID is needed for sorting in various SnapCoordinator methods.
+  int record_replay_id_ = 0;
 };
 
 template <>

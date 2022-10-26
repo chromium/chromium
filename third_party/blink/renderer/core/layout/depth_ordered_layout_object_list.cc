@@ -56,6 +56,18 @@ void DepthOrderedLayoutObjectList::Clear() {
   data_->ordered_objects_.clear();
 }
 
+bool LayoutObjectWithDepth::operator<(const LayoutObjectWithDepth& other) const {
+  if (depth != other.depth)
+    return depth > other.depth;
+
+  // When recording/replaying, ensure that sorted arrays of objects are
+  // ordered deterministically when their depths are the same.
+  if (recordreplay::IsRecordingOrReplaying("pointer-ids"))
+    return object->RecordReplayId() < other.object->RecordReplayId();
+
+  return false;
+}
+
 unsigned LayoutObjectWithDepth::DetermineDepth(LayoutObject* object) {
   unsigned depth = 1;
   for (LayoutObject* parent = object->Parent(); parent;

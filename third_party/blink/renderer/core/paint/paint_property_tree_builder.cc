@@ -989,7 +989,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
           // When recording/replaying we need a consistent context ID, so use
           // the pointer ID of the object instead of its hash.
           if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
-            state.rendering_context_id = recordreplay::PointerId(&object_);
+            state.rendering_context_id = object_.RecordReplayId();
           } else {
             state.rendering_context_id =
                 PtrHash<const LayoutObject>::GetHash(&object_);

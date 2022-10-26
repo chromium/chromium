@@ -111,7 +111,7 @@ NOINLINE void CreateAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
                                     const Callback& callback) {
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("CreateAlgorithmAndRun Start %d",
-                       recordreplay::PointerId(params.node.GetLayoutBox()));
+                       params.node.GetLayoutBox()->RecordReplayId());
 
   Algorithm algorithm(params);
   callback(&algorithm);
@@ -393,7 +393,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     const NGEarlyBreak* early_break) const {
   // https://linear.app/replay/issue/RUN-546
   recordreplay::Assert("NGBlockNode::Layout Start %d",
-                       recordreplay::PointerId(GetLayoutBox()));
+                       GetLayoutBox()->RecordReplayId());
 
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
@@ -799,7 +799,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput float_input) const {
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGBlockNode::ComputeMinMaxSizes %d",
-                       recordreplay::PointerId(GetLayoutBox()));
+                       GetLayoutBox()->RecordReplayId());
 
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.

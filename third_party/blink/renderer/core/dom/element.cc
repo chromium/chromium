@@ -2687,7 +2687,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("Element::AttachLayoutTree %d",
-                       recordreplay::PointerId(this));
+                       RecordReplayId());
 
   const ComputedStyle* style = GetComputedStyle();
   bool being_rendered =

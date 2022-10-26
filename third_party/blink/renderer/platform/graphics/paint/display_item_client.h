@@ -29,16 +29,13 @@ enum class RasterEffectOutset : uint8_t {
 class PLATFORM_EXPORT DisplayItemClient {
  public:
   DisplayItemClient() {
-    // Pointer registration is needed for GetKey.
-    recordreplay::RegisterPointer("DisplayItemClient", this);
+    record_replay_id_ = recordreplay::NewIdMainThread("DisplayItemClient");
 
 #if DCHECK_IS_ON()
     OnCreate();
 #endif
   }
   virtual ~DisplayItemClient() {
-    recordreplay::UnregisterPointer(this);
-
 #if DCHECK_IS_ON()
     OnDestroy();
 #endif
@@ -49,7 +46,7 @@ class PLATFORM_EXPORT DisplayItemClient {
   // keys of possibly dead clients.
   uintptr_t GetKey() const {
     if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
-      return recordreplay::PointerId(this);
+      return record_replay_id_;
     }
     return (uintptr_t)this;
   }
@@ -139,6 +136,9 @@ class PLATFORM_EXPORT DisplayItemClient {
 
   mutable PaintInvalidationReason paint_invalidation_reason_ =
       PaintInvalidationReason::kJustCreated;
+
+  // A deterministic ID is needed for GetKey.
+  int record_replay_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayItemClient);
 };

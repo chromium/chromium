@@ -140,7 +140,7 @@ class CORE_EXPORT NGInlineItem {
   void SetOffset(unsigned start, unsigned end) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineItem::SetOffset %d %u %u",
-                         recordreplay::PointerId(GetLayoutObject()),
+                         GetLayoutObject()->RecordReplayId(),
                          start, end);
 
     DCHECK_GE(end, start);
@@ -152,7 +152,7 @@ class CORE_EXPORT NGInlineItem {
   void SetEndOffset(unsigned end_offset) {
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("NGInlineItem::SetEndOffset %d %u",
-                         recordreplay::PointerId(GetLayoutObject()),
+                         GetLayoutObject()->RecordReplayId(),
                          end_offset);
 
     DCHECK_GE(end_offset, start_offset_);

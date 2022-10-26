@@ -89,7 +89,7 @@ NGInlineItem::NGInlineItem(NGInlineItemType type,
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItem::NGInlineItem #1 %d %d %u %u",
-                       recordreplay::PointerId(GetLayoutObject()),
+                       GetLayoutObject()->RecordReplayId(),
                        type, start, end);
 }
 
@@ -115,7 +115,7 @@ NGInlineItem::NGInlineItem(const NGInlineItem& other,
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("NGInlineItem::NGInlineItem #2 %d %d %u %u",
-                       recordreplay::PointerId(GetLayoutObject()),
+                       GetLayoutObject()->RecordReplayId(),
                        other.type_, start, end);
 }
 

@@ -164,8 +164,7 @@ LayoutText::LayoutText(Node* node, scoped_refptr<StringImpl> str)
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("LayoutText::LayoutText %d %u",
-                       recordreplay::PointerId(this),
-                       text_.length());
+                       RecordReplayId(), text_.length());
 
   SetIsText();
 
@@ -2069,8 +2068,7 @@ void LayoutText::SetTextInternal(scoped_refptr<StringImpl> text) {
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("LayoutText::SetTextInternal %d %u",
-                       recordreplay::PointerId(this),
-                       text_.length());
+                       RecordReplayId(), text_.length());
 }
 
 void LayoutText::ApplyTextTransform() {
@@ -2080,8 +2078,7 @@ void LayoutText::ApplyTextTransform() {
 
     // https://linear.app/replay/issue/RUN-480
     recordreplay::Assert("LayoutText::ApplyTextTransform #1 %d %u",
-                         recordreplay::PointerId(this),
-                         text_.length());
+                         RecordReplayId(), text_.length());
 
     // We use the same characters here as for list markers.
     // See the listMarkerText function in LayoutListMarker.cpp.
@@ -2126,8 +2123,7 @@ void LayoutText::SecureText(UChar mask) {
 
   // https://linear.app/replay/issue/RUN-480
   recordreplay::Assert("LayoutText::SecureText Done %d %u",
-                       recordreplay::PointerId(this),
-                       text_.length());
+                       RecordReplayId(), text_.length());
 }
 
 void LayoutText::SetTextIfNeeded(scoped_refptr<StringImpl> text) {
