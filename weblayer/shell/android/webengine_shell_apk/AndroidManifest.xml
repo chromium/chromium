@@ -11,7 +11,7 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     package="org.chromium.webengine.shell">
 
-    <application android:label="BF shell"
+    <application android:label="WE shell"
         tools:replace="android:label"
         android:supportsRtl="true">
         <activity android:name="WebEngineShellActivity"
