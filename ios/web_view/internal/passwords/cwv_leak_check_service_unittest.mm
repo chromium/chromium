@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/bulk_leak_check_service.h"
@@ -79,12 +80,11 @@ ACTION_P(CreateFakeBulkLeakCheck, out) {
 }
 
 MATCHER_P(CredentialsAre, credentials, "") {
-  return std::equal(arg.begin(), arg.end(), credentials.get().begin(),
-                    credentials.get().end(),
-                    [](const auto& lhs, const auto& rhs) {
-                      return lhs.username() == rhs.username() &&
-                             lhs.password() == rhs.password();
-                    });
+  return base::ranges::equal(arg, credentials.get(),
+                             [](const auto& lhs, const auto& rhs) {
+                               return lhs.username() == rhs.username() &&
+                                      lhs.password() == rhs.password();
+                             });
 }
 
 class CWVLeakCheckServiceTest : public PlatformTest {
