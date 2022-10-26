@@ -2937,17 +2937,31 @@ bool IsSigninForcedByPolicy() {
 - (void)startSigninCoordinatorWithCompletion:
     (signin_ui::CompletionCallback)completion {
   DCHECK(self.signinCoordinator);
-  if (!signin::IsSigninAllowedByPolicy()) {
-    if (completion) {
-      completion(/*success=*/NO);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.sceneState.appState.mainBrowserState);
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy: {
+      if (completion) {
+        completion(/*success=*/NO);
+      }
+      [self.signinCoordinator stop];
+      id<PolicyChangeCommands> handler = HandlerForProtocol(
+          self.signinCoordinator.browser->GetCommandDispatcher(),
+          PolicyChangeCommands);
+      [handler showForceSignedOutPrompt];
+      self.signinCoordinator = nil;
+      return;
     }
-    [self.signinCoordinator stop];
-    id<PolicyChangeCommands> handler = HandlerForProtocol(
-        self.signinCoordinator.browser->GetCommandDispatcher(),
-        PolicyChangeCommands);
-    [handler showForceSignedOutPrompt];
-    self.signinCoordinator = nil;
-    return;
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed: {
+      break;
+    }
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
+      NOTREACHED();
+      break;
+    }
   }
 
   DCHECK(self.signinCoordinator);

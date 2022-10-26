@@ -104,15 +104,25 @@
 }
 
 - (void)start {
-  if (!signin::IsSigninAllowedByPolicy()) {
-    self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
-    [self finishPresentingAndSkipRemainingScreens:NO];
-    return;
-  }
-
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+      // This case should not happen, unless testers trigger the FRE while
+      // sign-in is disabled by user.
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      self.attemptStatus = first_run::SignInAttemptStatus::NOT_SUPPORTED;
+      [self finishPresentingAndSkipRemainingScreens:NO];
+      return;
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+      self.attemptStatus = first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
+      [self finishPresentingAndSkipRemainingScreens:NO];
+      return;
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+      break;
+  }
 
   if (authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {

@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/first_run/first_run_configuration.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -205,18 +207,29 @@
   self.firstRunConfig = [[FirstRunConfiguration alloc] init];
   self.firstRunConfig.signInAttemptStatus =
       first_run::SignInAttemptStatus::NOT_ATTEMPTED;
+  ChromeBrowserState* browserState = self.mainBrowser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.mainBrowser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   self.firstRunConfig.hasSSOAccount = accountManagerService->HasIdentities();
 
-  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
-      self.mainBrowser->GetBrowserState());
-  BOOL shouldSkipSignInFlow =
-      syncService->GetDisableReasons().Has(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      !signin::IsSigninAllowedByPolicy();
-
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  BOOL shouldSkipSignInFlow = syncService->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      // It is possible to have `SigninDisabledByUser` case if a tester triggers
+      // the FRE after disabling sign-in in the settings.
+      shouldSkipSignInFlow = YES;
+      break;
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+  }
   if (shouldSkipSignInFlow) {
     // Sign-in or sync is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =

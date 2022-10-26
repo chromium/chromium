@@ -103,7 +103,8 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(handler_);
   DCHECK(auth_service_);
-  if (!signin::IsSigninAllowedByPolicy()) {
+  if ((auth_service_->GetServiceStatus() ==
+       AuthenticationService::ServiceStatus::SigninDisabledByPolicy)) {
     if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",

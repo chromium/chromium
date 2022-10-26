@@ -8,17 +8,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/version.h"
-#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
-#import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -192,20 +188,6 @@ void RecordUpgradePromoSigninStarted(
       [defaults integerForKey:kSigninPromoViewDisplayCountKey];
   ++display_count;
   [defaults setInteger:display_count forKey:kSigninPromoViewDisplayCountKey];
-}
-
-bool IsSigninAllowedByPolicy() {
-  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
-      GetApplicationContext()->GetLocalState()->GetInteger(
-          prefs::kBrowserSigninPolicy));
-
-  switch (policy_mode) {
-    case BrowserSigninMode::kDisabled:
-      return false;
-    case BrowserSigninMode::kEnabled:
-    case BrowserSigninMode::kForced:
-      return true;
-  }
 }
 
 IdentitySigninState GetPrimaryIdentitySigninState(

@@ -53,8 +53,6 @@ source_set("signin_impl") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync",

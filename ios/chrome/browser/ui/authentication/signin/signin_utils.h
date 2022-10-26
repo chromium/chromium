@@ -35,12 +35,6 @@ void RecordUpgradePromoSigninStarted(
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);
 
-// TODO(crbug.com/1271785): Move this to enterprise_utils.
-// Returns a boolean indicating whether policy allows browser sign-in.
-// DEPRECATED. Needs to use AuthenticationService::GetServiceStatus().
-// TODO(crbug.com/1242320): Need to remove this method.
-bool IsSigninAllowedByPolicy();
-
 // Returns the current sign-in state of primary identity.
 IdentitySigninState GetPrimaryIdentitySigninState(
     ChromeBrowserState* browser_state);
