@@ -8900,8 +8900,7 @@
       },
       {
         "args": [
-          "--",
-          "--ozone-platform=headless"
+          "--test-arg=--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -9225,8 +9224,7 @@
       },
       {
         "args": [
-          "--",
-          "--vmodule=test_navigation_listener=1"
+          "--test-arg=--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -9247,8 +9245,7 @@
       },
       {
         "args": [
-          "--",
-          "--vmodule=test_navigation_listener=1"
+          "--test-arg=--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -10393,8 +10390,7 @@
       },
       {
         "args": [
-          "--",
-          "--ozone-platform=headless"
+          "--test-arg=--ozone-platform=headless"
         ],
         "merge": {
           "args": [],
@@ -10669,8 +10665,7 @@
       },
       {
         "args": [
-          "--",
-          "--vmodule=test_navigation_listener=1"
+          "--test-arg=--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],
@@ -10692,8 +10687,7 @@
       },
       {
         "args": [
-          "--",
-          "--vmodule=test_navigation_listener=1"
+          "--test-arg=--vmodule=test_navigation_listener=1"
         ],
         "merge": {
           "args": [],

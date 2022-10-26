@@ -102,9 +102,12 @@ class ExecutableTestRunner(TestRunner):
                             action='store_true',
                             default=False,
                             help='Enable Chrome test server spawner.')
-        parser.add_argument('test_process_args',
-                            nargs='*',
-                            help='Arguments for the test process.')
+        parser.add_argument('--test-arg',
+                            dest='test_args',
+                            action='append',
+                            help='Legacy flag to pass in arguments for '
+                            'the test process. These arguments can now be '
+                            'passed in without a preceding "--" flag.')
         args, child_args = parser.parse_known_args(self._test_args)
         if args.isolated_script_test_output:
             self._isolated_script_test_output = args.isolated_script_test_output
@@ -138,7 +141,8 @@ class ExecutableTestRunner(TestRunner):
                 self._target_id, test_concurrency)
             child_args.append('--remote-test-server-spawner-url-base=%s' %
                               spawner_url_base)
-        child_args.extend(args.test_process_args)
+        if args.test_args:
+            child_args.extend(args.test_args)
         return child_args
 
     def _postprocess(self, test_runner: FfxTestRunner) -> None:

@@ -163,6 +163,10 @@ def AddTestExecutionArgs(arg_parser):
                          default=False,
                          action='store_true',
                          help='Run tests prefixed with DISABLED_')
+  test_args.add_argument('--test-arg',
+                         dest='test_args',
+                         action='append',
+                         help='Argument for the test process.')
   test_args.add_argument('child_args',
                          nargs='*',
                          help='Arguments for the test process.')
@@ -229,6 +233,8 @@ def main():
     child_args.append('--gtest_break_on_failure')
   if args.gtest_also_run_disabled_tests:
     child_args.append('--gtest_also_run_disabled_tests')
+  if args.test_args:
+    child_args.extend(args.test_args)
 
   if args.child_args:
     child_args.extend(args.child_args)

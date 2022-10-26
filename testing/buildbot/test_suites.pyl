@@ -2133,8 +2133,7 @@
       'browser_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter',
-          '--',
-          '--test-launcher-timeout=60000',
+          '--test-arg=--test-launcher-timeout=60000',
         ],
         'swarming': {
           'shards': 40,
@@ -2143,10 +2142,9 @@
       # TODO(crbug.com/1371630): Move to one of the fuchsia_common_gtests* sets.
       'content_browsertests': {
         'args': [
-          '--',
-          '--disable-gpu',
-          '--headless',
-          '--ozone-platform=headless',
+          '--test-arg=--disable-gpu',
+          '--test-arg=--headless',
+          '--test-arg=--ozone-platform=headless',
         ],
         'swarming': {
           'shards': 8,
@@ -2224,8 +2222,7 @@
       },
       'ozone_gl_unittests': {
         'args': [
-          '--',
-          '--ozone-platform=headless',
+          '--test-arg=--ozone-platform=headless',
         ],
       },
       'ozone_unittests': {},
@@ -5008,14 +5005,12 @@
       'web_engine_browsertests': {},
       'web_engine_integration_tests': {
         'args': [
-          '--',
-          '--vmodule=test_navigation_listener=1',
+          '--test-arg=--vmodule=test_navigation_listener=1',
         ],
       },
       'web_engine_integration_tests_cfv1': {
         'args': [
-          '--',
-          '--vmodule=test_navigation_listener=1',
+          '--test-arg=--vmodule=test_navigation_listener=1',
         ],
       },
       'web_engine_unittests': {},
