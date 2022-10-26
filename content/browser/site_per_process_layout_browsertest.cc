@@ -2010,8 +2010,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, VisibilityChange) {
 
 // This test verifies that the main-frame's page scale factor propagates to
 // the compositor layertrees in each of the child processes.
+// Flaky on all platforms: https://crbug.com/1116774
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       PageScaleFactorPropagatesToOOPIFs) {
+                       DISABLED_PageScaleFactorPropagatesToOOPIFs) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(c),d)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
