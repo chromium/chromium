@@ -164,14 +164,23 @@ PriceTrackingBubbleCoordinator::PriceTrackingBubbleCoordinator(
 
 PriceTrackingBubbleCoordinator::~PriceTrackingBubbleCoordinator() = default;
 
+void PriceTrackingBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK(bubble_widget_observation_.IsObservingSource(widget));
+  bubble_widget_observation_.Reset();
+
+  std::move(on_dialog_closing_callback_).Run();
+}
+
 void PriceTrackingBubbleCoordinator::Show(
     content::WebContents* web_contents,
     Profile* profile,
     const GURL& url,
     ui::ImageModel image_model,
     PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
+    base::OnceClosure on_dialog_closing_callback,
     PriceTrackingBubbleDialogView::Type type) {
   DCHECK(!tracker_.view());
+  on_dialog_closing_callback_ = std::move(on_dialog_closing_callback);
 
   if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
     base::RecordAction(
@@ -185,7 +194,9 @@ void PriceTrackingBubbleCoordinator::Show(
       anchor_view_, web_contents, profile, url, std::move(image_model),
       std::move(callback), type);
   tracker_.SetView(bubble.get());
-  PriceTrackingBubbleDialogView::CreateBubble(std::move(bubble))->Show();
+  auto* widget = PriceTrackingBubbleDialogView::CreateBubble(std::move(bubble));
+  bubble_widget_observation_.Observe(widget);
+  widget->Show();
 }
 
 void PriceTrackingBubbleCoordinator::Hide() {

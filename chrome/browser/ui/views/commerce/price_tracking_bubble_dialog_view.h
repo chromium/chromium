@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_BUBBLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_BUBBLE_DIALOG_VIEW_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace content {
 class WebContents;
@@ -58,16 +60,20 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
   base::WeakPtrFactory<PriceTrackingBubbleDialogView> weak_factory_{this};
 };
 
-class PriceTrackingBubbleCoordinator {
+class PriceTrackingBubbleCoordinator : public views::WidgetObserver {
  public:
   explicit PriceTrackingBubbleCoordinator(views::View* anchor_view);
-  ~PriceTrackingBubbleCoordinator();
+  ~PriceTrackingBubbleCoordinator() override;
+
+  // WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void Show(content::WebContents* web_contents,
             Profile* profile,
             const GURL& url,
             ui::ImageModel image_model,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
+            base::OnceClosure on_dialog_closing_callback,
             PriceTrackingBubbleDialogView::Type type);
   void Hide();
 
@@ -78,6 +84,9 @@ class PriceTrackingBubbleCoordinator {
 
   const raw_ptr<views::View> anchor_view_;
   views::ViewTracker tracker_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      bubble_widget_observation_{this};
+  base::OnceClosure on_dialog_closing_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_BUBBLE_DIALOG_VIEW_H_

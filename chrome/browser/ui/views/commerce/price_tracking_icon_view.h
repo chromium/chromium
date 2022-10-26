@@ -32,6 +32,7 @@ class PriceTrackingIconView : public PageActionIconView {
 
   void ForceVisibleForTesting(bool is_tracking_price);
   const std::u16string& GetIconLabelForTesting();
+  void SetOneShotTimerForTesting(base::OneShotTimer* animate_out_timer);
 
  protected:
   // PageActionIconView:
@@ -40,6 +41,7 @@ class PriceTrackingIconView : public PageActionIconView {
  private:
   // IconLabelBubbleView:
   void AnimationProgressed(const gfx::Animation* animation) override;
+
   void EnablePriceTracking(bool enable);
   void SetVisualState(bool enable);
   void OnPriceTrackingServerStateUpdated(bool success);
@@ -48,6 +50,7 @@ class PriceTrackingIconView : public PageActionIconView {
   bool ShouldShowFirstUseExperienceBubble() const;
   void MaybeShowPageActionLabel();
   void HidePageActionLabel();
+  base::OneShotTimer& AnimateOutTimer();
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
@@ -59,7 +62,9 @@ class PriceTrackingIconView : public PageActionIconView {
   // Animates out the price tracking icon label after a fixed period of time.
   // This keeps the label visible for long enough to give users an opportunity
   // to read the label text.
-  base::RetainingOneShotTimer animate_out_timer_;
+  base::OneShotTimer animate_out_timer_;
+
+  raw_ptr<base::OneShotTimer> animate_out_timer_for_testing_ = nullptr;
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;

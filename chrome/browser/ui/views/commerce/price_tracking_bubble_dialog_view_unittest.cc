@@ -80,16 +80,21 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
   void CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type type) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(1, 1);
-    bubble_coordinator_->Show(browser()->tab_strip_model()->GetWebContentsAt(0),
-                              profile(), GURL(kTestURL),
-                              ui::ImageModel::FromImage(gfx::Image(
-                                  gfx::ImageSkia::CreateFrom1xBitmap(bitmap))),
-                              Callback().Get(), type);
+    bubble_coordinator_->Show(
+        browser()->tab_strip_model()->GetWebContentsAt(0), profile(),
+        GURL(kTestURL),
+        ui::ImageModel::FromImage(
+            gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap))),
+        Callback().Get(), OnDialogClosingCallback().Get(), type);
   }
 
   base::MockCallback<PriceTrackingBubbleDialogView::OnTrackPriceCallback>&
   Callback() {
     return callback_;
+  }
+
+  base::MockCallback<base::OnceClosure>& OnDialogClosingCallback() {
+    return on_dialog_closing_callback_;
   }
 
   PriceTrackingBubbleCoordinator* BubbleCoordinator() {
@@ -109,6 +114,7 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
   base::MockCallback<PriceTrackingBubbleDialogView::OnTrackPriceCallback>
       callback_;
   std::unique_ptr<PriceTrackingBubbleCoordinator> bubble_coordinator_;
+  base::MockCallback<base::OnceClosure> on_dialog_closing_callback_;
 };
 
 TEST_F(PriceTrackingBubbleDialogViewUnitTest, FUEBubble) {
@@ -167,6 +173,7 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, AcceptFUEBubble) {
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
   EXPECT_CALL(Callback(), Run(true));
+  EXPECT_CALL(OnDialogClosingCallback(), Run());
   bubble->Accept();
 }
 
@@ -176,6 +183,7 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, CancelNormalBubble) {
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
   EXPECT_CALL(Callback(), Run(false));
+  EXPECT_CALL(OnDialogClosingCallback(), Run());
   bubble->Cancel();
 }
 
@@ -188,6 +196,7 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, ClickLinkInTheNormalBubble) {
   auto bookmark_editor_waiter = views::NamedWidgetShownWaiter(
       views::test::AnyWidgetTestPasskey{}, BookmarkEditorView::kViewClassName);
 
+  EXPECT_CALL(OnDialogClosingCallback(), Run());
   bubble->GetBodyLabelForTesting()->ClickFirstLinkForTesting();
   EXPECT_TRUE(bookmark_editor_waiter.WaitIfNeededAndGet());
 

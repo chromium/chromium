@@ -67,6 +67,10 @@ std::u16string PriceTrackingIconView::GetTextForTooltipAndAccessibleName()
 
 void PriceTrackingIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
+  if (AnimateOutTimer().IsRunning()) {
+    AnimateOutTimer().Stop();
+  }
+
   auto* web_contents = GetWebContents();
   DCHECK(web_contents);
   auto* tab_helper =
@@ -85,6 +89,8 @@ void PriceTrackingIconView::OnExecuting(
         ui::ImageModel::FromImage(product_image),
         base::BindOnce(&PriceTrackingIconView::EnablePriceTracking,
                        weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
+                       weak_ptr_factory_.GetWeakPtr()),
         PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
   } else {
     EnablePriceTracking(/*enable=*/true);
@@ -92,6 +98,8 @@ void PriceTrackingIconView::OnExecuting(
         GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
         ui::ImageModel::FromImage(product_image),
         base::BindOnce(&PriceTrackingIconView::EnablePriceTracking,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
                        weak_ptr_factory_.GetWeakPtr()),
         PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
   }
@@ -146,10 +154,10 @@ void PriceTrackingIconView::AnimationProgressed(
       GetAnimationValue() >= kAnimationValueWhenLabelFullyShown) {
     should_extend_label_shown_duration_ = false;
     PauseAnimation();
-    animate_out_timer_.Start(
+    AnimateOutTimer().Start(
         FROM_HERE, kLabelPersistDuration,
-        base::BindRepeating(&PriceTrackingIconView::UnpauseAnimation,
-                            base::Unretained(this)));
+        base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
+                       base::Unretained(this)));
   }
 }
 
@@ -160,6 +168,11 @@ void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {
 
 const std::u16string& PriceTrackingIconView::GetIconLabelForTesting() {
   return label()->GetText();
+}
+
+void PriceTrackingIconView::SetOneShotTimerForTesting(
+    base::OneShotTimer* timer) {
+  animate_out_timer_for_testing_ = timer;
 }
 
 void PriceTrackingIconView::EnablePriceTracking(bool enable) {
@@ -274,4 +287,9 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
 void PriceTrackingIconView::HidePageActionLabel() {
   UnpauseAnimation();
   ResetSlideAnimation(false);
+}
+
+base::OneShotTimer& PriceTrackingIconView::AnimateOutTimer() {
+  return animate_out_timer_for_testing_ ? *animate_out_timer_for_testing_
+                                        : animate_out_timer_;
 }

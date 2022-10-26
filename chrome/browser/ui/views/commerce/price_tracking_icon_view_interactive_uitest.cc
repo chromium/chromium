@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/timer/mock_timer.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -338,21 +339,35 @@ class PriceTrackingIconViewEngagementTest
         {});
   }
 
+  void SetUpOnMainThread() override {
+    PriceTrackingIconViewInteractiveTest::SetUpOnMainThread();
+
+    BrowserFeaturePromoController* const promo_controller =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetFeaturePromoController();
+    EXPECT_TRUE(
+        user_education::test::WaitForFeatureEngagementReady(promo_controller));
+
+    SetUpChip();
+  }
+
+  void SetUpChip() {
+    SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/false);
+    ON_CALL(*mock_tab_helper_, ShouldShowPriceTrackingIconView)
+        .WillByDefault(testing::Return(true));
+  }
+
+  void WaitForIconFinishAnimating(PriceTrackingIconView* icon_view) {
+    while (icon_view->is_animating_label()) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
  private:
   base::test::ScopedFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest, ShowExpandedIcon) {
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetFeaturePromoController();
-  EXPECT_TRUE(
-      user_education::test::WaitForFeatureEngagementReady(promo_controller));
-
-  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/false);
-  ON_CALL(*mock_tab_helper_, ShouldShowPriceTrackingIconView)
-      .WillByDefault(testing::Return(true));
-
   auto* icon_view = GetChip();
   EXPECT_FALSE(icon_view->GetVisible());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTrackableUrl)));
@@ -362,16 +377,6 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest, ShowExpandedIcon) {
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest,
                        ExpandedIconShownOnceOnly) {
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetFeaturePromoController();
-  EXPECT_TRUE(
-      user_education::test::WaitForFeatureEngagementReady(promo_controller));
-
-  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/false);
-  ON_CALL(*mock_tab_helper_, ShouldShowPriceTrackingIconView)
-      .WillByDefault(testing::Return(true));
-
   auto* icon_view = GetChip();
   EXPECT_FALSE(icon_view->GetVisible());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTrackableUrl)));
@@ -387,6 +392,67 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest,
   ON_CALL(*mock_tab_helper_, ShouldShowPriceTrackingIconView)
       .WillByDefault(testing::Return(true));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTrackableUrl)));
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_FALSE(icon_view->ShouldShowLabel());
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest, AutoCollapseIcon) {
+  auto* icon_view = GetChip();
+  EXPECT_FALSE(icon_view->GetVisible());
+  base::MockOneShotTimer timer;
+  icon_view->SetOneShotTimerForTesting(&timer);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTrackableUrl)));
+  WaitForIconFinishAnimating(icon_view);
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_TRUE(icon_view->ShouldShowLabel());
+
+  // Simulate ready to collapse the icon.
+  timer.Fire();
+
+  WaitForIconFinishAnimating(icon_view);
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_FALSE(icon_view->ShouldShowLabel());
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest,
+                       StopCollapseTimerWhenClickingIcon) {
+  auto* icon_view = GetChip();
+  EXPECT_FALSE(icon_view->GetVisible());
+  base::MockOneShotTimer timer;
+  icon_view->SetOneShotTimerForTesting(&timer);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTrackableUrl)));
+  WaitForIconFinishAnimating(icon_view);
+  EXPECT_TRUE(icon_view->GetVisible());
+
+  ClickPriceTrackingIconView();
+  EXPECT_FALSE(timer.IsRunning());
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_TRUE(icon_view->ShouldShowLabel());
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewEngagementTest,
+                       CollapseIconUponBubbleClosing) {
+  auto* icon_view = GetChip();
+  EXPECT_FALSE(icon_view->GetVisible());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTrackableUrl)));
+  WaitForIconFinishAnimating(icon_view);
+  EXPECT_TRUE(icon_view->GetVisible());
+  EXPECT_TRUE(icon_view->ShouldShowLabel());
+
+  ClickPriceTrackingIconView();
+  views::test::WidgetVisibleWaiter(icon_view->GetBubble()->GetWidget()).Wait();
+  EXPECT_TRUE(icon_view->GetBubble());
+
+  // Close bubble and verify the label is hiding.
+  auto* widget = icon_view->GetBubble()->GetWidget();
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+  destroyed_waiter.Wait();
+  EXPECT_FALSE(icon_view->GetBubble());
+  WaitForIconFinishAnimating(icon_view);
   EXPECT_TRUE(icon_view->GetVisible());
   EXPECT_FALSE(icon_view->ShouldShowLabel());
 }
