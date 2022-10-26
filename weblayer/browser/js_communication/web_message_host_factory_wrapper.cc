@@ -10,6 +10,7 @@
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
+#include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "weblayer/browser/page_impl.h"
@@ -38,7 +39,12 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
   void OnPostMessage(
       std::unique_ptr<js_injection::WebMessage> message) override {
     std::unique_ptr<WebMessage> m = std::make_unique<WebMessage>();
-    m->message = std::move(absl::get<std::u16string>(message->message.payload));
+    auto& payload = message->message;
+    if (!payload->is_string_value()) {
+      // Ignore non-string messages, not supported by weblayer.
+      return;
+    }
+    m->message = std::move(payload->get_string_value());
     connection_->OnPostMessage(std::move(m));
   }
   void OnBackForwardCacheStateChanged() override {
@@ -47,8 +53,9 @@ class WebMessageHostWrapper : public js_injection::WebMessageHost,
 
   // WebMessageReplyProxy:
   void PostWebMessage(std::unique_ptr<WebMessage> message) override {
-    js_injection::JsWebMessage js_message;
-    js_message.payload = std::move(message->message);
+    js_injection::mojom::JsWebMessagePtr js_message =
+        js_injection::mojom::JsWebMessage::NewStringValue(
+            std::move(message->message));
     proxy_->PostWebMessage(std::move(js_message));
   }
   bool IsInBackForwardCache() override {

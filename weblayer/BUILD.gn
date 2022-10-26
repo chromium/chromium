@@ -448,6 +448,7 @@ source_set("weblayer_lib_base") {
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/js_injection/browser",
+    "//components/js_injection/common:common_mojom",
     "//components/js_injection/renderer",
     "//components/keyed_service/content",
     "//components/language/core/browser",

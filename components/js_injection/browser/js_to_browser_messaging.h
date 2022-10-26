@@ -24,7 +24,6 @@ class RenderFrameHost;
 
 namespace js_injection {
 
-struct JsWebMessage;
 class WebMessageHost;
 class WebMessageHostFactory;
 
@@ -48,7 +47,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   void OnBackForwardCacheStateChanged();
 
   // mojom::JsToBrowserMessaging implementation.
-  void PostMessage(JsWebMessage message,
+  void PostMessage(mojom::JsWebMessagePtr message,
                    std::vector<blink::MessagePortDescriptor> ports) override;
   void SetBrowserToJsMessaging(
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>

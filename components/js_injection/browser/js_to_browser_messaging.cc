@@ -10,7 +10,7 @@
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
-#include "components/js_injection/common/web_message.h"
+#include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -50,7 +50,7 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
   ~ReplyProxyImpl() override = default;
 
   // WebMessageReplyProxy:
-  void PostWebMessage(JsWebMessage message) override {
+  void PostWebMessage(mojom::JsWebMessagePtr message) override {
     java_to_js_messaging_->OnPostMessage(std::move(message));
   }
   bool IsInBackForwardCache() override {
@@ -83,7 +83,7 @@ void JsToBrowserMessaging::OnBackForwardCacheStateChanged() {
 }
 
 void JsToBrowserMessaging::PostMessage(
-    JsWebMessage message,
+    mojom::JsWebMessagePtr message,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 

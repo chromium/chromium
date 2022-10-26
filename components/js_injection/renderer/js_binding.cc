@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "components/js_injection/common/web_message.h"
+#include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/data_object_builder.h"
@@ -88,7 +88,7 @@ JsBinding::JsBinding(content::RenderFrame* render_frame,
 
 JsBinding::~JsBinding() = default;
 
-void JsBinding::OnPostMessage(JsWebMessage message) {
+void JsBinding::OnPostMessage(mojom::JsWebMessagePtr message) {
   // If `js_communication_` is null, this object will soon be destroyed.
   if (!js_communication_)
     return;
@@ -114,7 +114,7 @@ void JsBinding::OnPostMessage(JsWebMessage message) {
   // https://html.spec.whatwg.org/multipage/comms.html#messageevent
   v8::Local<v8::Object> event =
       gin::DataObjectBuilder(isolate)
-          .Set("data", absl::get<std::u16string>(message.payload))
+          .Set("data", std::move(message->get_string_value()))
           .Build();
   v8::Local<v8::Value> argv[] = {event};
 
@@ -186,10 +186,8 @@ void JsBinding::PostMessage(gin::Arguments* args) {
       js_communication_ ? js_communication_->GetJsToJavaMessage(js_object_name_)
                         : nullptr;
   if (js_to_java_messaging) {
-    JsWebMessage js_message;
-    js_message.payload = std::move(message);
     js_to_java_messaging->PostMessage(
-        std::move(js_message),
+        mojom::JsWebMessage::NewStringValue(std::move(message)),
         blink::MessagePortChannel::ReleaseHandles(ports));
   }
 }
