@@ -203,9 +203,9 @@ void StorageMonitorCros::OnMountEvent(
   if (mount_info.mount_type != ash::MountType::kDevice)
     return;
   // Ignore errors.
-  if (error_code != ash::MountError::kNone)
+  if (error_code != ash::MountError::kSuccess)
     return;
-  if (mount_info.mount_error != ash::MountError::kNone)
+  if (mount_info.mount_error != ash::MountError::kSuccess)
     return;
 
   switch (event) {
@@ -270,7 +270,7 @@ bool StorageMonitorCros::GetStorageInfoForPath(
 void NotifyUnmountResult(
     base::OnceCallback<void(StorageMonitor::EjectStatus)> callback,
     ash::MountError error_code) {
-  if (error_code == ash::MountError::kNone)
+  if (error_code == ash::MountError::kSuccess)
     std::move(callback).Run(StorageMonitor::EJECT_OK);
   else
     std::move(callback).Run(StorageMonitor::EJECT_FAILURE);

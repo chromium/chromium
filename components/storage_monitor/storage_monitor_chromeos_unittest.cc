@@ -207,7 +207,7 @@ void StorageMonitorCrosTest::MountDevice(
     const std::string& product_name,
     ash::DeviceType device_type,
     uint64_t device_size_in_bytes) {
-  if (error_code == ash::MountError::kNone) {
+  if (error_code == ash::MountError::kSuccess) {
     disk_mount_manager_mock_->CreateDiskEntryForMountDevice(
         mount_info, unique_id, device_label, vendor_name, product_name,
         device_type, device_size_in_bytes, false /* is_parent */,
@@ -222,7 +222,7 @@ void StorageMonitorCrosTest::UnmountDevice(
     ash::MountError error_code,
     const DiskMountManager::MountPoint& mount_info) {
   monitor_->OnMountEvent(DiskMountManager::UNMOUNTING, error_code, mount_info);
-  if (error_code == ash::MountError::kNone)
+  if (error_code == ash::MountError::kSuccess)
     disk_mount_manager_mock_->RemoveDiskEntryForMountDevice(mount_info);
   task_environment_.RunUntilIdle();
 }
@@ -258,13 +258,8 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPoint mount_info{kDevice1, mount_path1.value(),
                                           ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId1,
-              kDevice1Name,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId1, kDevice1Name,
+              kVendorName, kProductName, ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -272,7 +267,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
-  UnmountDevice(ash::MountError::kNone, mount_info);
+  UnmountDevice(ash::MountError::kSuccess, mount_info);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -282,13 +277,8 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
   ASSERT_FALSE(mount_path2.empty());
   DiskMountManager::MountPoint mount_info2{kDevice2, mount_path2.value(),
                                            ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info2,
-              kUniqueId2,
-              kDevice2Name,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
+  MountDevice(ash::MountError::kSuccess, mount_info2, kUniqueId2, kDevice2Name,
+              kVendorName, kProductName, ash::DeviceType::kUSB,
               kDevice2SizeInBytes);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
@@ -296,7 +286,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path2.value(), observer().last_attached().location());
 
-  UnmountDevice(ash::MountError::kNone, mount_info2);
+  UnmountDevice(ash::MountError::kSuccess, mount_info2);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(2, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
@@ -314,13 +304,8 @@ TEST_F(StorageMonitorCrosTest, NoDCIM) {
   const std::string device_id = StorageInfo::MakeDeviceId(
       StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM,
       kFSUniqueIdPrefix + kUniqueId);
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId,
-              kDevice1Name,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId, kDevice1Name,
+              kVendorName, kProductName, ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -338,26 +323,16 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   // Mount error.
   DiskMountManager::MountPoint mount_info{kDevice1, mount_path.value(),
                                           ash::MountType::kDevice};
-  MountDevice(ash::MountError::kUnknown,
-              mount_info,
-              kUniqueId,
-              kDevice1Name,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
+  MountDevice(ash::MountError::kUnknownError, mount_info, kUniqueId,
+              kDevice1Name, kVendorName, kProductName, ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(0, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
 
   // Not a device
   mount_info.mount_type = ash::MountType::kArchive;
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId,
-              kDevice1Name,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId, kDevice1Name,
+              kVendorName, kProductName, ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(0, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -365,13 +340,8 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   // Unsupported file system.
   mount_info.mount_type = ash::MountType::kDevice;
   mount_info.mount_error = ash::MountError::kUnsupportedFilesystem;
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId,
-              kDevice1Name,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId, kDevice1Name,
+              kVendorName, kProductName, ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(0, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -382,21 +352,16 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPoint mount_info1{
       kSDCardDeviceName1, mount_path1.value(), ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info1,
-              kUniqueId2,
-              kSDCardDeviceName1,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kSD,
-              kSDCardSizeInBytes);
+  MountDevice(ash::MountError::kSuccess, mount_info1, kUniqueId2,
+              kSDCardDeviceName1, kVendorName, kProductName,
+              ash::DeviceType::kSD, kSDCardSizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
-  UnmountDevice(ash::MountError::kNone, mount_info1);
+  UnmountDevice(ash::MountError::kSuccess, mount_info1);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
@@ -406,21 +371,16 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
   ASSERT_FALSE(mount_path2.empty());
   DiskMountManager::MountPoint mount_info2{
       kSDCardDeviceName2, mount_path2.value(), ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info2,
-              kUniqueId2,
-              kSDCardDeviceName2,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kSD,
-              kSDCardSizeInBytes);
+  MountDevice(ash::MountError::kSuccess, mount_info2, kUniqueId2,
+              kSDCardDeviceName2, kVendorName, kProductName,
+              ash::DeviceType::kSD, kSDCardSizeInBytes);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path2.value(), observer().last_attached().location());
 
-  UnmountDevice(ash::MountError::kNone, mount_info2);
+  UnmountDevice(ash::MountError::kSuccess, mount_info2);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(2, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
@@ -432,21 +392,16 @@ TEST_F(StorageMonitorCrosTest, AttachDeviceWithEmptyLabel) {
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPoint mount_info{
       kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId1,
-              kEmptyDeviceLabel,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
-              kDevice1SizeInBytes);
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId1,
+              kEmptyDeviceLabel, kVendorName, kProductName,
+              ash::DeviceType::kUSB, kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
-  UnmountDevice(ash::MountError::kNone, mount_info);
+  UnmountDevice(ash::MountError::kSuccess, mount_info);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -458,14 +413,9 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPoint mount_info{
       kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId1,
-              kEmptyDeviceLabel,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
-              kDevice1SizeInBytes);
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId1,
+              kEmptyDeviceLabel, kVendorName, kProductName,
+              ash::DeviceType::kUSB, kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -473,7 +423,7 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
   EXPECT_EQ(kDevice1SizeInBytes, GetDeviceStorageSize(mount_path1.value()));
-  UnmountDevice(ash::MountError::kNone, mount_info);
+  UnmountDevice(ash::MountError::kSuccess, mount_info);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -485,14 +435,9 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPoint mount_info{
       kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice};
-  MountDevice(ash::MountError::kNone,
-              mount_info,
-              kUniqueId1,
-              kEmptyDeviceLabel,
-              kVendorName,
-              kProductName,
-              ash::DeviceType::kUSB,
-              kDevice1SizeInBytes);
+  MountDevice(ash::MountError::kSuccess, mount_info, kUniqueId1,
+              kEmptyDeviceLabel, kVendorName, kProductName,
+              ash::DeviceType::kUSB, kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
 
@@ -500,7 +445,7 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
   ON_CALL(*disk_mount_manager_mock_, UnmountPath(_, _))
       .WillByDefault([](const std::string& location,
                         DiskMountManager::UnmountPathCallback cb) {
-        std::move(cb).Run(ash::MountError::kNone);
+        std::move(cb).Run(ash::MountError::kSuccess);
       });
   EXPECT_CALL(*disk_mount_manager_mock_,
               UnmountPath(observer().last_attached().location(), _));
