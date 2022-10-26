@@ -18,6 +18,8 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -31,6 +33,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/gurl.h"
 
 using extension_function_test_utils::RunFunctionAndReturnSingleResult;
@@ -38,8 +41,6 @@ using extension_function_test_utils::RunFunctionAndReturnSingleResult;
 namespace {
 
 class ExtensionBrowsingDataTest : public InProcessBrowserTest {};
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // TODO(http://crbug.com/1266606): appcache is a noop and should be removed.
 const char kRemoveEverythingArguments[] =
@@ -51,6 +52,8 @@ const char kRemoveEverythingArguments[] =
     "pluginData": true, "serviceWorkers": true, "cacheStorage": true,
     "webSQL": true
     }])";
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Sets the SAPISID Gaia cookie, which is monitored by the AccountReconcilor.
 bool SetGaiaCookieForProfile(Profile* profile) {
@@ -183,3 +186,100 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, NotSyncing) {
       identity_manager->HasAccountWithRefreshToken(account_info.account_id));
 }
 #endif
+
+void CreateLocalStorageForKey(Profile* profile, const blink::StorageKey& key) {
+  auto* local_storage_control =
+      profile->GetDefaultStoragePartition()->GetLocalStorageControl();
+  mojo::Remote<blink::mojom::StorageArea> area;
+  local_storage_control->BindStorageArea(key,
+                                         area.BindNewPipeAndPassReceiver());
+  {
+    bool success = false;
+    base::RunLoop run_loop;
+    area->Put({'k', 'e', 'y'}, {'v', 'a', 'l', 'u', 'e'}, absl::nullopt,
+              "source", base::BindLambdaForTesting([&](bool success_in) {
+                success = success_in;
+                run_loop.Quit();
+              }));
+    run_loop.Run();
+    ASSERT_TRUE(success);
+  }
+}
+
+std::vector<storage::mojom::StorageUsageInfoPtr> GetLocalStorage(
+    Profile* profile) {
+  auto* local_storage_control =
+      profile->GetDefaultStoragePartition()->GetLocalStorageControl();
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
+  {
+    base::RunLoop run_loop;
+    local_storage_control->GetUsage(base::BindLambdaForTesting(
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
+          usage_infos.swap(usage_infos_in);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  return usage_infos;
+}
+
+bool UsageInfosHasStorageKey(
+    const std::vector<storage::mojom::StorageUsageInfoPtr>& usage_infos,
+    const blink::StorageKey& key) {
+  auto it = base::ranges::find_if(
+      usage_infos, [&key](const storage::mojom::StorageUsageInfoPtr& info) {
+        return info->storage_key == key;
+      });
+  return it != usage_infos.end();
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageAll) {
+  blink::StorageKey key1(url::Origin::Create(GURL("https://example.com")));
+  blink::StorageKey key2(url::Origin::Create(GURL("https://other.com")));
+  // Create some local storage for each of the origins.
+  CreateLocalStorageForKey(browser()->profile(), key1);
+  CreateLocalStorageForKey(browser()->profile(), key2);
+  // Verify that the data is actually stored.
+  auto usage_infos = GetLocalStorage(browser()->profile());
+  EXPECT_EQ(2U, usage_infos.size());
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+
+  // Clear the data for everything.
+  auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
+  EXPECT_EQ(nullptr,
+            RunFunctionAndReturnSingleResult(
+                function.get(), kRemoveEverythingArguments, browser()));
+
+  usage_infos = GetLocalStorage(browser()->profile());
+  EXPECT_EQ(0U, usage_infos.size());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, DeleteLocalStorageOrigin) {
+  blink::StorageKey key1(url::Origin::Create(GURL("https://example.com")));
+  blink::StorageKey key2(url::Origin::Create(GURL("https://other.com")));
+  // Create some local storage for each of the origins.
+  CreateLocalStorageForKey(browser()->profile(), key1);
+  CreateLocalStorageForKey(browser()->profile(), key2);
+  // Verify that the data is actually stored.
+  auto usage_infos = GetLocalStorage(browser()->profile());
+  EXPECT_EQ(2U, usage_infos.size());
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+
+  // Clear the data for everything.
+  auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
+  const char removeArgs[] =
+      R"([{
+    "origins": ["https://example.com"]
+    }, {
+    "localStorage": true
+    }])";
+  EXPECT_EQ(nullptr, RunFunctionAndReturnSingleResult(function.get(),
+                                                      removeArgs, browser()));
+
+  usage_infos = GetLocalStorage(browser()->profile());
+  EXPECT_EQ(1U, usage_infos.size());
+  EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key1));
+  EXPECT_TRUE(UsageInfosHasStorageKey(usage_infos, key2));
+}
