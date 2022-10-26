@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/crash/core/common/crash_key.h"
 #include "components/download/public/common/download_item.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,27 +75,6 @@ constexpr int kProgressBarHeight = 3;
 // span. The 5 columns are Download Icon, Padding, Status text,
 // Main Button, Subpage Icon.
 constexpr int kNumColumns = 5;
-
-class LabelWithCrashKey : public views::Label {
- public:
-  METADATA_HEADER(LabelWithCrashKey);
-  LabelWithCrashKey(const std::u16string& text,
-                    int text_context,
-                    int text_style)
-      : Label(text, text_context, text_style) {}
-
-  int GetHeightForWidth(int w) const override {
-    // Not sure how big the filename will be. 256 char should be enough though.
-    static crash_reporter::CrashKeyString<256> download_bubble_crash_key(
-        "DownloadBubble-LabelText");
-    crash_reporter::ScopedCrashKeyString auto_clear(
-        &download_bubble_crash_key, base::UTF16ToUTF8(GetText()));
-    return Label::GetHeightForWidth(w);
-  }
-};
-
-BEGIN_METADATA(LabelWithCrashKey, Label)
-END_METADATA
 
 // A stub subclass of Button that has no visuals.
 class TransparentButton : public views::Button {
@@ -356,7 +334,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   icon_->SetPaintToLayer();
   icon_->layer()->SetFillsBoundsOpaquely(false);
 
-  primary_label_ = AddChildView(std::make_unique<LabelWithCrashKey>(
+  primary_label_ = AddChildView(std::make_unique<views::Label>(
       model_->GetFileNameToReportUser().LossyDisplayName(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -419,7 +397,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // Empty cell under icon_
   AddChildView(std::make_unique<views::FlexLayoutView>());
 
-  secondary_label_ = AddChildView(std::make_unique<LabelWithCrashKey>(
+  secondary_label_ = AddChildView(std::make_unique<views::Label>(
       model_->GetStatusText(), views::style::CONTEXT_LABEL,
       views::style::STYLE_SECONDARY));
   secondary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
