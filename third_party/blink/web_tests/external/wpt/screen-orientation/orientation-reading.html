@@ -1,9 +1,14 @@
 <!DOCTYPE html>
+<meta charset="utf-8" />
+<meta viewport="width=device-width, initial-scale=1" />
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
-<script>
+<script type="module">
+
+import { makeCleanup, getOppositeOrientation } from "./resources/orientation-utils.js";
+
 test(() => {
   assert_true("type" in screen.orientation);
   assert_true("angle" in screen.orientation);
@@ -23,14 +28,9 @@ test(() => {
 }, "Test screen.orientation default values.");
 
 promise_test(async t => {
-  t.add_cleanup(async () => {
-    try {
-      await document.exitFullscreen();
-    } catch (e) {}
-  });
-  await test_driver.bless("request full screen", () => {
-    return document.documentElement.requestFullscreen();
-  });
+  t.add_cleanup(makeCleanup());
+  await test_driver.bless("request full screen");
+  await document.documentElement.requestFullscreen();
   try {
     await screen.orientation.lock("portrait-primary");
   } catch (err) {
@@ -102,35 +102,21 @@ test(() => {
 }, "Test that screen.orientation is always the same object");
 
 promise_test(async t => {
-  t.add_cleanup(async () => {
-    try {
-      await document.exitFullscreen();
-    } catch (e) {}
-    screen.orientation.unlock();
-  });
-  await test_driver.bless("request full screen", () => {
-    return document.documentElement.requestFullscreen();
-  });
-  const orientation = screen.orientation;
-  const orientationType = screen.orientation.type;
-  const orientationAngle = screen.orientation.angle;
-  const orientationWatcher = new EventWatcher(t, orientation, "change");
-
-  const newOrientationType =
-    orientationType.includes("portrait") ? "landscape" :
-                                           "portrait";
-  const promise = orientation.lock(newOrientationType);
+  t.add_cleanup(makeCleanup());
+  await test_driver.bless("request full screen");
+  await document.documentElement.requestFullscreen();
+  const initialType = screen.orientation.type;
+  const initialAngle = screen.orientation.angle;
+  const orientationWatcher = new EventWatcher(t, screen.orientation, "change");
+  const newOrientationType = getOppositeOrientation();
 
   // change event is fired before resolving promise by lock.
-  await orientationWatcher.wait_for("change");
-  await promise;
-  assert_equals(screen.orientation, orientation);
-  assert_equals(screen.orientation.type, orientation.type);
-  assert_equals(screen.orientation.angle, orientation.angle);
-  assert_not_equals(screen.orientation.type, orientationType);
-  assert_not_equals(screen.orientation.angle, orientationAngle);
-  // currently doesn't return a promise, makes it less racy against exitFullScreen
-  await screen.orientation.unlock();
-  return document.exitFullscreen();
+  const event = await Promise.race([
+    orientationWatcher.wait_for("change"),
+    screen.orientation.lock(newOrientationType)
+  ]);
+  assert_true(event instanceof Event, "expected event");
+  assert_not_equals(screen.orientation.type, initialType, "type should have changed");
+  assert_not_equals(screen.orientation.angle, initialAngle, "angle should have changed");
 }, "Test that screen.orientation values change if the orientation changes");
 </script>

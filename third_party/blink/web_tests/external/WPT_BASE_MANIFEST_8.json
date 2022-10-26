@@ -310720,16 +310720,8 @@
      "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
      []
     ],
-    "iso-2022-jp-decoder.any-expected.txt": [
-     "e2530320ed21b50220eb6fc8eb0cb8b2c01b57e6",
-     []
-    ],
-    "iso-2022-jp-decoder.any.worker-expected.txt": [
-     "e2530320ed21b50220eb6fc8eb0cb8b2c01b57e6",
-     []
-    ],
     "iso-2022-jp-encoder-expected.txt": [
-     "2fa27d4bef69bb199c220d0e241a36bc28ef83b9",
+     "ece9411a592feec208ae8b6c1ea2bfd60f181b9f",
      []
     ],
     "legacy-mb-japanese": {
@@ -311210,42 +311202,12 @@
     },
     "legacy-mb-schinese": {
      "gb18030": {
-      "gb18030-decoder-expected.txt": [
-       "8c55d6063b3b5252abe30f47f5e30e1d9aca85ed",
-       []
-      ],
-      "gb18030-decoder.any-expected.txt": [
-       "8c55d6063b3b5252abe30f47f5e30e1d9aca85ed",
-       []
-      ],
-      "gb18030-decoder.any.worker-expected.txt": [
-       "8c55d6063b3b5252abe30f47f5e30e1d9aca85ed",
-       []
-      ],
       "resources": {
        "ranges.js": [
         "5bbd553dc01b538e3559e5ea4dc497d483ae30a7",
         []
        ]
       }
-     },
-     "gbk": {
-      "gbk-decoder-expected.txt": [
-       "acabbf261646ca769326ea69f873aaad6d82afce",
-       []
-      ],
-      "gbk-decoder.any-expected.txt": [
-       "acabbf261646ca769326ea69f873aaad6d82afce",
-       []
-      ],
-      "gbk-decoder.any.worker-expected.txt": [
-       "acabbf261646ca769326ea69f873aaad6d82afce",
-       []
-      ],
-      "gbk-encoder-expected.txt": [
-       "9ce1b539e8ce0a754b190c6f96cb8d9781b7919f",
-       []
-      ]
      }
     },
     "legacy-mb-tchinese": {
@@ -342806,8 +342768,12 @@
      "c22adc8ffc47ebaafaaec80faf3061bbf51b9883",
      []
     ],
+    "fullscreen-interactions-expected.txt": [
+     "94921fc16abafe13059f47a35de95dced18b4d3a",
+     []
+    ],
     "lock-basic-expected.txt": [
-     "14fd8d2183a42e6331c6a21cea6d3418cfe0a0e0",
+     "0a3c4c2a0662122db8123acc6d7470138589f5cc",
      []
     ],
     "lock-unlock-check-expected.txt": [
@@ -342827,7 +342793,7 @@
      []
     ],
     "orientation-reading-expected.txt": [
-     "4baea978c79da7d0fae73830bcdc397aab2bbd54",
+     "6d87c319490042a595abb2292308fb29e38da996",
      []
     ],
     "resources": {
@@ -342847,7 +342813,11 @@
       "74f6ec9261000272c7f7ea87aa16423c821b6ac8",
       []
      ]
-    }
+    },
+    "unlock-expected.txt": [
+     "1c0be80b5b6ce01520271fa846b355b0dfd9307d",
+     []
+    ]
    },
    "screen-wake-lock": {
     "META.yml": [
@@ -346729,6 +346699,10 @@
      }
     },
     "prerender": {
+     "media-autoplay-expected.txt": [
+      "4a68d62779c0e640aad965733c2f9c993145ff36",
+      []
+     ],
      "resources": {
       "about-blank-iframes.html": [
        "db99d586e2b8b96da36344653a9e6be80d6d2247",
@@ -347114,7 +347088,15 @@
        "86c7d3136dc27649d3b079d751fa98d29d657fb1",
        []
       ]
-     }
+     },
+     "restriction-presentation-request.https-expected.txt": [
+      "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      []
+     ],
+     "storage-foundation.https-expected.txt": [
+      "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      []
+     ]
     }
    },
    "speech-api": {
@@ -547105,7 +547087,7 @@
    },
    "screen-orientation": {
     "active-lock.html": [
-     "f71d5f0dbc5f61ce78a256e97d22048ae73759ef",
+     "6459e67ca8358f1ae9c9ef7f40baf6a2ce0f025b",
      [
       null,
       {
@@ -547114,7 +547096,16 @@
      ]
     ],
     "event-before-promise.html": [
-     "fa006e2b1d231641cc44efc2e6c1091ca14b3f14",
+     "56be4379ac0fcb0142d2a8abcb11a1978cf900c3",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "fullscreen-interactions.html": [
+     "cffacc1f4f73e253e13848ac56d4a5a99586b394",
      [
       null,
       {
@@ -547148,7 +547139,7 @@
      ]
     ],
     "lock-basic.html": [
-     "71c8e8e210d35a7c5ff5b7f906ca542468d0f214",
+     "584747113ca232f4f56955b77430d48755f25866",
      [
       null,
       {
@@ -547166,7 +547157,7 @@
      ]
     ],
     "lock-unlock-check.html": [
-     "e19952472cab24e4572a47524242770a3f8622f0",
+     "b415f7b2a80597a438706483447911418a6b3906",
      [
       null,
       {
@@ -547211,7 +547202,16 @@
      ]
     ],
     "orientation-reading.html": [
-     "fdf05c87065ccb6927a833eefb1ec8a60c32fe9a",
+     "75022a3b9bb420a7803a24d69069208551914dfb",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "unlock.html": [
+     "d5f32eb7bea5c9b309118622aea5fc84d6c8ca4a",
      [
       null,
       {
