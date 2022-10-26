@@ -1338,6 +1338,7 @@
       'android-pie-arm64-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
+          '--use-persistent-shell',
         ],
         'ci_only': True, # https://crbug.com/1233700
       },
