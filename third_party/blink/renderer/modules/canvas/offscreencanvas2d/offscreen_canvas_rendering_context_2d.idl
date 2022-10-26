@@ -74,7 +74,7 @@
     [HighEntropy, MeasureAs=OffscreenCanvasIsPointInStroke] boolean isPointInStroke(Path2D path, unrestricted double x, unrestricted double y);
 
     // text (see also the CanvasDrawingStyles interface)
-    void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+    [HighEntropy] void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
     [HighEntropy, MeasureAs=OffscreenCanvasMeasureText] TextMetrics measureText(DOMString text);
 
