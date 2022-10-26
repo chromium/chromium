@@ -44,10 +44,14 @@ namespace blink {
 
 class WebCryptoKeyAlgorithmPrivate;
 
-// WebCryptoKeyAlgorithm represents the algorithm used to generate a key.
+// WebCryptoKeyAlgorithm represents the algorithm used to generate a
+// WebCryptoKey instance.
 //   * Immutable
 //   * Threadsafe
 //   * Copiable (cheaply)
+//
+// The WebCryptoKey represents a key from the Web Crypto API:
+// https://w3c.github.io/webcrypto/#cryptokey-interface
 class BLINK_PLATFORM_EXPORT WebCryptoKeyAlgorithm {
  public:
   WebCryptoKeyAlgorithm() = default;
@@ -74,6 +78,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoKeyAlgorithm {
       WebCryptoAlgorithmId hash);
   static WebCryptoKeyAlgorithm CreateEc(WebCryptoAlgorithmId,
                                         WebCryptoNamedCurve);
+  static WebCryptoKeyAlgorithm CreateEd25519(WebCryptoAlgorithmId);
   static WebCryptoKeyAlgorithm CreateWithoutParams(WebCryptoAlgorithmId);
 
   ~WebCryptoKeyAlgorithm() { Reset(); }

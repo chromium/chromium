@@ -30,7 +30,8 @@ class AlgorithmRegistry {
         ecdsa_(CreateEcdsaImplementation()),
         ecdh_(CreateEcdhImplementation()),
         hkdf_(CreateHkdfImplementation()),
-        pbkdf2_(CreatePbkdf2Implementation()) {
+        pbkdf2_(CreatePbkdf2Implementation()),
+        ed25519_(CreateEd25519Implementation()) {
     crypto::EnsureOpenSSLInit();
   }
 
@@ -66,6 +67,8 @@ class AlgorithmRegistry {
         return hkdf_.get();
       case blink::kWebCryptoAlgorithmIdPbkdf2:
         return pbkdf2_.get();
+      case blink::kWebCryptoAlgorithmIdEd25519:
+        return ed25519_.get();
       default:
         return nullptr;
     }
@@ -85,6 +88,7 @@ class AlgorithmRegistry {
   const std::unique_ptr<AlgorithmImplementation> ecdh_;
   const std::unique_ptr<AlgorithmImplementation> hkdf_;
   const std::unique_ptr<AlgorithmImplementation> pbkdf2_;
+  const std::unique_ptr<AlgorithmImplementation> ed25519_;
 };
 
 }  // namespace

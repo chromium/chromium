@@ -48,6 +48,8 @@ static WebFeature AlgorithmIdToFeature(WebCryptoAlgorithmId id) {
       return WebFeature::kCryptoAlgorithmHkdf;
     case kWebCryptoAlgorithmIdPbkdf2:
       return WebFeature::kCryptoAlgorithmPbkdf2;
+    case kWebCryptoAlgorithmIdEd25519:
+      return WebFeature::kCryptoAlgorithmEd25519;
   }
 
   NOTREACHED();

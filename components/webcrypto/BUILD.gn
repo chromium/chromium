@@ -26,6 +26,8 @@ static_library("webcrypto") {
     "algorithms/ec.h",
     "algorithms/ecdh.cc",
     "algorithms/ecdsa.cc",
+    "algorithms/ed25519.cc",
+    "algorithms/ed25519.h",
     "algorithms/hkdf.cc",
     "algorithms/hmac.cc",
     "algorithms/pbkdf2.cc",

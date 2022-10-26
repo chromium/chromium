@@ -27,6 +27,7 @@ enum CryptoKeyAlgorithmTag : uint32_t {
   kEcdhTag = 15,
   kHkdfTag = 16,
   kPbkdf2Tag = 17,
+  kEd25519Tag = 18,
   // Maximum allowed value is 2^32-1
 };
 
@@ -60,6 +61,7 @@ enum CryptoKeySubTag : uint8_t {
   kRsaHashedKeyTag = 4,
   kEcKeyTag = 5,
   kNoParamsKeyTag = 6,
+  kEd25519KeyTag = 7,
   // Maximum allowed value is 255
 };
 

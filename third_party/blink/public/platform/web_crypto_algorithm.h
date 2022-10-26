@@ -72,8 +72,9 @@ enum WebCryptoAlgorithmId {
   kWebCryptoAlgorithmIdEcdh,
   kWebCryptoAlgorithmIdHkdf,
   kWebCryptoAlgorithmIdPbkdf2,
+  kWebCryptoAlgorithmIdEd25519,
 #if INSIDE_BLINK
-  kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdPbkdf2,
+  kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdEd25519,
 #endif
 };
 

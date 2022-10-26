@@ -729,6 +729,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEC) {
        0x2a, 0x6f, 0xb2, 0xf5, 0x48, 0x73, 0x2f, 0x59, 0x21, 0xa0, 0xa9, 0xf5,
        0x6e, 0x37, 0x0c, 0xfc, 0x5b, 0x68, 0x0e, 0x19, 0x5b, 0xd3, 0x4f, 0xb4,
        0x0e, 0x1c, 0x31, 0x5a, 0xaa, 0x2d});
+
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
   ASSERT_TRUE(V8CryptoKey::HasInstance(result, scope.GetIsolate()));
@@ -749,6 +750,82 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEC) {
   WebCryptoAlgorithm hash(kWebCryptoAlgorithmIdSha256, nullptr);
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEcdsa,
                                std::make_unique<WebCryptoEcdsaParams>(hash));
+  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm,
+                                  new_public_key->Key(), signature, message));
+}
+
+// Ed25519 uses no params.
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
+  V8TestingScope scope(KURL("https://secure.context/"));
+  ScriptState* script_state = scope.GetScriptState();
+
+  // Generate an Ed25519 key pair.
+  WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdEd25519,
+                                            nullptr);
+  CryptoKey* public_key;
+  CryptoKey* private_key;
+  std::tie(public_key, private_key) =
+      SyncGenerateKeyPair(script_state, generate_key_algorithm, true,
+                          kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
+
+  // Round trip the private key and check the visible attributes.
+  v8::Local<v8::Value> wrapper = ToV8(private_key, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+  ASSERT_TRUE(V8CryptoKey::HasInstance(result, scope.GetIsolate()));
+  CryptoKey* new_private_key = V8CryptoKey::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("private", new_private_key->type());
+  EXPECT_TRUE(new_private_key->extractable());
+  EXPECT_EQ(kWebCryptoKeyUsageSign, new_private_key->Key().Usages());
+
+  // Check that the keys have the same PKCS8 representation.
+  WebVector<uint8_t> key_raw =
+      SyncExportKey(script_state, kWebCryptoKeyFormatPkcs8, private_key->Key());
+  WebVector<uint8_t> new_key_raw = SyncExportKey(
+      script_state, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
+  EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
+
+  // Check that one can verify a message signed by the other.
+  Vector<uint8_t> message{1, 2, 3};
+  WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEd25519, nullptr);
+  WebVector<uint8_t> signature =
+      SyncSign(script_state, algorithm, new_private_key->Key(), message);
+
+  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm, public_key->Key(),
+                                  signature, message));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEd25519) {
+  V8TestingScope scope(KURL("https://secure.context/"));
+  ScriptState* script_state = scope.GetScriptState();
+
+  // Decode an Ed25519 public key (extractable).
+  // TEST 3 from https://www.rfc-editor.org/rfc/rfc8032#section-7.1
+  scoped_refptr<SerializedScriptValue> input = SerializedValue({
+      0xff, 0x14, 0xff, 0x0f, 0x5c, 0x4b, 0x07, 0x12, 0x01, 0x11, 0x2c,
+      0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21,
+      0x00, 0xfc, 0x51, 0xcd, 0x8e, 0x62, 0x18, 0xa1, 0xa3, 0x8d, 0xa4,
+      0x7e, 0xd0, 0x02, 0x30, 0xf0, 0x58, 0x08, 0x16, 0xed, 0x13, 0xba,
+      0x33, 0x03, 0xac, 0x5d, 0xeb, 0x91, 0x15, 0x48, 0x90, 0x80, 0x25,
+  });
+  v8::Local<v8::Value> result =
+      V8ScriptValueDeserializerForModules(script_state, input).Deserialize();
+  ASSERT_TRUE(V8CryptoKey::HasInstance(result, scope.GetIsolate()));
+  CryptoKey* new_public_key = V8CryptoKey::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ("public", new_public_key->type());
+  EXPECT_TRUE(new_public_key->extractable());
+  EXPECT_EQ(kWebCryptoKeyUsageVerify, new_public_key->Key().Usages());
+
+  // Check that it can successfully verify a signature.
+  Vector<uint8_t> message{0xaf, 0x82};
+  Vector<uint8_t> signature{
+      0x62, 0x91, 0xd6, 0x57, 0xde, 0xec, 0x24, 0x02, 0x48, 0x27, 0xe6,
+      0x9c, 0x3a, 0xbe, 0x01, 0xa3, 0x0c, 0xe5, 0x48, 0xa2, 0x84, 0x74,
+      0x3a, 0x44, 0x5e, 0x36, 0x80, 0xd7, 0xdb, 0x5a, 0xc3, 0xac, 0x18,
+      0xff, 0x9b, 0x53, 0x8d, 0x16, 0xf2, 0x90, 0xae, 0x67, 0xf7, 0x60,
+      0x98, 0x4d, 0xc6, 0x59, 0x4a, 0x7c, 0x15, 0xe9, 0x71, 0x6e, 0xd2,
+      0x8d, 0xc0, 0x27, 0xbe, 0xce, 0xea, 0x1e, 0xc4, 0x0a,
+  };
+  WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEd25519, nullptr);
   EXPECT_TRUE(SyncVerifySignature(script_state, algorithm,
                                   new_public_key->Key(), signature, message));
 }
