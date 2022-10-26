@@ -164,6 +164,9 @@ export class PersonalizationRouter extends PolymerElement {
    * subpages, but the ambient mode is not allowed, reset path to root.
    */
   private onPathChanged_(path: string|null) {
+    // Navigates to the top of the subpage.
+    window.scrollTo(0, 0);
+
     if (!isPathValid(path) || isAmbientPathNotAllowed(path)) {
       // Reset the path to root.
       this.setProperties({path_: Paths.ROOT, queryParams_: {}});
