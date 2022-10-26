@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
@@ -270,23 +269,36 @@ void HoldingSpaceKeyedService::AddScreenshot(
 void HoldingSpaceKeyedService::SetSuggestions(
     const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
         suggestions) {
+  // Construct `items` from `suggestions` in the reverse order so that
+  // suggestion views follow the order of `suggestions`. `suggestions` could
+  // have duplicates in the holding space model. In this case, the existing
+  // suggestions are still replaced by newly generated ones because the
+  // suggestion order could change.
+  std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
+  for (const auto& [type, file_path] : base::Reversed(suggestions)) {
+    std::unique_ptr<HoldingSpaceItem> item;
+    if (const HoldingSpaceItem* existing_item =
+            holding_space_model_.GetItem(type, file_path);
+        existing_item && !existing_item->IsInitialized()) {
+      // Reuse the existing uninitialized file suggestion item to avoid
+      // resolving the suggested file's URL. Because `existing_item` is
+      // uninitialized, its removal does not incur visual changes.
+      item = holding_space_model_.TakeItem(existing_item->id());
+    } else {
+      item = CreateItemOfType(
+          type, file_path,
+          /*progress=*/HoldingSpaceProgress(),
+          /*placeholder_image_skia_resolver=*/base::NullCallback());
+    }
+
+    if (item)
+      items_to_add.push_back(std::move(item));
+  }
+
   std::set<std::string> item_ids_to_remove;
   for (const auto& item : holding_space_model_.items()) {
     if (HoldingSpaceItem::IsSuggestion(item->type()))
       item_ids_to_remove.insert(item->id());
-  }
-
-  std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
-
-  // Construct `items` from `suggestions` in the reverse order so that
-  // suggestion views follow the order of `suggestions`.
-  for (const auto& [type, file_path] : base::Reversed(suggestions)) {
-    std::unique_ptr<HoldingSpaceItem> item = CreateItemOfType(
-        type, file_path,
-        /*progress=*/HoldingSpaceProgress(),
-        /*placeholder_image_skia_resolver=*/base::NullCallback());
-    if (item)
-      items_to_add.push_back(std::move(item));
   }
 
   // Allow the duplicate suggestions to be added because the order among

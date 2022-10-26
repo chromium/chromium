@@ -127,6 +127,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   // Removes multiple holding space items from the model.
   void RemoveItems(const std::set<std::string>& ids);
 
+  // Similar to `RemoveItem()` but returns the unique pointer to the removed
+  // item. If the specified item does not exist in the model, returns `nullptr`.
+  std::unique_ptr<HoldingSpaceItem> TakeItem(const std::string& id);
+
   // Fully initializes a partially initialized holding space item using the
   // provided `file_system_url`. The item will be removed if `file_system_url`
   // is empty.
@@ -138,9 +142,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
   std::unique_ptr<ScopedItemUpdate> UpdateItem(const std::string& id);
 
   // Removes all holding space items from the model for which the specified
-  // `predicate` returns true.
+  // `predicate` returns true. Returns the unique pointers to the items removed
+  // from the model.
   using Predicate = base::RepeatingCallback<bool(const HoldingSpaceItem*)>;
-  void RemoveIf(Predicate predicate);
+  std::vector<std::unique_ptr<HoldingSpaceItem>> RemoveIf(Predicate predicate);
 
   // Invalidates image representations for items for which the specified
   // `predicate` returns true.

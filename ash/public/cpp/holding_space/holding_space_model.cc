@@ -222,6 +222,21 @@ void HoldingSpaceModel::RemoveItems(const std::set<std::string>& item_ids) {
       std::cref(item_ids)));
 }
 
+std::unique_ptr<HoldingSpaceItem> HoldingSpaceModel::TakeItem(
+    const std::string& id) {
+  auto items = RemoveIf(base::BindRepeating(
+      [](const std::string& id, const HoldingSpaceItem* item) {
+        return item->id() == id;
+      },
+      std::cref(id)));
+
+  if (items.empty())
+    return nullptr;
+
+  DCHECK_EQ(items.size(), 1u);
+  return std::move(items[0]);
+}
+
 void HoldingSpaceModel::InitializeOrRemoveItem(const std::string& id,
                                                const GURL& file_system_url) {
   if (file_system_url.is_empty()) {
@@ -249,7 +264,8 @@ HoldingSpaceModel::UpdateItem(const std::string& id) {
   return base::WrapUnique(new ScopedItemUpdate(this, item_it->get()));
 }
 
-void HoldingSpaceModel::RemoveIf(Predicate predicate) {
+std::vector<std::unique_ptr<HoldingSpaceItem>> HoldingSpaceModel::RemoveIf(
+    Predicate predicate) {
   // Keep removed items around until `observers_` have been notified of removal.
   std::vector<std::unique_ptr<HoldingSpaceItem>> items;
   std::vector<const HoldingSpaceItem*> item_ptrs;
@@ -272,6 +288,8 @@ void HoldingSpaceModel::RemoveIf(Predicate predicate) {
     for (auto& observer : observers_)
       observer.OnHoldingSpaceItemsRemoved(item_ptrs);
   }
+
+  return items;
 }
 
 void HoldingSpaceModel::InvalidateItemImageIf(Predicate predicate) {

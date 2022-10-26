@@ -3456,4 +3456,66 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
   }
 }
 
+// Verifies by updating file suggestions in the holding space model which
+// contains the suggested files from an unmounted file system.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, UpdateSuggestionsWithDelayedMount) {
+  auto delayed_mount = std::make_unique<ScopedTestMountPoint>(
+      "drivefs-delayed_mount",
+      /*file_system_type=*/storage::kFileSystemTypeDriveFs,
+      /*volume_type=*/file_manager::VOLUME_TYPE_GOOGLE_DRIVE);
+  const base::FilePath delayed_mount_file_path =
+      delayed_mount->GetRootPath().Append("delayed file");
+  auto delayed_holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDriveSuggestion, delayed_mount_file_path,
+      GURL("filesystem:fake"), base::BindOnce(&CreateTestHoldingSpaceImage));
+
+  // Create a secondary profile with a persisted delayed file suggestion.
+  TestingProfile* const secondary_profile = CreateSecondaryProfile(
+      base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
+        base::Value::List persisted_items;
+        persisted_items.Append(delayed_holding_space_item->Serialize());
+        pref_store->SetValueSilently(
+            HoldingSpacePersistenceDelegate::kPersistencePath,
+            base::Value(std::move(persisted_items)),
+            PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      }));
+
+  // Activate `secondary_profile`. Wait until the model updates.
+  ActivateSecondaryProfile();
+  HoldingSpaceModelAttachedWaiter(secondary_profile).Wait();
+  HoldingSpaceModel* const secondary_holding_space_model =
+      HoldingSpaceController::Get()->model();
+  const bool suggestion_feature_enabled =
+      features::IsHoldingSpaceSuggestionsEnabled();
+  EXPECT_EQ(secondary_holding_space_model->items().size(),
+            suggestion_feature_enabled ? 1u : 0u);
+
+  // Update with a local file suggestion.
+  const base::FilePath local_file = mount_point()->CreateArbitraryFile();
+  static_cast<app_list::MockFileSuggestKeyedService*>(
+      app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+          secondary_profile))
+      ->SetSuggestionsForType(
+          app_list::FileSuggestionType::kLocalFile,
+          /*suggestions=*/std::vector<app_list::FileSuggestData>{
+              {app_list::FileSuggestionType::kLocalFile, local_file,
+               /*new_prediction_reason=*/absl::nullopt,
+               /*new_score=*/absl::nullopt}});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  const auto& model_items = secondary_holding_space_model->items();
+  if (suggestion_feature_enabled) {
+    ASSERT_EQ(model_items.size(), 2u);
+    EXPECT_EQ(model_items[0]->file_path(), local_file);
+    EXPECT_EQ(model_items[0]->type(), HoldingSpaceItem::Type::kLocalSuggestion);
+    EXPECT_TRUE(model_items[0]->IsInitialized());
+
+    EXPECT_EQ(model_items[1]->file_path(), delayed_mount_file_path);
+    EXPECT_EQ(model_items[1]->type(), HoldingSpaceItem::Type::kDriveSuggestion);
+    EXPECT_FALSE(model_items[1]->IsInitialized());
+  } else {
+    EXPECT_TRUE(model_items.empty());
+  }
+}
+
 }  // namespace ash
