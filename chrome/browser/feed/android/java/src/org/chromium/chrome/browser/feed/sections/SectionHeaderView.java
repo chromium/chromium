@@ -563,4 +563,10 @@ public class SectionHeaderView extends LinearLayout {
 
         tab.setContentDescription(contentDescription);
     }
+
+    /**
+     * This method sets visibility of the header if this header is sticky to the top of the screen.
+     * Does nothing otherwise.
+     */
+    void setStickyHeaderVisible(boolean isVisible) {}
 }

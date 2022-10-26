@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
+import org.chromium.chrome.browser.feed.sections.StickySectionHeaderView;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -125,6 +126,12 @@ public class FeedSurfaceCoordinator
             SectionHeaderView, PropertyKey> mSectionHeaderListModelChangeProcessor;
     private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
             mSectionHeaderModelChangeProcessor;
+    // Sticky section header fields.
+    private @Nullable StickySectionHeaderView mStickySectionHeaderView;
+    private @Nullable ListModelChangeProcessor<PropertyListModel<PropertyModel, PropertyKey>,
+            SectionHeaderView, PropertyKey> mStickySectionHeaderListModelChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
+            mStickySectionHeaderModelChangeProcessor;
     // Feed RecyclerView/xSurface fields.
     private @Nullable NtpListContentManager mContentManager;
     private @Nullable RecyclerView mRecyclerView;
@@ -312,7 +319,7 @@ public class FeedSurfaceCoordinator
 
         mHandler = new Handler(Looper.getMainLooper());
 
-        // MVC setup for feed header.
+        // MVC setup for feed header and sticky header.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
                     R.layout.new_tab_page_multi_feed_header, null, false);
@@ -331,9 +338,27 @@ public class FeedSurfaceCoordinator
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .addObserver(mSectionHeaderListModelChangeProcessor);
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_HEADER_STICK_TO_TOP)) {
+            mStickySectionHeaderView =
+                    (StickySectionHeaderView) LayoutInflater.from(mActivity).inflate(
+                            R.layout.new_tab_page_multi_sticky_feed_header, null, false);
+            mRootView.addView(mStickySectionHeaderView);
+            mStickySectionHeaderModelChangeProcessor = PropertyModelChangeProcessor.create(
+                    mSectionHeaderModel, mStickySectionHeaderView, binder);
+            mStickySectionHeaderListModelChangeProcessor = new ListModelChangeProcessor<>(
+                    mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY),
+                    mStickySectionHeaderView, binder);
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .addObserver(mStickySectionHeaderListModelChangeProcessor);
+        }
+
         FeedOptionsCoordinator optionsCoordinator = new FeedOptionsCoordinator(mActivity);
-        mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
-                optionsCoordinator.getView());
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_HEADER_STICK_TO_TOP)) {
+            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
+                    optionsCoordinator.getView());
+        }
 
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mSectionHeaderModel,
@@ -407,6 +432,12 @@ public class FeedSurfaceCoordinator
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                     .removeObserver(mSectionHeaderListModelChangeProcessor);
         }
+        if (mStickySectionHeaderModelChangeProcessor != null) {
+            mStickySectionHeaderModelChangeProcessor.destroy();
+            mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                    .removeObserver(mStickySectionHeaderListModelChangeProcessor);
+        }
+
         // Destroy mediator after all other related controller/processors are destroyed.
         mMediator.destroy();
 

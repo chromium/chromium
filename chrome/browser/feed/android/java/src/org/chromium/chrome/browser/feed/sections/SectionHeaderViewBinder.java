@@ -48,6 +48,9 @@ public class SectionHeaderViewBinder
             view.setOptionsPanel(model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
         } else if (key == SectionHeaderListProperties.TOOLBAR_HEIGHT_PX) {
             view.setToolbarHeight(model.get(SectionHeaderListProperties.TOOLBAR_HEIGHT_PX));
+        } else if (key == SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY) {
+            view.setStickyHeaderVisible(
+                    model.get(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY));
         }
     }
 
