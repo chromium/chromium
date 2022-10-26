@@ -287,6 +287,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedStreamTest.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedStreamViewResizerTest.java",
     "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
     "java/src/org/chromium/chrome/browser/feed/NativeViewListRendererTest.java",
     "java/src/org/chromium/chrome/browser/feed/NtpListContentManagerTest.java",

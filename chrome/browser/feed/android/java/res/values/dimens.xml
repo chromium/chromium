@@ -46,6 +46,9 @@ found in the LICENSE file.
     <dimen name="ntp_wide_card_lateral_margins">36dp</dimen>
     <dimen name="feed_v2_header_menu_touch_size">48dp</dimen>
     <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
+    <dimen name="ntp_wide_card_width_breakpoint">840dp</dimen>
+    <dimen name="ntp_wide_card_width_max">1200dp</dimen>
+    <dimen name="ntp_wide_card_lateral_margins_max">200dp</dimen>
     <dimen name="feed_options_vertical_margins">6dp</dimen>
     <dimen name="feed_options_chip_margin">8dp</dimen>
     <dimen name="feed_header_dropdown_size">15dp</dimen>
