@@ -125,7 +125,13 @@ StartupCalculateDecision GetStartupCalculationDecision(
 
 void RecordBrowsingTopicsApiResultUkmMetrics(
     ApiAccessFailureReason failure_reason,
-    content::RenderFrameHost* main_frame) {
+    content::RenderFrameHost* main_frame,
+    bool is_get_topics_request) {
+  // The `BrowsingTopics_DocumentBrowsingTopicsApiResult2` event is only
+  // recorded for request that gets the topics.
+  if (!is_get_topics_request)
+    return;
+
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::BrowsingTopics_DocumentBrowsingTopicsApiResult2 builder(
       main_frame->GetPageUkmSourceId());
@@ -201,28 +207,35 @@ BrowsingTopicsServiceImpl::BrowsingTopicsServiceImpl(
       optimization_guide::AnnotationType::kPageTopics, base::DoNothing());
 }
 
-std::vector<blink::mojom::EpochTopicPtr>
-BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
+bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
     const url::Origin& context_origin,
     content::RenderFrameHost* main_frame,
-    bool observe) {
+    ApiCallerSource caller_source,
+    bool get_topics,
+    bool observe,
+    std::vector<blink::mojom::EpochTopicPtr>& topics) {
+  DCHECK(topics.empty());
+  DCHECK(get_topics || observe);
+
   if (!browsing_topics_state_loaded_) {
     RecordBrowsingTopicsApiResultUkmMetrics(
-        ApiAccessFailureReason::kStateNotReady, main_frame);
-    return {};
+        ApiAccessFailureReason::kStateNotReady, main_frame, get_topics);
+    return false;
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowed()) {
     RecordBrowsingTopicsApiResultUkmMetrics(
-        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame);
-    return {};
+        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame,
+        get_topics);
+    return false;
   }
 
   if (!privacy_sandbox_settings_->IsTopicsAllowedForContext(
           context_origin.GetURL(), main_frame->GetLastCommittedOrigin())) {
     RecordBrowsingTopicsApiResultUkmMetrics(
-        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame);
-    return {};
+        ApiAccessFailureReason::kAccessDisallowedBySettings, main_frame,
+        get_topics);
+    return false;
   }
 
   std::string context_domain =
@@ -238,6 +251,9 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
     BrowsingTopicsPageLoadDataTracker::GetOrCreateForPage(main_frame->GetPage())
         ->OnBrowsingTopicsApiUsed(hashed_context_domain, history_service_);
   }
+
+  if (!get_topics)
+    return true;
 
   std::string top_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -268,8 +284,6 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
 
   RecordBrowsingTopicsApiResultUkmMetrics(valid_candidate_topics, main_frame);
 
-  std::vector<blink::mojom::EpochTopicPtr> result_topics;
-
   for (const CandidateTopic& candidate_topic : valid_candidate_topics) {
     if (candidate_topic.should_be_filtered())
       continue;
@@ -297,21 +311,20 @@ BrowsingTopicsServiceImpl::GetBrowsingTopicsForJsApi(
     result_topic->version = base::StrCat({result_topic->config_version, ":",
                                           result_topic->taxonomy_version, ":",
                                           result_topic->model_version});
-    result_topics.emplace_back(std::move(result_topic));
+    topics.emplace_back(std::move(result_topic));
   }
 
-  std::sort(result_topics.begin(), result_topics.end());
+  std::sort(topics.begin(), topics.end());
 
   // Remove duplicate entries.
-  result_topics.erase(std::unique(result_topics.begin(), result_topics.end()),
-                      result_topics.end());
+  topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
 
   // Shuffle the entries.
   // TODO(yaoxia): Remove the random shuffle. The topics are already sorted /
   // no longer in time order.
-  base::RandomShuffle(result_topics.begin(), result_topics.end());
+  base::RandomShuffle(topics.begin(), topics.end());
 
-  return result_topics;
+  return true;
 }
 
 void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(

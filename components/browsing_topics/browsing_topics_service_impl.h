@@ -44,10 +44,13 @@ class BrowsingTopicsServiceImpl
 
   ~BrowsingTopicsServiceImpl() override;
 
-  std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
+  bool HandleTopicsWebApi(
       const url::Origin& context_origin,
       content::RenderFrameHost* main_frame,
-      bool observe) override;
+      ApiCallerSource caller_source,
+      bool get_topics,
+      bool observe,
+      std::vector<blink::mojom::EpochTopicPtr>& topics) override;
 
   void GetBrowsingTopicsStateForWebUi(
       bool calculate_now,

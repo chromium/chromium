@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/browsing_topics/common/common_types.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/file_access/scoped_file_access.h"
 #include "content/common/content_export.h"
@@ -2088,14 +2089,21 @@ class CONTENT_EXPORT ContentBrowserClient {
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy);
 
-  // Returns the browsing topics associated with the browser context of
-  // `main_frame`. If `observe` is true, record the observation
-  // (i.e. the <calling context site, top level site> pair) to the
-  // `BrowsingTopicsSiteDataStorage` database.
-  virtual std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
+  // Writes the browsing topics for a particular requesting context into the
+  // output parameter `topics` and returns whether the access permission is
+  // allowed. `context_origin` and `main_frame` will potentially be used for the
+  // access permission check, for calculating the topics, and/or for the
+  // `BrowsingTopicsPageLoadDataTracker` to track the API usage. If `get_topics`
+  // is true, topics calculation result will be stored to `topics`. If `observe`
+  // is true, record the observation (i.e. the <calling context site,
+  // top level site> pair) to the `BrowsingTopicsSiteDataStorage` database.
+  virtual bool HandleTopicsWebApi(
       const url::Origin& context_origin,
-      RenderFrameHost* main_frame,
-      bool observe);
+      content::RenderFrameHost* main_frame,
+      browsing_topics::ApiCallerSource caller_source,
+      bool get_topics,
+      bool observe,
+      std::vector<blink::mojom::EpochTopicPtr>& topics);
 
   // Returns whether a site is blocked to use Bluetooth scanning API.
   virtual bool IsBluetoothScanningBlocked(

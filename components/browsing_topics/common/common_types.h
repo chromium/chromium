@@ -17,6 +17,12 @@ using HashedHost = base::StrongAlias<class HashedHostTag, int64_t>;
 using HashedDomain = base::StrongAlias<class HashedHostTag, int64_t>;
 using Topic = base::StrongAlias<class TopicTag, int>;
 
+// Represents the source of the caller.
+enum class ApiCallerSource {
+  // The API usage is from document.browsingTopics().
+  kJavaScript,
+};
+
 // Represents the different reasons why the topics API access is denied. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.

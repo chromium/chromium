@@ -582,13 +582,15 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   NavigateToPage(GURL("https://www.foo.com"));
 
-  EXPECT_TRUE(browsing_topics_service_
-                  ->GetBrowsingTopicsForJsApi(
-                      /*context_origin=*/url::Origin::Create(
-                          GURL("https://www.bar.com")),
-                      web_contents()->GetPrimaryMainFrame(),
-                      /*observe=*/true)
-                  .empty());
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_FALSE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
+    EXPECT_TRUE(result.empty());
+  }
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
@@ -612,13 +614,16 @@ TEST_F(BrowsingTopicsServiceImplTest,
   // Finish file loading.
   task_environment()->RunUntilIdle();
 
-  EXPECT_FALSE(browsing_topics_service_
-                   ->GetBrowsingTopicsForJsApi(
-                       /*context_origin=*/url::Origin::Create(
-                           GURL("https://www.bar.com")),
-                       web_contents()->GetPrimaryMainFrame(),
-                       /*observe=*/true)
-                   .empty());
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
+    EXPECT_FALSE(result.empty());
+  }
+
   EXPECT_FALSE(browsing_topics_service_->GetTopTopicsForDisplay().empty());
 
   base::test::TestFuture<mojom::WebUIGetBrowsingTopicsStateResultPtr> future2;
@@ -806,7 +811,7 @@ TEST_F(BrowsingTopicsServiceImplTest, Recalculate) {
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
-       GetBrowsingTopicsForJsApi_PrivacySandboxSettingsDisabled) {
+       HandleTopicsWebApi_PrivacySandboxSettingsDisabled) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
@@ -826,13 +831,13 @@ TEST_F(BrowsingTopicsServiceImplTest,
 
   NavigateToPage(GURL("https://www.foo.com"));
 
-  EXPECT_TRUE(browsing_topics_service_
-                  ->GetBrowsingTopicsForJsApi(
-                      /*context_origin=*/url::Origin::Create(
-                          GURL("https://www.bar.com")),
-                      web_contents()->GetPrimaryMainFrame(),
-                      /*observe=*/true)
-                  .empty());
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_FALSE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+  EXPECT_TRUE(result.empty());
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
@@ -845,7 +850,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 }
 
-TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
+TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
@@ -863,13 +868,16 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
 
   NavigateToPage(GURL("https://www.foo.com"));
 
-  // Current time is before the epoch switch time.
-  std::vector<blink::mojom::EpochTopicPtr> result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
-
-  EXPECT_TRUE(result.empty());
+  {
+    // Current time is before the epoch switch time.
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
+    EXPECT_TRUE(result.empty());
+  }
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
       ReadApiResultUkmMetrics(ukm_recorder);
@@ -884,20 +892,24 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_OneEpoch) {
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  EXPECT_EQ(result.size(), 1u);
-  EXPECT_EQ(result[0]->topic, 2);
-  EXPECT_EQ(result[0]->config_version, "chrome.1");
-  EXPECT_EQ(result[0]->taxonomy_version, "1");
-  EXPECT_EQ(result[0]->model_version, "5000000000");
-  EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
+    EXPECT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0]->topic, 2);
+    EXPECT_EQ(result[0]->config_version, "chrome.1");
+    EXPECT_EQ(result[0]->taxonomy_version, "1");
+    EXPECT_EQ(result[0]->model_version, "5000000000");
+    EXPECT_EQ(result[0]->version, "chrome.1:1:5000000000");
+  }
 }
 
-TEST_F(BrowsingTopicsServiceImplTest,
-       GetBrowsingTopicsForJsApi_OneEpoch_Filtered) {
+TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::queue<EpochTopics> mock_calculator_results;
@@ -917,11 +929,12 @@ TEST_F(BrowsingTopicsServiceImplTest,
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  std::vector<blink::mojom::EpochTopicPtr> result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
-
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
   EXPECT_TRUE(result.empty());
 
   std::vector<ApiResultUkmMetrics> metrics_entries =
@@ -942,7 +955,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
-       GetBrowsingTopicsForJsApi_TopicNotAllowedByPrivacySandboxSettings) {
+       HandleTopicsWebApi_TopicNotAllowedByPrivacySandboxSettings) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -960,36 +973,49 @@ TEST_F(BrowsingTopicsServiceImplTest,
   NavigateToPage(GURL("https://www.foo81.com"));
 
   // Current time is before the epoch switch time.
-  std::vector<blink::mojom::EpochTopicPtr> result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
-
-  EXPECT_TRUE(result.empty());
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
+    EXPECT_TRUE(result.empty());
+  }
 
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  // Some topics are returned.
-  EXPECT_FALSE(result.empty());
+    // Some topics are returned.
+    EXPECT_FALSE(result.empty());
+  }
 
   privacy_sandbox_settings_->SetTopicAllowed(
       privacy_sandbox::CanonicalTopic(Topic(130), /*taxonomy_version=*/1),
       false);
 
-  result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  // The topic was blocked by the settings.
-  EXPECT_TRUE(result.empty());
+    // The topic was blocked by the settings.
+    EXPECT_TRUE(result.empty());
+  }
 }
 
-TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_FourEpochs) {
+TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_FourEpochs) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -1030,35 +1056,44 @@ TEST_F(BrowsingTopicsServiceImplTest, GetBrowsingTopicsForJsApi_FourEpochs) {
   NavigateToPage(GURL("https://www.foo.com"));
 
   // Current time is before the epoch switch time.
-  std::vector<blink::mojom::EpochTopicPtr> result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  EXPECT_EQ(result.size(), 3u);
-  std::set<int> result_set;
-  result_set.insert(result[0]->topic);
-  result_set.insert(result[1]->topic);
-  result_set.insert(result[2]->topic);
-  EXPECT_EQ(result_set, std::set<int>({2, 7, 12}));
+    EXPECT_EQ(result.size(), 3u);
+    std::set<int> result_set;
+    result_set.insert(result[0]->topic);
+    result_set.insert(result[1]->topic);
+    result_set.insert(result[2]->topic);
+    EXPECT_EQ(result_set, std::set<int>({2, 7, 12}));
+  }
 
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  EXPECT_EQ(result.size(), 3u);
-  result_set.clear();
-  result_set.insert(result[0]->topic);
-  result_set.insert(result[1]->topic);
-  result_set.insert(result[2]->topic);
-  EXPECT_EQ(result_set, std::set<int>({7, 12, 17}));
+    EXPECT_EQ(result.size(), 3u);
+    std::set<int> result_set;
+    result_set.insert(result[0]->topic);
+    result_set.insert(result[1]->topic);
+    result_set.insert(result[2]->topic);
+    EXPECT_EQ(result_set, std::set<int>({7, 12, 17}));
+  }
 }
 
 TEST_F(BrowsingTopicsServiceImplTest,
-       GetBrowsingTopicsForJsApi_DuplicateTopicsRemoved) {
+       HandleTopicsWebApi_DuplicateTopicsRemoved) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -1099,29 +1134,38 @@ TEST_F(BrowsingTopicsServiceImplTest,
   NavigateToPage(GURL("https://www.foo.com"));
 
   // Current time is before the epoch switch time.
-  std::vector<blink::mojom::EpochTopicPtr> result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  EXPECT_EQ(result.size(), 2u);
-  std::set<int> result_set;
-  result_set.insert(result[0]->topic);
-  result_set.insert(result[1]->topic);
-  EXPECT_EQ(result_set, std::set<int>({2, 7}));
+    EXPECT_EQ(result.size(), 2u);
+    std::set<int> result_set;
+    result_set.insert(result[0]->topic);
+    result_set.insert(result[1]->topic);
+    EXPECT_EQ(result_set, std::set<int>({2, 7}));
+  }
 
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
-  EXPECT_EQ(result.size(), 2u);
-  result_set.clear();
-  result_set.insert(result[0]->topic);
-  result_set.insert(result[1]->topic);
-  EXPECT_EQ(result_set, std::set<int>({2, 7}));
+    EXPECT_EQ(result.size(), 2u);
+    std::set<int> result_set;
+    result_set.insert(result[0]->topic);
+    result_set.insert(result[1]->topic);
+    EXPECT_EQ(result_set, std::set<int>({2, 7}));
+  }
 
   // Ensure access has been reported to the Page Specific Content Settings.
   auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
@@ -1138,7 +1182,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
 // TODO(yaoxia): Re-enable. This test currently fails solely due to it's
 // generating a lot of GMOCK WARNING output.
 TEST_F(BrowsingTopicsServiceImplTest,
-       DISABLED_GetBrowsingTopicsForJsApi_TopicsReturnedInRandomOrder) {
+       DISABLED_HandleTopicsWebApi_TopicsReturnedInRandomOrder) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -1186,10 +1230,12 @@ TEST_F(BrowsingTopicsServiceImplTest,
   bool seen_topic_7_at_front = false;
 
   for (int i = 0; i < 100; ++i) {
-    std::vector<blink::mojom::EpochTopicPtr> result =
-        browsing_topics_service_->GetBrowsingTopicsForJsApi(
-            /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-            web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
 
     EXPECT_EQ(result.size(), 2u);
     std::set<int> result_set;
@@ -1205,8 +1251,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   EXPECT_TRUE(seen_topic_7_at_front);
 }
 
-TEST_F(BrowsingTopicsServiceImplTest,
-       GetBrowsingTopicsForJsApi_TrackedUsageContext) {
+TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_TrackedUsageContext) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -1217,16 +1262,23 @@ TEST_F(BrowsingTopicsServiceImplTest,
                             kTime1));
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
-  task_environment()->RunUntilIdle();
+  // Advance to the time after the epoch switch time.
+  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
+                                    base::Microseconds(1));
 
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
       0u);
 
   NavigateToPage(GURL("https://www.foo.com"));
-  browsing_topics_service_->GetBrowsingTopicsForJsApi(
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, result));
+  EXPECT_EQ(result.size(), 1u);
 
   std::vector<ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
@@ -1237,8 +1289,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
             GetHashedDomain("bar.com"));
 }
 
-TEST_F(BrowsingTopicsServiceImplTest,
-       GetBrowsingTopicsForJsApi_DoesNotObserve) {
+TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotObserve) {
   base::queue<EpochTopics> mock_calculator_results;
   mock_calculator_results.push(
       CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
@@ -1249,16 +1300,105 @@ TEST_F(BrowsingTopicsServiceImplTest,
                             kTime1));
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
-  task_environment()->RunUntilIdle();
+  // Advance to the time after the epoch switch time.
+  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
+                                    base::Microseconds(1));
+
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      0u);
 
   NavigateToPage(GURL("https://www.foo.com"));
-  browsing_topics_service_->GetBrowsingTopicsForJsApi(
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
       /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/false);
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/false, result));
+  EXPECT_EQ(result.size(), 1u);
 
   std::vector<ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
   EXPECT_TRUE(api_usage_contexts.empty());
+}
+
+TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotGetTopics) {
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Advance to the time after the epoch switch time.
+  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
+                                    base::Microseconds(1));
+
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      0u);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/false,
+      /*observe=*/true, result));
+  EXPECT_TRUE(result.empty());
+
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+  EXPECT_EQ(api_usage_contexts[0].hashed_main_frame_host,
+            HashMainFrameHostForStorage("www.foo.com"));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
+            GetHashedDomain("bar.com"));
+}
+
+TEST_F(
+    BrowsingTopicsServiceImplTest,
+    HandleTopicsWebApi_DoesNotGetTopics_SettingsDisabled_NoApiResultUkmEvent) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.push(
+      CreateTestEpochTopics({{Topic(1), {GetHashedDomain("bar.com")}},
+                             {Topic(2), {GetHashedDomain("bar.com")}},
+                             {Topic(3), {GetHashedDomain("bar.com")}},
+                             {Topic(4), {GetHashedDomain("bar.com")}},
+                             {Topic(5), {GetHashedDomain("bar.com")}}},
+                            kTime1));
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  // Advance to the time after the epoch switch time.
+  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
+                                    base::Microseconds(1));
+
+  EXPECT_EQ(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
+      0u);
+
+  NavigateToPage(GURL("https://www.foo.com"));
+
+  privacy_sandbox_settings_->SetPrivacySandboxEnabled(false);
+
+  std::vector<blink::mojom::EpochTopicPtr> result;
+  EXPECT_FALSE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/false,
+      /*observe=*/true, result));
+  EXPECT_TRUE(result.empty());
+
+  std::vector<ApiResultUkmMetrics> metrics_entries =
+      ReadApiResultUkmMetrics(ukm_recorder);
+  EXPECT_TRUE(metrics_entries.empty());
 }
 
 TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
@@ -1287,9 +1427,14 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
 
   // Current time is before the epoch switch time. Expect one ukm event without
   // any metrics.
-  browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
+  }
 
   metrics_entries = ReadApiResultUkmMetrics(ukm_recorder);
   EXPECT_EQ(1u, metrics_entries.size());
@@ -1302,9 +1447,14 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, result));
+  }
 
   metrics_entries = ReadApiResultUkmMetrics(ukm_recorder);
   EXPECT_EQ(2u, metrics_entries.size());
@@ -1366,10 +1516,12 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
   // Advance to the time after the epoch switch time.
   task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
 
-  std::vector<blink::mojom::EpochTopicPtr> api_call_result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  std::vector<blink::mojom::EpochTopicPtr> api_call_result;
+  EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+      /*context_origin=*/url::Origin::Create(GURL("https://www.bar.com")),
+      web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+      /*get_topics=*/true,
+      /*observe=*/true, api_call_result));
 
   // The API returns 2 topics, but all 3 candidate topics are logged.
   EXPECT_EQ(2u, api_call_result.size());
@@ -1810,13 +1962,17 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
   // Finish file loading and two calculations.
   task_environment()->FastForwardBy(2 * kCalculatorDelay + kEpoch);
 
-  std::vector<blink::mojom::EpochTopicPtr> api_call_result =
-      browsing_topics_service_->GetBrowsingTopicsForJsApi(
-          /*context_origin=*/url::Origin::Create(GURL("https://b.com")),
-          web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> api_call_result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.b.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, api_call_result));
 
-  EXPECT_EQ(api_call_result.size(), 1u);
-  EXPECT_EQ(api_call_result[0]->topic, 3);
+    EXPECT_EQ(api_call_result.size(), 1u);
+    EXPECT_EQ(api_call_result[0]->topic, 3);
+  }
 
   // Add some arbitrary data to site data storage. The intent is just to test
   // data deletion.
@@ -1825,7 +1981,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
       {GetHashedDomain("b.com"), GetHashedDomain("c.com")}, base::Time::Now());
 
   // The data is from both the manual `OnBrowsingTopicsApiUsed` call and the
-  // usage tracking due to the previous `GetBrowsingTopicsForJsApi`.
+  // usage tracking due to the previous `HandleTopicsWebApi`.
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
       3u);
@@ -1839,12 +1995,18 @@ TEST_F(BrowsingTopicsServiceImplTest, ClearTopicsDataForOrigin) {
 
   // Note that this won't trigger another usage storing to the database, because
   // the same context domain was seen in the page before.
-  api_call_result = browsing_topics_service_->GetBrowsingTopicsForJsApi(
-      /*context_origin=*/url::Origin::Create(GURL("https://b.com")),
-      web_contents()->GetPrimaryMainFrame(), /*observe=*/true);
+  {
+    std::vector<blink::mojom::EpochTopicPtr> api_call_result;
+    EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
+        /*context_origin=*/url::Origin::Create(GURL("https://www.b.com")),
+        web_contents()->GetPrimaryMainFrame(), ApiCallerSource::kJavaScript,
+        /*get_topics=*/true,
+        /*observe=*/true, api_call_result));
 
-  // Since the domain "b.com" is removed. The candidate topic won't be returned.
-  EXPECT_TRUE(api_call_result.empty());
+    // Since the domain "b.com" is removed. The candidate topic won't be
+    // returned.
+    EXPECT_TRUE(api_call_result.empty());
+  }
 
   std::vector<browsing_topics::ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager());

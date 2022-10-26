@@ -1216,12 +1216,14 @@ void ContentBrowserClient::AugmentNavigationDownloadPolicy(
     bool user_gesture,
     blink::NavigationDownloadPolicy* download_policy) {}
 
-std::vector<blink::mojom::EpochTopicPtr>
-ContentBrowserClient::GetBrowsingTopicsForJsApi(
+bool ContentBrowserClient::HandleTopicsWebApi(
     const url::Origin& context_origin,
-    RenderFrameHost* main_frame,
-    bool observe) {
-  return {};
+    content::RenderFrameHost* main_frame,
+    browsing_topics::ApiCallerSource caller_source,
+    bool get_topics,
+    bool observe,
+    std::vector<blink::mojom::EpochTopicPtr>& topics) {
+  return false;
 }
 
 bool ContentBrowserClient::IsBluetoothScanningBlocked(

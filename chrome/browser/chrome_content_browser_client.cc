@@ -6381,11 +6381,13 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
   }
 }
 
-std::vector<blink::mojom::EpochTopicPtr>
-ChromeContentBrowserClient::GetBrowsingTopicsForJsApi(
+bool ChromeContentBrowserClient::HandleTopicsWebApi(
     const url::Origin& context_origin,
     content::RenderFrameHost* main_frame,
-    bool observe) {
+    browsing_topics::ApiCallerSource caller_source,
+    bool get_topics,
+    bool observe,
+    std::vector<blink::mojom::EpochTopicPtr>& topics) {
   browsing_topics::BrowsingTopicsService* browsing_topics_service =
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(
           Profile::FromBrowserContext(
@@ -6395,8 +6397,8 @@ ChromeContentBrowserClient::GetBrowsingTopicsForJsApi(
   if (!browsing_topics_service)
     return {};
 
-  return browsing_topics_service->GetBrowsingTopicsForJsApi(
-      context_origin, main_frame, observe);
+  return browsing_topics_service->HandleTopicsWebApi(
+      context_origin, main_frame, caller_source, get_topics, observe, topics);
 }
 
 bool ChromeContentBrowserClient::IsBluetoothScanningBlocked(

@@ -109,9 +109,14 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
   MockBrowsingTopicsService();
   ~MockBrowsingTopicsService() override;
 
-  MOCK_METHOD(std::vector<blink::mojom::EpochTopicPtr>,
-              GetBrowsingTopicsForJsApi,
-              (const url::Origin&, content::RenderFrameHost*, bool),
+  MOCK_METHOD(bool,
+              HandleTopicsWebApi,
+              (const url::Origin&,
+               content::RenderFrameHost*,
+               ApiCallerSource,
+               bool,
+               bool,
+               std::vector<blink::mojom::EpochTopicPtr>&),
               (override));
   MOCK_METHOD(void,
               GetBrowsingTopicsStateForWebUi,

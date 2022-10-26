@@ -53,11 +53,14 @@ class FixedBrowsingTopicsService
   FixedBrowsingTopicsService() = default;
   ~FixedBrowsingTopicsService() override = default;
 
-  std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
+  bool HandleTopicsWebApi(
       const url::Origin& context_origin,
       content::RenderFrameHost* main_frame,
-      bool observe) override {
-    return {};
+      ApiCallerSource caller_source,
+      bool get_topics,
+      bool observe,
+      std::vector<blink::mojom::EpochTopicPtr>& topics) override {
+    return false;
   }
 
   void GetBrowsingTopicsStateForWebUi(

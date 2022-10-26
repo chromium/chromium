@@ -32,12 +32,13 @@ namespace {
 
 class FixedTopicsContentBrowserClient : public ContentBrowserClient {
  public:
-  std::vector<blink::mojom::EpochTopicPtr> GetBrowsingTopicsForJsApi(
+  bool HandleTopicsWebApi(
       const url::Origin& context_origin,
-      RenderFrameHost* main_frame,
-      bool observe) override {
-    std::vector<blink::mojom::EpochTopicPtr> result_topics;
-
+      content::RenderFrameHost* main_frame,
+      browsing_topics::ApiCallerSource caller_source,
+      bool get_topics,
+      bool observe,
+      std::vector<blink::mojom::EpochTopicPtr>& topics) override {
     blink::mojom::EpochTopicPtr result_topic = blink::mojom::EpochTopic::New();
     result_topic->topic = 1;
     result_topic->config_version = "chrome.1";
@@ -45,8 +46,9 @@ class FixedTopicsContentBrowserClient : public ContentBrowserClient {
     result_topic->model_version = "2";
     result_topic->version = "chrome.1:1:2";
 
-    result_topics.push_back(std::move(result_topic));
-    return result_topics;
+    topics.push_back(std::move(result_topic));
+
+    return true;
   }
 
   StoragePartitionConfig GetStoragePartitionConfigForSite(

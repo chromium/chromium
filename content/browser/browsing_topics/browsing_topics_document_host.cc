@@ -91,11 +91,16 @@ void BrowsingTopicsDocumentHost::GetBrowsingTopics(
     return;
   }
 
+  std::vector<blink::mojom::EpochTopicPtr> topics;
+  GetContentClient()->browser()->HandleTopicsWebApi(
+      render_frame_host().GetLastCommittedOrigin(),
+      render_frame_host().GetMainFrame(),
+      browsing_topics::ApiCallerSource::kJavaScript,
+      /*get_topics=*/true, observe, topics);
+
   std::move(callback).Run(
       blink::mojom::GetBrowsingTopicsResult::NewBrowsingTopics(
-          GetContentClient()->browser()->GetBrowsingTopicsForJsApi(
-              render_frame_host().GetLastCommittedOrigin(),
-              render_frame_host().GetMainFrame(), observe)));
+          std::move(topics)));
 }
 
 BrowsingTopicsDocumentHost::~BrowsingTopicsDocumentHost() = default;
