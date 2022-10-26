@@ -858,7 +858,7 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
     // way that relinquishes its ownership. Because of this, new it here and
     // let it be deleted by the constrained_window code.
     dialog_ = new ContentAnalysisDialog(
-        std::move(delegate),
+        std::move(delegate), true,
         browser()->tab_strip_model()->GetActiveWebContents(),
         safe_browsing::DeepScanAccessPoint::DOWNLOAD, 0, result);
 
@@ -1078,7 +1078,7 @@ class ContentAnalysysDialogUiTest
     // way that relinquishes its ownership. Because of this, new it here and
     // let it be deleted by the constrained_window code.
     new ContentAnalysisDialog(
-        std::move(delegate),
+        std::move(delegate), true,
         browser()->tab_strip_model()->GetActiveWebContents(),
         safe_browsing::DeepScanAccessPoint::DOWNLOAD, 1,
         FinalContentAnalysisResult::WARNING);
@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogDownloadObserverTest,
           u"", u"", GURL(), true,
           /* open_file_callback */ base::DoNothing(),
           /* discard_callback */ base::DoNothing(), &mock_download_item),
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      true, browser()->tab_strip_model()->GetActiveWebContents(),
       safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, &mock_download_item);
 
@@ -1161,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogDownloadObserverTest,
           u"", u"", GURL(), true,
           /* open_file_callback */ base::DoNothing(),
           /* discard_callback */ base::DoNothing(), &mock_download_item),
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      true, browser()->tab_strip_model()->GetActiveWebContents(),
       safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, &mock_download_item);
 
@@ -1196,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogDownloadObserverTest,
           u"", u"", GURL(), true,
           /* open_file_callback */ base::DoNothing(),
           /* discard_callback */ base::DoNothing(), mock_download_item.get()),
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      true, browser()->tab_strip_model()->GetActiveWebContents(),
       safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
       FinalContentAnalysisResult::WARNING, mock_download_item.get());
 

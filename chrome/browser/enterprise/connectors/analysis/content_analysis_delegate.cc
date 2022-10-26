@@ -294,7 +294,10 @@ void ContentAnalysisDelegate::CreateForWebContents(
 
     // This dialog is owned by the constrained_window code.
     delegate_ptr->dialog_ = new ContentAnalysisDialog(
-        std::move(delegate), web_contents, access_point, files_count);
+        std::move(delegate),
+        delegate_ptr->data_.settings.cloud_or_local_settings
+            .is_cloud_analysis(),
+        web_contents, access_point, files_count);
     return;
   }
 

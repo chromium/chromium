@@ -425,6 +425,7 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
           filename, custom_message, learn_more_url,
           bypass_justification_required, std::move(keep_closure),
           std::move(discard_closure), download_item),
+      true,  // Downloads are always cloud-based for now.
       web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);
 }

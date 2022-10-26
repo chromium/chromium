@@ -93,6 +93,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   static base::TimeDelta GetSuccessDialogTimeout();
 
   ContentAnalysisDialog(std::unique_ptr<ContentAnalysisDelegateBase> delegate,
+                        bool is_cloud,
                         content::WebContents* web_contents,
                         safe_browsing::DeepScanAccessPoint access_point,
                         int files_count,
@@ -320,6 +321,10 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // This is used to decide whether the dialog should go away without user input
   // or not.
   bool accepted_or_cancelled_ = false;
+
+  // True when performing a cloud-based content analysis, false when performing
+  // a locally based content analysis.
+  bool is_cloud_ = true;
 
   base::WeakPtrFactory<ContentAnalysisDialog> weak_ptr_factory_{this};
 };

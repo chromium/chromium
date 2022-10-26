@@ -211,6 +211,7 @@ base::TimeDelta ContentAnalysisDialog::GetSuccessDialogTimeout() {
 
 ContentAnalysisDialog::ContentAnalysisDialog(
     std::unique_ptr<ContentAnalysisDelegateBase> delegate,
+    bool is_cloud,
     content::WebContents* web_contents,
     safe_browsing::DeepScanAccessPoint access_point,
     int files_count,
@@ -222,7 +223,8 @@ ContentAnalysisDialog::ContentAnalysisDialog(
       final_result_(final_result),
       access_point_(std::move(access_point)),
       files_count_(files_count),
-      download_item_(download_item) {
+      download_item_(download_item),
+      is_cloud_(is_cloud) {
   DCHECK(delegate_);
   SetOwnedByWidget(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -333,12 +335,19 @@ views::View* ContentAnalysisDialog::GetContentsView() {
     contents_view_->SetOrientation(views::BoxLayout::Orientation::kVertical);
     // Padding to distance the top image from the icon and message.
     contents_view_->SetBetweenChildSpacing(16);
-    // padding to distance the message from the button(s).
-    contents_view_->SetInsideBorderInsets(gfx::Insets::TLBR(0, 0, 10, 0));
 
-    // Add the top image.
-    image_ = contents_view_->AddChildView(
-        std::make_unique<DeepScanningTopImageView>(this));
+    // padding to distance the message from the button(s).  When doing a cloud
+    // based analysis, a top image is added to the view and the top padding
+    // looks fine.  When not doing a cloud-based analysis set the top padding
+    // to make things look nice.
+    contents_view_->SetInsideBorderInsets(
+        gfx::Insets::TLBR(is_cloud_ ? 0 : 24, 0, 10, 0));
+
+    // Add the top image for cloud-based analysis.
+    if (is_cloud_) {
+      image_ = contents_view_->AddChildView(
+          std::make_unique<DeepScanningTopImageView>(this));
+    }
 
     // Create message area layout.
     contents_layout_ = contents_view_->AddChildView(
@@ -451,8 +460,11 @@ void ContentAnalysisDialog::UpdateViews() {
   DCHECK(contents_view_);
 
   // Update the style of the dialog to reflect the new state.
-  image_->Update();
+  if (image_)
+    image_->Update();
+
   side_icon_image_->Update();
+
   // There isn't always a spinner, for instance when the dialog is started in a
   // state other than the "pending" state.
   if (side_icon_spinner_) {
