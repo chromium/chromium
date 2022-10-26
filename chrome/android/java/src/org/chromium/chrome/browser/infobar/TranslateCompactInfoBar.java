@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import android.app.Activity;
-import android.graphics.Rect;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -21,9 +17,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
@@ -294,45 +288,21 @@ public class TranslateCompactInfoBar
         boolean isIncognito = TranslateCompactInfoBarJni.get().isIncognito(
                 mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this);
         boolean isSourceLangUnknown = mOptions.sourceLanguageCode().equals("und");
-
-        // TODO(jinsukkim): Get this rect info passed from RootUiCoordinator.
-        Supplier<Rect> appRect = this::getAppRectInWindow;
         switch (menuType) {
             case TranslateMenu.MENU_OVERFLOW:
                 mOverflowMenuHelper = new TranslateMenuHelper(getContext(), mMenuButton, mOptions,
-                        this, isIncognito, isSourceLangUnknown, appRect);
+                        this, isIncognito, isSourceLangUnknown);
                 return;
             case TranslateMenu.MENU_TARGET_LANGUAGE:
             case TranslateMenu.MENU_SOURCE_LANGUAGE:
                 if (mLanguageMenuHelper == null) {
                     mLanguageMenuHelper = new TranslateMenuHelper(getContext(), mMenuButton,
-                            mOptions, this, isIncognito, isSourceLangUnknown, appRect);
+                            mOptions, this, isIncognito, isSourceLangUnknown);
                 }
                 return;
             default:
                 assert false : "Unsupported Menu Item Id";
         }
-    }
-
-    // Returns {@link Rect} that represents the app client area the popup menu should fit in.
-    // This is necessary if PopupWindow cannot apply its internal logic that ensures the menu
-    // will not be clipped off the screen, which can happen if Window#FLAGS_LAYOUT_NO_LIMITS
-    // is set to allow the app to be drawn outside the screen. Returns {@code null} if not
-    // necessary.
-    private Rect getAppRectInWindow() {
-        if (ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) return null;
-
-        View view = getView().getRootView().findViewById(R.id.coordinator);
-        if (!view.isAttachedToWindow()) return null;
-        WindowManager.LayoutParams attrs = ((Activity) getContext()).getWindow().getAttributes();
-        if ((attrs.flags & WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS) == 0) return null;
-
-        int[] loc = new int[2];
-        view.getLocationInWindow(loc);
-        Rect rect = new Rect(0, 0, view.getWidth(), view.getHeight());
-        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-        rect.offsetTo(loc[0], loc[1] - lp.topMargin);
-        return rect;
     }
 
     /**

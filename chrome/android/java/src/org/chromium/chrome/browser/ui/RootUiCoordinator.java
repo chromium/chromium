@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -710,7 +709,7 @@ public class RootUiCoordinator
                     mTabModelSelectorSupplier.get().openNewTab(
                             generateUrlParamsForSearch(tab, query),
                             TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
-                }, mShareDelegateSupplier, canDrawOutsideScreen());
+                }, mShareDelegateSupplier);
         mVrModeObserver = new VrModeObserver() {
             @Override
             public void onEnterVr() {
@@ -1295,8 +1294,7 @@ public class RootUiCoordinator
             mAppMenuCoordinator = AppMenuCoordinatorFactory.createAppMenuCoordinator(mActivity,
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
-                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub),
-                    this::getAppRectInWindow);
+                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
                             -> ChromePureJavaExceptionReporter.reportJavaException(
@@ -1321,34 +1319,6 @@ public class RootUiCoordinator
             };
             mAppMenuCoordinator.getAppMenuHandler().addObserver(mAppMenuObserver);
         }
-    }
-
-    /**
-     * Returns {@link Rect} that represents the app client area the app menu should fit in.
-     */
-    protected Rect getAppRectInWindow() {
-        Rect appRect = new Rect();
-        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
-        return appRect;
-    }
-
-    /**
-     * Provides the height of the base app area on which bottom sheet client is drawn. This is
-     * not necessary for most embedders of BottomSheet, unless they have non-zero vertical Window
-     * offset that would push down a part of app area out of the screen. BottomSheet then uses
-     * this height to resize the sheet content so all of it is visible.
-     * @return Supplier of the height of the base app area. {@code null} if not necessary.
-     */
-    @Nullable
-    protected Supplier<Integer> getBaseHeightProvider() {
-        return null;
-    }
-
-    /**
-     * Whether UI like popup can be drawn outside the screen. {@code false} by default.
-     */
-    protected boolean canDrawOutsideScreen() {
-        return false;
     }
 
     private void hideAppMenu() {
@@ -1443,7 +1413,7 @@ public class RootUiCoordinator
                         -> mScrimCoordinator,
                 sheetInitializedCallback, mActivity.getWindow(),
                 mWindowAndroid.getKeyboardDelegate(),
-                () -> mActivity.findViewById(R.id.sheet_container), getBaseHeightProvider());
+                () -> mActivity.findViewById(R.id.sheet_container));
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
                         -> ChromePureJavaExceptionReporter.reportJavaException(

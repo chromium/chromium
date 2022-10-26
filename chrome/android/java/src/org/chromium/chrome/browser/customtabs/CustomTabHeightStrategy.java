@@ -74,13 +74,6 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
      */
     public void setScrimFraction(float scrimFraction) {}
 
-    /**
-     * {@see org.chromium.chrome.browser.ui.RootUiCoordinator#canDrawOutsideScreen()}
-     */
-    public boolean canDrawOutsideScreen() {
-        return false;
-    }
-
     // FindToolbarObserver implementation.
 
     @Override

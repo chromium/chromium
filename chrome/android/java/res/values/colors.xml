@@ -55,7 +55,6 @@ found in the LICENSE file.
 
     <!-- App Background Colors -->
     <color name="window_background_color">@color/default_bg_color_baseline</color>
-    <color name="navigation_bar_color">@color/default_bg_color_baseline</color>
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>

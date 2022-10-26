@@ -52,7 +52,6 @@ BASE_DECLARE_FEATURE(kCCTResizableAllowResizeByUserGesture);
 BASE_DECLARE_FEATURE(kCCTResizableAlwaysShowNavBarButtons);
 BASE_DECLARE_FEATURE(kCCTResizableForFirstParties);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
-BASE_DECLARE_FEATURE(kCCTResizableWindowAboveNavbar);
 BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingState);
 BASE_DECLARE_FEATURE(kCCTShowAboutBlankUrl);

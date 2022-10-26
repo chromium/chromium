@@ -204,7 +204,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableAlwaysShowNavBarButtons,
     &kCCTResizableForFirstParties,
     &kCCTResizableForThirdParties,
-    &kCCTResizableWindowAboveNavbar,
     &kCCTRetainingState,
     &kCCTResourcePrefetch,
     &kCCTShowAboutBlankUrl,
@@ -614,10 +613,6 @@ BASE_FEATURE(kCCTResizableForFirstParties,
 
 BASE_FEATURE(kCCTResizableForThirdParties,
              "CCTResizableForThirdParties",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTResizableWindowAboveNavbar,
-             "CCTResizableWindowAboveNavbar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResourcePrefetch,

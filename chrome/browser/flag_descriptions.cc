@@ -3476,12 +3476,6 @@ const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =
     "Enable bottom sheet Custom Tabs for third party apps.";
-const char kCCTResizableWindowAboveNavbarName[] =
-    "Bottom sheet Custom Tabs placed above the NavBar";
-const char kCCTResizableWindowAboveNavbarDescription[] =
-    "Avoid various UI glitches/misbehavior by always keeping bottom sheet "
-    "custom tab above the navigation bar. The navigation bar color is not "
-    "customizable - it is up to the host app to ensure the bar looks okay.";
 const char kCCTResizableAlwaysShowNavBarButtonsName[] =
     "Always show the navigation bar buttons";
 const char kCCTResizableAlwaysShowNavBarButtonsDescription[] =

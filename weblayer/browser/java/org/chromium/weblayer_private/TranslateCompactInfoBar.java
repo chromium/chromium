@@ -206,13 +206,13 @@ public class TranslateCompactInfoBar extends InfoBar
         switch (menuType) {
             case TranslateMenu.MENU_OVERFLOW:
                 mOverflowMenuHelper = new TranslateMenuHelper(getContext(), mMenuButton, mOptions,
-                        this, isIncognito, isSourceLangUnknown, () -> null);
+                        this, isIncognito, isSourceLangUnknown);
                 return;
             case TranslateMenu.MENU_TARGET_LANGUAGE:
             case TranslateMenu.MENU_SOURCE_LANGUAGE:
                 if (mLanguageMenuHelper == null) {
                     mLanguageMenuHelper = new TranslateMenuHelper(getContext(), mMenuButton,
-                            mOptions, this, isIncognito, isSourceLangUnknown, () -> null);
+                            mOptions, this, isIncognito, isSourceLangUnknown);
                 }
                 return;
             default:

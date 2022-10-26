@@ -288,7 +288,6 @@ found in the LICENSE file.
     <dimen name="custom_tabs_shadow_offset">4dp</dimen>
     <dimen name="custom_tabs_outline_width">1dp</dimen>
     <dimen name="custom_tabs_default_corner_radius">16dp</dimen>
-    <dimen name="custom_tabs_actionmode_offset">32dp</dimen>
 
     <dimen name="custom_tabs_menu_footer_icon_size">16dp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_horizontal">8dp</dimen>

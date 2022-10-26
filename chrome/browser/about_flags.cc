@@ -6556,10 +6556,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kCCTResizableForThirdParties,
          kCCTResizableThirdPartiesDefaultPolicyVariations,
          "CCTResizableThirdPartiesDefaultPolicy")},
-    {"cct-resizable-window-above-navbar",
-     flag_descriptions::kCCTResizableWindowAboveNavbarName,
-     flag_descriptions::kCCTResizableWindowAboveNavbarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTResizableWindowAboveNavbar)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

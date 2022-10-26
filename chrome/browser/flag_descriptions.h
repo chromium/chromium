@@ -1964,8 +1964,6 @@ extern const char kCCTResizableForFirstPartiesName[];
 extern const char kCCTResizableForFirstPartiesDescription[];
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
-extern const char kCCTResizableWindowAboveNavbarName[];
-extern const char kCCTResizableWindowAboveNavbarDescription[];
 
 extern const char kCCTRealTimeEngagementSignalsName[];
 extern const char kCCTRealTimeEngagementSignalsDescription[];

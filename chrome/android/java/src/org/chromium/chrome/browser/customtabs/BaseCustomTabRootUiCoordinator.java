@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -296,35 +295,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         super.setStatusBarScrimFraction(scrimFraction);
         // TODO(jinsukkim): Separate CCT scrim update action from status bar scrim stuff.
         mCustomTabHeightStrategy.setScrimFraction(scrimFraction);
-    }
-
-    @Override
-    protected Rect getAppRectInWindow() {
-        // This is necessary if app handler cannot rely on the popup window that ensures the menu
-        // will not be clipped off the screen, which can happen in partial CCT.
-        if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
-            View coord = mActivity.findViewById(R.id.coordinator);
-            int[] location = new int[2];
-            coord.getLocationInWindow(location);
-            return new Rect(location[0], location[1], location[0] + coord.getWidth(),
-                    location[1] + coord.getHeight());
-        }
-        return super.getAppRectInWindow();
-    }
-
-    @Override
-    protected Supplier<Integer> getBaseHeightProvider() {
-        if (mIntentDataProvider.get().isPartialHeightCustomTab()
-                && !ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) {
-            return () -> mActivity.findViewById(R.id.coordinator).getHeight();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    protected boolean canDrawOutsideScreen() {
-        return mCustomTabHeightStrategy.canDrawOutsideScreen();
     }
 
     @Override

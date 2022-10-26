@@ -96,18 +96,12 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mTestMenuButtonDelegate = new TestMenuButtonDelegate();
         mAppMenuCoordinator = new AppMenuCoordinatorImpl(getActivity(), mLifecycleDispatcher,
                 mTestMenuButtonDelegate, mDelegate, getActivity().getWindow().getDecorView(),
-                getActivity().findViewById(R.id.menu_anchor_stub), this::getAppRect);
+                getActivity().findViewById(R.id.menu_anchor_stub));
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
         mPropertiesDelegate =
                 (TestAppMenuPropertiesDelegate) mAppMenuCoordinator.getAppMenuPropertiesDelegate();
-    }
-
-    private Rect getAppRect() {
-        Rect appRect = new Rect();
-        getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
-        return appRect;
     }
 
     @Test
