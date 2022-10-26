@@ -3218,6 +3218,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_VERIFY_BUTTON" desc="Label for the button to get the Chromebook to verify that it can connect with their phone.">
     Verify
   </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_BUTTON_A11Y_LABEL" desc="Accessibility label of the button that begins the setup process to link this Chromebook to one of the user's phones.">
+    Set up phone
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_VERIFY_BUTTON_A11Y_LABEL" desc="Accessibility label of the button to get the Chromebook to verify that it can connect with their phone.">
+    Verify phone
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_SETUP_ITEM_HEADING" desc="Heading for settings item that allows the user to connect their phone to their Chromebook.">
     Android phone
   </message>

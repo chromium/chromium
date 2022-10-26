@@ -316,6 +316,23 @@ class SettingsMultidevicePageElement extends
   }
 
   /**
+   * @return {string} Translated button a11y label.
+   * @private
+   */
+  getButtonA11yLabel_() {
+    switch (this.pageContentData.mode) {
+      case MultiDeviceSettingsMode.NO_HOST_SET:
+        return this.i18n('multideviceSetupButtonA11yLabel');
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_SERVER:
+      // Intentional fall-through.
+      case MultiDeviceSettingsMode.HOST_SET_WAITING_FOR_VERIFICATION:
+        return this.i18n('multideviceVerifyButtonA11yLabel');
+      default:
+        return '';
+    }
+  }
+
+  /**
    * @return {string} "true" or "false" indicating whether the text box
    *                  should be aria-hidden or not.
    * @private

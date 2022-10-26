@@ -24,7 +24,9 @@
   </div>
     <template is="dom-if" if="[[shouldShowVerifyButton_(pageContentData)]]"
         restamp>
-      <cr-button on-click="handleVerifyButtonClick_">
+      <cr-button
+        aria-label="$i18n{multideviceVerifyButtonA11yLabel}"
+        on-click="handleVerifyButtonClick_">
         $i18n{multideviceVerifyButton}
       </cr-button>
     </template>
