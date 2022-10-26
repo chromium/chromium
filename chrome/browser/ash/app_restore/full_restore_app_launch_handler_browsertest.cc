@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_test_helper.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
-#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -1412,10 +1412,10 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
         app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
     ASSERT_TRUE(arc_task_handler);
 
-    arc_app_launch_handler_ =
-        arc_task_handler->GetFullRestoreArcAppLaunchHandler();
-    DCHECK(arc_app_launch_handler_);
-    arc_app_launch_handler_->is_app_connection_ready_ = false;
+    arc_app_queue_restore_handler_ =
+        arc_task_handler->GetFullRestoreArcAppQueueRestoreHandler();
+    DCHECK(arc_app_queue_restore_handler_);
+    arc_app_queue_restore_handler_->is_app_connection_ready_ = false;
 
     app_launch_handler_ =
         std::make_unique<FullRestoreAppLaunchHandler>(profile());
@@ -1423,8 +1423,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
   void ForceLaunchApp(const std::string& app_id, int32_t window_id) {
-    if (arc_app_launch_handler_) {
-      arc_app_launch_handler_->LaunchAppWindow(app_id, window_id);
+    if (arc_app_queue_restore_handler_) {
+      arc_app_queue_restore_handler_->LaunchAppWindow(app_id, window_id);
       content::RunAllTasksUntilIdle();
     }
   }
@@ -1560,7 +1560,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
   }
 
  protected:
-  app_restore::ArcAppLaunchHandler* arc_app_launch_handler_ = nullptr;
+  app_restore::ArcAppQueueRestoreHandler* arc_app_queue_restore_handler_ =
+      nullptr;
   AppRestoreArcTestHelper arc_helper_;
 
  private:
@@ -2292,7 +2293,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   EXPECT_LT(window->GetProperty(::app_restore::kRestoreWindowIdKey), -1);
 }
 
-class ArcAppLaunchHandlerArcAppBrowserTest
+class ArcAppQueueRestoreHandlerArcAppBrowserTest
     : public FullRestoreAppLaunchHandlerArcAppBrowserTest {
  protected:
   void UpdateApp(const std::string& app_id, apps::Readiness readiness) {
@@ -2318,18 +2319,18 @@ class ArcAppLaunchHandlerArcAppBrowserTest
   }
 
   bool HasRestoreData() {
-    DCHECK(arc_app_launch_handler_);
-    return arc_app_launch_handler_->HasRestoreData();
+    DCHECK(arc_app_queue_restore_handler_);
+    return arc_app_queue_restore_handler_->HasRestoreData();
   }
 
   bool HasRestoreData(const std::string& app_id) {
-    DCHECK(arc_app_launch_handler_);
+    DCHECK(arc_app_queue_restore_handler_);
 
-    for (auto it : arc_app_launch_handler_->windows_) {
+    for (auto it : arc_app_queue_restore_handler_->windows_) {
       if (it.second.app_id == app_id)
         return true;
     }
-    for (auto it : arc_app_launch_handler_->no_stack_windows_) {
+    for (auto it : arc_app_queue_restore_handler_->no_stack_windows_) {
       if (it.app_id == app_id)
         return true;
     }
@@ -2338,33 +2339,33 @@ class ArcAppLaunchHandlerArcAppBrowserTest
   }
 
   std::set<std::string> GetAppIds() {
-    DCHECK(arc_app_launch_handler_);
-    return arc_app_launch_handler_->app_ids_;
+    DCHECK(arc_app_queue_restore_handler_);
+    return arc_app_queue_restore_handler_->app_ids_;
   }
 
   void OnAppConnectionReady() {
-    if (!arc_app_launch_handler_) {
-      arc_app_launch_handler_ =
+    if (!arc_app_queue_restore_handler_) {
+      arc_app_queue_restore_handler_ =
           app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())
-              ->GetFullRestoreArcAppLaunchHandler();
+              ->GetFullRestoreArcAppQueueRestoreHandler();
     }
-    arc_app_launch_handler_->OnAppConnectionReady();
+    arc_app_queue_restore_handler_->OnAppConnectionReady();
   }
 
   void VerifyWindows(int32_t index,
                      const std::string& app_id,
                      int32_t window_id) {
-    DCHECK(arc_app_launch_handler_);
-    auto it = arc_app_launch_handler_->windows_.find(index);
-    ASSERT_TRUE(it != arc_app_launch_handler_->windows_.end());
+    DCHECK(arc_app_queue_restore_handler_);
+    auto it = arc_app_queue_restore_handler_->windows_.find(index);
+    ASSERT_TRUE(it != arc_app_queue_restore_handler_->windows_.end());
     EXPECT_EQ(app_id, it->second.app_id);
     EXPECT_EQ(window_id, it->second.window_id);
   }
 
   void VerifyNoStackWindows(const std::string& app_id, int32_t window_id) {
-    DCHECK(arc_app_launch_handler_);
+    DCHECK(arc_app_queue_restore_handler_);
     bool found = false;
-    for (auto it : arc_app_launch_handler_->no_stack_windows_) {
+    for (auto it : arc_app_queue_restore_handler_->no_stack_windows_) {
       if (it.app_id == app_id && it.window_id == window_id) {
         found = true;
         break;
@@ -2375,7 +2376,7 @@ class ArcAppLaunchHandlerArcAppBrowserTest
 };
 
 // Verify the saved windows in ArcAppLaunchHandler when apps are removed.
-IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RemoveApps) {
+IN_PROC_BROWSER_TEST_F(ArcAppQueueRestoreHandlerArcAppBrowserTest, RemoveApps) {
   SetProfile();
   arc_helper_.InstallTestApps(kTestAppPackage, true);
 
@@ -2454,7 +2455,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RemoveApps) {
 
 // Verify the saved windows in ArcAppLaunchHandler when apps status are
 // modified.
-IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, UpdateApps) {
+IN_PROC_BROWSER_TEST_F(ArcAppQueueRestoreHandlerArcAppBrowserTest, UpdateApps) {
   SetProfile();
   arc_helper_.InstallTestApps(kTestAppPackage, true);
 
@@ -2534,7 +2535,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, UpdateApps) {
 
 // Verify the saved windows in ArcAppLaunchHandler when only restore one of the
 // apps.
-IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreOneApp) {
+IN_PROC_BROWSER_TEST_F(ArcAppQueueRestoreHandlerArcAppBrowserTest,
+                       RestoreOneApp) {
   SetProfile();
   arc_helper_.InstallTestApps(kTestAppPackage, true);
 
@@ -2585,7 +2587,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreOneApp) {
 
 // Verify the saved windows in ArcAppLaunchHandler when one of apps is ready
 // late.
-IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, AppIsReadyLate) {
+IN_PROC_BROWSER_TEST_F(ArcAppQueueRestoreHandlerArcAppBrowserTest,
+                       AppIsReadyLate) {
   SetProfile();
   arc_helper_.InstallTestApps(kTestAppPackage, true);
 
@@ -2657,7 +2660,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, AppIsReadyLate) {
 
 // Verify the restore process when the user clicks the `restore` button very
 // late after the OnAppConnectionReady is called.
-IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreLate) {
+IN_PROC_BROWSER_TEST_F(ArcAppQueueRestoreHandlerArcAppBrowserTest,
+                       RestoreLate) {
   SetProfile();
   arc_helper_.InstallTestApps(kTestAppPackage, true);
 

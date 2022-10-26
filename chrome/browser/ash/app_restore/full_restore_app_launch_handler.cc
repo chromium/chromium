@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
-#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -247,7 +247,8 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
   VLOG(1) << "Restore apps in " << profile()->GetPath();
   if (auto* arc_task_handler =
           app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())) {
-    arc_task_handler->GetFullRestoreArcAppLaunchHandler()->RestoreArcApps(this);
+    arc_task_handler->GetFullRestoreArcAppQueueRestoreHandler()->RestoreArcApps(
+        this);
   }
 
   MaybeRestoreLacros();

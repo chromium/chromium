@@ -23,7 +23,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
 namespace app_restore {
 
-class ArcAppLaunchHandler;
+class ArcAppQueueRestoreHandler;
 
 namespace {
 
@@ -65,15 +65,18 @@ class AppRestoreArcTaskHandler : public KeyedService,
   // which window info should be applied.
   bool IsAppPendingRestore(const std::string& arc_app_id) const;
 
-  // Get or create full restore arc app launch handler.
-  ArcAppLaunchHandler* GetFullRestoreArcAppLaunchHandler();
+  // Get or create full restore arc app queue restore handler.
+  ArcAppQueueRestoreHandler* GetFullRestoreArcAppQueueRestoreHandler();
 
-  // Get or create window predictor arc app launch handler by `launch_id`.
-  ArcAppLaunchHandler* GetWindowPredictorArcAppLaunchHandler(int32_t launch_id);
+  // Get or create window predictor arc app queue restore handler by
+  // `launch_id`.
+  ArcAppQueueRestoreHandler* GetWindowPredictorArcAppQueueRestoreHandler(
+      int32_t launch_id);
 
-  // Get or create desk template arc app launch handler by `launch_id`.
-  ArcAppLaunchHandler* GetDeskTemplateArcAppLaunchHandler(int32_t launch_id);
-  void ClearDeskTemplateArcAppLaunchHandler(int32_t launch_id);
+  // Get or create desk template arc app queue restore handler by `launch_id`.
+  ArcAppQueueRestoreHandler* GetDeskTemplateArcAppQueueRestoreHandler(
+      int32_t launch_id);
+  void ClearDeskTemplateArcAppQueueRestoreHandler(int32_t launch_id);
 
   // ArcAppListPrefs::Observer.
   void OnAppStatesChanged(const std::string& id,
@@ -105,8 +108,9 @@ class AppRestoreArcTaskHandler : public KeyedService,
  private:
   friend class ash::full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
-  ArcAppLaunchHandler* CreateOrGetArcAppLaunchHandler(LauncherTag launcher_tag,
-                                                      bool call_init_callback);
+  ArcAppQueueRestoreHandler* CreateOrGetArcAppQueueRestoreHandler(
+      LauncherTag launcher_tag,
+      bool call_init_callback);
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
@@ -115,9 +119,9 @@ class AppRestoreArcTaskHandler : public KeyedService,
   std::unique_ptr<full_restore::ArcGhostWindowHandler> window_handler_;
 #endif
 
-  // Maps LauncherTag to ArcAppLaunchHandlers.
-  std::map<LauncherTag, std::unique_ptr<ArcAppLaunchHandler>>
-      arc_app_launch_handlers_;
+  // Maps LauncherTag to ArcAppQueueRestoreHandlers.
+  std::map<LauncherTag, std::unique_ptr<ArcAppQueueRestoreHandler>>
+      arc_app_queue_restore_handlers_;
 
   // These cache the readiness status of the subsystems needed to launch ARC
   // apps. They are used when new handlers are dynamically created so that the

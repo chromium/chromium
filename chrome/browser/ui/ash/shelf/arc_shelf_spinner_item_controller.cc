@@ -6,7 +6,7 @@
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
-#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
@@ -57,7 +57,7 @@ void ArcShelfSpinnerItemController::ItemSelected(
       window_info_->window_id >
           app_restore::kArcSessionIdOffsetForRestoredLaunching) {
     ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(observed_profile_)
-        ->GetFullRestoreArcAppLaunchHandler()
+        ->GetFullRestoreArcAppQueueRestoreHandler()
         ->LaunchApp(app_id());
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;

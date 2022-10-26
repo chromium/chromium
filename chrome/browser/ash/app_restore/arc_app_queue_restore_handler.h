@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_LAUNCH_HANDLER_H_
-#define CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_LAUNCH_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_QUEUE_RESTORE_HANDLER_H_
+#define CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_QUEUE_RESTORE_HANDLER_H_
 
 #include <list>
 #include <map>
@@ -34,7 +34,7 @@ namespace ash {
 class AppLaunchHandler;
 
 namespace full_restore {
-class ArcAppLaunchHandlerArcAppBrowserTest;
+class ArcAppQueueRestoreHandlerArcAppBrowserTest;
 class ArcGhostWindowHandler;
 class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 }  // namespace full_restore
@@ -101,9 +101,9 @@ constexpr char kRestoredAppWindowCountHistogram[] =
 // has finished in `kAppLaunchDelay` timeframe, we stop the restoration process.
 constexpr base::TimeDelta kStopRestoreDelay = base::Minutes(1);
 
-// The ArcAppLaunchHandler class restores ARC apps during the system startup
-// phase.
-class ArcAppLaunchHandler
+// The ArcAppQueueRestoreHandler class restores ARC apps during the system
+// startup phase.
+class ArcAppQueueRestoreHandler
     : public apps::AppRegistryCache::Observer,
       public ResourcedClient::Observer,
       public wm::ActivationChangeObserver,
@@ -116,10 +116,11 @@ class ArcAppLaunchHandler
     int32_t window_id;
   };
 
-  ArcAppLaunchHandler();
-  ArcAppLaunchHandler(const ArcAppLaunchHandler&) = delete;
-  ArcAppLaunchHandler& operator=(const ArcAppLaunchHandler&) = delete;
-  ~ArcAppLaunchHandler() override;
+  ArcAppQueueRestoreHandler();
+  ArcAppQueueRestoreHandler(const ArcAppQueueRestoreHandler&) = delete;
+  ArcAppQueueRestoreHandler& operator=(const ArcAppQueueRestoreHandler&) =
+      delete;
+  ~ArcAppQueueRestoreHandler() override;
 
   // Invoked when the restoration process can start. Reads the restore data, and
   // add the ARC apps windows to `windows_` and `no_stack_windows_`. For each
@@ -162,7 +163,7 @@ class ArcAppLaunchHandler
   }
 
  private:
-  friend class full_restore::ArcAppLaunchHandlerArcAppBrowserTest;
+  friend class full_restore::ArcAppQueueRestoreHandlerArcAppBrowserTest;
   friend class full_restore::FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
   // Reads the restore data, and add the ARC app windows to `windows_`,
@@ -315,10 +316,10 @@ class ArcAppLaunchHandler
   base::ScopedObservation<ResourcedClient, ResourcedClient::Observer>
       resourced_client_observer_{this};
 
-  base::WeakPtrFactory<ArcAppLaunchHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ArcAppQueueRestoreHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace app_restore
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_LAUNCH_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_QUEUE_RESTORE_HANDLER_H_

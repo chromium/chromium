@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
-#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -107,7 +107,8 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
   auto data_handler = std::make_unique<ArcPredictorAppLaunchHandler>();
   data_handler->AddPendingApp(arc_app_id, event_flags, window_type,
                               std::move(predict_window_info));
-  arc_task_handler->GetWindowPredictorArcAppLaunchHandler(handlers_.size())
+  arc_task_handler
+      ->GetWindowPredictorArcAppQueueRestoreHandler(handlers_.size())
       ->RestoreArcApps(data_handler.get());
   handlers_.push_back(std::move(data_handler));
 
