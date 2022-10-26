@@ -166,7 +166,6 @@ void ServiceController::Stop() {
     return;
 
   DVLOG(1) << "Stopping Libassistant service";
-  SetStateAndInformObservers(ServiceState::kStopped);
 
   for (auto& observer : assistant_client_observers_) {
     observer.OnDestroyingAssistantClient(assistant_client_.get());
@@ -175,10 +174,11 @@ void ServiceController::Stop() {
   assistant_client_ = nullptr;
   chromium_api_delegate_ = nullptr;
 
+  DVLOG(1) << "Stopped Libassistant service";
+  SetStateAndInformObservers(ServiceState::kStopped);
+
   for (auto& observer : assistant_client_observers_)
     observer.OnAssistantClientDestroyed();
-
-  DVLOG(1) << "Stopped Libassistant service";
 }
 
 void ServiceController::ResetAllDataAndStop() {

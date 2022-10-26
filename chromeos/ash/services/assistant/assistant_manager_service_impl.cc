@@ -248,7 +248,7 @@ void AssistantManagerServiceImpl::Stop() {
   DCHECK_NE(GetState(), State::STARTING);
 
   weak_factory_.InvalidateWeakPtrs();
-  SetStateAndInformObservers(State::STOPPED);
+  SetStateAndInformObservers(State::STOPPING);
 
   media_host_->Stop();
   scoped_app_list_event_subscriber_.Reset();
@@ -442,6 +442,7 @@ void AssistantManagerServiceImpl::OnStateChanged(
       OnServiceRunning();
       break;
     case ServiceState::kStopped:
+      OnServiceStopped();
       break;
   }
 }
@@ -479,6 +480,7 @@ void AssistantManagerServiceImpl::OnServiceStarted() {
 bool AssistantManagerServiceImpl::IsServiceStarted() const {
   switch (state_) {
     case State::STOPPED:
+    case State::STOPPING:
     case State::STARTING:
       return false;
     case State::STARTED:
@@ -521,6 +523,25 @@ void AssistantManagerServiceImpl::OnServiceRunning() {
 
   if (base::FeatureList::IsEnabled(assistant::features::kAssistantAppSupport))
     scoped_app_list_event_subscriber_.Observe(device_actions());
+}
+
+void AssistantManagerServiceImpl::OnServiceStopped() {
+  // Valid `STOPPED` will only be called after `STOPPING`.
+  // However, a false `STOPPED` may be received.
+  // An ideal situation would be:
+  // 1. `AddAndFireStateObserver()` is called.
+  // 2. `ServiceController` sends the current state, e.g. STOPPED.
+  // However, since it takes a longer time (through mojom to another thread),
+  // the `state_` in this class could be temporary out of sync. For example:
+  // 1. `AddAndFireStateObserver()` is called when the `state_` is STOPPED.
+  // 2. `Start()`: sets `state_` to STARTING.
+  // 3. `ServiceController` sends the current state inside it, which is STOPPED.
+  // 4. `OnStateChanged()` receives STOPPED, but the `state_` is STARTING.
+  // We will ignore the invalid STOPPED signal.
+  if (GetState() != State::STOPPING)
+    return;
+
+  SetStateAndInformObservers(State::STOPPED);
 }
 
 void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(

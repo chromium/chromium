@@ -122,6 +122,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   void OnStateChanged(AssistantManagerService::State new_state) override;
 
   void UpdateAssistantManagerState();
+  void ScheduleUpdateAssistantManagerState();
 
   CoreAccountInfo RetrievePrimaryAccountInfo() const;
   void RequestAccessToken();

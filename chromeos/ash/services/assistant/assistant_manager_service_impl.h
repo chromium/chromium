@@ -190,6 +190,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void InitAssistant(const absl::optional<UserInfo>& user);
   void OnServiceStarted();
   void OnServiceRunning();
+  void OnServiceStopped();
   bool IsServiceStarted() const;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();

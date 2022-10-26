@@ -67,6 +67,7 @@ AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
 
   switch (state) {
     case State::STOPPED:
+    case State::STOPPING:
     case State::STARTING:
     case State::STARTED:
       return AssistantStatus::NOT_READY;
@@ -378,13 +379,10 @@ void Service::UpdateAssistantManagerState() {
         return;
       }
       // Wait if |assistant_manager_service_| is not at a stable state.
-      update_assistant_manager_callback_.Cancel();
-      update_assistant_manager_callback_.Reset(
-          base::BindOnce(&Service::UpdateAssistantManagerState,
-                         weak_ptr_factory_.GetWeakPtr()));
-      main_task_runner_->PostDelayedTask(
-          FROM_HERE, update_assistant_manager_callback_.callback(),
-          kUpdateAssistantManagerDelay);
+      ScheduleUpdateAssistantManagerState();
+      break;
+    case AssistantManagerService::State::STOPPING:
+      ScheduleUpdateAssistantManagerState();
       break;
     case AssistantManagerService::State::RUNNING:
       if (assistant_state->settings_enabled().value()) {
@@ -399,6 +397,15 @@ void Service::UpdateAssistantManagerState() {
       }
       break;
   }
+}
+
+void Service::ScheduleUpdateAssistantManagerState() {
+  update_assistant_manager_callback_.Cancel();
+  update_assistant_manager_callback_.Reset(base::BindOnce(
+      &Service::UpdateAssistantManagerState, weak_ptr_factory_.GetWeakPtr()));
+  main_task_runner_->PostDelayedTask(
+      FROM_HERE, update_assistant_manager_callback_.callback(),
+      kUpdateAssistantManagerDelay);
 }
 
 CoreAccountInfo Service::RetrievePrimaryAccountInfo() const {

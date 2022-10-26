@@ -585,9 +585,13 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStopping) {
   StrictMock<StateObserverMock> observer;
   AddStateObserver(&observer);
   EXPECT_CALL(observer,
+              OnStateChanged(AssistantManagerService::State::STOPPING));
+  EXPECT_CALL(observer,
               OnStateChanged(AssistantManagerService::State::STOPPED));
 
   assistant_manager_service()->Stop();
+  WaitForState(AssistantManagerService::STOPPING);
+  WaitForState(AssistantManagerService::STOPPED);
 
   assistant_manager_service()->RemoveStateObserver(&observer);
 }
