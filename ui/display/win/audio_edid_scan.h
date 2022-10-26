@@ -19,9 +19,10 @@ namespace win {
 // paths using the WmiGetMonitorRawEEdidV1Block method returns the EDID
 // blocks for those devices.  We query the extended blocks which contain
 // the Short Audio Descriptor (SAD), and parse them to obtain a bitmask
-// indicating which audio content is supported.  The mask consists of
-// AudioParameters::Format flags.  If multiple EDID devices are present,
-// the intersection of flags is reported.
+// indicating which audio content is supported.  The bitmask bits are
+// defined in edid_parser.h, as returned from the EdidParser::audio_formats()
+// method.  If multiple EDID devices are present, the intersection is
+// reported as the bitmask.
 DISPLAY_EXPORT uint32_t ScanEdidBitstreams();
 
 }  // namespace win
