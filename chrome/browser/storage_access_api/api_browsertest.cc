@@ -831,9 +831,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
   EXPECT_FALSE(
       storage::test::RequestStorageAccessForOrigin(GetFrame(), "mattwashere"));
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(), base::StrCat({"https://", kHostA})));
+      GetPrimaryMainFrame(), GetURL(kHostA).spec()));
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetFrame(), base::StrCat({"https://", kHostA})));
+      GetFrame(), GetURL(kHostA).spec()));
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
@@ -842,7 +842,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
                                            GURL("data:,Hello%2C%20World%21")));
 
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(), base::StrCat({"https://", kHostA})));
+      GetPrimaryMainFrame(), GetURL(kHostA).spec()));
 }
 
 // Validate that if an iframe requests access that cookies become unblocked for
@@ -865,15 +865,11 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(),
-      base::StrCat({"https://", kHostB, ":",
-                    base::NumberToString(https_server().port())})));
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
   // Repeated calls should also return true.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(),
-      base::StrCat({"https://", kHostB, ":",
-                    base::NumberToString(https_server().port())})));
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is sent:
@@ -1050,9 +1046,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   // `khostB`. Note that `kHostB` would not be auto-granted access if it were
   // the requestor, because it is a service domain.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(),
-      base::StrCat({"https://", kHostB, ":",
-                    base::NumberToString(https_server().port())})));
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
@@ -1093,9 +1087,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
   // The promise should be rejected; `khostB` is a service domain.
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(),
-      base::StrCat({"https://", kHostA, ":",
-                    base::NumberToString(https_server().port())})));
+      GetPrimaryMainFrame(), GetURL(kHostA).spec()));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Re-navigate iframe to a cross-site, cookie-reading endpoint, and verify
@@ -1131,8 +1123,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   // because the call is not from the top-level page and because `kHostB` is a
   // service domain.
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetFrame(), base::StrCat({"https://", kHostA, ":",
-                                base::NumberToString(https_server().port())})));
+      GetFrame(), GetURL(kHostA).spec()));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
@@ -1175,9 +1166,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   // this configuration, because the requesting site (`kHostA`) is not in the
   // same First-Party Set as the requested site (`kHostD`).
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetPrimaryMainFrame(),
-      base::StrCat({"https://", kHostD, ":",
-                    base::NumberToString(https_server().port())})));
+      GetPrimaryMainFrame(), GetURL(kHostD).spec()));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
