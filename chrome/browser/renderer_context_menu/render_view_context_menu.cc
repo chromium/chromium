@@ -1038,6 +1038,8 @@ void RenderViewContextMenu::InitMenu() {
     AppendPrintItem();
   }
 
+  // Partial Translate is not supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(translate::kDesktopPartialTranslate) &&
       content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_PARTIAL_TRANSLATE)) {
@@ -1048,6 +1050,7 @@ void RenderViewContextMenu::InitMenu() {
       AppendPartialTranslateItem();
     }
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Spell check and writing direction options are not currently supported by
   // pepper plugins.

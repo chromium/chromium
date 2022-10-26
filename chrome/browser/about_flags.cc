@@ -9622,7 +9622,8 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"desktop-partial-translate",
      flag_descriptions::kDesktopPartialTranslateName,
-     flag_descriptions::kDesktopPartialTranslateDescription, kOsDesktop,
+     flag_descriptions::kDesktopPartialTranslateDescription,
+     kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(translate::kDesktopPartialTranslate)},
 #endif
 
