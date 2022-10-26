@@ -32,13 +32,8 @@ export type AcceleratorSource = AcceleratorInfoTypes.AcceleratorSource;
 export const AcceleratorSource = AcceleratorInfoTypes.AcceleratorSource;
 
 /** Enumeration of accelerator types. */
-export enum AcceleratorType {
-  DEFAULT,
-  USER_DEFINED,
-  DEPRECATED,
-  DEVELOPER,
-  DEBUG,
-}
+export type AcceleratorType = AcceleratorInfoTypes.AcceleratorType;
+export const AcceleratorType = AcceleratorInfoTypes.AcceleratorType;
 
 /** Enumeration of accelerator states. */
 export enum AcceleratorState {

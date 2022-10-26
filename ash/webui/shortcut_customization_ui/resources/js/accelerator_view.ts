@@ -53,7 +53,7 @@ function getModifierString(modifier: Modifier): string {
 function createEmptyAcceleratorInfo(): AcceleratorInfo {
   return {
     accelerator: {modifiers: 0, key: 0, keyDisplay: ''},
-    type: AcceleratorType.DEFAULT,
+    type: AcceleratorType.kDefault,
     state: AcceleratorState.ENABLED,
     locked: false,
   };

@@ -34,7 +34,7 @@ const accelerator: AcceleratorKeys = {
 
 const defaultAcceleratorInfoState: AcceleratorInfo = {
   accelerator,
-  type: AcceleratorType.DEFAULT,
+  type: AcceleratorType.kDefault,
   state: AcceleratorState.ENABLED,
   locked: false,
 };

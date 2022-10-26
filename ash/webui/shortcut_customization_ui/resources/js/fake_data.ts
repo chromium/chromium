@@ -27,7 +27,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
   [AcceleratorSource.kAsh]: {
     // Snap Window Left
     [0]: [{
-      type: AcceleratorType.DEFAULT,
+      type: AcceleratorType.kDefault,
       state: AcceleratorState.ENABLED,
       locked: true,
       accelerator: {
@@ -38,7 +38,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     }],
     // Snap Window Right
     [1]: [{
-      type: AcceleratorType.DEFAULT,
+      type: AcceleratorType.kDefault,
       state: AcceleratorState.ENABLED,
       locked: false,
       accelerator: {
@@ -49,7 +49,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     }],
     // New Desk
     [2]: [{
-      type: AcceleratorType.DEFAULT,
+      type: AcceleratorType.kDefault,
       state: AcceleratorState.ENABLED,
       locked: false,
       accelerator: {
@@ -60,7 +60,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
     }],
     // Remove Desk
     [3]: [{
-      type: AcceleratorType.DEFAULT,
+      type: AcceleratorType.kDefault,
       state: AcceleratorState.ENABLED,
       locked: false,
       accelerator: {
@@ -73,7 +73,7 @@ export const fakeAcceleratorConfig: AcceleratorConfig = {
   [AcceleratorSource.kBrowser]: {
     // New Tab
     [1001]: [{
-      type: AcceleratorType.DEFAULT,
+      type: AcceleratorType.kDefault,
       state: AcceleratorState.ENABLED,
       locked: true,
       accelerator: {
