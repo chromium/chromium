@@ -380,7 +380,8 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // Create a special exclusion past everything, so that the container(s) may
     // grow to encompass the floats, if appropriate.
     NGBfcOffset past_everything(LayoutUnit(),
-                                FragmentainerSpaceLeft(parent_space));
+                                FragmentainerSpaceLeft(parent_space) +
+                                    parent_space.ExpectedBfcBlockOffset());
     const NGExclusion* exclusion = NGExclusion::Create(
         NGBfcRect(past_everything, past_everything), float_type);
     exclusion_space->Add(std::move(exclusion));
