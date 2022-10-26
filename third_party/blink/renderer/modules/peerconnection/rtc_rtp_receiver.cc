@@ -220,6 +220,14 @@ void RTCRtpReceiver::ContextDestroyed() {
     base::AutoLock locker(audio_underlying_sink_lock_);
     audio_to_decoder_underlying_sink_.Clear();
   }
+  {
+    base::AutoLock locker(video_underlying_source_lock_);
+    video_from_depacketizer_underlying_source_.Clear();
+  }
+  {
+    base::AutoLock locker(video_underlying_sink_lock_);
+    video_to_decoder_underlying_sink_.Clear();
+  }
 }
 
 void RTCRtpReceiver::Trace(Visitor* visitor) const {
