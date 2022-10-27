@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 
 #include "ash/public/cpp/login_screen.h"
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -53,6 +54,8 @@ UserCreationScreen::UserCreationScreen(base::WeakPtr<UserCreationView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(UserCreationView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
+      histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
+          ErrorScreensHistogramHelper::ErrorParentScreen::kUserCreation)),
       error_screen_(error_screen),
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
@@ -98,6 +101,8 @@ void UserCreationScreen::ShowImpl() {
 
   if (!error_screen_visible_)
     view_->Show();
+
+  histogram_helper_->OnScreenShow();
 }
 
 void UserCreationScreen::HideImpl() {
@@ -147,6 +152,7 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
     error_screen_visible_ = true;
     error_screen_->SetParentScreen(UserCreationView::kScreenId);
     error_screen_->ShowNetworkErrorMessage(state, reason);
+    histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
   } else {
     error_screen_->HideCaptivePortal();
     if (error_screen_visible_ &&
@@ -155,6 +161,7 @@ void UserCreationScreen::UpdateState(NetworkError::ErrorReason reason) {
       error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
       error_screen_->Hide();
       view_->Show();
+      histogram_helper_->OnErrorHide();
     }
   }
 }

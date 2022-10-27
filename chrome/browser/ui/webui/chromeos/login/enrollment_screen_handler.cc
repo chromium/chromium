@@ -219,7 +219,8 @@ EnrollmentScreenHandler::EnrollmentScreenHandler(
     : BaseScreenHandler(kScreenId),
       network_state_informer_(network_state_informer),
       error_screen_(error_screen),
-      histogram_helper_(new ErrorScreensHistogramHelper("Enrollment")) {
+      histogram_helper_(new ErrorScreensHistogramHelper(
+          ash::ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment)) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   set_user_acted_method_path_deprecated(

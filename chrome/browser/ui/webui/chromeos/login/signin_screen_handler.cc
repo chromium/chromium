@@ -70,8 +70,8 @@ SigninScreenHandler::SigninScreenHandler(
       error_screen_(error_screen),
       proxy_auth_dialog_reload_times_(kMaxGaiaReloadForProxyAuthDialog),
       gaia_screen_handler_(gaia_screen_handler),
-      histogram_helper_(
-          std::make_unique<ErrorScreensHistogramHelper>("Signin")) {
+      histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
+          ash::ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   gaia_screen_handler_->set_signin_screen_handler(this);

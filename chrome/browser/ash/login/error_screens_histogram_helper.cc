@@ -17,8 +17,29 @@ const int kTimeMinInMS = 10;
 const int kTimeMaxInMinutes = 3;
 const int kTimeBucketCount = 50;
 
-std::string ErrorToString(NetworkError::ErrorState error) {
-  switch (error) {
+}  // namespace
+
+std::string ErrorScreensHistogramHelper::GetParentScreenString() {
+  switch (parent_screen_) {
+    case ErrorParentScreen::kEnrollment:
+      return "Enrollment";
+    case ErrorParentScreen::kSignin:
+      return "Signin";
+    case ErrorParentScreen::kUpdate:
+      return "Update";
+    case ErrorParentScreen::kUpdateRequired:
+      return "UpdateRequired";
+    case ErrorParentScreen::kUserCreation:
+      return "UserCreation";
+    default:
+      NOTREACHED() << "Invalid ErrorParentScreen "
+                   << static_cast<int>(parent_screen_);
+      return std::string();
+  }
+}
+
+std::string ErrorScreensHistogramHelper::GetLastErrorShownString() {
+  switch (last_error_shown_) {
     case NetworkError::ERROR_STATE_PORTAL:
       return ".Portal";
     case NetworkError::ERROR_STATE_OFFLINE:
@@ -28,34 +49,34 @@ std::string ErrorToString(NetworkError::ErrorState error) {
     case NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT:
       return ".AuthExtTimeout";
     default:
-      NOTREACHED() << "Invalid ErrorState " << error;
+      NOTREACHED() << "Invalid ErrorState " << last_error_shown_;
       return std::string();
   }
 }
 
-void StoreErrorScreenToHistogram(const std::string& screen_name,
-                                 NetworkError::ErrorState error) {
-  if (error <= NetworkError::ERROR_STATE_UNKNOWN ||
-      error > NetworkError::ERROR_STATE_NONE)
+void ErrorScreensHistogramHelper::StoreErrorScreenToHistogram() {
+  if (last_error_shown_ <= NetworkError::ERROR_STATE_UNKNOWN ||
+      last_error_shown_ > NetworkError::ERROR_STATE_NONE)
     return;
-  std::string histogram_name = kOobeErrorScreensCounterPrefix + screen_name;
+  std::string histogram_name =
+      kOobeErrorScreensCounterPrefix + GetParentScreenString();
   int boundary = NetworkError::ERROR_STATE_NONE + 1;
   // This comes from UMA_HISTOGRAM_ENUMERATION macros. Can't use it because of
   // non const histogram name.
   base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
       histogram_name, 1, boundary, boundary + 1,
       base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(error);
+  histogram->Add(last_error_shown_);
 }
 
-void StoreTimeOnErrorScreenToHistogram(const std::string& screen_name,
-                                       NetworkError::ErrorState error,
-                                       const base::TimeDelta& time_delta) {
-  if (error <= NetworkError::ERROR_STATE_UNKNOWN ||
-      error > NetworkError::ERROR_STATE_NONE)
+void ErrorScreensHistogramHelper::StoreTimeOnErrorScreenToHistogram(
+    const base::TimeDelta& time_delta) {
+  if (last_error_shown_ <= NetworkError::ERROR_STATE_UNKNOWN ||
+      last_error_shown_ > NetworkError::ERROR_STATE_NONE)
     return;
-  std::string histogram_name =
-      kOobeTimeSpentOnErrorScreensPrefix + screen_name + ErrorToString(error);
+  std::string histogram_name = kOobeTimeSpentOnErrorScreensPrefix +
+                               GetParentScreenString() +
+                               GetLastErrorShownString();
 
   // This comes from UMA_HISTOGRAM_MEDIUM_TIMES macros. Can't use it because of
   // non const histogram name.
@@ -67,13 +88,9 @@ void StoreTimeOnErrorScreenToHistogram(const std::string& screen_name,
   histogram->AddTime(time_delta);
 }
 
-}  // namespace
-
 ErrorScreensHistogramHelper::ErrorScreensHistogramHelper(
-    const std::string& screen_name)
-    : screen_name_(screen_name),
-      was_shown_(false),
-      last_error_shown_(NetworkError::ERROR_STATE_NONE) {}
+    ErrorParentScreen parent_screen)
+    : parent_screen_(parent_screen) {}
 
 void ErrorScreensHistogramHelper::OnScreenShow() {
   was_shown_ = true;
@@ -89,7 +106,7 @@ void ErrorScreensHistogramHelper::OnErrorShowTime(
   last_error_shown_ = error;
   if (error_screen_start_time_.is_null())
     error_screen_start_time_ = now;
-  StoreErrorScreenToHistogram(screen_name_, error);
+  StoreErrorScreenToHistogram();
 }
 
 void ErrorScreensHistogramHelper::OnErrorHide() {
@@ -106,14 +123,13 @@ void ErrorScreensHistogramHelper::OnErrorHideTime(base::Time now) {
 ErrorScreensHistogramHelper::~ErrorScreensHistogramHelper() {
   if (was_shown_) {
     if (last_error_shown_ == NetworkError::ERROR_STATE_NONE) {
-      StoreErrorScreenToHistogram(screen_name_, NetworkError::ERROR_STATE_NONE);
+      StoreErrorScreenToHistogram();
     } else {
       if (!error_screen_start_time_.is_null()) {
         time_on_error_screens_ += base::Time::Now() - error_screen_start_time_;
         error_screen_start_time_ = base::Time();
       }
-      StoreTimeOnErrorScreenToHistogram(screen_name_, last_error_shown_,
-                                        time_on_error_screens_);
+      StoreTimeOnErrorScreenToHistogram(time_on_error_screens_);
     }
   }
 }

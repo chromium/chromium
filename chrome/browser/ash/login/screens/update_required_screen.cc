@@ -57,8 +57,8 @@ UpdateRequiredScreen::UpdateRequiredScreen(
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(std::move(exit_callback)),
-      histogram_helper_(
-          std::make_unique<ErrorScreensHistogramHelper>("UpdateRequired")),
+      histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
+          ErrorScreensHistogramHelper::ErrorParentScreen::kUpdateRequired)),
       version_updater_(std::make_unique<VersionUpdater>(this)),
       clock_(base::DefaultClock::GetInstance()) {
   error_message_delay_ = kDelayErrorMessage;

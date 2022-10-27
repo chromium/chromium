@@ -14,106 +14,119 @@
 
 namespace ash {
 
+namespace {
+
+constexpr char kErrorShownEnrollmentHistogram[] =
+    "OOBE.NetworkErrorShown.Enrollment";
+constexpr char kErrorShownSigninHistogram[] = "OOBE.NetworkErrorShown.Signin";
+constexpr char kErrorTimeEnrollmentPortalHistogram[] =
+    "OOBE.ErrorScreensTime.Enrollment.Portal";
+constexpr char kErrorTimeUserCreationProxyHistogram[] =
+    "OOBE.ErrorScreensTime.UserCreation.Proxy";
+
+}  // namespace
+
 class ErrorScreensHistogramHelperTest : public testing::Test {
  public:
   void SetUp() override {
-    helper_ = std::make_unique<ErrorScreensHistogramHelper>("TestScreen");
-    second_helper_ =
-        std::make_unique<ErrorScreensHistogramHelper>("TestScreen2");
+    enrollment_helper = std::make_unique<ErrorScreensHistogramHelper>(
+        ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment);
+    signin_helper = std::make_unique<ErrorScreensHistogramHelper>(
+        ErrorScreensHistogramHelper::ErrorParentScreen::kSignin);
+    user_creation_helper = std::make_unique<ErrorScreensHistogramHelper>(
+        ErrorScreensHistogramHelper::ErrorParentScreen::kUserCreation);
   }
 
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histograms_;
-  std::unique_ptr<ErrorScreensHistogramHelper> helper_;
-  std::unique_ptr<ErrorScreensHistogramHelper> second_helper_;
+  std::unique_ptr<ErrorScreensHistogramHelper> enrollment_helper;
+  std::unique_ptr<ErrorScreensHistogramHelper> signin_helper;
+  std::unique_ptr<ErrorScreensHistogramHelper> user_creation_helper;
 };
 
 // No errors when screen was not shown.
 TEST_F(ErrorScreensHistogramHelperTest, DoesNotShowScreen) {
-  helper_.reset();
-  histograms_.ExpectTotalCount("OOBE.NetworkErrorShown.TestScreen", 0);
+  enrollment_helper.reset();
+  histograms_.ExpectTotalCount(kErrorShownEnrollmentHistogram, 0);
 }
 
 // No errors when screen was shown and error was not.
 TEST_F(ErrorScreensHistogramHelperTest, ShowScreenWithoutError) {
-  helper_->OnScreenShow();
-  helper_.reset();
-  second_helper_->OnScreenShow();
-  second_helper_.reset();
-  histograms_.ExpectUniqueSample("OOBE.NetworkErrorShown.TestScreen",
+  enrollment_helper->OnScreenShow();
+  enrollment_helper.reset();
+  signin_helper->OnScreenShow();
+  signin_helper.reset();
+  histograms_.ExpectUniqueSample(kErrorShownEnrollmentHistogram,
                                  NetworkError::ERROR_STATE_NONE, 1);
-  histograms_.ExpectUniqueSample("OOBE.NetworkErrorShown.TestScreen2",
+  histograms_.ExpectUniqueSample(kErrorShownSigninHistogram,
                                  NetworkError::ERROR_STATE_NONE, 1);
 }
 
 // Show 3 offline errors and 1 portal error. Make sure in time histograms logged
 // portal error only.
 TEST_F(ErrorScreensHistogramHelperTest, ShowScreenAndError) {
-  helper_->OnScreenShow();
-  second_helper_->OnScreenShow();
-  helper_->OnErrorShow(NetworkError::ERROR_STATE_OFFLINE);
-  second_helper_->OnErrorShow(NetworkError::ERROR_STATE_PORTAL);
-  helper_->OnErrorShow(NetworkError::ERROR_STATE_OFFLINE);
-  helper_->OnErrorHide();
-  second_helper_->OnErrorHide();
-  helper_->OnErrorShow(NetworkError::ERROR_STATE_OFFLINE);
-  histograms_.ExpectUniqueSample("OOBE.NetworkErrorShown.TestScreen",
+  enrollment_helper->OnScreenShow();
+  signin_helper->OnScreenShow();
+  enrollment_helper->OnErrorShow(NetworkError::ERROR_STATE_OFFLINE);
+  signin_helper->OnErrorShow(NetworkError::ERROR_STATE_PORTAL);
+  enrollment_helper->OnErrorShow(NetworkError::ERROR_STATE_OFFLINE);
+  enrollment_helper->OnErrorHide();
+  signin_helper->OnErrorHide();
+  enrollment_helper->OnErrorShow(NetworkError::ERROR_STATE_OFFLINE);
+  histograms_.ExpectUniqueSample(kErrorShownEnrollmentHistogram,
                                  NetworkError::ERROR_STATE_OFFLINE, 3);
-  histograms_.ExpectUniqueSample("OOBE.NetworkErrorShown.TestScreen2",
+  histograms_.ExpectUniqueSample(kErrorShownSigninHistogram,
                                  NetworkError::ERROR_STATE_PORTAL, 1);
-  helper_->OnErrorShow(NetworkError::ERROR_STATE_PORTAL);
-  histograms_.ExpectBucketCount("OOBE.NetworkErrorShown.TestScreen",
+  enrollment_helper->OnErrorShow(NetworkError::ERROR_STATE_PORTAL);
+  histograms_.ExpectBucketCount(kErrorShownEnrollmentHistogram,
                                 NetworkError::ERROR_STATE_PORTAL, 1);
-  histograms_.ExpectTotalCount("OOBE.ErrorScreensTime.TestScreen.Portal", 0);
-  helper_.reset();
-  histograms_.ExpectTotalCount("OOBE.ErrorScreensTime.TestScreen.Portal", 1);
+  histograms_.ExpectTotalCount(kErrorTimeEnrollmentPortalHistogram, 0);
+  enrollment_helper.reset();
+  histograms_.ExpectTotalCount(kErrorTimeEnrollmentPortalHistogram, 1);
 }
 
 // Show error and hide it after 1 sec.
 TEST_F(ErrorScreensHistogramHelperTest, TestShowHideTime) {
-  helper_->OnScreenShow();
-  second_helper_->OnScreenShow();
+  enrollment_helper->OnScreenShow();
+  signin_helper->OnScreenShow();
   base::Time now = base::Time::Now();
-  helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
+  enrollment_helper->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
   now += base::Milliseconds(1000);
-  helper_->OnErrorHideTime(now);
-  helper_.reset();
-  histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
-                                 1000, 1);
+  enrollment_helper->OnErrorHideTime(now);
+  enrollment_helper.reset();
+  histograms_.ExpectUniqueSample(kErrorTimeEnrollmentPortalHistogram, 1000, 1);
 }
 
 // Show, hide, show, hide error with 1 sec interval. Make sure time logged in
 // histogram is 2 sec.
 TEST_F(ErrorScreensHistogramHelperTest, TestShowHideShowHideTime) {
-  helper_->OnScreenShow();
-  second_helper_->OnScreenShow();
+  enrollment_helper->OnScreenShow();
+  signin_helper->OnScreenShow();
   base::Time now = base::Time::Now();
-  helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
+  enrollment_helper->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
   now += base::Milliseconds(1000);
-  helper_->OnErrorHideTime(now);
+  enrollment_helper->OnErrorHideTime(now);
   now += base::Milliseconds(1000);
-  helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
+  enrollment_helper->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
   now += base::Milliseconds(1000);
-  helper_->OnErrorHideTime(now);
-  helper_.reset();
-  histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
-                                 2000, 1);
+  enrollment_helper->OnErrorHideTime(now);
+  enrollment_helper.reset();
+  histograms_.ExpectUniqueSample(kErrorTimeEnrollmentPortalHistogram, 2000, 1);
 }
 
 // Show, show, hide error with 1 sec interval. Make sure time logged in
 // histogram is 2 sec.
 TEST_F(ErrorScreensHistogramHelperTest, TestShowShowHideTime) {
-  helper_->OnScreenShow();
-  second_helper_->OnScreenShow();
+  user_creation_helper->OnScreenShow();
+  signin_helper->OnScreenShow();
   base::Time now = base::Time::Now();
-  helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
+  user_creation_helper->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
   now += base::Milliseconds(1000);
-  helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
+  user_creation_helper->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
   now += base::Milliseconds(1000);
-  helper_->OnErrorHideTime(now);
-  helper_.reset();
-  histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
-                                 2000, 1);
+  user_creation_helper->OnErrorHideTime(now);
+  user_creation_helper.reset();
+  histograms_.ExpectUniqueSample(kErrorTimeUserCreationProxyHistogram, 2000, 1);
 }
 
 }  // namespace ash

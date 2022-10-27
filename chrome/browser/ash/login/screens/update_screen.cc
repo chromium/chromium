@@ -113,8 +113,8 @@ UpdateScreen::UpdateScreen(base::WeakPtr<UpdateView> view,
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
-      histogram_helper_(
-          std::make_unique<ErrorScreensHistogramHelper>("Update")),
+      histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
+          ErrorScreensHistogramHelper::ErrorParentScreen::kUpdate)),
       version_updater_(std::make_unique<VersionUpdater>(this)),
       wait_before_reboot_time_(kWaitBeforeRebootTime),
       show_delay_(kDefaultShowDelay),

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
@@ -72,6 +73,8 @@ class UserCreationScreen
   base::WeakPtr<UserCreationView> view_;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
+
+  std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
       scoped_observation_{this};

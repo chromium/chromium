@@ -42,7 +42,8 @@ AutoEnrollmentCheckScreen::AutoEnrollmentCheckScreen(
       view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback),
-      histogram_helper_(new ErrorScreensHistogramHelper("Enrollment")) {}
+      histogram_helper_(new ErrorScreensHistogramHelper(
+          ErrorScreensHistogramHelper::ErrorParentScreen::kEnrollment)) {}
 
 AutoEnrollmentCheckScreen::~AutoEnrollmentCheckScreen() {
   if (NetworkHandler::IsInitialized())
