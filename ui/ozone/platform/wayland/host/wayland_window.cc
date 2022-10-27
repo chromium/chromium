@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -241,6 +242,11 @@ bool WaylandWindow::StartDrag(
   if (!alive)
     return false;
   return true;
+}
+
+void WaylandWindow::UpdateDragImage(const gfx::ImageSkia& image,
+                                    const gfx::Vector2d& offset) {
+  NOTIMPLEMENTED();
 }
 
 void WaylandWindow::CancelDrag() {

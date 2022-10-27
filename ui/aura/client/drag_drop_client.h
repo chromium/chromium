@@ -12,7 +12,9 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
+class ImageSkia;
 class Point;
+class Vector2d;
 }
 
 namespace ui {
@@ -28,7 +30,7 @@ class DragDropClientObserver;
 // An interface implemented by an object that controls a drag and drop session.
 class AURA_EXPORT DragDropClient {
  public:
-  virtual ~DragDropClient() {}
+  virtual ~DragDropClient() = default;
 
   // Initiates a drag and drop session. Returns the drag operation that was
   // applied at the end of the drag drop session. |screen_location| is in
@@ -41,6 +43,16 @@ class AURA_EXPORT DragDropClient {
       const gfx::Point& screen_location,
       int allowed_operations,
       ui::mojom::DragEventSource source) = 0;
+
+#if BUILDFLAG(IS_LINUX)
+  // Updates the drag image. An empty |image| may be used to hide a previously
+  // set non-empty drag image, and a non-empty |image| shows the drag image
+  // again if it was previously hidden.
+  //
+  // This must be called during an active drag and drop session.
+  virtual void UpdateDragImage(const gfx::ImageSkia& image,
+                               const gfx::Vector2d& offset) = 0;
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Called when a drag and drop session is cancelled.
   virtual void DragCancel() = 0;

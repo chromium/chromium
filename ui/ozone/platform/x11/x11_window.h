@@ -189,6 +189,8 @@ class X11Window : public PlatformWindow,
                  WmDragHandler::DragFinishedCallback drag_finished_callback,
                  WmDragHandler::LocationDelegate* delegate) override;
   void CancelDrag() override;
+  void UpdateDragImage(const gfx::ImageSkia& image,
+                       const gfx::Vector2d& offset) override;
 
   // XDragDropClient::Delegate
   absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;

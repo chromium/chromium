@@ -194,6 +194,14 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   return drag_operation_;
 }
 
+#if BUILDFLAG(IS_LINUX)
+void DesktopDragDropClientOzone::UpdateDragImage(const gfx::ImageSkia& image,
+                                                 const gfx::Vector2d& offset) {
+  DCHECK(drag_handler_);
+  drag_handler_->UpdateDragImage(image, offset);
+}
+#endif  // BUILDFLAG(LINUX)
+
 void DesktopDragDropClientOzone::DragCancel() {
   ResetDragDropTarget(true);
   drag_operation_ = DragOperation::kNone;

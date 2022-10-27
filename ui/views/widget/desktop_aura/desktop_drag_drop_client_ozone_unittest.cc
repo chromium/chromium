@@ -121,6 +121,9 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
 
   void CancelDrag() override { drag_loop_quit_closure_.Run(); }
 
+  void UpdateDragImage(const gfx::ImageSkia& image,
+                       const gfx::Vector2d& offset) override {}
+
   void OnDragEnter(const gfx::PointF& point,
                    std::unique_ptr<OSExchangeData> data,
                    int operation) {

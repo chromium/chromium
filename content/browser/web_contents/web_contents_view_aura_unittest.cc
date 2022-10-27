@@ -98,6 +98,10 @@ class TestDragDropClient : public aura::client::DragDropClient {
     drag_drop_data_ = std::move(data);
     return DragOperation::kCopy;
   }
+#if BUILDFLAG(IS_LINUX)
+  void UpdateDragImage(const gfx::ImageSkia& image,
+                       const gfx::Vector2d& offset) override {}
+#endif
   void DragCancel() override { drag_in_progress_ = false; }
   bool IsDragDropInProgress() override { return drag_in_progress_; }
   void AddObserver(aura::client::DragDropClientObserver* observer) override {}

@@ -1550,6 +1550,11 @@ void X11Window::CancelDrag() {
   QuitDragLoop();
 }
 
+void X11Window::UpdateDragImage(const gfx::ImageSkia& image,
+                                const gfx::Vector2d& offset) {
+  NOTIMPLEMENTED();
+}
+
 absl::optional<gfx::AcceleratedWidget> X11Window::GetDragWidget() {
   DCHECK(drag_location_delegate_);
   return drag_location_delegate_->GetDragWidget();
