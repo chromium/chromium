@@ -46,30 +46,6 @@ class DIPSDatabase {
 
   absl::optional<StateValue> Read(const std::string& site);
 
-  // Returns all sites that did a bounce after |range_start| with their last
-  // interaction happening before |last_interaction|.
-  //
-  // Note: |last_interaction| must be earlier than |range_start|.
-  std::vector<std::string> GetSitesThatBounced(
-      base::Time range_start,
-      base::Time last_interaction) const;
-
-  // Returns all sites that did a stateful bounce after |range_start| with their
-  // last interaction happening before |last_interaction|.
-  //
-  // Note: |last_interaction| must be earlier than |range_start|.
-  std::vector<std::string> GetSitesThatBouncedWithState(
-      base::Time range_start,
-      base::Time last_interaction) const;
-
-  // Returns all sites that wrote to storage after |range_start| with their last
-  // interaction happening before |last_interaction|.
-  //
-  // Note: |last_interaction| must be earlier than |range_start|.
-  std::vector<std::string> GetSitesThatUsedStorage(
-      base::Time range_start,
-      base::Time last_interaction) const;
-
   // Delete the row from the bounces table for `site`. Returns true if query
   // executes successfully.
   bool RemoveRow(const std::string& site);

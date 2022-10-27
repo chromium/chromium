@@ -176,30 +176,6 @@ void DIPSStorage::RecordStatelessBounce(const GURL& url, base::Time time) {
   Read(url).update_stateless_bounce_time(time);
 }
 
-std::vector<std::string> DIPSStorage::GetSitesThatBounced(
-    base::Time range_start,
-    base::Time last_interaction) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatBounced(range_start, last_interaction);
-}
-
-std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState(
-    base::Time range_start,
-    base::Time last_interaction) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatBouncedWithState(range_start, last_interaction);
-}
-
-std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
-    base::Time range_start,
-    base::Time last_interaction) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_);
-  return db_->GetSitesThatUsedStorage(range_start, last_interaction);
-}
-
 /* static */
 size_t DIPSStorage::SetPrepopulateChunkSizeForTesting(size_t size) {
   return std::exchange(g_prepopulate_chunk_size, size);
