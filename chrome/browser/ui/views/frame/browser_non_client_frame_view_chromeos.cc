@@ -295,15 +295,10 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
   SkColor fallback_color = chromeos::kDefaultFrameColor;
 
   if (chromeos::features::IsDarkLightModeEnabled() && GetWidget()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    bool use_debug_colors = base::FeatureList::IsEnabled(
-        ash::features::kSemanticColorsDebugOverride);
-#else
-    bool use_debug_colors = false;
-#endif
-    fallback_color = cros_styles::ResolveColor(
-        cros_styles::ColorName::kBgColor,
-        GetNativeTheme()->ShouldUseDarkColors(), use_debug_colors);
+    // TODO(skau): Migrate to ColorProvider.
+    fallback_color =
+        cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                  GetNativeTheme()->ShouldUseDarkColors());
   }
 
   return color.value_or(fallback_color);

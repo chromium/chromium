@@ -7575,10 +7575,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseWallpaperStagingUrlName,
      flag_descriptions::kUseWallpaperStagingUrlDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kUseWallpaperStagingUrl)},
-    {"semantic-colors-debug-override",
-     flag_descriptions::kSemanticColorsDebugOverrideName,
-     flag_descriptions::kSemanticColorsDebugOverrideDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kSemanticColorsDebugOverride)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"autofill-enable-virtual-card",

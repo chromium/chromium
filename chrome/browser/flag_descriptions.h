@@ -162,9 +162,6 @@ extern const char kUseStorkSmdsServerAddressDescription[];
 extern const char kUseWallpaperStagingUrlName[];
 extern const char kUseWallpaperStagingUrlDescription[];
 
-extern const char kSemanticColorsDebugOverrideName[];
-extern const char kSemanticColorsDebugOverrideDescription[];
-
 extern const char kUseMessagesStagingUrlName[];
 extern const char kUseMessagesStagingUrlDescription[];
 
