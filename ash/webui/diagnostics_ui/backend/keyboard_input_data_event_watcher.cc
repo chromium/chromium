@@ -11,6 +11,8 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/strings/stringprintf.h"
@@ -43,6 +45,18 @@ KeyboardInputDataEventWatcher::KeyboardInputDataEventWatcher(
   Start();
 }
 
+KeyboardInputDataEventWatcher::KeyboardInputDataEventWatcher(
+    uint32_t id,
+    const base::FilePath& device_path,
+    int read_fd,
+    base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher)
+    : id_(id),
+      path_(device_path),
+      fd_(read_fd),
+      input_device_fd_(fd_),
+      dispatcher_(dispatcher),
+      controller_(FROM_HERE) {}
+
 KeyboardInputDataEventWatcher::~KeyboardInputDataEventWatcher() = default;
 
 void KeyboardInputDataEventWatcher::Start() {
@@ -54,6 +68,11 @@ void KeyboardInputDataEventWatcher::Start() {
 void KeyboardInputDataEventWatcher::Stop() {
   controller_.StopWatchingFileDescriptor();
   watching_ = false;
+}
+
+void KeyboardInputDataEventWatcher::SetQuitClosureForTesting(
+    base::OnceClosure quit_closure) {
+  quit_closure_ = std::move(quit_closure);
 }
 
 void KeyboardInputDataEventWatcher::OnFileCanReadWithoutBlocking(int fd) {
@@ -82,6 +101,11 @@ void KeyboardInputDataEventWatcher::ConvertKeyEvent(uint32_t key_code,
   bool down = key_state != kKeyReleaseValue;
   if (dispatcher_)
     dispatcher_->SendInputKeyEvent(id_, key_code, scan_code, down);
+
+  // `quit_closure_` used to stop tests.
+  if (quit_closure_) {
+    std::move(quit_closure_).Run();
+  }
 }
 
 // Process evdev event structures directly from the kernel.
@@ -102,7 +126,6 @@ void KeyboardInputDataEventWatcher::ProcessEvent(const input_event& input) {
       if (input.code == SYN_REPORT)
         ConvertKeyEvent(pending_key_code_, pending_key_state_,
                         pending_scan_code_);
-
       pending_key_code_ = 0;
       pending_key_state_ = 0;
       pending_scan_code_ = 0;

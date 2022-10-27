@@ -8,6 +8,7 @@
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
 #include "base/message_loop/message_pump_for_ui.h"
 
 namespace ash::diagnostics {
@@ -39,6 +40,14 @@ class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
   KeyboardInputDataEventWatcher(
       uint32_t id,
       base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher);
+
+  // Constructor for unittests.
+  KeyboardInputDataEventWatcher(
+      uint32_t id,
+      const base::FilePath& device_path,
+      const int fd,
+      base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher);
+
   ~KeyboardInputDataEventWatcher() override;
 
   void ConvertKeyEvent(uint32_t key_code,
@@ -47,6 +56,8 @@ class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
   void ProcessEvent(const input_event& input) override;
   void Start();
   void Stop();
+
+  void SetQuitClosureForTesting(base::OnceClosure quit_closure);
 
  protected:
   // base::MessagePumpForUI::FdWatcher:
@@ -69,9 +80,11 @@ class KeyboardInputDataEventWatcher : public InputDataEventWatcher,
   bool watching_ = false;
 
   // EV_ information pending for SYN_REPORT to dispatch.
-  uint32_t pending_scan_code_;
-  uint32_t pending_key_code_;
-  uint32_t pending_key_state_;
+  uint32_t pending_scan_code_ = 0;
+  uint32_t pending_key_code_ = 0;
+  uint32_t pending_key_state_ = 0;
+
+  base::OnceClosure quit_closure_;
 
   base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;
 
