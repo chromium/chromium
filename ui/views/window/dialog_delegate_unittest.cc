@@ -16,6 +16,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
@@ -97,6 +98,8 @@ class DialogTest : public ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
+
+    views::InputEventActivationProtector::DisableForTesting();
 
     // These tests all expect to use a custom frame on the dialog so they can
     // control hit-testing and other behavior. Custom frames are only supported

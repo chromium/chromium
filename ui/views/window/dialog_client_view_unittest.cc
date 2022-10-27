@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -66,6 +67,13 @@ class DialogClientViewTest : public test::WidgetTest {
   }
 
  protected:
+  class AwaitCompletionChecker {
+   public:
+    virtual void WaitForOnPaint() = 0;
+
+    virtual void WaitForFramePresented() = 0;
+  };
+
   gfx::Rect GetUpdatedClientBounds() {
     SizeAndLayoutWidget();
     return client_view()->bounds();
@@ -156,11 +164,16 @@ class DialogClientViewTest : public test::WidgetTest {
 
   DialogDelegateView* delegate() { return delegate_; }
 
+  AwaitCompletionChecker* await_completion_checker() {
+    return static_cast<AwaitCompletionChecker*>(delegate_);
+  }
+
   Widget* widget() { return widget_; }
   test::TestLayoutProvider* layout_provider() { return layout_provider_.get(); }
 
  private:
-  class TestDialogDelegateView : public DialogDelegateView {
+  class TestDialogDelegateView : public DialogDelegateView,
+                                 public AwaitCompletionChecker {
    public:
     explicit TestDialogDelegateView(DialogClientViewTest* parent)
         : parent_(parent) {}
@@ -169,17 +182,45 @@ class DialogClientViewTest : public test::WidgetTest {
     gfx::Size CalculatePreferredSize() const override {
       return parent_->preferred_size_;
     }
+
+    // View:
     gfx::Size GetMinimumSize() const override { return parent_->min_size_; }
     gfx::Size GetMaximumSize() const override { return parent_->max_size_; }
+    void OnPaint(gfx::Canvas* canvas) override {
+      EXPECT_TRUE(GetWidget()->IsVisible());
+      DialogDelegateView::OnPaint(canvas);
+      if (run_loop_)
+        run_loop_->Quit();
+    }
+
+    void WaitForOnPaint() override {
+      base::RunLoop run_loop;
+      run_loop_ = &run_loop;
+      run_loop_->Run();
+      run_loop_ = nullptr;
+    }
+
+    void WaitForFramePresented() override {
+      base::RunLoop run_loop;
+      GetWidget()->GetCompositor()->RequestPresentationTimeForNextFrame(
+          base::BindOnce(
+              [&](base::OnceClosure quit,
+                  const gfx::PresentationFeedback& feedback) {
+                std::move(quit).Run();
+              },
+              run_loop.QuitClosure()));
+      run_loop.Run();
+    }
 
    private:
     const raw_ptr<DialogClientViewTest> parent_;
+    raw_ptr<base::RunLoop> run_loop_ = nullptr;
   };
 
   // The dialog Widget.
   std::unique_ptr<test::TestLayoutProvider> layout_provider_;
   raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<DialogDelegateView> delegate_ = nullptr;
+  raw_ptr<TestDialogDelegateView> delegate_ = nullptr;
 
   gfx::Size preferred_size_;
   gfx::Size min_size_;
@@ -536,14 +577,27 @@ TEST_F(DialogClientViewTest, FocusChangingButtons) {
 
 // Ensures that clicks are ignored for short time after view has been shown.
 TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
-  widget()->Show();
+  widget()->SetBounds(gfx::Rect(100, 100, 300, 300));
   SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  widget()->Show();
 
   // Should ignore clicks right after the dialog is shown.
   ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_FALSE(widget()->IsClosed());
+
+  // Should ignore clicks right after the dialog is painted.
+  await_completion_checker()->WaitForOnPaint();
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_FALSE(widget()->IsClosed());
+
+  // Should ignore clicks right after the dialog is presented.
+  await_completion_checker()->WaitForFramePresented();
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
@@ -557,8 +611,10 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
 // Ensures that repeated clicks with short intervals after view has been shown
 // are also ignored.
 TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
-  widget()->Show();
+  widget()->SetBounds(gfx::Rect(100, 100, 300, 300));
   SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  widget()->Show();
+  await_completion_checker()->WaitForFramePresented();
 
   const base::TimeTicks kNow = ui::EventTimeForNow();
   const base::TimeDelta kShortClickInterval =
@@ -591,6 +647,35 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
   cancel_button.NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                            gfx::Point(), event_time,
                                            ui::EF_NONE, ui::EF_NONE));
+  EXPECT_TRUE(widget()->IsClosed());
+}
+
+// Ensures that repeated clicks with short intervals after repainting view are
+// also ignored.
+TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterChanged) {
+  widget()->SetBounds(gfx::Rect(100, 100, 300, 300));
+  SetDialogButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  widget()->Show();
+  await_completion_checker()->WaitForFramePresented();
+
+  // Should ignore clicks right after the dialog is repainting.
+  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+  test::ButtonTestApi cancel_button(client_view()->cancel_button());
+  widget()->SetSize(gfx::Size(250, 250));
+  await_completion_checker()->WaitForOnPaint();
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_FALSE(widget()->IsClosed());
+
+  await_completion_checker()->WaitForFramePresented();
+  test::ButtonTestApi(client_view()->ok_button()).NotifyClick(mouse_event);
+  cancel_button.NotifyClick(mouse_event);
+  EXPECT_FALSE(widget()->IsClosed());
+  cancel_button.NotifyClick(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
+      ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
 

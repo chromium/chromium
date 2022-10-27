@@ -16,7 +16,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -155,6 +158,25 @@ gfx::Size DialogClientView::GetMaximumSize() const {
 void DialogClientView::VisibilityChanged(View* starting_from, bool is_visible) {
   ClientView::VisibilityChanged(starting_from, is_visible);
   input_protector_.VisibilityChanged(is_visible);
+}
+
+void DialogClientView::OnPaint(gfx::Canvas* canvas) {
+  ClientView::OnPaint(canvas);
+
+  if (!InputEventActivationProtector::IsDisabledForTesting()) {
+    GetWidget()->GetCompositor()->RequestPresentationTimeForNextFrame(
+        base::BindOnce(&DialogClientView::OnFramePresented,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void DialogClientView::OnFramePresented(
+    const gfx::PresentationFeedback& feedback) {
+  // Record time stamp of input protector from this point. It is still ok if the
+  // owned frame is dropped after calling |RequestPresentationTimeForNextFrame|,
+  // the time stamp is very close to the time of presenting this view to screen.
+  // TODO(crbug.com/1378612): Handle failure feedback.
+  input_protector_.UpdateViewShownTimeStamp();
 }
 
 void DialogClientView::Layout() {

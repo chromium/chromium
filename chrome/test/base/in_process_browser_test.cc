@@ -132,6 +132,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/test/views/accessibility_checker.h"
+#include "ui/views/input_event_activation_protector.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
@@ -456,6 +457,10 @@ void InProcessBrowserTest::SetUp() {
   // don't typically account for this possibly, so it can cause unrelated tests
   // to fail. See crbug.com/1050012.
   Tab::SetShowHoverCardOnMouseHoverForTesting(false);
+
+  // Disable input event protector to avoid failures of clicking too quickly on
+  // bubble/dialog
+  views::InputEventActivationProtector::DisableForTesting();
 #endif  // defined(TOOLKIT_VIEWS)
 
   // Auto-redirect to the NTP, which can happen if remote content is enabled on

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -942,6 +943,15 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   std::u16string GetSubtitle() const override { return subtitle_; }
   bool ShouldShowWindowTitle() const override { return !title_.empty(); }
   bool ShouldShowCloseButton() const override { return should_show_close_; }
+
+  // View:
+  void OnPaint(gfx::Canvas* canvas) override {
+    BubbleDialogDelegateView::OnPaint(canvas);
+    EXPECT_TRUE(GetWidget()->IsVisible());
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
   void SetShouldShowCloseButton(bool should_show_close) {
     should_show_close_ = should_show_close;
   }
@@ -955,10 +965,30 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
         GetWidget()->non_client_view()->frame_view());
   }
 
+  void WaitForOnPaint() {
+    base::RunLoop run_loop;
+    run_loop_ = &run_loop;
+    run_loop_->Run();
+    run_loop_ = nullptr;
+  }
+
+  void WaitForFramePresented() {
+    base::RunLoop run_loop;
+    GetWidget()->GetCompositor()->RequestPresentationTimeForNextFrame(
+        base::BindOnce(
+            [&](base::OnceClosure quit,
+                const gfx::PresentationFeedback& feedback) {
+              std::move(quit).Run();
+            },
+            run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
  private:
   std::u16string title_;
   std::u16string subtitle_;
   bool should_show_close_ = false;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 class TestAnchor {
@@ -1320,6 +1350,22 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksClose) {
                                   ui::EF_NONE, ui::EF_NONE));
   EXPECT_FALSE(bubble->IsClosed());
 
+  // Should ignore clicks right after the dialog is painted.
+  delegate->WaitForOnPaint();
+  test::ButtonTestApi(frame->close_)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_NONE, ui::EF_NONE));
+  EXPECT_FALSE(bubble->IsClosed());
+
+  // Should ignore clicks right after the dialog is presented.
+  delegate->WaitForFramePresented();
+  test::ButtonTestApi(frame->close_)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_NONE, ui::EF_NONE));
+  EXPECT_FALSE(bubble->IsClosed());
+
   test::ButtonTestApi(frame->close_)
       .NotifyClick(ui::MouseEvent(
           ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -1340,6 +1386,22 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
   bubble->Show();
 
   BubbleFrameView* frame = delegate->GetBubbleFrameView();
+  test::ButtonTestApi(frame->minimize_)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_NONE, ui::EF_NONE));
+  EXPECT_FALSE(bubble->IsClosed());
+
+  // Should ignore clicks right after the dialog is painted.
+  delegate->WaitForOnPaint();
+  test::ButtonTestApi(frame->minimize_)
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_NONE, ui::EF_NONE));
+  EXPECT_FALSE(bubble->IsClosed());
+
+  // Should ignore clicks right after the dialog is presented.
+  delegate->WaitForFramePresented();
   test::ButtonTestApi(frame->minimize_)
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(),
