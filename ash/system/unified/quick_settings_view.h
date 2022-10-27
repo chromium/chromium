@@ -112,10 +112,15 @@ class ASH_EXPORT QuickSettingsView : public views::View {
  private:
   class SystemTrayContainer;
 
+  // Adds buttons that load some of the tray detailed pages.
+  // TODO(b/255993869): Delete this when feature tiles are working.
+  void AddTemporaryDetailedViewButtons();
+
   // Owned by UnifiedSystemTrayBubble.
   UnifiedSystemTrayController* const controller_;
 
   // Owned by views hierarchy.
+  views::View* temporary_buttons_container_ = nullptr;
   SystemTrayContainer* system_tray_container_ = nullptr;
   QuickSettingsHeader* header_ = nullptr;
   FeatureTilesContainerView* feature_tiles_container_ = nullptr;

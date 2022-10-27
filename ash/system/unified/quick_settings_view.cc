@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "ash/constants/ash_features.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
 #include "ash/system/tray/tray_constants.h"
@@ -18,6 +19,7 @@
 #include "ash/system/unified/quick_settings_header.h"
 #include "ash/system/unified/unified_system_info_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/functional/bind.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -139,6 +141,8 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
   system_tray_container_ =
       AddChildView(std::make_unique<SystemTrayContainer>());
 
+  AddTemporaryDetailedViewButtons();
+
   header_ = system_tray_container_->AddChildView(
       std::make_unique<QuickSettingsHeader>(controller_));
   feature_tiles_container_ = system_tray_container_->AddChildView(
@@ -243,7 +247,9 @@ int QuickSettingsView::CalculateHeightForFeatureTilesContainer() {
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
                                 : 0;
 
-  return max_height_ - header_->GetPreferredSize().height() -
+  return max_height_ -
+         temporary_buttons_container_->GetPreferredSize().height() -
+         header_->GetPreferredSize().height() -
          page_indicator_view_->GetPreferredSize().height() -
          sliders_container_->GetHeight() - media_controls_container_height -
          footer_->GetPreferredSize().height();
@@ -262,7 +268,8 @@ gfx::Size QuickSettingsView::CalculatePreferredSize() const {
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
                                 : 0;
   return gfx::Size(kRevampedTrayMenuWidth,
-                   header_->GetPreferredSize().height() +
+                   temporary_buttons_container_->GetPreferredSize().height() +
+                       header_->GetPreferredSize().height() +
                        feature_tiles_container_->GetPreferredSize().height() +
                        page_indicator_view_->GetExpandedHeight() +
                        sliders_container_->GetHeight() +
@@ -284,6 +291,46 @@ void QuickSettingsView::Layout() {
 
 void QuickSettingsView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
+}
+
+void QuickSettingsView::AddTemporaryDetailedViewButtons() {
+  // While feature tiles are under development, provide some temporary buttons
+  // that allow access to tray detail pages.
+  DCHECK(system_tray_container_);
+  temporary_buttons_container_ =
+      system_tray_container_->AddChildView(std::make_unique<views::View>());
+  auto* layout = temporary_buttons_container_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>());
+  layout->set_between_child_spacing(4);
+
+  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(
+          [](UnifiedSystemTrayController* controller) {
+            controller->ShowNetworkDetailedView(/*force=*/true);
+          },
+          controller_),
+      u"Net"));
+  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(
+          [](UnifiedSystemTrayController* controller) {
+            controller->ShowBluetoothDetailedView();
+          },
+          controller_),
+      u"Bluetooth"));
+  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(
+          [](UnifiedSystemTrayController* controller) {
+            controller->ShowIMEDetailedView();
+          },
+          controller_),
+      u"IME"));
+  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(
+          [](UnifiedSystemTrayController* controller) {
+            controller->ShowAccessibilityDetailedView();
+          },
+          controller_),
+      u"A11y"));
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)
