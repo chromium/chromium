@@ -20,16 +20,6 @@ README.md
 =========
 This file.
 
-wpt.config.json
-===============
-The configuration file used when running WPTServe. Note that this file loads
-after wpt/config.default.json and this configuration gets merged onto it. When
-changing the ports (HTTP/S, WS/S), make sure to also:
-
-- update `WPT_HOST_AND_PORTS` in
-  `//third_party/blink/tools/blinkpy/web_tests/port/driver.py`
-- update WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess()
-
 checkout.sh
 ===========
 Running this script without arguments will remove the existing checkout

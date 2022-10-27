@@ -19,7 +19,7 @@ class WPTServe(server_base.ServerBase):
     def __init__(self, port_obj, output_dir):
         super(WPTServe, self).__init__(port_obj, output_dir)
 
-        # These ports must match wpt_tools/wpt.config.json
+        # These ports must match external/wpt/config.json
         http_port = 8001
         http_alt_port = 8081
         http_private_port = 8082
@@ -77,7 +77,7 @@ class WPTServe(server_base.ServerBase):
         # TODO(burnik): We can probably avoid PID files for WPT in the future.
         fs = self._filesystem
         self._pid_file = fs.join(self._runtime_path, '%s.pid' % self._name)
-        self._config_file = fs.join(self._runtime_path, 'wpt.config.json')
+        self._config_file = fs.join(self._runtime_path, 'config.json')
 
         finder = PathFinder(fs)
         path_to_pywebsocket = finder.path_from_chromium_base(
@@ -112,7 +112,7 @@ class WPTServe(server_base.ServerBase):
             start_cmd.append('--webtransport-h3')
 
         # TODO(burnik): We should stop setting the CWD once WPT can be run without it.
-        self._cwd = path_to_wpt_root
+        self._cwd = finder.path_from_web_tests()
         self._env = port_obj.host.environ.copy()
         self._env.update({'PYTHONPATH': path_to_pywebsocket})
         self._start_cmd = start_cmd
@@ -131,7 +131,8 @@ class WPTServe(server_base.ServerBase):
 
     def _prepare_config(self):
         fs = self._filesystem
-        template_path = fs.join(self.path_to_wpt_support, 'wpt.config.json')
+        finder = PathFinder(fs)
+        template_path = finder.path_from_wpt_tests('config.json')
         config = json.loads(fs.read_text_file(template_path))
         config['aliases'].append({
             'url-path':

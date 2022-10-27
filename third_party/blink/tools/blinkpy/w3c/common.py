@@ -24,6 +24,10 @@ PROVISIONAL_PR_LABEL = 'do not merge yet'
 DEFAULT_WPT_COMMITTER_NAME = 'Chromium WPT Sync'
 DEFAULT_WPT_COMMITTER_EMAIL = 'blink-w3c-test-autoroller@chromium.org'
 
+EXPORT_DENYLIST = {
+    'third_party/blink/web_tests/external/wpt/config.json',
+}
+
 _log = logging.getLogger(__name__)
 
 
@@ -80,20 +84,7 @@ def is_disallowed_ini(filename):
     """
     if not filename.endswith('.ini'):
         return False
-    allowed_inis = [
-        # Configuration for mypy support
-        'mypy.ini',
-        # Configuration of wpt lint
-        'py27-flake8.ini',
-        'py3-flake8.ini',
-        # Configuration of wpt framework unit tests
-        'pytest.ini',
-        'tox.ini',
-        # Contains default locations of tests and manifest for wptrunner.
-        # Required for wptrunner to work.
-        'wptrunner.default.ini',
-    ]
-    return filename not in allowed_inis
+    return True
 
 
 def is_basename_skipped(basename):
@@ -121,4 +112,4 @@ def is_file_exportable(path):
     """
     assert path.startswith(RELATIVE_WPT_TESTS)
     basename = path[path.rfind('/') + 1:]
-    return not is_basename_skipped(basename)
+    return path not in EXPORT_DENYLIST and not is_basename_skipped(basename)

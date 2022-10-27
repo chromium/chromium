@@ -95,8 +95,6 @@ class CommonTest(unittest.TestCase):
         self.assertFalse(is_basename_skipped('something.json'))
 
     def test_is_disallowed_ini(self):
-        self.assertFalse(is_disallowed_ini('tox.ini'))
-        self.assertFalse(is_disallowed_ini("wptrunner.default.ini"))
         self.assertTrue(is_disallowed_ini('test.html.ini'))
         self.assertTrue(is_disallowed_ini('__dir__.ini'))
 
@@ -115,9 +113,6 @@ class CommonTest(unittest.TestCase):
         self.assertFalse(is_file_exportable(RELATIVE_WPT_TESTS + 'dom/OWNERS'))
         self.assertFalse(
             is_file_exportable(RELATIVE_WPT_TESTS + 'dom/DIR_METADATA'))
-        self.assertTrue(
-            is_file_exportable(RELATIVE_WPT_TESTS +
-                               'tools/wptrunner/wptrunner.default.ini'))
         self.assertFalse(
             is_file_exportable(
                 RELATIVE_WPT_TESTS +
