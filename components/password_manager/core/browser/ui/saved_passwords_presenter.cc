@@ -451,6 +451,14 @@ std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups()
   return GetAffiliatedGroupsWithGroupingInfo(password_grouping_info_);
 }
 
+std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
+  DCHECK(base::FeatureList::IsEnabled(features::kPasswordsGrouping));
+  // Sort blocked sites.
+  std::sort(password_grouping_info_.blocked_sites.begin(),
+            password_grouping_info_.blocked_sites.end());
+  return password_grouping_info_.blocked_sites;
+}
+
 std::vector<PasswordForm>
 SavedPasswordsPresenter::GetCorrespondingPasswordForms(
     const CredentialUIEntry& credential) const {

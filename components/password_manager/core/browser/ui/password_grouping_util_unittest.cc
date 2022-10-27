@@ -70,6 +70,13 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
   form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
 
+  PasswordForm form2;
+  form2.url = form.url;
+  form2.signon_realm = form.signon_realm;
+  form2.username_value = u"username2";
+  form2.password_value = u"password2";
+  form2.in_store = PasswordForm::Store::kProfileStore;
+
   PasswordForm blocked_form;
   blocked_form.signon_realm = form.signon_realm;
   blocked_form.blocked_by_user = true;
@@ -103,9 +110,10 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
   // Create sort_key_to_password_forms object for test.
   std::multimap<std::string, PasswordForm> sort_key_to_password_forms;
   sort_key_to_password_forms.insert(std::make_pair("test_key1", form));
-  sort_key_to_password_forms.insert(std::make_pair("test_key2", blocked_form));
+  sort_key_to_password_forms.insert(std::make_pair("test_key2", form2));
+  sort_key_to_password_forms.insert(std::make_pair("test_key3", blocked_form));
   sort_key_to_password_forms.insert(
-      std::make_pair("test_key3", federated_form));
+      std::make_pair("test_key4", federated_form));
 
   // Create map_group_id_to_forms object for test.
   std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
@@ -113,19 +121,23 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
   GroupId group_id1(1);
   UsernamePasswordKey test_key1(CreateUsernamePasswordSortKey(form));
   map_group_id_to_forms[group_id1][test_key1].push_back(form);
-  UsernamePasswordKey test_key2(CreateUsernamePasswordSortKey(blocked_form));
-  map_group_id_to_forms[group_id1][test_key2].push_back(blocked_form);
+  UsernamePasswordKey test_key2(CreateUsernamePasswordSortKey(form2));
+  map_group_id_to_forms[group_id1][test_key2].push_back(form2);
   GroupId group_id2(2);
   UsernamePasswordKey test_key3(CreateUsernamePasswordSortKey(federated_form));
   map_group_id_to_forms[group_id2][test_key3].push_back(federated_form);
 
-  PasswordGroupingInfo expect_password_grouping_info;
-  expect_password_grouping_info.map_group_id_to_forms = map_group_id_to_forms;
+  PasswordGroupingInfo expected_password_grouping_info;
+  expected_password_grouping_info.map_group_id_to_forms = map_group_id_to_forms;
+
+  std::vector<password_manager::CredentialUIEntry> expected_blocked_sites;
+  expected_blocked_sites.emplace_back(blocked_form);
 
   PasswordGroupingInfo password_grouping_info =
       GroupPasswords(grouped_facets_vect, sort_key_to_password_forms);
   EXPECT_THAT(password_grouping_info.map_group_id_to_forms,
-              expect_password_grouping_info.map_group_id_to_forms);
+              expected_password_grouping_info.map_group_id_to_forms);
+  EXPECT_THAT(password_grouping_info.blocked_sites, expected_blocked_sites);
 }
 
 }  // namespace password_manager

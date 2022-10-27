@@ -18,6 +18,7 @@
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -1205,6 +1206,24 @@ NSInteger kTrailingSymbolSize = 18;
       [self setEditing:NO animated:YES];
     }
   }
+}
+
+- (void)setAffiliatedGroups:
+            (const std::vector<password_manager::AffiliatedGroup>&)
+                affiliatedGroups
+               blockedSites:
+                   (const std::vector<password_manager::CredentialUIEntry>&)
+                       blockedSites {
+  // TODO(crbug.com/1358974): Use affiliated groups for to display the UI.
+  // Currently converting back to the old logic here so the Password Manager
+  // still works.
+  std::vector<password_manager::CredentialUIEntry> passwords;
+  for (const auto& affiliatedGroup : affiliatedGroups) {
+    for (const auto& credentialGroup : affiliatedGroup.GetCredentialGroups()) {
+      passwords.push_back(std::move(credentialGroup));
+    }
+  }
+  [self setPasswords:std::move(passwords) blockedSites:blockedSites];
 }
 
 - (void)updatePasswordsInOtherAppsDetailedText {

@@ -73,6 +73,7 @@ PasswordForm CreatePasswordForm() {
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
   std::vector<password_manager::CredentialUIEntry> _passwords;
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
+  std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 }
 
 // Number of time the method updateOnDeviceEncryptionSessionAndUpdateTableView
@@ -94,6 +95,16 @@ PasswordForm CreatePasswordForm() {
         blockedSites:
             (std::vector<password_manager::CredentialUIEntry>)blockedSites {
   _passwords = passwords;
+  _blockedSites = blockedSites;
+}
+
+- (void)setAffiliatedGroups:
+            (const std::vector<password_manager::AffiliatedGroup>&)
+                affiliatedGroups
+               blockedSites:
+                   (const std::vector<password_manager::CredentialUIEntry>&)
+                       blockedSites {
+  _affiliatedGroups = affiliatedGroups;
   _blockedSites = blockedSites;
 }
 

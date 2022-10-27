@@ -37,6 +37,10 @@ struct PasswordGroupingInfo {
   // grouped by username-password key password forms.
   std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
       map_group_id_to_forms;
+
+  // Structure to keep track of the blocked sites by user. They are not grouped
+  // into affiliated groups.
+  std::vector<password_manager::CredentialUIEntry> blocked_sites;
 };
 
 // Apply grouping algorithm to credentials. The grouping algorithm group

@@ -12,6 +12,7 @@
 
 namespace password_manager {
 struct CredentialUIEntry;
+class AffiliatedGroup;
 }  // namespace password_manager
 
 // Enum with all possible UI states of password check.
@@ -39,9 +40,20 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
     unmutedCompromisedPasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
+// TODO(crbug.com/1359392): Remove this.
 - (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
         blockedSites:
             (std::vector<password_manager::CredentialUIEntry>)blockedSites;
+
+// Displays affiliated groups for the Password Manager.
+// This method relates to the -setPasswords method above. This will eventually
+// replace it when the feature is done.
+- (void)setAffiliatedGroups:
+            (const std::vector<password_manager::AffiliatedGroup>&)
+                affiliatedGroups
+               blockedSites:
+                   (const std::vector<password_manager::CredentialUIEntry>&)
+                       blockedSites;
 
 // Updates "On/Off" state for Passwords In Other Apps item.
 - (void)updatePasswordsInOtherAppsDetailedText;

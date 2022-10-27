@@ -309,18 +309,24 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 // Provides passwords and blocked forms to the '_consumer'.
 - (void)providePasswordsToConsumer {
-  std::vector<password_manager::CredentialUIEntry> passwords, blockedSites;
-  for (const auto& credential :
-       _savedPasswordsPresenter->GetSavedCredentials()) {
-    if (credential.blocked_by_user) {
-      blockedSites.push_back(std::move(credential));
-    } else {
-      passwords.push_back(std::move(credential));
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordsGrouping)) {
+    [_consumer
+        setAffiliatedGroups:_savedPasswordsPresenter->GetAffiliatedGroups()
+               blockedSites:_savedPasswordsPresenter->GetBlockedSites()];
+  } else {
+    std::vector<password_manager::CredentialUIEntry> passwords, blockedSites;
+    for (const auto& credential :
+         _savedPasswordsPresenter->GetSavedCredentials()) {
+      if (credential.blocked_by_user) {
+        blockedSites.push_back(std::move(credential));
+      } else {
+        passwords.push_back(std::move(credential));
+      }
     }
+    [_consumer setPasswords:std::move(passwords)
+               blockedSites:std::move(blockedSites)];
   }
-
-  [_consumer setPasswords:std::move(passwords)
-             blockedSites:std::move(blockedSites)];
 }
 
 // Returns PasswordCheckUIState based on PasswordCheckState.

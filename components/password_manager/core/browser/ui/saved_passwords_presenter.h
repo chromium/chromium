@@ -162,6 +162,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Returns a list of affiliated groups for the Password Manager.
   std::vector<AffiliatedGroup> GetAffiliatedGroups() const;
 
+  // Returns a list of sites blocked by users for the Password Manager.
+  std::vector<CredentialUIEntry> GetBlockedSites();
+
   // Returns PasswordForms corresponding to |credential|.
   std::vector<PasswordForm> GetCorrespondingPasswordForms(
       const CredentialUIEntry& credential) const;

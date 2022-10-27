@@ -80,8 +80,13 @@ PasswordGroupingInfo GroupPasswords(
   // Extract all sign-on realms to group.
   std::vector<std::string> signon_realms;
   for (auto const& element : sort_key_to_password_forms) {
-    PasswordForm form = element.second;
-    signon_realms.push_back(form.signon_realm);
+    const PasswordForm& form = element.second;
+    // Do not group blocked by user password forms.
+    if (form.blocked_by_user) {
+      password_grouping_info.blocked_sites.emplace_back(form);
+    } else {
+      signon_realms.push_back(form.signon_realm);
+    }
   }
 
   // Construct map to keep track of facet URI to group id mapping.
@@ -92,6 +97,11 @@ PasswordGroupingInfo GroupPasswords(
   // to password form.
   for (auto const& element : sort_key_to_password_forms) {
     PasswordForm form = element.second;
+
+    // Do not group blocked by user password forms.
+    if (form.blocked_by_user)
+      continue;
+
     FacetURI uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
     GroupId group_id = map_facet_to_group_id[uri.canonical_spec()];
 
