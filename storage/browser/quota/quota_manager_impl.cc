@@ -2422,21 +2422,6 @@ void QuotaManagerImpl::DidGetStorageCapacityForHistogram(
         std::min(100, static_cast<int>((available_space * 100 / total_space))));
   }
 
-  GetGlobalUsage(
-      StorageType::kPersistent,
-      base::BindOnce(&QuotaManagerImpl::DidGetPersistentGlobalUsageForHistogram,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void QuotaManagerImpl::DidGetPersistentGlobalUsageForHistogram(
-    int64_t usage,
-    int64_t unlimited_usage) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(usage, -1);
-  DCHECK_GE(unlimited_usage, -1);
-
-  UMA_HISTOGRAM_MBYTES("Quota.GlobalUsageOfPersistentStorage", usage);
-
   // We DumpBucketTable last to ensure the trackers caches are loaded.
   DumpBucketTable(
       base::BindOnce(&QuotaManagerImpl::DidDumpBucketTableForHistogram,

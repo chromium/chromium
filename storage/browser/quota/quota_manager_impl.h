@@ -646,8 +646,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidGetStorageCapacityForHistogram(int64_t usage,
                                          int64_t total_space,
                                          int64_t available_space);
-  void DidGetPersistentGlobalUsageForHistogram(int64_t usage,
-                                               int64_t unlimited_usage);
   void DidDumpBucketTableForHistogram(BucketTableEntries entries);
 
   // Returns the list of bucket ids that should be excluded from eviction due to
@@ -713,8 +711,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DidGetModifiedBetween(GetBucketsCallback callback,
                              blink::mojom::StorageType type,
                              QuotaErrorOr<std::set<BucketLocator>> result);
-
-  void DeleteOnCorrectThread() const;
 
   void MaybeRunStoragePressureCallback(const blink::StorageKey& storage_key,
                                        int64_t total_space,
