@@ -1965,6 +1965,8 @@ component("ash") {
     "wm/desks/desk_animation_base.h",
     "wm/desks/desk_animation_impl.cc",
     "wm/desks/desk_animation_impl.h",
+    "wm/desks/desk_button_base.cc",
+    "wm/desks/desk_button_base.h",
     "wm/desks/desk_drag_proxy.cc",
     "wm/desks/desk_drag_proxy.h",
     "wm/desks/desk_mini_view.cc",

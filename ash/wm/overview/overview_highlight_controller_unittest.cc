@@ -464,7 +464,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
+  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
@@ -517,7 +517,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   // Tests that after the desks templates button (if the feature was enabled),
   // we get to the new desk button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
+  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
 
   // Tests that after the new desk button comes the preview views and the desk
@@ -585,7 +585,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingChromevox) {
 
   // Check for the new desk button.
   SendKey(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN);
-  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->inner_button(),
+  EXPECT_EQ(desk_bar_view->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
 }
 
@@ -639,7 +639,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
             GetHighlightedView());
   SendKey(ui::VKEY_TAB);
 
-  EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->inner_button(),
+  EXPECT_EQ(desk_bar_view1->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -668,7 +668,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view2->expanded_state_new_desk_button()->inner_button(),
+  EXPECT_EQ(desk_bar_view2->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -697,7 +697,7 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
-  EXPECT_EQ(desk_bar_view3->expanded_state_new_desk_button()->inner_button(),
+  EXPECT_EQ(desk_bar_view3->expanded_state_new_desk_button()->GetInnerButton(),
             GetHighlightedView());
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
@@ -853,7 +853,7 @@ TEST_P(DesksOverviewHighlightControllerTest,
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_FALSE(desk_bar_view->IsZeroState());
   const auto* new_desk_button =
-      desk_bar_view->expanded_state_new_desk_button()->inner_button();
+      desk_bar_view->expanded_state_new_desk_button()->GetInnerButton();
   const auto* desks_controller = DesksController::Get();
 
   auto check_name_view_at_index = [this, desks_controller](

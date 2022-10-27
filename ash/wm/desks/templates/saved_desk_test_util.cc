@@ -199,7 +199,7 @@ views::Button* GetExpandedStateDesksTemplatesButton() {
   const auto* desks_bar_view = overview_grid->desks_bar_view();
   return desks_bar_view
              ? desks_bar_view->expanded_state_desks_templates_button()
-                   ->inner_button()
+                   ->GetInnerButton()
              : nullptr;
 }
 

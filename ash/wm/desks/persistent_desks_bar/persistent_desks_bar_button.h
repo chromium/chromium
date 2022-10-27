@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/wm/desks/zero_state_button.h"
+#include "ash/wm/desks/desk_button_base.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -19,6 +19,8 @@ class PersistentDesksBarContextMenu;
 // The button with the desk's name inside the PersistentDesksBarView.
 class PersistentDesksBarDeskButton : public DeskButtonBase {
  public:
+  METADATA_HEADER(PersistentDesksBarDeskButton);
+
   explicit PersistentDesksBarDeskButton(const Desk* desk);
   PersistentDesksBarDeskButton(const PersistentDesksBarDeskButton&) = delete;
   PersistentDesksBarDeskButton& operator=(const PersistentDesksBarDeskButton) =
@@ -30,11 +32,11 @@ class PersistentDesksBarDeskButton : public DeskButtonBase {
 
  private:
   // DeskButtonBase:
-  const char* GetClassName() const override;
-  void OnButtonPressed() override;
   void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+
+  void OnButtonPressed();
 
   const Desk* desk_;
 };
@@ -44,6 +46,8 @@ class PersistentDesksBarDeskButton : public DeskButtonBase {
 // PersistentDesksBarOverviewButton.
 class PersistentDesksBarCircularButton : public views::ImageButton {
  public:
+  METADATA_HEADER(PersistentDesksBarCircularButton);
+
   explicit PersistentDesksBarCircularButton(const gfx::VectorIcon& icon);
   PersistentDesksBarCircularButton(const PersistentDesksBarCircularButton&) =
       delete;
@@ -52,7 +56,6 @@ class PersistentDesksBarCircularButton : public views::ImageButton {
   ~PersistentDesksBarCircularButton() override = default;
 
   // views::ImageButton:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
@@ -69,6 +72,8 @@ class PersistentDesksBarCircularButton : public views::ImageButton {
 class PersistentDesksBarVerticalDotsButton
     : public PersistentDesksBarCircularButton {
  public:
+  METADATA_HEADER(PersistentDesksBarVerticalDotsButton);
+
   PersistentDesksBarVerticalDotsButton();
   PersistentDesksBarVerticalDotsButton(
       const PersistentDesksBarVerticalDotsButton&) = delete;
@@ -80,7 +85,6 @@ class PersistentDesksBarVerticalDotsButton
   friend class DesksTestApi;
 
   // PersistentDesksBarCircularButton:
-  const char* GetClassName() const override;
   void OnButtonPressed() override;
 
   void OnMenuClosed();
@@ -94,6 +98,8 @@ class PersistentDesksBarVerticalDotsButton
 class PersistentDesksBarOverviewButton
     : public PersistentDesksBarCircularButton {
  public:
+  METADATA_HEADER(PersistentDesksBarOverviewButton);
+
   PersistentDesksBarOverviewButton();
   PersistentDesksBarOverviewButton(const PersistentDesksBarOverviewButton&) =
       delete;
@@ -103,7 +109,6 @@ class PersistentDesksBarOverviewButton
 
  private:
   // PersistentDesksBarCircularButton:
-  const char* GetClassName() const override;
   void OnButtonPressed() override;
 };
 

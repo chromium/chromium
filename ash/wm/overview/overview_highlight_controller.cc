@@ -269,14 +269,14 @@ OverviewHighlightController::GetTraversableViews() const {
         }
 
         auto* new_desk_button =
-            bar_view->expanded_state_new_desk_button()->inner_button();
+            bar_view->expanded_state_new_desk_button()->GetInnerButton();
         if (new_desk_button->GetEnabled())
           traversable_views.push_back(new_desk_button);
 
         if (auto* desks_templates_button =
                 bar_view->expanded_state_desks_templates_button()) {
           auto* inner_desks_templates_button =
-              desks_templates_button->inner_button();
+              desks_templates_button->GetInnerButton();
           if (desks_templates_button->GetVisible() &&
               inner_desks_templates_button->GetEnabled()) {
             traversable_views.push_back(inner_desks_templates_button);

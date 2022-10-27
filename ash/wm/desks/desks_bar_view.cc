@@ -1050,7 +1050,7 @@ void DesksBarView::UpdateDesksTemplatesButtonVisibility() {
   }
   if (!expanded_state_desks_templates_button_->GetVisible()) {
     highlight_controller->OnViewDestroyingOrDisabling(
-        expanded_state_desks_templates_button_->inner_button());
+        expanded_state_desks_templates_button_->GetInnerButton());
   }
 
   const int begin_x = GetFirstMiniViewXOffset();

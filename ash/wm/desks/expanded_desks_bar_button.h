@@ -5,6 +5,7 @@
 #ifndef ASH_WM_DESKS_EXPANDED_DESKS_BAR_BUTTON_H_
 #define ASH_WM_DESKS_EXPANDED_DESKS_BAR_BUTTON_H_
 
+#include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -20,11 +21,12 @@ namespace ash {
 
 class DeskButtonBase;
 class DesksBarView;
+class InnerExpandedDesksBarButton;
 
 // A desk button view in the expanded desks bar. It includes the
 // InnerExpandedDesksBarButton and a name label below, which has the same style
 // as a DeskMiniView, but the name label is not changeable and not focusable.
-class ExpandedDesksBarButton : public views::View {
+class ASH_EXPORT ExpandedDesksBarButton : public views::View {
  public:
   METADATA_HEADER(ExpandedDesksBarButton);
 
@@ -39,9 +41,9 @@ class ExpandedDesksBarButton : public views::View {
 
   const gfx::VectorIcon* button_icon() const { return button_icon_; }
 
-  DeskButtonBase* inner_button() { return inner_button_; }
-
   void set_active(bool active) { active_ = active; }
+
+  DeskButtonBase* GetInnerButton();
 
   // Updates `inner_button_`'s state on current desks state.
   void SetButtonState(bool enabled);
@@ -63,7 +65,7 @@ class ExpandedDesksBarButton : public views::View {
   DesksBarView* const bar_view_;  // Not owned.
   const gfx::VectorIcon* const button_icon_;
   const std::u16string button_label_;
-  DeskButtonBase* inner_button_;
+  InnerExpandedDesksBarButton* inner_button_;
   views::Label* label_;
 
   // If `active_` is true, then the border of `inner_button_` will be

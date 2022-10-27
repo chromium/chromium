@@ -72,7 +72,7 @@ PersistentDesksBarContextMenu* DesksTestApi::GetDesksBarContextMenu() {
 SkColor DesksTestApi::GetNewDeskButtonBackgroundColor() {
   return GetDesksBarView()
       ->expanded_state_new_desk_button()
-      ->inner_button()
+      ->GetInnerButton()
       ->background_color_;
 }
 

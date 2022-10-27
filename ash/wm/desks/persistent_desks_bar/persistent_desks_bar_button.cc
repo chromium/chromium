@@ -12,7 +12,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_context_menu.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ui/compositor/layer.h"
+#include "base/functional/bind.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -20,14 +21,25 @@
 namespace ash {
 
 namespace {
+
 constexpr int kCircularButtonSize = 32;
+
+constexpr int kCornerRadius = 8;
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
 // PersistentDesksBarDeskButton:
 
 PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
-    : DeskButtonBase(desk->name(), /*set_text=*/true), desk_(desk) {
+    : DeskButtonBase(
+          desk->name(),
+          /*set_text=*/true,
+          base::BindRepeating(&PersistentDesksBarDeskButton::OnButtonPressed,
+                              base::Unretained(this)),
+          kCornerRadius,
+          kCornerRadius),
+      desk_(desk) {
   // TODO(minch): A11y of bento bar.
   SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
   // Only paint the background of the active desk's button.
@@ -36,10 +48,6 @@ PersistentDesksBarDeskButton::PersistentDesksBarDeskButton(const Desk* desk)
 
 void PersistentDesksBarDeskButton::UpdateText(std::u16string name) {
   SetText(std::move(name));
-}
-
-const char* PersistentDesksBarDeskButton::GetClassName() const {
-  return "PersistentDesksBarDeskButton";
 }
 
 void PersistentDesksBarDeskButton::OnButtonPressed() {
@@ -65,6 +73,9 @@ void PersistentDesksBarDeskButton::OnMouseExited(const ui::MouseEvent& event) {
   SetShouldPaintBackground(desk_ == DesksController::Get()->active_desk());
 }
 
+BEGIN_METADATA(PersistentDesksBarDeskButton, DeskButtonBase)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // PersistentDesksBarCircularButton:
 
@@ -85,10 +96,6 @@ PersistentDesksBarCircularButton::PersistentDesksBarCircularButton(
   views::InstallCircleHighlightPathGenerator(this);
 }
 
-const char* PersistentDesksBarCircularButton::GetClassName() const {
-  return "PersistentDesksBarCircularButton";
-}
-
 gfx::Size PersistentDesksBarCircularButton::CalculatePreferredSize() const {
   return gfx::Size(kCircularButtonSize, kCircularButtonSize);
 }
@@ -103,6 +110,9 @@ void PersistentDesksBarCircularButton::OnThemeChanged() {
            gfx::CreateVectorIcon(icon_, enabled_icon_color));
 }
 
+BEGIN_METADATA(PersistentDesksBarCircularButton, views::ImageButton)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // PersistentDesksBarVerticalDotsButton:
 
@@ -115,10 +125,6 @@ PersistentDesksBarVerticalDotsButton::PersistentDesksBarVerticalDotsButton()
 
 PersistentDesksBarVerticalDotsButton::~PersistentDesksBarVerticalDotsButton() =
     default;
-
-const char* PersistentDesksBarVerticalDotsButton::GetClassName() const {
-  return "PersistentDesksBarVerticalDotsButton";
-}
 
 void PersistentDesksBarVerticalDotsButton::OnButtonPressed() {
   context_menu_->ShowContextMenuForView(this, GetBoundsInScreen().CenterPoint(),
@@ -135,6 +141,10 @@ void PersistentDesksBarVerticalDotsButton::OnMenuClosed() {
       views::InkDropState::DEACTIVATED);
 }
 
+BEGIN_METADATA(PersistentDesksBarVerticalDotsButton,
+               PersistentDesksBarCircularButton)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // PersistentDesksBarOverviewButton:
 
@@ -143,13 +153,13 @@ PersistentDesksBarOverviewButton::PersistentDesksBarOverviewButton()
 
 PersistentDesksBarOverviewButton::~PersistentDesksBarOverviewButton() = default;
 
-const char* PersistentDesksBarOverviewButton::GetClassName() const {
-  return "PersistentDesksBarOverviewButton";
-}
-
 void PersistentDesksBarOverviewButton::OnButtonPressed() {
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kBentoBar);
 }
+
+BEGIN_METADATA(PersistentDesksBarOverviewButton,
+               PersistentDesksBarCircularButton)
+END_METADATA
 
 }  // namespace ash

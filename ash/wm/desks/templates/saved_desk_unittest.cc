@@ -2369,7 +2369,7 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonBorderColor) {
   // Helper to get the color of the border of the desks templates button.
   auto get_border_color = [button]() {
     // The inner button is the one where the border is applied to.
-    DeskButtonBase* inner_button = button->inner_button();
+    DeskButtonBase* inner_button = button->GetInnerButton();
     views::Border* border = inner_button->GetBorder();
     DCHECK(border);
     return border->color();
@@ -4426,7 +4426,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   // desk button should be disabled.
   auto* new_desk_button = GetPrimaryRootDesksBarView()
                               ->expanded_state_new_desk_button()
-                              ->inner_button();
+                              ->GetInnerButton();
   ASSERT_FALSE(controller->CanCreateDesks());
   ASSERT_FALSE(new_desk_button->GetEnabled());
 
