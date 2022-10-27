@@ -10,6 +10,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 namespace ui {
 namespace {
@@ -22,9 +24,9 @@ bool default_check_active_duration = true;
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||  \
     defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
     !defined(NDEBUG)
-#define NOTREACHED_OR_WARN() LOG(WARNING)
+#define DCHECK_OR_WARNING WARNING
 #else
-#define NOTREACHED_OR_WARN() NOTREACHED()
+#define DCHECK_OR_WARNING DCHECK
 #endif
 
 // Log animations that took more than 1m.  When DCHECK is enabled, it will fail
@@ -57,7 +59,10 @@ void CompositorAnimationObserver::ResetIfActive() {
 void CompositorAnimationObserver::NotifyFailure() {
   if (!base::debug::BeingDebugged() &&
       !base::subtle::ScopedTimeClockOverrides::overrides_active()) {
-    NOTREACHED_OR_WARN()
+    TRACE_EVENT_BEGIN("ui", "LongCompositorAnimationObserved",
+                      perfetto::ThreadTrack::Current(), *start_);
+    TRACE_EVENT_END("ui");
+    LOG(DCHECK_OR_WARNING)
         << "CompositorAnimationObserver is active for too long ("
         << (base::TimeTicks::Now() - *start_).InSecondsF()
         << "s) location=" << location_.ToString();
