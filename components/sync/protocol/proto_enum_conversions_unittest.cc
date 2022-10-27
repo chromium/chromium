@@ -101,5 +101,9 @@ TEST(ProtoEnumConversionsTest, GetVirtualCardEnrollmentTypeString) {
       sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType);
 }
 
+TEST(ProtoEnumConversionsTest, GetSavedTabGroupColorString) {
+  TestEnumStringsNonEmpty(sync_pb::SavedTabGroup::SavedTabGroupColor);
+}
+
 }  // namespace
 }  // namespace syncer

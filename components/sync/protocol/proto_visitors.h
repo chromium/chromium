@@ -565,6 +565,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(printers_authorization_server);
   VISIT(priority_preference);
   VISIT(reading_list);
+  VISIT(saved_tab_group);
   VISIT(search_engine);
   VISIT(security_event);
   VISIT(segmentation);
@@ -940,7 +941,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupSpecifics& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroup& proto) {
   VISIT(position);
   VISIT(title);
-  VISIT(color);
+  VISIT_ENUM(color);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {

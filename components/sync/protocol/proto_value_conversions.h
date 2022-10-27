@@ -50,6 +50,7 @@ class PrinterSpecifics;
 class PrintersAuthorizationServerSpecifics;
 class PriorityPreferenceSpecifics;
 class ReadingListSpecifics;
+class SavedTabGroupSpecifics;
 class SearchEngineSpecifics;
 class SecurityEventSpecifics;
 class SegmentationSpecifics;
@@ -194,6 +195,9 @@ base::Value PriorityPreferenceSpecificsToValue(
 
 base::Value ReadingListSpecificsToValue(
     const sync_pb::ReadingListSpecifics& proto);
+
+base::Value SavedTabGroupSpecificsToValue(
+    const sync_pb::SavedTabGroupSpecifics& saved_tab_group_specifics);
 
 base::Value SearchEngineSpecificsToValue(
     const sync_pb::SearchEngineSpecifics& search_engine_specifics);
