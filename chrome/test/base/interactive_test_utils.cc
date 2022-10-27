@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -131,15 +132,13 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
          "interactive tests.";
 #endif
 
-  scoped_refptr<content::MessageLoopRunner> runner =
-      new content::MessageLoopRunner;
-  bool result;
-  result = ui_controls::SendKeyPressNotifyWhenDone(
-      window, key, control, shift, alt, command, runner->QuitClosure());
+  base::RunLoop run_loop;
+  bool result = ui_controls::SendKeyPressNotifyWhenDone(
+      window, key, control, shift, alt, command, run_loop.QuitClosure());
 #if BUILDFLAG(IS_WIN)
   if (!result && ui_test_utils::ShowAndFocusNativeWindow(window)) {
     result = ui_controls::SendKeyPressNotifyWhenDone(
-        window, key, control, shift, alt, command, runner->QuitClosure());
+        window, key, control, shift, alt, command, run_loop.QuitClosure());
   }
 #endif
   if (!result) {
@@ -150,7 +149,9 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
   // Run the message loop. It'll stop running when either the key was received
   // or the test timed out (in which case testing::Test::HasFatalFailure should
   // be set).
-  runner->Run();
+  base::CurrentThread::ScopedNestableTaskAllower allow;
+  run_loop.Run();
+
   return !testing::Test::HasFatalFailure();
 }
 
