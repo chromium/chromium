@@ -5040,31 +5040,31 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUBBLE_CANCEL_BUTTON_LABEL" desc="The label of the button to don't allow the extension(s) to run on the site.">
           No thanks
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_HAS_ACCESS" desc="The title in the footer of the card that shows up on mouse hover of a toolbar action when extension has access to the current site.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_HAS_ACCESS" desc="The title in the card that shows up on mouse hover of a toolbar action when extension has access to the current site.">
           Allowed to read &amp; change
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_BLOCKED_ACCESS" desc="The title in the footer of the card that shows up on mouse hover of a toolbar action when the extension cannot access the current site.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_BLOCKED_ACCESS" desc="The title in the card that shows up on mouse hover of a toolbar action when the extension cannot access the current site.">
           Not allowed to read &amp; change
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_REQUESTS_ACCESS" desc="The title in the footer of the card that shows up on mouse hover of a toolbar action when the extension requests access to the current site.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_REQUESTS_ACCESS" desc="The title in the card that shows up on mouse hover of a toolbar action when the extension requests access to the current site.">
           Requested to read &amp; change
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS" desc="The description in the footer of the card that shows up on mouse hover of a toolbar action when all extensions have access to the current site.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS" desc="The description in the card that shows up on mouse hover of a toolbar action when all extensions have access to the current site.">
           All extensions can read &amp; change <ph name="HOST">$1<ex>google.com</ex></ph>
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS" desc="The description in the footer of the card that shows up on mouse hover of a toolbar action when all extensions cannot access the current site.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS" desc="The description in the card that shows up on mouse hover of a toolbar action when all extensions cannot access the current site.">
           You blocked all extensions from <ph name="HOST">$1<ex>google.com</ex></ph>
         </message>
-         <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_HAS_ACESSS" desc="The description in the footer of the card that shows up on mouse hover of a toolbar action when the extension has access to the current site.">
+         <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_HAS_ACCESS" desc="The description in the card that shows up on mouse hover of a toolbar action when the extension has access to the current site.">
           This extension can read &amp; change <ph name="HOST">$1<ex>google.com</ex></ph>
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_REQUESTS_ACESSS" desc="The description in the footer of the card that shows up on mouse hover of a toolbar action when the extension requests access to the current site.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_REQUESTS_ACCESS" desc="The description in the card that shows up on mouse hover of a toolbar action when the extension requests access to the current site.">
           Click this extension's icon to read &amp; change <ph name="HOST">$1<ex>google.com</ex></ph>
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_PINNED_TEXT" desc="The text in the footer of the card that shows up on mouse hover of a toolbar action when extension was pinned by the administrator.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_PINNED_TEXT" desc="The text in the card that shows up on mouse hover of a toolbar action when extension was pinned by the administrator.">
           Pinned by your administrator
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_INSTALLED_TEXT" desc="The text in the footer of the card that shows up on mouse hover of a toolbar action when extension was installed by the administrator.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_INSTALLED_TEXT" desc="The text in the card that shows up on mouse hover of a toolbar action when extension was installed by the administrator.">
           Installed by your administrator
         </message>
 

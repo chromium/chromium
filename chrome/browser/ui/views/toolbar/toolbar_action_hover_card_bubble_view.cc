@@ -57,16 +57,13 @@ std::u16string GetSiteAccessTitle(
   switch (state) {
     case HoverCardState::SiteAccess::kAllExtensionsAllowed:
     case HoverCardState::SiteAccess::kExtensionHasAccess:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_HAS_ACCESS;
+      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_HAS_ACCESS;
       break;
     case HoverCardState::SiteAccess::kAllExtensionsBlocked:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_BLOCKED_ACCESS;
+      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_BLOCKED_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionRequestsAccess:
-      title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_REQUESTS_ACCESS;
+      title_id = IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_REQUESTS_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
       NOTREACHED();
@@ -81,19 +78,19 @@ std::u16string GetSiteAccessDescription(HoverCardState::SiteAccess state,
   switch (state) {
     case HoverCardState::SiteAccess::kAllExtensionsAllowed:
       title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS;
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_ALLOWED_ACCESS;
       break;
     case HoverCardState::SiteAccess::kAllExtensionsBlocked:
       title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS;
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_ALL_EXTENSIONS_BLOCKED_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionHasAccess:
       title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_HAS_ACESSS;
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_HAS_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionRequestsAccess:
       title_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_REQUESTS_ACESSS;
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_DESCRIPTION_EXTENSION_REQUESTS_ACCESS;
       break;
     case HoverCardState::SiteAccess::kExtensionDoesNotWantAccess:
       NOTREACHED();
@@ -107,11 +104,11 @@ std::u16string GetPolicyText(HoverCardState::AdminPolicy state) {
   switch (state) {
     case HoverCardState::AdminPolicy::kPinnedByAdmin:
       text_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_PINNED_TEXT;
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_PINNED_TEXT;
       break;
     case HoverCardState::AdminPolicy::kInstalledByAdmin:
       text_id =
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_INSTALLED_TEXT;
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_POLICY_LABEL_INSTALLED_TEXT;
       break;
     case HoverCardState::AdminPolicy::kNone:
       NOTREACHED();
