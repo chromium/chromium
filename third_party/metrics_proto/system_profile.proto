@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1045,6 +1045,7 @@ message SystemProfileProto {
     WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST = 29;
     // Hardware Decryption CDM only for Chrome on Windows.
     MEDIA_FOUNDATION_WIDEVINE_CDM = 30;
+    CROWD_DENY = 31;
   }
 
   // Information about what Chrome components are registered and at which
