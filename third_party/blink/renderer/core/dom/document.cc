@@ -1333,10 +1333,15 @@ Node* Document::importNode(Node* imported_node,
     return nullptr;
   }
 
-  // 2. Return a clone of node, with context object and the clone children flag
-  // set if deep is true.
+  // 2. Return a clone of node, with context object, the clone children flag set
+  // if deep is true, and the clone shadows flag set if this is a
+  // DocumentFragment whose host is an HTML template element.
+  auto* fragment = DynamicTo<DocumentFragment>(imported_node);
+  bool clone_shadows_flag = fragment && fragment->IsTemplateContent();
   return imported_node->Clone(
-      *this, deep ? CloneChildrenFlag::kClone : CloneChildrenFlag::kSkip);
+      *this, deep ? (clone_shadows_flag ? CloneChildrenFlag::kCloneWithShadows
+                                        : CloneChildrenFlag::kClone)
+                  : CloneChildrenFlag::kSkip);
 }
 
 Node* Document::adoptNode(Node* source, ExceptionState& exception_state) {
