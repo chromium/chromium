@@ -37,7 +37,7 @@ void RecommendedArcAppFetcher::OnLoadSuccess(base::Value app_list) {
     return;
   }
 
-  base::Value::ConstListView apps = app_value->GetListDeprecated();
+  const base::Value::List& apps = app_value->GetList();
   if (apps.empty()) {
     std::move(callback_).Run({}, DiscoveryError::kErrorMalformedData);
     return;
