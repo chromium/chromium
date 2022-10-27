@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndRecallDeskTest) {
   auto result = extension_function_test_utils::RunFunctionAndReturnSingleResult(
       save_desk_function.get(), R"([])", new_browser);
   EXPECT_TRUE(result->is_dict());
-  auto desk_id = result->GetDict().Find("deskUuid")->GetString();
+  auto desk_id = result->GetDict().Find("savedDeskUuid")->GetString();
   EXPECT_TRUE(base::GUID::ParseCaseInsensitive(desk_id).is_valid());
 
   // Waiting for desk launch animation to settle
@@ -304,6 +304,9 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SaveAndRecallDeskTest) {
           list_desk_function.get(), R"([])", new_browser);
   EXPECT_TRUE(result_1->is_list());
   EXPECT_EQ(1u, result_1->GetList().size());
+  EXPECT_TRUE(result_1->GetList().front().GetDict().Find("savedDeskUuid"));
+  EXPECT_TRUE(result_1->GetList().front().GetDict().Find("savedDeskName"));
+  EXPECT_TRUE(result_1->GetList().front().GetDict().Find("savedDeskType"));
 }
 
 }  // namespace extensions

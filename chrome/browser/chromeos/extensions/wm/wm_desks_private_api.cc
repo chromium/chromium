@@ -26,26 +26,34 @@ constexpr char kApiRemoveDeskResult[] = "Ash.DeskApi.RemoveDesk.Result";
 constexpr char kApiSwitchDeskResult[] = "Ash.DeskApi.SwitchDesk.Result";
 constexpr char kApiAllDeskResult[] = "Ash.DeskApi.AllDesk.Result";
 
-api::wm_desks_private::Desk FromAshDeskTemplate(
-    const ash::DeskTemplate& desk_template) {
-  api::wm_desks_private::Desk out_api_template;
-  out_api_template.desk_uuid = desk_template.uuid().AsLowercaseString();
-  out_api_template.desk_name = base::UTF16ToUTF8(desk_template.template_name());
-  return out_api_template;
-}
-
-api::wm_desks_private::Desk FromAshDesk(const ash::Desk& ash_desk) {
+api::wm_desks_private::Desk GetApiDeskFromAshDesk(const ash::Desk& ash_desk) {
   api::wm_desks_private::Desk target;
   target.desk_name = base::UTF16ToUTF8(ash_desk.name());
   target.desk_uuid = ash_desk.uuid().AsLowercaseString();
   return target;
 }
 
-api::wm_desks_private::Desk GetSavedDeskFromAshDeskTemplate(
+api::wm_desks_private::SavedDeskType GetSavedDeskTypeFromDeskTemplateType(
+    const ash::DeskTemplateType type) {
+  switch (type) {
+    case ash::DeskTemplateType::kTemplate:
+      return api::wm_desks_private::SavedDeskType::SAVED_DESK_TYPE_KTEMPLATE;
+    case ash::DeskTemplateType::kSaveAndRecall:
+      return api::wm_desks_private::SavedDeskType::
+          SAVED_DESK_TYPE_KSAVEANDRECALL;
+    case ash::DeskTemplateType::kUnknown:
+      return api::wm_desks_private::SavedDeskType::SAVED_DESK_TYPE_KUNKNOWN;
+  }
+}
+
+api::wm_desks_private::SavedDesk GetSavedDeskFromAshDeskTemplate(
     const ash::DeskTemplate& desk_template) {
-  api::wm_desks_private::Desk out_api_desk;
-  out_api_desk.desk_uuid = desk_template.uuid().AsLowercaseString();
-  out_api_desk.desk_name = base::UTF16ToUTF8(desk_template.template_name());
+  api::wm_desks_private::SavedDesk out_api_desk;
+  out_api_desk.saved_desk_uuid = desk_template.uuid().AsLowercaseString();
+  out_api_desk.saved_desk_name =
+      base::UTF16ToUTF8(desk_template.template_name());
+  out_api_desk.saved_desk_type =
+      GetSavedDeskTypeFromDeskTemplateType(desk_template.type());
   return out_api_desk;
 }
 
@@ -71,15 +79,15 @@ void WmDesksPrivateGetSavedDesksFunction::OnGetSavedDesks(
   }
 
   // Construct the value.
-  std::vector<api::wm_desks_private::Desk> api_templates;
+  std::vector<api::wm_desks_private::SavedDesk> saved_desks;
   for (auto* desk_template : desk_templates) {
-    api::wm_desks_private::Desk api_template =
-        FromAshDeskTemplate(*desk_template);
-    api_templates.push_back(std::move(api_template));
+    api::wm_desks_private::SavedDesk saved_desk =
+        GetSavedDeskFromAshDeskTemplate(*desk_template);
+    saved_desks.push_back(std::move(saved_desk));
   }
 
   Respond(ArgumentList(
-      api::wm_desks_private::GetSavedDesks::Results::Create(api_templates)));
+      api::wm_desks_private::GetSavedDesks::Results::Create(saved_desks)));
 }
 
 WmDesksPrivateGetDeskTemplateJsonFunction::
@@ -195,7 +203,7 @@ void WmDesksPrivateGetAllDesksFunction::OnGetAllDesks(
 
   std::vector<api::wm_desks_private::Desk> api_desks;
   for (const ash::Desk* desk : desks)
-    api_desks.push_back(FromAshDesk(*desk));
+    api_desks.push_back(GetApiDeskFromAshDesk(*desk));
 
   Respond(ArgumentList(
       api::wm_desks_private::GetAllDesks::Results::Create(api_desks)));
@@ -252,10 +260,7 @@ void WmDesksPrivateSaveActiveDeskFunction::OnSavedActiveDesk(
     return;
   }
 
-  // Note that we want to phase out the concept of `template` in external
-  // interface. Saved Desk is modeled as desk instead of template in returning
-  // value.
-  api::wm_desks_private::Desk saved_desk =
+  api::wm_desks_private::SavedDesk saved_desk =
       GetSavedDeskFromAshDeskTemplate(*desk_template);
   Respond(ArgumentList(
       api::wm_desks_private::SaveActiveDesk::Results::Create(saved_desk)));
