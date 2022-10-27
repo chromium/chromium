@@ -139,7 +139,7 @@ class TranslateManager {
 
   // Returns true iff the current page could be manually translated.
   // Logging should only be performed when this method is called to show the
-  // translate menu item.
+  // Full Page Translate menu item.
   bool CanManuallyTranslate(bool menuLogging = false);
 
   bool IsMimeTypeSupported(const std::string& mime_type);
