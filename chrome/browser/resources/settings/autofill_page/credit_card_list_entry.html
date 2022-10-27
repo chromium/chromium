@@ -34,6 +34,7 @@
 
       #cardImage {
         margin-inline-end: 16px;
+        vertical-align: middle;
       }
     </style>
     <div class="list-item" role="row">
@@ -69,9 +70,9 @@
             <if expr="_google_chrome">
               <picture id="paymentsIcon">
                 <source
-                    srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK"
+                    srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL"
                     media="(prefers-color-scheme: dark)">
-                <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY">
+                <img alt="" src="chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL">
               </picture>
             </if>
             <if expr="not _google_chrome">

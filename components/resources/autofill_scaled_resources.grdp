@@ -17,10 +17,14 @@
     <then>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="google_chrome/autofill/googlepay_dark.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_SMALL" file="google_chrome/autofill/googlepay_28.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL" file="google_chrome/autofill/googlepay_28_dark.png" />
     </then>
     <else>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="autofill/cc-generic.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_SMALL" file="autofill/cc-generic.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL" file="autofill/cc-generic.png" />
     </else>
   </if>
   <if expr="is_android">
