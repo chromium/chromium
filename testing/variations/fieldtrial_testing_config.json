@@ -6651,10 +6651,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221013",
+                    "name": "Enabled_20221027",
                     "params": {
-                        "minPhotosVersionForImage": "6.8",
-                        "minPhotosVersionForVideo": "6.8"
+                        "minPhotosVersionForImage": "6.12",
+                        "minPhotosVersionForVideo": "6.12"
                     },
                     "enable_features": [
                         "MediaAppPhotosIntegrationImage",
