@@ -8,6 +8,8 @@ source_set("keyboard") {
     "UIKeyCommand+Chrome.h",
     "UIKeyCommand+Chrome.mm",
     "key_command_actions.h",
+    "menu_builder.h",
+    "menu_builder.mm",
   ]
   deps = [
     "//base",

@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
+#import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -386,7 +387,7 @@ const int kMainIntentCheckDelay = 1;
   [super buildMenuWithBuilder:builder];
 
   if (IsKeyboardShortcutsMenuEnabled()) {
-    // TODO(crbug.com/1371848): Build the menu.
+    [MenuBuilder buildMainMenuWithBuilder:builder];
   }
 }
 
