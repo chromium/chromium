@@ -33,9 +33,13 @@ if (!use_system_libwayland) {
     # Client/Server headers are automatically generated. Though, we still need
     # to pass the path where these headers are located.
     include_dirs += [ "$root_gen_dir/third_party/wayland/src/protocol" ]
+  }
 
-    # TODO(thomasanderson): Remove this once
-    # https://patchwork.freedesktop.org/patch/242086/ lands.
+  # Only used within this file. Should not be in a public_config entry and leak
+  # out. No relations to the "wayland_private" target below.
+  # TODO(thomasanderson): Remove this once
+  # https://patchwork.freedesktop.org/patch/242086/ lands.
+  config("wayland_build_workaround_private_config") {
     cflags = [ "-Wno-macro-redefined" ]
   }
 
@@ -73,6 +77,7 @@ if (!use_system_libwayland) {
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
+      ":wayland_build_workaround_private_config",
       "//build/config/compiler:no_chromium_code",
       "//build/config/linux/libffi",
     ]
@@ -99,6 +104,7 @@ if (!use_system_libwayland) {
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
+      ":wayland_build_workaround_private_config",
       "//build/config/compiler:no_chromium_code",
       "//build/config/linux/libffi",
     ]
@@ -118,6 +124,7 @@ if (!use_system_libwayland) {
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
+      ":wayland_build_workaround_private_config",
       "//build/config/compiler:no_chromium_code",
       "//build/config/linux/libffi",
     ]
@@ -160,6 +167,7 @@ if (!use_system_libwayland) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
+      ":wayland_build_workaround_private_config",
       ":wayland_config",
     ]
   }

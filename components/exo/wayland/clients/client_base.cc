@@ -1,9 +1,6 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-
-#define _GNU_SOURCE
 
 #include "components/exo/wayland/clients/client_base.h"
 
