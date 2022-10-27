@@ -273,14 +273,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   if (!config->hasAvc() && !config->hasHevc())
     return result;
 
-  // We should only get here with H264 codecs.
-  if (result->codec != media::VideoCodec::kH264 &&
-      result->codec != media::VideoCodec::kHEVC) {
-    exception_state.ThrowTypeError(
-        "'avc/hevc' field can only be used with AVC/HEVC codecs");
-    return nullptr;
-  }
-
   switch (result->codec) {
     case media::VideoCodec::kH264: {
       std::string avc_format = IDLEnumAsString(config->avc()->format()).Utf8();
@@ -402,7 +394,9 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
   return true;
 }
 
-VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
+VideoEncoderConfig* CopyConfig(
+    const VideoEncoderConfig& config,
+    const VideoEncoderTraits::ParsedConfig& parsed_config) {
   auto* result = VideoEncoderConfig::Create();
   result->setCodec(config.codec());
   result->setWidth(config.width());
@@ -435,16 +429,20 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
   if (config.hasLatencyMode())
     result->setLatencyMode(config.latencyMode());
 
-  if (config.hasAvc() && config.avc()->hasFormat()) {
-    auto* avc = AvcEncoderConfig::Create();
-    avc->setFormat(config.avc()->format());
-    result->setAvc(avc);
+  if (parsed_config.codec == media::VideoCodec::kH264) {
+    if (config.hasAvc() && config.avc()->hasFormat()) {
+      auto* avc = AvcEncoderConfig::Create();
+      avc->setFormat(config.avc()->format());
+      result->setAvc(avc);
+    }
   }
 
-  if (config.hasHevc() && config.hevc()->hasFormat()) {
-    auto* hevc = HevcEncoderConfig::Create();
-    hevc->setFormat(config.hevc()->format());
-    result->setHevc(hevc);
+  if (parsed_config.codec == media::VideoCodec::kHEVC) {
+    if (config.hasHevc() && config.hevc()->hasFormat()) {
+      auto* hevc = HevcEncoderConfig::Create();
+      hevc->setFormat(config.hevc()->format());
+      result->setHevc(hevc);
+    }
   }
 
   return result;
@@ -1180,7 +1178,7 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
     DCHECK(exception_state.HadException());
     return ScriptPromise();
   }
-  auto* config_copy = CopyConfig(*config);
+  auto* config_copy = CopyConfig(*config, *parsed_config);
 
   // Run very basic coarse synchronous validation
   if (!VerifyCodecSupportStatic(parsed_config, nullptr)) {

@@ -87,27 +87,6 @@ promise_test(async t => {
 }, "Test AvcConfig supports 'avc' and 'annexb'");
 
 promise_test(async t => {
-  let encoder = new VideoEncoder({
-    error: () => t.unreached_func("Unexpected error"),
-    output: () => t.unreached_func("Unexpected output"),
-  });
-
-  const vp8Config = {
-    codec: 'vp8',
-    hardwareAcceleration: "no-preference",
-    width: defaultWidth,
-    height: defaultHeight,
-    avc: { outputFormat: "avc" },
-  };
-
-  assert_throws_js(TypeError,
-    () => { encoder.configure(vp8Config); },
-    "Only H264 should support avcOptions");
-
-  encoder.close();
-}, "Make sure non-H264 configurations reject avcOptions");
-
-promise_test(async t => {
   let goodEncoderConfig = {codec: 'avc1.42001E', width: 128, height: 128};
   let support = await VideoEncoder.isConfigSupported(goodEncoderConfig);
   assert_true(support.supported);
