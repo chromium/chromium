@@ -1514,6 +1514,9 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
     return;
   }
 
+  if (!recordreplay::FeatureEnabled("recording-script"))
+    return;
+
   recordreplay::AutoDisallowEvents disallow;
 
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
