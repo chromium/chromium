@@ -60,7 +60,7 @@ final class WebFragmentEventHandler extends RemoteFragmentEventHandler {
             String name = args.getString(BrowserFragmentArgs.PROFILE_NAME);
         }
         try {
-            mImpl = mWebLayer.connectFragment(getRemoteFragmentClient(), args);
+            mImpl = mWebLayer.connectFragment(args);
             return mImpl.asRemoteFragment();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize WebLayer", e);

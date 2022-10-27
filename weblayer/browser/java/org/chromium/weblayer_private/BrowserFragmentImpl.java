@@ -21,7 +21,6 @@ import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 /**
@@ -40,9 +39,8 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     // embedder.
     private Context mEmbedderActivityContext;
 
-    public BrowserFragmentImpl(
-            ProfileManager profileManager, IRemoteFragmentClient client, Bundle fragmentArgs) {
-        super(client);
+    public BrowserFragmentImpl(ProfileManager profileManager, Bundle fragmentArgs) {
+        super();
         mPersistenceId = fragmentArgs.getString(BrowserFragmentArgs.PERSISTENCE_ID);
         String name = fragmentArgs.getString(BrowserFragmentArgs.PROFILE_NAME);
 

@@ -28,9 +28,7 @@ class SettingsFragmentEventHandler extends RemoteFragmentEventHandler {
     protected IRemoteFragment createRemoteFragmentEventHandler(Context appContext) {
         try {
             Bundle args = getArguments();
-            return WebLayer.loadSync(appContext)
-                    .connectSettingsFragment(getRemoteFragmentClient(), args)
-                    .asRemoteFragment();
+            return WebLayer.loadSync(appContext).connectSettingsFragment(args).asRemoteFragment();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize WebLayer", e);
         }

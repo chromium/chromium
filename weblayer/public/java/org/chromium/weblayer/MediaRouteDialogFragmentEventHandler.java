@@ -23,7 +23,7 @@ class MediaRouteDialogFragmentEventHandler extends RemoteFragmentEventHandler {
     protected IRemoteFragment createRemoteFragmentEventHandler(Context appContext) {
         try {
             return WebLayer.loadSync(appContext)
-                    .connectMediaRouteDialogFragment(getRemoteFragmentClient())
+                    .connectMediaRouteDialogFragment()
                     .asRemoteFragment();
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize WebLayer", e);

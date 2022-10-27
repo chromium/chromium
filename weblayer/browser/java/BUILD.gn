@@ -659,7 +659,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IProfile.aidl",
     "org/chromium/weblayer_private/interfaces/IProfileClient.aidl",
     "org/chromium/weblayer_private/interfaces/IRemoteFragment.aidl",
-    "org/chromium/weblayer_private/interfaces/IRemoteFragmentClient.aidl",
     "org/chromium/weblayer_private/interfaces/ISettingsFragment.aidl",
     "org/chromium/weblayer_private/interfaces/ISiteSettingsFragment.aidl",
     "org/chromium/weblayer_private/interfaces/ITab.aidl",

@@ -88,7 +88,6 @@ import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.ISettingsFragment;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
 import org.chromium.weblayer_private.interfaces.IWebLayer;
@@ -382,39 +381,31 @@ public final class WebLayerImpl extends IWebLayer.Stub {
     }
 
     @Override
-    public IBrowserFragment createBrowserFragmentImpl(
-            IRemoteFragmentClient fragmentClient, IObjectWrapper fragmentArgs) {
+    public IBrowserFragment createBrowserFragmentImpl(IObjectWrapper fragmentArgs) {
         StrictModeWorkaround.apply();
         Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        BrowserFragmentImpl fragment =
-                new BrowserFragmentImpl(mProfileManager, fragmentClient, unwrappedArgs);
+        BrowserFragmentImpl fragment = new BrowserFragmentImpl(mProfileManager, unwrappedArgs);
         return fragment.asIBrowserFragment();
     }
 
     @Override
-    public ISettingsFragment createSettingsFragmentImpl(
-            IRemoteFragmentClient remoteFragmentClient, IObjectWrapper fragmentArgs) {
+    public ISettingsFragment createSettingsFragmentImpl(IObjectWrapper fragmentArgs) {
         StrictModeWorkaround.apply();
         Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        return new SettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs)
-                .asISettingsFragment();
+        return new SettingsFragmentImpl(mProfileManager, unwrappedArgs).asISettingsFragment();
     }
 
     @Override
-    public ISiteSettingsFragment createSiteSettingsFragmentImpl(
-            IRemoteFragmentClient remoteFragmentClient, IObjectWrapper fragmentArgs) {
+    public ISiteSettingsFragment createSiteSettingsFragmentImpl(IObjectWrapper fragmentArgs) {
         StrictModeWorkaround.apply();
         Bundle unwrappedArgs = ObjectWrapper.unwrap(fragmentArgs, Bundle.class);
-        return new SettingsFragmentImpl(mProfileManager, remoteFragmentClient, unwrappedArgs)
-                .asISiteSettingsFragment();
+        return new SettingsFragmentImpl(mProfileManager, unwrappedArgs).asISiteSettingsFragment();
     }
 
     @Override
-    public IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
-            IRemoteFragmentClient remoteFragmentClient) {
+    public IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl() {
         StrictModeWorkaround.apply();
-        MediaRouteDialogFragmentImpl fragment =
-                new MediaRouteDialogFragmentImpl(remoteFragmentClient);
+        MediaRouteDialogFragmentImpl fragment = new MediaRouteDialogFragmentImpl();
         return fragment.asIMediaRouteDialogFragment();
     }
 

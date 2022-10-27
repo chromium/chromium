@@ -20,7 +20,6 @@ import androidx.fragment.app.FragmentController;
 import androidx.fragment.app.FragmentHostCallback;
 import androidx.fragment.app.FragmentManager;
 
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.lang.reflect.Constructor;
@@ -139,17 +138,19 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
 
         @Override
         public boolean onHasView() {
+            // This is always false.
             return mFragmentImpl.getView() != null;
         }
 
         @Override
         public View onFindViewById(int id) {
+            // This is always null.
             return onHasView() ? mFragmentImpl.getView().findViewById(id) : null;
         }
     }
 
-    protected FragmentHostingRemoteFragmentImpl(IRemoteFragmentClient remoteFragmentClient) {
-        super(remoteFragmentClient);
+    protected FragmentHostingRemoteFragmentImpl() {
+        super();
     }
 
     @Override

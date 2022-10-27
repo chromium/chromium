@@ -31,7 +31,6 @@ import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.ProfileManager;
 import org.chromium.weblayer_private.R;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.ISettingsFragment;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
 import org.chromium.weblayer_private.interfaces.SettingsFragmentArgs;
@@ -117,9 +116,8 @@ public class SettingsFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         }
     }
 
-    public SettingsFragmentImpl(ProfileManager profileManager,
-            IRemoteFragmentClient remoteFragmentClient, Bundle intentExtras) {
-        super(remoteFragmentClient);
+    public SettingsFragmentImpl(ProfileManager profileManager, Bundle intentExtras) {
+        super();
         String profileName = intentExtras.getString(SettingsFragmentArgs.PROFILE_NAME);
         boolean isIncognito = intentExtras.getBoolean(
                 SettingsFragmentArgs.IS_INCOGNITO_PROFILE, /*defaultValue=*/profileName.equals(""));

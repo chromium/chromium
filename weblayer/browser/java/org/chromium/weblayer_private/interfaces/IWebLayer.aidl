@@ -11,7 +11,6 @@ import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.ISettingsFragment;
 import org.chromium.weblayer_private.interfaces.ISiteSettingsFragment;
@@ -27,8 +26,7 @@ interface IWebLayer {
   // WebLayer can call methods on Fragment.
   // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
   // (see Fragment#setArguments).
-  IBrowserFragment createBrowserFragmentImpl(in IRemoteFragmentClient fragmentClient,
-      in IObjectWrapper fragmentArgs) = 3;
+  IBrowserFragment createBrowserFragmentImpl(in IObjectWrapper fragmentArgs) = 3;
 
   // Create or get the profile matching profileName.
   IProfile getProfile(in String profileName) = 4;
@@ -84,9 +82,7 @@ interface IWebLayer {
   // WebLayer can call methods on Fragment.
   // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
   // (see Fragment#setArguments).
-  ISiteSettingsFragment createSiteSettingsFragmentImpl(
-      in IRemoteFragmentClient remoteFragmentClient,
-      in IObjectWrapper fragmentArgs) = 16;
+  ISiteSettingsFragment createSiteSettingsFragmentImpl(in IObjectWrapper fragmentArgs) = 16;
 
   void onMediaSessionServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 17;
   void onMediaSessionServiceDestroyed() = 18;
@@ -95,8 +91,7 @@ interface IWebLayer {
                                  in IObjectWrapper remoteContext) = 19;
 
   IObjectWrapper getApplicationContext() = 20;
-  IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
-      in IRemoteFragmentClient remoteFragmentClient) = 21;
+  IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl() = 21;
   IProfile getIncognitoProfile(in String profileName) = 24;
 
   // Added in Version 88.
@@ -110,9 +105,7 @@ interface IWebLayer {
   // @param fragmentArgs Bundle of arguments with which the Fragment was created on the client side
   // (see Fragment#setArguments).
   // Added in Version 89.
-  ISettingsFragment createSettingsFragmentImpl(
-      in IRemoteFragmentClient remoteFragmentClient,
-      in IObjectWrapper fragmentArgs) = 25;
+  ISettingsFragment createSettingsFragmentImpl(in IObjectWrapper fragmentArgs) = 25;
 
   // Creates an instance of GooglePayDataCallbacksService. Added in Version 92.
   IObjectWrapper createGooglePayDataCallbacksService() = 26;

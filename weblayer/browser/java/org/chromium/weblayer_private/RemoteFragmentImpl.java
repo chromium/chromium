@@ -9,14 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
-import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
@@ -26,11 +23,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * to call super, etc.
  */
 public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
-    private final IRemoteFragmentClient mClient;
-
-    protected RemoteFragmentImpl(IRemoteFragmentClient client) {
-        mClient = client;
-    }
+    protected RemoteFragmentImpl() {}
 
     @Deprecated
     public final View onCreateView() {
@@ -42,158 +35,58 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     }
 
     public final Activity getActivity() {
-        try {
-            return ObjectWrapper.unwrap(mClient.getActivity(), Activity.class);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return null;
     }
 
     public final View getView() {
-        try {
-            return ObjectWrapper.unwrap(mClient.getView(), View.class);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return null;
     }
 
-    public void removeFragmentFromFragmentManager() {
-        try {
-            mClient.removeFragmentFromFragmentManager();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
+    public void onCreate(Bundle savedInstanceState) {}
 
-    // TODO(pshmakov): add dependency to androidx.annotation and put @CallSuper here.
-    public void onCreate(Bundle savedInstanceState) {
-        try {
-            mClient.superOnCreate(ObjectWrapper.wrap(savedInstanceState));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
+    public void onAttach(Context context) {}
 
-    public void onAttach(Context context) {
-        try {
-            mClient.superOnAttach(ObjectWrapper.wrap(context));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
+    public void onActivityCreated(Bundle savedInstanceState) {}
 
-    public void onActivityCreated(Bundle savedInstanceState) {
-        try {
-            mClient.superOnActivityCreated(ObjectWrapper.wrap(savedInstanceState));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
+    public void onStart() {}
+
+    public void onDestroy() {}
+
+    public void onDetach() {}
+
+    public void onResume() {}
+
+    public void onDestroyView() {}
+
+    public void onStop() {}
+
+    public void onPause() {}
+
+    public void onSaveInstanceState(Bundle outState) {}
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {}
+
+    public void requestPermissions(String[] permissions, int requestCode) {}
 
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {}
 
-    public void onStart() {
-        try {
-            mClient.superOnStart();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onDestroy() {
-        try {
-            mClient.superOnDestroy();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onDetach() {
-        try {
-            mClient.superOnDetach();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onResume() {
-        try {
-            mClient.superOnResume();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onDestroyView() {
-        try {
-            mClient.superOnDestroyView();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onStop() {
-        try {
-            mClient.superOnStop();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onPause() {
-        try {
-            mClient.superOnPause();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    public void onSaveInstanceState(Bundle outState) {
-        try {
-            mClient.superOnSaveInstanceState(ObjectWrapper.wrap(outState));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
+    // TODO(crbug/1378606): Either remove below methods together with callers or provide a client
+    // implementation on weblayer side.
     public boolean startActivityForResult(Intent intent, int requestCode, Bundle options) {
-        try {
-            return mClient.startActivityForResult(
-                    ObjectWrapper.wrap(intent), requestCode, ObjectWrapper.wrap(options));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return false;
     }
 
     public boolean startIntentSenderForResult(IntentSender intent, int requestCode,
             Intent fillInIntent, int flagsMask, int flagsValues, int extraFlags, Bundle options) {
-        try {
-            return mClient.startIntentSenderForResult(ObjectWrapper.wrap(intent), requestCode,
-                    ObjectWrapper.wrap(fillInIntent), flagsMask, flagsValues, extraFlags,
-                    ObjectWrapper.wrap(options));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return false;
     }
 
     public boolean shouldShowRequestPermissionRationale(String permission) {
-        try {
-            return mClient.shouldShowRequestPermissionRationale(permission);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return false;
     }
 
-    public void requestPermissions(String[] permissions, int requestCode) {
-        try {
-            mClient.requestPermissions(permissions, requestCode);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
+    public void removeFragmentFromFragmentManager() {}
 
     // IRemoteFragment implementation below.
 
