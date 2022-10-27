@@ -34,22 +34,16 @@ export class DlpRestrictedBanner extends StateBanner {
   }
 
   /**
-   * This banner is triggered in SELECT_OPEN_FILE, SELECT_OPEN_MULTI_FILE and
-   * SELECT_SAVEAS_FILE dialog types, in case that some of the files and
-   * folders, respectfully, cannot be selected due to DLP restrictions. The
-   * following list are volumes for which this can happen.
+   * This banner relies on a custom trigger registered in the BannerController.
+   * It is shown in SELECT_OPEN_FILE and SELECT_OPEN_MULTI_FILE dialog types
+   * when some files are restricted by DLP, and in SELECT_SAVEAS_FILE dialog
+   * when some destinations are restricted. Regardless of the dialog type, the
+   * user can navigate to different roots so the banner can be shown in any of
+   * them.
    * @returns {!Array<!Banner.AllowedVolume>}
    */
   allowedVolumes() {
-    // TODO(crbug.com/1364014): return the correct types here.
-    return [
-      {root: VolumeManagerCommon.RootType.DOWNLOADS},
-      {root: VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT},
-      {root: VolumeManagerCommon.RootType.COMPUTER},
-      {root: VolumeManagerCommon.RootType.ARCHIVE},
-      {root: VolumeManagerCommon.RootType.RECENT},
-      {root: VolumeManagerCommon.RootType.TRASH},
-    ];
+    return Object.values(VolumeManagerCommon.RootType).map(x => ({root: x}));
   }
 
   /**

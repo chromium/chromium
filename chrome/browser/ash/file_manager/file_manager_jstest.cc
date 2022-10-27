@@ -28,6 +28,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BannerController) {
   RunTestURL("foreground/js/banner_controller_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BannerDlp) {
+  RunTestURL("foreground/js/ui/banners/dlp_restricted_banner_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, BannerUtil) {
   RunTestURL("foreground/js/banner_util_unittest.js");
 }

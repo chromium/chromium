@@ -432,6 +432,7 @@ unittest_files = [
   "file_manager/foreground/js/ui/multi_menu_unittest.js",
   "file_manager/foreground/js/ui/position_util_unittest.js",
   "file_manager/foreground/js/ui/splitter_unittest.js",
+  "file_manager/foreground/js/ui/banners/dlp_restricted_banner_unittest.js",
   "file_manager/foreground/js/ui/banners/state_banner_unittest.js",
   "file_manager/foreground/js/ui/banners/educational_banner_unittest.js",
   "file_manager/foreground/js/ui/banners/warning_banner_unittest.js",

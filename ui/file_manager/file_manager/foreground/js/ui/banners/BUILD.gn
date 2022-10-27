@@ -78,6 +78,15 @@ js_library("dlp_restricted_banner") {
   ]
 }
 
+js_unittest("dlp_restricted_banner_unittest") {
+  deps = [
+    ":dlp_restricted_banner",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+  ]
+}
+
 js_library("holding_space_welcome_banner") {
   deps = [
     ":educational_banner",
@@ -226,6 +235,7 @@ js_unittest("warning_banner_unittest") {
 
 js_test_type_check("js_test_type_check") {
   deps = [
+    ":dlp_restricted_banner_unittest",
     ":educational_banner_unittest",
     ":state_banner_unittest",
     ":warning_banner_unittest",
