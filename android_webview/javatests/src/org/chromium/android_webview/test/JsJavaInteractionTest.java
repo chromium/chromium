@@ -51,8 +51,6 @@ public class JsJavaInteractionTest {
     private static final String RESOURCE_PATH = "/android_webview/test/data";
     private static final String POST_MESSAGE_SIMPLE_HTML =
             RESOURCE_PATH + "/post_message_simple.html";
-    private static final String POST_MESSAGE_SIMPLE_ARRAY_BUFFER_HTML =
-            RESOURCE_PATH + "/post_message_simple_array_buffer.html";
     private static final String POST_MESSAGE_WITH_PORTS_HTML =
             RESOURCE_PATH + "/post_message_with_ports.html";
     private static final String POST_MESSAGE_REPEAT_HTML =
@@ -130,6 +128,24 @@ public class JsJavaInteractionTest {
         mListener = new TestWebMessageListener();
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
         mTestServer = sTestServerRule.getServer();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostMessageSimple() throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+
+        final String url = loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
+
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+
+        assertUrlHasOrigin(url, data.mSourceOrigin);
+        Assert.assertEquals(HELLO, data.getAsString());
+        Assert.assertTrue(data.mIsMainFrame);
+        Assert.assertEquals(0, data.mPorts.length);
+
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     @Test
