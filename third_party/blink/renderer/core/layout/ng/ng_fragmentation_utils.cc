@@ -266,8 +266,10 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
   // fragmentation type (multicol vs. printing). We still need to perform block
   // fragmentation inside inline nodes, though: While the line box itself is
   // monolithic, there may be floats inside, which are fragmentable.
-  if (child.IsMonolithic() && !child.IsInline())
+  if (child.IsMonolithic() && !child.IsInline()) {
+    builder->SetShouldPropagateChildBreakValues(false);
     return;
+  }
 
   builder->SetFragmentainerBlockSize(parent_space.FragmentainerBlockSize());
   LayoutUnit fragmentainer_offset =

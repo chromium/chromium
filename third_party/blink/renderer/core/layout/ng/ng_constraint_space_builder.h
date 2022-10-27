@@ -251,8 +251,10 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.EnsureRareData()->min_break_appeal = min_break_appeal;
   }
 
-  void SetShouldPropagateChildBreakValues() {
-    space_.EnsureRareData()->propagate_child_break_values = true;
+  void SetShouldPropagateChildBreakValues(
+      bool propagate_child_break_values = true) {
+    space_.EnsureRareData()->propagate_child_break_values =
+        propagate_child_break_values;
   }
 
   void SetIsTableCell(bool is_table_cell) {
