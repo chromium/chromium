@@ -143,8 +143,7 @@ using web::test::HttpServer;
           chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")
                                      timeout:
                                          base::test::ios::
-                                             kWaitForClearBrowsingDataTimeout
-                                                 .InSecondsF()];
+                                             kWaitForClearBrowsingDataTimeout];
 }
 
 @end

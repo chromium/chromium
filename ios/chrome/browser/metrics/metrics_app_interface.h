@@ -7,14 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
 namespace syncher {
 
 // Constant for timeout while waiting for asynchronous sync and UKM operations.
-const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
+constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 
 }  // namespace syncher
 

@@ -53,7 +53,7 @@ char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
 
 // Constant for timeout while waiting for asynchronous sync operations.
-const NSTimeInterval kSyncOperationTimeout = 10.0;
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Matcher for the edit button in the navigation bar.
 id<GREYMatcher> NavigationEditButton() {

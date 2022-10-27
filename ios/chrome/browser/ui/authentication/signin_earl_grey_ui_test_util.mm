@@ -108,7 +108,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 
   // Sync utilities require sync to be initialized in order to perform
   // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
 }
 
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
@@ -345,8 +345,7 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SettingsDoneButton()
                                   timeout:base::test::ios::
-                                              kWaitForClearBrowsingDataTimeout
-                                                  .InSecondsF()];
+                                              kWaitForClearBrowsingDataTimeout];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];

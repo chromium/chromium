@@ -5,6 +5,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/ios/browser/features.h"
@@ -54,6 +55,8 @@ using chrome_test_util::PrimarySignInButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 
 namespace {
+
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(5);
 
 // Returns a matcher for the sign-in screen "Continue as <identity>" button.
 id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
@@ -405,7 +408,6 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
-  const NSTimeInterval kSyncOperationTimeout = 5.0;
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
 
   OpenAccountSettingsAndSignOut(YES);
@@ -452,7 +454,6 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Enable sync.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
-  const NSTimeInterval kSyncOperationTimeout = 5.0;
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
 
   [ChromeEarlGreyUI openSettingsMenu];
@@ -717,7 +718,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Sync utilities require sync to be initialized in order to perform
   // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
 
   // Make sure the forced sign-in screen isn't shown because sign-in was
   // already done.
@@ -856,7 +857,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Sync utilities require sync to be initialized in order to perform
   // operations on the Sync server.
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
 
   // Make sure the forced sign-in screen isn't shown because the browser is
   // already signed in.

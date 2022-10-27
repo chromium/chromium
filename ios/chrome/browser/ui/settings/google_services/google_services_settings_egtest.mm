@@ -380,8 +380,7 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncInitialized:YES
-                             syncTimeout:kWaitForActionTimeout.InSecondsF()];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kWaitForActionTimeout];
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [BookmarkEarlGrey setupStandardBookmarks];
 
@@ -449,8 +448,7 @@ void WaitForSettingDoneButton() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   // Add a bookmark after sync is initialized.
-  [ChromeEarlGrey waitForSyncInitialized:YES
-                             syncTimeout:kWaitForActionTimeout.InSecondsF()];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kWaitForActionTimeout];
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
   [BookmarkEarlGrey setupStandardBookmarks];
 

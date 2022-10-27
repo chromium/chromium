@@ -878,7 +878,7 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (NSError*)waitForSyncInitialized:(BOOL)isInitialized
-                       syncTimeout:(NSTimeInterval)timeout {
+                       syncTimeout:(base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{
     return chrome_test_util::IsSyncInitialized() == isInitialized;
   });
@@ -1238,7 +1238,7 @@ NSString* SerializedValue(const base::Value* value) {
 #pragma mark - Watcher utilities
 
 // Delay between two watch cycles.
-const NSTimeInterval kWatcherCycleDelay = 0.2;
+constexpr base::TimeDelta kWatcherCycleDelay = base::Milliseconds(200);
 
 // Set of buttons being watched for.
 NSMutableSet* watchingButtons;
@@ -1249,7 +1249,7 @@ NSMutableSet* watchedButtons;
 int watchRunNumber = 0;
 
 + (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
-                          timeout:(NSTimeInterval)timeout {
+                          timeout:(base::TimeDelta)timeout {
   watchRunNumber++;
   watchedButtons = [NSMutableSet set];
   watchingButtons = [NSMutableSet set];
@@ -1274,13 +1274,12 @@ int watchRunNumber = 0;
 // be accessed from there. Scheduling directly on the main
 // thread would let EG to try to drain the main thread queue without
 // success.
-+ (void)scheduleNextWatchForButtonsWithTimeout:(NSTimeInterval)timeout
++ (void)scheduleNextWatchForButtonsWithTimeout:(base::TimeDelta)timeout
                                      runNumber:(int)runNumber {
   dispatch_queue_t background_queue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
   dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW,
-                    (int64_t)(kWatcherCycleDelay * NSEC_PER_SEC)),
+      dispatch_time(DISPATCH_TIME_NOW, kWatcherCycleDelay.InNanoseconds()),
       background_queue, ^{
         dispatch_async(dispatch_get_main_queue(), ^{
           if (!watchingButtons.count || runNumber != watchRunNumber)
@@ -1289,7 +1288,7 @@ int watchRunNumber = 0;
           [self findButtonsWithLabelsInViews:[UIApplication sharedApplication]
                                                  .windows];
 
-          if (watchingButtons.count && timeout > 0.0) {
+          if (watchingButtons.count && timeout.is_positive()) {
             [self scheduleNextWatchForButtonsWithTimeout:timeout -
                                                          kWatcherCycleDelay
                                                runNumber:runNumber];

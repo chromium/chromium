@@ -71,13 +71,13 @@ NSString* const kUnreadTitle2 = @"I am another unread entry";
 NSString* const kUnreadURL2 = @"http://unreadfoobar2.com";
 const size_t kNumberReadEntries = 2;
 const size_t kNumberUnreadEntries = 2;
-const CFTimeInterval kSnackbarAppearanceTimeout = 5;
+constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
 // kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + 1
-const CFTimeInterval kSnackbarDisappearanceTimeout = 10 + 1;
-const CFTimeInterval kDelayForSlowWebServer = 4;
-const CFTimeInterval kLongPressDuration = 1.0;
-const CFTimeInterval kDistillationTimeout = 5;
-const CFTimeInterval kServerOperationDelay = 1;
+constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(10 + 1);
+constexpr base::TimeDelta kDelayForSlowWebServer = base::Seconds(4);
+constexpr base::TimeDelta kLongPressDuration = base::Seconds(1);
+constexpr base::TimeDelta kDistillationTimeout = base::Seconds(5);
+constexpr base::TimeDelta kServerOperationDelay = base::Seconds(1);
 NSString* const kReadHeader = @"Read";
 NSString* const kUnreadHeader = @"Unread";
 
@@ -371,15 +371,15 @@ void WaitForDistillation() {
 // If `distillable`, result is can be distilled for offline display.
 std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
     const bool& responds_with_content,
-    const int& delay,
+    const base::TimeDelta& delay,
     bool distillable,
     const net::test_server::HttpRequest& request) {
   if (!responds_with_content) {
     return std::make_unique<net::test_server::RawHttpResponse>(
         /*headers=*/"", /*contents=*/"");
   }
-  auto response = std::make_unique<net::test_server::DelayedHttpResponse>(
-      base::Seconds(delay));
+  auto response =
+      std::make_unique<net::test_server::DelayedHttpResponse>(delay);
 
   if (base::StartsWith(request.relative_url, kDistillableURL)) {
     response->set_content_type("text/html");
@@ -496,7 +496,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 @property(nonatomic, assign) bool serverServedRedImage;
 
 // The delay after which self.testServer will send a response.
-@property(nonatomic, assign) NSTimeInterval serverResponseDelay;
+@property(nonatomic, assign) base::TimeDelta serverResponseDelay;
 @end
 
 @implementation ReadingListTestCase
@@ -722,8 +722,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   AssertIsShowingDistillablePage(true, distillableURL);
   // Stop server to reload offline.
   self.serverRespondsWithContent = NO;
-  base::test::ios::SpinRunLoopWithMinDelay(
-      base::Seconds(kServerOperationDelay));
+  base::test::ios::SpinRunLoopWithMinDelay(kServerOperationDelay);
 
   [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(false, distillableURL);
@@ -753,8 +752,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Stop server to generate error.
   self.serverRespondsWithContent = NO;
-  base::test::ios::SpinRunLoopWithMinDelay(
-      base::Seconds(kServerOperationDelay));
+  base::test::ios::SpinRunLoopWithMinDelay(kServerOperationDelay);
   // Long press the entry, and open it offline.
   TapEntry(kDistillableTitle);
   AssertIsShowingDistillablePage(false, distillableURL);
@@ -769,8 +767,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
   // Start server to reload online error.
   self.serverRespondsWithContent = YES;
-  base::test::ios::SpinRunLoopWithMinDelay(
-      base::Seconds(kServerOperationDelay));
+  base::test::ios::SpinRunLoopWithMinDelay(kServerOperationDelay);
 
   [ChromeEarlGreyAppInterface startReloading];
   AssertIsShowingDistillablePage(true, distillableURL);

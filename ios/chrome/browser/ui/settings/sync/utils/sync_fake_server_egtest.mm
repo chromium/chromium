@@ -5,6 +5,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -25,7 +26,7 @@
 namespace {
 
 // Constant for timeout while waiting for asynchronous sync operations.
-const NSTimeInterval kSyncOperationTimeout = 10.0;
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Waits for `entity_count` entities of type `entity_type`, and fails with
 // a GREYAssert if the condition is not met, within a short period of time.

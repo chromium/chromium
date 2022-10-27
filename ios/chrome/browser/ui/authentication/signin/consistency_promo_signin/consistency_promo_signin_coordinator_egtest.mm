@@ -112,8 +112,7 @@
           chrome_test_util::StaticTextWithAccessibilityLabelId(
               IDS_IOS_WEBSIGN_ERROR_TITLE)
                                   timeout:base::test::ios::
-                                              kWaitForDownloadTimeout
-                                                  .InSecondsF()];
+                                              kWaitForDownloadTimeout];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
@@ -139,8 +138,7 @@
           chrome_test_util::StaticTextWithAccessibilityLabelId(
               IDS_IOS_WEBSIGN_ERROR_TITLE)
                                   timeout:base::test::ios::
-                                              kWaitForDownloadTimeout
-                                                  .InSecondsF()];
+                                              kWaitForDownloadTimeout];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
                      IDS_IOS_SIGN_IN_DISMISS)] performAction:grey_tap()];

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#include "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/sync/base/model_type.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
@@ -364,7 +365,7 @@
 // Returns nil on success, or else an NSError indicating why the
 // operation failed.
 + (NSError*)waitForSyncInitialized:(BOOL)isInitialized
-                       syncTimeout:(NSTimeInterval)timeout;
+                       syncTimeout:(base::TimeDelta)timeout;
 
 // Returns the current sync cache GUID. The sync server must be running when
 // calling this.
@@ -638,7 +639,7 @@
 // replaced with this set. Note that timeout is best effort and can be a bit
 // longer than specified. This method returns immediately.
 + (void)watchForButtonsWithLabels:(NSArray<NSString*>*)labels
-                          timeout:(NSTimeInterval)timeout;
+                          timeout:(base::TimeDelta)timeout;
 
 // Returns YES if the button with given (accessibility) `label` was observed at
 // some point since `watchForButtonsWithLabels:timeout:` was called.

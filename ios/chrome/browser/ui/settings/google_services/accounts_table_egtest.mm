@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -37,7 +38,7 @@ using chrome_test_util::SignOutAccountsButton;
 namespace {
 
 // Constant for timeout while waiting for asynchronous sync operations.
-const NSTimeInterval kSyncOperationTimeout = 10.0;
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 }
 
 // Integration tests using the Account Settings screen.

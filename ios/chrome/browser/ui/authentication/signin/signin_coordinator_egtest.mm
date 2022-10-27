@@ -6,6 +6,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
@@ -82,7 +83,7 @@ char const kManagedText[] = "Your browser is managed by your administrator.";
 NSString* const kPassphrase = @"hello";
 
 // Timeout in seconds to wait for asynchronous sync operations.
-const NSTimeInterval kSyncOperationTimeout = 5.0;
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(5);
 
 // Sets parental control capability for the given identity.
 void SetParentalControlsCapabilityForIdentity(FakeSystemIdentity* identity) {

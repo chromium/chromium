@@ -410,7 +410,7 @@ class ScopedDisableTimerTracking {
   // press gesture recognizer.  Disable this here so the test can be re-enabled.
   ScopedSynchronizationDisabler disabler;
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
-      performAction:grey_longPressWithDuration(0.05)];
+      performAction:grey_longPressWithDuration(base::Milliseconds(50))];
 }
 
 - (void)reload {

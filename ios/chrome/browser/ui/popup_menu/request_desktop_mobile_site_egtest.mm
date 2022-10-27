@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -49,7 +50,7 @@ const char kJavaScriptReload[] =
 
 // Custom timeout used when waiting for a web state after requesting desktop
 // or mobile mode.
-const NSTimeInterval kWaitForUserAgentChangeTimeout = 15.0;
+constexpr base::TimeDelta kWaitForUserAgentChangeTimeout = base::Seconds(15);
 
 // Returns the correct matcher for the collection view containing the Request
 // Desktop/Mobile button given the current overflow menu.

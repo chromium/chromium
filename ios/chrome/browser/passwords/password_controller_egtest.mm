@@ -190,7 +190,7 @@ BOOL WaitForKeyboardToAppear() {
   }
 #endif
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_signup_form.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form."];

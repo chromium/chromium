@@ -4,6 +4,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -45,7 +46,7 @@ namespace {
 NSString* const kPassphrase = @"hello";
 
 // Timeout in seconds to wait for asynchronous sync operations.
-const NSTimeInterval kSyncOperationTimeout = 5.0;
+constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(5);
 
 // Waits for the settings done button to be enabled.
 void WaitForSettingDoneButton() {

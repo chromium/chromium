@@ -4,6 +4,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -37,7 +38,7 @@ const char kWindow2Closed[] = "window2.closed: true";
 const char kWriteReloadPath[] = "/writeReload.html";
 const char kSlowPath[] = "/slow.html";
 const char kSlowPathContent[] = "Slow Page";
-int kSlowPathDelay = 3;
+constexpr base::TimeDelta kSlowPathDelay = base::Seconds(3);
 
 // net::EmbeddedTestServer handler for kWriteReloadPath.
 std::unique_ptr<net::test_server::HttpResponse> ReloadHandler(
@@ -57,8 +58,7 @@ std::unique_ptr<net::test_server::HttpResponse> ReloadHandler(
 std::unique_ptr<net::test_server::HttpResponse> SlowResponseHandler(
     const net::test_server::HttpRequest& request) {
   auto slow_http_response =
-      std::make_unique<net::test_server::DelayedHttpResponse>(
-          base::Seconds(kSlowPathDelay));
+      std::make_unique<net::test_server::DelayedHttpResponse>(kSlowPathDelay);
   slow_http_response->set_content_type("text/html");
   slow_http_response->set_content(kSlowPathContent);
   return std::move(slow_http_response);

@@ -551,7 +551,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.3.");
   }
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:base::Seconds(10)];
 
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];

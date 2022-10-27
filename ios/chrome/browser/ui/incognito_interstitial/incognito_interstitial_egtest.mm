@@ -260,7 +260,7 @@ using chrome_test_util::NTPIncognitoView;
     timeout = base::Seconds(20);
   }
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
-                                        timeout:timeout.InSecondsF()];
+                                        timeout:timeout];
   // Wait for the Incognito tab count to be one, as expected.
   [ChromeEarlGrey waitForMainTabCount:1];
 }
@@ -286,7 +286,7 @@ using chrome_test_util::NTPIncognitoView;
     timeout = base::Seconds(20);
   }
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
-                                        timeout:timeout.InSecondsF()];
+                                        timeout:timeout];
   // Wait for the Incognito tab count to be one, as expected.
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 }
