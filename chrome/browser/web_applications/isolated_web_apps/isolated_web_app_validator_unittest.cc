@@ -8,6 +8,8 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -41,9 +43,17 @@ constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
 
 }  // namespace
 
+class IsolatedWebAppValidatorTest : public ::testing::Test {
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment;
+};
+
+class IsolatedWebAppValidatorIntegrityBlockTest
+    : public IsolatedWebAppValidatorTest {};
+
 // TODO(crbug.com/1365852): Extend this test once we have implemented a
 // mechanism that provides the trusted public keys.
-TEST(IsolatedWebAppValidatorIntegrityBlockTest, OnePublicKey) {
+TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, OnePublicKey) {
   auto web_bundle_id =
       web_package::SignedWebBundleId::Create(kSignedWebBundleId);
   ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
@@ -53,24 +63,30 @@ TEST(IsolatedWebAppValidatorIntegrityBlockTest, OnePublicKey) {
           base::make_span(kEd25519PublicKey))};
 
   IsolatedWebAppValidator validator;
-  EXPECT_EQ(validator.ValidateIntegrityBlock(*web_bundle_id, public_key_stack),
-            absl::nullopt);
+  base::test::TestFuture<absl::optional<std::string>> future;
+  validator.ValidateIntegrityBlock(*web_bundle_id, public_key_stack,
+                                   future.GetCallback());
+  EXPECT_EQ(future.Get(), absl::nullopt);
 }
 
-TEST(IsolatedWebAppValidatorIntegrityBlockTest, EmptyPublicKeyStack) {
+TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, EmptyPublicKeyStack) {
   auto web_bundle_id =
       web_package::SignedWebBundleId::Create(kSignedWebBundleId);
   ASSERT_TRUE(web_bundle_id.has_value()) << web_bundle_id.error();
 
   IsolatedWebAppValidator validator;
-  EXPECT_EQ(validator.ValidateIntegrityBlock(*web_bundle_id, {}),
+  base::test::TestFuture<absl::optional<std::string>> future;
+  validator.ValidateIntegrityBlock(*web_bundle_id, {}, future.GetCallback());
+  EXPECT_EQ(future.Get(),
             "The Isolated Web App must have at least one signature.");
 }
 
 class IsolatedWebAppValidatorMetadataTest
-    : public ::testing::TestWithParam<std::tuple<std::string,
-                                                 std::vector<std::string>,
-                                                 absl::optional<std::string>>> {
+    : public IsolatedWebAppValidatorTest,
+      public ::testing::WithParamInterface<
+          std::tuple<std::string,
+                     std::vector<std::string>,
+                     absl::optional<std::string>>> {
  public:
   IsolatedWebAppValidatorMetadataTest()
       : primary_url_(std::get<0>(GetParam())),

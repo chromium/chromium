@@ -106,13 +106,25 @@ void IsolatedWebAppReaderRegistry::OnIntegrityBlockRead(
     const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
     base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
         integrity_callback) {
-  if (auto error =
-          validator_->ValidateIntegrityBlock(web_bundle_id, public_key_stack);
-      error.has_value()) {
+  validator_->ValidateIntegrityBlock(
+      web_bundle_id, public_key_stack,
+      base::BindOnce(&IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated,
+                     weak_ptr_factory_.GetWeakPtr(), web_bundle_path,
+                     web_bundle_id, std::move(integrity_callback)));
+}
+
+void IsolatedWebAppReaderRegistry::OnIntegrityBlockValidated(
+    const base::FilePath& web_bundle_path,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    base::OnceCallback<void(SignedWebBundleReader::SignatureVerificationAction)>
+        integrity_callback,
+    absl::optional<std::string> integrity_block_error) {
+  if (integrity_block_error.has_value()) {
     // Aborting parsing will trigger a call to `OnIntegrityBlockAndMetadataRead`
     // with a `SignedWebBundleReader::AbortedByCaller` error.
     std::move(integrity_callback)
-        .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(*error));
+        .Run(SignedWebBundleReader::SignatureVerificationAction::Abort(
+            *integrity_block_error));
     return;
   }
 

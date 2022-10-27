@@ -125,6 +125,14 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       base::OnceCallback<
           void(SignedWebBundleReader::SignatureVerificationAction)> callback);
 
+  void OnIntegrityBlockValidated(
+      const base::FilePath& web_bundle_path,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      base::OnceCallback<
+          void(SignedWebBundleReader::SignatureVerificationAction)>
+          integrity_callback,
+      absl::optional<std::string> integrity_block_error);
+
   void OnIntegrityBlockAndMetadataRead(
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
@@ -226,6 +234,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       signature_verifier_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<IsolatedWebAppReaderRegistry> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

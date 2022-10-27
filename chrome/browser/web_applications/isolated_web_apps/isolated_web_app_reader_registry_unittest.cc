@@ -48,11 +48,11 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
       absl::optional<std::string> integrity_block_error)
       : integrity_block_error_(integrity_block_error) {}
 
-  [[nodiscard]] absl::optional<std::string> ValidateIntegrityBlock(
-      web_package::SignedWebBundleId web_bundle_id,
-      const std::vector<web_package::Ed25519PublicKey>& public_key_stack)
-      override {
-    return integrity_block_error_;
+  void ValidateIntegrityBlock(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+      base::OnceCallback<void(absl::optional<std::string>)> callback) override {
+    std::move(callback).Run(integrity_block_error_);
   }
 
  private:

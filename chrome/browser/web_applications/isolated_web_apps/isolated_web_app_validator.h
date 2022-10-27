@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,15 +27,16 @@ class IsolatedWebAppValidator {
   // Validates that the integrity block of the Isolated Web App contains trusted
   // public keys given the `web_bundle_id`. Returns `absl::nullopt` on success,
   // or an error message if the public keys are not trusted.
-  [[nodiscard]] virtual absl::optional<std::string> ValidateIntegrityBlock(
-      web_package::SignedWebBundleId web_bundle_id,
-      const std::vector<web_package::Ed25519PublicKey>& public_key_stack);
+  virtual void ValidateIntegrityBlock(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+      base::OnceCallback<void(absl::optional<std::string>)> callback);
 
   // Validates that the metadata of the Isolated Web App is valid given the
   // `web_bundle_id`. Returns `absl::nullopt` on success, or an error message if
   // metadata is invalid.
   [[nodiscard]] virtual absl::optional<std::string> ValidateMetadata(
-      web_package::SignedWebBundleId web_bundle_id,
+      const web_package::SignedWebBundleId& web_bundle_id,
       const GURL& primary_url,
       const std::vector<GURL>& entries);
 };

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 
+#include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/url_constants.h"
@@ -13,20 +14,23 @@
 
 namespace web_app {
 
-absl::optional<std::string> IsolatedWebAppValidator::ValidateIntegrityBlock(
-    web_package::SignedWebBundleId web_bundle_id,
-    const std::vector<web_package::Ed25519PublicKey>& public_key_stack) {
+void IsolatedWebAppValidator::ValidateIntegrityBlock(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
+    base::OnceCallback<void(absl::optional<std::string>)> callback) {
   if (public_key_stack.empty()) {
-    return "The Isolated Web App must have at least one signature.";
+    std::move(callback).Run(
+        "The Isolated Web App must have at least one signature.");
+    return;
   }
 
   // TODO(crbug.com/1365852): Check whether we trust the public keys contained
   // in the integrity block here.
-  return absl::nullopt;
+  std::move(callback).Run(absl::nullopt);
 }
 
 absl::optional<std::string> IsolatedWebAppValidator::ValidateMetadata(
-    web_package::SignedWebBundleId web_bundle_id,
+    const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& primary_url,
     const std::vector<GURL>& entries) {
   // Verify that the primary URL of the bundle corresponds to the Signed Web
