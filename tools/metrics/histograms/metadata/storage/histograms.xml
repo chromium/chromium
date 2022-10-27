@@ -261,39 +261,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.Blob.DataURLWorkerRegister" enum="Boolean"
-    expires_after="M106">
-  <owner>awillia@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
-  <summary>
-    Recorded when the PublicURLManager::Register method is called from a worker
-    execution context (excluding service worker contexts). The value indicates
-    if the worker was created from a data URL.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.DataURLWorkerResolveAsURLLoaderFactory"
-    enum="Boolean" expires_after="M106">
-  <owner>awillia@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
-  <summary>
-    Recorded when the PublicURLManager::Resolve URLLoaderFactory method is
-    called from a worker execution context (excluding service worker contexts).
-    The value indicates if the worker was created from a data URL.
-  </summary>
-</histogram>
-
-<histogram name="Storage.Blob.DataURLWorkerResolveForNavigation" enum="Boolean"
-    expires_after="M106">
-  <owner>awillia@chromium.org</owner>
-  <owner>ayui@chromium.org</owner>
-  <summary>
-    Recorded when the PublicURLManager::Resolve method for navigations is called
-    from a worker execution context (excluding service worker contexts). The
-    value indicates if the worker was created from a data URL.
-  </summary>
-</histogram>
-
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
     units="ms" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>
