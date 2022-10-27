@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "base/callback_forward.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -74,6 +76,8 @@ class ArcGhostWindowViewTest : public testing::Test {
         /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
+
+    feature_list_.InitAndEnableFeature(arc::kGhostWindowNewStyle);
   }
 
   void InstallApp(const std::string& app_id) {
@@ -102,6 +106,8 @@ class ArcGhostWindowViewTest : public testing::Test {
 
  private:
   std::unique_ptr<ArcGhostWindowView> view_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   ash::FakeChromeUserManager* user_manager_;  // Not own.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

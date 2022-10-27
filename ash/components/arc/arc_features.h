@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kEnableUnmanagedToManagedTransitionFeature);
 BASE_DECLARE_FEATURE(kEnableUsap);
 BASE_DECLARE_FEATURE(kEnableVirtioBlkForData);
 BASE_DECLARE_FEATURE(kFixupWindowFeature);
+BASE_DECLARE_FEATURE(kGhostWindowNewStyle);
 BASE_DECLARE_FEATURE(kVirtioBlkDataConfigOverride);
 extern const base::FeatureParam<bool> kVirtioBlkDataConfigUseLvm;
 BASE_DECLARE_FEATURE(kFilePickerExperimentFeature);

@@ -2714,6 +2714,9 @@ extern const char kArcFilePickerExperimentDescription[];
 extern const char kArcFixupWindowName[];
 extern const char kArcFixupWindowDescription[];
 
+extern const char kArcGhostWindowNewStyleName[];
+extern const char kArcGhostWindowNewStyleDescription[];
+
 extern const char kArcGameModeName[];
 extern const char kArcGameModeDescription[];
 

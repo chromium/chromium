@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -97,35 +98,40 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
   RemoveAllChildViews();
   message_label_ = nullptr;
 
-  SetBackground(views::CreateSolidBackground(theme_color_));
-
+  // Currently App icon image view is the same for different style.
   AddChildView(views::Builder<views::ImageView>()
                    .SetImage(icon_raw_data_)
                    .SetAccessibleName(l10n_util::GetStringUTF16(
                        IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON))
+                   .SetID(ContentID::ID_ICON_IMAGE)
                    .Build());
 
-  auto* throbber = AddChildView(std::make_unique<Throbber>(
-      color_utils::GetColorWithMaxContrast(theme_color_)));
-  throbber->SetPreferredSize(gfx::Size(kThrobberDiameterOriginalStyle,
-                                       kThrobberDiameterOriginalStyle));
-  throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
-  // TODO(sstan): Set window title and accessible name from saved data.
+  // TODO(b/255486588): Support dark mode.
+  SetBackground(views::CreateSolidBackground(theme_color_));
 
-  // Currently the only difference of App Fixup and other type of ghost
-  // is that App Fixup ghost window has a message label.
-  if (type == arc::GhostWindowType::kFixup) {
+  if (type == arc::GhostWindowType::kFullRestore ||
+      !base::FeatureList::IsEnabled(arc::kGhostWindowNewStyle)) {
+    // If not enabled new style flag, all types will use original UI.
+
+    auto* throbber = AddChildView(std::make_unique<Throbber>(
+        color_utils::GetColorWithMaxContrast(theme_color_)));
+    throbber->SetPreferredSize(gfx::Size(kThrobberDiameterOriginalStyle,
+                                         kThrobberDiameterOriginalStyle));
+    throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
+    throbber->SetID(ContentID::ID_THROBBER);
+    // TODO(sstan): Set window title and accessible name from saved data.
+  } else if (type == arc::GhostWindowType::kFixup) {
     // TODO(sstan): Set font size or height, according to future UI update.
     message_label_ =
         AddChildView(views::Builder<views::Label>()
                          .SetText(l10n_util::GetStringUTF16(
                              IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE))
                          .SetMultiLine(true)
+                         .SetID(ContentID::ID_MESSAGE_LABEL)
                          .Build());
 
     base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
                                   GhostWindowType::kIconSpinningWithFixupText);
-
   } else {
     base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
                                   GhostWindowType::kIconSpinning);

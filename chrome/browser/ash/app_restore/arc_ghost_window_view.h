@@ -21,6 +21,14 @@ enum class GhostWindowType;
 
 namespace ash::full_restore {
 
+// ID for different component view in ArcGhostWindowView.
+enum ContentID {
+  ID_NONE = 0,
+  ID_ICON_IMAGE,
+  ID_THROBBER,
+  ID_MESSAGE_LABEL,
+};
+
 // The view of ARC ghost window content. It shows the icon of app and a
 // throbber. It is used on ARC ghost window shell surface overlay, so it will
 // be destroyed after actual ARC task window launched.

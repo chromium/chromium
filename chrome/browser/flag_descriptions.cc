@@ -4739,6 +4739,12 @@ extern const char kArcFixupWindowName[] =
 extern const char kArcFixupWindowDescription[] =
     "Popup ARC Ghost Window app launching before fixup finishes.";
 
+extern const char kArcGhostWindowNewStyleName[] =
+    "Enable new UI for ARC Ghost Window";
+extern const char kArcGhostWindowNewStyleDescription[] =
+    "Allow use new UI for ARC Ghost Window if corresponding launch source "
+    "request it.";
+
 const char kArcGameModeName[] = "Enable Game Mode for ARC";
 const char kArcGameModeDescription[] =
     "ARC Fullscreen Games will request accomodation from ChromeOS for "
