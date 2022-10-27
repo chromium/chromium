@@ -358,32 +358,6 @@ gfx::QuadF TransformationMatrix::ProjectQuad(const gfx::QuadF& q) const {
   return projected_quad;
 }
 
-static float ClampEdgeValue(float f) {
-  DCHECK(!std::isnan(f));
-  return ClampTo(f, (-LayoutUnit::Max() / 2).ToFloat(),
-                 (LayoutUnit::Max() / 2).ToFloat());
-}
-
-LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
-    const gfx::QuadF& q) const {
-  gfx::RectF mapped_quad_bounds = ProjectQuad(q).BoundingBox();
-  // mapped_quad_bounds.width()/height() may be infinity if e.g.
-  // right - left > float_max.
-  DCHECK(std::isfinite(mapped_quad_bounds.x()));
-  DCHECK(std::isfinite(mapped_quad_bounds.y()));
-  DCHECK(!std::isnan(mapped_quad_bounds.width()));
-  DCHECK(!std::isnan(mapped_quad_bounds.height()));
-
-  float left = ClampEdgeValue(floorf(mapped_quad_bounds.x()));
-  float top = ClampEdgeValue(floorf(mapped_quad_bounds.y()));
-  float right = ClampEdgeValue(ceilf(mapped_quad_bounds.right()));
-  float bottom = ClampEdgeValue(ceilf(mapped_quad_bounds.bottom()));
-
-  return LayoutRect(LayoutUnit::Clamp(left), LayoutUnit::Clamp(top),
-                    LayoutUnit::Clamp(right - left),
-                    LayoutUnit::Clamp(bottom - top));
-}
-
 void TransformationMatrix::TransformBox(gfx::BoxF& box) const {
   gfx::BoxF bounds;
   bool first_point = true;

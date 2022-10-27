@@ -209,10 +209,6 @@ class PLATFORM_EXPORT TransformationMatrix {
                                          bool* clamped = nullptr) const;
   // Projects the four corners of the quad.
   [[nodiscard]] gfx::QuadF ProjectQuad(const gfx::QuadF&) const;
-  // Projects the four corners of the quad and takes a bounding box,
-  // while sanitizing values created when the w component is negative.
-  [[nodiscard]] LayoutRect ClampedBoundsOfProjectedQuad(
-      const gfx::QuadF&) const;
 
   void TransformBox(gfx::BoxF&) const;
 

@@ -67,6 +67,8 @@ class HitTestingTransformState {
   }
 
  private:
+  PhysicalRect BoundsOfMappedQuadInternal(const gfx::QuadF&) const;
+
   gfx::PointF last_planar_point_;
   gfx::QuadF last_planar_quad_;
   gfx::QuadF last_planar_area_;

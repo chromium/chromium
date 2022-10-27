@@ -70,15 +70,22 @@ gfx::QuadF HitTestingTransformState::MappedQuad() const {
 }
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedQuad() const {
-  return PhysicalRectToBeNoop(
-      accumulated_transform_.Inverse().ClampedBoundsOfProjectedQuad(
-          last_planar_quad_));
+  return BoundsOfMappedQuadInternal(last_planar_quad_);
 }
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedArea() const {
-  return PhysicalRectToBeNoop(
-      accumulated_transform_.Inverse().ClampedBoundsOfProjectedQuad(
-          last_planar_area_));
+  return BoundsOfMappedQuadInternal(last_planar_area_);
+}
+
+PhysicalRect HitTestingTransformState::BoundsOfMappedQuadInternal(
+    const gfx::QuadF& q) const {
+  gfx::RectF rect =
+      accumulated_transform_.Inverse().ProjectQuad(q).BoundingBox();
+  PhysicalOffset offset(LayoutUnit::FromFloatRound(rect.x()),
+                        LayoutUnit::FromFloatRound(rect.y()));
+  PhysicalSize size(LayoutUnit::FromFloatRound(rect.right()) - offset.left,
+                    LayoutUnit::FromFloatRound(rect.bottom()) - offset.top);
+  return PhysicalRect(offset, size);
 }
 
 }  // namespace blink

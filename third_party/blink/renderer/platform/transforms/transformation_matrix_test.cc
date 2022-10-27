@@ -274,10 +274,6 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
       EXPECT_TRUE(is_valid_quad(q)) << q.ToString();
       q = m.ProjectQuad(q0);
       EXPECT_TRUE(is_valid_quad(q)) << q.ToString();
-      // This should not trigger DCHECK.
-      LayoutRect layout_rect = m.ClampedBoundsOfProjectedQuad(q0);
-      // This is just to avoid unused variable warning.
-      EXPECT_TRUE(layout_rect.IsEmpty() || !layout_rect.IsEmpty());
 
       float a[16];
       m.ToTransform().GetColMajorF(a);
