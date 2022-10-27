@@ -1152,6 +1152,7 @@ source_set("unit_tests") {
     "../ash/app_mode/web_app/web_kiosk_app_launcher_unittest.cc",
     "../ash/app_mode/web_app/web_kiosk_app_service_launcher_unittest.cc",
     "../ash/app_mode/web_app/web_kiosk_app_update_observer_unittest.cc",
+    "../ash/app_restore/arc_app_single_restore_handler_unittest.cc",
     "../ash/app_restore/arc_ghost_window_view_unittest.cc",
     "../ash/app_restore/arc_window_utils_unittest.cc",
     "../ash/app_restore/full_restore_prefs_unittest.cc",

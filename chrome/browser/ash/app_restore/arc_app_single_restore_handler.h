@@ -1,0 +1,72 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_SINGLE_RESTORE_HANDLER_H_
+#define CHROME_BROWSER_ASH_APP_RESTORE_ARC_APP_SINGLE_RESTORE_HANDLER_H_
+
+#include <string>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace ash::app_restore {
+
+// ArcAppSingleRestoreHandler class restore single ARC app with ghost window
+// directly.
+class ArcAppSingleRestoreHandler {
+ public:
+  ArcAppSingleRestoreHandler();
+  ~ArcAppSingleRestoreHandler();
+
+  ArcAppSingleRestoreHandler(const ArcAppSingleRestoreHandler&) = delete;
+  ArcAppSingleRestoreHandler& operator=(const ArcAppSingleRestoreHandler&) =
+      delete;
+
+  // Launch the ARC app and corresponding ghost window by the given launch
+  // parameters. It's expected only called once.
+  void LaunchGhostWindowWithApp(Profile* profile,
+                                const std::string& app_id,
+                                int event_flags,
+                                arc::GhostWindowType window_type,
+                                arc::mojom::WindowInfoPtr window_info);
+
+  bool IsAppPendingRestore(const std::string& app_id) const;
+
+  void OnShelfReady();
+
+  // Expected receive app status update from AppRestoreArcTaskHandler.
+  void OnAppStatesUpdate(const std::string& app_id);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(ArcAppSingleRestoreHandlerTest,
+                           NotLaunchIfShelfNotReady);
+  FRIEND_TEST_ALL_PREFIXES(ArcAppSingleRestoreHandlerTest,
+                           PendingLaunchIfShelfHasReady);
+
+  // Called when ARC app has ready. It's expected only called once.
+  void SendAppLaunchRequestToARC();
+
+  // For test usage.
+  full_restore::ArcGhostWindowHandler* ghost_window_handler_ = nullptr;
+
+  Profile* profile_;
+  absl::optional<std::string> app_id_;
+
+  int32_t event_flags_;
+  apps::WindowInfoPtr window_info_;
+
+  bool is_shelf_ready_ = false;
+  base::OnceClosure not_ready_callback_;
+
+  base::WeakPtrFactory<ArcAppSingleRestoreHandler> weak_ptr_factory_{this};
+};
+
+}  // namespace ash::app_restore
+
+#endif

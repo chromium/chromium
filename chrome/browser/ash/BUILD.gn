@@ -168,6 +168,8 @@ source_set("ash") {
     "app_restore/app_restore_arc_task_handler_factory.h",
     "app_restore/arc_app_queue_restore_handler.cc",
     "app_restore/arc_app_queue_restore_handler.h",
+    "app_restore/arc_app_single_restore_handler.cc",
+    "app_restore/arc_app_single_restore_handler.h",
     "app_restore/arc_ghost_window_delegate.cc",
     "app_restore/arc_ghost_window_delegate.h",
     "app_restore/arc_ghost_window_handler.cc",

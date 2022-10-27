@@ -76,10 +76,12 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   static ArcGhostWindowHandler* Get();
 
   // Returns true if the ghost window is created and launched. Otherwise,
-  // returns false.
-  bool LaunchArcGhostWindow(const std::string& app_id,
-                            int32_t session_id,
-                            ::app_restore::AppRestoreData* restore_data);
+  // returns false. virtual for test usage.
+  // TODO(sstan): Add mock class.
+  virtual bool LaunchArcGhostWindow(
+      const std::string& app_id,
+      int32_t session_id,
+      ::app_restore::AppRestoreData* restore_data);
 
   bool UpdateArcGhostWindowType(int32_t session_id,
                                 arc::GhostWindowType window_type);

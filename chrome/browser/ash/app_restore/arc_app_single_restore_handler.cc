@@ -1,0 +1,132 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
+
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_utils.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "ui/events/event_constants.h"
+
+namespace {
+bool IsAppReadyForLaunch(Profile* profile, const std::string& app_id) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
+  return prefs && prefs->IsAbleToBeLaunched(app_id);
+}
+}  // namespace
+namespace ash::app_restore {
+
+ArcAppSingleRestoreHandler::ArcAppSingleRestoreHandler() = default;
+
+ArcAppSingleRestoreHandler::~ArcAppSingleRestoreHandler() = default;
+
+void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
+    Profile* profile,
+    const std::string& app_id,
+    int event_flags,
+    arc::GhostWindowType window_type,
+    arc::mojom::WindowInfoPtr window_info) {
+  // The ghost window and corresponding shelf item need to be added after ash
+  // shelf ready.
+  if (!is_shelf_ready_) {
+    not_ready_callback_ =
+        base::BindOnce(&ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp,
+                       weak_ptr_factory_.GetWeakPtr(), profile, app_id,
+                       event_flags, window_type, std::move(window_info));
+    return;
+  }
+
+  DCHECK(profile);
+  profile_ = profile;
+
+  // For each single restore handler, the LaunchApp should be only called once.
+  DCHECK(!app_id_.has_value());
+  app_id_ = app_id;
+  event_flags_ = event_flags;
+
+  // Unit test use injected window handler.
+  if (!ghost_window_handler_) {
+    ghost_window_handler_ =
+        AppRestoreArcTaskHandler::GetForProfile(profile)->window_handler();
+  }
+  DCHECK(ghost_window_handler_);
+
+  // Fill restore data by launch parameter to reuse full restore related
+  // functions.
+  ::app_restore::AppRestoreData restore_data;
+  restore_data.current_bounds = restore_data.bounds_in_root =
+      window_info->bounds;
+  restore_data.window_state_type =
+      static_cast<chromeos::WindowStateType>(window_info->state);
+  restore_data.event_flag = event_flags;
+  restore_data.display_id = window_info->display_id;
+
+  // Even if the full restore is not enabled, still assign a session id to the
+  // window in case these ghost window conflict.
+  if (window_info->window_id == -1) {
+    window_info->window_id = ::app_restore::CreateArcSessionId();
+  }
+
+  // Save the launch parameters for send launch request when app ready.
+  window_info_ = std::make_unique<apps::WindowInfo>();
+  window_info_->window_id = window_info->window_id;
+  window_info_->bounds = window_info->bounds;
+  window_info_->display_id = window_info->display_id;
+  window_info_->state = window_info->state;
+
+  // TODO: Add initial launch type.
+  ghost_window_handler_->LaunchArcGhostWindow(app_id, window_info->window_id,
+                                              &restore_data);
+
+  if (IsAppReadyForLaunch(profile_, app_id)) {
+    // SendAppLaunchRequestToARC will reset `app_id_` after request sent.
+    SendAppLaunchRequestToARC();
+  }
+}
+
+bool ArcAppSingleRestoreHandler::IsAppPendingRestore(
+    const std::string& app_id) const {
+  return app_id_ && app_id == app_id_.value();
+}
+
+void ArcAppSingleRestoreHandler::OnShelfReady() {
+  if (!not_ready_callback_.is_null()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(not_ready_callback_));
+  }
+  is_shelf_ready_ = true;
+}
+
+void ArcAppSingleRestoreHandler::OnAppStatesUpdate(const std::string& app_id) {
+  if (!app_id_ || app_id_.value() != app_id)
+    return;
+  // Update ARC app states immediately, since the app states may already
+  // changed from original state.
+  if (IsAppReadyForLaunch(profile_, app_id))
+    SendAppLaunchRequestToARC();
+}
+
+void ArcAppSingleRestoreHandler::SendAppLaunchRequestToARC() {
+  if (!app_id_.has_value())
+    return;
+
+  DCHECK(profile_);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
+
+  // TODO(sstan): Add new launch source.
+  proxy->Launch(app_id_.value(), ui::EF_NONE,
+                apps::LaunchSource::kFromFullRestore, std::move(window_info_));
+
+  // Remove app_id_ to make sure it only be called once for each app_id.
+  app_id_.reset();
+}
+
+}  // namespace ash::app_restore
