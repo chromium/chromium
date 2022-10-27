@@ -47,7 +47,7 @@
 // viewport size (including scrollbars). Areas obscured by scrollbars should be
 // filled with background and content; the snapshot should not be scaled-to-fit.
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     document.querySelector('div').remove();
     document.documentElement.style.overflow = "hidden";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));

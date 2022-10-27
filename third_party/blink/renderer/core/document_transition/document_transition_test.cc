@@ -215,7 +215,7 @@ TEST_P(DocumentTransitionTest, LayoutShift) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
 
@@ -264,12 +264,10 @@ TEST_P(DocumentTransitionTest, TransitionCreatesNewObject) {
   auto* second_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* first_transition =
-      DocumentTransitionSupplement::createDocumentTransition(
-          script_state, GetDocument(), first_callback, exception_state);
-  auto* second_transition =
-      DocumentTransitionSupplement::createDocumentTransition(
-          script_state, GetDocument(), second_callback, exception_state);
+  auto* first_transition = DocumentTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), first_callback, exception_state);
+  auto* second_transition = DocumentTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), second_callback, exception_state);
 
   EXPECT_TRUE(first_transition);
   EXPECT_EQ(GetState(first_transition), State::kAborted);
@@ -289,7 +287,7 @@ TEST_P(DocumentTransitionTest, TransitionReadyPromiseResolves) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
 
@@ -336,7 +334,7 @@ TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
 
@@ -399,7 +397,7 @@ TEST_P(DocumentTransitionTest, UncontainedElementsAreCleared) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
 
@@ -493,7 +491,7 @@ TEST_P(DocumentTransitionTest, StartSharedElementsWantToBeComposited) {
                         v8::External::New(v8_scope.GetIsolate(), &data))
           .ToLocalChecked();
 
-  DocumentTransitionSupplement::createDocumentTransition(
+  DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
       V8DocumentTransitionCallback::Create(start_setup_callback),
       exception_state);
@@ -523,7 +521,7 @@ TEST_P(DocumentTransitionTest, TransitionCleanedUpBeforePromiseResolution) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
   ScriptPromiseTester promise_tester(script_state, transition->finished());
@@ -554,7 +552,7 @@ TEST_P(DocumentTransitionTest, RenderingPausedTest) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
 
@@ -594,7 +592,7 @@ TEST_P(DocumentTransitionTest, Abandon) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
   ScriptPromiseTester finished_tester(script_state, transition->finished());
@@ -651,7 +649,7 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
                         v8::External::New(v8_scope.GetIsolate(), &data))
           .ToLocalChecked();
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
       V8DocumentTransitionCallback::Create(start_setup_callback),
       exception_state);
@@ -722,7 +720,7 @@ TEST_P(DocumentTransitionTest, DocumentTransitionSharedElementInvalidation) {
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
       V8DocumentTransitionCallback::Create(start_setup_callback),
       exception_state);
@@ -791,7 +789,7 @@ TEST_P(DocumentTransitionTest, InspectorStyleResolver) {
       v8::Function::New(v8_scope.GetContext(), start_setup_lambda, {})
           .ToLocalChecked();
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(),
       V8DocumentTransitionCallback::Create(start_setup_callback),
       exception_state);

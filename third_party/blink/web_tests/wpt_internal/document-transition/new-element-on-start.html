@@ -55,7 +55,7 @@ html::page-transition { background: lightpink; }
 async function runTest() {
   hidden.style.pageTransitionTag = "hidden";
   before.style.pageTransitionTag = "before";
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     before.remove();
     hidden.style.pageTransitionTag = "";
     after.style.pageTransitionTag = "after";

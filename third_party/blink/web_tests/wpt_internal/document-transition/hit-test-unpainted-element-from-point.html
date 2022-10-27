@@ -52,7 +52,7 @@ html::page-transition-incoming-image(shared) {
 
 <script>
 async_test(t => {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     target.classList.toggle("before");
     target.classList.toggle("after");
     requestAnimationFrame(async () => {

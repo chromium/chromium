@@ -44,7 +44,7 @@ This text should appear unmodified, since the root isn't captured.
 
 <script>
 async function runTest() {
-  document.createDocumentTransition(() =>
+  document.startViewTransition(() =>
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot)));
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));

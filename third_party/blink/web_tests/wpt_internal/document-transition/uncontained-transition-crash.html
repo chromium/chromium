@@ -32,7 +32,7 @@ async function runTest() {
   await waitForAtLeastOneFrame();
   // Prepare with a shared element
   first.style.pageTransitionTag = "shared";
-  let t = document.createDocumentTransition(() => {
+  let t = document.startViewTransition(() => {
     first.style.pageTransitionTag = "";
     second.style.pageTransitionTag = "shared";
   });

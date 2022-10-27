@@ -58,7 +58,7 @@ html::page-transition-incoming-image(target2) { animation: unset; opacity: 1; }
 
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     target1.style = "";
     target2.style = "page-transition-tag: target2";
     requestAnimationFrame(() => requestAnimationFrame(() => 

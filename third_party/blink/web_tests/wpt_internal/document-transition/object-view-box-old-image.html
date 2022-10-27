@@ -61,7 +61,7 @@ html::page-transition-outgoing-image(target) {
 
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     requestAnimationFrame(() =>  requestAnimationFrame(takeScreenshot));
   });
 }

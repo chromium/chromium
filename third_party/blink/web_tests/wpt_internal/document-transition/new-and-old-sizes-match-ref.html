@@ -38,7 +38,7 @@ html::page-transition { background: lightpink; }
 <div id=target class=box><div class=inner_overflow>X</div></div>
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

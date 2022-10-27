@@ -44,7 +44,7 @@ html::page-transition-image-wrapper(root) { visibility: hidden; }
 <div id=shared></div>
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     e1.classList.add("dst");
     document.body.style.background = "red";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));

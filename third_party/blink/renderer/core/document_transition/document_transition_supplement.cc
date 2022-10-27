@@ -63,7 +63,7 @@ DocumentTransitionSupplement* DocumentTransitionSupplement::From(
 }
 
 // static
-DocumentTransition* DocumentTransitionSupplement::createDocumentTransition(
+DocumentTransition* DocumentTransitionSupplement::startViewTransition(
     ScriptState* script_state,
     Document& document,
     V8DocumentTransitionCallback* callback,

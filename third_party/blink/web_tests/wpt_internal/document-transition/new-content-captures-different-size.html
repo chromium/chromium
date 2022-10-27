@@ -50,7 +50,7 @@ html::page-transition { background: lightpink; }
 <div id=e3 class=box>three</div>
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition(() => {
+  let t = document.startViewTransition(() => {
     e1.classList.add("dst");
     e2.classList.add("dst");
     e3.classList.add("dst");

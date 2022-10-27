@@ -194,7 +194,7 @@ TEST_F(AXDocumentTransitionTest, TransitionPseudoNotRelevant) {
   auto* document_transition_callback =
       V8DocumentTransitionCallback::Create(funcs.ExpectCall());
 
-  auto* transition = DocumentTransitionSupplement::createDocumentTransition(
+  auto* transition = DocumentTransitionSupplement::startViewTransition(
       script_state, GetDocument(), document_transition_callback,
       exception_state);
 

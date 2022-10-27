@@ -31,7 +31,7 @@ async function runTest(resolve, reject) {
         reject(point);
     });
 
-    let transition = document.createDocumentTransition(() => {
+    let transition = document.startViewTransition(() => {
       return new Promise(async (inner_resolve) => {
         new test_driver.Actions()
                  .setContext(window)

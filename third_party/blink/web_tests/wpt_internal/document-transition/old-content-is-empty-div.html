@@ -47,7 +47,7 @@ html::page-transition { background: lightpink; }
 <script>
 async function runTest() {
   empty.style.pageTransitionTag = "shared";
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     empty.style.pageTransitionTag = "";
     target.style.pageTransitionTag = "shared";
 

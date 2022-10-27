@@ -9,7 +9,7 @@
      new Promise( async (resolve) => {
        // Wait for the promise below and query style to ensure all
        // pseudo-elements are generated before using the devtools API.
-       await document.createDocumentTransition().ready;
+       await document.startViewTransition().ready;
        window.getComputedStyle(document.documentElement, "::page-transition-incoming-image(root)").background;
        resolve();
      });

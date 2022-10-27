@@ -50,7 +50,7 @@
 // full size when rendered in the incoming viewport which is inset by
 // scrollbars. The content must not be scaled-to-fit.
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     document.documentElement.style.overflow = "unset";
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });

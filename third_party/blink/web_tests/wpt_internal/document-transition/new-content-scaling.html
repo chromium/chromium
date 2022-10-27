@@ -50,7 +50,7 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  let t = document.createDocumentTransition(() => {
+  let t = document.startViewTransition(() => {
     target.classList.remove("src");
     target.classList.add("dst");
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));

@@ -35,7 +35,7 @@ html::page-transition-incoming-image(root) { animation: unset; opacity: 0 }
 <div id=shared></div>
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
 }

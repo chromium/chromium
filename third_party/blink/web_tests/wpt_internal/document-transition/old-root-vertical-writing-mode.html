@@ -58,7 +58,7 @@ html::page-transition-outgoing-image(root) { animation: unset; opacity: 1; }
 
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     one.remove();
     target.style = "";
     target.style.pageTransitionTag = "s1";

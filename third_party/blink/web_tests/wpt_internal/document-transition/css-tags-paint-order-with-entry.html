@@ -96,7 +96,7 @@ html::page-transition { background: lightpink; }
 
 <script>
 async function runTest() {
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     const f = document.createElement("div");
     f.id = "four";
     document.body.appendChild(f);

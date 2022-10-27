@@ -71,7 +71,7 @@ async function runTest() {
   s1.style = "page-transition-tag: s1";
   s2.style = "page-transition-tag: s2";
   s3.style = "page-transition-tag: s3";
-  document.createDocumentTransition(() => {
+  document.startViewTransition(() => {
     s1.remove();
     s2.remove();
     s3.remove();

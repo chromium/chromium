@@ -26,7 +26,7 @@ class CORE_EXPORT DocumentTransitionSupplement
   static DocumentTransitionSupplement* From(Document&);
   static DocumentTransitionSupplement* FromIfExists(const Document&);
 
-  static DocumentTransition* createDocumentTransition(
+  static DocumentTransition* startViewTransition(
       ScriptState*,
       Document&,
       V8DocumentTransitionCallback* callback,

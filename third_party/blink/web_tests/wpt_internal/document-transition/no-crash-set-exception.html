@@ -35,7 +35,7 @@ function validate_background(pseudoString) {
 
 promise_test(async t => {
   return new Promise((resolve, reject) => {
-    document.createDocumentTransition(() => {
+    document.startViewTransition(() => {
       resolve();
       throw 'error';
     });

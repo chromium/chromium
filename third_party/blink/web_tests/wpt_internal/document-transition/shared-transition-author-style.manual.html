@@ -76,7 +76,7 @@ pseudoStyle.appendChild(document.createTextNode(transitionStyle));
 
 async function runAnimation() {
   target.style.pageTransitionTag = "target";
-  let t = document.createDocumentTransition(() => {
+  let t = document.startViewTransition(() => {
     target.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
     target.classList.add(classes[i]);

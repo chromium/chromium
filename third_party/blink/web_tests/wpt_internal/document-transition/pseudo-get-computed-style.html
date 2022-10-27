@@ -25,7 +25,7 @@ div {
 <script>
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    let transition = document.createDocumentTransition(() => {
+    let transition = document.startViewTransition(() => {
       assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed", ":page-transition");
       assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute", "container(target)");
       assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "absolute", "wrapper(target)");
@@ -55,7 +55,7 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    let transition = document.createDocumentTransition(() => {
+    let transition = document.startViewTransition(() => {
       assert_equals(getComputedStyle(document.documentElement, ":page-transition").position, "fixed");
       assert_equals(getComputedStyle(document.documentElement, ":page-transition-container(target)").position, "absolute");
       assert_equals(getComputedStyle(document.documentElement, ":page-transition-image-wrapper(target)").position, "absolute");

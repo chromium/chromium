@@ -65,7 +65,7 @@ async function runAnimation() {
   e3.style.pageTransitionTag = "e3";
   e4.style.pageTransitionTag = "e4";
   e5.style.pageTransitionTag = "e5";
-  let t = document.createDocumentTransition(() => {
+  let t = document.startViewTransition(() => {
     container.classList.remove(classes[i]);
     i = (i + 1) % classes.length;
     container.classList.add(classes[i]);
