@@ -4,10 +4,9 @@
 
 #include "ui/views/layout/layout_manager_base.h"
 
-#include <algorithm>
-
 #include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
@@ -32,10 +31,9 @@ class TestLayoutManagerBase : public LayoutManagerBase {
  public:
   std::vector<const View*> GetIncludedChildViews() const {
     std::vector<const View*> included;
-    std::copy_if(host_view()->children().begin(), host_view()->children().end(),
-                 std::back_inserter(included), [=](const View* child) {
-                   return IsChildIncludedInLayout(child);
-                 });
+    base::ranges::copy_if(
+        host_view()->children(), std::back_inserter(included),
+        [=](const View* child) { return IsChildIncludedInLayout(child); });
     return included;
   }
 

@@ -865,9 +865,8 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   Widget::GetAllOwnedWidgets(widget->GetNativeView(), &owned_widgets);
 
   std::vector<Widget*> visible_widgets;
-  std::copy_if(owned_widgets.cbegin(), owned_widgets.cend(),
-               std::back_inserter(visible_widgets),
-               [](const Widget* child) { return child->IsVisible(); });
+  base::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
+                        &Widget::IsVisible);
 
   // Focused child widgets should take the place of the web page they cover in
   // the accessibility tree.

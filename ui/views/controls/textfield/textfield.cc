@@ -1377,8 +1377,8 @@ void Textfield::ClearCompositionText() {
 void Textfield::InsertText(const std::u16string& new_text,
                            InsertTextCursorBehavior cursor_behavior) {
   std::u16string filtered_new_text;
-  std::copy_if(new_text.begin(), new_text.end(),
-               std::back_inserter(filtered_new_text), IsValidCharToInsert);
+  base::ranges::copy_if(new_text, std::back_inserter(filtered_new_text),
+                        IsValidCharToInsert);
 
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE ||
       filtered_new_text.empty())
