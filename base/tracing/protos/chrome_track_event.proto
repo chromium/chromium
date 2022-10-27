@@ -930,7 +930,7 @@ message AndroidToolbar {
     BLOCKED_SCROLL_ABLATION = 8;
     BLOCKED_BROWSER_CONTROLS_LOCKED = 9;
     BLOCKED_TAB_SWITCHER_MODE = 10;
-    // TODO(https://crbug.com/1324678): SCROLL_IN_PROGRESS.
+    BLOCKED_COMPOSITOR_IN_MOTION = 11;
     // TODO(https://crbug.com/1324678): NATIVE_PAGE.
   }
   enum AllowCaptureReason {
@@ -952,8 +952,8 @@ message AndroidToolbar {
     DIFF_LOCATION_BAR_WIDTH = 10;
     DIFF_URL_TEXT = 11;
     DIFF_HOME_BUTTON_COLOR = 12;
-    TITLE_TEXT = 13;
-    CCT_ANIMATION = 14;
+    DIFF_TITLE_TEXT = 13;
+    DIFF_CCT_ANIMATION = 14;
   }
 
   optional BlockCaptureReason block_capture_reason = 1;

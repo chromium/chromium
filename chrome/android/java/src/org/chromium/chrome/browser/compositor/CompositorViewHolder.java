@@ -39,6 +39,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -125,6 +126,10 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
+    // Tracks current aggregated state of if the compositor is in motion. This could be an ongoing
+    // touch by the user, or a scroll that's in progress.
+    private final ObservableSupplierImpl<Boolean> mInMotionSupplier =
+            new ObservableSupplierImpl<>();
 
     private EventOffsetHandler mEventOffsetHandler;
     private boolean mIsKeyboardShowing;
@@ -324,6 +329,7 @@ public class CompositorViewHolder extends FrameLayout
             @Override
             public void onContentViewScrollingStateChanged(boolean scrolling) {
                 mContentViewScrolling = scrolling;
+                updateInMotion();
                 if (!scrolling) updateContentViewChildrenDimension();
             }
 
@@ -752,6 +758,23 @@ public class CompositorViewHolder extends FrameLayout
             mInGesture = false;
             updateViewportSize();
         }
+        updateInMotion();
+    }
+
+    private void updateInMotion() {
+        // TODO(skym): Track fling as well.
+        boolean inMotion = mInGesture || mContentViewScrolling;
+        mInMotionSupplier.set(inMotion);
+    }
+
+    /**
+     * Aggregated supplier for whether the compositor's content is moving. Currently tracking in
+     * touch event and in scroll event. Performance is critical while this supplier returns true,
+     * and clients that have expensive operations may consider defering until after the motion is
+     * over.
+     */
+    public ObservableSupplier<Boolean> getInMotionSupplier() {
+        return mInMotionSupplier;
     }
 
     @Override
