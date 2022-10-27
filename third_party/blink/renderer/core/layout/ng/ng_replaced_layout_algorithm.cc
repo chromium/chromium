@@ -29,6 +29,10 @@ const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
           .block_size;
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
 
+  if (Node().IsMedia() &&
+      RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled())
+    LayoutMediaChildren();
+
   return container_builder_.ToBoxFragment();
 }
 
@@ -51,6 +55,10 @@ MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
       (Style().LogicalHeight().IsAuto() &&
        ConstraintSpace().IsBlockAutoBehaviorStretch());
   return {sizes, depends_on_block_constraints};
+}
+
+void NGReplacedLayoutAlgorithm::LayoutMediaChildren() {
+  // Layout children of Node(), and add their results to container_builder_.
 }
 
 }  // namespace blink

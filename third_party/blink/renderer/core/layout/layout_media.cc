@@ -60,6 +60,11 @@ void LayoutMedia::UpdateLayout() {
 
   LayoutImage::UpdateLayout();
 
+  // If LayoutMediaNGContainer flag is enabled, |NGReplacedLayoutAlgorithm::
+  // LayoutMediaChildren()| handles children layout.
+  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled())
+    return;
+
   auto new_rect = PhysicalContentBoxRect().ToLayoutRect();
 
   LayoutState state(*this);
