@@ -2302,18 +2302,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputDate) {
 }
 
 // TODO: date and time controls drop their children, including the popup button,
-// on Android
-// TODO(https://crbug.com/1378498): Fix flakiness on Windows and Linux.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-#define MAYBE_AccessibilityInputDateWithPopupOpen \
-  DISABLED_AccessibilityInputDateWithPopupOpen
-#else
-#define MAYBE_AccessibilityInputDateWithPopupOpen \
-  AccessibilityInputDateWithPopupOpen
-#endif
-
+// on Android.
+// TODO(https://crbug.com/1378498): Flaky on every platform.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputDateWithPopupOpen) {
+                       DISABLED_AccessibilityInputDateWithPopupOpen) {
   RunHtmlTest(FILE_PATH_LITERAL("input-date-with-popup-open.html"));
 }
 
