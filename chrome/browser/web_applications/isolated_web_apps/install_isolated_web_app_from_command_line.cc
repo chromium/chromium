@@ -39,7 +39,7 @@ void ReportInstallationResult(
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
   if (!result.has_value()) {
-    LOG(ERROR) << "Isolated app auto installation "
+    LOG(ERROR) << "Isolated web app auto installation "
                   "failed. Error: "
                << result.error();
   }
@@ -55,10 +55,10 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
   return web_contents;
 }
 
-void ScheduleInstallIsolatedApp(const IsolatedWebAppUrlInfo& isolation_info,
-                                IsolationData isolation_data,
-                                WebAppProvider& provider,
-                                Profile& profile) {
+void ScheduleInstallIsolatedWebApp(const IsolatedWebAppUrlInfo& isolation_info,
+                                   IsolationData isolation_data,
+                                   WebAppProvider& provider,
+                                   Profile& profile) {
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedWebAppCommand>(
           isolation_info, isolation_data, CreateWebContents(profile),
@@ -186,7 +186,7 @@ void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
 
   provider->on_registry_ready().Post(
       FROM_HERE,
-      base::BindOnce(&ScheduleInstallIsolatedApp, isolation_info.value(),
+      base::BindOnce(&ScheduleInstallIsolatedWebApp, isolation_info.value(),
                      **isolation_data, std::ref(*provider), std::ref(profile)));
 }
 
