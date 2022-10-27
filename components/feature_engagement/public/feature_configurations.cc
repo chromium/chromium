@@ -1039,6 +1039,23 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(GREATER_THAN_OR_EQUAL, 3), 60, 60));
     return config;
   }
+
+  if (kIPHWhatsNewFeature.name == feature->name) {
+    // A config that allows a user education bubble to be shown for the bottom
+    // toolbar. After the promo manager dismisses What's New promo, the user
+    // education bubble will be shown once. This can only occur once every a
+    // year.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("whats_new_trigger", Comparator(EQUAL, 0), 360, 360);
+    config->used =
+        EventConfig("whats_new_used", Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
   if (kIPHDummyFeature.name == feature->name) {

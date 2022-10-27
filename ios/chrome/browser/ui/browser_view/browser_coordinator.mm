@@ -1407,6 +1407,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   self.whatsNewCoordinator = nil;
 }
 
+- (void)showWhatsNewIPH {
+  [_bubblePresenter presentWhatsNewBottomToolbarBubble];
+}
+
 #pragma mark - DefaultPromoCommands
 
 - (void)showTailoredPromoStaySafe {
@@ -1573,6 +1577,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 - (void)showWhatsNewPromo {
   [self showWhatsNew];
+  self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
 }
 
 #pragma mark - PageInfoCommands

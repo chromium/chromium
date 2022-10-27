@@ -391,6 +391,9 @@ BASE_FEATURE(kIPHBadgedReadingListFeature,
 BASE_FEATURE(kIPHBadgedWhatsNewFeature,
              "IPH_BadgedWhatsNew",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHWhatsNewFeature,
+             "IPH_WhatsNew",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadingListMessagesFeature,
              "IPH_ReadingListMessages",
              base::FEATURE_DISABLED_BY_DEFAULT);

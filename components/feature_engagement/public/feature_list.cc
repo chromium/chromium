@@ -110,6 +110,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHNewIncognitoTabTipFeature,
     &kIPHBadgedReadingListFeature,
     &kIPHBadgedWhatsNewFeature,
+    &kIPHWhatsNewFeature,
     &kIPHReadingListMessagesFeature,
     &kIPHBadgedTranslateManualTriggerFeature,
     &kIPHDiscoverFeedHeaderFeature,
