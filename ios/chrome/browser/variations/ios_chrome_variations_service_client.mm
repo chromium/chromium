@@ -9,8 +9,8 @@
 #import "components/variations/seed_response.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/variations/ios_chrome_first_run_variations_seed_manager.h"
 #import "ios/chrome/browser/variations/ios_chrome_seed_response.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -54,9 +54,7 @@ bool IOSChromeVariationsServiceClient::IsEnterprise() {
 
 std::unique_ptr<variations::SeedResponse>
 IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
-  IOSChromeFirstRunVariationsSeedManager* mgr =
-      [[IOSChromeFirstRunVariationsSeedManager alloc] init];
-  IOSChromeSeedResponse* ios_seed = [mgr popSeed];
+  IOSChromeSeedResponse* ios_seed = [IOSChromeVariationsSeedStore popSeed];
   if (!ios_seed) {
     return nullptr;
   }

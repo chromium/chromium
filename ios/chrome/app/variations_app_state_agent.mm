@@ -12,7 +12,7 @@
 #endif
 
 // TODO(crbug.com/1372180): Implement
-// IOSChromeFirstRunVariationsSeedManagerDelegate.
+// IOSChromeVariationsSeedFetcherDelegate.
 @interface VariationsAppStateAgent () {
   // Whether the variations seed has been fetched.
   BOOL _seedFetched;
@@ -65,7 +65,7 @@
   [super sceneState:sceneState transitionedToActivationLevel:level];
 }
 
-#pragma mark - IOSChromeFirstRunVariationsSeedManagerDelegate
+#pragma mark - IOSChromeVariationsSeedFetcherDelegate
 
 - (void)didFetchSeedSuccess:(BOOL)succeeded {
   DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);

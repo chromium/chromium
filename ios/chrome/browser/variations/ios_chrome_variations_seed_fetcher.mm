@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/variations/ios_chrome_first_run_variations_seed_manager.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
@@ -13,6 +13,7 @@
 #import "components/variations/variations_url_constants.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/variations/ios_chrome_seed_response.h"
+#import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
 #import "ios/chrome/common/channel_info.h"
 #import "net/http/http_status_code.h"
 
@@ -22,19 +23,24 @@
 
 namespace {
 // Maximum time allowed to fetch the seed before the request is cancelled.
-const base::TimeDelta kRequestTimeout = base::Seconds(3);
+const base::TimeDelta kRequestTimeout = base::Seconds(2);
 
 // Whether a current request for variations seed is being made; this variable
 // exists that only one instance of the manager updates the global seed at one
 // time.
 static BOOL g_seed_fetching_in_progress = NO;
 
-// The source of truth of the entire app for the stored seed.
-static IOSChromeSeedResponse* g_shared_seed = nil;
-
 }  // namespace
 
-@interface IOSChromeFirstRunVariationsSeedManager () {
+// Extraction of seed update method in IOSChromeVariationsSeedStore to
+// be used (and ONLY used) by the fetcher.
+@interface IOSChromeVariationsSeedStore (Fetcher)
+
++ (void)updateSharedSeed:(IOSChromeSeedResponse*)seed;
+
+@end
+
+@interface IOSChromeVariationsSeedFetcher () {
   // The variations server domain name.
   std::string _variationsDomain;
 
@@ -53,12 +59,9 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
 // reporting, and will be reset to `nil` when the request finishes.
 @property(nonatomic, strong) NSDate* startTimeOfOngoingSeedRequest;
 
-// The fetched seed response.
-@property(nonatomic, readonly) IOSChromeSeedResponse* seed;
-
 @end
 
-@implementation IOSChromeFirstRunVariationsSeedManager
+@implementation IOSChromeVariationsSeedFetcher
 
 #pragma mark - Public
 
@@ -97,17 +100,7 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
   });
 }
 
-- (IOSChromeSeedResponse*)popSeed {
-  IOSChromeSeedResponse* seed = self.seed;
-  [self updateSharedSeed:nil];
-  return seed;
-}
-
 #pragma mark - Accessors
-
-- (IOSChromeSeedResponse*)seed {
-  return g_shared_seed;
-}
 
 - (NSURL*)variationsUrl {
   // Setting "osname", "milestone" and "channel" as parameters. Dogfood
@@ -198,7 +191,7 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
     if (seed == nil) {
       success = NO;
     } else {
-      [self updateSharedSeed:seed];
+      [IOSChromeVariationsSeedStore updateSharedSeed:seed];
     }
   }
   [self recordSeedFetchResult];
@@ -239,8 +232,8 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
                                               compressed:YES];
     return seed;
   }
-    [self recordSeedFetchResult];
-    return nil;
+  [self recordSeedFetchResult];
+  return nil;
 }
 
 // Records the seed fetch result on UMA.
@@ -250,19 +243,13 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
   return;
 }
 
-// Updates the shared seed response. This method is extracted out for testing
-// purposes.
-- (void)updateSharedSeed:(IOSChromeSeedResponse*)seed {
-  g_shared_seed = seed;
-}
-
 // Notifies the delegate of the seed fetching result. Since the seed fetch
 // request is sent on the global queue instead of the main queue, this method
 // should explicitly dispatch the result back on the main queue.
 // TODO(crbug.com/3835653): Merge with `recordSeedFetchResult`.
 - (void)notifyDelegateSeedFetchResult:(BOOL)result {
   if (self.delegate) {
-    __weak IOSChromeFirstRunVariationsSeedManager* weakSelf = self;
+    __weak IOSChromeVariationsSeedFetcher* weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
       [weakSelf.delegate didFetchSeedSuccess:result];
     });
