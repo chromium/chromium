@@ -62,14 +62,21 @@ void WebsiteMetricsServiceLacros::Start() {
       &WebsiteMetricsServiceLacros::CheckForNoisyAppKMReportingInterval);
 }
 
+void WebsiteMetricsServiceLacros::SetWebsiteMetricsForTesting(
+    std::unique_ptr<apps::WebsiteMetrics> website_metrics) {
+  website_metrics_ = std::move(website_metrics);
+}
+
 void WebsiteMetricsServiceLacros::CheckForFiveMinutes() {
-  // TODO(crbug.com/1334173): Call WebsiteMetrics OnFiveMinutes to record
-  // website metrics in the user pref.
+  if (website_metrics_) {
+    website_metrics_->OnFiveMinutes();
+  }
 }
 
 void WebsiteMetricsServiceLacros::CheckForNoisyAppKMReportingInterval() {
-  // TODO(crbug.com/1334173): Call WebsiteMetrics OnTwoHours to log website
-  // metrics UKM.
+  if (website_metrics_) {
+    website_metrics_->OnTwoHours();
+  }
 }
 
 void WebsiteMetricsServiceLacros::OnGetDeviceTypeForMetrics(

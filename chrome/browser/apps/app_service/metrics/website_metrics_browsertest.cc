@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -28,6 +27,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "ui/wm/core/window_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
+#endif
 
 namespace apps {
 
@@ -58,7 +66,9 @@ class TestWebsiteMetrics : public WebsiteMetrics {
   void OnInstallableWebAppStatusUpdated(
       content::WebContents* web_contents) override {
     WebsiteMetrics::OnInstallableWebAppStatusUpdated(web_contents);
-    if (webcontents_to_ukm_key_[web_contents] != ukm_key_) {
+    if (webcontents_to_ukm_key_.find(web_contents) ==
+            webcontents_to_ukm_key_.end() ||
+        webcontents_to_ukm_key_[web_contents] != ukm_key_) {
       return;
     }
 
@@ -85,15 +95,27 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+    DCHECK(proxy);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto metrics_service_ =
+        std::make_unique<WebsiteMetricsServiceLacros>(profile);
+    website_metrics_service_ = metrics_service_.get();
+    proxy->SetWebsiteMetricsServiceForTesting(std::move(metrics_service_));
+    auto website_metrics_ptr = std::make_unique<apps::WebsiteMetrics>(
+        ProfileManager::GetPrimaryUserProfile(),
+        /*user_type_by_device_type=*/0);
+    website_metrics_service_->SetWebsiteMetricsForTesting(
+        std::move(website_metrics_ptr));
+    website_metrics_service_->Start();
+#else
     auto metrics_service_ =
         std::make_unique<AppPlatformMetricsService>(profile);
     app_platform_metrics_service_ = metrics_service_.get();
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    DCHECK(proxy);
     proxy->SetAppPlatformMetricsServiceForTesting(std::move(metrics_service_));
-
     app_platform_metrics_service_->Start(proxy->AppRegistryCache(),
                                          proxy->InstanceRegistry());
+#endif
   }
 
   void TearDownOnMainThread() override {
@@ -110,6 +132,8 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     Browser::CreateParams params(profile, true /* user_gesture */);
     Browser* browser = Browser::Create(params);
     browser->window()->Show();
+    auto* window = browser->window()->GetNativeWindow();
+    wm::GetActivationClient(window->GetRootWindow())->ActivateWindow(window);
     return browser;
   }
 
@@ -245,9 +269,24 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
     ASSERT_EQ(1, count);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  WebsiteMetricsServiceLacros* MetricsService() {
+    return website_metrics_service_;
+  }
+#else
+  AppPlatformMetricsService* MetricsService() {
+    return app_platform_metrics_service_;
+  }
+#endif
+
   WebsiteMetrics* website_metrics() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    DCHECK(website_metrics_service_);
+    return website_metrics_service_->website_metrics_.get();
+#else
     DCHECK(app_platform_metrics_service_);
     return app_platform_metrics_service_->website_metrics_.get();
+#endif
   }
 
   base::flat_map<aura::Window*, content::WebContents*>&
@@ -274,7 +313,11 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   AppPlatformMetricsService* app_platform_metrics_service_ = nullptr;
+#else
+  WebsiteMetricsServiceLacros* website_metrics_service_ = nullptr;
+#endif
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
@@ -435,8 +478,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
-  app_platform_metrics_service_->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  MetricsService()->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
@@ -496,8 +538,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
-  app_platform_metrics_service_->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  MetricsService()->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
@@ -571,8 +612,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
-  app_platform_metrics_service_->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  MetricsService()->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
@@ -657,6 +697,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   auto* window2 = browser2->window()->GetNativeWindow();
   auto* tab_app3 = InsertForegroundTab(browser2, "https://c.example.org");
   auto* tab_app4 = InsertForegroundTab(browser2, "https://d.example.org");
+  wm::GetActivationClient(window1->GetRootWindow())->DeactivateWindow(window1);
 
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(4u, webcontents_to_observer_map().size());
@@ -704,6 +745,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   i = browser2->tab_strip_model()->GetIndexOfWebContents(tab_app4);
   browser2->tab_strip_model()->CloseWebContentsAt(
       i, TabCloseTypes::CLOSE_USER_GESTURE);
+  wm::GetActivationClient(window1->GetRootWindow())->ActivateWindow(window1);
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
@@ -755,8 +797,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
-  app_platform_metrics_service_->SetWebsiteMetricsForTesting(
-      std::move(website_metrics_ptr));
+  MetricsService()->SetWebsiteMetricsForTesting(std::move(website_metrics_ptr));
 
   // Create a browser with two tabs.
   auto* browser1 = CreateBrowser();
@@ -793,6 +834,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   // Create the second browser, and move the activated tab to the new browser.
   auto* browser2 = CreateBrowser();
   auto* window2 = browser2->window()->GetNativeWindow();
+  wm::GetActivationClient(window1->GetRootWindow())->DeactivateWindow(window1);
 
   // Detach `tab1`.
   auto detached =
@@ -851,6 +893,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   VerifyNoUsageTimeUkm(url2);
 
   browser2->tab_strip_model()->CloseAllTabs();
+  wm::GetActivationClient(window1->GetRootWindow())->ActivateWindow(window1);
   EXPECT_EQ(1u, window_to_web_contents().size());
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
@@ -918,6 +961,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   // Create the second browser, and move the inactivated tab to the new browser.
   auto* browser2 = CreateBrowser();
   auto* window2 = browser2->window()->GetNativeWindow();
+  wm::GetActivationClient(window1->GetRootWindow())->DeactivateWindow(window1);
 
   // Detach `tab2`.
   auto detached =
@@ -1012,6 +1056,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   auto* browser2 = CreateBrowser();
   auto* window2 = browser2->window()->GetNativeWindow();
   auto* tab_app2 = InsertForegroundTab(browser2, "https://b.example.org");
+  wm::GetActivationClient(window1->GetRootWindow())->DeactivateWindow(window1);
 
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());

@@ -542,6 +542,12 @@ void AppServiceProxyLacros::SetCrosapiAppServiceProxyForTesting(
       crosapi::mojom::AppServiceProxy::Version_;
 }
 
+void AppServiceProxyLacros::SetWebsiteMetricsServiceForTesting(
+    std::unique_ptr<apps::WebsiteMetricsServiceLacros>
+        website_metrics_service) {
+  metrics_service_ = std::move(website_metrics_service);
+}
+
 base::WeakPtr<AppServiceProxyLacros> AppServiceProxyLacros::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

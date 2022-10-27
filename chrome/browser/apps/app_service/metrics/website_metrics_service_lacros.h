@@ -32,6 +32,9 @@ class WebsiteMetricsServiceLacros {
   // Start the timer for website metrics.
   void Start();
 
+  void SetWebsiteMetricsForTesting(
+      std::unique_ptr<apps::WebsiteMetrics> website_metrics);
+
  private:
   friend class WebsiteMetricsBrowserTest;
 

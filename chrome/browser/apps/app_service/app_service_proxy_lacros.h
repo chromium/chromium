@@ -296,6 +296,10 @@ class AppServiceProxyLacros : public KeyedService,
   void SetCrosapiAppServiceProxyForTesting(
       crosapi::mojom::AppServiceProxy* proxy);
 
+  void SetWebsiteMetricsServiceForTesting(
+      std::unique_ptr<apps::WebsiteMetricsServiceLacros>
+          website_metrics_service);
+
   base::WeakPtr<AppServiceProxyLacros> GetWeakPtr();
 
  protected:
