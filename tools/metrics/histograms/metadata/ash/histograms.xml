@@ -3912,7 +3912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SearchModelUpdateTime.{TabletOrClamshell}" units="ms"
-    expires_after="2022-12-01">
+    expires_after="2023-10-01">
   <owner>yulunwu@google.com</owner>
   <owner>tbarzic@google.com</owner>
   <summary>
