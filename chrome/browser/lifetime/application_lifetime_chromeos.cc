@@ -5,8 +5,13 @@
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -37,9 +42,32 @@ bool g_send_stop_request_to_session_manager = false;
 
 }  // namespace
 
+void AttemptUserExit() {
+  VLOG(1) << "AttemptUserExit";
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted", false);
+
+  PrefService* state = g_browser_process->local_state();
+  if (state) {
+    ash::BootTimesRecorder::Get()->OnLogoutStarted(state);
+
+    if (SetLocaleForNextStart(state)) {
+      TRACE_EVENT0("shutdown", "CommitPendingWrite");
+      state->CommitPendingWrite();
+    }
+  }
+  SetSendStopRequestToSessionManager();
+  // On ChromeOS, always terminate the browser, regardless of the result of
+  // AreAllBrowsersCloseable(). See crbug.com/123107.
+  browser_shutdown::NotifyAndTerminate(true /* fast_path */);
+}
+
 void AttemptRelaunch() {
   GetPowerManagerClient()->RequestRestart(power_manager::REQUEST_RESTART_OTHER,
                                           "Chrome relaunch");
+}
+
+void AttemptExit() {
+  AttemptUserExit();
 }
 
 void RelaunchIgnoreUnloadHandlers() {

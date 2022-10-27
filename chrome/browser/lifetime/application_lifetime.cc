@@ -23,10 +23,6 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/boot_times_recorder.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
-#include "chrome/browser/lifetime/termination_notification.h"
 #include "ui/aura/env.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -54,25 +50,10 @@ void AttemptExitInternal(bool try_to_quit_application) {
 
 }  // namespace
 
+// The ChromeOS implementations are in application_lifetime_chromeos.cc
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
 void AttemptUserExit() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  VLOG(1) << "AttemptUserExit";
-  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted", false);
-
-  PrefService* state = g_browser_process->local_state();
-  if (state) {
-    ash::BootTimesRecorder::Get()->OnLogoutStarted(state);
-
-    if (SetLocaleForNextStart(state)) {
-      TRACE_EVENT0("shutdown", "CommitPendingWrite");
-      state->CommitPendingWrite();
-    }
-  }
-  SetSendStopRequestToSessionManager();
-  // On ChromeOS, always terminate the browser, regardless of the result of
-  // AreAllBrowsersCloseable(). See crbug.com/123107.
-  browser_shutdown::NotifyAndTerminate(true /* fast_path */);
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   // Reset the restart bit that might have been set in cancelled restart
   // request.
 #if !BUILDFLAG(IS_ANDROID)
@@ -81,21 +62,13 @@ void AttemptUserExit() {
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
   AttemptExitInternal(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-// The ChromeOS implementation is in application_lifetime_chromeos.cc
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void AttemptRelaunch() {
   AttemptRestart();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AttemptExit() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, user exit and system exits are the same.
-  AttemptUserExit();
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   // If we know that all browsers can be closed without blocking,
   // don't notify users of crashes beyond this point.
   // Note that MarkAsCleanShutdown() does not set UMA's exit cleanly bit
@@ -106,8 +79,9 @@ void AttemptExit() {
     MarkAsCleanShutdown();
 #endif  // !BUILDFLAG(IS_ANDROID)
   AttemptExitInternal(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ExitIgnoreUnloadHandlers() {
   VLOG(1) << "ExitIgnoreUnloadHandlers";
