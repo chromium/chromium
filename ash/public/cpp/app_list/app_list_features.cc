@@ -49,7 +49,7 @@ BASE_FEATURE(kLauncherPlayStoreSearch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAnimateScaleOnTabletModeTransition,
              "AnimateScaleOnTabletModeTransition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
