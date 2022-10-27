@@ -193,7 +193,7 @@ class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
 std::unique_ptr<base::Value> ParseReportUpload(const std::string& payload) {
   base::Value parsed_payload = base::test::ParseJson(payload);
   // Clear out any non-reproducible fields.
-  for (auto& report : parsed_payload.GetListDeprecated()) {
+  for (auto& report : parsed_payload.GetList()) {
     report.RemoveKey("age");
     report.RemovePath("body.elapsed_time");
     auto* user_agent =
@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
 
   // Verify the contents of the report that we received.
   EXPECT_TRUE(response != nullptr);
-  auto report = response->GetListDeprecated().begin();
+  auto report = response->GetList().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
 
@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
 
   // Verify the contents of the report that we received.
   EXPECT_TRUE(response != nullptr);
-  auto report = response->GetListDeprecated().begin();
+  auto report = response->GetList().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
   auto* body = report->FindKeyOfType("body", base::Value::Type::DICTIONARY);
