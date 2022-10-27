@@ -129,7 +129,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
-    for (const auto& url_value : urls_value->GetListDeprecated()) {
+    for (const auto& url_value : urls_value->GetList()) {
       GURL url(url_value.GetString());
       if (url.is_valid())
         urls.push_back(url::Origin::Create(url));
@@ -140,7 +140,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
 
     const auto* devices_value = item.FindKey(kPrefDevicesKey);
     DCHECK(devices_value);
-    for (const auto& device_value : devices_value->GetListDeprecated()) {
+    for (const auto& device_value : devices_value->GetList()) {
       const auto* vendor_id_value = device_value.FindKey(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 
