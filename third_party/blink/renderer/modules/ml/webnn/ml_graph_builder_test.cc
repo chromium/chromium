@@ -1936,6 +1936,114 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
   }
 }
 
+MLOperand* BuildClamp(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLClampOptions* options = MLClampOptions::Create()) {
+  auto* output = builder->clamp(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), input->Type());
+  auto* clamp = output->Operator();
+  EXPECT_NE(clamp, nullptr);
+  EXPECT_EQ(clamp->Kind(), MLOperator::OperatorKind::kClamp);
+  EXPECT_EQ(clamp->IsConnected(), true);
+  EXPECT_NE(clamp->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, ClampTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test building clamp with default options.
+    auto* input = BuildInput(scope, builder, "input", {2, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* options = MLClampOptions::Create();
+    EXPECT_FALSE(options->hasMaxValue());
+    EXPECT_FALSE(options->hasMinValue());
+    auto* output = BuildClamp(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+  }
+  {
+    // Test building clamp with max value = 0 and min value = 0.
+    auto* input = BuildInput(scope, builder, "input", {1, 2, 2, 7},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* options = MLClampOptions::Create();
+    options->setMaxValue(0);
+    options->setMinValue(0);
+    auto* output = BuildClamp(scope, builder, input, options);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 2, 7}));
+  }
+  {
+    // Test throwing error when the max value is less than the min value.
+    auto* input = BuildInput(scope, builder, "input", {2, 4},
+                             V8MLOperandType::Enum::kInt32);
+    auto* options = MLClampOptions::Create();
+    options->setMaxValue(-3.243432);
+    options->setMinValue(4.432232);
+    auto* output = builder->clamp(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The min value (4.432232) should be less than or equal to "
+              "the max value (-3.243432).");
+  }
+  {
+    // Test building clamp as a standalone operator.
+    auto* clamp =
+        builder->clamp(MLClampOptions::Create(), scope.GetExceptionState());
+    EXPECT_NE(clamp, nullptr);
+    EXPECT_EQ(clamp->Kind(), MLOperator::OperatorKind::kClamp);
+    EXPECT_EQ(clamp->IsConnected(), false);
+    EXPECT_NE(clamp->Options(), nullptr);
+  }
+}
+
+TEST_F(MLGraphBuilderTest, Softmax) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
+  {
+    // Test building softmax with float32 input.
+    auto* input = BuildInput(scope, builder, "input", {2, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->softmax(input, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+    auto* softmax = output->Operator();
+    EXPECT_NE(softmax, nullptr);
+    EXPECT_EQ(softmax->Kind(), MLOperator::OperatorKind::kSoftmax);
+    EXPECT_EQ(softmax->IsConnected(), true);
+    EXPECT_EQ(softmax->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building softmax with 4-D input.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 2, 4},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->softmax(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input must be a 2-D tensor.");
+  }
+  {
+    // Test throwing exception when building softmax with int32 input.
+    auto* input = BuildInput(scope, builder, "input", {3, 4},
+                             V8MLOperandType::Enum::kInt32);
+    auto* output = builder->softmax(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+}
+
 class FakeMLGraphBackend final : public MLGraph {
  public:
   // Create and build a FakeMLGraphBackend object. Resolve the promise with
