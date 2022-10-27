@@ -22,6 +22,8 @@ PartitionedLockManager::PartitionedLockRequest::PartitionedLockRequest(
     LockType type)
     : lock_id(std::move(lock_id)), type(type) {}
 
+PartitionedLockManager::AcquireOptions::AcquireOptions() = default;
+
 PartitionedLockManager::LockRequest::LockRequest() = default;
 PartitionedLockManager::LockRequest::LockRequest(
     LockType type,
@@ -65,7 +67,8 @@ int64_t PartitionedLockManager::RequestsWaitingForTesting() const {
 void PartitionedLockManager::AcquireLocks(
     base::flat_set<PartitionedLockRequest> lock_requests,
     base::WeakPtr<PartitionedLockHolder> locks_holder,
-    LocksAcquiredCallback callback) {
+    LocksAcquiredCallback callback,
+    AcquireOptions acquire_options) {
   if (!locks_holder) {
     std::move(callback).Run();
     return;
@@ -77,7 +80,8 @@ void PartitionedLockManager::AcquireLocks(
   // stack (every task would execute in the stack of its parent task,
   // recursively).
   scoped_refptr<base::RefCountedData<bool>> run_callback_synchonously =
-      base::MakeRefCounted<base::RefCountedData<bool>>(true);
+      base::MakeRefCounted<base::RefCountedData<bool>>(
+          !acquire_options.ensure_async);
 
   locks_holder->locks.reserve(lock_requests.size());
   size_t num_closure_calls = lock_requests.size();

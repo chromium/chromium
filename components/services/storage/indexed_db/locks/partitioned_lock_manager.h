@@ -82,9 +82,14 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
     PartitionedLockId lock_id;
     LockType type;
   };
+  struct COMPONENT_EXPORT(LOCK_MANAGER) AcquireOptions {
+    AcquireOptions();
+    bool ensure_async = false;
+  };
   void AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
                     base::WeakPtr<PartitionedLockHolder> locks_holder,
-                    LocksAcquiredCallback callback);
+                    LocksAcquiredCallback callback,
+                    AcquireOptions acquire_options = AcquireOptions());
 
   enum class TestLockResult { kLocked, kFree };
   // Tests to see if the given lock request can be acquired.

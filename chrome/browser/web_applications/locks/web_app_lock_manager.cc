@@ -109,16 +109,12 @@ void WebAppLockManager::AcquireLock(LockDescription& lock_description,
       << "Cannot acquire a lock twice.";
   std::vector<content::PartitionedLockManager::PartitionedLockRequest>
       requests = GetLockRequestsForLock(lock_description);
-  // TODO(dmurph): Create option for lock acquisition callbacks to always be
-  // posted async. https://crbug.com/1354312
-  auto posted_callback =
-      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
-                     base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
-                     std::move(on_lock_acquired));
+  content::PartitionedLockManager::AcquireOptions options;
+  options.ensure_async = true;
   lock_description.holder_ = std::make_unique<content::PartitionedLockHolder>();
   lock_manager_.AcquireLocks(std::move(requests),
                              lock_description.holder_->AsWeakPtr(),
-                             std::move(posted_callback));
+                             std::move(on_lock_acquired), options);
 }
 
 std::unique_ptr<SharedWebContentsWithAppLockDescription>
@@ -130,15 +126,11 @@ WebAppLockManager::UpgradeAndAcquireLock(
   std::unique_ptr<SharedWebContentsWithAppLockDescription> result_lock =
       std::make_unique<SharedWebContentsWithAppLockDescription>(app_ids);
   result_lock->holder_ = std::move(lock_description->holder_);
-  // TODO(dmurph): Create option for lock acquisition callbacks to always be
-  // posted async. https://crbug.com/1354312
-  auto posted_callback =
-      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
-                     base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
-                     std::move(on_lock_acquired));
+  content::PartitionedLockManager::AcquireOptions options;
+  options.ensure_async = true;
   lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                              result_lock->holder_->AsWeakPtr(),
-                             std::move(posted_callback));
+                             std::move(on_lock_acquired), options);
 
   return result_lock;
 }
@@ -151,15 +143,11 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
   std::unique_ptr<AppLockDescription> result_lock =
       std::make_unique<AppLockDescription>(app_ids);
   result_lock->holder_ = std::move(lock_description->holder_);
-  // TODO(dmurph): Create option for lock acquisition callbacks to always be
-  // posted async. https://crbug.com/1354312
-  auto posted_callback =
-      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
-                     base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
-                     std::move(on_lock_acquired));
+  content::PartitionedLockManager::AcquireOptions options;
+  options.ensure_async = true;
   lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                              result_lock->holder_->AsWeakPtr(),
-                             std::move(posted_callback));
+                             std::move(on_lock_acquired), options);
   return result_lock;
 }
 

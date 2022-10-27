@@ -292,5 +292,64 @@ TEST_F(PartitionedLockManagerTest, PartitionsOperateSeparately) {
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
 }
 
+TEST_F(PartitionedLockManagerTest, AcquireOptionsEnsureAsync) {
+  {
+    base::RunLoop loop;
+    bool callback_ran = false;
+
+    PartitionedLockManager lock_manager;
+    PartitionedLockHolder lock_holder;
+    PartitionedLockId lock_id = {0, IntegerKey(0)};
+
+    EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
+              lock_manager.TestLock(
+                  {lock_id, PartitionedLockManager::LockType::kShared}));
+
+    content::PartitionedLockManager::AcquireOptions options{};
+    options.ensure_async = true;
+
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kShared}},
+        lock_holder.AsWeakPtr(),
+        base::BindOnce(
+            [](base::RunLoop* loop, bool* callback_ran) {
+              *callback_ran = true;
+              loop->Quit();
+            },
+            base::Unretained(&loop), base::Unretained(&callback_ran)),
+        options);
+    EXPECT_FALSE(callback_ran);
+
+    loop.Run();
+    EXPECT_TRUE(callback_ran);
+  }
+  {
+    base::RunLoop loop;
+    bool callback_ran = false;
+
+    PartitionedLockManager lock_manager;
+    PartitionedLockHolder lock_holder;
+    PartitionedLockId lock_id = {0, IntegerKey(0)};
+
+    EXPECT_EQ(PartitionedLockManager::TestLockResult::kFree,
+              lock_manager.TestLock(
+                  {lock_id, PartitionedLockManager::LockType::kShared}));
+
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kShared}},
+        lock_holder.AsWeakPtr(),
+        base::BindOnce(
+            [](base::RunLoop* loop, bool* callback_ran) {
+              *callback_ran = true;
+              loop->Quit();
+            },
+            base::Unretained(&loop), base::Unretained(&callback_ran)));
+    EXPECT_TRUE(callback_ran);
+
+    loop.Run();
+    EXPECT_TRUE(callback_ran);
+  }
+}
+
 }  // namespace
 }  // namespace content
