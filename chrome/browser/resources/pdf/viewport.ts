@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.js';
@@ -1031,6 +1032,7 @@ export class Viewport implements ViewportInterface {
       }
       this.setZoomInternal_(nextZoom);
       this.updateViewport_();
+      this.announceZoom_();
     });
   }
 
@@ -1047,7 +1049,15 @@ export class Viewport implements ViewportInterface {
       }
       this.setZoomInternal_(nextZoom);
       this.updateViewport_();
+      this.announceZoom_();
     });
+  }
+
+  /** Announce zoom level for screen readers. */
+  private announceZoom_(): void {
+    const announcer = getAnnouncerInstance();
+    announcer.announce(
+        `$i18n{zoomTextInputAriaLabel}: ${Math.round(100 * this.getZoom())}%`);
   }
 
   private pageUpDownSpaceHandler_(e: KeyboardEvent, formFieldFocused: boolean) {
