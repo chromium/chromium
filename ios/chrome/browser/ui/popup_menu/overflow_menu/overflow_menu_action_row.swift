@@ -50,22 +50,21 @@ struct OverflowMenuActionRow: View {
   /// TODO(crbug.com/1315544): Remove this once only the symbols are present.
   @ViewBuilder
   func imageBuilder() -> some View {
-    let image = actionImage()
     if !action.symbolName.isEmpty {
-      image.font(Font.system(size: OverflowMenuActionRow.symbolSize, weight: .medium)).imageScale(
-        .medium)
+      actionSymbol().font(Font.system(size: OverflowMenuActionRow.symbolSize, weight: .medium))
+        .imageScale(
+          .medium)
     } else {
-      image
+      action.image
     }
   }
 
-  func actionImage() -> Image {
-    if !action.symbolName.isEmpty {
-      if action.systemSymbol {
-        return Image(systemName: action.symbolName)
-      }
-      return Image(action.symbolName)
+  func actionSymbol() -> Image {
+    let symbol =
+      action.systemSymbol ? Image(systemName: action.symbolName) : Image(action.symbolName)
+    if action.monochromeSymbol {
+      return symbol.symbolRenderingMode(.monochrome)
     }
-    return action.image
+    return symbol
   }
 }

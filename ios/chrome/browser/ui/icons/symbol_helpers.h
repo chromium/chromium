@@ -42,17 +42,16 @@ UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbol_name,
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
                                            CGFloat point_size);
 
-// Returns a custom symbol named `symbol_name`, configured with the default
-// configuration and the given `point_size`.
-UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size);
+// Returns the given `symbol`, making sure that it is preferring the monochrome
+// version.
+UIImage* MakeSymbolMonochrome(UIImage* symbol);
 
-// Returns a custom symbol named `symbol_name` configured with `point_size`,
-// `weight`, `scale` and set the "Palette" configuration for `colors`.
-UIImage* CustomPaletteSymbol(NSString* symbol_name,
-                             CGFloat point_size,
-                             UIImageSymbolWeight weight,
-                             UIImageSymbolScale scale,
-                             NSArray<UIColor*>* colors)
+// Returns the given `symbol`, making sure that it is preferring the multicolor
+// version.
+UIImage* MakeSymbolMulticolor(UIImage* symbol);
+
+// Returns the given `symbol`, with the palette of `colors` applied.
+UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors)
     API_AVAILABLE(ios(15.0));
 
 // Returns a SF symbol named `symbol_name` configured for the Settings root

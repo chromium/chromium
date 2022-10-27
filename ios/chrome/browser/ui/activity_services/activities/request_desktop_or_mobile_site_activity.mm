@@ -63,11 +63,11 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 - (UIImage*)activityImage {
   if (UseSymbols()) {
     if (self.userAgent == web::UserAgentType::MOBILE) {
-      return DefaultSymbolWithPointSize(kRequestDesktopActionSymbol,
-                                        kSymbolActionPointSize);
+      return MakeSymbolMonochrome(
+          DefaultSymbolWithPointSize(kDesktopSymbol, kSymbolActionPointSize));
     }
-    return DefaultSymbolWithPointSize(kRequestMobileActionSymbol,
-                                      kSymbolActionPointSize);
+    return MakeSymbolMonochrome(
+        DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolActionPointSize));
   }
 
   if (self.userAgent == web::UserAgentType::MOBILE)

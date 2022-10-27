@@ -937,12 +937,10 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       UIImage* image;
       if (UseSymbols()) {
         if (@available(iOS 15, *)) {
-          image = CustomPaletteSymbol(
-              kIncognitoCircleFillSymbol, kSymbolActionPointSize,
-              UIImageSymbolWeightMedium, UIImageSymbolScaleMedium, @[
-                [UIColor colorNamed:kGrey400Color],
-                [UIColor colorNamed:kGrey100Color]
-              ]);
+          image = SymbolWithPalette(
+              CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
+                                        kSymbolActionPointSize),
+              SmallIncognitoPalette());
         } else {
           image = [UIImage imageNamed:@"incognito_badge_ios14"];
         }

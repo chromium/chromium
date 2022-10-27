@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/icons/symbol_configurations.h"
 
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -20,3 +22,15 @@ const CGFloat kInfobarSymbolPointSize = 18;
 const CGFloat kSymbolAccessoryPointSize = 18;
 
 const CGFloat kSettingsRootSymbolImagePointSize = 18;
+
+NSArray<UIColor*>* SmallIncognitoPalette() {
+  return @[
+    [UIColor colorNamed:kGrey400Color], [UIColor colorNamed:kGrey100Color]
+  ];
+}
+
+NSArray<UIColor*>* LargeIncognitoPalette() {
+  return @[
+    [UIColor colorNamed:kGrey100Color], [UIColor colorNamed:kGrey700Color]
+  ];
+}

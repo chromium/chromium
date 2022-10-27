@@ -21,7 +21,6 @@ extern NSString* const kSafetyCheckSymbol;
 extern NSString* const kGoogleIconSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kArrowClockWiseSymbol;
-extern NSString* const kIncognitoSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kCameraSymbol;
@@ -37,14 +36,18 @@ extern NSString* const kLanguageSymbol;
 extern NSString* const kPasswordSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
-extern NSString* const kIncognitoCircleFilliOS14Symbol;
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kGoogleShieldSymbol;
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 extern NSString* const kShieldSymbol;
+extern NSString* const kIncognitoSymbol;
 
 // Custom symbol names which can be configured with a color palette.
 extern NSString* const kIncognitoCircleFillSymbol;
+
+// Custom symbol to replace "palette" symbols on iOS 14. Cannot be used with a
+// palette.
+extern NSString* const kIncognitoCircleFilliOS14Symbol;
 
 // Default symbol names.
 extern NSString* const kSyncEnabledSymbol;
@@ -70,8 +73,6 @@ extern NSString* const kAddBookmarkActionSymbol;
 extern NSString* const kCopyActionSymbol;
 extern NSString* const kNewWindowActionSymbol;
 extern NSString* const kHideActionSymbol;
-extern NSString* const kRequestDesktopActionSymbol;
-extern NSString* const kRequestMobileActionSymbol;
 extern NSString* const kFindInPageActionSymbol;
 extern NSString* const kZoomTextActionSymbol;
 extern NSString* const kSaveImageActionSymbol;
@@ -84,9 +85,6 @@ extern NSString* const kMicrophoneSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kPinSymbol;
 extern NSString* const kPinFillSymbol;
-extern NSString* const kIPhoneSymbol;
-extern NSString* const kIPadSymbol;
-extern NSString* const kLaptopSymbol;
 extern NSString* const kSettingsSymbol;
 extern NSString* const kSettingsFilledSymbol;
 extern NSString* const kShareSymbol;
@@ -123,5 +121,12 @@ extern NSString* const kOpenInDownloadsSymbol;
 extern NSString* const kOpenInDownloadsiOS14Symbol;
 extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronForwardSymbol;
+
+// Names of the default symbol being non-monochrome by default. When using them,
+// you probably want to set their color to monochrome.
+extern NSString* const kIPhoneSymbol;
+extern NSString* const kIPadSymbol;
+extern NSString* const kLaptopSymbol;
+extern NSString* const kDesktopSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_NAMES_H_

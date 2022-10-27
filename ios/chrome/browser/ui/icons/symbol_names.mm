@@ -67,8 +67,6 @@ NSString* const kAddBookmarkActionSymbol = @"star";
 NSString* const kCopyActionSymbol = @"doc.on.doc";
 NSString* const kNewWindowActionSymbol = @"square.split.2x1";
 NSString* const kHideActionSymbol = @"eye.slash";
-NSString* const kRequestDesktopActionSymbol = @"desktopcomputer";
-NSString* const kRequestMobileActionSymbol = @"iphone";
 NSString* const kFindInPageActionSymbol = @"doc.text.magnifyingglass";
 NSString* const kZoomTextActionSymbol = @"plus.magnifyingglass";
 NSString* const kSaveImageActionSymbol = @"square.and.arrow.down";
@@ -81,9 +79,6 @@ NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kPinSymbol = @"pin";
 NSString* const kPinFillSymbol = @"pin.fill";
-NSString* const kIPhoneSymbol = @"iphone";
-NSString* const kIPadSymbol = @"ipad";
-NSString* const kLaptopSymbol = @"laptopcomputer";
 NSString* const kSettingsSymbol = @"gearshape";
 NSString* const kSettingsFilledSymbol = @"gearshape.fill";
 NSString* const kShareSymbol = @"square.and.arrow.up";
@@ -121,3 +116,10 @@ NSString* const kOpenInDownloadsSymbol = @"arrow.down.to.line.compact";
 NSString* const kOpenInDownloadsiOS14Symbol = @"arrow.down.to.line.alt";
 NSString* const kExternalLinkSymbol = @"arrow.up.forward.square";
 NSString* const kChevronForwardSymbol = @"chevron.forward";
+
+// Names of the default symbol being non-monochrome by default. When using them,
+// you probably want to set their color to monochrome.
+NSString* const kIPhoneSymbol = @"iphone";
+NSString* const kIPadSymbol = @"ipad";
+NSString* const kLaptopSymbol = @"laptopcomputer";
+NSString* const kDesktopSymbol = @"desktopcomputer";

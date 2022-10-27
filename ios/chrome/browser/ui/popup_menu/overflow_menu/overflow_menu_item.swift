@@ -15,6 +15,9 @@ import SwiftUI
   /// Whether the symbol is a system one (or a custom one).
   @Published public var systemSymbol: Bool
 
+  /// Whether the symbol is monochrome or default configuration.
+  @Published public var monochromeSymbol: Bool
+
   /// The base `UIImage` used to load the image for SwiftUI.
   /// TODO(crbug.com/1315544): Remove this once the symbols have shipped.
   @Published public var storedImage: UIImage
@@ -42,13 +45,15 @@ import SwiftUI
     storedImage = image
     symbolName = ""
     systemSymbol = false
+    monochromeSymbol = false
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
     self.handler = handler
   }
 
   public init(
-    name: String, symbolName: String, systemSymbol: Bool, accessibilityIdentifier: String,
+    name: String, symbolName: String, systemSymbol: Bool, monochromeSymbol: Bool,
+    accessibilityIdentifier: String,
     enterpriseDisabled: Bool,
     handler: @escaping () -> Void
   ) {
@@ -56,6 +61,7 @@ import SwiftUI
     self.storedImage = UIImage()
     self.symbolName = symbolName
     self.systemSymbol = systemSymbol
+    self.monochromeSymbol = monochromeSymbol
     self.accessibilityIdentifier = accessibilityIdentifier
     self.enterpriseDisabled = enterpriseDisabled
     self.handler = handler

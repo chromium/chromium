@@ -30,4 +30,10 @@ extern const CGFloat kSymbolAccessoryPointSize;
 // Size of the icons in the root screen of the settings.
 extern const CGFloat kSettingsRootSymbolImagePointSize;
 
+// Returns the palette to be used on incognito symbol when it is small.
+NSArray<UIColor*>* SmallIncognitoPalette();
+
+// Returns the palette to be used on incognito symbol when it is large.
+NSArray<UIColor*>* LargeIncognitoPalette();
+
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_CONFIGURATIONS_H_

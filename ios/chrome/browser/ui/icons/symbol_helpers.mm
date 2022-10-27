@@ -76,35 +76,30 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
-UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size) {
-  UIImageConfiguration* configuration =
-      DefaultSymbolConfigurationWithPointSize(point_size);
-  if (@available(iOS 15, *)) {
-    configuration = [configuration
-        configurationByApplyingConfiguration:
-            [UIImageSymbolConfiguration configurationPreferringMulticolor]];
+UIImage* MakeSymbolMonochrome(UIImage* symbol) {
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
+  if (@available(iOS 16, *)) {
+    return [symbol
+        imageByApplyingSymbolConfiguration:
+            [UIImageSymbolConfiguration configurationPreferringMonochrome]];
   }
-  UIImage* symbol = CustomSymbolWithConfiguration(symbol_name, configuration);
+#endif  // defined(__IPHONE_16_0)
+  return symbol;
+}
+
+UIImage* MakeSymbolMulticolor(UIImage* symbol) {
   if (@available(iOS 15, *)) {
-    return symbol;
+    return [symbol
+        imageByApplyingSymbolConfiguration:
+            [UIImageSymbolConfiguration configurationPreferringMulticolor]];
   }
   return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
 }
 
-UIImage* CustomPaletteSymbol(NSString* symbol_name,
-                             CGFloat point_size,
-                             UIImageSymbolWeight weight,
-                             UIImageSymbolScale scale,
-                             NSArray<UIColor*>* colors) {
-  UIImageConfiguration* conf =
-      [UIImageSymbolConfiguration configurationWithPointSize:point_size
-                                                      weight:weight
-                                                       scale:scale];
-  conf = [conf
-      configurationByApplyingConfiguration:
+UIImage* SymbolWithPalette(UIImage* symbol, NSArray<UIColor*>* colors) {
+  return [symbol
+      imageByApplyingSymbolConfiguration:
           [UIImageSymbolConfiguration configurationWithPaletteColors:colors]];
-
-  return CustomSymbolWithConfiguration(symbol_name, conf);
 }
 
 bool UseSymbols() {
@@ -122,5 +117,6 @@ UIImage* CustomSettingsRootSymbol(NSString* symbol_name) {
 }
 
 UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name) {
-  return CustomMulticolorSymbol(symbol_name, kSettingsRootSymbolImagePointSize);
+  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      symbol_name, kSettingsRootSymbolImagePointSize));
 }

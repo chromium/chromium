@@ -217,19 +217,16 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
       // Incognito icon.
       UIImage* incognitoImage;
       if (UseSymbols()) {
+        UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+            configurationWithPointSize:kIncognitoSymbolImagePointSize
+                                weight:UIImageSymbolWeightLight
+                                 scale:UIImageSymbolScaleMedium];
         if (@available(iOS 15, *)) {
-          incognitoImage = CustomPaletteSymbol(
-              kIncognitoCircleFillSymbol, kIncognitoSymbolImagePointSize,
-              UIImageSymbolWeightLight, UIImageSymbolScaleMedium, @[
-                [UIColor colorNamed:kGrey100Color],
-                [UIColor colorNamed:kGrey700Color]
-              ]);
+          incognitoImage =
+              SymbolWithPalette(CustomSymbolWithConfiguration(
+                                    kIncognitoCircleFillSymbol, configuration),
+                                LargeIncognitoPalette());
         } else {
-          UIImageSymbolConfiguration* configuration =
-              [UIImageSymbolConfiguration
-                  configurationWithPointSize:kIncognitoSymbolImagePointSize
-                                      weight:UIImageSymbolWeightLight
-                                       scale:UIImageSymbolScaleMedium];
           incognitoImage = [CustomSymbolWithConfiguration(
               kIncognitoCircleFilliOS14Symbol, configuration)
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
