@@ -97,7 +97,8 @@ void FastPairDataEncryptorImpl::Factory::CreateAsyncWithAccountKey(
         on_get_instance_callback) {
   QP_LOG(INFO) << __func__;
 
-  absl::optional<std::vector<uint8_t>> account_key = device->account_key();
+  absl::optional<std::vector<uint8_t>> account_key =
+      device->GetAdditionalData(Device::AdditionalDataType::kAccountKey);
   DCHECK(account_key);
   DCHECK_EQ(account_key->size(), static_cast<size_t>(kPrivateKeyByteSize));
 

@@ -485,7 +485,8 @@ TEST_F(FastPairRepositoryImplTest, AssociateAccountKeyLocally_ValidAccountKey) {
   auto device = base::MakeRefCounted<Device>(kInvalidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
   device->set_classic_address(kTestClassicAddress1);
-  device->set_account_key(kAccountKey1);
+  device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
+                            kAccountKey1);
   ASSERT_TRUE(fast_pair_repository_->AssociateAccountKeyLocally(device));
   base::RunLoop().RunUntilIdle();
 

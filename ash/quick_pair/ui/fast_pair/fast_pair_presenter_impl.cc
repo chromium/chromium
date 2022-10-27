@@ -161,10 +161,10 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
           .anti_spoofing_key_pair()
           .public_key()
           .empty()) {
-    device->set_version(DeviceFastPairVersion::kV1);
+    device->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
+                              {1});
     RecordFastPairDiscoveredVersion(FastPairVersion::kVersion1);
   } else {
-    device->set_version(DeviceFastPairVersion::kHigherThanV1);
     RecordFastPairDiscoveredVersion(FastPairVersion::kVersion2);
   }
 

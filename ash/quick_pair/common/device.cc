@@ -45,6 +45,28 @@ Device::Device(std::string metadata_id,
 
 Device::~Device() = default;
 
+absl::optional<std::vector<uint8_t>> Device::GetAdditionalData(
+    const AdditionalDataType& type) const {
+  auto it = additional_data_.find(type);
+
+  if (it == additional_data_.end())
+    return absl::nullopt;
+
+  return it->second;
+}
+
+void Device::SetAdditionalData(const AdditionalDataType& type,
+                               const std::vector<uint8_t>& data) {
+  auto result = additional_data_.emplace(type, data);
+
+  if (type == AdditionalDataType::kFastPairVersion && data[0] == 1)
+    set_classic_address(ble_address);
+
+  if (!result.second) {
+    result.first->second = data;
+  }
+}
+
 std::ostream& operator<<(std::ostream& stream, const Device& device) {
   return OutputToStream(stream, device.metadata_id, device.ble_address,
                         device.classic_address(), device.display_name(),

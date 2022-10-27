@@ -243,7 +243,8 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   QP_LOG(INFO) << __func__ << ": Id: " << model_id;
   auto device = base::MakeRefCounted<Device>(model_id, address,
                                              Protocol::kFastPairSubsequent);
-  device->set_account_key(metadata->account_key);
+  device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
+                            metadata->account_key);
 
   device::BluetoothDevice* classic_device =
       device->classic_address()

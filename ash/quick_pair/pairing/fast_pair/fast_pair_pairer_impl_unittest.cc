@@ -284,9 +284,8 @@ class FastPairPairerImplTest : public AshTestBase {
     device_->set_classic_address(kBluetoothCanonicalizedAddress);
 
     if (fast_pair_v1) {
-      device_->set_version(DeviceFastPairVersion::kV1);
-    } else {
-      device_->set_version(DeviceFastPairVersion::kHigherThanV1);
+      device_->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
+                                 {1});
     }
 
     // Need to add a matching mock device to the bluetooth adapter with the
