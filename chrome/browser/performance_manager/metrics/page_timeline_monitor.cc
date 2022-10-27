@@ -218,7 +218,7 @@ void PageTimelineMonitor::OnTypeChanged(const PageNode* page_node,
   switch (page_node->GetType()) {
     case performance_manager::PageType::kTab:
       page_node_info_map_[page_node] =
-          std::make_unique<PageNodeInfo>(base::TimeTicks::Now());
+          std::make_unique<PageNodeInfo>(base::TimeTicks::Now(), page_node);
       break;
     case performance_manager::PageType::kExtension:
       // We won't be dealing with these because we're not recording this UKM

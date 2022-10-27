@@ -68,12 +68,13 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
                            TestUpdateTitleInBackground);
   FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
                            TestUpdateLifecycleState);
+  FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
+                           TestUpdatePageNodeBeforeTypeChange);
 
   struct PageNodeInfo {
     base::TimeTicks time_of_creation;
-    bool currently_visible{true};
-    PageNode::LifecycleState current_lifecycle{
-        PageNode::LifecycleState::kRunning};
+    bool currently_visible;
+    PageNode::LifecycleState current_lifecycle;
     base::TimeTicks time_of_most_recent_state_change;
     bool updated_title_or_favicon_in_background{false};
     base::TimeTicks time_of_last_foreground_millisecond_update;
@@ -81,8 +82,11 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
     PageTimelineMonitor::PageState GetPageState();
 
-    explicit PageNodeInfo(base::TimeTicks time_of_creation)
+    explicit PageNodeInfo(base::TimeTicks time_of_creation,
+                          const PageNode* page_node)
         : time_of_creation(time_of_creation),
+          currently_visible(page_node->IsVisible()),
+          current_lifecycle(page_node->GetLifecycleState()),
           time_of_most_recent_state_change(base::TimeTicks::Now()),
           time_of_last_foreground_millisecond_update(
               time_of_most_recent_state_change) {}

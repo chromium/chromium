@@ -385,4 +385,23 @@ TEST_F(PageTimelineMonitorUnitTest, TestResidentSetSize) {
   test_ukm_recorder()->ExpectEntryMetric(entries[0], "ResidentSetSize", 123);
 }
 
+TEST_F(PageTimelineMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  ukm::SourceId mock_source_id = ukm::NoURLSourceId();
+  mock_graph.page->SetIsVisible(false);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.page->SetLifecycleStateForTesting(mojom::LifecycleState::kFrozen);
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+
+  EXPECT_EQ(
+      monitor()->page_node_info_map_[mock_graph.page.get()]->current_lifecycle,
+      mojom::LifecycleState::kFrozen);
+  EXPECT_EQ(
+      monitor()->page_node_info_map_[mock_graph.page.get()]->currently_visible,
+      false);
+
+  // making sure no DCHECKs are hit
+  TriggerCollectSlice();
+}
+
 }  // namespace performance_manager::metrics
