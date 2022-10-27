@@ -235,8 +235,9 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   auto* cache_ptr = cache.get();
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
-  AutomationEventWaiter waiter;
+  manager->send_window_state_on_enable_ = false;
   manager->Enable();
+  AutomationEventWaiter waiter;
 
   views::Widget* widget = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
@@ -301,8 +302,9 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
   auto* cache_ptr = cache.get();
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
-  AutomationEventWaiter waiter;
+  manager->send_window_state_on_enable_ = false;
   manager->Enable();
+  AutomationEventWaiter waiter;
   auto* tree = manager->tree_.get();
 
   // Create a widget with size 200, 200.
@@ -408,14 +410,9 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_TableView) {
   // Get the AutomationManagerAura and make it use our cache.
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
-
-  // Initialize this before we enable AutomationManagerAura because it's
-  // going to intercept all AXTreeUpdates and build an AXTree from the
-  // results.
-  AutomationEventWaiter waiter;
-
-  // Enable the AutomationManagerAura.
+  manager->send_window_state_on_enable_ = false;
   manager->Enable();
+  AutomationEventWaiter waiter;
 
   // Create a widget and give it explicit bounds that aren't at the top-left
   // of the screen so that we can check that the global bounding rect of
@@ -513,8 +510,8 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   manager->send_window_state_on_enable_ = false;
   manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
-  AutomationEventWaiter waiter;
   manager->Enable();
+  AutomationEventWaiter waiter;
 
   views::Widget* widget = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
@@ -636,4 +633,21 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, GetFocusOnChildTree) {
   cache.set_focused_widget_for_testing(nullptr);
 
   RunAccessibilityChecks(widget);
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, ObservedOnEnable) {
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+
+  // Before enabling, we should not be listening to AutomationEventRouter.
+  EXPECT_FALSE(
+      extensions::AutomationEventRouter::GetInstance()->HasObserver(manager));
+
+  // After enabling, we should be observing.
+  manager->Enable();
+  EXPECT_TRUE(
+      extensions::AutomationEventRouter::GetInstance()->HasObserver(manager));
+
+  manager->Disable();
+  EXPECT_FALSE(
+      extensions::AutomationEventRouter::GetInstance()->HasObserver(manager));
 }

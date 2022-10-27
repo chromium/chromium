@@ -74,6 +74,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
 
   void AddObserver(AutomationEventRouterObserver* observer);
   void RemoveObserver(AutomationEventRouterObserver* observer);
+  bool HasObserver(AutomationEventRouterObserver* observer);
 
   // AutomationEventRouterInterface:
   void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,

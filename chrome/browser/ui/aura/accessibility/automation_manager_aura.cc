@@ -90,8 +90,7 @@ void AutomationManagerAura::Enable() {
       PostEvent(focus->GetUniqueId(), ax::mojom::Event::kChildrenChanged);
   }
 
-  if (!automation_event_router_observer_.IsObserving() &&
-      !automation_event_router_interface_) {
+  if (!automation_event_router_observer_.IsObserving()) {
     automation_event_router_observer_.Observe(
         extensions::AutomationEventRouter::GetInstance());
   }

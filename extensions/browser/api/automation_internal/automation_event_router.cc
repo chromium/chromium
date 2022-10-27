@@ -205,6 +205,11 @@ void AutomationEventRouter::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool AutomationEventRouter::HasObserver(
+    AutomationEventRouterObserver* observer) {
+  return observers_.HasObserver(observer);
+}
+
 void AutomationEventRouter::RegisterRemoteRouter(
     AutomationEventRouterInterface* router) {
   // There can be at most 1 remote router. So either this method is setting the

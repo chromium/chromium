@@ -97,6 +97,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, EventFromAction);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
                            GetFocusOnChildTree);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           TransientFocusChangesAreSuppressed);
 
   AutomationManagerAura();
   ~AutomationManagerAura() override;
