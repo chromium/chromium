@@ -83,8 +83,8 @@ class WebViewTranslateClient : public translate::TranslateClient {
 
  private:
   PrefService* pref_service_;
-  translate::TranslateManager translate_manager_;
   translate::IOSTranslateDriver translate_driver_;
+  translate::TranslateManager translate_manager_;
   language::AcceptLanguagesService* accept_languages_;
 
   // ObjC class that wraps this class.

@@ -353,6 +353,9 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
     return;
   }
 
+  translate_driver_->PrepareToTranslatePage(page_seq_no_, original_source_lang,
+                                            target_lang, triggered_from_menu);
+
   // Log the source and target languages of the translate request.
   TranslateBrowserMetrics::ReportTranslateSourceLanguage(original_source_lang);
   TranslateBrowserMetrics::ReportTranslateTargetLanguage(target_lang);

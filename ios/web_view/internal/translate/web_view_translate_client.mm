@@ -50,14 +50,13 @@ WebViewTranslateClient::WebViewTranslateClient(
     web::WebState* web_state,
     language::AcceptLanguagesService* accept_languages)
     : pref_service_(pref_service),
-      translate_manager_(this, translate_ranker, language_model),
       translate_driver_(web_state,
-                        &translate_manager_,
-                        url_language_histogram,
                         /*translate_model_service=*/nullptr),
+      translate_manager_(this, translate_ranker, language_model),
       accept_languages_(accept_languages) {
   DCHECK(pref_service_);
   DCHECK(accept_languages_);
+  translate_driver_.Initialize(url_language_histogram, &translate_manager_);
 }
 
 WebViewTranslateClient::~WebViewTranslateClient() = default;

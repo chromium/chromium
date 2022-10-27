@@ -57,6 +57,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "ios_translate_driver_unittest.mm",
     "js_translate_web_frame_manager_unittest.mm",
     "translate_controller_unittest.mm",
   ]
@@ -65,8 +66,12 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/language/core/browser",
     "//components/language/ios/browser",
     "//components/resources",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
+    "//components/translate/core/browser:test_support",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",

@@ -52,6 +52,13 @@ class TranslateDriver {
   // Called when the page is "translated" state of the page changed.
   virtual void OnIsPageTranslatedChanged() = 0;
 
+  // Called when a translation starts. The driver can do preparation work by
+  // overriding this method.
+  virtual void PrepareToTranslatePage(int page_seq_no,
+                                      const std::string& original_source_lang,
+                                      const std::string& target_lang,
+                                      bool triggered_from_menu) {}
+
   // Translates the page contents from |source_lang| to |target_lang|.
   virtual void TranslatePage(int page_seq_no,
                              const std::string& translate_script,

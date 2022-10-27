@@ -37,9 +37,12 @@ void TranslateInfobarBannerInteractionHandler::MainButtonTapped(
       delegate->RevertWithoutClosingInfobar();
       infobar->set_accepted(false);
       break;
+    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
+      // On error, action is to retry.
+      delegate->Translate();
+      break;
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
       NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
 }

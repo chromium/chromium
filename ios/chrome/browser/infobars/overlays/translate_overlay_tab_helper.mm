@@ -87,22 +87,19 @@ void TranslateOverlayTabHelper::TranslateDidStart(infobars::InfoBar* infobar) {
 
 void TranslateOverlayTabHelper::TranslateDidFinish(infobars::InfoBar* infobar,
                                                    bool success) {
-  if (success) {
-    static_cast<InfoBarIOS*>(infobar)->set_accepted(true);
+  static_cast<InfoBarIOS*>(infobar)->set_accepted(success);
 
-    size_t insert_index = 0;
-    bool placeholder_found = GetIndexOfMatchingRequest(
-        banner_queue_, &insert_index,
-        ConfigAndInfoBarMatcher<PlaceholderRequestConfig>(infobar));
+  size_t insert_index = 0;
+  bool placeholder_found = GetIndexOfMatchingRequest(
+      banner_queue_, &insert_index,
+      ConfigAndInfoBarMatcher<PlaceholderRequestConfig>(infobar));
 
-    InsertParams params(static_cast<InfoBarIOS*>(infobar));
-    params.overlay_type = InfobarOverlayType::kBanner;
-    params.insertion_index =
-        placeholder_found ? insert_index + 1 : banner_queue_->size();
-    params.source = InfobarOverlayInsertionSource::kInfoBarDelegate;
-    inserter_->InsertOverlayRequest(params);
-  }
-  // TODO(crbug.com/1071914): Handle Translate failure case.
+  InsertParams params(static_cast<InfoBarIOS*>(infobar));
+  params.overlay_type = InfobarOverlayType::kBanner;
+  params.insertion_index =
+      placeholder_found ? insert_index + 1 : banner_queue_->size();
+  params.source = InfobarOverlayInsertionSource::kInfoBarDelegate;
+  inserter_->InsertOverlayRequest(params);
 
   for (auto& observer : observers_) {
     observer.TranslationFinished(this, success);

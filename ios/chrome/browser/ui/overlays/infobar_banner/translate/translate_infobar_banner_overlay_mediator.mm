@@ -82,9 +82,12 @@ NSString* const kTranslateImageName = @"infobar_translate_icon";
     case translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE:
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_AFTER_TRANSLATE_BANNER_TITLE);
+    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
+      return l10n_util::GetNSString(
+          IDS_IOS_TRANSLATE_INFOBAR_ON_ERROR_BANNER_TITLE);
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
+
       NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
       return nil;
   }
@@ -107,9 +110,12 @@ NSString* const kTranslateImageName = @"infobar_translate_icon";
     case translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE:
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_UNDO_ACTION);
+    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
+      return l10n_util::GetNSString(
+          IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_TRY_AGAIN_ACTION);
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-    case translate::TranslateStep::TRANSLATE_STEP_TRANSLATE_ERROR:
+
       NOTREACHED() << "Translate infobar should not be presenting anything in "
                       "this state.";
       return nil;

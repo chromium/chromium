@@ -406,6 +406,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 - (void)setSubtitleText:(NSString*)subtitleText {
   _subtitleText = subtitleText;
   self.subTitleLabel.text = _subtitleText;
+  self.subTitleLabel.hidden = !self.subtitleText.length;
 }
 
 - (void)setButtonText:(NSString*)buttonText {

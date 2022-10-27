@@ -3527,6 +3527,9 @@ New Search
       <message name="IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_ACTION" desc="The button text for the action to translate the page. [iOS only]">
         Translate
       </message>
+      <message name="IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_TRY_AGAIN_ACTION" desc="The button text for the action to try again the translation after failure. [iOS only]">
+        Try Again
+      </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_UNDO_ACTION" desc="The button text for the action to undo the translation. [iOS only]">
         Show Original
       </message>
@@ -3541,6 +3544,9 @@ New Search
       </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_BEFORE_TRANSLATE_BANNER_TITLE" desc="The text for the title of the Translate Message Banner asking the user to translate the page [iOS only]">
         Translate Page?
+      </message>
+      <message name="IDS_IOS_TRANSLATE_INFOBAR_ON_ERROR_BANNER_TITLE" desc="The text for the title of the Translate Message Banner in case of an error [iOS only]">
+        Translation Failed
       </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME" desc="The text field name for the source language in the Translate Infobar modal. [iOS only]">
         From

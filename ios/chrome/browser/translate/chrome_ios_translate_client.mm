@@ -45,6 +45,11 @@
 
 ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
     : web_state_(web_state),
+      translate_driver_(
+          web_state,
+          LanguageDetectionModelServiceFactory::GetForBrowserState(
+              ChromeBrowserState::FromBrowserState(
+                  web_state->GetBrowserState()))),
       translate_manager_(std::make_unique<translate::TranslateManager>(
           this,
           translate::TranslateRankerFactory::GetForBrowserState(
@@ -53,17 +58,12 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
           LanguageModelManagerFactory::GetForBrowserState(
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))
-              ->GetPrimaryModel())),
-      translate_driver_(
-          web_state,
-          translate_manager_.get(),
-          UrlLanguageHistogramFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState())),
-          LanguageDetectionModelServiceFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))) {
-  web_state_->AddObserver(this);
+              ->GetPrimaryModel())) {
+  translate_driver_.Initialize(
+      UrlLanguageHistogramFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())),
+      translate_manager_.get()),
+      web_state_->AddObserver(this);
 }
 
 ChromeIOSTranslateClient::~ChromeIOSTranslateClient() {
