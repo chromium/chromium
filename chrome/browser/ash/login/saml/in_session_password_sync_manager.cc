@@ -260,8 +260,6 @@ void InSessionPasswordSyncManager::OnAuthSuccess(
 }
 
 void InSessionPasswordSyncManager::CreateAndShowDialog() {
-  if (!IsLockReauthEnabled())
-    NOTREACHED();
   DCHECK(!lock_screen_start_reauth_dialog_);
   lock_screen_start_reauth_dialog_ =
       std::make_unique<LockScreenStartReauthDialog>();
