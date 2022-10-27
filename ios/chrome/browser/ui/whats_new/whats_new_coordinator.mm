@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
@@ -41,6 +42,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 // The coordinator used for What's New feature.
 @property(nonatomic, strong)
     WhatsNewDetailCoordinator* whatsNewDetailCoordinator;
+// Browser coordinator command handler.
+@property(nonatomic, readonly) id<ApplicationCommands> applicationHandler;
 // The starting time of What's New.
 @property(nonatomic, assign) base::TimeTicks whatsNewStartTime;
 
@@ -61,6 +64,7 @@ NSString* const kTableViewNavigationDismissButtonId =
   self.tableViewController.delegate = self;
   self.tableViewController.actionHandler = self.mediator;
   self.mediator.consumer = self.tableViewController;
+  self.mediator.handler = self.applicationHandler;
 
   [self.tableViewController reloadData];
 
@@ -71,6 +75,7 @@ NSString* const kTableViewNavigationDismissButtonId =
                                         animated:YES
                                       completion:nil];
   self.whatsNewStartTime = base::TimeTicks::Now();
+  self.mediator.baseViewController = self.tableViewController;
 
   [super start];
 }
@@ -128,6 +133,13 @@ NSString* const kTableViewNavigationDismissButtonId =
 }
 
 #pragma mark Private
+
+- (id<ApplicationCommands>)applicationHandler {
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+
+  return handler;
+}
 
 - (UIBarButtonItem*)dismissButton {
   UIBarButtonItem* button = [[UIBarButtonItem alloc]

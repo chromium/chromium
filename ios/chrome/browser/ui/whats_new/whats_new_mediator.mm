@@ -6,6 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
@@ -72,7 +73,7 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
     case WhatsNewType::kAddPasswordManually:
       base::RecordAction(base::UserMetricsAction(
           "WhatsNew.AddPasswordManually.PrimaryActionTapped"));
-      [self openSettingsURLString];
+      [self.handler showSettingsFromViewController:self.baseViewController];
       break;
     case WhatsNewType::kUseChromeByDefault:
       base::RecordAction(base::UserMetricsAction(
@@ -82,7 +83,7 @@ WhatsNewType kHighlightedFeature = WhatsNewType::kSearchTabs;
     case WhatsNewType::kPasswordsInOtherApps:
       base::RecordAction(base::UserMetricsAction(
           "WhatsNew.PasswordsInOtherApps.PrimaryActionTapped"));
-      [self openSettingsURLString];
+      [self.handler showSettingsFromViewController:self.baseViewController];
       break;
     default:
       NOTREACHED();
