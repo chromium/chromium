@@ -491,7 +491,7 @@ class CertPathIter {
   bool GetNextPath(ParsedCertificateList* out_certs,
                    CertificateTrust* out_last_cert_trust,
                    CertPathErrors* out_errors,
-                   const base::TimeTicks deadline,
+                   CertPathBuilderDelegate* delegate,
                    uint32_t* iteration_count,
                    const uint32_t max_iteration_count,
                    const uint32_t max_path_building_depth);
@@ -529,7 +529,7 @@ void CertPathIter::AddCertIssuerSource(CertIssuerSource* cert_issuer_source) {
 bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
                                CertificateTrust* out_last_cert_trust,
                                CertPathErrors* out_errors,
-                               const base::TimeTicks deadline,
+                               CertPathBuilderDelegate* delegate,
                                uint32_t* iteration_count,
                                const uint32_t max_iteration_count,
                                const uint32_t max_path_building_depth) {
@@ -537,7 +537,7 @@ bool CertPathIter::GetNextPath(ParsedCertificateList* out_certs,
   *out_last_cert_trust = CertificateTrust::ForUnspecified();
 
   while (true) {
-    if (!deadline.is_null() && base::TimeTicks::Now() > deadline) {
+    if (delegate->IsDeadlineExpired()) {
       if (cur_path_.Empty()) {
         // If the deadline is already expired before the first call to
         // GetNextPath, cur_path_ will be empty. Return the leaf cert in that
@@ -742,10 +742,6 @@ void CertPathBuilder::SetIterationLimit(uint32_t limit) {
   max_iteration_count_ = limit;
 }
 
-void CertPathBuilder::SetDeadline(base::TimeTicks deadline) {
-  deadline_ = deadline;
-}
-
 void CertPathBuilder::SetDepthLimit(uint32_t limit) {
   max_path_building_depth_ = limit;
 }
@@ -763,7 +759,7 @@ CertPathBuilder::Result CertPathBuilder::Run() {
 
     if (!cert_path_iter_->GetNextPath(
             &result_path->certs, &result_path->last_cert_trust,
-            &result_path->errors, deadline_, &iteration_count,
+            &result_path->errors, delegate_, &iteration_count,
             max_iteration_count_, max_path_building_depth_)) {
       // There are no more paths to check or limits were exceeded.
       if (result_path->errors.ContainsError(

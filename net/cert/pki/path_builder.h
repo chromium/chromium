@@ -96,6 +96,11 @@ class NET_EXPORT CertPathBuilderDelegate
   // building by adding high severity errors.
   virtual void CheckPathAfterVerification(const CertPathBuilder& path_builder,
                                           CertPathBuilderResultPath* path) = 0;
+
+  // This is called during path building in between attempts to build candidate
+  // paths. Delegates can cause path building to stop and return indicating
+  // the deadline was exceeded by returning true from this function.
+  virtual bool IsDeadlineExpired() = 0;
 };
 
 // Checks whether a certificate is trusted by building candidate paths to trust
@@ -149,8 +154,8 @@ class NET_EXPORT CertPathBuilder {
     // configured with |SetIterationLimit|.
     bool exceeded_iteration_limit = false;
 
-    // True if the search stopped because it exceeded the deadline configured
-    // with |SetDeadline|.
+    // True if the search stopped because delegate->IsDeadlineExpired() returned
+    // true.
     bool exceeded_deadline = false;
   };
 
@@ -196,12 +201,6 @@ class NET_EXPORT CertPathBuilder {
   // the iteration limit, which is the default.
   void SetIterationLimit(uint32_t limit);
 
-  // Sets a deadline for completing path building. If |deadline| has passed and
-  // path building has not completed, path building will stop. Note that this
-  // is not a hard limit, there is no guarantee how far past |deadline| time
-  // will be when path building is aborted.
-  void SetDeadline(base::TimeTicks deadline);
-
   // Sets a limit to the number of certificates to be added in a path from leaf
   // to root. Setting |limit| to 0 disables this limit, which is the default.
   void SetDepthLimit(uint32_t limit);
@@ -211,10 +210,6 @@ class NET_EXPORT CertPathBuilder {
   // building will continue until all possible paths have been exhausted (or
   // iteration limit / deadline is exceeded).
   void SetExploreAllPaths(bool explore_all_paths);
-
-  // Returns the deadline for path building, if any. If no deadline is set,
-  // |deadline().is_null()| will be true.
-  base::TimeTicks deadline() const { return deadline_; }
 
   // Executes verification of the target certificate.
   //
@@ -237,7 +232,6 @@ class NET_EXPORT CertPathBuilder {
   const InitialPolicyMappingInhibit initial_policy_mapping_inhibit_;
   const InitialAnyPolicyInhibit initial_any_policy_inhibit_;
   uint32_t max_iteration_count_ = 0;
-  base::TimeTicks deadline_;
   uint32_t max_path_building_depth_ = 0;
   bool explore_all_paths_ = false;
 };

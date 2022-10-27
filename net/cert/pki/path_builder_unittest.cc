@@ -53,6 +53,22 @@ using ::testing::SaveArg;
 using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 
+class DeadlineTestingPathBuilderDelegate : public SimplePathBuilderDelegate {
+ public:
+  DeadlineTestingPathBuilderDelegate(size_t min_rsa_modulus_length_bits,
+                                     DigestPolicy digest_policy)
+      : SimplePathBuilderDelegate(min_rsa_modulus_length_bits, digest_policy) {}
+
+  bool IsDeadlineExpired() override { return deadline_is_expired_; }
+
+  void SetDeadlineExpiredForTesting(bool deadline_is_expired) {
+    deadline_is_expired_ = deadline_is_expired;
+  }
+
+ private:
+  bool deadline_is_expired_ = false;
+};
+
 // AsyncCertIssuerSourceStatic always returns its certs asynchronously.
 class AsyncCertIssuerSourceStatic : public CertIssuerSource {
  public:
@@ -185,8 +201,9 @@ TEST(PathBuilderResultUserDataTest, ModifyUserDataInConstructor) {
 class PathBuilderMultiRootTest : public ::testing::Test {
  public:
   PathBuilderMultiRootTest()
-      : delegate_(1024,
-                  SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1) {}
+      : delegate_(
+            1024,
+            DeadlineTestingPathBuilderDelegate::DigestPolicy::kWeakAllowSha1) {}
 
   void SetUp() override {
     ASSERT_TRUE(ReadTestCert("multi-root-A-by-B.pem", &a_by_b_));
@@ -203,7 +220,7 @@ class PathBuilderMultiRootTest : public ::testing::Test {
   scoped_refptr<ParsedCertificate> a_by_b_, b_by_c_, b_by_f_, c_by_d_, c_by_e_,
       d_by_d_, e_by_e_, f_by_e_;
 
-  SimplePathBuilderDelegate delegate_;
+  DeadlineTestingPathBuilderDelegate delegate_;
   der::GeneralizedTime time_ = {2017, 3, 1, 0, 0, 0};
 
   const InitialExplicitPolicy initial_explicit_policy_ =
@@ -714,24 +731,14 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
         initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
     path_builder.AddCertIssuerSource(&sync_certs);
 
-    base::TimeTicks deadline;
-    if (insufficient_limit) {
-      // Set a deadline one millisecond in the past. Path building should fail
-      // since the deadline is already past.
-      deadline = base::TimeTicks::Now() - base::Milliseconds(1);
-    } else {
-      // The other tests in this file exercise the case that |SetDeadline|
-      // isn't called. Therefore set a sufficient limit for the path to be
-      // found.
-      deadline = base::TimeTicks::Now() + base::Days(1);
-    }
-    path_builder.SetDeadline(deadline);
+    // Make the deadline either expired or not.
+    delegate_.SetDeadlineExpiredForTesting(insufficient_limit);
 
     auto result = path_builder.Run();
 
     EXPECT_EQ(!insufficient_limit, result.HasValidPath());
     EXPECT_EQ(insufficient_limit, result.exceeded_deadline);
-    EXPECT_EQ(deadline, path_builder.deadline());
+    EXPECT_EQ(delegate_.IsDeadlineExpired(), insufficient_limit);
 
     if (insufficient_limit) {
       ASSERT_EQ(1U, result.paths.size());
@@ -752,8 +759,6 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
 }
 
 TEST_F(PathBuilderMultiRootTest, TestDeadline) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TrustStoreInMemory trust_store;
   trust_store.AddTrustAnchor(d_by_d_);
 
@@ -761,12 +766,12 @@ TEST_F(PathBuilderMultiRootTest, TestDeadline) {
   CertIssuerSourceStatic sync_certs;
   sync_certs.AddCert(b_by_c_);
 
-  // Cert C(D) is supplied asynchronously and will advance time before returning
-  // the async result.
+  // Cert C(D) is supplied asynchronously and will expire the deadline before
+  // returning the async result.
   AsyncCertIssuerSourceStatic async_certs;
   async_certs.AddCert(c_by_d_);
   async_certs.SetAsyncGetCallback(base::BindLambdaForTesting(
-      [&] { task_environment.FastForwardBy(base::Seconds(2)); }));
+      [&] { delegate_.SetDeadlineExpiredForTesting(true); }));
 
   CertPathBuilder path_builder(
       a_by_b_, &trust_store, &delegate_, time_, KeyPurpose::ANY_EKU,
@@ -775,15 +780,11 @@ TEST_F(PathBuilderMultiRootTest, TestDeadline) {
   path_builder.AddCertIssuerSource(&sync_certs);
   path_builder.AddCertIssuerSource(&async_certs);
 
-  base::TimeTicks deadline;
-  deadline = base::TimeTicks::Now() + base::Seconds(1);
-  path_builder.SetDeadline(deadline);
-
   auto result = path_builder.Run();
 
   EXPECT_FALSE(result.HasValidPath());
   EXPECT_TRUE(result.exceeded_deadline);
-  EXPECT_EQ(deadline, path_builder.deadline());
+  EXPECT_TRUE(delegate_.IsDeadlineExpired());
 
   // The chain returned should end in c_by_d_, since the deadline would only be
   // checked again after the async results had been checked (since

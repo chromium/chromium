@@ -52,6 +52,10 @@ void SimplePathBuilderDelegate::CheckPathAfterVerification(
   // Do nothing - consider all candidate paths valid.
 }
 
+bool SimplePathBuilderDelegate::IsDeadlineExpired() {
+  return false;
+}
+
 bool SimplePathBuilderDelegate::IsSignatureAlgorithmAcceptable(
     SignatureAlgorithm algorithm,
     CertErrors* errors) {
