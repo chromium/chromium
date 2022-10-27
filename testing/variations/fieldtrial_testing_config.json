@@ -7464,7 +7464,7 @@
                 {
                     "name": "LaunchTarget",
                     "params": {
-                        "clear_focus_asynchronously": "true"
+                        "clear_focus_asynchronously": "false"
                     },
                     "enable_features": [
                         "CacheDeprecatedSystemLocationSetting",
