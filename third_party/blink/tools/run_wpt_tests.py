@@ -254,6 +254,14 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
 
     def do_post_test_run_tasks(self):
         self.process_and_upload_results()
+        if self.options.show_results_in_browser:
+            self.show_results_in_browser()
+
+    def show_results_in_browser(self):
+        results_file = self.fs.join(self.fs.dirname(self.wpt_output),
+                                    self.layout_test_results_subdir,
+                                    'results.html')
+        self.port.show_results_html_file(results_file)
 
     def clean_up_after_test_run(self):
         super().clean_up_after_test_run()
