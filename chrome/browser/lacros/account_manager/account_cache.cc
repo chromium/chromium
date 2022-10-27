@@ -22,7 +22,7 @@ AccountCache::AccountIdSet GetLacrosAccountIdsPref(PrefService* prefs) {
   if (!list.is_list())
     return {};
   AccountCache::AccountIdSet account_ids;
-  for (const base::Value& value : list.GetListDeprecated()) {
+  for (const base::Value& value : list.GetList()) {
     const std::string* gaia_id = value.GetIfString();
     if (gaia_id)
       account_ids.insert(*gaia_id);
