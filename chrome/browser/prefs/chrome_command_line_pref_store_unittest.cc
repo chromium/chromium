@@ -52,9 +52,9 @@ class TestCommandLinePrefStore : public ChromeCommandLinePrefStore {
     const base::Value* value = nullptr;
     ASSERT_TRUE(GetValue(prefs::kCipherSuiteBlacklist, &value));
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(cipher_count, value->GetListDeprecated().size());
+    ASSERT_EQ(cipher_count, value->GetList().size());
 
-    for (const base::Value& cipher_string : value->GetListDeprecated()) {
+    for (const base::Value& cipher_string : value->GetList()) {
       ASSERT_TRUE(cipher_string.is_string());
       EXPECT_EQ(*ciphers++, cipher_string.GetString());
     }
@@ -226,7 +226,7 @@ TEST(ChromeCommandLinePrefStoreTest, ExplicitlyAllowedPorts) {
   cl.AppendSwitchASCII(switches::kExplicitlyAllowedPorts,
                        "79,554,  6000, foo,1000000");
   auto store = base::MakeRefCounted<TestCommandLinePrefStore>(&cl);
-  constexpr int kExpectedPorts[] = {
+  static constexpr int kExpectedPorts[] = {
       79,
       554,
       6000,
@@ -236,10 +236,10 @@ TEST(ChromeCommandLinePrefStoreTest, ExplicitlyAllowedPorts) {
   ASSERT_TRUE(store->GetValue(prefs::kExplicitlyAllowedNetworkPorts, &value));
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(std::size(kExpectedPorts), value->GetListDeprecated().size());
+  ASSERT_EQ(std::size(kExpectedPorts), value->GetList().size());
 
   int i = 0;
-  for (const base::Value& port : value->GetListDeprecated()) {
+  for (const base::Value& port : value->GetList()) {
     ASSERT_TRUE(port.is_int());
     EXPECT_EQ(kExpectedPorts[i], port.GetInt());
     ++i;

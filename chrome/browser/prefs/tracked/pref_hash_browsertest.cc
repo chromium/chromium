@@ -758,7 +758,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
     EXPECT_TRUE(
         selected_prefs->GetList(prefs::kURLsToRestoreOnStartup, &startup_urls));
     EXPECT_TRUE(startup_urls);
-    EXPECT_EQ(1U, startup_urls->GetListDeprecated().size());
+    EXPECT_EQ(1U, startup_urls->GetList().size());
     startup_urls->Append("http://example.org");
   }
 
