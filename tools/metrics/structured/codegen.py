@@ -181,6 +181,11 @@ class MetricInfo:
       self.setter = 'AddRawStringMetric'
       self.type_enum = 'kRawString'
       self.base_value = 'base::Value(value)'
+    elif metric.type == 'double':
+      self.type = 'double'
+      self.setter = 'AddDoubleMetric'
+      self.type_enum = 'kDouble'
+      self.base_value = 'base::Value(value)'
     else:
       raise ValueError('Invalid metric type.')
 

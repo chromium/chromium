@@ -528,4 +528,25 @@
   </event>
 </project>
 
+<project name="TestProjectSix">
+  <owner>andrewbregger@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventSeven">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricSeven" type="double">
+      <summary>
+        A floating point value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 </structured-metrics>

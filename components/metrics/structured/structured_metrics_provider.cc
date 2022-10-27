@@ -512,9 +512,11 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
       case Event::MetricType::kRawString:
         metric_proto->set_value_string(value.GetString());
         break;
+      case Event::MetricType::kDouble:
+        metric_proto->set_value_double(value.GetDouble());
+        break;
       // Not supported yet.
       case Event::MetricType::kInt:
-      case Event::MetricType::kDouble:
       case Event::MetricType::kBoolean:
         break;
     }

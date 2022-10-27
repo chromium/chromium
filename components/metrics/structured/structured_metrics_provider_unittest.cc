@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/structured_metrics_provider.h"
+#include <cstdint>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -38,6 +39,8 @@ constexpr uint64_t kProjectThreeHash = UINT64_C(10860358748803291132);
 constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 // The name hash of "TestProjectFive"
 constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
+// The name hash of "TestProjectSix"
+constexpr uint64_t kProjectSixHash = UINT64_C(6972396123792667134);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
 constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
@@ -51,6 +54,8 @@ constexpr uint64_t kEventFourHash = UINT64_C(1718797808092246258);
 constexpr uint64_t kEventFiveHash = UINT64_C(7045523601811399253);
 // The name hash of "chrome::TestProjectFour::TestEventSix".
 constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
+// The name hash of "chrome::TestProjectSix::TestEventSeven".
+constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -64,6 +69,8 @@ constexpr uint64_t kMetricFourHash = UINT64_C(2917855408523247722);
 constexpr uint64_t kMetricFiveHash = UINT64_C(8665976921794972190);
 // The name hash of "TestMetricSix".
 constexpr uint64_t kMetricSixHash = UINT64_C(3431522567539822144);
+// The name hash of "TestMetricSeven".
+constexpr uint64_t kMetricSevenHash = UINT64_C(8395865158198697574);
 
 // The hex-encoded first 8 bytes of SHA256("aaa...a")
 constexpr char kProjectOneId[] = "3BA3F5F43B926026";
@@ -695,6 +702,46 @@ TEST_F(StructuredMetricsProviderTest, RawStringMetricsReportedCorrectly) {
 
   EXPECT_EQ(metric.name_hash(), kMetricSixHash);
   EXPECT_EQ(metric.value_string(), test_string);
+}
+
+TEST_F(StructuredMetricsProviderTest, FloatMetricsReportedCorrectly) {
+  Init();
+
+  const float test_float = 3.4;
+  const float test_float2 = 3.14e-8;
+
+  events::v2::test_project_six::TestEventSeven()
+      .SetTestMetricSeven(test_float)
+      .Record();
+
+  events::v2::test_project_six::TestEventSeven()
+      .SetTestMetricSeven(test_float2)
+      .Record();
+
+  const auto data = GetIndependentMetrics();
+  ASSERT_EQ(data.events_size(), 2);
+
+  const auto& event = data.events(0);
+  EXPECT_EQ(event.event_name_hash(), kEventSevenHash);
+  EXPECT_EQ(event.project_name_hash(), kProjectSixHash);
+  EXPECT_FALSE(event.has_profile_event_id());
+
+  ASSERT_EQ(event.metrics_size(), 1);
+  const auto& metric = event.metrics(0);
+
+  EXPECT_EQ(metric.name_hash(), kMetricSevenHash);
+  EXPECT_EQ(metric.value_double(), test_float);
+
+  const auto& event2 = data.events(1);
+  EXPECT_EQ(event2.event_name_hash(), kEventSevenHash);
+  EXPECT_EQ(event2.project_name_hash(), kProjectSixHash);
+  EXPECT_FALSE(event2.has_profile_event_id());
+
+  ASSERT_EQ(event2.metrics_size(), 1);
+  const auto& metric2 = event2.metrics(0);
+
+  EXPECT_EQ(metric2.name_hash(), kMetricSevenHash);
+  EXPECT_EQ(metric2.value_double(), test_float2);
 }
 
 TEST_F(StructuredMetricsProviderTest, DeviceKeysUsedForDeviceScopedProjects) {
