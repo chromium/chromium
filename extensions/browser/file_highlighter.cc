@@ -112,9 +112,14 @@ ManifestHighlighter::ManifestHighlighter(const std::string& manifest,
                                          const std::string& specific)
     : FileHighlighter(manifest) {
   start_ = contents_.find('{');
-  start_ = start_ == std::string::npos ? contents_.size() : start_ + 1;
   end_ = contents_.rfind('}');
-  end_ = end_ == std::string::npos ? contents_.size() : end_;
+  if (start_ == std::string::npos || end_ == std::string::npos ||
+      start_ > end_) {
+    start_ = contents_.size();
+    end_ = start_;
+  } else {
+    start_ = start_ + 1;
+  }
   Parse(key, specific);
 }
 

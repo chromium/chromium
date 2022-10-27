@@ -13,37 +13,37 @@ namespace extensions {
 
 namespace {
 
-const char kManifest[] =
-"{\n"
-"  \"name\": \"Content Scripts\",\n"
-"  \"version\": \"2.0\",\n"
-"  // this is a comment with the word permissions.\n"
-"  /* This is a multine\n"
-"     comment with the word permissions\n"
-"     that shouldn't be highlighted */\n"
-"  \"permissions\": [\n"
-"    /* This is a tricky comment because it has brackets }]*/\n"
-"    \"tabs\"\n"
-"  ],\n"
-"  \"content_scripts\": [\n"
-"    {\n"
-"      \"matches\": [\"*://aaronboodman.com/*\", \"*://rdcronin.com/*\"],\n"
-"      \"js\": [\"myscript.js\"]\n"
-"    }\n"
-"  ],\n"
-"  \"test_key\": {\n"
-"    \"escaped_quoted\\\"\",\n"
-"    \"/*foo*/\"\n"
-"  },\n"
-"  \"manifest_version\": 2,\n"
-"  \"international_key\": \"還是不要\"\n"
-"}";
+static constexpr char kManifest[] =
+    "{\n"
+    "  \"name\": \"Content Scripts\",\n"
+    "  \"version\": \"2.0\",\n"
+    "  // this is a comment with the word permissions.\n"
+    "  /* This is a multine\n"
+    "     comment with the word permissions\n"
+    "     that shouldn't be highlighted */\n"
+    "  \"permissions\": [\n"
+    "    /* This is a tricky comment because it has brackets }]*/\n"
+    "    \"tabs\"\n"
+    "  ],\n"
+    "  \"content_scripts\": [\n"
+    "    {\n"
+    "      \"matches\": [\"*://aaronboodman.com/*\", \"*://rdcronin.com/*\"],\n"
+    "      \"js\": [\"myscript.js\"]\n"
+    "    }\n"
+    "  ],\n"
+    "  \"test_key\": {\n"
+    "    \"escaped_quoted\\\"\",\n"
+    "    \"/*foo*/\"\n"
+    "  },\n"
+    "  \"manifest_version\": 2,\n"
+    "  \"international_key\": \"還是不要\"\n"
+    "}";
 
 }  // namespace
 
 TEST(ManifestHighlighterUnitTest, ManifestHighlighterUnitTest) {
   // Get a full key.
-  const char kPermissionsFeature[] =
+  static constexpr char kPermissionsFeature[] =
       "\"permissions\": [\n"
       "    /* This is a tricky comment because it has brackets }]*/\n"
       "    \"tabs\"\n"
@@ -52,18 +52,18 @@ TEST(ManifestHighlighterUnitTest, ManifestHighlighterUnitTest) {
   EXPECT_EQ(kPermissionsFeature, permissions.GetFeature());
 
   // Get a specific portion of a key.
-  const char kTabsFeature[] = "\"tabs\"";
+  static constexpr char kTabsFeature[] = "\"tabs\"";
   ManifestHighlighter tabs(kManifest, "permissions", "tabs");
   EXPECT_EQ(kTabsFeature, tabs.GetFeature());
 
   // Get a single-character, non-quoted entity of a key.
-  const char kManifestVersionFeature[] = "2";
+  static constexpr char kManifestVersionFeature[] = "2";
   ManifestHighlighter version(kManifest, "manifest_version", "2");
   EXPECT_EQ(kManifestVersionFeature, version.GetFeature());
 
   // Get a compound portion of a key, including quoted '//' (which shouldn't be
   // mistaken for comments).
-  const char kMatchesFeature[] =
+  static constexpr char kMatchesFeature[] =
       "\"matches\": [\"*://aaronboodman.com/*\", \"*://rdcronin.com/*\"]";
   ManifestHighlighter matches(kManifest, "content_scripts", "matches");
   EXPECT_EQ(kMatchesFeature, matches.GetFeature());
@@ -78,29 +78,37 @@ TEST(ManifestHighlighterUnitTest, ManifestHighlighterUnitTest) {
       kManifest, "permissions", "a_fake_feature");
   EXPECT_EQ(std::string(), specific_portion_not_present.GetFeature());
 
-  const char kEscapedQuotedFeature[] = "\"escaped_quoted\\\"\"";
+  static constexpr char kEscapedQuotedFeature[] = "\"escaped_quoted\\\"\"";
   ManifestHighlighter escaped_quoted(
       kManifest, "test_key", "escaped_quoted\\\"");
   EXPECT_EQ(kEscapedQuotedFeature, escaped_quoted.GetFeature());
 
-  const char kFeatureWithComment[] = "\"/*foo*/\"";
+  static constexpr char kFeatureWithComment[] = "\"/*foo*/\"";
   ManifestHighlighter feature_with_comment(kManifest, "test_key", "/*foo*/");
   EXPECT_EQ(kFeatureWithComment, feature_with_comment.GetFeature());
 
   // Check with non-ascii characters.
-  const char kInternationalFeature[] = "\"international_key\": \"還是不要\"";
+  static constexpr char kInternationalFeature[] =
+      "\"international_key\": \"還是不要\"";
   ManifestHighlighter international_feature(
       kManifest, "international_key", std::string());
   EXPECT_EQ(kInternationalFeature, international_feature.GetFeature());
 
   // Empty manifest. Check that there is no crash.
-  const char kEmptyManifest[] = "";
+  static constexpr char kEmptyManifest[] = "";
   ManifestHighlighter no_feature(kEmptyManifest, std::string(), std::string());
   EXPECT_EQ(std::string(), no_feature.GetFeature());
+
+  // Malformed manifest with wrongly ordered brackets. Check that there is no
+  // crash.
+  static constexpr char kMalformedManifest[] = "}{";
+  ManifestHighlighter malformed_feature(kMalformedManifest, std::string(),
+                                        std::string());
+  EXPECT_EQ(std::string(), malformed_feature.GetFeature());
 }
 
 TEST(SouceHighlighterUnitTest, SourceHighlighterUnitTest) {
-  const char kBasicSourceFile[] = "line one\nline two\nline three";
+  static constexpr char kBasicSourceFile[] = "line one\nline two\nline three";
 
   SourceHighlighter basic1(kBasicSourceFile, 1u);
   EXPECT_EQ("line one", basic1.GetFeature());
@@ -109,7 +117,8 @@ TEST(SouceHighlighterUnitTest, SourceHighlighterUnitTest) {
   SourceHighlighter basic3(kBasicSourceFile, 3u);
   EXPECT_EQ("line three", basic3.GetFeature());
 
-  const char kNoNewlineSourceFile[] = "thisisonelonglinewithnobreaksinit";
+  static constexpr char kNoNewlineSourceFile[] =
+      "thisisonelonglinewithnobreaksinit";
 
   SourceHighlighter full_line(kNoNewlineSourceFile, 1u);
   EXPECT_EQ(kNoNewlineSourceFile, full_line.GetFeature());
