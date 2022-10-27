@@ -10,7 +10,7 @@ import sys
 from xml.dom import minidom
 from xml.parsers import expat
 
-sys.path.append('.')
+sys.path.append(os.path.abspath('.'))
 from policy_templates import GetPolicyTemplates
 
 _SRC_PATH = os.path.abspath('../../../')
