@@ -143,20 +143,12 @@ std::unique_ptr<policy::PolicyStatusProvider> GetMachinePolicyStatusProvider(
   policy::BrowserDMTokenStorage* dmTokenStorage =
       policy::BrowserDMTokenStorage::Get();
 
-  base::Time lastCloudReportSent;
-  PrefService* prefService = g_browser_process->local_state();
-
-  if (prefService->HasPrefPath(
-          enterprise_reporting::kLastUploadSucceededTimestamp)) {
-    lastCloudReportSent = prefService->GetTime(
-        enterprise_reporting::kLastUploadSucceededTimestamp);
-  }
-
   return std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
-      manager->core(),
+      manager->core(), g_browser_process->local_state(),
       new policy::MachineLevelUserCloudPolicyContext(
           {dmTokenStorage->RetrieveEnrollmentToken(),
-           dmTokenStorage->RetrieveClientId(), lastCloudReportSent}));
+           dmTokenStorage->RetrieveClientId(),
+           enterprise_reporting::kLastUploadSucceededTimestamp}));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

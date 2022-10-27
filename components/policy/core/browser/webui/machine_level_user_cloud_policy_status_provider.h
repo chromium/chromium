@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/policy_export.h"
+#include "components/prefs/pref_service.h"
 
 namespace policy {
 class CloudPolicyCore;
@@ -26,7 +26,7 @@ POLICY_EXPORT extern const char kMachineKey[];
 struct POLICY_EXPORT MachineLevelUserCloudPolicyContext {
   std::string enrollmentToken;
   std::string deviceId;
-  base::Time lastCloudReportSent;
+  std::string lastReportTimestampPrefName;
 };
 
 class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
@@ -35,6 +35,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
  public:
   MachineLevelUserCloudPolicyStatusProvider(
       CloudPolicyCore* core,
+      PrefService* prefs,
       MachineLevelUserCloudPolicyContext* context);
   MachineLevelUserCloudPolicyStatusProvider(
       const MachineLevelUserCloudPolicyStatusProvider&) = delete;
@@ -51,6 +52,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
 
  private:
   raw_ptr<CloudPolicyCore> core_;
+  raw_ptr<PrefService> prefs_;
   raw_ptr<MachineLevelUserCloudPolicyContext> context_;
 };
 

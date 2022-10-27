@@ -40,8 +40,9 @@ const char kMachineKey[] = "machine";
 MachineLevelUserCloudPolicyStatusProvider::
     MachineLevelUserCloudPolicyStatusProvider(
         CloudPolicyCore* core,
+        PrefService* prefs,
         MachineLevelUserCloudPolicyContext* context)
-    : core_(core), context_(context) {
+    : core_(core), prefs_(prefs), context_(context) {
   if (core_->store())
     core_->store()->AddObserver(this);
 }
@@ -94,12 +95,14 @@ base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
   }
   dict.Set(kMachineKey, GetMachineName());
 
-  if (!context_->lastCloudReportSent.is_null()) {
-    dict.Set("lastCloudReportSentTimestamp",
-             base::TimeFormatShortDateAndTimeWithTimeZone(
-                 context_->lastCloudReportSent));
+  if (prefs_->HasPrefPath(context_->lastReportTimestampPrefName)) {
+    base::Time last_report_timestamp =
+        prefs_->GetTime(context_->lastReportTimestampPrefName);
+    dict.Set(
+        "lastCloudReportSentTimestamp",
+        base::TimeFormatShortDateAndTimeWithTimeZone(last_report_timestamp));
     dict.Set("timeSinceLastCloudReportSent",
-             GetTimeSinceLastActionString(context_->lastCloudReportSent));
+             GetTimeSinceLastActionString(last_report_timestamp));
   }
   dict.Set(policy::kPolicyDescriptionKey, GetMachineStatusDescriptionKey());
   return dict;

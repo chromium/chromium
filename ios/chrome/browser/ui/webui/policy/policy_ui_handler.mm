@@ -106,21 +106,13 @@ void PolicyUIHandler::RegisterMessages() {
     policy::BrowserDMTokenStorage* dmTokenStorage =
         policy::BrowserDMTokenStorage::Get();
 
-    base::Time lastCloudReportSent;
-    PrefService* prefService = GetApplicationContext()->GetLocalState();
-
-    if (prefService->HasPrefPath(
-            enterprise_reporting::kLastUploadSucceededTimestamp)) {
-      lastCloudReportSent = prefService->GetTime(
-          enterprise_reporting::kLastUploadSucceededTimestamp);
-    }
-
     machine_status_provider_ =
         std::make_unique<policy::MachineLevelUserCloudPolicyStatusProvider>(
-            manager->core(),
+            manager->core(), GetApplicationContext()->GetLocalState(),
             new policy::MachineLevelUserCloudPolicyContext(
                 {dmTokenStorage->RetrieveEnrollmentToken(),
-                 dmTokenStorage->RetrieveClientId(), lastCloudReportSent}));
+                 dmTokenStorage->RetrieveClientId(),
+                 enterprise_reporting::kLastUploadSucceededTimestamp}));
     machine_status_provider_observation_.Observe(
         machine_status_provider_.get());
   }
