@@ -37,13 +37,8 @@ bool IsNonLatinLocale(base::StringPiece locale) {
 
 }  // namespace
 
-AppSearchProvider::AppSearchProvider(Profile* profile,
-                                     AppListControllerDelegate* list_controller,
-                                     base::Clock* clock,
-                                     AppListModelUpdater* model_updater)
-    : model_updater_(model_updater) {
-  data_source_ =
-      std::make_unique<AppSearchDataSource>(profile, list_controller, clock);
+AppSearchProvider::AppSearchProvider(AppSearchDataSource* data_source)
+    : data_source_(data_source) {
   app_updates_subscription_ =
       data_source_->SubscribeToAppUpdates(base::BindRepeating(
           &AppSearchProvider::UpdateResults, base::Unretained(this)));
@@ -70,35 +65,17 @@ void AppSearchProvider::Start(const std::u16string& query) {
 
 void AppSearchProvider::StartZeroState() {
   query_.clear();
-  query_start_time_ = base::TimeTicks::Now();
-  record_query_uma_ = true;
-
-  {
-    // Prevent `UpdateResults()` from running as a result of a data source
-    // refresh callback to avoid double update.
-    base::AutoReset<bool> auto_reset(&updates_blocked_, true);
-    data_source_->RefreshIfNeeded();
-  }
-
-  UpdateResults();
+  record_query_uma_ = false;
 }
 
 ash::AppListSearchResultType AppSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kInstalledApp;
 }
 
-bool AppSearchProvider::ShouldBlockZeroState() const {
-  return true;
-}
+void AppSearchProvider::UpdateResults() {
+  if (updates_blocked_)
+    return;
 
-void AppSearchProvider::UpdateRecommendedResults(
-    const base::flat_map<std::string, uint16_t>& id_to_app_list_index) {
-  SearchProvider::Results new_results =
-      data_source_->GetRecommendations(id_to_app_list_index);
-  PublishQueriedResultsOrRecommendation(false, &new_results);
-}
-
-void AppSearchProvider::UpdateQueriedResults() {
   SearchProvider::Results new_results;
 
   const bool use_exact_match =
@@ -111,48 +88,13 @@ void AppSearchProvider::UpdateQueriedResults() {
     new_results = data_source_->GetFuzzyMatches(query_);
   }
 
-  PublishQueriedResultsOrRecommendation(true, &new_results);
-}
-
-void AppSearchProvider::PublishQueriedResultsOrRecommendation(
-    bool is_queried_search,
-    Results* new_results) {
-  MaybeRecordQueryLatencyHistogram(is_queried_search);
-  SwapResults(new_results);
-}
-
-void AppSearchProvider::MaybeRecordQueryLatencyHistogram(
-    bool is_queried_search) {
-  // Record the query latency only if search provider is queried by user
-  // initiating a search or getting zero state suggestions.
-  if (!record_query_uma_)
-    return;
-
-  if (is_queried_search) {
+  if (record_query_uma_) {
+    record_query_uma_ = false;
     UMA_HISTOGRAM_TIMES("Apps.AppList.AppSearchProvider.QueryTime",
                         base::TimeTicks::Now() - query_start_time_);
-  } else {
-    UMA_HISTOGRAM_TIMES("Apps.AppList.AppSearchProvider.ZeroStateLatency",
-                        base::TimeTicks::Now() - query_start_time_);
   }
-  record_query_uma_ = false;
-}
 
-void AppSearchProvider::UpdateResults() {
-  if (updates_blocked_)
-    return;
-
-  const bool show_recommendations = query_.empty();
-
-  if (show_recommendations) {
-    // Get the map of app ids to their position in the app list, and then
-    // update results.
-    // Unretained is safe because the callback gets called synchronously.
-    model_updater_->GetIdToAppListIndexMap(base::BindOnce(
-        &AppSearchProvider::UpdateRecommendedResults, base::Unretained(this)));
-  } else {
-    UpdateQueriedResults();
-  }
+  SwapResults(&new_results);
 }
 
 }  // namespace app_list

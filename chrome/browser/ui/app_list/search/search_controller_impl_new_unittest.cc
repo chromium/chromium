@@ -40,11 +40,8 @@ using Result = ash::AppListSearchResultType;
 class TestSearchProvider : public SearchProvider {
  public:
   TestSearchProvider(ash::AppListSearchResultType result_type,
-                     bool block_zero_state,
                      base::TimeDelta delay)
-      : result_type_(result_type),
-        block_zero_state_(block_zero_state),
-        delay_(delay) {}
+      : result_type_(result_type), delay_(delay) {}
 
   ~TestSearchProvider() override = default;
 
@@ -52,8 +49,6 @@ class TestSearchProvider : public SearchProvider {
       std::vector<std::unique_ptr<ChromeSearchResult>> results) {
     results_ = std::move(results);
   }
-
-  bool ShouldBlockZeroState() const override { return block_zero_state_; }
 
   ash::AppListSearchResultType ResultType() const override {
     return result_type_;
@@ -78,7 +73,6 @@ class TestSearchProvider : public SearchProvider {
 
   std::vector<std::unique_ptr<ChromeSearchResult>> results_;
   ash::AppListSearchResultType result_type_;
-  bool block_zero_state_;
   base::TimeDelta delay_;
 };
 
@@ -142,8 +136,8 @@ std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
 // SimpleProvider.
 static std::unique_ptr<SearchProvider> kProvider;
 SearchProvider* SimpleProvider(ash::AppListSearchResultType result_type) {
-  kProvider = std::make_unique<TestSearchProvider>(result_type, false,
-                                                   base::Seconds(0));
+  kProvider =
+      std::make_unique<TestSearchProvider>(result_type, base::Seconds(0));
   return kProvider.get();
 }
 
@@ -592,7 +586,7 @@ TEST_F(SearchControllerImplNewTest, FirstSearchResultsNotShownInSecondSearch) {
   ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
 
   auto provider = std::make_unique<TestSearchProvider>(Result::kInstalledApp,
-                                                       false, base::Seconds(1));
+                                                       base::Seconds(1));
   auto* provider_ptr = provider.get();
   search_controller_->AddProvider(0, std::move(provider));
 
@@ -626,16 +620,16 @@ TEST_F(SearchControllerImplNewTest, FirstSearchResultsNotShownInSecondSearch) {
 TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {
   ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
 
-  // Set up four providers, two are zero-state blocking. One is slow. The
-  // particular result types and categories don't matter.
-  auto provider_a = std::make_unique<TestSearchProvider>(
-      Result::kInstalledApp, true, base::Seconds(1));
-  auto provider_b = std::make_unique<TestSearchProvider>(
-      Result::kZeroStateFile, true, base::Seconds(2));
-  auto provider_c = std::make_unique<TestSearchProvider>(
-      Result::kOsSettings, false, base::Seconds(1));
-  auto provider_d = std::make_unique<TestSearchProvider>(
-      Result::kOmnibox, false, base::Seconds(4));
+  // Set up four providers, two provide zero-state results. One is slow. The
+  // particular result categories don't matter.
+  auto provider_a = std::make_unique<TestSearchProvider>(Result::kZeroStateApp,
+                                                         base::Seconds(1));
+  auto provider_b = std::make_unique<TestSearchProvider>(Result::kZeroStateFile,
+                                                         base::Seconds(2));
+  auto provider_c = std::make_unique<TestSearchProvider>(Result::kOsSettings,
+                                                         base::Seconds(1));
+  auto provider_d =
+      std::make_unique<TestSearchProvider>(Result::kOmnibox, base::Seconds(4));
 
   provider_a->SetNextResults(
       MakeResults({"a"}, {Category::kApps}, {-1}, {0.3}));
@@ -675,10 +669,10 @@ TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {
 TEST_F(SearchControllerImplNewTest, ZeroStateResultsGetTimedOut) {
   ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
 
-  auto provider_a = std::make_unique<TestSearchProvider>(
-      Result::kInstalledApp, true, base::Seconds(1));
-  auto provider_b = std::make_unique<TestSearchProvider>(
-      Result::kZeroStateFile, true, base::Seconds(3));
+  auto provider_a = std::make_unique<TestSearchProvider>(Result::kZeroStateApp,
+                                                         base::Seconds(1));
+  auto provider_b = std::make_unique<TestSearchProvider>(Result::kZeroStateFile,
+                                                         base::Seconds(3));
 
   provider_a->SetNextResults(
       MakeResults({"a"}, {Category::kApps}, {-1}, {0.3}));
@@ -711,9 +705,9 @@ TEST_F(SearchControllerImplNewTest, ContinueRanksDriveAboveLocal) {
       std::make_unique<RankerDelegate>(&profile_, search_controller_.get()));
 
   auto drive_provider = std::make_unique<TestSearchProvider>(
-      Result::kZeroStateDrive, true, base::Seconds(0));
+      Result::kZeroStateDrive, base::Seconds(0));
   auto local_provider = std::make_unique<TestSearchProvider>(
-      Result::kZeroStateFile, true, base::Seconds(0));
+      Result::kZeroStateFile, base::Seconds(0));
 
   drive_provider->SetNextResults(MakeResults(
       {"drive_a", "drive_b"}, {Category::kUnknown, Category::kUnknown},

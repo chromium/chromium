@@ -67,8 +67,4 @@ ash::AppListSearchResultType TestContinueFilesSearchProvider::ResultType()
   return ResultType::kUnknown;
 }
 
-bool TestContinueFilesSearchProvider::ShouldBlockZeroState() const {
-  return true;
-}
-
 }  // namespace app_list

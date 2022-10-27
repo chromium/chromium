@@ -192,10 +192,6 @@ ash::AppListSearchResultType HelpAppZeroStateProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateHelpApp;
 }
 
-bool HelpAppZeroStateProvider::ShouldBlockZeroState() const {
-  return true;
-}
-
 void HelpAppZeroStateProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() == web_app::kHelpAppId && update.ReadinessChanged() &&
       update.Readiness() == apps::Readiness::kReady) {

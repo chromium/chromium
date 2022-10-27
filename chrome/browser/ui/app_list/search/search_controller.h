@@ -32,6 +32,7 @@ class TimeDelta;
 
 namespace app_list {
 
+class AppSearchDataSource;
 class SearchProvider;
 enum class RankingItemType;
 
@@ -78,6 +79,10 @@ class SearchController {
   virtual void OpenResult(ChromeSearchResult* result, int event_flags) = 0;
   virtual void InvokeResultAction(ChromeSearchResult* result,
                                   ash::SearchResultActionType action) = 0;
+
+  // Returns AppSearchDataSource instance that should be used with app search
+  // providers.
+  virtual AppSearchDataSource* GetAppSearchDataSource() = 0;
 
   // Adds a new mixer group. See Mixer::AddGroup.
   virtual size_t AddGroup(size_t max_results) = 0;

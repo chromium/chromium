@@ -32,6 +32,7 @@ Category StringToCategory(const std::string& value) {
 Category ResultTypeToCategory(ResultType result_type) {
   switch (result_type) {
     case ResultType::kInstalledApp:
+    case ResultType::kZeroStateApp:
     case ResultType::kInstantApp:
     case ResultType::kInternalApp:
     case ResultType::kGames:

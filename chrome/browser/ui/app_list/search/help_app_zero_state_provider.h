@@ -61,7 +61,6 @@ class HelpAppZeroStateProvider : public SearchProvider,
   // SearchProvider:
   void StartZeroState() override;
   ash::AppListSearchResultType ResultType() const override;
-  bool ShouldBlockZeroState() const override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
