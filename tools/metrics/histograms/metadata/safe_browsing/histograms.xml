@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullURLLookup{AllowlistCheckStatus}"
+    name="SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup{AllowlistCheckStatus}"
     units="ms" expires_after="2023-01-12">
   <owner>xinghuilu@chromium.org</owner>
   <owner>bhatiarohit@google.com</owner>
