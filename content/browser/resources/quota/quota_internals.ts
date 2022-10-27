@@ -6,29 +6,9 @@ import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {QuotaInternalsBrowserProxy} from './quota_internals_browser_proxy.js';
+import {BucketTableEntry, QuotaInternalsBrowserProxy, RetrieveBucketsTableResult, StorageType} from './quota_internals_browser_proxy.js';
 
-enum StorageType {
-  TEMPORARY,
-  PERSISTENT,
-  SYNCABLE,
-}
-
-interface BucketTableEntry {
-  'bucketId': bigint;
-  'storageKey': string;
-  'type': StorageType;
-  'name': string;
-  'usage': bigint;
-  'useCount': bigint;
-  'lastAccessed': Time;
-  'lastModified': Time;
-}
-
-interface RetrieveBucketsTableResult {
-  entries: BucketTableEntry[];
-}
-
+// Object for constructing the bucket row in the usage table.
 interface StorageTypeBucketTableEntry {
   'bucketId': string;
   'name': string;
@@ -38,18 +18,19 @@ interface StorageTypeBucketTableEntry {
   'lastModified': string;
 }
 
-type EntriesForStorageType = StorageTypeBucketTableEntry[];
-
+// Bucket entries organized by StorageType for constructing the usage table.
 interface StorageTypeEntries {
   // key = storageType
-  [key: string]: EntriesForStorageType;
+  [key: string]: StorageTypeBucketTableEntry[];
 }
 
+// StorageTypeEntries organized by StorageKey for constructing the usage table.
 interface StorageKeyData {
   'bucketCount': number;
   'storageKeyEntries': StorageTypeEntries;
 }
 
+// Map of StorageKey entries for constructing bucket usage table.
 interface BucketTableEntriesByStorageKey {
   // key = storageKey
   [key: string]: StorageKeyData;
@@ -106,14 +87,16 @@ async function renderDiskAvailabilityAndTempPoolSize() {
 }
 
 async function renderGlobalUsage() {
-  const globalUsageStorageTypes: string[] =
-      ['temporary', 'persistent', 'syncable'];
+  const typeVals: number[] =
+      Object.keys(StorageType).map((v) => Number(v)).filter((v) => !isNaN(v));
 
-  for (const storageType of globalUsageStorageTypes) {
-    const result = await getProxy().getGlobalUsage(storageType);
+  for (const typeVal of typeVals) {
+    const result = await getProxy().getGlobalUsage(typeVal);
     const formattedResultString: string = `${Number(result.usage)} B (${
         result.unlimitedUsage} B for unlimited origins)`;
-    document.body.querySelector(`.${storageType}-global-and-unlimited-usage`)!
+    document.body
+        .querySelector(`.${
+            StorageType[typeVal].toLowerCase()}-global-and-unlimited-usage`)!
         .textContent = formattedResultString;
   }
 }

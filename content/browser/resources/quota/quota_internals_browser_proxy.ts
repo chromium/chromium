@@ -7,13 +7,13 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
-enum StorageType {
-  TEMPORARY,
-  PERSISTENT,
-  SYNCABLE,
+export enum StorageType {
+  TEMPORARY = 0,
+  PERSISTENT = 1,
+  SYNCABLE = 2,
 }
 
-interface BucketTableEntry {
+export interface BucketTableEntry {
   'bucketId': bigint;
   'storageKey': string;
   'type': StorageType;
@@ -44,7 +44,7 @@ interface GetStatisticsResult {
   };
 }
 
-interface RetrieveBucketsTableResult {
+export interface RetrieveBucketsTableResult {
   entries: BucketTableEntry[];
 }
 
@@ -61,19 +61,6 @@ function urlPort(url: URL): number {
   }
 }
 
-function enumerateStorageType(storageType: string): number {
-  switch (storageType) {
-    case 'temporary':
-      return 0;
-    case 'persistent':
-      return 1;
-    case 'syncable':
-      return 2;
-    default:
-      return 0;
-  }
-}
-
 export class QuotaInternalsBrowserProxy {
   private handler = QuotaInternalsHandler.getRemote();
 
@@ -82,9 +69,8 @@ export class QuotaInternalsBrowserProxy {
     return this.handler.getDiskAvailabilityAndTempPoolSize();
   }
 
-  getGlobalUsage(storageType: string): Promise<GetGlobalUsageResult> {
-    return this.handler.getGlobalUsageForInternals(
-        enumerateStorageType(storageType));
+  getGlobalUsage(storageType: number): Promise<GetGlobalUsageResult> {
+    return this.handler.getGlobalUsageForInternals(storageType);
   }
 
   getStatistics(): Promise<GetStatisticsResult> {
