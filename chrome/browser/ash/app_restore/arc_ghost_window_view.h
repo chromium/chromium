@@ -41,7 +41,7 @@ class ArcGhostWindowView : public views::View {
   ArcGhostWindowView operator=(const ArcGhostWindowView&) = delete;
   ~ArcGhostWindowView() override;
 
-  // The original style of ghost window requires the theme color.
+  // The original style of ghost window requires the App theme color.
   void SetThemeColor(uint32_t theme_color);
 
   // Initialize or replace content of ghost window. If use the original style,
@@ -50,6 +50,9 @@ class ArcGhostWindowView : public views::View {
 
   // Load icon from App service by app id.
   void LoadIcon(const std::string& app_id);
+
+  // views::View:
+  void OnThemeChanged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);

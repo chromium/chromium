@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -16,6 +17,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -38,6 +40,10 @@ enum class GhostWindowType {
   kIconSpinningWithFixupText = 1,
   kMaxValue = kIconSpinningWithFixupText,
 };
+
+bool IsGhostWindowNewStyleEnabled() {
+  return base::FeatureList::IsEnabled(arc::kGhostWindowNewStyle);
+}
 
 class Throbber : public views::View {
  public:
@@ -106,11 +112,20 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
                    .SetID(ContentID::ID_ICON_IMAGE)
                    .Build());
 
-  // TODO(b/255486588): Support dark mode.
-  SetBackground(views::CreateSolidBackground(theme_color_));
+  // DarkLightModeController maybe null in test env.
+  if (type != arc::GhostWindowType::kFullRestore &&
+      IsGhostWindowNewStyleEnabled() && DarkLightModeController::Get()) {
+    // New style use ChromeOS system provided background color.
+    SetBackground(views::CreateSolidBackground(cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor,
+        DarkLightModeController::Get()->IsDarkModeEnabled())));
+  } else {
+    // Use ARC app's theme color.
+    SetBackground(views::CreateSolidBackground(theme_color_));
+  }
 
   if (type == arc::GhostWindowType::kFullRestore ||
-      !base::FeatureList::IsEnabled(arc::kGhostWindowNewStyle)) {
+      !IsGhostWindowNewStyleEnabled()) {
     // If not enabled new style flag, all types will use original UI.
 
     auto* throbber = AddChildView(std::make_unique<Throbber>(
@@ -138,6 +153,19 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
   }
 
   Layout();
+}
+
+void ArcGhostWindowView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // DarkLightModeController maybe null in test env.
+  if (!IsGhostWindowNewStyleEnabled() ||
+      ghost_window_type_ == arc::GhostWindowType::kFullRestore ||
+      !DarkLightModeController::Get()) {
+    return;
+  }
+  SetBackground(views::CreateSolidBackground(cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor,
+      DarkLightModeController::Get()->IsDarkModeEnabled())));
 }
 
 void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
