@@ -185,7 +185,8 @@ class PasswordAccessoryControllerImpl
   content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
-  raw_ptr<password_manager::CredentialCache> credential_cache_ = nullptr;
+  raw_ptr<password_manager::CredentialCache, DanglingUntriaged>
+      credential_cache_ = nullptr;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;

@@ -54,7 +54,7 @@ class StaticTriggerConditions {
   // next call to |Update|. See b/192220992.
   bool is_first_time_user_ = false;
   base::WeakPtr<StarterPlatformDelegate> delegate_;
-  raw_ptr<TriggerContext> trigger_context_ = nullptr;
+  raw_ptr<TriggerContext, DanglingUntriaged> trigger_context_ = nullptr;
   GURL deeplink_url_;
   base::WeakPtrFactory<StaticTriggerConditions> weak_ptr_factory_{this};
 };

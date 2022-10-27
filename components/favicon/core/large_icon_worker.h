@@ -62,7 +62,7 @@ class LargeIconWorker : public base::RefCountedThreadSafe<LargeIconWorker> {
   favicon_base::LargeIconCallback raw_bitmap_callback_;
   favicon_base::LargeIconImageCallback image_callback_;
   scoped_refptr<base::TaskRunner> background_task_runner_;
-  raw_ptr<base::CancelableTaskTracker> tracker_;
+  raw_ptr<base::CancelableTaskTracker, DanglingUntriaged> tracker_;
 
   favicon_base::FaviconRawBitmapResult raw_bitmap_result_;
   SkBitmap bitmap_result_;

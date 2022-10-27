@@ -117,7 +117,7 @@ class WaitForDomOperation : public ScriptExecutor::Listener,
 
   raw_ptr<ScriptExecutor> main_script_;
   raw_ptr<ScriptExecutorDelegate> delegate_;
-  raw_ptr<ScriptExecutorUiDelegate> ui_delegate_;
+  raw_ptr<ScriptExecutorUiDelegate, DanglingUntriaged> ui_delegate_;
   const base::TimeDelta max_wait_time_;
   const bool allow_interrupt_;
   const bool use_observers_;
