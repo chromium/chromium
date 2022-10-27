@@ -32,15 +32,7 @@ template("wayland_protocol_codegen") {
     inputs = [ invoker.template ]
     outputs = [ invoker.output_pattern ]
 
-    if (host_os == "win") {
-      clang_format_path = "//buildtools/win/clang-format.exe"
-    } else if (host_os == "mac") {
-      clang_format_path = "//buildtools/mac/clang-format"
-    } else if (host_os == "linux") {
-      clang_format_path = "//buildtools/linux64/clang-format"
-    } else {
-      assert(false)
-    }
+    clang_format_path = "//third_party/depot_tools/clang-format"
 
     args = [
       rebase_path("//third_party", root_build_dir),
