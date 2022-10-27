@@ -249,6 +249,19 @@ void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {
   ResetAgent(agent);
   if (document_)
     document_->ResetAgent(*agent);
+
+  // This is only called on Android WebView, we need to reassign the microtask
+  // queue if there already is one for the associated context. There shouldn't
+  // be any other worlds with Android WebView so using the MainWorld is fine.
+  auto* microtask_queue = agent->event_loop()->microtask_queue();
+  if (microtask_queue) {
+    v8::HandleScope handle_scope(GetIsolate());
+    v8::Local<v8::Context> main_world_context =
+        ToV8ContextMaybeEmpty(GetFrame(), DOMWrapperWorld::MainWorld());
+    if (!main_world_context.IsEmpty())
+      main_world_context->SetMicrotaskQueue(microtask_queue);
+  }
+
   GetAgent()->AttachContext(this);
 }
 
