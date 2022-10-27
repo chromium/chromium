@@ -49,14 +49,14 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-password-manager-captured-sites-rel": {
@@ -64,7 +64,7 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lorenz-graph-dbg": {

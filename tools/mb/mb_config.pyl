@@ -825,9 +825,9 @@
       'chromeos-amd64-generic-lacros-internal-rel': 'chromeos_amd64-generic_lacros_rel',
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'lacros-arm-generic-chrome-fyi-reclient': 'chromeos_arm-generic_lacros_official_skylab_reclient',
-      'linux-autofill-captured-sites-rel': 'release_bot',
-      'linux-finch-smoke-chrome': 'official_goma',
-      'linux-password-manager-captured-sites-rel': 'release_bot',
+      'linux-autofill-captured-sites-rel': 'release_bot_reclient',
+      'linux-finch-smoke-chrome': 'official_reclient',
+      'linux-password-manager-captured-sites-rel': 'release_bot_reclient',
       'lorenz-graph-dbg': 'android_debug_static_external_bot',
       'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
       'mac-autofill-captured-sites-rel': 'release_bot',
@@ -3360,6 +3360,9 @@
 
     'official_optimize_reclient': [
       'official_optimize_reclient',
+    ],
+    'official_reclient': [
+       'official', 'reclient',
     ],
 
     'perfetto_release_bot_reclient': [
