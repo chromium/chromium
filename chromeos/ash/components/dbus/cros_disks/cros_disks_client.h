@@ -85,11 +85,6 @@ enum class MountError {
   kCancelled = 19,
   kBusy = 20,
   kMaxValue = 20,
-
-  // TODO(crbug.com/1368408) Remove when not used anymore.
-  kNone = kSuccess,
-  kUnknown = kUnknownError,
-  kInternal = kInternalError,
 };
 
 // Output operator for logging.
@@ -109,11 +104,6 @@ enum class RenameError {
   kDeviceNotAllowed,
   kLongName,
   kInvalidCharacter,
-
-  // TODO(crbug.com/1368408) Remove when not used anymore.
-  kNone = kSuccess,
-  kUnknown = kUnknownError,
-  kInternal = kInternalError,
 };
 
 // Output operator for logging.
@@ -138,11 +128,6 @@ enum class FormatError {
   kLongName = 10,
   kInvalidCharacter = 11,
   kMaxValue = 11,
-
-  // TODO(crbug.com/1368408) Remove when not used anymore.
-  kNone = kSuccess,
-  kUnknown = kUnknownError,
-  kInternal = kInternalError,
 };
 
 // Output operator for logging.
@@ -159,11 +144,6 @@ enum class PartitionError {
   kProgramNotFound = 5,
   kProgramFailed = 6,
   kDeviceNotAllowed = 7,
-
-  // TODO(crbug.com/1368408) Remove when not used anymore.
-  kNone = kSuccess,
-  kUnknown = kUnknownError,
-  kInternal = kInternalError,
 };
 
 // Output operator for logging.
