@@ -1,0 +1,12 @@
+diff --color -rupN nss-3.49.1/nss/lib/softoken/pkcs11.c nss-3.49.1.new/nss/lib/softoken/pkcs11.c
+--- nss-3.49.1/nss/lib/softoken/pkcs11.c	2020-01-13 17:14:10.000000000 +0000
++++ nss-3.49.1.new/nss/lib/softoken/pkcs11.c	2022-10-25 23:12:08.233648045 +0000
+@@ -4783,7 +4783,7 @@ sftk_searchDatabase(SFTKDBHandle *handle
+     CK_RV crv;
+     int objectListSize = search->array_size - search->size;
+     CK_OBJECT_HANDLE *array = &search->handles[search->size];
+-    SDBFind *find;
++    SDBFind *find = NULL;
+     CK_ULONG count;
+ 
+     crv = sftkdb_FindObjectsInit(handle, pTemplate, ulCount, &find);

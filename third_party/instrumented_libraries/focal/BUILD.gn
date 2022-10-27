@@ -777,7 +777,10 @@ instrumented_library("libxtst6") {
 instrumented_library("nss") {
   # TODO(eugenis): get rid of this dependency
   deps = [ ":libnspr4" ]
-  patches = [ "patches/nss.diff" ]
+  patches = [
+    "patches/nss.diff",
+    "patches/nss.2.diff",
+  ]
   build_method = "custom_nss"
 }
 
