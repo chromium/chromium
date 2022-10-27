@@ -124,16 +124,6 @@ void AppServiceMojomImpl::LaunchAppWithIntent(
                                     std::move(callback));
 }
 
-void AppServiceMojomImpl::SetPermission(apps::mojom::AppType app_type,
-                                        const std::string& app_id,
-                                        apps::mojom::PermissionPtr permission) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->SetPermission(app_id, std::move(permission));
-}
-
 void AppServiceMojomImpl::Uninstall(
     apps::mojom::AppType app_type,
     const std::string& app_id,

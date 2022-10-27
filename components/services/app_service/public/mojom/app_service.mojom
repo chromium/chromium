@@ -58,11 +58,6 @@ interface AppService {
       LaunchSource launch_source,
       WindowInfo? window_info) => (bool success);
 
-  SetPermission(
-      AppType app_type,
-      string app_id,
-      Permission permission);
-
   // Directly uninstalls |app_id| without prompting the user.
   // |clear_site_data| is available for bookmark apps only. If true, any site
   // data associated with the app will be removed..
@@ -166,12 +161,6 @@ interface Publisher {
     Intent intent,
     LaunchSource launch_source,
     WindowInfo? window_info) => (bool success);
-
-  // Sets |permission| for an app identified with |app_id|. Implemented if the
-  // publisher supports per-app permissions that are exposed in App Management.
-  SetPermission(
-      string app_id,
-      Permission permission);
 
   // Directly uninstalls an app identified by |app_id| without prompting the
   // user. |uninstall_source| indicates where the uninstallation came from.

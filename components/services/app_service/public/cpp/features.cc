@@ -10,10 +10,6 @@ BASE_FEATURE(kAppServiceLaunchWithoutMojom,
              "AppServiceLaunchWithoutMojom",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAppServiceSetPermissionWithoutMojom,
-             "AppServiceSetPermissionWithoutMojom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAppServiceUninstallWithoutMojom,
              "AppServiceUninstallWithoutMojom",
              base::FEATURE_ENABLED_BY_DEFAULT);

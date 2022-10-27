@@ -66,9 +66,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info,
                            LaunchAppWithIntentCallback callback) override;
-  void SetPermission(apps::mojom::AppType app_type,
-                     const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
   void Uninstall(apps::mojom::AppType app_type,
                  const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,

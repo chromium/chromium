@@ -292,12 +292,6 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
           std::move(callback)));
 }
 
-void WebApps::SetPermission(const std::string& app_id,
-                            apps::mojom::PermissionPtr permission) {
-  publisher_helper().SetPermission(
-      app_id, apps::ConvertMojomPermissionToPermission(permission));
-}
-
 void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }

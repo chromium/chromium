@@ -156,8 +156,6 @@ class WebAppsCrosapi : public KeyedService,
                                  int command_id,
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
-  void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<AppPtr> deltas) override;

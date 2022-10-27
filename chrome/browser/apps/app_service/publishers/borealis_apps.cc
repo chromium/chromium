@@ -464,11 +464,6 @@ void BorealisApps::Launch(const std::string& app_id,
       app_id, base::DoNothing());
 }
 
-void BorealisApps::SetPermission(const std::string& app_id,
-                                 apps::mojom::PermissionPtr permission_ptr) {
-  SetPermission(app_id, ConvertMojomPermissionToPermission(permission_ptr));
-}
-
 void BorealisApps::Uninstall(const std::string& app_id,
                              apps::mojom::UninstallSource uninstall_source,
                              bool clear_site_data,

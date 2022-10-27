@@ -1344,11 +1344,6 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
   std::move(callback).Run(/*success=*/true);
 }
 
-void ArcApps::SetPermission(const std::string& app_id,
-                            apps::mojom::PermissionPtr permission) {
-  SetPermission(app_id, ConvertMojomPermissionToPermission(permission));
-}
-
 void ArcApps::SetResizeLocked(const std::string& app_id,
                               apps::mojom::OptionalBool locked) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);

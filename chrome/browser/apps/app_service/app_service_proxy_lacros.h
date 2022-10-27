@@ -196,10 +196,6 @@ class AppServiceProxyLacros : public KeyedService,
 
   // Sets |permission| for the app identified by |app_id|.
   void SetPermission(const std::string& app_id, PermissionPtr permission);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission);
 
   // Uninstalls an app for the given |app_id|. If |parent_window| is specified,
   // the uninstall dialog will be created as a modal dialog anchored at

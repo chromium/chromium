@@ -557,18 +557,6 @@ void AppServiceProxyBase::SetPermission(const std::string& app_id,
       });
 }
 
-void AppServiceProxyBase::SetPermission(const std::string& app_id,
-                                        apps::mojom::PermissionPtr permission) {
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, &permission](const apps::AppUpdate& update) {
-          app_service_->SetPermission(
-              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId(),
-              std::move(permission));
-        });
-  }
-}
-
 void AppServiceProxyBase::UninstallSilently(const std::string& app_id,
                                             UninstallSource uninstall_source) {
   auto app_type = app_registry_cache_.GetAppType(app_id);

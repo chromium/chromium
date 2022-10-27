@@ -102,12 +102,7 @@ void AppNotificationHandler::SetQuietMode(bool in_quiet_mode) {
 void AppNotificationHandler::SetNotificationPermission(
     const std::string& app_id,
     apps::PermissionPtr permission) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    app_service_proxy_->SetPermission(app_id, std::move(permission));
-  } else {
-    app_service_proxy_->SetPermission(
-        app_id, apps::ConvertPermissionToMojomPermission(permission));
-  }
+  app_service_proxy_->SetPermission(app_id, std::move(permission));
 }
 
 void AppNotificationHandler::GetApps(GetAppsCallback callback) {

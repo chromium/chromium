@@ -100,8 +100,6 @@ class PluginVmApps : public apps::PublisherBase,
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info,
                            LaunchAppWithIntentCallback callback) override;
-  void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,

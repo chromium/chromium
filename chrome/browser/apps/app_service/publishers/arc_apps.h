@@ -154,8 +154,6 @@ class ArcApps : public KeyedService,
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info,
                            LaunchAppWithIntentCallback callback) override;
-  void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
   void Uninstall(const std::string& app_id,

@@ -311,12 +311,6 @@ void AppServiceProxyLacros::SetPermission(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::SetPermission(
-    const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
-  NOTIMPLEMENTED();
-}
-
 void AppServiceProxyLacros::Uninstall(const std::string& app_id,
                                       UninstallSource uninstall_source,
                                       gfx::NativeWindow parent_window) {

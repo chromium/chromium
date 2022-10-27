@@ -119,11 +119,6 @@ void PublisherBase::LaunchAppWithIntent(const std::string& app_id,
   std::move(callback).Run(/*success=*/false);
 }
 
-void PublisherBase::SetPermission(const std::string& app_id,
-                                  apps::mojom::PermissionPtr permission) {
-  NOTIMPLEMENTED();
-}
-
 void PublisherBase::Uninstall(const std::string& app_id,
                               apps::mojom::UninstallSource uninstall_source,
                               bool clear_site_data,
