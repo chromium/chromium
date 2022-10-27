@@ -417,6 +417,11 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       </if>
       <if expr="is_win">
         <message name="IDS_WIN_8_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
+                    To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.
+        </message>
+      </if>
+      <if expr="is_win">
+        <message name="IDS_WIN_8_1_OBSOLETE" desc="A message displayed on an at-launch infobar and about:help warning the user that the computer they are using will soon be or is already unsupported.">
                     To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.1.
         </message>
       </if>

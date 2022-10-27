@@ -30,8 +30,10 @@ std::u16string ObsoleteSystem::LocalizedObsoleteString() {
   const auto version = base::win::GetVersion();
   if (version == base::win::Version::WIN7)
     return l10n_util::GetStringUTF16(IDS_WIN_7_OBSOLETE);
-  if (version == base::win::Version::WIN8_1)
+  if (version == base::win::Version::WIN8)
     return l10n_util::GetStringUTF16(IDS_WIN_8_OBSOLETE);
+  if (version == base::win::Version::WIN8_1)
+    return l10n_util::GetStringUTF16(IDS_WIN_8_1_OBSOLETE);
   return l10n_util::GetStringUTF16(IDS_WIN_XP_VISTA_OBSOLETE);
 }
 
