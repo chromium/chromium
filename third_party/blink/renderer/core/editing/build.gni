@@ -377,6 +377,7 @@ blink_core_tests_editing = [
   "commands/split_text_node_command_test.cc",
   "commands/style_commands_test.cc",
   "commands/typing_command_test.cc",
+  "commands/undo_command_test.cc",
   "editing_strategy_test.cc",
   "editing_style_test.cc",
   "editing_utilities_test.cc",
