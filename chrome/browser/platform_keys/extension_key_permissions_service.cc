@@ -46,11 +46,6 @@ const char kStateStoreSignUnlimited[] = "signUnlimited";
 
 const char kPolicyAllowCorporateKeyUsage[] = "allowCorporateKeyUsage";
 
-// TODO(miersh): minimize the use of this function.
-std::vector<uint8_t> StrToBlob(const std::string& str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-
 bool ContainsTag(uint64_t tags, crosapi::mojom::KeyTag value) {
   return tags & static_cast<uint64_t>(value);
 }
@@ -263,10 +258,10 @@ void ExtensionKeyPermissionsService::RegisterKeyForCorporateUsage(
 }
 
 void ExtensionKeyPermissionsService::SetUserGrantedPermission(
-    const std::string& public_key_spki_der,
+    const std::vector<uint8_t>& public_key_spki_der,
     SetUserGrantedPermissionCallback callback) {
   keystore_service_->CanUserGrantPermissionForKey(
-      StrToBlob(public_key_spki_der),
+      public_key_spki_der,
       base::BindOnce(
           &ExtensionKeyPermissionsService::SetUserGrantedPermissionWithFlag,
           weak_factory_.GetWeakPtr(), public_key_spki_der,
@@ -274,7 +269,7 @@ void ExtensionKeyPermissionsService::SetUserGrantedPermission(
 }
 
 void ExtensionKeyPermissionsService::SetUserGrantedPermissionWithFlag(
-    const std::string& public_key_spki_der,
+    const std::vector<uint8_t>& public_key_spki_der,
     SetUserGrantedPermissionCallback callback,
     bool can_user_grant_permission) {
   if (!can_user_grant_permission) {
@@ -284,9 +279,8 @@ void ExtensionKeyPermissionsService::SetUserGrantedPermissionWithFlag(
     return;
   }
 
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-  KeyEntry* matching_entry = GetStateStoreEntry(public_key_spki_der_b64);
+  KeyEntry* matching_entry =
+      GetStateStoreEntry(base::Base64Encode(public_key_spki_der));
 
   if (matching_entry->sign_unlimited) {
     VLOG(1) << "Key is already allowed for signing, skipping.";

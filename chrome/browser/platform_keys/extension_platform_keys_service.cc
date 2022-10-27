@@ -837,11 +837,10 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       DoStep();
       return;
     }
-    const std::string public_key_spki_der(
-        platform_keys::GetSubjectPublicKeyInfo(selected_cert_));
     extension_key_permissions_service_->SetUserGrantedPermission(
-        public_key_spki_der, base::BindOnce(&SelectTask::OnPermissionsUpdated,
-                                            weak_factory_.GetWeakPtr()));
+        platform_keys::GetSubjectPublicKeyInfoBlob(selected_cert_),
+        base::BindOnce(&SelectTask::OnPermissionsUpdated,
+                       weak_factory_.GetWeakPtr()));
   }
 
   void OnPermissionsUpdated(bool is_error,

@@ -143,7 +143,7 @@ class ExtensionKeyPermissionsService {
   // |extension_id| can use the private key matching |public_key_spki_der| for
   // signing. |key_locations| must describe locations available to the user
   // the private key is stored on.
-  void SetUserGrantedPermission(const std::string& public_key_spki_der,
+  void SetUserGrantedPermission(const std::vector<uint8_t>& public_key_spki_der,
                                 SetUserGrantedPermissionCallback callback);
 
   // Returns the list of apps and extensions ids allowed to use corporate usage
@@ -205,7 +205,7 @@ class ExtensionKeyPermissionsService {
       crosapi::mojom::GetKeyTagsResultPtr key_tags);
 
   void SetUserGrantedPermissionWithFlag(
-      const std::string& public_key_spki_der,
+      const std::vector<uint8_t>& public_key_spki_der,
       SetUserGrantedPermissionCallback callback,
       bool can_user_grant_permission);
 
