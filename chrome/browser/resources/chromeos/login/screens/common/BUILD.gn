@@ -21,7 +21,6 @@ group("polymer3_elements") {
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
     ":sync_consent_module",
-    ":user_creation_module",
   ]
 }
 
@@ -76,7 +75,7 @@ js_type_check("closure_compile_local") {
     ":sync_consent.m",
     ":theme_selection",
     ":tpm_error",
-    ":user_creation.m",
+    ":user_creation",
     ":wrong_hwid",
   ]
 }
@@ -621,8 +620,8 @@ js_library("tpm_error") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("user_creation.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/user_creation.m.js" ]
+js_library("user_creation") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/user_creation.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -634,7 +633,7 @@ js_library("user_creation.m") {
     "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-  extra_deps = [ ":user_creation_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("wrong_hwid") {
@@ -711,15 +710,6 @@ polymer_modulizer("recommend_apps") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("user_creation") {
-  js_file = "user_creation.js"
-  html_file = "user_creation.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("signin_fatal_error") {
   js_file = "signin_fatal_error.js"
   html_file = "signin_fatal_error.html"
@@ -755,6 +745,7 @@ html_to_js("web_components") {
     "assistant_optin.js",
     "autolaunch.js",
     "consolidated_consent.js",
+    "device_disabled.js",
     "enable_kiosk.js",
     "error_message.js",
     "fingerprint_setup.js",
@@ -774,7 +765,7 @@ html_to_js("web_components") {
     "saml_confirm_password.js",
     "theme_selection.js",
     "tpm_error.js",
+    "user_creation.js",
     "wrong_hwid.js",
-    "device_disabled.js",
   ]
 }

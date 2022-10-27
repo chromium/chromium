@@ -3,7 +3,26 @@
 // found in the LICENSE file.
 
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_radio_button/cr_card_radio_button.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/hd_iron_icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/cr_card_radio_group_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_modal_dialog.m.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {Oobe} from '../../cr_ui.m.js';
+
 
 /**
  * @constructor
@@ -11,13 +30,8 @@
  * @implements {LoginScreenBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
  */
-const UserCreationScreenElementBase = Polymer.mixinBehaviors(
-    [
-      OobeI18nBehavior,
-      LoginScreenBehavior,
-      MultiStepBehavior,
-    ],
-    Polymer.Element);
+const UserCreationScreenElementBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * UI mode for the dialog.
@@ -59,7 +73,9 @@ class UserCreation extends UserCreationScreenElementBase {
     return 'user-creation-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -95,7 +111,6 @@ class UserCreation extends UserCreationScreenElementBase {
       subtitleKey_: {
         type: String,
       },
-
     };
   }
 
@@ -175,7 +190,8 @@ class UserCreation extends UserCreationScreenElementBase {
     } else if (this.uiStep === UserCreationUIState.CHILD) {
       if (this.selectedSignInMethod === UserCreationSignInMethod.CREATE) {
         this.userActed('child-account-create');
-      } else if (this.selectedSignInMethod === UserCreationSignInMethod.SIGNIN) {
+      } else if (
+          this.selectedSignInMethod === UserCreationSignInMethod.SIGNIN) {
         this.userActed('child-signin');
       }
     }

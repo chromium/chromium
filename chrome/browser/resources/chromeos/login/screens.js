@@ -40,7 +40,7 @@ import './screens/common/smart_privacy_protection.m.js';
 import './screens/common/sync_consent.m.js';
 import './screens/common/theme_selection.js';
 import './screens/common/tpm_error.js';
-import './screens/common/user_creation.m.js';
+import './screens/common/user_creation.js';
 import './screens/common/wrong_hwid.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/active_directory_password_change.js';
