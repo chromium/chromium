@@ -7,6 +7,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/wk_navigation_action_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -96,6 +97,21 @@ enum class PermissionRequest {
       break;
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
+  if (@available(iOS 16.0, *)) {
+    if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
+      __weak __typeof(self) weakSelf = self;
+      [webView closeAllMediaPresentationsWithCompletionHandler:^{
+        web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
+        if (webStateImpl) {
+          web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
+              webStateImpl);
+        }
+        decisionHandler(WKPermissionDecisionPrompt);
+      }];
+      return;
+    }
+  }
+
   web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
       self.webStateImpl);
   decisionHandler(WKPermissionDecisionPrompt);
