@@ -1065,10 +1065,9 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
                        SignInDlg_PrepopulateAccount) {
   const char kUserName[] = "Test User";
   const char kLogin[] = "test_user@test.com";
-  base::DictionaryValue account_info;
-  account_info.SetStringKey(enterprise_connectors::kBoxNameFieldName,
-                            kUserName);
-  account_info.SetStringKey(enterprise_connectors::kBoxLoginFieldName, kLogin);
+  base::Value::Dict account_info;
+  account_info.Set(enterprise_connectors::kBoxNameFieldName, kUserName);
+  account_info.Set(enterprise_connectors::kBoxLoginFieldName, kLogin);
   SetFileSystemAccountInfo(
       browser()->profile()->GetPrefs(),
       enterprise_connectors::kFileSystemServiceProviderPrefNameBox,
