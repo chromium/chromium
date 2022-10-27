@@ -120,7 +120,10 @@ GpuMojoMediaClient::GpuMojoMediaClient(
       gpu_task_runner_(std::move(gpu_task_runner)),
       media_gpu_channel_manager_(std::move(media_gpu_channel_manager)),
       android_overlay_factory_cb_(std::move(android_overlay_factory_cb)),
-      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {}
+      gpu_memory_buffer_factory_(gpu_memory_buffer_factory) {
+  base::UmaHistogramEnumeration("Media.GPU.VideoDecoderType",
+                                GetDecoderImplementationType());
+}
 
 GpuMojoMediaClient::~GpuMojoMediaClient() = default;
 

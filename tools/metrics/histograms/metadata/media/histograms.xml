@@ -3061,6 +3061,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.GPU.VideoDecoderType" enum="VideoDecoderType"
+    expires_after="2023-10-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records the VideoDecoderType used for GPU based video decoding. Recorded
+    once per GPU mojo media client creation (~once per GPU process).
+  </summary>
+</histogram>
+
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InitializeResult"
     enum="ArcVideoDecodeAcceleratorResult" expires_after="2021-02-18">
   <owner>andrescj@chromium.org</owner>
