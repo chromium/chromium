@@ -227,11 +227,12 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
     return ProcessExitResult(INVALID_OPTION);
   }
 
-  // Append logging-related arguments for debugging purposes, at least for
-  // now.
+  // Append logging-related arguments for debugging purposes.
   if (!args.append(
-          L" --enable-logging "
-          L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2")) {
+          base::SysUTF8ToWide(base::StrCat({" --", kEnableLoggingSwitch, " --",
+                                            kLoggingModuleSwitch, "=",
+                                            kLoggingModuleSwitchValue}))
+              .c_str())) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);
   }
 

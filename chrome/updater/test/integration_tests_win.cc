@@ -305,10 +305,12 @@ void CheckInstallation(UpdaterScope scope,
     ASSERT_EQ(task_info.exec_actions.size(), 1u);
     EXPECT_STREQ(
         task_info.exec_actions[0].arguments.c_str(),
-        base::StrCat(
-            {L"--wake ", scope == UpdaterScope::kSystem ? L"--system " : L"",
-             L"--enable-logging "
-             L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2"})
+        base::StrCat({L"--wake ",
+                      scope == UpdaterScope::kSystem ? L"--system " : L"",
+                      L"--enable-logging "
+                      L"--vmodule=*/components/winhttp/*=2,"
+                      L"*/components/update_client/*=2,"
+                      L"*/chrome/updater/*=2"})
             .c_str());
   }
 

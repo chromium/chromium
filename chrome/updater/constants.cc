@@ -46,10 +46,9 @@ const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
 const char kLoggingModuleSwitchValue[] =
 #if BUILDFLAG(IS_WIN)
-    "*/chrome/updater/*=2,*/components/winhttp/*=2";
-#else
-    "*/chrome/updater/*=2,*/components/update_client/*=2";
-#endif  // BUILDFLAG(IS_WIN)
+    "*/components/winhttp/*=2,"
+#endif
+    "*/components/update_client/*=2,*/chrome/updater/*=2";
 const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
