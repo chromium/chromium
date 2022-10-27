@@ -12,10 +12,10 @@
 
 namespace web_package {
 
-// This class represents the ID of a signed web bundle. There are currently two
+// This class represents the ID of a Signed Web Bundle. There are currently two
 // types of IDs: IDs used for development and testing, and IDs based on an
 // Ed25519 public key.
-// IDs are base32 encoded (without padding), and then transformed to lowercase.
+// IDs are base32-encoded (without padding), and then transformed to lowercase.
 //
 // New instances of this class can only be constructed via the static `Create`
 // function, which will validate the format of the given ID. This means that you
@@ -36,13 +36,13 @@ class SignedWebBundleId {
 
  public:
   enum class Type {
-    // This is intended for use during development, where a web bundle might not
+    // This is intended for use during development, where a Web Bundle might not
     // be signed with a real key and instead uses a fake development-only ID.
     kDevelopment,
     kEd25519PublicKey,
   };
 
-  // Attempts to parse a a signed web bundle ID, and returns an instance of
+  // Attempts to parse a a Signed Web Bundle ID, and returns an instance of
   // `SignedWebBundleId` if it works. If it doesn't, then the return value
   // contains an error message detailing the issue.
   static base::expected<SignedWebBundleId, std::string> Create(
@@ -63,10 +63,6 @@ class SignedWebBundleId {
   ~SignedWebBundleId();
 
   Type type() const { return type_; }
-
-  // Returns the Ed25519 public key corresponding to this ID. Will CHECK if
-  // type() != kEd25519PublicKey
-  Ed25519PublicKey GetEd25519PublicKey() const;
 
   const std::string& id() const { return encoded_id_; }
 

@@ -106,14 +106,6 @@ SignedWebBundleId::SignedWebBundleId(const SignedWebBundleId& other) = default;
 
 SignedWebBundleId::~SignedWebBundleId() = default;
 
-Ed25519PublicKey SignedWebBundleId::GetEd25519PublicKey() const {
-  CHECK_EQ(type(), Type::kEd25519PublicKey);
-
-  return Ed25519PublicKey::Create(
-      base::make_span(decoded_id_)
-          .first<kDecodedIdLength - kTypeSuffixLength>());
-}
-
 // static
 base::RepeatingCallback<void(void*, size_t)>
 SignedWebBundleId::GetDefaultRandomGenerator() {

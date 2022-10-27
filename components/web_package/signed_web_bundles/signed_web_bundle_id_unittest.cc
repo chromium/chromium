@@ -60,9 +60,6 @@ TEST_P(SignedWebBundleIdValidTest, ParseValidIDs) {
   const auto parsed_id = SignedWebBundleId::Create(raw_id_);
   EXPECT_TRUE(parsed_id.has_value());
   EXPECT_EQ(parsed_id->type(), type_);
-  if (type_ == SignedWebBundleId::Type::kEd25519PublicKey) {
-    EXPECT_EQ(parsed_id->GetEd25519PublicKey(), *public_key_);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -137,7 +134,6 @@ TEST(SignedWebBundleIdTest, CreateForEd25519PublicKey) {
 
   auto id = SignedWebBundleId::CreateForEd25519PublicKey(public_key);
   EXPECT_EQ(id.type(), SignedWebBundleId::Type::kEd25519PublicKey);
-  EXPECT_EQ(id.GetEd25519PublicKey(), public_key);
   EXPECT_EQ(id.id(), kEd25519SignedWebBundleId);
 }
 
