@@ -131,8 +131,10 @@
   E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
   /* New Tab Page colors. */ \
+  E_CPONLY(kColorNewTabPageActionButtonBackground) \
   E_CPONLY(kColorNewTabPageActionButtonBorder) \
   E_CPONLY(kColorNewTabPageActionButtonBorderHovered) \
+  E_CPONLY(kColorNewTabPageActionButtonForeground) \
   E_CPONLY(kColorNewTabPageActiveBackground) \
   E_CPONLY(kColorNewTabPageAttributionForeground) \
   E_CPONLY(kColorNewTabPageBackground) \
@@ -165,6 +167,7 @@
   E_CPONLY(kColorNewTabPageModuleControlBorder) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
+  E_CPONLY(kColorNewTabPageModuleItemBackground) \
   E_CPONLY(kColorNewTabPageModuleScrollButtonBackground) \
   E_CPONLY(kColorNewTabPageModuleScrollButtonBackgroundHovered) \
   E_CPONLY(kColorNewTabPageMostVisitedForeground) \

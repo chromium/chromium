@@ -6,6 +6,7 @@
   }
 
   #consentCardContainer {
+    background-color: var(--color-new-tab-page-module-item-background);
     border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     display: inline-flex;
@@ -46,6 +47,11 @@
     width: 24px;
   }
 
+  .action-button {
+    --text-color-action: var(--color-new-tab-page-action-button-foreground);
+    background-color: var(--color-new-tab-page-action-button-background);
+  }
+
   .content-container {
     color: var(--color-new-tab-page-primary-foreground);
     font-size: 13px;
@@ -80,6 +86,7 @@
   }
 
   #close {
+    --cr-icon-button-fill-color: var(--color-new-tab-page-secondary-foreground);
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 24px;
     margin: 4px 4px;

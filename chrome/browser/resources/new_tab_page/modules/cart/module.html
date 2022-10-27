@@ -57,6 +57,7 @@
 
   #consentCard,
   .cart-container {
+    background-color: var(--color-new-tab-page-module-item-background);
     border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     display: inline-flex;
@@ -156,6 +157,11 @@
 
   :host-context(.focus-outline-visible) .cart-item:focus {
     box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .action-button {
+    --text-color-action: var(--color-new-tab-page-action-button-foreground);
+    background-color: var(--color-new-tab-page-action-button-background);
   }
 
   .cart-title {
@@ -300,6 +306,10 @@
   .probe {
     display: inline-flex;
     width: 12px;
+  }
+
+  .icon-more-vert {
+    --cr-icon-button-fill-color: var(--color-new-tab-page-secondary-foreground);
   }
 </style>
 <div id="module">
