@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveAndLoadUserImage) {
 
 // Verifies that SaveUserDefaultImageIndex() correctly sets and persists the
 // chosen user image.
-IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
+IN_PROC_BROWSER_TEST_F(UserImageManagerTest, DISABLED_SaveUserDefaultImageIndex) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(test_account_id1_);
   ASSERT_TRUE(user);
@@ -714,7 +714,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, DISABLED_SetAndClear) {
 // Verifies that when the user chooses a user image and a different image is
 // then set through policy, the policy takes precedence, overriding the
 // previously chosen image.
-IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
+IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest,
+                       DISABLED_PolicyOverridesUser) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(enterprise_account_id_);
   ASSERT_TRUE(user);
