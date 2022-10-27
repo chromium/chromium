@@ -13,6 +13,7 @@ source_set("rlz") {
     "//components/omnibox/browser",
     "//components/rlz",
     "//components/search_engines",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/google",
     "//ios/chrome/browser/search_engines",
