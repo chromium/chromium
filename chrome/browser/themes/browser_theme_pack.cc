@@ -1253,7 +1253,7 @@ void BrowserThemePack::SetTintsFromJSON(
     if (!item.second.is_list())
       continue;
 
-    base::Value::ConstListView tint_list = item.second.GetListDeprecated();
+    const base::Value::List& tint_list = item.second.GetList();
     if (tint_list.size() != 3)
       continue;
 
@@ -1309,7 +1309,7 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value* colors_value,
   for (const auto iter : colors_value->DictItems()) {
     if (!iter.second.is_list())
       continue;
-    base::Value::ConstListView color_list = iter.second.GetListDeprecated();
+    const base::Value::List& color_list = iter.second.GetList();
     if (!(color_list.size() == 3 || color_list.size() == 4))
       continue;
 
