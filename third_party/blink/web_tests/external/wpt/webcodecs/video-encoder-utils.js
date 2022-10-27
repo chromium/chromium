@@ -67,9 +67,18 @@ function validateBlackDots(frame, count) {
     let x = i * step + dot_size / 2;
     let y = step * (x / width + 1) + dot_size / 2;
     x %= width;
-    let rgba = ctx.getImageData(x, y, 1, 1).data;
+
+    if (x)
+      x = x -1;
+    if (y)
+      y = y -1;
+
+    let rgba = ctx.getImageData(x, y, 2, 2).data;
     const tolerance = 40;
-    if (rgba[0] > tolerance || rgba[1] > tolerance || rgba[2] > tolerance) {
+    if ((rgba[0] > tolerance || rgba[1] > tolerance || rgba[2] > tolerance)
+      && (rgba[4] > tolerance || rgba[5] > tolerance || rgba[6] > tolerance)
+      && (rgba[8] > tolerance || rgba[9] > tolerance || rgba[10] > tolerance)
+      && (rgba[12] > tolerance || rgba[13] > tolerance || rgba[14] > tolerance)) {
       // The dot is too bright to be a black dot.
       return false;
     }
