@@ -294,10 +294,10 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                         titleID:IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE];
 }
 
-+ (UIKeyCommand*)cr_dismissModalDialogs {
++ (UIKeyCommand*)cr_close {
   return [self keyCommandWithInput:UIKeyInputEscape
                      modifierFlags:None
-                            action:@selector(keyCommand_dismissModalDialogs)];
+                            action:@selector(keyCommand_close)];
 }
 
 + (UIKeyCommand*)cr_showSettings {

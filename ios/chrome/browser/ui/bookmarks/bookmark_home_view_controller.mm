@@ -457,10 +457,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (NSArray*)keyCommands {
-  return @[ UIKeyCommand.cr_dismissModalDialogs ];
+  return @[ UIKeyCommand.cr_close ];
 }
 
-- (void)keyCommand_dismissModalDialogs {
+- (void)keyCommand_close {
   [self navigationBarCancel:nil];
 }
 

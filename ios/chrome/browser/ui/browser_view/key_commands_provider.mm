@@ -94,7 +94,7 @@
       UIKeyCommand.cr_showPreviousTab_2,
       UIKeyCommand.cr_showNextTab_3,
       UIKeyCommand.cr_showPreviousTab_3,
-      UIKeyCommand.cr_dismissModalDialogs,
+      UIKeyCommand.cr_close,
       UIKeyCommand.cr_goBack_2,
       UIKeyCommand.cr_goForward_2,
       UIKeyCommand.cr_showDownloadsFolder_2,
@@ -170,7 +170,7 @@
   }
 
   if (self.canDismissModals) {
-    [keyCommands addObject:UIKeyCommand.cr_dismissModalDialogs];
+    [keyCommands addObject:UIKeyCommand.cr_close];
   }
 
   // List the commands that don't appear in the HUD but are always present.
@@ -336,7 +336,7 @@
   [_dispatcher startVoiceSearch];
 }
 
-- (void)keyCommand_dismissModalDialogs {
+- (void)keyCommand_close {
   [_dispatcher dismissModalDialogs];
 }
 

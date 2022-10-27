@@ -695,10 +695,10 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 #pragma mark - UIResponder
 
 - (NSArray*)keyCommands {
-  return @[ UIKeyCommand.cr_dismissModalDialogs ];
+  return @[ UIKeyCommand.cr_close ];
 }
 
-- (void)keyCommand_dismissModalDialogs {
+- (void)keyCommand_close {
   [self dismissBookmarkEditView];
 }
 

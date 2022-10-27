@@ -88,8 +88,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_startVoiceSearch, @"⇧⌘.",
          @"keyCommand_startVoiceSearch",
          IDS_IOS_VOICE_SEARCH_KEYBOARD_DISCOVERY_TITLE);
-  Verify(UIKeyCommand.cr_dismissModalDialogs, @"⎋",
-         @"keyCommand_dismissModalDialogs");
+  Verify(UIKeyCommand.cr_close, @"⎋", @"keyCommand_close");
   Verify(UIKeyCommand.cr_showSettings, @"⌘,", @"keyCommand_showSettings");
   Verify(UIKeyCommand.cr_stop, @"⌘.", @"keyCommand_stop");
   Verify(UIKeyCommand.cr_showHelp, @"⌥⌘?", @"keyCommand_showHelp");

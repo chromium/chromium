@@ -29,7 +29,7 @@
 - (void)keyCommand_goForward;
 - (void)keyCommand_showHistory;
 - (void)keyCommand_startVoiceSearch;
-- (void)keyCommand_dismissModalDialogs;
+- (void)keyCommand_close;
 - (void)keyCommand_showSettings;
 - (void)keyCommand_stop;
 - (void)keyCommand_showHelp;
