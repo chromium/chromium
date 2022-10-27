@@ -336,7 +336,18 @@ TEST_F(AXNativeWidgetMacTest, HelpAttribute) {
   EXPECT_NSEQ(nil, A11yElementAtMidpoint().accessibilityHelp);
   label->SetTooltipText(base::SysNSStringToUTF16(kTestPlaceholderText));
   widget()->GetContentsView()->AddChildView(label);
-  EXPECT_NSEQ(kTestPlaceholderText, A11yElementAtMidpoint().accessibilityHelp);
+
+  // TODO(https://crbug.com/1375848): Write better test for AccessibilityHelp
+  // for after MacOS 11. The tooltip is exposed in accessibilityHelp only before
+  // MacOS 11. After, it is AXCustomContent. This is because the DescriptionFrom
+  // for the ToolTip string has been been set to kAriaDescription, and
+  // `aria-description` is exposed in AXCustomContent.
+  if (base::mac::IsAtLeastOS11()) {
+    EXPECT_NSEQ(nil, A11yElementAtMidpoint().accessibilityHelp);
+  } else {
+    EXPECT_NSEQ(kTestPlaceholderText,
+                A11yElementAtMidpoint().accessibilityHelp);
+  }
 }
 
 // Test view properties that should report the native NSWindow, and test

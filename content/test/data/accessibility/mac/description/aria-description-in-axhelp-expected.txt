@@ -1,0 +1,2 @@
+div.accessibilityAttributeValue(AXHelp)='Text-description'
+div_with_tooltip.accessibilityAttributeValue(AXHelp)='Description from describedby'

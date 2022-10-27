@@ -9,6 +9,7 @@
 #include "base/logging.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/mac/mac_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -912,7 +913,8 @@ bool IsAXSetter(SEL selector) {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
-    NSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
+    NSAccessibilityBlockQuoteLevelAttribute,
+    NSAccessibilityCustomContentAttribute, NSAccessibilityChildrenAttribute,
     NSAccessibilityDOMClassList, NSAccessibilityDOMIdentifierAttribute,
     NSAccessibilityDescriptionAttribute, NSAccessibilityElementBusyAttribute,
     NSAccessibilityParentAttribute, NSAccessibilityPositionAttribute,
@@ -1591,9 +1593,28 @@ bool IsAXSetter(SEL selector) {
   return @(_node->HasState(ax::mojom::State::kVisited));
 }
 
+- (NSString*)AXCustomContent {
+  if (![self instanceActive])
+    return nil;
+
+  ax::mojom::DescriptionFrom descFrom = static_cast<ax::mojom::DescriptionFrom>(
+      _node->GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom));
+  if (descFrom == ax::mojom::DescriptionFrom::kAriaDescription)
+    return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
+
+  return nil;
+}
+
 - (NSString*)AXHelp {
   if (![self instanceActive])
     return nil;
+
+  // AXCustomContent is only supported by VoiceOver after MacOS 11. If
+  // it is after MacOS 11, and we expose the description in AXCustomContent,
+  // do not expose that information here.
+  if (base::mac::IsAtLeastOS11() && [self AXCustomContent]) {
+    return nil;
+  }
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
 }
@@ -1899,6 +1920,10 @@ bool IsAXSetter(SEL selector) {
 
 - (NSRect)accessibilityFrame {
   return [self boundsInScreen];
+}
+
+- (NSString*)accessibilityHelp {
+  return [self AXHelp];
 }
 
 - (NSString*)accessibilityLabel {

@@ -48,6 +48,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityBlockQuoteLevelAttribute =
     @"AXBlockQuoteLevel";
 AX_EXPORT constexpr NSString* const NSAccessibilityChromeAXNodeIdAttribute =
     @"ChromeAXNodeId";
+AX_EXPORT constexpr NSString* const NSAccessibilityCustomContentAttribute =
+    @"AXCustomContent";
 AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
     @"AXDetailsElements";
 AX_EXPORT constexpr NSString* const NSAccessibilityDOMClassList =

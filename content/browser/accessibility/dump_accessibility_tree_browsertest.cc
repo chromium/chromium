@@ -28,10 +28,6 @@
 #include "content/shell/browser/shell.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 // TODO(aboxhall): Create expectations on Android for these
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE(x) DISABLED_##x
