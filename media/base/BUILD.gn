@@ -652,7 +652,7 @@ source_set("unit_tests") {
     "//ui/gfx",
   ]
 
-  if (is_apple) {
+  if (is_mac) {
     deps += [ "//media/base/mac:unit_tests" ]
   }
 
