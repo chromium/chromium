@@ -104,6 +104,10 @@ js_type_check("test_support_modules_type_check") {
 }
 
 js_library("api") {
+  deps = [
+    ":util",
+    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+  ]
 }
 
 js_library("app_util") {

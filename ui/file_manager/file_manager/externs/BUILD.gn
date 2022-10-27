@@ -46,7 +46,6 @@ js_library("command_handler_deps") {
     "//ui/file_manager/file_manager/foreground/js:naming_controller",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/file_manager/file_manager/foreground/js:spinner_controller",
-    "//ui/file_manager/file_manager/foreground/js:task_controller",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/file_manager/file_manager/foreground/js/ui:directory_tree",
     "//ui/file_manager/file_manager/foreground/js/ui:file_manager_ui",

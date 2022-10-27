@@ -19,6 +19,7 @@ interface FileManager {
 declare global {
   interface Window {
     fileManager: FileManager;
+    IN_TEST: boolean;
   }
 }
 

@@ -154,7 +154,6 @@ static_js_files = [
   "file_manager/foreground/js/selection_menu_controller.js",
   "file_manager/foreground/js/sort_menu_controller.js",
   "file_manager/foreground/js/spinner_controller.js",
-  "file_manager/foreground/js/task_controller.js",
   "file_manager/foreground/js/task_history.js",
   "file_manager/foreground/js/thumbnail_loader.js",
   "file_manager/foreground/js/toolbar_controller.js",
@@ -270,6 +269,9 @@ ts_files = [
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
   "file_manager/widgets/xf_nudge.ts",
   "file_manager/widgets/xf_select.ts",
+
+  # Foreground.
+  "file_manager/foreground/js/task_controller.ts",
 ]
 
 # HTML template files that are used to generate the ".html.ts"
@@ -302,6 +304,24 @@ ts_generated_templates = []
 foreach(_t, ts_templates) {
   ts_generated_templates += [ _t + ".ts" ]
 }
+
+# d.ts. files that are automatically generated from the JS file.
+generate_definitions_js_files = [
+  "file_manager/common/js/volume_manager_types.js",
+  "file_manager/externs/entry_location.js",
+  "file_manager/externs/files_app_entry_interfaces.js",
+  "file_manager/externs/volume_info.js",
+  "file_manager/externs/volume_info_list.js",
+  "file_manager/externs/volume_manager.js",
+]
+
+# d.ts. files that are manually created and checked-in in the repo.
+checked_in_dts_files = [
+  "file_manager/definitions/file_error.d.ts",
+  "file_manager/definitions/file_manager.d.ts",
+  "file_manager/foreground/js/ui/command.d.ts",
+  "file_manager/foreground/js/ui/multi_menu_button.d.ts",
+]
 
 generated_js_files = [
   # Common:

@@ -6,6 +6,8 @@
  * @fileoverview Helpers for APIs used within Files app.
  */
 
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+
 import {util} from './util.js';
 
 /**
@@ -247,13 +249,14 @@ export async function getEntry(directory, filename, isFile, options) {
  * Starts an IOTask of `type` and returns a taskId that can be used to cancel
  * or identify the ongoing IO operation.
  * @param {!chrome.fileManagerPrivate.IOTaskType} type
- * @param {!Array<!Entry>} entries
+ * @param {!Array<!Entry|!FilesAppEntry>} entries
  * @param {!chrome.fileManagerPrivate.IOTaskParams} params
  * @returns {!Promise<!number>}
  */
 export async function startIOTask(type, entries, params) {
   return promisify(
-      chrome.fileManagerPrivate.startIOTask, type, entries, params);
+      chrome.fileManagerPrivate.startIOTask, type,
+      entries.map(e => util.unwrapEntry(e)), params);
 }
 
 /**
@@ -265,4 +268,13 @@ export async function parseTrashInfoFiles(entries) {
   return promisify(
       chrome.fileManagerPrivate.parseTrashInfoFiles,
       entries.map(e => util.unwrapEntry(e)));
+}
+
+/**
+ * @param {!Entry} entry
+ * @return {!Promise<string|undefined>}
+ */
+export async function getMimeType(entry) {
+  return promisify(
+      chrome.fileManagerPrivate.getMimeType, util.unwrapEntry(entry));
 }

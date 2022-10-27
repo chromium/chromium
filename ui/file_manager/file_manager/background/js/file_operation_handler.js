@@ -101,6 +101,7 @@ export class FileOperationHandler {
           item.progressValue = item.progressMax;
           item.remainingTime = event.remainingSeconds;
           if (item.type === ProgressItemType.TRASH) {
+            /** @type {!Array<!Entry>} */
             const infoEntries =
                 event.outputs.filter(o => o.name.endsWith('.trashinfo'));
             item.setExtraButton(
@@ -157,6 +158,7 @@ export class FileOperationHandler {
     const message = (event.itemCount === 1) ?
         strf('UNDO_DELETE_ONE', event.sourceName) :
         strf('UNDO_DELETE_SOME', event.itemCount);
+    /** @type {!Array<!Entry>} */
     const infoEntries =
         event.outputs.filter(o => o.name.endsWith('.trashinfo'));
     this.toast.show(message, {

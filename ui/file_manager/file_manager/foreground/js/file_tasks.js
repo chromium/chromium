@@ -1121,7 +1121,7 @@ export class FileTasks {
   static createComboButtonItem_(task, opt_title, opt_bold, opt_isDefault) {
     return {
       type: FileTasks.TaskMenuButtonItemType.RunTask,
-      label: opt_title || task.label || task.title,
+      label: opt_title || task.title,
       iconUrl: task.iconUrl || '',
       iconType: task.iconType || '',
       task: task,

@@ -80,7 +80,6 @@ group("js_modules") {
     ":selection_menu_controller",
     ":sort_menu_controller",
     ":spinner_controller",
-    ":task_controller",
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
@@ -157,7 +156,6 @@ js_type_check("closure_compile_jsmodules") {
     ":selection_menu_controller",
     ":sort_menu_controller",
     ":spinner_controller",
-    ":task_controller",
     ":task_history",
     ":thumbnail_loader",
     ":toolbar_controller",
@@ -607,7 +605,6 @@ js_library("file_manager") {
     ":selection_menu_controller",
     ":sort_menu_controller",
     ":spinner_controller",
-    ":task_controller",
     ":toolbar_controller",
     "metadata:content_metadata_provider",
     "metadata:metadata_model",
@@ -990,7 +987,6 @@ js_library("main_window_component") {
     ":directory_model",
     ":file_selection",
     ":naming_controller",
-    ":task_controller",
     "ui:file_manager_ui",
     "ui:file_tap_handler",
     "ui:list_container",
@@ -1137,7 +1133,6 @@ js_library("quick_view_controller") {
     ":metadata_box_controller",
     ":quick_view_model",
     ":quick_view_uma",
-    ":task_controller",
     ":thumbnail_loader",
     "metadata:metadata_item",
     "metadata:metadata_model",
@@ -1193,7 +1188,6 @@ js_library("scan_controller") {
 js_library("search_controller") {
   deps = [
     ":directory_model",
-    ":task_controller",
     "ui:file_manager_ui",
     "ui:search_box",
     "//ui/file_manager/file_manager/common/js:util",
@@ -1234,36 +1228,12 @@ js_unittest("spinner_controller_unittest") {
   ]
 }
 
-js_library("task_controller") {
-  deps = [
-    ":directory_model",
-    ":file_selection",
-    ":file_tasks",
-    ":file_transfer_controller",
-    ":metadata_update_controller",
-    ":task_history",
-    "metadata:metadata_model",
-    "ui:command",
-    "ui:file_manager_ui",
-    "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
 js_unittest("task_controller_unittest") {
   deps = [
     ":directory_model",
     ":fake_file_selection_handler",
     ":file_selection",
     ":metadata_update_controller",
-    ":task_controller",
     "metadata:mock_metadata",
     "ui:command",
     "ui:file_manager_ui",
