@@ -81,15 +81,7 @@
     margin: 24px 0 16px;
   }
 
-  h3 {
-    color: var(--cr-secondary-text-color);
-    font-size: var(--subtitle-font-size);
-    font-weight: 400;
-    line-height: 24px;
-    margin: 0 0 24px;
-  }
-
-  h6 {
+  h2 {
     font-size: var(--card-title-font-size);
     font-weight: 500;
     line-height: 22px;
@@ -157,6 +149,14 @@
     min-width: 133px;
   }
 
+  #subtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--subtitle-font-size);
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0 0 24px;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
     width: var(--scrollbar-width);
   }
@@ -218,12 +218,12 @@
       <div id="content-area">
         <img id="product-logo" src="product-logo.png">
         <h1>$i18n{pageTitle}</h1>
-        <h3>$i18n{pageSubtitle}</h3>
+        <p id="subtitle">$i18n{pageSubtitle}</p>
         <div id="benefit-cards-container">
           <template is="dom-repeat" items="[[benefitCards_]]">
             <div class="benefit-card">
               <iron-icon icon="[[item.iconName]]"></iron-icon>
-              <h6>[[item.title]]</h6>
+              <h2>[[item.title]]</h2>
               <p id="benefit-card-description">[[item.description]]</p>
             </div>
           </template>
