@@ -31,7 +31,7 @@ class NetworkChangeManagerBridge;
 class QuickAnswersController;
 class StandaloneBrowserTestController;
 class TabletModePageBehavior;
-class UiThroughputRecorderLacros;
+class UiMetricRecorderLacros;
 class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
 
@@ -166,7 +166,7 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   std::unique_ptr<LacrosFileSystemProvider> file_system_provider_;
 
   // Records UI metrics such as dropped frame percentage.
-  std::unique_ptr<UiThroughputRecorderLacros> ui_throughput_recorder_;
+  std::unique_ptr<UiMetricRecorderLacros> ui_metric_recorder_;
 
   // Controls sync-related Crosapi clients.
   SyncCrosapiManagerLacros sync_crosapi_manager_;

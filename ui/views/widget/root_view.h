@@ -111,7 +111,10 @@ class VIEWS_EXPORT RootView : public View,
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   ui::EventTargeter* GetDefaultEventTargeter() override;
   void OnEventProcessingStarted(ui::Event* event) override;
-  void OnEventProcessingFinished(ui::Event* event) override;
+  void OnEventProcessingFinished(
+      ui::Event* event,
+      ui::EventTarget* target,
+      const ui::EventDispatchDetails& details) override;
 
   // View:
   const Widget* GetWidget() const override;

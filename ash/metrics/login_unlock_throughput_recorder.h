@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/metrics/ui_throughput_recorder.h"
+#include "ash/metrics/ui_metrics_recorder.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/containers/flat_set.h"
@@ -91,7 +91,7 @@ class ASH_EXPORT LoginUnlockThroughputRecorder
 
   void OnAllExpectedShelfIconsLoaded();
 
-  UiThroughputRecorder ui_recorder_;
+  UiMetricsRecorder ui_recorder_;
 
   // Set of window IDs ("restore_window_id") that could be restored but
   // for which windows have not been created yet.

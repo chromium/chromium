@@ -50,7 +50,9 @@ class EVENTS_EXPORT EventProcessor : public EventDispatcherDelegate,
   // dispatching of |event| will be performed by this EventProcessor). Note
   // that the last target to which |event| was dispatched may have been
   // destroyed.
-  virtual void OnEventProcessingFinished(Event* event);
+  virtual void OnEventProcessingFinished(Event* event,
+                                         EventTarget* target,
+                                         const EventDispatchDetails& details);
 
  private:
   base::WeakPtrFactory<EventProcessor> weak_ptr_factory_{this};

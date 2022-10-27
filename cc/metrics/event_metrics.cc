@@ -280,7 +280,12 @@ EventMetrics::~EventMetrics() {
 }
 
 const char* EventMetrics::GetTypeName() const {
-  return kInterestingEvents[static_cast<int>(type_)].name;
+  return GetTypeName(type_);
+}
+
+// static
+const char* EventMetrics::GetTypeName(EventMetrics::EventType type) {
+  return kInterestingEvents[static_cast<int>(type)].name;
 }
 
 void EventMetrics::SetHighLatencyStage(const std::string& stage) {

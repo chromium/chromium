@@ -48,7 +48,10 @@ class MenuHostRootView : public internal::RootView {
 
  private:
   // ui::EventProcessor:
-  void OnEventProcessingFinished(ui::Event* event) override;
+  void OnEventProcessingFinished(
+      ui::Event* event,
+      ui::EventTarget* target,
+      const ui::EventDispatchDetails& details) override;
 
   // Returns the MenuController for this MenuHostRootView.
   MenuController* GetMenuController();

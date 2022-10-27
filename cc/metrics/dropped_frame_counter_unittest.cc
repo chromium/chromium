@@ -35,11 +35,12 @@ class TestCustomMetricsRecorder : public CustomMetricRecorder {
   ~TestCustomMetricsRecorder() override = default;
 
   // CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecoundWindow(
-      double percentage) override {
+  void ReportPercentDroppedFramesInOneSecondWindow(double percentage) override {
     ++percent_dropped_frames_count_;
     last_percent_dropped_frames_ = percentage;
   }
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 
   int percent_dropped_frames_count() const {
     return percent_dropped_frames_count_;

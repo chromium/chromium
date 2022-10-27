@@ -29,8 +29,8 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
 
   EventDispatchDetails details;
   OnEventProcessingStarted(event_to_dispatch);
+  EventTarget* target = nullptr;
   if (!event_to_dispatch->handled()) {
-    EventTarget* target = nullptr;
     EventTarget* root = GetRootForEvent(event_to_dispatch);
     DCHECK(root);
     EventTargeter* targeter = root->GetEventTargeter();
@@ -77,14 +77,16 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
       target = targeter->FindNextBestTarget(target, event_to_dispatch);
     }
   }
-  OnEventProcessingFinished(event);
+  OnEventProcessingFinished(event, target, details);
   return details;
 }
 
 void EventProcessor::OnEventProcessingStarted(Event* event) {
 }
 
-void EventProcessor::OnEventProcessingFinished(Event* event) {
-}
+void EventProcessor::OnEventProcessingFinished(
+    Event* event,
+    EventTarget* target,
+    const EventDispatchDetails& details) {}
 
 }  // namespace ui

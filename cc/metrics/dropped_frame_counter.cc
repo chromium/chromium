@@ -402,7 +402,7 @@ void DroppedFrameCounter::ReportFramesForUI() {
   if (!recorder)
     return;
 
-  recorder->ReportPercentDroppedFramesInOneSecoundWindow(
+  recorder->ReportPercentDroppedFramesInOneSecondWindow(
       sliding_window_current_percent_dropped_);
 }
 

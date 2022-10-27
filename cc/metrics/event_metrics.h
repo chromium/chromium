@@ -107,6 +107,7 @@ class CC_EXPORT EventMetrics {
 
   // Returns a string representing event type.
   const char* GetTypeName() const;
+  static const char* GetTypeName(EventType type);
 
   void SetHighLatencyStage(const std::string& stage);
   const std::vector<std::string>& GetHighLatencyStages() const {

@@ -363,7 +363,10 @@ void RootView::OnEventProcessingStarted(ui::Event* event) {
   gesture_handler_set_before_processing_ = !!gesture_handler_;
 }
 
-void RootView::OnEventProcessingFinished(ui::Event* event) {
+void RootView::OnEventProcessingFinished(
+    ui::Event* event,
+    ui::EventTarget* target,
+    const ui::EventDispatchDetails& details) {
   VLOG(5) << "RootView::OnEventProcessingFinished(" << event->ToString() << ")";
   // If |event| was not handled and |gesture_handler_| was not set by the
   // dispatch of a previous gesture event, then no default gesture handler

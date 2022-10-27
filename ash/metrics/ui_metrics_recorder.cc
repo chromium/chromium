@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/metrics/ui_throughput_recorder.h"
+#include "ash/metrics/ui_metrics_recorder.h"
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 
 namespace ash {
 
-UiThroughputRecorder::UiThroughputRecorder() = default;
-UiThroughputRecorder::~UiThroughputRecorder() = default;
+UiMetricsRecorder::UiMetricsRecorder() = default;
+UiMetricsRecorder::~UiMetricsRecorder() = default;
 
-void UiThroughputRecorder::OnUserLoggedIn() {
+void UiMetricsRecorder::OnUserLoggedIn() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // OnUserLoggedIn could be called multiple times from any states.
@@ -31,7 +32,7 @@ void UiThroughputRecorder::OnUserLoggedIn() {
   }
 }
 
-void UiThroughputRecorder::OnPostLoginAnimationFinish() {
+void UiMetricsRecorder::OnPostLoginAnimationFinish() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This happens when adding a user to the existing session. Ignore it to
@@ -44,7 +45,7 @@ void UiThroughputRecorder::OnPostLoginAnimationFinish() {
   state_ = State::kInSession;
 }
 
-void UiThroughputRecorder::ReportPercentDroppedFramesInOneSecoundWindow(
+void UiMetricsRecorder::ReportPercentDroppedFramesInOneSecondWindow(
     double percentage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -104,4 +105,14 @@ void UiThroughputRecorder::ReportPercentDroppedFramesInOneSecoundWindow(
   }
 }
 
+void UiMetricsRecorder::ReportEventLatency(
+    std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
+  for (auto& latency : latencies) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        base::StrCat({"Ash.EventLatency.",
+                      cc::EventMetrics::GetTypeName(latency.event_type),
+                      ".TotalLatency"}),
+        latency.total_latency, base::Milliseconds(1), base::Seconds(5), 100);
+  }
+}
 }  // namespace ash

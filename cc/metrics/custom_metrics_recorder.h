@@ -5,7 +5,10 @@
 #ifndef CC_METRICS_CUSTOM_METRICS_RECORDER_H_
 #define CC_METRICS_CUSTOM_METRICS_RECORDER_H_
 
+#include <vector>
+
 #include "cc/cc_export.h"
+#include "cc/metrics/event_latency_tracker.h"
 
 namespace cc {
 
@@ -15,7 +18,11 @@ class CC_EXPORT CustomMetricRecorder {
   static CustomMetricRecorder* Get();
 
   // Invoked to report "PercentDroppedFrames_1sWindow".
-  virtual void ReportPercentDroppedFramesInOneSecoundWindow(double percent) = 0;
+  virtual void ReportPercentDroppedFramesInOneSecondWindow(double percent) = 0;
+
+  // Invoked to report event latencies.
+  virtual void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
 
  protected:
   CustomMetricRecorder();

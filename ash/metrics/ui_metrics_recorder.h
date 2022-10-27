@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_METRICS_UI_THROUGHPUT_RECORDER_H_
-#define ASH_METRICS_UI_THROUGHPUT_RECORDER_H_
+#ifndef ASH_METRICS_UI_METRICS_RECORDER_H_
+#define ASH_METRICS_UI_METRICS_RECORDER_H_
+
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "cc/metrics/event_latency_tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
-// Records throughput metrics for ash UI. Note this class is not thread-safe.
-class ASH_EXPORT UiThroughputRecorder : public cc::CustomMetricRecorder {
+// Records metrics for ash UI. Note this class is not thread-safe.
+class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
  public:
-  UiThroughputRecorder();
-  ~UiThroughputRecorder() override;
+  UiMetricsRecorder();
+  ~UiMetricsRecorder() override;
 
   // Invoked on a user login. This is expected to be called after cryptohome
   // mount but before user profile loading.
@@ -27,7 +30,9 @@ class ASH_EXPORT UiThroughputRecorder : public cc::CustomMetricRecorder {
   void OnPostLoginAnimationFinish();
 
   // cc::CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecoundWindow(double percentage) override;
+  void ReportPercentDroppedFramesInOneSecondWindow(double percentage) override;
+  void ReportEventLatency(
+      std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
 
  private:
   // State to split "Ash.Smoothness.PercentDroppedFrames_1sWindow".
@@ -53,4 +58,4 @@ class ASH_EXPORT UiThroughputRecorder : public cc::CustomMetricRecorder {
 
 }  // namespace ash
 
-#endif  // ASH_METRICS_UI_THROUGHPUT_RECORDER_H_
+#endif  // ASH_METRICS_UI_METRICS_RECORDER_H_

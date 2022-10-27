@@ -2330,6 +2330,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.EventLatency.{EventType}.TotalLatency"
+    units="microseconds" expires_after="2023-10-06">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Tracks total latency of {EventType} for ash UI, from when the user input
+    causing the event is generated until the frame caused by the event is
+    submitted by the GPU service and presented successfully on the screen.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="EventType">
+    <variant name="FirstGestureScrollUpdate"/>
+    <variant name="GestureDoubleTap"/>
+    <variant name="GestureLongPress"/>
+    <variant name="GestureLongTap"/>
+    <variant name="GesturePinchBegin"/>
+    <variant name="GesturePinchEnd"/>
+    <variant name="GesturePinchUpdate"/>
+    <variant name="GestureScrollBegin"/>
+    <variant name="GestureScrollEnd"/>
+    <variant name="GestureScrollUpdate"/>
+    <variant name="GestureShowPress"/>
+    <variant name="GestureTap"/>
+    <variant name="GestureTapCancel"/>
+    <variant name="GestureTapDown"/>
+    <variant name="GestureTapUnconfirmed"/>
+    <variant name="GestureTwoFingerTap"/>
+    <variant name="InertialGestureScrollUpdate"/>
+    <variant name="KeyPressed"/>
+    <variant name="KeyReleased"/>
+    <variant name="MouseDragged"/>
+    <variant name="MousePressed"/>
+    <variant name="MouseReleased"/>
+    <variant name="MouseWheel"/>
+    <variant name="TouchMoved"/>
+    <variant name="TouchPressed"/>
+    <variant name="TouchReleased"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Glanceables.SignoutScreenshotDuration" units="ms"
     expires_after="2023-03-01">
   <owner>jamescook@chromium.org</owner>

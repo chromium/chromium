@@ -55,7 +55,10 @@ void TestEventProcessor::OnEventProcessingStarted(Event* event) {
     event->SetHandled();
 }
 
-void TestEventProcessor::OnEventProcessingFinished(Event* event) {
+void TestEventProcessor::OnEventProcessingFinished(
+    Event* event,
+    EventTarget* target,
+    const EventDispatchDetails& details) {
   num_times_processing_finished_++;
 }
 

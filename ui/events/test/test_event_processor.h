@@ -43,7 +43,9 @@ class TestEventProcessor : public EventProcessor {
   EventTargeter* GetDefaultEventTargeter() override;
   EventDispatchDetails OnEventFromSource(Event* event) override;
   void OnEventProcessingStarted(Event* event) override;
-  void OnEventProcessingFinished(Event* event) override;
+  void OnEventProcessingFinished(Event* event,
+                                 EventTarget* target,
+                                 const EventDispatchDetails& details) override;
 
  private:
   std::unique_ptr<EventTarget> root_;

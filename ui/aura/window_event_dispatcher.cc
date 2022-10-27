@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "cc/metrics/custom_metrics_recorder.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -496,7 +497,7 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
     return;
   }
 
-  if (host_->compositor()) {
+  if (host_->compositor() && cc::CustomMetricRecorder::Get()) {
     event_metrics_monitors_.push_back(
         CreateScropedMetricsMonitorForEvent(*event));
   }
@@ -510,18 +511,38 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
   observer_notifiers_.push(std::make_unique<ObserverNotifier>(this, *event));
 }
 
-void WindowEventDispatcher::OnEventProcessingFinished(ui::Event* event) {
+void WindowEventDispatcher::OnEventProcessingFinished(
+    ui::Event* event,
+    ui::EventTarget* target,
+    const ui::EventDispatchDetails& details) {
   if (in_shutdown_)
     return;
 
   observer_notifiers_.pop();
-  if (host_->compositor()) {
+  if (host_->compositor() && cc::CustomMetricRecorder::Get()) {
     std::unique_ptr<cc::EventsMetricsManager::ScopedMonitor> monitor =
         std::move(event_metrics_monitors_.back());
     event_metrics_monitors_.pop_back();
-    if (event->handled())
+    if (event->handled() && ShouldReportEventLatency(target, details))
       monitor->SetSaveMetrics();
   }
+}
+
+bool WindowEventDispatcher::ShouldReportEventLatency(
+    ui::EventTarget* target,
+    const ui::EventDispatchDetails& details) {
+  // If a target getting destroyed, we expect ui::Compositor has a frame to
+  // reflect it.
+  if (details.target_destroyed)
+    return true;
+  const aura::Window* target_window = static_cast<aura::Window*>(target);
+  if (!target_window) {
+    return false;
+  }
+  const std::string& name = target_window->GetName();
+  // We shouldn't report the latency in ui::Compositor for exo windows and aura
+  // windows backing web contents.
+  return name != "RenderWidgetHostViewAura" && !base::StartsWith(name, "Exo");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
