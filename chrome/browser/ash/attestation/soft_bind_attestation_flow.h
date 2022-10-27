@@ -55,6 +55,11 @@ class SoftBindAttestationFlow {
             AccountId account_id,
             const std::string& user_key);
     ~Session();
+    Session(const Session&) = delete;
+    Session(Session&&) = delete;
+    Session& operator=(const Session&) = delete;
+    Session& operator=(Session&&) = delete;
+
     bool IsTimerRunning() const;
     void StopTimer();
     // Returns false if the maximum number of certificate fetch retries (timer
