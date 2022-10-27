@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "components/cast_receiver/browser/public/runtime_application_state.h"
 #include "components/cast_receiver/common/public/status.h"
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "third_party/cast_core/public/src/proto/common/application_state.pb.h"
@@ -25,7 +26,7 @@ class MessagePortService;
 // lifecycle is very simple: Load() -> Launch() -> Destruction.  Implementations
 // of this interface will additionally communicate over various gRPC interfaces.
 // For example, Launch needs to respond with SetApplicationStatus.
-class RuntimeApplication {
+class RuntimeApplication : public cast_receiver::RuntimeApplicationState {
  public:
   using StatusCallback = base::OnceCallback<void(cast_receiver::Status)>;
 
@@ -62,14 +63,9 @@ class RuntimeApplication {
   };
 
   RuntimeApplication() = default;
-  virtual ~RuntimeApplication() = 0;
+  ~RuntimeApplication() override = 0;
 
   virtual void SetDelegate(Delegate& delegate) = 0;
-
-  // NOTE: These fields are the empty string until after Load() is called.
-  virtual const std::string& GetDisplayName() const = 0;
-  virtual const std::string& GetAppId() const = 0;
-  virtual const std::string& GetCastSessionId() const = 0;
 
   // Called before Launch() to perform any pre-launch loading that is
   // necessary. The |callback| will be called indicating if the operation
@@ -80,9 +76,6 @@ class RuntimeApplication {
   // Called to launch the application. The |callback| will be called indicating
   // if the operation succeeded or not.
   virtual void Launch(StatusCallback callback) = 0;
-
-  // Returns whether this instance is associated with cast streaming.
-  virtual bool IsStreamingApplication() const = 0;
 
   // Sets URL rewrite rules.
   virtual void SetUrlRewriteRules(
@@ -97,14 +90,9 @@ class RuntimeApplication {
   // Sets touch input.
   virtual void SetTouchInput(cast::common::TouchInput::Type touch_input) = 0;
 
-  // Checks if application is running.
-  virtual bool IsApplicationRunning() const = 0;
-
   // Notifies a message port message needs to be handled.
   virtual bool OnMessagePortMessage(cast::web::Message message) = 0;
 };
-
-std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app);
 
 }  // namespace chromecast
 

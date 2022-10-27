@@ -16,6 +16,7 @@
 #include "chromecast/cast_core/runtime/browser/runtime_service_impl.h"
 #include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast_receiver/browser/public/application_client.h"
+#include "components/cast_receiver/browser/public/runtime_application_state.h"
 #include "content/public/common/content_switches.h"
 #include "media/base/cdm_factory.h"
 
@@ -119,10 +120,11 @@ bool CastRuntimeContentBrowserClient::ApplicationClientObservers::
 }
 
 void CastRuntimeContentBrowserClient::ApplicationClientObservers::
-    OnForegroundApplicationChanged(RuntimeApplication* app) {
+    OnForegroundApplicationChanged(
+        cast_receiver::RuntimeApplicationState* app_state) {
   bool enabled = true;
   // Buffering must be disabled for streaming applications.
-  if (app && app->IsStreamingApplication()) {
+  if (app_state && app_state->IsStreamingApplication()) {
     enabled = false;
   }
 

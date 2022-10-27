@@ -101,24 +101,10 @@ cast_source_set("core_service_bindings") {
   }
 }
 
-cast_source_set("runtime_application") {
+cast_source_set("streaming_receiver_session_client") {
   sources = [
     "runtime_application.cc",
     "runtime_application.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/cast_receiver/common",
-    "//components/url_rewrite/common",
-    "//third_party/cast_core/public/src/proto/common:application_state_proto",
-    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
-    "//url",
-  ]
-}
-
-cast_source_set("streaming_receiver_session_client") {
-  sources = [
     "streaming_controller.h",
     "streaming_controller_base.cc",
     "streaming_controller_base.h",
@@ -145,11 +131,16 @@ cast_source_set("streaming_receiver_session_client") {
     "//base",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast/message_port:message_port_core",
+    "//components/cast_receiver/browser",
+    "//components/cast_receiver/common",
     "//components/cast_streaming/public",
     "//components/cast_streaming/public/mojom",
+    "//components/url_rewrite/common",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
+    "//third_party/cast_core/public/src/proto/common:application_state_proto",
+    "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//third_party/openscreen/src/cast/streaming:receiver",
   ]
 
@@ -178,7 +169,6 @@ cast_source_set("runtime_application_dispatcher") {
   ]
 
   public_deps = [
-    ":runtime_application",
     ":streaming_receiver_session_client",
     "//base",
     "//chromecast/browser",
@@ -204,6 +194,7 @@ cast_source_set("runtime_application_dispatcher") {
     "//third_party/cast_core/public/src/proto/common:application_state_proto",
     "//third_party/cast_core/public/src/proto/web:message_channel_proto",
     "//third_party/openscreen/src/cast/common:public",
+    "//url",
   ]
 }
 
@@ -218,7 +209,6 @@ cast_source_set("runtime_service_impl") {
   public_deps = [
     ":grpc_webui",
     ":metrics_recorder",
-    ":runtime_application",
     ":runtime_application_dispatcher",
     "//base",
     "//chromecast/browser",

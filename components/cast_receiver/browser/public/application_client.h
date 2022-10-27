@@ -10,10 +10,6 @@
 #include "components/cast_receiver/browser/public/application_state_observer.h"
 #include "components/cast_receiver/browser/public/streaming_resolution_observer.h"
 
-namespace chromecast {
-class RuntimeApplication;
-}  // namespace chromecast
-
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -27,6 +23,8 @@ class NetworkContext;
 }  // namespace network::mojom
 
 namespace cast_receiver {
+
+class RuntimeApplicationState;
 
 // This class is responsible for providing all factory methods required for
 // creating the classes responsible for management and control of cast
@@ -70,8 +68,7 @@ class ApplicationClient : public StreamingResolutionObserver,
       const media::VideoTransformation& transformation) final;
 
   // ApplicationStateObserver implementation:
-  void OnForegroundApplicationChanged(
-      chromecast::RuntimeApplication* app) final;
+  void OnForegroundApplicationChanged(RuntimeApplicationState* app_state) final;
 
  private:
   base::ObserverList<StreamingResolutionObserver>

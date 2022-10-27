@@ -52,7 +52,7 @@ void ApplicationClient::OnStreamingResolutionChanged(
 }
 
 void ApplicationClient::OnForegroundApplicationChanged(
-    chromecast::RuntimeApplication* app) {
+    RuntimeApplicationState* app) {
   NotifyObservers(application_state_observer_list_,
                   &ApplicationStateObserver::OnForegroundApplicationChanged,
                   app);

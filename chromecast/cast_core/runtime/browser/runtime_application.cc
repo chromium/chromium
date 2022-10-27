@@ -10,9 +10,4 @@ RuntimeApplication::Delegate::~Delegate() = default;
 
 RuntimeApplication::~RuntimeApplication() = default;
 
-std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app) {
-  return os << "app_id=" << app.GetAppId() << " (" << app.GetDisplayName()
-            << "), session_id=" << app.GetCastSessionId();
-}
-
 }  // namespace chromecast

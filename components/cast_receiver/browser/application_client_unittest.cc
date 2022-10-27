@@ -24,8 +24,7 @@ class MockApplicationStateObserver : public ApplicationStateObserver {
  public:
   ~MockApplicationStateObserver() override = default;
 
-  MOCK_METHOD1(OnForegroundApplicationChanged,
-               void(chromecast::RuntimeApplication*));
+  MOCK_METHOD1(OnForegroundApplicationChanged, void(RuntimeApplicationState*));
 };
 
 class ApplicationClientForTesting : public ApplicationClient {

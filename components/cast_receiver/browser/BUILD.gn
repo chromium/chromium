@@ -9,9 +9,13 @@ source_set("browser") {
   public = [
     "public/application_client.h",
     "public/application_state_observer.h",
+    "public/runtime_application_state.h",
     "public/streaming_resolution_observer.h",
   ]
-  sources = [ "application_client.cc" ]
+  sources = [
+    "application_client.cc",
+    "runtime_application_state.cc",
+  ]
   friend = [ ":unit_tests" ]
 }
 
