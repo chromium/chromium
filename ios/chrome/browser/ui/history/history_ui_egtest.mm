@@ -229,12 +229,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that searching history displays only entries matching the search term.
 - (void)testSearchHistory {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works on iOS 11.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   [self loadTestURLs];
   [self openHistoryPanel];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]

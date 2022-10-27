@@ -366,12 +366,6 @@ void TapSuppressDialogsButton() {
 // Tests that a prompt dialog is shown, and that the completion block is called
 // with the correct value when the OK buton is tapped.
 - (void)testShowJavaScriptPromptOK {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   // Load the prompt test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kPromptURLPath);
   [ChromeEarlGrey loadURL:kURL];
@@ -396,12 +390,6 @@ void TapSuppressDialogsButton() {
 // Tests that a prompt dialog is shown, and that the completion block is called
 // with the correct value when the Cancel buton is tapped.
 - (void)testShowJavaScriptPromptCancelled {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   // Load the prompt test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kPromptURLPath);
   [ChromeEarlGrey loadURL:kURL];

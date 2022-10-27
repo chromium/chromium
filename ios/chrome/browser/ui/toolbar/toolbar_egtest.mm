@@ -166,8 +166,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 // Tests whether input mode in an omnibox can be canceled via tapping the typing
 // shield and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
-// TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-// works on iOS 11.
+// TODO(crbug.com/1378626): Test is flaky.
 - (void)DISABLED_testToolbarOmniboxTypingShield {
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {
@@ -296,12 +295,6 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 
 // Verifies that the clear text button clears any text in the omnibox.
 - (void)testOmniboxClearTextButton {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   const GURL URL = self.testServer->GetURL("/echo");
 
   [ChromeEarlGrey loadURL:URL];

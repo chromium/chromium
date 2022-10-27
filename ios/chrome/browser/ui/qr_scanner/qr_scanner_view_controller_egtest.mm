@@ -851,12 +851,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   DISABLED_testReceivingQRScannerURLResultAndEditingTheURL
 #endif
 - (void)MAYBE_testReceivingQRScannerURLResultAndEditingTheURL {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   [self doTestReceivingResult:_testURL.GetContent()
                      response:kTestURLEditedResponse
                          edit:@"\bedited/"];
