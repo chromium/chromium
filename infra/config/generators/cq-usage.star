@@ -19,15 +19,18 @@ def _remove_none(l):
 def _trim_builder(builder, include_path_based):
     if builder.includable_only or builder.experiment_percentage:
         return None
-    if not include_path_based and builder.location_regexp and list(builder.location_regexp) != [".*"]:
+
+    # The majority of CQ builders will exclude something because we don't
+    # trigger most builders on changes to non-code directories (e.g. docs), so
+    # only consider them path-based if they have an include filter
+    if not include_path_based and any([not f.exclude for f in builder.location_filters]):
         return None
     trimmed = cq_pb.Verifiers.Tryjob.Builder(
         name = builder.name,
         disable_reuse = builder.disable_reuse,
     )
     if include_path_based:
-        trimmed.location_regexp = builder.location_regexp
-        trimmed.location_regexp_exclude = builder.location_regexp_exclude
+        trimmed.location_filters = builder.location_filters
     return trimmed
 
 def _trim_tryjob(tryjob, include_path_based):

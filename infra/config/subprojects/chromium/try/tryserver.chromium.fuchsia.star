@@ -34,8 +34,8 @@ try_.builder(
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
+        location_filters = [
+            "chromecast/.+",
         ],
     ),
     mirrors = [
@@ -66,10 +66,10 @@ try_.builder(
 try_.builder(
     name = "fuchsia-compile-x64-dbg",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/base/fuchsia/.+",
-            ".+/[+]/fuchsia/.+",
-            ".+/[+]/media/fuchsia/.+",
+        location_filters = [
+            "base/fuchsia/.+",
+            "fuchsia/.+",
+            "media/fuchsia/.+",
         ],
     ),
     mirrors = [

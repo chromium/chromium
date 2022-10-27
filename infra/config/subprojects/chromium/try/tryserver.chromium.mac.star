@@ -358,13 +358,11 @@ ios_builder(
     check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/components/cronet/.+",
-            ".+/[+]/components/grpc_support/.+",
-            ".+/[+]/ios/.+",
-        ],
-        location_regexp_exclude = [
-            ".+/[+]/components/cronet/android/.+",
+        location_filters = [
+            "components/cronet/.+",
+            "components/grpc_support/.+",
+            "ios/.+",
+            cq.location_filter(path_regexp = "components/cronet/android/.+", exclude = True),
         ],
     ),
 )
@@ -381,8 +379,8 @@ ios_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/ios/.+",
+        location_filters = [
+            "ios/.+",
         ],
     ),
 )
@@ -402,8 +400,8 @@ ios_builder(
         "ci/ios-simulator-noncq",
     ],
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/third_party/crashpad/crashpad/.+",
+        location_filters = [
+            "third_party/crashpad/crashpad/.+",
         ],
     ),
 )
@@ -457,29 +455,29 @@ try_.gpu.optional_tests_builder(
     main_list_view = "try",
     ssd = None,
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/browser/vr/.+",
-            ".+/[+]/content/browser/xr/.+",
-            ".+/[+]/content/test/gpu/.+",
-            ".+/[+]/gpu/.+",
-            ".+/[+]/media/audio/.+",
-            ".+/[+]/media/base/.+",
-            ".+/[+]/media/capture/.+",
-            ".+/[+]/media/filters/.+",
-            ".+/[+]/media/gpu/.+",
-            ".+/[+]/media/mojo/.+",
-            ".+/[+]/media/renderers/.+",
-            ".+/[+]/media/video/.+",
-            ".+/[+]/services/shape_detection/.+",
-            ".+/[+]/testing/buildbot/tryserver.chromium.mac.json",
-            ".+/[+]/testing/trigger_scripts/.+",
-            ".+/[+]/third_party/blink/renderer/modules/mediastream/.+",
-            ".+/[+]/third_party/blink/renderer/modules/webcodecs/.+",
-            ".+/[+]/third_party/blink/renderer/modules/webgl/.+",
-            ".+/[+]/third_party/blink/renderer/platform/graphics/gpu/.+",
-            ".+/[+]/tools/clang/scripts/update.py",
-            ".+/[+]/tools/mb/mb_config_expectations/tryserver.chromium.mac.json",
-            ".+/[+]/ui/gl/.+",
+        location_filters = [
+            "chrome/browser/vr/.+",
+            "content/browser/xr/.+",
+            "content/test/gpu/.+",
+            "gpu/.+",
+            "media/audio/.+",
+            "media/base/.+",
+            "media/capture/.+",
+            "media/filters/.+",
+            "media/gpu/.+",
+            "media/mojo/.+",
+            "media/renderers/.+",
+            "media/video/.+",
+            "services/shape_detection/.+",
+            "testing/buildbot/tryserver.chromium.mac.json",
+            "testing/trigger_scripts/.+",
+            "third_party/blink/renderer/modules/mediastream/.+",
+            "third_party/blink/renderer/modules/webcodecs/.+",
+            "third_party/blink/renderer/modules/webgl/.+",
+            "third_party/blink/renderer/platform/graphics/gpu/.+",
+            "tools/clang/scripts/update.py",
+            "tools/mb/mb_config_expectations/tryserver.chromium.mac.json",
+            "ui/gl/.+",
         ],
     ),
 )

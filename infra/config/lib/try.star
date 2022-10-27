@@ -23,11 +23,11 @@ load("./builders.star", "builders", "os", "os_category")
 load("./orchestrator.star", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
-DEFAULT_EXCLUDE_REGEXPS = [
+DEFAULT_EXCLUDE_LOCATION_FILTERS = [
     # Contains documentation that doesn't affect the outputs
-    ".+/[+]/docs/.+",
+    cq.location_filter(path_regexp = "docs/.+", exclude = True),
     # Contains configuration files that aren't active until after committed
-    ".+/[+]/infra/config/.+",
+    cq.location_filter(path_regexp = "infra/config/.+", exclude = True),
 ]
 
 # Intended to be used for the `caches` builder arg when no source checkout is
@@ -65,8 +65,7 @@ def tryjob(
         *,
         disable_reuse = None,
         experiment_percentage = None,
-        location_regexp = None,
-        location_regexp_exclude = None,
+        location_filters = None,
         cancel_stale = None,
         add_default_excludes = True):
     """Specifies the details of a tryjob verifier.
@@ -74,22 +73,37 @@ def tryjob(
     See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.cq_tryjob_verifier
     for details on the most of the arguments.
 
-    Arguments:
-      add_default_excludes - A bool indicating whether to add exclude regexps
+    Args:
+      disable_reuse: See cq.tryjob_verifier.
+      experiment_percentage: See cq.tryjob_verifier.
+      location_filters: A list of cq.location_filter objects and/or strings.
+        This is the same as the location_filters value of cq.tryjob_verifier
+        except that strings can be provided, which will be converted to a
+        cq.location_filter with path_regexp set to the provided string.
+      cancel_stale: See cq.tryjob_verifier.
+      add_default_excludes: A bool indicating whether to add exclude filters
         for certain directories that would have no impact when building chromium
         with the patch applied (docs, config files that don't take effect until
-        landing, etc., see DEFAULT_EXCLUDE_REGEXPS).
+        landing, etc., see DEFAULT_EXCLUDE_LOCATION_FILTERS).
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
       enable the builder for CQ.
     """
+
+    def normalize_location_filter(f):
+        if type(f) == type(""):
+            return cq.location_filter(path_regexp = f)
+        return f
+
+    if location_filters:
+        location_filters = [normalize_location_filter(f) for f in location_filters]
+
     return struct(
         disable_reuse = disable_reuse,
         experiment_percentage = experiment_percentage,
         add_default_excludes = add_default_excludes,
-        location_regexp = location_regexp,
-        location_regexp_exclude = location_regexp_exclude,
+        location_filters = location_filters,
         cancel_stale = cancel_stale,
     )
 
@@ -222,17 +236,16 @@ def try_builder(
     builder = "{}/{}".format(bucket, name)
     cq_group = defaults.get_value("cq_group", cq_group)
     if tryjob != None:
-        location_regexp_exclude = tryjob.location_regexp_exclude
+        location_filters = tryjob.location_filters
         if tryjob.add_default_excludes:
-            location_regexp_exclude = DEFAULT_EXCLUDE_REGEXPS + (location_regexp_exclude or [])
+            location_filters = (location_filters or []) + DEFAULT_EXCLUDE_LOCATION_FILTERS
 
         luci.cq_tryjob_verifier(
             builder = builder,
             cq_group = cq_group,
             disable_reuse = tryjob.disable_reuse,
             experiment_percentage = tryjob.experiment_percentage,
-            location_regexp = tryjob.location_regexp,
-            location_regexp_exclude = location_regexp_exclude,
+            location_filters = location_filters,
             cancel_stale = tryjob.cancel_stale,
         )
     else:
