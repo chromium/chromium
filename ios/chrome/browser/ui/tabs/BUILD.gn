@@ -40,7 +40,6 @@ source_set("tabs") {
     "//base:i18n",
     "//components/favicon/ios",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/flags:system_flags",
@@ -86,7 +85,6 @@ source_set("coordinator") {
   ]
   deps = [
     ":tabs",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/bubble",

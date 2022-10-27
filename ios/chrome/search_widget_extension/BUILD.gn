@@ -82,7 +82,7 @@ source_set("search_widget") {
     "UIKit.framework",
   ]
 
-  assert_no_deps = [ "//ios/chrome/browser" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }

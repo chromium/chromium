@@ -113,7 +113,7 @@ source_set("browser_state_impl") {
     "//components/sync_preferences",
     "//components/user_prefs",
     "//google_apis",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/bookmarks",
@@ -143,11 +143,13 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/prefs",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/screen_time:buildflags",
@@ -192,7 +194,6 @@ source_set("browser_state_impl") {
     deps += [ "//ios/chrome/browser/credential_provider" ]
   }
   allow_circular_includes_from = [
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/prefs:browser_prefs",
@@ -253,7 +254,6 @@ source_set("test_support") {
     "//components/undo",
     "//components/user_prefs",
     "//components/webdata_services",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/policy:policy",
     "//ios/chrome/browser/prefs",

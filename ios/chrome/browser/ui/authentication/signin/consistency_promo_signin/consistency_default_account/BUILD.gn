@@ -19,7 +19,6 @@ source_set("consistency_default_account") {
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",

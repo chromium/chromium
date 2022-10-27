@@ -17,7 +17,6 @@ source_set("share_extension") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/reading_list/core",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/flags:system_flags",

@@ -26,7 +26,6 @@ source_set("favicon") {
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",
     "//components/resources",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/ui/util",

@@ -35,7 +35,10 @@ source_set("startup_basic") {
     deps += [ ":sandbox_dump" ]
   }
 
-  assert_no_deps = [ "//ios/chrome/browser" ]
+  assert_no_deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/web",
+  ]
 }
 
 buildflag_header("ios_enable_sandbox_dump_buildflags") {
@@ -76,7 +79,6 @@ source_set("startup") {
     "//base",
     "//components/search_engines:search_engines",
     "//ios/chrome/app",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/net:net",
@@ -103,7 +105,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",

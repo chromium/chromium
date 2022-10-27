@@ -15,7 +15,6 @@ source_set("unified_consent") {
   deps = [
     ":unified_consent_ui",
     "//base",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
@@ -42,7 +41,7 @@ source_set("unified_consent_ui") {
     "//base",
     "//components/google/core/common",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",

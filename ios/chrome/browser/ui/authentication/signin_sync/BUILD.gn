@@ -21,7 +21,6 @@ source_set("signin_sync") {
     "//components/unified_consent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",

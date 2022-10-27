@@ -32,7 +32,6 @@ source_set("passwords") {
     "//components/strings",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/autofill:autofill_shared",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",

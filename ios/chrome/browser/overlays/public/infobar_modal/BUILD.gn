@@ -34,7 +34,6 @@ source_set("infobar_modal") {
     "//base",
     "//components/autofill/core/browser",
     "//components/translate/core/browser",
-    "//ios/chrome/browser:browser",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",

@@ -59,7 +59,7 @@ source_set("popup_menu") {
     "//components/profile_metrics",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",

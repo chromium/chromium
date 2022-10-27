@@ -19,7 +19,7 @@ source_set("ntp_tiles") {
     "//components/image_fetcher/ios",
     "//components/keyed_service/core",
     "//components/ntp_tiles",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",

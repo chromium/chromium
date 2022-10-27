@@ -20,7 +20,6 @@ source_set("send_tab_to_self") {
     "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme:theme_grit",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",

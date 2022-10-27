@@ -42,7 +42,6 @@ source_set("public") {
     "upgrade_utils.h",
     "upgrade_utils.mm",
   ]
-  deps = [ "//ios/chrome/browser" ]
   frameworks = [ "UIKit.framework" ]
 }
 

@@ -62,7 +62,7 @@ source_set("incognito_reauth_scene_agent") {
     "//components/pref_registry",
     "//components/prefs",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/main:browser_interface_provider",

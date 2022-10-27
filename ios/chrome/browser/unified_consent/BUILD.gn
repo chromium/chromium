@@ -15,8 +15,9 @@ source_set("unified_consent") {
     "//components/sync",
     "//components/sync_preferences",
     "//components/unified_consent",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
   ]

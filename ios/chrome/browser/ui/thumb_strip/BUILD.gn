@@ -14,7 +14,6 @@ source_set("thumb_strip") {
   deps = [
     ":public",
     "//base",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/commands",

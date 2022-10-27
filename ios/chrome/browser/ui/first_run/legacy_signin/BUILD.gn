@@ -14,7 +14,6 @@ source_set("legacy_signin") {
     ":legacy_signin_ui",
     "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy",

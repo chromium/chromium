@@ -34,7 +34,7 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//components/prefs",
     "//components/variations",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
   ]
 }
 

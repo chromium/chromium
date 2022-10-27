@@ -22,7 +22,6 @@ source_set("cells") {
     "//components/bookmarks/browser:browser",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/bookmarks:constants",

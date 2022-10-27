@@ -74,7 +74,7 @@ source_set("signin") {
     "//components/signin/public/identity_manager/ios",
     "//components/sync",
     "//google_apis",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
@@ -82,6 +82,7 @@ source_set("signin") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/reading_list:reading_list_remover",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
@@ -121,7 +122,8 @@ source_set("signin_util") {
     "//base",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
   ]
@@ -149,7 +151,7 @@ source_set("signin_util_internal") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/paths",
   ]
 }
 
@@ -284,7 +286,7 @@ source_set("unit_tests") {
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//google_apis",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/content_settings",
@@ -292,6 +294,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",

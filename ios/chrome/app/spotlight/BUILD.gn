@@ -28,7 +28,6 @@ source_set("spotlight") {
     "//components/history/core/browser",
     "//ios/chrome/app",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/flags:system_flags",

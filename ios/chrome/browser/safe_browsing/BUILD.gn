@@ -57,7 +57,7 @@ source_set("safe_browsing") {
     "//components/strings",
     "//components/sync_user_events",
     "//components/variations/service",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/history",

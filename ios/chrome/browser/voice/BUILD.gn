@@ -68,7 +68,6 @@ source_set("tts") {
     "//base",
     "//components/google/core/common",
     "//components/prefs",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/web",
     "//ios/web/public/js_messaging:js_messaging",

@@ -21,7 +21,6 @@ source_set("utils") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/prefs",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/util",

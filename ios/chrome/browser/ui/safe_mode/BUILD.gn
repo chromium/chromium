@@ -16,7 +16,6 @@ source_set("safe_mode") {
     "//base",
     "//ios/chrome/app",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/safe_mode",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

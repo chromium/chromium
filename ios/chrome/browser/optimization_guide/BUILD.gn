@@ -112,7 +112,6 @@ source_set("eg_app_support+eg2") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/test/app:test_support",
   ]

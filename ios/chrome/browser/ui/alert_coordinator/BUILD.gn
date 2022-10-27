@@ -15,7 +15,6 @@ source_set("alert_coordinator") {
   deps = [
     "//base",
     "//components/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

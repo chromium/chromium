@@ -14,7 +14,6 @@ source_set("open_in") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/web/public",
@@ -32,7 +31,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/ui/open_in",
     "//ios/web/public/test/fakes",

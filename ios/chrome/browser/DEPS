@@ -183,17 +183,4 @@ specific_include_rules = {
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
   ],
-
-  # TODO(crbug.com/1294160): Remove these dependencies.
-  "^browser_about_rewriter.cc": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
-  "^ios_chrome_field_trials.mm": [
-    "+ios/chrome/browser/ui/first_run/fre_field_trial.h",
-    "+ios/chrome/browser/ui/first_run/trending_queries_field_trial.h",
-  ],
-  "^system_flags.mm": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
-
 }

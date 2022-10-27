@@ -15,7 +15,6 @@ source_set("invalidation") {
     "//components/keyed_service/ios",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/gcm",
     "//ios/chrome/browser/gcm/instance_id",

@@ -23,7 +23,6 @@ source_set("consistency_account_chooser") {
   ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/signin",

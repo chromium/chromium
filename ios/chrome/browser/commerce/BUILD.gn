@@ -17,7 +17,7 @@ source_set("commerce") {
     "//components/payments/core:core",
     "//components/prefs:prefs",
     "//components/unified_consent:unified_consent",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/prefs:pref_names",

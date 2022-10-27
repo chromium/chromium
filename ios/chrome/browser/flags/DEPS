@@ -3,5 +3,11 @@ specific_include_rules = {
   "^about_flags.mm": [
     "+ios/chrome/browser/ui",
   ],
+  "^ios_chrome_field_trials.mm": [
+    "+ios/chrome/browser/ui/first_run",
+  ],
+  "^system_flags.mm": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ]
 }
 

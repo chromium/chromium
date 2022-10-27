@@ -30,8 +30,8 @@ source_set("net") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/update_client",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/net",
     "//ios/web/common",
     "//net",
@@ -42,7 +42,6 @@ source_set("net") {
     ":crurl",
     ":net_types",
   ]
-  allow_circular_includes_from = [ "//ios/chrome/browser" ]
 }
 
 source_set("net_types") {

@@ -19,7 +19,7 @@ source_set("prefs") {
     "//components/proxy_config",
     "//components/search_engines",
     "//components/sync_preferences",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
   ]
 }
 
@@ -38,6 +38,7 @@ source_set("browser_prefs") {
     "browser_prefs.mm",
   ]
   deps = [
+    ":pref_names",
     "//components/autofill/core/browser",
     "//components/browsing_data/core",
     "//components/commerce/core:pref_names",
@@ -81,7 +82,6 @@ source_set("browser_prefs") {
     "//components/update_client",
     "//components/variations/service",
     "//components/web_resource",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/geolocation",

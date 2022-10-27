@@ -13,7 +13,7 @@ source_set("net_export") {
     "//components/net_log",
     "//components/resources",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/webui",

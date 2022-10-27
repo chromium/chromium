@@ -25,7 +25,6 @@ source_set("bookmarks") {
     "//components/prefs",
     "//components/sync_bookmarks",
     "//components/undo",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
@@ -55,7 +54,7 @@ source_set("bookmarks_utils") {
     "//base",
     "//components/bookmarks/browser",
     "//components/prefs",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/prefs:pref_names",
   ]
 }

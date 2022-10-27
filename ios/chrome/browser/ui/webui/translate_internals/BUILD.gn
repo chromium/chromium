@@ -15,7 +15,7 @@ source_set("translate_internals") {
     "//components/translate/core/common",
     "//components/translate/translate_internals",
     "//ios/chrome/app/resources:ios_resources",
-    "//ios/chrome/browser",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/translate",

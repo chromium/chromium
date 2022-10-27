@@ -82,7 +82,6 @@ source_set("history_ui") {
     "//components/url_formatter",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main:public",
