@@ -10,6 +10,7 @@
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
 
@@ -403,6 +404,60 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration& v4l2_lr,
       v4l2_lr.loop_restoration_size[0] >> v4l2_lr.lr_uv_shift;
 }
 
+// Section 5.9.24. Global motion params syntax
+struct v4l2_av1_global_motion FillGlobalMotionParams(
+    const std::array<libgav1::GlobalMotion, libgav1::kNumReferenceFrameTypes>&
+        gm_array) {
+  struct v4l2_av1_global_motion v4l2_gm = {};
+
+  // gm_array[0] (for kReferenceFrameIntra) is not used because global motion is
+  // not relevant for intra frames
+  for (size_t i = 1; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    auto gm = gm_array[i];
+    switch (gm.type) {
+      case libgav1::kGlobalMotionTransformationTypeIdentity:
+        v4l2_gm.type[i] = V4L2_AV1_WARP_MODEL_IDENTITY;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeTranslation:
+        v4l2_gm.type[i] = V4L2_AV1_WARP_MODEL_TRANSLATION;
+        v4l2_gm.flags[i] |= V4L2_AV1_GLOBAL_MOTION_FLAG_IS_TRANSLATION;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeRotZoom:
+        v4l2_gm.type[i] = V4L2_AV1_WARP_MODEL_ROTZOOM;
+        v4l2_gm.flags[i] |= V4L2_AV1_GLOBAL_MOTION_FLAG_IS_ROT_ZOOM;
+        break;
+      case libgav1::kGlobalMotionTransformationTypeAffine:
+        v4l2_gm.type[i] = V4L2_AV1_WARP_MODEL_AFFINE;
+        v4l2_gm.flags[i] |= V4L2_AV1_WARP_MODEL_AFFINE;
+        break;
+      default:
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << v4l2_gm.type[i];
+    }
+
+    if (gm.type != libgav1::kGlobalMotionTransformationTypeIdentity)
+      v4l2_gm.flags[i] |= V4L2_AV1_GLOBAL_MOTION_FLAG_IS_GLOBAL;
+
+    constexpr auto kNumGlobalMotionParams = std::size(decltype(gm.params){});
+
+    for (size_t j = 0; j < kNumGlobalMotionParams; ++j) {
+      // TODO(b/247611513): Remove separate handling when gm.params[j] < 0 if
+      // V4L2 AV1 uAPI decides to make an update to make this param consistent
+      // with definition in libgav1 parser
+      if (gm.params[j] < 0) {
+        v4l2_gm.params[i][j] =
+            base::checked_cast<uint32_t>(UINT32_MAX + gm.params[j] + 1);
+      } else
+        v4l2_gm.params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
+    }
+
+    if (!libgav1::SetupShear(&gm))
+      v4l2_gm.invalid |= V4L2_AV1_GLOBAL_MOTION_IS_INVALID(i);
+  }
+
+  return v4l2_gm;
+}
+
 // 5.9.2. Uncompressed header syntax
 struct v4l2_ctrl_av1_frame SetupFrameParams(
     const libgav1::ObuSequenceHeader& sequence_header,
@@ -433,6 +488,9 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
 
   struct v4l2_av1_tile_info v4l2_ti = {};
   FillTileInfo(v4l2_ti, frame_header.tile_info);
+
+  v4l2_frame_params.global_motion =
+      FillGlobalMotionParams(frame_header.global_motion);
 
   if (frame_header.show_frame)
     v4l2_frame_params.flags |= V4L2_AV1_FRAME_FLAG_SHOW_FRAME;
