@@ -1350,7 +1350,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 });
         mLogoContainerView.setVisibility(View.VISIBLE);
 
-        mLogoCoordinator = new LogoCoordinator(logoClickedCallback,
+        mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback,
                 mLogoContainerView.findViewById(R.id.search_provider_logo), true, null, null,
                 isShowingStartSurfaceHomepage());
         mLogoCoordinator.addObserver(this);

@@ -86,7 +86,7 @@ public class StartSurfaceToolbarCoordinator {
         mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
         boolean isTabToGtsFadeAnimationEnabled = isTabToGtsAnimationEnabled
                 && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext());
-        mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
+        mToolbarMediator = new StartSurfaceToolbarMediator(mStub.getContext(), mPropertyModel,
                 (iphCommandBuilder)
                         -> {
                     // TODO(crbug.com/865801): Replace the null check with an assert after fixing or

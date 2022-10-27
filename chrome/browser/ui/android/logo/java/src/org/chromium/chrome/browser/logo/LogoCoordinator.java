@@ -6,10 +6,17 @@ package org.chromium.chrome.browser.logo;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 
-import android.view.View;
-import android.view.ViewGroup.MarginLayoutParams;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -20,15 +27,19 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Coordinator used to fetch and load logo image for Start surface and NTP.
- */
+import java.lang.ref.WeakReference;
+
+/** Coordinator used to fetch and load logo image for Start surface and NTP.*/
 public class LogoCoordinator implements TemplateUrlServiceObserver {
     private final Callback<LoadUrlParams> mLogoClickedCallback;
+    private final PropertyModel mLogoModel;
     private final LogoView mLogoView;
     private final Callback<Logo> mOnLogoAvailableRunnable;
     private final Runnable mOnCachedLogoRevalidatedRunnable;
+    private final Context mContext;
 
     private LogoDelegateImpl mLogoDelegate;
     private Profile mProfile;
@@ -40,11 +51,13 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     private boolean mIsNativeInitialized;
     private boolean mIsLoadPending;
 
+    // The default logo is shared across all NTPs.
+    private static WeakReference<Bitmap> sDefaultLogo;
+    private static @ColorInt int sDefaultLogoTint;
+
     private final ObserverList<VisibilityObserver> mVisibilityObservers = new ObserverList<>();
 
-    /**
-     * Interface for the observers of the logo visibility change.
-     */
+    /** Interface for the observers of the logo visibility change. */
     public interface VisibilityObserver {
         void onLogoVisibilityChanged();
     }
@@ -52,6 +65,7 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     /**
      * Creates a LogoCoordinator object.
      *
+     * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoView The view that shows the search provider logo.
      * @param shouldFetchDoodle Whether to fetch doodle if there is.
@@ -61,15 +75,18 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
      *                             is true when this class is used by NTP; while used by Start,
      *                             it's only true on Start homepage.
      */
-    public LogoCoordinator(Callback<LoadUrlParams> logoClickedCallback, LogoView logoView,
-            boolean shouldFetchDoodle, Callback<Logo> onLogoAvailableCallback,
+    public LogoCoordinator(Context context, Callback<LoadUrlParams> logoClickedCallback,
+            LogoView logoView, boolean shouldFetchDoodle, Callback<Logo> onLogoAvailableCallback,
             Runnable onCachedLogoRevalidatedRunnable, boolean isParentSurfaceShown) {
         mLogoClickedCallback = logoClickedCallback;
+        mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         mShouldFetchDoodle = shouldFetchDoodle;
         mOnLogoAvailableRunnable = onLogoAvailableCallback;
         mOnCachedLogoRevalidatedRunnable = onCachedLogoRevalidatedRunnable;
         mIsParentSurfaceShown = isParentSurfaceShown;
+        mContext = context;
+        PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
     }
 
     /**
@@ -91,17 +108,13 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         TemplateUrlServiceFactory.get().addObserver(this);
     }
 
-    /**
-     * Update the logo based on default search engine changes.
-     */
+    /** Update the logo based on default search engine changes.*/
     @Override
     public void onTemplateURLServiceChanged() {
         loadSearchProviderLogoWithAnimation();
     }
 
-    /**
-     * Force to load the search provider logo with animation enabled.
-     */
+    /** Force to load the search provider logo with animation enabled.*/
     public void loadSearchProviderLogoWithAnimation() {
         mHasLogoLoadedForCurrentSearchEngine = false;
         maybeLoadSearchProviderLogo(mIsParentSurfaceShown, /*shouldDestroyDelegate=*/false, true);
@@ -142,9 +155,7 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         }
     }
 
-    /**
-     * Cleans up any code as necessary.
-     */
+    /** Cleans up any code as necessary.*/
     public void destroy() {
         if (mLogoDelegate != null) {
             mLogoDelegate.destroy();
@@ -152,7 +163,7 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         }
 
         if (mLogoView != null) {
-            mLogoView.destroy();
+            mLogoModel.set(LogoProperties.DESTROY, true);
         }
 
         if (mIsNativeInitialized) {
@@ -160,18 +171,14 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         }
     }
 
-    /**
-     * Returns the LogoView.
-     */
+    /** Returns the logo view.*/
     public LogoView getView() {
         return mLogoView;
     }
 
-    /**
-     * Jumps to the end of the logo view's cross-fading animation, if any.
-     */
+    /** Jumps to the end of the logo view's cross-fading animation, if any.*/
     public void endFadeAnimation() {
-        mLogoView.endFadeAnimation();
+        mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
     }
 
     /**
@@ -180,34 +187,30 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
      * @param alpha opacity (alpha) value to use.
      */
     public void setAlpha(float alpha) {
-        mLogoView.setAlpha(alpha);
+        mLogoModel.set(LogoProperties.ALPHA, alpha);
     }
 
     /**
      * Sets the top margin of the logo view.
      *
-     * TODO(crbug.com/1359422): Move this inside View class and use ViewBinder as the bridge.
      * @param topMargin The expected top margin.
      */
     public void setTopMargin(int topMargin) {
-        ((MarginLayoutParams) mLogoView.getLayoutParams()).topMargin = topMargin;
+        mLogoModel.set(LogoProperties.LOGO_TOP_MARGIN, topMargin);
     }
 
     /**
      * Sets the bottom margin of the logo view.
      *
-     * TODO(crbug.com/1359422): Move this inside View class and use ViewBinder as the bridge.
      * @param bottomMargin The expected bottom margin.
      */
     public void setBottomMargin(int bottomMargin) {
-        ((MarginLayoutParams) mLogoView.getLayoutParams()).bottomMargin = bottomMargin;
+        mLogoModel.set(LogoProperties.LOGO_BOTTOM_MARGIN, bottomMargin);
     }
 
-    /**
-     * Returns whether LogoView is visible.
-     */
+    /** Returns whether LogoView is visible.*/
     public boolean isLogoVisible() {
-        return mShouldShowLogo && mLogoView.getVisibility() == View.VISIBLE;
+        return mShouldShowLogo && mLogoModel.get(LogoProperties.VISIBILITY);
     }
 
     /**
@@ -237,8 +240,8 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         if (mHasLogoLoadedForCurrentSearchEngine || mProfile == null || !mShouldShowLogo) return;
 
         mHasLogoLoadedForCurrentSearchEngine = true;
-        mLogoView.setAnimationEnabled(animationEnabled);
-        mLogoView.showSearchProviderInitialView();
+        mLogoModel.set(LogoProperties.ANIMATION_ENABLED, animationEnabled);
+        showSearchProviderInitialView();
 
         // If default search engine is google and doodle is not supported, doesn't bother to fetch
         // logo image.
@@ -253,13 +256,17 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
         mLogoDelegate.getSearchProviderLogo(new LogoObserver() {
             @Override
             public void onLogoAvailable(Logo logo, boolean fromCache) {
-                if (logo == null && fromCache) {
-                    // There is no cached logo. Wait until we know whether there's a fresh
-                    // one before making any further decisions.
-                    return;
+                if (logo == null) {
+                    if (fromCache) {
+                        // There is no cached logo. Wait until we know whether there's a fresh
+                        // one before making any further decisions.
+                        return;
+                    }
+                    mLogoModel.set(
+                            LogoProperties.DEFAULT_GOOGLE_LOGO, getDefaultGoogleLogo(mContext));
                 }
-                mLogoView.setDelegate(mLogoDelegate);
-                mLogoView.updateLogo(logo);
+                mLogoModel.set(LogoProperties.LOGO_DELEGATE, mLogoDelegate);
+                mLogoModel.set(LogoProperties.UPDATED_LOGO, logo);
 
                 if (mOnLogoAvailableRunnable != null) mOnLogoAvailableRunnable.onResult(logo);
             }
@@ -274,7 +281,8 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     }
 
     private void showSearchProviderInitialView() {
-        mLogoView.showSearchProviderInitialView();
+        mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO, getDefaultGoogleLogo(mContext));
+        mLogoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
     }
 
     private void updateVisibility() {
@@ -283,34 +291,68 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
                 : SharedPreferencesManager.getInstance().readBoolean(
                         APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
         mShouldShowLogo = mIsParentSurfaceShown && doesDSEHaveLogo;
-        mLogoView.setVisibility(mShouldShowLogo ? View.VISIBLE : View.GONE);
+        mLogoModel.set(LogoProperties.VISIBILITY, mShouldShowLogo);
         for (VisibilityObserver observer : mVisibilityObservers) {
             observer.onLogoVisibilityChanged();
         }
     }
 
-    @VisibleForTesting
+    /**
+     * Get the default Google logo if available.
+     * @param context Used to load colors and resources.
+     * @return The default Google logo.
+     */
+    public static Bitmap getDefaultGoogleLogo(Context context) {
+        if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return null;
+
+        Bitmap defaultLogo = sDefaultLogo == null ? null : sDefaultLogo.get();
+        final int tint = context.getColor(R.color.google_logo_tint_color);
+        if (defaultLogo == null || sDefaultLogoTint != tint) {
+            final Resources resources = context.getResources();
+            if (tint == Color.TRANSPARENT) {
+                defaultLogo = BitmapFactory.decodeResource(resources, R.drawable.google_logo);
+            } else {
+                // Apply color filter on a bitmap, which will cause some performance overhead, but
+                // it is worth the APK space savings by avoiding adding another large asset for the
+                // logo in night mode. Not using vector drawable here because it is close to the
+                // maximum recommended vector drawable size 200dpx200dp.
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inMutable = true;
+                defaultLogo =
+                        BitmapFactory.decodeResource(resources, R.drawable.google_logo, options);
+                Paint paint = new Paint();
+                paint.setColorFilter(new PorterDuffColorFilter(tint, PorterDuff.Mode.SRC_ATOP));
+                Canvas canvas = new Canvas(defaultLogo);
+                canvas.drawBitmap(defaultLogo, 0, 0, paint);
+            }
+            sDefaultLogo = new WeakReference<>(defaultLogo);
+            sDefaultLogoTint = tint;
+        }
+        return defaultLogo;
+    }
+
+    /** Returns the logo model.*/
+    public PropertyModel getModelForTesting() {
+        return mLogoModel;
+    }
+
     void setShouldFetchDoodleForTesting(boolean shouldFetchDoodle) {
         mShouldFetchDoodle = shouldFetchDoodle;
     }
 
-    @VisibleForTesting
     void setLogoDelegateForTesting(LogoDelegateImpl logoDelegate) {
         mLogoDelegate = logoDelegate;
     }
 
-    @VisibleForTesting
     void setHasLogoLoadedForCurrentSearchEngineForTesting(
             boolean hasLogoLoadedForCurrentSearchEngine) {
         mHasLogoLoadedForCurrentSearchEngine = hasLogoLoadedForCurrentSearchEngine;
     }
 
-    @VisibleForTesting
     boolean getIsLoadPendingForTesting() {
         return mIsLoadPending;
     }
 
-    @VisibleForTesting
     LogoDelegateImpl getLogoDelegateForTesting() {
         return mLogoDelegate;
     }

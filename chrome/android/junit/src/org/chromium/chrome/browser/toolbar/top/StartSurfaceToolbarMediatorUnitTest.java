@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -119,6 +120,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     Tracker mTracker;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private Context mContext;
     @Mock
     private LogoView mLogoView;
     @Mock
@@ -559,8 +562,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 !ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
                 || SharedPreferencesManager.getInstance().readBoolean(
                         ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
-        mMediator = new StartSurfaceToolbarMediator(mPropertyModel, mMockIdentityIPHCallback,
-                hideIncognitoSwitchWhenNoTabs, mMenuButtonCoordinator, mIdentityDiscController,
+        mMediator = new StartSurfaceToolbarMediator(mContext, mPropertyModel,
+                mMockIdentityIPHCallback, hideIncognitoSwitchWhenNoTabs, mMenuButtonCoordinator,
+                mIdentityDiscController,
                 ()
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting(),

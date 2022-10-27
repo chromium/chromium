@@ -172,4 +172,12 @@ public class LoadingView extends ProgressBar {
     public static void setDisableAnimationForTest(boolean disableAnimation) {
         sDisableAnimationForTest = disableAnimation;
     }
+
+    /**
+     * Check if the Loading View Observer is empty or not.
+     * @return If the observers is empty then return true.
+     */
+    public boolean isObserverListEmpty() {
+        return mObservers.isEmpty();
+    }
 }

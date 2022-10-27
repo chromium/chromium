@@ -74,6 +74,7 @@ public class LogoViewTest {
     @Test
     public void testDefaultLogoView() {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mView.setDefaultGoogleLogo(LogoCoordinator.getDefaultGoogleLogo(mView.getContext()));
         mView.updateLogo(null);
         mView.endAnimationsForTesting();
 

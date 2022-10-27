@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -110,7 +109,7 @@ public class LogoCoordinatorUnitTest {
 
         mLogoCoordinator.onTemplateURLServiceChanged();
 
-        Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext));
+        Assert.assertNotNull(LogoCoordinator.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
 
         // If doodle isn't supported, getSearchProviderLogo() shouldn't be called by
@@ -119,7 +118,7 @@ public class LogoCoordinatorUnitTest {
 
         mLogoCoordinator.onTemplateURLServiceChanged();
 
-        Assert.assertNotNull(LogoView.getDefaultGoogleLogo(mContext));
+        Assert.assertNotNull(LogoCoordinator.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
@@ -130,7 +129,7 @@ public class LogoCoordinatorUnitTest {
 
         mLogoCoordinator.onTemplateURLServiceChanged();
 
-        Assert.assertNull(LogoView.getDefaultGoogleLogo(mContext));
+        Assert.assertNull(LogoCoordinator.getDefaultGoogleLogo(mContext));
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
 
@@ -176,14 +175,13 @@ public class LogoCoordinatorUnitTest {
         mLogoCoordinator.maybeLoadSearchProviderLogo(
                 /*isParentSurfaceShown*/ false, /*shouldDestroyDelegate*/ false,
                 /*animationEnabled*/ false);
-
-        verify(mLogoView, times(1)).setVisibility(View.GONE);
+        Assert.assertFalse(mLogoCoordinator.getModelForTesting().get(LogoProperties.VISIBILITY));
         // When parent surface isn't showing, calling maybeLoadSearchProviderLogo() shouldn't
         // trigger getSearchProviderLogo() nor add any pending load task.
         Assert.assertFalse(mLogoCoordinator.getIsLoadPendingForTesting());
         mLogoCoordinator.initWithNative();
 
-        verify(mLogoView, times(2)).setVisibility(View.GONE);
+        Assert.assertFalse(mLogoCoordinator.getModelForTesting().get(LogoProperties.VISIBILITY));
         Assert.assertFalse(mLogoCoordinator.isLogoVisible());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
         verify(mTemplateUrlService).addObserver(mLogoCoordinator);
@@ -259,7 +257,7 @@ public class LogoCoordinatorUnitTest {
     }
 
     private void createCoordinatorWithoutNative(boolean isParentSurfaceShown) {
-        mLogoCoordinator = new LogoCoordinator(mLogoClickedCallback, mLogoView,
+        mLogoCoordinator = new LogoCoordinator(mContext, mLogoClickedCallback, mLogoView,
                 /*shouldFetchDoodle=*/true, mOnLogoAvailableCallback,
                 mOnCachedLogoRevalidatedRunnable, isParentSurfaceShown);
         mLogoCoordinator.setLogoDelegateForTesting(mLogoDelegate);

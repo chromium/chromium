@@ -9,7 +9,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoDelegateImpl.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoProperties.java",
     "java/src/org/chromium/chrome/browser/logo/LogoView.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoViewBinder.java",
   ]
 
   deps = [
@@ -59,16 +61,15 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/logo/LogoViewBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoViewTest.java",
   ]
 
   deps = [
     ":java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
-    "//chrome/android/features/start_surface:public_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
@@ -77,8 +78,10 @@ robolectric_library("junit") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

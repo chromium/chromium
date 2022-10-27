@@ -315,7 +315,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         // If pull up Feed position is enabled, doodle is not supported since there is not enough
         // room, we don't need to fetch logo image.
         boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
-        mLogoCoordinator = new LogoCoordinator(logoClickedCallback,
+        mLogoCoordinator = new LogoCoordinator(mContext, logoClickedCallback,
                 findViewById(R.id.search_provider_logo), shouldFetchDoodle, onLogoAvailableCallback,
                 onCachedLogoRevalidatedRunnable, /*isParentSurfaceShown=*/true);
         mLogoCoordinator.initWithNative();
