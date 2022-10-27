@@ -126,6 +126,12 @@ AST_MATCHER_P(clang::TemplateArgument,
                       });
 }
 
+// Prevents the use of garbage collected objects in `absl::variant`.
+// That's because `absl::variant` doesn't work well with concurrent marking.
+// Oilpan uses an object's type to know how to trace it. If the type stored in
+// an `absl::variant` changes while the object is concurrently being marked,
+// Oilpan might fail to find a matching pair of element type and reference. This
+// in turn can lead to UAFs and other memory corruptions.
 class VariantGarbageCollectedMatcher : public MatchFinder::MatchCallback {
  public:
   explicit VariantGarbageCollectedMatcher(DiagnosticsReporter& diagnostics)
