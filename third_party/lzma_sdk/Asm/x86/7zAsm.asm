@@ -1,6 +1,11 @@
 ; 7zAsm.asm -- ASM macros
-; 2021-12-25 : Igor Pavlov : Public domain
+; 2022-05-16 : Igor Pavlov : Public domain
 
+
+; UASM can require these changes
+; OPTION FRAMEPRESERVEFLAGS:ON
+; OPTION PROLOGUE:NONE
+; OPTION EPILOGUE:NONE
 
 ifdef @wordsize
 ; @wordsize is defined only in JWASM and ASMC and is not defined in MASM

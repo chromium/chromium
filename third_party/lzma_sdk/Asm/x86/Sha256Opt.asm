@@ -1,5 +1,5 @@
 ; Sha256Opt.asm -- SHA-256 optimized code for SHA-256 x86 hardware instructions
-; 2021-03-10 : Igor Pavlov : Public domain
+; 2022-04-17 : Igor Pavlov : Public domain
 
 include 7zAsm.asm
 
@@ -54,14 +54,20 @@ ifndef x64
     .686
     .xmm
 endif
-
+        
+; jwasm-based assemblers for linux and linker from new versions of binutils
+; can generate incorrect code for load [ARRAY + offset] instructions.
+; 22.00: we load K_CONST offset to (rTable) register to avoid jwasm+binutils problem 
+        rTable  equ r0
+        ; rTable  equ K_CONST
+        
 ifdef x64
         rNum    equ REG_ABI_PARAM_2
     if (IS_LINUX eq 0)
         LOCAL_SIZE equ (16 * 2)
     endif
 else
-        rNum    equ r0
+        rNum    equ r3
         LOCAL_SIZE equ (16 * 1)
 endif
 
@@ -103,15 +109,18 @@ MY_PROLOG macro
         movdqa  [r4 + 16], xmm9
       endif
     else ; x86
-      if (IS_CDECL gt 0)
-        mov     rState, [r4 + REG_SIZE * 1]
-        mov     rData,  [r4 + REG_SIZE * 2]
-        mov     rNum,   [r4 + REG_SIZE * 3]
-      else ; fastcall
-        mov     rNum,   [r4 + REG_SIZE * 1]
-      endif
+        push    r3
         push    r5
         mov     r5, r4
+        NUM_PUSH_REGS   equ 2
+        PARAM_OFFSET    equ (REG_SIZE * (1 + NUM_PUSH_REGS))
+      if (IS_CDECL gt 0)
+        mov     rState, [r4 + PARAM_OFFSET]
+        mov     rData,  [r4 + PARAM_OFFSET + REG_SIZE * 1]
+        mov     rNum,   [r4 + PARAM_OFFSET + REG_SIZE * 2]
+      else ; fastcall
+        mov     rNum,   [r4 + PARAM_OFFSET]
+      endif
         and     r4, -16
         sub     r4, LOCAL_SIZE
     endif
@@ -129,6 +138,7 @@ MY_EPILOG macro
     else ; x86
         mov     r4, r5
         pop     r5
+        pop     r3
     endif
     MY_ENDP
 endm
@@ -171,7 +181,7 @@ pre2 equ 2
 
 
 RND4 macro k
-        movdqa  msg, xmmword ptr [K_CONST + (k) * 16]
+        movdqa  msg, xmmword ptr [rTable + (k) * 16]
         paddd   msg, @CatStr(xmm, %(w_regs + ((k + 0) mod 4)))
         MY_sha256rnds2 state0_N, state1_N
         pshufd   msg, msg, 0eH
@@ -209,6 +219,8 @@ endm
 
 MY_PROC Sha256_UpdateBlocks_HW, 3
     MY_PROLOG
+
+        lea     rTable, [K_CONST]
 
         cmp     rNum, 0
         je      end_c

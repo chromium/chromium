@@ -1,5 +1,5 @@
 /* 7zTypes.h -- Basic types
-2021-12-25 : Igor Pavlov : Public domain */
+2022-04-01 : Igor Pavlov : Public domain */
 
 #ifndef __7Z_TYPES_H
 #define __7Z_TYPES_H
@@ -132,10 +132,6 @@ typedef int WRes;
 #define E_INVALIDARG              MY_HRESULT_FROM_errno_CONST_ERROR(EINVAL)
 #define MY__E_ERROR_NEGATIVE_SEEK MY_HRESULT_FROM_errno_CONST_ERROR(EINVAL)
 */
-
-// gcc / clang : (sizeof(long) == sizeof(void*)) in 32/64 bits
-typedef          long INT_PTR;
-typedef unsigned long UINT_PTR;
 
 #define TEXT(quote) quote
 
@@ -519,6 +515,14 @@ struct ISzAlloc
 #define WSTRING_PATH_SEPARATOR L"/"
 
 #endif
+
+#define k_PropVar_TimePrec_0        0
+#define k_PropVar_TimePrec_Unix     1
+#define k_PropVar_TimePrec_DOS      2
+#define k_PropVar_TimePrec_HighPrec 3
+#define k_PropVar_TimePrec_Base     16
+#define k_PropVar_TimePrec_100ns (k_PropVar_TimePrec_Base + 7)
+#define k_PropVar_TimePrec_1ns   (k_PropVar_TimePrec_Base + 9)
 
 EXTERN_C_END
 

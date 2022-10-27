@@ -1,5 +1,5 @@
 /* DllSecur.c -- DLL loading security
-2021-12-25 : Igor Pavlov : Public domain */
+2022-07-15 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -10,6 +10,10 @@
 #include "DllSecur.h"
 
 #ifndef UNDER_CE
+
+#if defined(__GNUC__) && (__GNUC__ >= 8)
+  #pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 
 typedef BOOL (WINAPI *Func_SetDefaultDllDirectories)(DWORD DirectoryFlags);
 
@@ -34,7 +38,7 @@ static const char * const g_Dlls =
 #endif
 
 // #define MY_CAST_FUNC  (void(*)())
-#define MY_CAST_FUNC  
+#define MY_CAST_FUNC
 
 void My_SetDefaultDllDirectories()
 {

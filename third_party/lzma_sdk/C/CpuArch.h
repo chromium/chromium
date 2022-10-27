@@ -1,5 +1,5 @@
 /* CpuArch.h -- CPU specific code
-2021-07-13 : Igor Pavlov : Public domain */
+2022-07-15 : Igor Pavlov : Public domain */
 
 #ifndef __CPU_ARCH_H
 #define __CPU_ARCH_H
@@ -123,12 +123,15 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
 #endif
 
 
-#if  defined(__sparc64__)
-  #define MY_CPU_NAME "sparc64"
-  #define MY_CPU_64BIT
-#elif defined(__sparc__)
-  #define MY_CPU_NAME "sparc"
-  /* #define MY_CPU_32BIT */
+#if  defined(__riscv) \
+  || defined(__riscv__)
+  #if __riscv_xlen == 32
+    #define MY_CPU_NAME "riscv32"
+  #elif __riscv_xlen == 64
+    #define MY_CPU_NAME "riscv64"
+  #else
+    #define MY_CPU_NAME "riscv"
+  #endif
 #endif
 
 

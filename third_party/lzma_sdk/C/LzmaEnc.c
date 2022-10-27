@@ -1,5 +1,5 @@
 /* LzmaEnc.c -- LZMA Encoder
-2021-11-18: Igor Pavlov : Public domain */
+2022-07-15: Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -2970,6 +2970,7 @@ const Byte *LzmaEnc_GetCurBuf(CLzmaEncHandle pp)
 }
 
 
+// (desiredPackSize == 0) is not allowed
 SRes LzmaEnc_CodeOneMemBlock(CLzmaEncHandle pp, BoolInt reInit,
     Byte *dest, size_t *destLen, UInt32 desiredPackSize, UInt32 *unpackSize)
 {
@@ -2990,14 +2991,10 @@ SRes LzmaEnc_CodeOneMemBlock(CLzmaEncHandle pp, BoolInt reInit,
   if (reInit)
     LzmaEnc_Init(p);
   LzmaEnc_InitPrices(p);
-
-  nowPos64 = p->nowPos64;
   RangeEnc_Init(&p->rc);
   p->rc.outStream = &outStream.vt;
-
-  if (desiredPackSize == 0)
-    return SZ_ERROR_OUTPUT_EOF;
-
+  nowPos64 = p->nowPos64;
+  
   res = LzmaEnc_CodeOneBlock(p, desiredPackSize, *unpackSize);
   
   *unpackSize = (UInt32)(p->nowPos64 - nowPos64);
