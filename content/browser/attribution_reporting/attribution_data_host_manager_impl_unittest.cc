@@ -1091,7 +1091,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                 {{"key", absl::MakeUint128(/*high=*/5, /*low=*/345)}})),
             SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(mock_manager_, HandleSource);
   }
 
   const blink::AttributionSrcToken attribution_src_token;
@@ -1123,8 +1123,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     checkpoint.Call(1);
 
-    // This should fail because the destination site doesn't match the final
-    // navigation site.
+    // This should succeed even though the destination site doesn't match the
+    // final navigation site.
     source_data->destination =
         url::Origin::Create(GURL("https://trigger2.example"));
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
@@ -1139,8 +1139,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   histograms.ExpectBucketCount("Conversions.NavigationDataHostStatus", 3, 1);
 
   // kSuccess = 0, kContextError = 2
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 1);
-  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 2, 1);
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 0, 2);
+  histograms.ExpectBucketCount(kSourceDataHandleStatusMetric, 2, 0);
 }
 
 // Ensures correct behavior in
@@ -1309,54 +1309,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 }
 
 TEST_F(AttributionDataHostManagerImplTest,
-       NavigationRedirectSource_RegistrationWithDestinationMismatchIgnored) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  auto reporter = url::Origin::Create(GURL("https://report.test"));
-  auto source_site = url::Origin::Create(GURL("https://source.test"));
-
-  const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
-  // Wait for parsing to finish.
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  data_host_manager_.NotifyNavigationForDataHost(
-      attribution_src_token, source_site,
-      url::Origin::Create(GURL("https://destination2.example")));
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
-       NavigationRedirectSource_DestinationMismatchIgnoredAfterFinished) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
-
-  auto reporter = url::Origin::Create(GURL("https://report.test"));
-  auto source_site = url::Origin::Create(GURL("https://source.test"));
-
-  EXPECT_CALL(mock_manager_,
-              NotifyFailedSourceRegistration(
-                  kRegisterSourceJson, reporter,
-                  SourceRegistrationError::kDestinationMismatched));
-
-  const blink::AttributionSrcToken attribution_src_token;
-  data_host_manager_.NotifyNavigationRedirectRegistration(
-      attribution_src_token, kRegisterSourceJson, reporter, source_site);
-
-  data_host_manager_.NotifyNavigationForDataHost(
-      attribution_src_token, source_site,
-      url::Origin::Create(GURL("https://destination2.example")));
-
-  // Wait for parsing to finish. Note that this relies on the DataDecoder
-  // callback not being invoked in the same callstack as the call to
-  // `NotifyNavigationRedirectRegistration()` above. If flakes result, perhaps
-  // due to a change in the DataDecoder implementation, consider replacing this
-  // with a mock whose callback sequencing we can explicitly control.
-  task_environment_.FastForwardBy(base::TimeDelta());
-}
-
-TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectSource_NavigationFailed) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource);
 
   auto reporter = url::Origin::Create(GURL("https://report.test"));
   auto source_site = url::Origin::Create(GURL("https://source.test"));
@@ -1376,7 +1330,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationRedirectSource_NavigationFailedBeforeParsing) {
-  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  EXPECT_CALL(mock_manager_, HandleSource);
 
   auto reporter = url::Origin::Create(GURL("https://report.test"));
   auto source_site = url::Origin::Create(GURL("https://source.test"));
