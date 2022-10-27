@@ -9301,10 +9301,12 @@ void RenderFrameHostImpl::CommitNavigation(
 
     absl::optional<blink::ParsedPermissionsPolicy> manifest_policy;
     if (!parent_frame_host && isolation_info.is_isolated_application()) {
-      if (auto isolated_app_permissions_policy =
-              GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
-                  GetBrowserContext(), isolation_info.origin())) {
-        manifest_policy = std::move(isolated_app_permissions_policy);
+      if (auto isolated_web_app_permissions_policy =
+              GetContentClient()
+                  ->browser()
+                  ->GetPermissionsPolicyForIsolatedWebApp(
+                      GetBrowserContext(), isolation_info.origin())) {
+        manifest_policy = std::move(isolated_web_app_permissions_policy);
       }
     }
 
@@ -10564,11 +10566,13 @@ void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (!parent_frame_host && isolation_info.is_isolated_application()) {
     // In Isolated Apps, the top level frame should use the policy declared in
     // the Web App Manifest.
-    if (auto isolated_app_permissions_policy =
-            GetContentClient()->browser()->GetPermissionsPolicyForIsolatedApp(
-                GetBrowserContext(), isolation_info.origin())) {
+    if (auto isolated_web_app_permissions_policy =
+            GetContentClient()
+                ->browser()
+                ->GetPermissionsPolicyForIsolatedWebApp(
+                    GetBrowserContext(), isolation_info.origin())) {
       permissions_policy_ = blink::PermissionsPolicy::CreateFromParsedPolicy(
-          *isolated_app_permissions_policy, last_committed_origin_);
+          *isolated_web_app_permissions_policy, last_committed_origin_);
       return;
     }
   }

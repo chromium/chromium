@@ -248,7 +248,7 @@ size_t ContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>
-ContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+ContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
   return blink::ParsedPermissionsPolicy();
@@ -334,7 +334,7 @@ bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
   return false;
 }
 
-bool ContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
+bool ContentBrowserClient::IsIsolatedWebAppsDeveloperModeAllowed(
     BrowserContext* context) {
   return true;
 }

@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, CSPAttributeTooLong) {
   EXPECT_FALSE(current_frame_host()->child_at(0)->csp_attribute());
 }
 
-class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
@@ -343,7 +343,7 @@ class ContentSecurityPolicyIsolatedAppBrowserTest
   net::EmbeddedTestServer https_server_;
   ContentMockCertVerifier mock_cert_verifier_;
 
-  IsolatedAppContentBrowserClient client_;
+  IsolatedWebAppContentBrowserClient client_;
   raw_ptr<ContentBrowserClient> old_client_;
 };
 

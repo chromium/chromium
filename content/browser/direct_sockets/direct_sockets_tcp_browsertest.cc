@@ -311,7 +311,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  test::IsolatedAppContentBrowserClient client_;
+  test::IsolatedWebAppContentBrowserClient client_;
   ScopedContentBrowserClientSetting setting{&client_};
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;

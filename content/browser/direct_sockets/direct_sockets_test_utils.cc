@@ -206,14 +206,14 @@ std::string AsyncJsRunner::MakeScriptSendResultToDomQueue(
       script.c_str(), token_.ToString().c_str()));
 }
 
-bool IsolatedAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url) {
   return true;
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>
-IsolatedAppContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicy out;

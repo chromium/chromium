@@ -206,8 +206,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool MayReuseHost(content::RenderProcessHost* process_host) override;
   size_t GetProcessCountToIgnoreForLimit() override;
   absl::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedApp(content::BrowserContext* browser_context,
-                                     const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override;
   bool ShouldTryToUseExistingProcessHost(
       content::BrowserContext* browser_context,
       const GURL& url) override;
@@ -236,7 +237,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool IsIsolatedContextAllowedForUrl(content::BrowserContext* browser_context,
                                       const GURL& lock_url) override;
-  bool IsIsolatedAppsDeveloperModeAllowed(
+  bool IsIsolatedWebAppsDeveloperModeAllowed(
       content::BrowserContext* context) override;
   bool IsGetDisplayMediaSetSelectAllScreensAllowed(
       content::BrowserContext* context,

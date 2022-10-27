@@ -125,7 +125,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     return shell()->web_contents()->GetBrowserContext();
   }
 
-  test::IsolatedAppContentBrowserClient client_;
+  test::IsolatedWebAppContentBrowserClient client_;
   ScopedContentBrowserClientSetting setting{&client_};
   base::test::ScopedFeatureList feature_list_;
   mojo::Remote<network::mojom::UDPSocket> server_socket_;

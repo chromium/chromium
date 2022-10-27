@@ -195,14 +195,15 @@ std::string WrapAsync(const std::string& script);
 
 // Mock ContentBrowserClient that enableds direct sockets via permissions policy
 // for isolated apps.
-class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;
 
   absl::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedApp(content::BrowserContext* browser_context,
-                                     const url::Origin& app_origin) override;
+  GetPermissionsPolicyForIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override;
 };
 
 }  // namespace content::test

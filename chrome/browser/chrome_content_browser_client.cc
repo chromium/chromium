@@ -2130,7 +2130,7 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>
-ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -2318,7 +2318,7 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
 #endif
 }
 
-bool ChromeContentBrowserClient::IsIsolatedAppsDeveloperModeAllowed(
+bool ChromeContentBrowserClient::IsIsolatedWebAppsDeveloperModeAllowed(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return profile &&

@@ -741,7 +741,7 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>
-ShellContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration decl(

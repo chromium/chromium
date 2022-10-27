@@ -5375,9 +5375,9 @@ const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "non-app.com";
 }  // namespace
 
-class IsolatedAppContentBrowserClient : public ContentBrowserClient {
+class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
-  IsolatedAppContentBrowserClient() = default;
+  IsolatedWebAppContentBrowserClient() = default;
 
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
@@ -5413,7 +5413,7 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
     net::test_server::RegisterDefaultHandlers(https_server());
     ASSERT_TRUE(https_server()->Start());
 
-    test_client_ = std::make_unique<IsolatedAppContentBrowserClient>();
+    test_client_ = std::make_unique<IsolatedWebAppContentBrowserClient>();
     old_client_ = SetBrowserClientForTesting(test_client_.get());
   }
 
@@ -5423,7 +5423,7 @@ class RenderFrameHostImplBrowserTestWithRestrictedApis
   }
 
  private:
-  std::unique_ptr<IsolatedAppContentBrowserClient> test_client_;
+  std::unique_ptr<IsolatedWebAppContentBrowserClient> test_client_;
   raw_ptr<ContentBrowserClient> old_client_;
   ContentMockCertVerifier mock_cert_verifier_;
 };

@@ -543,8 +543,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // specific cases -- then the default non-isolated permissions policy will be
   // applied.
   virtual absl::optional<blink::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedApp(content::BrowserContext* browser_context,
-                                     const url::Origin& app_origin);
+  GetPermissionsPolicyForIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin);
 
   // Returns whether a new process should be created or an existing one should
   // be reused based on the URL we want to load. This should return false,
@@ -640,9 +641,10 @@ class CONTENT_EXPORT ContentBrowserClient {
                                               const GURL& lock_url);
 
   // Checks whether isolated apps developer mode is allowed by the
-  // AllowIsolatedAppsDeveloperMode policy (chrome-only, the respective override
-  // can be found in ChromeContentBrowserClient). Returns true by default.
-  virtual bool IsIsolatedAppsDeveloperModeAllowed(BrowserContext* context);
+  // AllowIsolatedWebAppsDeveloperMode policy (chrome-only, the respective
+  // override can be found in ChromeContentBrowserClient). Returns true by
+  // default.
+  virtual bool IsIsolatedWebAppsDeveloperModeAllowed(BrowserContext* context);
 
   // Check if applications whose origin is |origin| are allowed to perform
   // all-screens-auto-selection, which allows automatic capturing of all
