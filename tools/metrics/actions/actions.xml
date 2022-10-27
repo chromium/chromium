@@ -17195,6 +17195,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.Omnibox.iOS.PastedValidURL">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    User tapped the 'paste' iOS/iPadOS button into the Omnibox and the resulting
+    text in the Omnibox is a valid URL. iOS and iPadOS only.
+  </description>
+</action>
+
 <action name="Mobile.OmniboxContextMenu.SearchCopiedImage">
   <owner>rkgibson@google.com</owner>
   <owner>stkhapugin@google.com</owner>

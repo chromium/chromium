@@ -1653,9 +1653,19 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // Update the paste state as appropriate: if we're just finishing a paste
   // that replaced all the text, preserve that information; otherwise, if we've
   // made some other edit, clear paste tracking.
-  if (paste_state_ == PASTING)
+  if (paste_state_ == PASTING) {
     paste_state_ = PASTED;
-  else if (state_changes.text_differs)
+
+#if BUILDFLAG(IS_IOS)
+    GURL url = GURL(*(state_changes.new_text));
+
+    if (url.is_valid()) {
+      base::RecordAction(
+          base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
+    }
+#endif
+
+  } else if (state_changes.text_differs)
     paste_state_ = NONE;
 
   if (state_changes.text_differs || state_changes.selection_differs) {
