@@ -109,14 +109,13 @@ void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
       policy::key::kSpellcheckLanguage, base::Value::Type::LIST);
   std::unordered_set<std::string> forced_languages_lookup;
   if (forced_enabled_value) {
-    for (const auto& forced_language :
-         forced_enabled_value->GetListDeprecated())
+    for (const auto& forced_language : forced_enabled_value->GetList())
       forced_languages_lookup.insert(forced_language.GetString());
   }
 
   // Separate the valid languages from the unknown / unsupported languages and
   // the languages that also appear in the SpellcheckLanguage policy.
-  for (const base::Value& language : value->GetListDeprecated()) {
+  for (const base::Value& language : value->GetList()) {
     std::string candidate_language(
         base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL));
     std::string current_language =
