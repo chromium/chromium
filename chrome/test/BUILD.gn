@@ -7566,6 +7566,7 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/platform:unit_tests",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/cpp:unit_tests",
+      "//chrome/services/speech:unit_tests",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/cryptohome",

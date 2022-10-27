@@ -43,3 +43,21 @@ source_set("lib") {
     "//services/audio/public/cpp",
   ]
 }
+
+if (is_chromeos_ash) {
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [ "audio_source_fetcher_unittest.cc" ]
+
+    deps = [
+      ":lib",
+      "//base",
+      "//base/test:test_support",
+      "//media/mojo/common",
+      "//mojo/public/cpp/bindings",
+      "//services/audio/public/cpp:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
