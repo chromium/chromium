@@ -68,7 +68,7 @@ ReportingServiceSettings::ReportingServiceSettings(
       settings_value.FindListKey(kKeyEnabledEventNames);
   if (enabled_event_name_list_value) {
     for (const base::Value& enabled_event_name_value :
-         enabled_event_name_list_value->GetListDeprecated()) {
+         enabled_event_name_list_value->GetList()) {
       if (enabled_event_name_value.is_string())
         enabled_event_names_.insert(enabled_event_name_value.GetString());
       else
@@ -89,16 +89,14 @@ ReportingServiceSettings::ReportingServiceSettings(
   const base::Value* enabled_opt_in_events_value =
       settings_value.FindListKey(kKeyEnabledOptInEvents);
   if (enabled_opt_in_events_value) {
-    for (const base::Value& event :
-         enabled_opt_in_events_value->GetListDeprecated()) {
+    for (const base::Value& event : enabled_opt_in_events_value->GetList()) {
       DCHECK(event.is_dict());
       const std::string* name = event.FindStringKey(kKeyOptInEventName);
       const base::Value* url_patterns_value =
           event.FindListKey(kKeyOptInEventUrlPatterns);
 
       DCHECK(url_patterns_value->is_list());
-      for (const base::Value& url_pattern :
-           url_patterns_value->GetListDeprecated()) {
+      for (const base::Value& url_pattern : url_patterns_value->GetList()) {
         DCHECK(url_pattern.is_string());
 
         enabled_opt_in_events_[*name].push_back(url_pattern.GetString());
