@@ -161,7 +161,8 @@ constexpr SqliteResultCodeMappingEntry kResultCodeMapping[] = {
     {SQLITE_BUSY_TIMEOUT,
      static_cast<int>(SqliteLoggedResultCode::kUnusedChrome)},
 #ifdef SQLITE_ENABLE_SETLK_TIMEOUT
-#error "This code assumes that Chrome does not use
+#error "This code assumes that Chrome does not use blocking Posix advisory \
+file lock requests"
 #endif
 
     {SQLITE_READONLY_ROLLBACK,
