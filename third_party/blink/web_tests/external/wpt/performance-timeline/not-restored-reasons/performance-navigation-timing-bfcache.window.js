@@ -14,14 +14,14 @@ promise_test(async t => {
   // Open a window with noopener so that BFCache will work.
   const rc1 = await rcHelper.addWindow(
       /*config=*/ null, /*options=*/ {features: 'noopener'});
-  prepareForBFCache(rc1);
+  await prepareForBFCache(rc1);
 
   // Navigate away.
   const rc2 = await rc1.navigateToNew();
 
   // Navigate back.
   await rc2.historyBack();
-  assert_implements_bfcache(rc1);
+  await assert_implements_bfcache(rc1);
 
   // Verify that no reasons are recorded for successful restore.
   assert_true(await rc1.executeScript(() => {

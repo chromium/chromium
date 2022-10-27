@@ -38,13 +38,13 @@ promise_test(async t => {
   const rc1_grand_child_url = await rc1_grand_child.executeScript(() => {
     return location.href;
   });
-  prepareForBFCache(rc1);
+  await prepareForBFCache(rc1);
   // Navigate away.
   const rc2 = await rc1.navigateToNew();
 
   // Navigate back.
   await rc2.historyBack();
-  assert_not_bfcached(rc1);
+  await assert_not_bfcached(rc1);
   // Check the reported reasons.
   await assertNotRestoredReasonsEquals(
       rc1,

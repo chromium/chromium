@@ -19,13 +19,13 @@ promise_test(async t => {
   const rc1_url = await rc1.executeScript(() => {
     return location.href;
   });
-  prepareForBFCache(rc1);
+  await prepareForBFCache(rc1);
 
   // Navigate away.
   const rc2 = await rc1.navigateToNew();
   // Navigate back.
   await rc2.historyBack();
-  assert_not_bfcached(rc1);
+  await assert_not_bfcached(rc1);
 
   // Check the reported reasons.
   await assertNotRestoredReasonsEquals(
@@ -37,13 +37,13 @@ promise_test(async t => {
       /*name=*/ '',
       /*reasons=*/['WebSocket'],
       /*children=*/[]);
-  prepareForBFCache(rc1);
+  await prepareForBFCache(rc1);
 
   await rc1.historyForward();
   await rc2.historyBack();
   // This time no blocking feature is used, so the page is restored
   // from BFCache. Ensure that the previous reasons stay there.
-  assert_implements_bfcache(rc1);
+  await assert_implements_bfcache(rc1);
   await assertNotRestoredReasonsEquals(
       rc1,
       /*blocked=*/ true,
