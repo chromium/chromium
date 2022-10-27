@@ -103,8 +103,8 @@ TestPositionType AXNodePositionFuzzerGenerator::CreateNewPosition(
           anchor->GetChildCount()
               ? child_index_or_text_offset % anchor->GetChildCount()
               : 0;
-      return ui::AXNodePosition::CreateTreePosition(
-          tree_->GetAXTreeID(), anchor_id, child_index_or_text_offset);
+      return ui::AXNodePosition::CreateTreePosition(*anchor,
+                                                    child_index_or_text_offset);
     case ui::AXPositionKind::TEXT_POSITION: {
       // Avoid division by zero in the case where the node has no text.
       child_index_or_text_offset =

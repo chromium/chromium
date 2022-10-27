@@ -243,23 +243,18 @@ class AXPosition {
     return new_position;
   }
 
-  static AXPositionInstance CreateTreePosition(AXTreeID tree_id,
-                                               AXNodeID anchor_id,
-                                               int child_index) {
-    AXPositionInstance new_position(new AXPositionType());
-    new_position->Initialize(AXPositionKind::TREE_POSITION, tree_id, anchor_id,
-                             child_index, INVALID_OFFSET,
-                             ax::mojom::TextAffinity::kDownstream);
-    return new_position;
-  }
-
   static AXPositionInstance CreateTreePosition(const AXNode& anchor,
                                                int child_index) {
     DCHECK(anchor.tree());
     DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
     DCHECK_NE(anchor.id(), kInvalidAXNodeID);
-    return CreateTreePosition(anchor.tree()->GetAXTreeID(), anchor.id(),
-                              child_index);
+
+    AXPositionInstance new_position(new AXPositionType());
+    new_position->Initialize(AXPositionKind::TREE_POSITION,
+                             anchor.tree()->GetAXTreeID(), anchor.id(),
+                             child_index, INVALID_OFFSET,
+                             ax::mojom::TextAffinity::kDownstream);
+    return new_position;
   }
 
   static AXPositionInstance CreateTreePositionAtStartOfAnchor(
@@ -279,25 +274,18 @@ class AXPosition {
   }
 
   static AXPositionInstance CreateTextPosition(
-      AXTreeID tree_id,
-      AXNodeID anchor_id,
-      int text_offset,
-      ax::mojom::TextAffinity affinity) {
-    AXPositionInstance new_position(new AXPositionType());
-    new_position->Initialize(AXPositionKind::TEXT_POSITION, tree_id, anchor_id,
-                             INVALID_INDEX, text_offset, affinity);
-    return new_position;
-  }
-
-  static AXPositionInstance CreateTextPosition(
       const AXNode& anchor,
       int text_offset,
       ax::mojom::TextAffinity affinity) {
     DCHECK(anchor.tree());
     DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
     DCHECK_NE(anchor.id(), kInvalidAXNodeID);
-    return CreateTextPosition(anchor.tree()->GetAXTreeID(), anchor.id(),
-                              text_offset, affinity);
+
+    AXPositionInstance new_position(new AXPositionType());
+    new_position->Initialize(AXPositionKind::TEXT_POSITION,
+                             anchor.tree()->GetAXTreeID(), anchor.id(),
+                             INVALID_INDEX, text_offset, affinity);
+    return new_position;
   }
 
   virtual ~AXPosition() = default;
