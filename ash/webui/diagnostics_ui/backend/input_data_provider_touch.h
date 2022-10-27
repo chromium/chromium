@@ -22,7 +22,8 @@ class InputDataProviderTouch {
   ~InputDataProviderTouch();
 
   mojom::TouchDeviceInfoPtr ConstructTouchDevice(
-      const InputDeviceInformation* device_info);
+      const InputDeviceInformation* device_info,
+      bool is_internal_display_on);
 };
 
 }  // namespace diagnostics

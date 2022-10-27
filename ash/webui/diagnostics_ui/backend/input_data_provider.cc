@@ -66,6 +66,7 @@ InputDataProvider::~InputDataProvider() {
   device_manager_->RemoveObserver(this);
   widget_->RemoveObserver(this);
   TabletMode::Get()->RemoveObserver(this);
+  ash::Shell::Get()->display_configurator()->RemoveObserver(this);
 }
 
 // static
@@ -92,6 +93,7 @@ void InputDataProvider::Initialize(aura::Window* window) {
   device_manager_->ScanDevices(this);
   widget_->AddObserver(this);
   TabletMode::Get()->AddObserver(this);
+  ash::Shell::Get()->display_configurator()->AddObserver(this);
   UpdateMaySendEvents();
 }
 
@@ -155,6 +157,29 @@ void InputDataProvider::OnTabletModeStarted() {
 void InputDataProvider::OnTabletModeEnded() {
   if (tablet_mode_observer_.is_bound()) {
     tablet_mode_observer_->OnTabletModeChanged(/*is_tablet_mode=*/false);
+  }
+}
+
+void InputDataProvider::ObserveInternalDisplayPowerState(
+    mojo::PendingRemote<mojom::InternalDisplayPowerStateObserver> observer) {
+  auto power_state =
+      Shell::Get()->display_configurator()->current_power_state();
+  is_internal_display_on_ =
+      power_state != chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON;
+  internal_display_power_state_observer_ =
+      mojo::Remote<mojom::InternalDisplayPowerStateObserver>(
+          std::move(observer));
+}
+
+void InputDataProvider::OnPowerStateChanged(
+    chromeos::DisplayPowerState power_state) {
+  if (internal_display_power_state_observer_.is_bound()) {
+    // Only when the internal display is off and external is on, we grey out the
+    // internal touchscreen test button.
+    is_internal_display_on_ =
+        power_state != chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON;
+    internal_display_power_state_observer_->OnInternalDisplayPowerStateChanged(
+        is_internal_display_on_);
   }
 }
 
@@ -364,7 +389,7 @@ void InputDataProvider::ProcessDeviceInfo(
 void InputDataProvider::AddTouchDevice(
     const InputDeviceInformation* device_info) {
   touch_devices_[device_info->evdev_id] =
-      touch_helper_.ConstructTouchDevice(device_info);
+      touch_helper_.ConstructTouchDevice(device_info, is_internal_display_on_);
 
   for (const auto& observer : connected_devices_observers_) {
     observer->OnTouchDeviceConnected(

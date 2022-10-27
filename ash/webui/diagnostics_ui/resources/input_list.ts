@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
-import {ConnectedDevicesObserverReceiver, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './input_list.html.js';
 import {KeyboardTesterElement} from './keyboard_tester.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
@@ -72,6 +72,8 @@ export class InputListElement extends InputListElementBase {
   private touchscreens_: TouchDeviceInfo[];
   private connectedDevicesObserverReceiver_: ConnectedDevicesObserverReceiver|
       null = null;
+  private internalDisplayPowerStateObserverReceiver_:
+      InternalDisplayPowerStateObserverReceiver|null = null;
   private keyboardTester: KeyboardTesterElement|null = null;
   private browserProxy_: DiagnosticsBrowserProxy =
       DiagnosticsBrowserProxyImpl.getInstance();
@@ -92,6 +94,7 @@ export class InputListElement extends InputListElementBase {
     this.browserProxy_.initialize();
     this.loadInitialDevices_();
     this.observeConnectedDevices_();
+    this.observeInternalDisplayPowerState();
   }
 
   private loadInitialDevices_(): void {
@@ -110,6 +113,32 @@ export class InputListElement extends InputListElementBase {
         new ConnectedDevicesObserverReceiver(this);
     this.inputDataProvider_.observeConnectedDevices(
         this.connectedDevicesObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  private observeInternalDisplayPowerState(): void {
+    this.internalDisplayPowerStateObserverReceiver_ =
+        new InternalDisplayPowerStateObserverReceiver(this);
+    this.inputDataProvider_.observeInternalDisplayPowerState(
+        this.internalDisplayPowerStateObserverReceiver_.$
+            .bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * Implements
+   * InternalDisplayPowerStateObserver.OnInternalDisplayPowerStateChanged.
+   * @param isDisplayOn Just applied value of whether the display power is on.
+   */
+  onInternalDisplayPowerStateChanged(isDisplayOn: boolean): void {
+    // Find the internal touchscreen.
+    const index = this.touchscreens_.findIndex(
+        (device: TouchDeviceInfo) =>
+            device.connectionType === ConnectionType.kInternal);
+    if (index != -1) {
+      // Copy object to enforce dom to re-render.
+      const internalTouchscreen = {...this.touchscreens_[index]};
+      internalTouchscreen.testable = isDisplayOn;
+      this.splice('touchscreens_', index, 1, internalTouchscreen);
+    }
   }
 
   /**

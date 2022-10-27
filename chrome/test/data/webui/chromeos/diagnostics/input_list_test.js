@@ -307,6 +307,22 @@ export function inputListTestSuite() {
     assertFalse(touchscreenTester.getIsTabletMode());
   });
 
+  test('OnInternalDisplayPowerStateChanged', async () => {
+    await initializeInputList([], [fakeTouchDevices[1]]);
+
+    assertTrue(getCardByDeviceType('touchscreen').devices[0].testable);
+
+    provider.setInternalDisplayPowerOff();
+    await flushTasks();
+
+    assertFalse(getCardByDeviceType('touchscreen').devices[0].testable);
+
+    provider.setInternalDisplayPowerOn();
+    await flushTasks();
+
+    assertTrue(getCardByDeviceType('touchscreen').devices[0].testable);
+  });
+
   test('EmptySectionsHidden', async () => {
     await initializeInputList([], []);
     assertFalse(isVisible(getCardByDeviceType('keyboard')));

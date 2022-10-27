@@ -354,6 +354,30 @@ class FakeTabletModeObserver : public mojom::TabletModeObserver {
   bool is_tablet_mode_ = false;
 };
 
+// A mock observer that records current internal display power state and counts
+// when OnInternalDisplayPowerStateChanged function is called.
+class FakeInternalDisplayPowerStateObserver
+    : public mojom::InternalDisplayPowerStateObserver {
+ public:
+  uint32_t num_display_state_change_calls() const {
+    return num_display_state_change_calls_;
+  }
+
+  bool is_display_on() { return is_display_on_; }
+
+  // mojom::InternalDisplayPowerStateObserver:
+  void OnInternalDisplayPowerStateChanged(bool is_display_on) override {
+    ++num_display_state_change_calls_;
+    is_display_on_ = is_display_on;
+  }
+
+  mojo::Receiver<mojom::InternalDisplayPowerStateObserver> receiver{this};
+
+ private:
+  uint32_t num_display_state_change_calls_ = 0;
+  bool is_display_on_ = true;
+};
+
 // A utility class that fakes obtaining information about an evdev.
 class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
  public:
@@ -2123,6 +2147,57 @@ TEST_F(InputDataProviderTest, TabletModeObservationInitAsTabletMode) {
 
   // Initial state is set to "in-tablet-mode".
   ASSERT_TRUE(future.Get<0>());
+}
+
+// Test the behavior when the initial internal display power state is on.
+TEST_F(InputDataProviderTest, InternalDisplayPowerStateAsDefault) {
+  FakeInternalDisplayPowerStateObserver fake_observer;
+
+  // Attach a internal display power state observer.
+  provider_->ObserveInternalDisplayPowerState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  ASSERT_TRUE(provider_->is_internal_display_on());
+}
+
+// Test the behavior when the initial internal display power state is off.
+TEST_F(InputDataProviderTest, InternalDisplayPowerStateAsOff) {
+  FakeInternalDisplayPowerStateObserver fake_observer;
+
+  // Set initial display state as internal off and external on.
+  auto* displayConfigurator = Shell::Get()->display_configurator();
+  displayConfigurator->reset_requested_power_state_for_test();
+  displayConfigurator->SetInitialDisplayPower(
+      chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON);
+
+  // Attach a internal display power state observer.
+  provider_->ObserveInternalDisplayPowerState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  ASSERT_FALSE(provider_->is_internal_display_on());
+}
+
+// Test the behavior when the internal display power state has changed.
+TEST_F(InputDataProviderTest, InternalDisplayPowerStateObserver) {
+  FakeInternalDisplayPowerStateObserver fake_observer;
+
+  // Attach a internal display power state observer.
+  provider_->ObserveInternalDisplayPowerState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+
+  provider_->OnPowerStateChanged(
+      chromeos::DISPLAY_POWER_INTERNAL_OFF_EXTERNAL_ON);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(fake_observer.is_display_on());
+  EXPECT_EQ(1u, fake_observer.num_display_state_change_calls());
+
+  provider_->OnPowerStateChanged(
+      chromeos::DISPLAY_POWER_INTERNAL_ON_EXTERNAL_OFF);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(fake_observer.is_display_on());
+  EXPECT_EQ(2u, fake_observer.num_display_state_change_calls());
 }
 
 }  // namespace diagnostics

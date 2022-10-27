@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/aura/window.h"
+#include "ui/display/manager/display_configurator.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -41,7 +42,8 @@ class InputDataProvider : public mojom::InputDataProvider,
                           public ui::DeviceEventObserver,
                           public KeyboardInputDataEventWatcher::Dispatcher,
                           public views::WidgetObserver,
-                          public TabletModeObserver {
+                          public TabletModeObserver,
+                          public display::DisplayConfigurator::Observer {
  public:
   explicit InputDataProvider(aura::Window* window);
   explicit InputDataProvider(
@@ -78,6 +80,10 @@ class InputDataProvider : public mojom::InputDataProvider,
       mojo::PendingRemote<mojom::TabletModeObserver> observer,
       ObserveTabletModeCallback callback) override;
 
+  void ObserveInternalDisplayPowerState(
+      mojo::PendingRemote<mojom::InternalDisplayPowerStateObserver> observer)
+      override;
+
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
 
@@ -88,6 +94,12 @@ class InputDataProvider : public mojom::InputDataProvider,
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
+
+  // display::DisplayConfigurator::Observer
+  void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;
+
+  // Get the value of is_internal_display_on_ for testing purpose.
+  bool is_internal_display_on() { return is_internal_display_on_; }
 
  protected:
   base::SequenceBound<InputDeviceInfoHelper> info_helper_{
@@ -127,6 +139,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   // top-right key glyph).
   bool has_tablet_mode_switch_ = false;
 
+  // Whether the internal touchscreen is on, used to determine if the internal
+  // display is testable or not.
+  bool is_internal_display_on_ = true;
+
   // Map by evdev ids to information blocks.
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
   base::flat_map<int, std::unique_ptr<InputDataProviderKeyboard::AuxData>>
@@ -145,6 +161,9 @@ class InputDataProvider : public mojom::InputDataProvider,
   mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
 
   mojo::Remote<mojom::TabletModeObserver> tablet_mode_observer_;
+
+  mojo::Remote<mojom::InternalDisplayPowerStateObserver>
+      internal_display_power_state_observer_;
 
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 

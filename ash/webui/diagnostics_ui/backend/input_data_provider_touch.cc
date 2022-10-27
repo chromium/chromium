@@ -13,7 +13,8 @@ InputDataProviderTouch::InputDataProviderTouch() {}
 InputDataProviderTouch::~InputDataProviderTouch() {}
 
 mojom::TouchDeviceInfoPtr InputDataProviderTouch::ConstructTouchDevice(
-    const InputDeviceInformation* device_info) {
+    const InputDeviceInformation* device_info,
+    bool is_internal_display_on) {
   mojom::TouchDeviceInfoPtr result = mojom::TouchDeviceInfo::New();
 
   result->id = device_info->evdev_id;
@@ -24,6 +25,15 @@ mojom::TouchDeviceInfoPtr InputDataProviderTouch::ConstructTouchDevice(
                      ? mojom::TouchDeviceType::kPointer
                      : mojom::TouchDeviceType::kDirect;
   result->name = device_info->event_device_info.name();
+  result->testable = true;
+
+  // If the device is internal touchscreen, we check its initial testability
+  // by looking at the internal display current power state.
+  if (result->type == mojom::TouchDeviceType::kDirect &&
+      result->connection_type == mojom::ConnectionType::kInternal) {
+    result->testable = is_internal_display_on;
+  }
+
   return result;
 }
 

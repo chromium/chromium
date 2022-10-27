@@ -5,7 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 import {GetConnectedDevicesResponse} from './diagnostics_types.js';
-import {ConnectedDevicesObserverRemote, InputDataProviderInterface, KeyboardInfo, KeyboardObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardInfo, KeyboardObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -18,6 +18,8 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
   private keyboards_: KeyboardInfo[] = [];
   private keyboardObservers_: KeyboardObserverRemote[][] = [];
   private tabletModeObserver_: TabletModeObserverRemote;
+  private internalDisplayPowerStateObserver_:
+      InternalDisplayPowerStateObserverRemote;
   private touchDevices_: TouchDeviceInfo[] = [];
   constructor() {
     this.registerMethods();
@@ -53,6 +55,27 @@ export class FakeInputDataProvider implements InputDataProviderInterface {
       return;
     }
     this.keyboardObservers_[id].push(remote);
+  }
+
+  observeInternalDisplayPowerState(
+      remote: InternalDisplayPowerStateObserverRemote): void {
+    this.internalDisplayPowerStateObserver_ = remote;
+  }
+
+  /**
+   * Sets the internal display power state to be on.
+   */
+  setInternalDisplayPowerOn(): void {
+    this.internalDisplayPowerStateObserver_.onInternalDisplayPowerStateChanged(
+        true);
+  }
+
+  /**
+   * Sets the internal display power state to be off.
+   */
+  setInternalDisplayPowerOff(): void {
+    this.internalDisplayPowerStateObserver_.onInternalDisplayPowerStateChanged(
+        false);
   }
 
   /**

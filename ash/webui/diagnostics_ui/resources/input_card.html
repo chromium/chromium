@@ -42,7 +42,8 @@
           </div>
           <cr-button id="inputDeviceTestButton"
               on-click="handleTestButtonClick_"
-              aria-labelledby="inputDeviceTestButton deviceName">
+              aria-labelledby="inputDeviceTestButton deviceName"
+              disabled="[[!getDeviceTestability(device)]]">
             [[i18n('inputDeviceTest')]]
           </cr-button>
         </div>

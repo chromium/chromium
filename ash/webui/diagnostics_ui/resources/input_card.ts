@@ -102,6 +102,20 @@ export class InputCardElement extends InputCardElementBase {
         'inputDescription' + connectionTypeString + deviceTypeString);
   }
 
+  /**
+   * Grey out the test button if the test device is untestable. e.g. if the
+   * laptop's lid is closed, the internal touchscreen is untestable.
+   */
+  private getDeviceTestability(device: KeyboardInfo|TouchDeviceInfo): boolean {
+    // If the device has the key 'testable', we check its testable state.
+    if ('testable' in device) {
+      return (device as TouchDeviceInfo).testable;
+    }
+    return true;
+  }
+
+
+
   private handleTestButtonClick_(e: PointerEvent): void {
     const inputDeviceButton = e.target as CrButtonElement;
     assert(inputDeviceButton);
