@@ -23,13 +23,12 @@ namespace ui {
 
 namespace {
 
-// Cache at most 5 ColorProviders to prevent unbounded storage from user_color.
-constexpr size_t kCacheSize = 5;
+// Estimated upper limit of what we should record for cache size.
+constexpr int kCacheHistogramMax = 100;
 
 class GlobalManager : public ColorProviderManager {
  public:
-  explicit GlobalManager(size_t cache_size = kCacheSize)
-      : ColorProviderManager(cache_size) {}
+  GlobalManager() = default;
   GlobalManager(const GlobalManager&) = delete;
   GlobalManager& operator=(const GlobalManager&) = delete;
   ~GlobalManager() override = default;
@@ -84,8 +83,7 @@ ColorProviderManager::Key& ColorProviderManager::Key::operator=(const Key&) =
 
 ColorProviderManager::Key::~Key() = default;
 
-ColorProviderManager::ColorProviderManager(size_t cache_size)
-    : color_providers_(cache_size) {
+ColorProviderManager::ColorProviderManager() {
   ResetColorProviderInitializerList();
 }
 
@@ -106,10 +104,10 @@ ColorProviderManager& ColorProviderManager::Get() {
 }
 
 // static
-ColorProviderManager& ColorProviderManager::GetForTesting(size_t cache_size) {
+ColorProviderManager& ColorProviderManager::GetForTesting() {
   absl::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value())
-    manager.emplace(cache_size);
+    manager.emplace();
   return manager.value();
 }
 
@@ -126,7 +124,7 @@ void ColorProviderManager::ResetColorProviderInitializerList() {
 
 void ColorProviderManager::ResetColorProviderCache() {
   if (!color_providers_.empty())
-    color_providers_.Clear();
+    color_providers_.clear();
 }
 
 void ColorProviderManager::AppendColorProviderInitializer(
@@ -139,7 +137,7 @@ void ColorProviderManager::AppendColorProviderInitializer(
 }
 
 ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
-  auto iter = color_providers_.Get(key);
+  auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
     auto provider = std::make_unique<ColorProvider>();
     DCHECK(initializer_list_);
@@ -147,9 +145,9 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
       initializer_list_->Notify(provider.get(), key);
 
     provider->GenerateColorMap();
-    iter = color_providers_.Put(key, std::move(provider));
+    iter = color_providers_.emplace(key, std::move(provider)).first;
     base::UmaHistogramExactLinear("Views.ColorProviderCacheSize",
-                                  color_providers_.size(), kCacheSize);
+                                  color_providers_.size(), kCacheHistogramMax);
   }
   ColorProvider* provider = iter->second.get();
   DCHECK(provider);
