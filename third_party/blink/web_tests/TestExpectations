@@ -5198,12 +5198,6 @@ crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-b
 
 # Assorted virtual/threaded/.../wpt/scroll-animations tests
 crbug.com/1279648 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-iframe.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-quirks-mode.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors-writing-mode-rl.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-descriptors.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-quirks-mode.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-frame-size-changed.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-inline-orientation.html [ Failure ]
 crbug.com/1279648 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Failure Pass Timeout ]
 
@@ -7129,8 +7123,6 @@ crbug.com/1356118 [ Linux ] virtual/partitioned-cookies/external/wpt/html/anonym
 
 # Sheriff 2022-08-30
 crbug.com/1357621 [ Linux ] external/wpt/webauthn/getcredential-abort.https.html [ Failure Pass Timeout ]
-crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default.html [ Failure Pass ]
-crbug.com/1357917 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-writing-mode-rl.html [ Failure Pass ]
 
 # TODO(crbug.com/1358147): Re-enable this test
 virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Skip ]

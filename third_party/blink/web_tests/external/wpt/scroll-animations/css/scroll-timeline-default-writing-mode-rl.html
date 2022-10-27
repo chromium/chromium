@@ -42,16 +42,24 @@
 <div id="box"></div>
 <div id="covered"></div>
 
+<script src="/web-animations/testcommon.js"></script>
 <script>
-  window.addEventListener('load', function() {
+  document.documentElement.addEventListener('TestRendered', async () => {
+    runTest();
+  }, { once: true });
+
+  async function runTest() {
     const scroller = document.scrollingElement;
+
+    await waitForCompositorReady();
 
     // Move the scroller to the halfway point.
     const maxScroll = scroller.scrollWidth - scroller.clientWidth;
     scroller.scrollLeft = -0.5 * maxScroll;
 
-    window.requestAnimationFrame(() => {
-      document.documentElement.classList.remove("reftest-wait");
-    });
-  });
+    await waitForNextFrame();
+    await waitForNextFrame();
+
+    document.documentElement.classList.remove("reftest-wait");
+  }
 </script>

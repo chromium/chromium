@@ -38,17 +38,26 @@
 
 <div id="box"></div>
 <div id="covered"></div>
-
+<script src="/web-animations/testcommon.js"></script>
 <script>
-  window.addEventListener('load', function() {
-    const scroller = document.scrollingElement;
+document.documentElement.addEventListener('TestRendered', async () => {
+  runTest();
+}, { once: true });
 
-    // Move the scroller to the halfway point.
-    const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-    scroller.scrollTop = 0.5 * maxScroll;
+async function runTest() {
+  const scroller = document.scrollingElement;
 
-    window.requestAnimationFrame(() => {
-      document.documentElement.classList.remove("reftest-wait");
-    });
-  });
+  await waitForCompositorReady();
+
+  // Move the scroller to the halfway point. Then advance to the next frame
+  // to pick up the new timeline time.
+  const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+  scroller.scrollTop = 0.5 * maxScroll;
+
+  await waitForNextFrame();
+  await waitForNextFrame();
+
+  document.documentElement.classList.remove("reftest-wait");
+}
+
 </script>
