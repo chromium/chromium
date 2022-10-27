@@ -55,6 +55,10 @@ class TransferringOptimizer : public WritableStreamTransferringOptimizer {
 
 }  // namespace
 
+MainThreadTaskRunnerRestricted AccessMainThreadForGpuMemoryBufferManager() {
+  return {};
+}
+
 MediaStreamVideoTrackUnderlyingSink::MediaStreamVideoTrackUnderlyingSink(
     scoped_refptr<PushableMediaStreamVideoSource::Broker> source_broker)
     : source_broker_(std::move(source_broker)) {
@@ -195,10 +199,10 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
     if (accelerated_frame_pool_callback_in_progress_) {
       return absl::nullopt;
     }
-    if (!Thread::MainThread()->IsCurrentThread()) {
+    if (!IsMainThread()) {
       accelerated_frame_pool_callback_in_progress_ = true;
       Thread::MainThread()
-          ->GetDeprecatedTaskRunner()
+          ->GetTaskRunner(AccessMainThreadForGpuMemoryBufferManager())
           ->PostTaskAndReplyWithResult(
               FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce([]() {
                 return Platform::Current()->GetGpuMemoryBufferManager();
