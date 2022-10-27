@@ -16,7 +16,7 @@
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/common/origin_matcher.h"
-#include "content/browser/android/message_payload.h"
+#include "content/public/browser/android/message_payload.h"
 #include "content/public/browser/android/message_port_helper.h"
 
 namespace android_webview {

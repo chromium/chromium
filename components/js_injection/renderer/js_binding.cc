@@ -183,18 +183,18 @@ void JsBinding::PostMessage(gin::Arguments* args) {
     args->ThrowError();
     return;
   }
-  JsWebMessage js_message;
+  mojom::JsWebMessagePtr js_message;
   if (payload->IsString()) {
     std::u16string string;
     gin::Converter<std::u16string>::FromV8(args->isolate(), payload, &string);
-    js_message.payload = std::move(string);
+    js_message = mojom::JsWebMessage::NewStringValue(std::move(string));
   } else if (payload->IsArrayBuffer()) {
     v8::Local<v8::ArrayBuffer> array_buffer =
         v8::Local<v8::ArrayBuffer>::Cast(payload);
-    js_message.payload =
-        std::vector<uint8_t>(static_cast<uint8_t*>(array_buffer->Data()),
-                             static_cast<uint8_t*>(array_buffer->Data()) +
-                                 array_buffer->ByteLength());
+    mojo_base::BigBuffer big_buffer(array_buffer->ByteLength());
+    memcpy(big_buffer.data(), array_buffer->Data(), array_buffer->ByteLength());
+    js_message =
+        mojom::JsWebMessage::NewArrayBufferValue(std::move(big_buffer));
   } else {
     args->ThrowError();
     return;
@@ -226,7 +226,8 @@ void JsBinding::PostMessage(gin::Arguments* args) {
                         : nullptr;
   if (js_to_java_messaging) {
     js_to_java_messaging->PostMessage(
-        std::move(message), blink::MessagePortChannel::ReleaseHandles(ports));
+        std::move(js_message),
+        blink::MessagePortChannel::ReleaseHandles(ports));
   }
 }
 
