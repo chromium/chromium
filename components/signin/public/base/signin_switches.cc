@@ -20,7 +20,7 @@ BASE_FEATURE(kAccountIdMigration,
 // Sync feature forced on.
 BASE_FEATURE(kAllowSyncOffForChildAccounts,
              "AllowSyncOffForChildAccounts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, SigninChecker is created before displaying the sync consent
 // fragment during FRE.

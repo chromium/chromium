@@ -488,6 +488,12 @@ TEST_F(PrimaryAccountMutatorTest,
 // this test case and delete RevokeSyncConsent_MirrorConsistency_AllowSyncOff
 // as part of that cleanup.
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kAllowSyncOffForChildAccounts);
+#endif
+
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
                            RemoveAccountExpectation::kKeepAll
