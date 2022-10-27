@@ -2673,7 +2673,10 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   --executing_action_level_;
 #if BUILDFLAG(IS_MAC)
   for (auto* profile : GetAllProfiles()) {
-    std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
+    auto* provider = GetProviderForProfile(profile);
+    if (!provider)
+      continue;
+    std::vector<AppId> app_ids = provider->registrar().GetAppIds();
     for (auto& app_id : app_ids) {
       auto* app_shim_manager = apps::AppShimManager::Get();
       AppShimHost* app_shim_host = app_shim_manager->FindHost(profile, app_id);
