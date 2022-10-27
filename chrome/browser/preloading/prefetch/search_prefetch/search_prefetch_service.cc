@@ -873,8 +873,7 @@ bool SearchPrefetchService::LoadFromPrefs() {
     if (!navigation_url.is_valid())
       continue;
 
-    base::Value::ConstListView const prefetch_url_and_time =
-        base::Value::AsListValue(element.second).GetListDeprecated();
+    const base::Value::List& prefetch_url_and_time = element.second.GetList();
 
     if (prefetch_url_and_time.size() != 2 ||
         !prefetch_url_and_time[0].is_string() ||
