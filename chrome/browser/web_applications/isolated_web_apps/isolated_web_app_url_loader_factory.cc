@@ -367,22 +367,9 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                   DCHECK_EQ(
                       web_bundle_id->type(),
                       web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-                  auto* isolated_web_app_reader_registry =
-                      IsolatedWebAppReaderRegistryFactory::GetForProfile(
-                          profile_);
-                  if (!isolated_web_app_reader_registry) {
-                    LogErrorAndFail(
-                        "Support for Isolated Web Apps is not enabled.",
-                        std::move(loader_client));
-                    return;
-                  }
-                  mojo::MakeSelfOwnedReceiver(
-                      std::make_unique<IsolatedWebAppURLLoader>(
-                          isolated_web_app_reader_registry, content.path,
-                          *web_bundle_id, std::move(loader_client),
-                          resource_request, frame_tree_node_id_),
-                      mojo::PendingReceiver<network::mojom::URLLoader>(
-                          std::move(loader_receiver)));
+                  HandleSignedBundle(
+                      content.path, *web_bundle_id, std::move(loader_receiver),
+                      resource_request, std::move(loader_client));
                 },
                 [&](const IsolationData::DevModeBundle& content) {
                   DCHECK_EQ(
