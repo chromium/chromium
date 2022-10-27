@@ -245,8 +245,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        Assert.assertTrue(
-                mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
 
         // With fully concealed elements, scroll should trigger keyboard hide.
         reset(mAutocompleteDelegate);
@@ -289,8 +287,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        Assert.assertFalse(
-                mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
 
         // Build separate list of suggestions so that these are accepted as a new set.
         // We want to follow the same restrictions as the original list (specifically: have a
@@ -300,8 +296,6 @@ public class AutocompleteMediatorUnitTest {
                 buildDummySuggestionsList(mSuggestionsList.size(), "SuggestionB");
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(newList, null), "", true);
-        Assert.assertTrue(
-                mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
     }
 
     @Test
@@ -320,8 +314,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(heightWithOneConcealedItem);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        Assert.assertTrue(
-                mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
 
         // "Hide keyboard", report larger area and re-evaluate the results. We should see no
         // difference, as the logic should only evaluate presence of items concealed when keyboard
@@ -330,8 +322,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionDropdownHeightChanged(heightOfOAllSuggestions);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
-        Assert.assertTrue(
-                mMediator.getDropdownItemViewInfoListBuilderForTest().hasFullyConcealedElements());
     }
 
     @Test

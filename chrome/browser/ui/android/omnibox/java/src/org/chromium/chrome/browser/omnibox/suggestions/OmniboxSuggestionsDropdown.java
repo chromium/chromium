@@ -116,28 +116,66 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         @Override
         public int scrollVerticallyBy(
-                int deltaY, RecyclerView.Recycler recycler, RecyclerView.State state) {
-            int scrollY = super.scrollVerticallyBy(deltaY, recycler, state);
-            return updateKeyboardVisibilityAndScroll(scrollY, deltaY);
+                int requestedDeltaY, RecyclerView.Recycler recycler, RecyclerView.State state) {
+            int resultingDeltaY = super.scrollVerticallyBy(requestedDeltaY, recycler, state);
+            return updateKeyboardVisibilityAndScroll(resultingDeltaY, requestedDeltaY);
         }
 
         /**
          * Respond to scroll event.
-         * - Upon first scroll down, suppresses the scroll delta and dismisses the
-         *   keyboard,
-         * - Subsequent scroll down actions should result in scroll,
-         * - Upon overscroll to top (= when the list is already on top and a scroll up is
-         *   requested), request keyboard to show up.
+         * - Upon scroll down from the top, if the distance scrolled is same as distance requested
+         *   (= the list has enough content to respond to the request), hide the keyboard and
+         *   suppress the scroll action by reporting 0 as the resulting scroll distance.
+         * - Upon scroll up to the top, if the distance scrolled is shorter than the distance
+         *   requested (= the list has reached the top), show the keyboard.
+         * - In all other cases, take no action.
          *
-         * @param scrollY The current vertical scroll position.
-         * @param deltaY The requested scroll delta.
-         * @return Value of scrollY, if scroll is permitted, or 0 when it is suppressed.
+         * The code reports 0 if and only if the keyboard state transitions from "shown" to
+         * "hidden".
+         *
+         * The logic remembers the last requested keyboard state, so that the keyboard is not
+         * repeatedly called up or requested to be hidden.
+         *
+         * @param resultingDeltaY The scroll distance by which the LayoutManager intends to scroll.
+         *         Negative values indicate scroll up, positive values indicate scroll down.
+         * @param requestedDeltaY The scroll distance requested by the user via gesture.
+         *         Negative values indicate scroll up, positive values indicate scroll down.
+         * @return Value of resultingDeltaY, if scroll is permitted, or 0 when it is suppressed.
          */
         @VisibleForTesting
-        /* package */ int updateKeyboardVisibilityAndScroll(int scrollY, int deltaY) {
-            boolean keyboardShouldShow = (scrollY == 0 && deltaY <= 0);
+        /* package */ int updateKeyboardVisibilityAndScroll(
+                int resultingDeltaY, int requestedDeltaY) {
+            // If the effective scroll distance is:
+            // - same as the desired one, we have enough content to scroll in a given direction
+            //   (negative values = up, positive values = down).
+            // - if resultingDeltaY is smaller than requestedDeltaY, we have reached the bottom of
+            //   the list. This can occur only if both values are greater than or equal to 0:
+            //   having reached the bottom of the list, the scroll request cannot be satisfied and
+            //   the resultingDeltaY is clamped.
+            // - if resultingDeltaY is greater than requestedDeltaY, we have reached the top of the
+            //   list. This can occur only if both values are less than or equal to zero:
+            //   having reached the top of the list, the scroll request cannot be satisfied and
+            //   the resultingDeltaY is clamped.
+            //
+            // When resultingDeltaY is less than requestedDeltaY we know we have reached the bottom
+            // of the list and weren't able to satisfy the requested scroll distance.
+            // This could happen in one of two cases:
+            // 1. the list was previously scrolled down (and we have already toggled keyboard
+            //    visibility), or
+            // 2. the list is too short, and almost entirely fits on the screen, leaving at most
+            //    just a few pixels of content hiding under the keyboard.
+            // There's no need to dismiss the keyboard in any of these cases.
+            if (resultingDeltaY < requestedDeltaY) return resultingDeltaY;
+            // Otherwise decide whether keyboard should be shown or not.
+            // We want to call keyboard up only when we know we reached the top of the list.
+            // Note: the condition below evaluates `true` only if the scroll direction is "up",
+            // meaning values are <= 0, meaning all three conditions are true:
+            // - resultingDeltaY <= 0
+            // - requestedDeltaY <= 0
+            // - Math.abs(resultingDeltaY) < Math.abs(requestedDeltaY)
+            boolean keyboardShouldShow = (resultingDeltaY > requestedDeltaY);
 
-            if (mLastKeyboardShowState == keyboardShouldShow) return scrollY;
+            if (mLastKeyboardShowState == keyboardShouldShow) return resultingDeltaY;
             mLastKeyboardShowState = keyboardShouldShow;
 
             if (keyboardShouldShow) {
@@ -150,7 +188,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 }
                 return 0;
             }
-            return scrollY;
+            return resultingDeltaY;
         }
 
         /**

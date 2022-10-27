@@ -16,6 +16,7 @@ import android.view.ContextThemeWrapper;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,12 +49,19 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private Context mContext;
 
     private OmniboxSuggestionsDropdown mDropdown;
+    private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
 
     @Before
     public void setUp() {
         mContext = new ContextThemeWrapper(
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mDropdown = new OmniboxSuggestionsDropdown(mContext);
+        mListener = mDropdown.getLayoutScrollListener();
+    }
+
+    @After
+    public void tearDown() {
+        mListener.resetKeyboardShowState();
     }
 
     @Test
@@ -90,18 +98,15 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @SmallTest
     public void testScrollListener_keyboardShouldDismissOnScrollAttemptFromTop() {
         mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
-        var listener = mDropdown.getLayoutScrollListener();
-        // Don't flake if the list was previously scrolled by another test.
-        listener.resetKeyboardShowState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, 10));
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         verify(mDropdownScrollListener, times(1)).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Subsequent scroll events should pass through.
         // Keyboard should not be dismissed again.
-        assertEquals(5, listener.updateKeyboardVisibilityAndScroll(5, 10));
+        assertEquals(5, mListener.updateKeyboardVisibilityAndScroll(5, 10));
         verifyNoMoreInteractions(mDropdownScrollListener);
     }
 
@@ -109,18 +114,15 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @SmallTest
     public void testScrollListener_keyboardShouldDismissOnScrollAttemptFromScrolledList() {
         mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
-        var listener = mDropdown.getLayoutScrollListener();
-        // Don't flake if the list was previously scrolled by another test.
-        listener.resetKeyboardShowState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(10, 10));
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         verify(mDropdownScrollListener, times(1)).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Subsequent scroll events should pass through.
         // Keyboard should not be dismissed again.
-        assertEquals(5, listener.updateKeyboardVisibilityAndScroll(5, 10));
+        assertEquals(5, mListener.updateKeyboardVisibilityAndScroll(5, 10));
         verifyNoMoreInteractions(mDropdownScrollListener);
     }
 
@@ -129,26 +131,57 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void testScrollListener_keyboardShouldShowOnScrollToTop() {
         mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
         mDropdown.setSuggestionDropdownOverscrolledToTopListener(mDropdownScrollToTopListener);
-        var listener = mDropdown.getLayoutScrollListener();
-        // Don't flake if the list was previously scrolled by another test.
-        listener.resetKeyboardShowState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, 10));
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         verify(mDropdownScrollListener, times(1)).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Pretend we scroll up, while keyboard is hidden.
-        assertEquals(5, listener.updateKeyboardVisibilityAndScroll(5, -5));
+        assertEquals(-5, mListener.updateKeyboardVisibilityAndScroll(-5, -5));
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Overscroll to top. Expect the keyboard to be called in.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, -5));
+        assertEquals(-5, mListener.updateKeyboardVisibilityAndScroll(-5, -10));
         verify(mDropdownScrollToTopListener, times(1)).run();
         verifyNoMoreInteractions(mDropdownScrollToTopListener);
 
         // Overscroll again. Make sure we don't call the keyboard up again.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, -5));
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(0, -5));
+        verifyNoMoreInteractions(mDropdownScrollListener);
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollListener_notDismissingKeyboardWhenScrollDoesNotHappen() {
+        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+
+        // Pretend we're scrolling down (delta=10) but there is no content to move to (scroll=0).
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(0, 10));
+        // Confirm that we're not hiding the keyboard.
+        verifyNoMoreInteractions(mDropdownScrollListener);
+
+        // Pretend we're scrolling up now (delta=-10) but we're already on top and can't move.
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(0, -10));
+        // Confirm that we're not trying to show the keyboard.
+        verifyNoMoreInteractions(mDropdownScrollListener);
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollListener_notDismissingKeyboardWhenTheListIsOnlyBarelyUnderTheKeyboard() {
+        mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
+
+        // We want to scroll by 10px, but there's only 1px of content. Don't hide the keyboard.
+        assertEquals(1, mListener.updateKeyboardVisibilityAndScroll(1, 10));
+        verifyNoMoreInteractions(mDropdownScrollListener);
+
+        // We want to scroll by 10px, but there's only 9px of content. Don't hide the keyboard.
+        assertEquals(9, mListener.updateKeyboardVisibilityAndScroll(9, 10));
+        verifyNoMoreInteractions(mDropdownScrollListener);
+
+        // But then, if we scroll back up, we likely should not ask for keyboard to show.
+        assertEquals(-9, mListener.updateKeyboardVisibilityAndScroll(-9, -10));
         verifyNoMoreInteractions(mDropdownScrollListener);
     }
 
@@ -156,20 +189,19 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @SmallTest
     public void testScrollListener_reemitsKeyboardDismissOnReset() {
         mDropdown.setSuggestionDropdownScrollListener(mDropdownScrollListener);
-        var listener = mDropdown.getLayoutScrollListener();
-        // Don't flake if the list was previously scrolled by another test.
-        listener.resetKeyboardShowState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, 10));
+        // This time the scroll happens, even if just by one pixel.
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         verify(mDropdownScrollListener, times(1)).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Simulate lists being shown again.
-        listener.resetKeyboardShowState();
+        mListener.resetKeyboardShowState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, 10));
+        // Condition: the list is long enough that the scroll distance equals to delta.
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         verify(mDropdownScrollListener, times(2)).run();
         verifyNoMoreInteractions(mDropdownScrollListener);
     }
@@ -179,16 +211,13 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void testScrollListener_inactiveWhenObserverNotEquipped() {
         // Note: do not equip the listeners (no calls to setSuggestionDropdownScrollListener() and
         // setSuggestionDropdownOverscrolledToTopListener).
-        var listener = mDropdown.getLayoutScrollListener();
-        listener.resetKeyboardShowState();
-
         // None of the calls below should invoke listeners (and crash).
         // Scroll down from top.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, 10));
+        assertEquals(0, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         // Scroll down from the middle. Confirm new scroll position is accepted.
-        assertEquals(10, listener.updateKeyboardVisibilityAndScroll(10, 10));
+        assertEquals(10, mListener.updateKeyboardVisibilityAndScroll(10, 10));
         // Overscroll to top.
-        assertEquals(0, listener.updateKeyboardVisibilityAndScroll(0, -10));
+        assertEquals(-10, mListener.updateKeyboardVisibilityAndScroll(-10, -10));
         verifyNoMoreInteractions(mDropdownScrollListener);
         verifyNoMoreInteractions(mDropdownScrollToTopListener);
     }

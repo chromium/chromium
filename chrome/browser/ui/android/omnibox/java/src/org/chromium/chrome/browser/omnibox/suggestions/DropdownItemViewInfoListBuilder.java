@@ -63,7 +63,6 @@ class DropdownItemViewInfoListBuilder {
     private @NonNull BookmarkState mBookmarkState;
     @Px
     private int mDropdownHeight;
-    private boolean mBuiltListHasFullyConcealedElements;
 
     DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
@@ -222,7 +221,6 @@ class DropdownItemViewInfoListBuilder {
         if (!hasFocus) {
             if (mImageFetcher != null) mImageFetcher.clear();
             if (mFaviconFetcher != null) mFaviconFetcher.clearCache();
-            mBuiltListHasFullyConcealedElements = false;
         }
 
         mHeaderProcessor.onUrlFocusChange(hasFocus);
@@ -270,7 +268,6 @@ class DropdownItemViewInfoListBuilder {
                 autocompleteResult.groupSuggestionsBySearchVsURL(
                         1, Math.min(numVisibleSuggestions, firstSuggestionWithHeader));
             }
-            mBuiltListHasFullyConcealedElements = (numVisibleSuggestions < suggestionsCount);
             if (numVisibleSuggestions < firstSuggestionWithHeader) {
                 autocompleteResult.groupSuggestionsBySearchVsURL(
                         numVisibleSuggestions, firstSuggestionWithHeader);
@@ -383,11 +380,6 @@ class DropdownItemViewInfoListBuilder {
             }
         }
         return 0;
-    }
-
-    /** @return Whether built list contains fully concealed elements. */
-    boolean hasFullyConcealedElements() {
-        return mBuiltListHasFullyConcealedElements;
     }
 
     /**

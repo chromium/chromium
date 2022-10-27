@@ -407,38 +407,6 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    public void visibleSuggestions_calculatesPresenceOfConcealedSuggestionsFromDropdownHeight() {
-        mBuilder.onNativeInitialized();
-        final AutocompleteMatch suggestion =
-                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                        .build();
-        final int viewHeight = 20;
-
-        final AutocompleteResult result = AutocompleteResult.fromCache(
-                Arrays.asList(suggestion, suggestion, suggestion), null);
-        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
-        when(mMockSuggestionProcessor.getMinimumViewHeight()).thenReturn(viewHeight);
-
-        mBuilder.setDropdownHeightWithKeyboardActive(3 * viewHeight);
-        mBuilder.buildDropdownViewInfoList(result);
-        Assert.assertFalse(mBuilder.hasFullyConcealedElements());
-
-        mBuilder.setDropdownHeightWithKeyboardActive(2 * viewHeight);
-        mBuilder.buildDropdownViewInfoList(result);
-        Assert.assertTrue(mBuilder.hasFullyConcealedElements());
-
-        // Third suggestion is partially visible, so counts as visible.
-        mBuilder.setDropdownHeightWithKeyboardActive(3 * viewHeight - 1);
-        mBuilder.buildDropdownViewInfoList(result);
-        Assert.assertFalse(mBuilder.hasFullyConcealedElements());
-
-        mBuilder.setDropdownHeightWithKeyboardActive(2 * viewHeight + 1);
-        mBuilder.buildDropdownViewInfoList(result);
-        Assert.assertFalse(mBuilder.hasFullyConcealedElements());
-    }
-
-    @Test
-    @SmallTest
     public void partialGrouping_matchesWithHeaderAreNotPromotedAboveURLs() {
         final SuggestionProcessor mockProcessor = mock(SuggestionProcessor.class);
         mBuilder.registerSuggestionProcessor(mockProcessor);
