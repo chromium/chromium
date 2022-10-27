@@ -27,7 +27,6 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
 #include "v8-local-handle.h"
 #include "v8-primitive.h"
 #include "v8-value.h"
@@ -211,7 +210,7 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   }
 
   for (auto& obj : objs) {
-    if (blink::V8MessagePort::HasInstance(obj, args->isolate())) {
+    if (blink::WebMessagePortConverter::IsMessagePort(args->isolate(), obj)) {
       absl::optional<blink::MessagePortChannel> port =
           blink::WebMessagePortConverter::
               DisentangleAndExtractMessagePortChannel(args->isolate(), obj);

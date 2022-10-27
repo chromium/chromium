@@ -20,6 +20,9 @@ class MessagePortChannel;
 
 class BLINK_EXPORT WebMessagePortConverter {
  public:
+  // Check if the given value is a MessagePort.
+  static bool IsMessagePort(v8::Isolate* isolate, v8::Local<v8::Value> value);
+
   // Disentangle and extract a MessagePortChannel from a v8 wrapper of
   // MessagePort. If the wrapper is not MessagePort or the MessagePort is
   // neutered, it will return nullopt.
