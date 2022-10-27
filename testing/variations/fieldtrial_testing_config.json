@@ -9139,35 +9139,6 @@
             ]
         }
     ],
-    "RelatedSearches": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "MVP_20210915",
-                    "params": {
-                        "default_query_chip": "true",
-                        "default_query_max_width_sp": "115",
-                        "language_allowlist": "en",
-                        "needs_content": "true",
-                        "needs_url": "true",
-                        "stamp": "1Rs"
-                    },
-                    "enable_features": [
-                        "RelatedSearches",
-                        "RelatedSearchesInBar",
-                        "RelatedSearchesUi"
-                    ],
-                    "disable_features": [
-                        "RelatedSearchesAlternateUx",
-                        "RelatedSearchesSimplifiedUx"
-                    ]
-                }
-            ]
-        }
-    ],
     "RemoveCanceledTasksInTaskQueue2": [
         {
             "platforms": [

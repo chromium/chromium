@@ -191,8 +191,9 @@ class RelatedSearchesStamp {
 
     /** @return whether the runtime configuration has a URL sending permissions requirement. */
     private boolean isRelatedSearchesUrlNeeded() {
-        return mPolicy.isRelatedSearchesParamEnabled(
-                       ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME)
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                       ChromeFeatureList.RELATED_SEARCHES,
+                       ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME, true)
                 || mPolicy.isMissingRelatedSearchesConfiguration();
     }
 
@@ -201,8 +202,9 @@ class RelatedSearchesStamp {
      *         requirement.
      */
     private boolean isRelatedSearchesContentNeeded() {
-        return mPolicy.isRelatedSearchesParamEnabled(
-                       ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME)
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                       ChromeFeatureList.RELATED_SEARCHES,
+                       ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME, true)
                 || mPolicy.isMissingRelatedSearchesConfiguration();
     }
 

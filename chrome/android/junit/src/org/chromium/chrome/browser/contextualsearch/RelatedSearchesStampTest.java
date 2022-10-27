@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
@@ -111,6 +112,25 @@ public class RelatedSearchesStampTest {
             assertThat(featureName, is(ChromeFeatureList.RELATED_SEARCHES_UI));
             assertThat(paramName, is(RELATED_SEARCHES_VERBOSITY_PARAM));
             return sRelatedSearchesVerbosity;
+        }
+
+        @Implementation
+        protected static boolean getFieldTrialParamByFeatureAsBoolean(
+                String featureName, String paramName, boolean defaultValue) {
+            assertThat(featureName, is(ChromeFeatureList.RELATED_SEARCHES));
+            assertThat(paramName,
+                    anyOf(is(ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME),
+                            is(ContextualSearchFieldTrial
+                                            .RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME)));
+            if (paramName.equals(
+                        ContextualSearchFieldTrial.RELATED_SEARCHES_NEEDS_URL_PARAM_NAME)) {
+                return sRelatedSearchesNeedsUrl == null ? defaultValue : sRelatedSearchesNeedsUrl;
+            } else if (paramName.equals(ContextualSearchFieldTrial
+                                                .RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME)) {
+                return sRelatedSearchesNeedsContent == null ? defaultValue
+                                                            : sRelatedSearchesNeedsContent;
+            }
+            return defaultValue;
         }
 
         @Implementation

@@ -883,7 +883,7 @@ BASE_FEATURE(kReengagementNotification,
 
 BASE_FEATURE(kRelatedSearches,
              "RelatedSearches",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedSearchesAlternateUx,
              "RelatedSearchesAlternateUx",
@@ -891,7 +891,7 @@ BASE_FEATURE(kRelatedSearchesAlternateUx,
 
 BASE_FEATURE(kRelatedSearchesInBar,
              "RelatedSearchesInBar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedSearchesSimplifiedUx,
              "RelatedSearchesSimplifiedUx",
@@ -899,7 +899,7 @@ BASE_FEATURE(kRelatedSearchesSimplifiedUx,
 
 BASE_FEATURE(kRelatedSearchesUi,
              "RelatedSearchesUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRequestDesktopSiteDefaults,
              "RequestDesktopSiteDefaults",
