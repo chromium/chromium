@@ -819,7 +819,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         GetApplicationContext()->GetMetricsService();
     if (metrics) {
       metrics->Stop();
+      // MetricsService::Stop() depends on a committed local state, and does so
+      // asynchronously. To avoid losing metrics, this minimum wait is required.
+      // This will introduce a wait that will likely be the source of a number
+      // of watchdog kills, but it should still be fewer than the number of
+      // kills `_chromeMain.reset()` is responsible for.
+      dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+      GetApplicationContext()->GetLocalState()->CommitPendingWrite(
+          {}, base::BindOnce(^{
+            dispatch_semaphore_signal(semaphore);
+          }));
+      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
+
     return;
   }
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
