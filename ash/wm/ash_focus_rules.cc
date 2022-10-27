@@ -240,9 +240,13 @@ aura::Window* AshFocusRules::GetTopmostWindowToActivateInContainer(
     aura::Window* ignore) const {
   for (aura::Window* child : base::Reversed(container->children())) {
     WindowState* window_state = WindowState::Get(child);
+    // A floated window should not be activatable if it's hidden on an inactive
+    // desk.
     if (child != ignore && window_state->CanActivate() &&
-        !window_state->IsMinimized())
+        !window_state->IsMinimized() &&
+        !(window_state->IsFloated() && !child->IsVisible())) {
       return child;
+    }
   }
   return nullptr;
 }

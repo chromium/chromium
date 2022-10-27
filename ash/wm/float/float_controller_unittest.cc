@@ -559,6 +559,34 @@ TEST_F(WindowFloatTest, FloatWindowWorkAreaConsiderations) {
             docked_magnifier_controller->GetMagnifierHeightForTesting());
 }
 
+// Test that floated window are not blocking keyboard events when it's on an
+// inactive desk.
+TEST_F(WindowFloatTest, FloatWindowShouldNotBlockKeyboardEvents) {
+  auto* desks_controller = DesksController::Get();
+  // Float `window_1` at `desk_1`.
+  auto* desk_1 = desks_controller->desks()[0].get();
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
+  // Verify `window_1` belongs to `desk_1`.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_1);
+  NewDesk();
+  auto* desk_2 = desks_controller->desks()[1].get();
+  // Move to `desk_2`.
+  ActivateDesk(desk_2);
+  // Going into overview mode from keyboard shortcut.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
+  // Verify we are in overview mode.
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  // Repeat.
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
+  // Verify we are in overview mode.
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+}
+
 class TabletWindowFloatTest : public WindowFloatTest {
  public:
   TabletWindowFloatTest() = default;
