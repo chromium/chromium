@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -25,7 +24,6 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -613,9 +611,7 @@ void HoldingSpaceItemChipView::UpdateLabels() {
       : item()->secondary_text_color()
           ? cros_styles::ResolveColor(
                 item()->secondary_text_color().value(),
-                DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),
-                base::FeatureList::IsEnabled(
-                    features::kSemanticColorsDebugOverride))
+                DarkLightModeControllerImpl::Get()->IsDarkModeEnabled())
           : AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kTextColorSecondary));
   secondary_label_->SetVisible(!secondary_label_->GetText().empty());
