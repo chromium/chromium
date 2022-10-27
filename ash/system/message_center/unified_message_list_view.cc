@@ -1039,9 +1039,8 @@ void UnifiedMessageListView::InterruptClearAll() {
 void UnifiedMessageListView::DeleteRemovedNotifications() {
   DCHECK(model_);
   views::View::Views removed_views;
-  std::copy_if(children().cbegin(), children().cend(),
-               std::back_inserter(removed_views),
-               [](const auto* v) { return AsMVC(v)->is_removed(); });
+  base::ranges::copy_if(children(), std::back_inserter(removed_views),
+                        [](const auto* v) { return AsMVC(v)->is_removed(); });
 
   {
     base::AutoReset<bool> auto_reset(&is_deleting_removed_notifications_, true);

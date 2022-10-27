@@ -29,6 +29,7 @@
 #include "ash/system/user/login_status.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -74,10 +75,10 @@ void TopShortcutButtonContainer::Layout() {
   const gfx::Rect child_area = GetContentsBounds();
 
   views::View::Views visible_children;
-  std::copy_if(children().cbegin(), children().cend(),
-               std::back_inserter(visible_children), [](const auto* v) {
-                 return v->GetVisible() && (v->GetPreferredSize().width() > 0);
-               });
+  base::ranges::copy_if(
+      children(), std::back_inserter(visible_children), [](const auto* v) {
+        return v->GetVisible() && (v->GetPreferredSize().width() > 0);
+      });
   if (visible_children.empty())
     return;
 

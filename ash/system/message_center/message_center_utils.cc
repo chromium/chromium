@@ -12,6 +12,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -46,14 +47,13 @@ bool CompareNotifications(message_center::Notification* n1,
 }
 
 std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView() {
-  auto visible_notifications =
-      message_center::MessageCenter::Get()->GetVisibleNotifications();
   std::vector<message_center::Notification*> sorted_notifications;
-  std::copy_if(visible_notifications.begin(), visible_notifications.end(),
-               std::back_inserter(sorted_notifications),
-               [](message_center::Notification* notification) {
-                 return !notification->group_child();
-               });
+  base::ranges::copy_if(
+      message_center::MessageCenter::Get()->GetVisibleNotifications(),
+      std::back_inserter(sorted_notifications),
+      [](message_center::Notification* notification) {
+        return !notification->group_child();
+      });
   std::sort(sorted_notifications.begin(), sorted_notifications.end(),
             CompareNotifications);
   return sorted_notifications;

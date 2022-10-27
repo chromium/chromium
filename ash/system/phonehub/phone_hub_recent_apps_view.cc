@@ -16,6 +16,7 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -143,10 +144,10 @@ gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize()
 void PhoneHubRecentAppsView::RecentAppButtonsView::Layout() {
   const gfx::Rect child_area = GetContentsBounds();
   views::View::Views visible_children;
-  std::copy_if(children().cbegin(), children().cend(),
-               std::back_inserter(visible_children), [](const auto* v) {
-                 return v->GetVisible() && (v->GetPreferredSize().width() > 0);
-               });
+  base::ranges::copy_if(
+      children(), std::back_inserter(visible_children), [](const auto* v) {
+        return v->GetVisible() && (v->GetPreferredSize().width() > 0);
+      });
   if (visible_children.empty())
     return;
   const int visible_child_width =

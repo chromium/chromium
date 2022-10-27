@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_controller.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -30,6 +29,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/views/widget/widget.h"
@@ -287,8 +287,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
            !WindowState::Get(w)->IsUserPositionable();
   };
   std::vector<aura::Window*> hide_windows(windows.size());
-  auto end = std::copy_if(windows.begin(), windows.end(), hide_windows.begin(),
-                          should_hide_for_overview);
+  auto end = base::ranges::copy_if(windows, hide_windows.begin(),
+                                   should_hide_for_overview);
   hide_windows.resize(end - hide_windows.begin());
   base::EraseIf(windows, window_util::ShouldExcludeForOverview);
   // Overview windows will handle showing their transient related windows, so if
@@ -328,11 +328,10 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       // during overview exit. Minimized widgets will get created in their
       // place, and those widgets will fade out of overview.
       std::vector<aura::Window*> windows_to_minimize(windows.size());
-      auto it =
-          std::copy_if(windows.begin(), windows.end(),
-                       windows_to_minimize.begin(), [](aura::Window* window) {
-                         return !WindowState::Get(window)->IsMinimized();
-                       });
+      auto it = base::ranges::copy_if(
+          windows, windows_to_minimize.begin(), [](aura::Window* window) {
+            return !WindowState::Get(window)->IsMinimized();
+          });
       windows_to_minimize.resize(
           std::distance(windows_to_minimize.begin(), it));
       window_util::MinimizeAndHideWithoutAnimation(windows_to_minimize);

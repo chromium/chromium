@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -116,16 +117,14 @@ void FrameThrottlingController::StartThrottling(
   if (windows.empty())
     return;
 
-  auto all_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-
   std::vector<aura::Window*> all_arc_windows;
-  std::copy_if(all_windows.begin(), all_windows.end(),
-               std::back_inserter(all_arc_windows), [](aura::Window* window) {
-                 return ash::AppType::ARC_APP ==
-                        static_cast<ash::AppType>(
-                            window->GetProperty(aura::client::kAppType));
-               });
+  base::ranges::copy_if(
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk),
+      std::back_inserter(all_arc_windows), [](aura::Window* window) {
+        return ash::AppType::ARC_APP ==
+               static_cast<ash::AppType>(
+                   window->GetProperty(aura::client::kAppType));
+      });
 
   std::vector<aura::Window*> arc_windows;
   arc_windows.reserve(windows.size());
