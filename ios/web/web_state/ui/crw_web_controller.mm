@@ -2212,7 +2212,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
 - (void)loadUrlObjectsCompletion:(NSArray<NSURL*>*)objects {
   GURL URL = net::GURLWithNSURL([objects firstObject]);
-  if (!_isBeingDestroyed && URL.is_valid()) {
+  if (!_isBeingDestroyed && URL.is_valid() && URL.SchemeIsHTTPOrHTTPS()) {
     web::NavigationManager::WebLoadParams params(URL);
     params.transition_type = ui::PAGE_TRANSITION_TYPED;
     self.webStateImpl->GetNavigationManager()->LoadURLWithParams(params);
