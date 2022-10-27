@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 
@@ -130,9 +129,8 @@ std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(
   };
 
   std::vector<ServerFieldType> extracted_address_types;
-  std::copy_if(types.begin(), types.end(),
-               std::back_inserter(extracted_address_types),
-               should_be_extracted);
+  base::ranges::copy_if(types, std::back_inserter(extracted_address_types),
+                        should_be_extracted);
 
   return extracted_address_types;
 }
@@ -141,11 +139,10 @@ std::vector<ServerFieldType> TypesWithoutFocusedField(
     const std::vector<ServerFieldType>& types,
     ServerFieldType field_type_to_remove) {
   std::vector<ServerFieldType> types_without_field;
-  std::copy_if(types.begin(), types.end(),
-               std::back_inserter(types_without_field),
-               [&field_type_to_remove](ServerFieldType type) -> bool {
-                 return type != field_type_to_remove;
-               });
+  base::ranges::copy_if(types, std::back_inserter(types_without_field),
+                        [&field_type_to_remove](ServerFieldType type) {
+                          return type != field_type_to_remove;
+                        });
   return types_without_field;
 }
 

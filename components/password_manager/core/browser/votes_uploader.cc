@@ -193,8 +193,8 @@ int GetRandomSpecialSymbol() {
 // It is expected that |password| contains at least one special symbol.
 int GetRandomSpecialSymbolFromPassword(const std::u16string& password) {
   std::vector<int> symbols;
-  std::copy_if(password.begin(), password.end(), std::back_inserter(symbols),
-               &IsSpecialSymbol);
+  base::ranges::copy_if(password, std::back_inserter(symbols),
+                        &IsSpecialSymbol);
   DCHECK(!symbols.empty()) << "Password must contain at least one symbol.";
   return symbols[base::RandGenerator(symbols.size())];
 }

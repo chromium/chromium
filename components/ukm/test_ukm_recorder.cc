@@ -4,11 +4,11 @@
 
 #include "components/ukm/test_ukm_recorder.h"
 
-#include <algorithm>
 #include <iterator>
 
 #include "base/check_op.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -184,11 +184,11 @@ TestUkmRecorder::FilteredHumanReadableMetricForEntry(
     const std::string& entry_name,
     const std::string& metric_name) const {
   std::vector<std::string> metric_name_vector(1, metric_name);
-  auto metrics = GetMetrics(entry_name, metric_name_vector);
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics>
       filtered_result;
-  std::copy_if(
-      metrics.begin(), metrics.end(), std::back_inserter(filtered_result),
+  base::ranges::copy_if(
+      GetMetrics(entry_name, metric_name_vector),
+      std::back_inserter(filtered_result),
       [&metric_name](
           ukm::TestAutoSetUkmRecorder::HumanReadableUkmMetrics metric) {
         if (metric.empty())

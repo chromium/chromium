@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <iterator>
 #include <set>
 #include <string>
@@ -579,10 +578,11 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   // |passwords| though, in case it is needed for fallback.
   std::vector<const ProcessedField*> filtered;
   filtered.reserve(passwords.size());
-  std::copy_if(passwords.begin(), passwords.end(), std::back_inserter(filtered),
-               [&ignored_readonly](const ProcessedField* processed_field) {
-                 return IsLikelyPassword(*processed_field, &ignored_readonly);
-               });
+  base::ranges::copy_if(
+      passwords, std::back_inserter(filtered),
+      [&ignored_readonly](const ProcessedField* processed_field) {
+        return IsLikelyPassword(*processed_field, &ignored_readonly);
+      });
 
   // Step 4: remove the field parsed as username, if needed.
   if (username && username->IsPasswordInputElement()) {

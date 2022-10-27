@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/ui/label_formatter.h"
 
-#include <algorithm>
 #include <iterator>
 #include <set>
 
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -63,9 +63,9 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
            type != ADDRESS_HOME_COUNTRY;
   };
 
-  std::copy_if(field_types.begin(), field_types.end(),
-               std::back_inserter(field_types_for_labels_),
-               can_be_shown_in_label);
+  base::ranges::copy_if(field_types,
+                        std::back_inserter(field_types_for_labels_),
+                        can_be_shown_in_label);
 }
 
 LabelFormatter::~LabelFormatter() = default;

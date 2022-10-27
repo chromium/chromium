@@ -4,7 +4,6 @@
 
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 
-#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <numeric>
@@ -12,6 +11,7 @@
 
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -84,11 +84,11 @@ TermMatches SortMatches(const TermMatches& matches) {
 // Assumes |sorted_matches| is already sorted.
 TermMatches DeoverlapMatches(const TermMatches& sorted_matches) {
   TermMatches out;
-  std::copy_if(
-      sorted_matches.begin(), sorted_matches.end(), std::back_inserter(out),
-      [&out](const TermMatch& match) {
+  base::ranges::copy_if(
+      sorted_matches, std::back_inserter(out), [&out](const TermMatch& match) {
         return out.empty() ||
-               match.offset >= (out.back().offset + out.back().length); });
+               match.offset >= (out.back().offset + out.back().length);
+      });
   return out;
 }
 

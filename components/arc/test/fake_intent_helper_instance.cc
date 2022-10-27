@@ -4,12 +4,12 @@
 
 #include "components/arc/test/fake_intent_helper_instance.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace arc {
@@ -147,9 +147,9 @@ std::vector<FakeIntentHelperInstance::Broadcast>
 FakeIntentHelperInstance::GetBroadcastsForAction(
     const std::string& action) const {
   std::vector<Broadcast> result;
-  std::copy_if(broadcasts_.begin(), broadcasts_.end(),
-               std::back_inserter(result),
-               [action](const Broadcast& b) { return b.action == action; });
+  base::ranges::copy_if(
+      broadcasts_, std::back_inserter(result),
+      [&action](const Broadcast& b) { return b.action == action; });
   return result;
 }
 
