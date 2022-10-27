@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -75,9 +74,13 @@ uint32_t DragOperationsToDndActions(int operations) {
   return dnd_actions;
 }
 
-const SkBitmap* GetDragImage(const OSExchangeData& data) {
-  const SkBitmap* icon_bitmap = data.provider().GetDragImage().bitmap();
+const SkBitmap* GetDragImage(const gfx::ImageSkia& image) {
+  const SkBitmap* icon_bitmap = image.bitmap();
   return icon_bitmap && !icon_bitmap->empty() ? icon_bitmap : nullptr;
+}
+
+const SkBitmap* GetDragImage(const OSExchangeData& data) {
+  return GetDragImage(data.provider().GetDragImage());
 }
 
 }  // namespace
@@ -175,6 +178,16 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   return true;
 }
 
+void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
+                                                const gfx::Vector2d& offset) {
+  DCHECK(icon_surface_);
+  DCHECK(origin_window_);
+
+  icon_bitmap_ = GetDragImage(image);
+
+  DrawIconInternal();
+}
+
 bool WaylandDataDragController::ShouldReleaseCaptureForDrag(
     ui::OSExchangeData* data) const {
   DCHECK(data);
@@ -220,6 +233,14 @@ void WaylandDataDragController::OnDragSurfaceFrame(void* data,
 }
 
 void WaylandDataDragController::DrawIconInternal() {
+  // If there was a drag icon before but now there isn't, attach a null buffer
+  // to the icon surface to hide it.
+  if (icon_surface_ && !icon_bitmap_) {
+    auto* const surface = icon_surface_->surface();
+    wl_surface_attach(surface, nullptr, 0, 0);
+    wl_surface_commit(surface);
+  }
+
   if (!icon_surface_ || !icon_bitmap_)
     return;
 

@@ -101,6 +101,14 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                     int operations,
                     mojom::DragEventSource source);
 
+  // Updates the drag image. An empty |image| may be used to hide a previously
+  // set non-empty drag image, and a non-empty |image| shows the drag image
+  // again if it was previously hidden.
+  //
+  // This must be called during an active drag session.
+  void UpdateDragImage(const gfx::ImageSkia& image,
+                       const gfx::Vector2d& offset);
+
   State state() const { return state_; }
 
   // TODO(crbug.com/896640): Remove once focus is fixed during DND sessions.
