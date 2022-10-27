@@ -55,7 +55,8 @@ SkiaVkAndroidImageRepresentation::~SkiaVkAndroidImageRepresentation() {
   }
 }
 
-sk_sp<SkSurface> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkSurface>>
+SkiaVkAndroidImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -66,12 +67,12 @@ sk_sp<SkSurface> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
 
   if (!BeginAccess(false /* readonly */, begin_semaphores, end_semaphores,
                    base::ScopedFD()))
-    return nullptr;
+    return {};
 
   auto* gr_context = context_state_->gr_context();
   if (gr_context->abandoned()) {
     LOG(ERROR) << "GrContext is abandoned.";
-    return nullptr;
+    return {};
   }
 
   if (!surface_ || final_msaa_count != surface_msaa_count_ ||
@@ -84,16 +85,20 @@ sk_sp<SkSurface> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
         &surface_props);
     if (!surface_) {
       LOG(ERROR) << "MakeFromBackendTexture() failed.";
-      return nullptr;
+      return {};
     }
     surface_msaa_count_ = final_msaa_count;
   }
 
   *end_state = GetEndAccessState();
-  return surface_;
+
+  if (!surface_)
+    return {};
+  return {surface_};
 }
 
-sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaVkAndroidImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -102,10 +107,13 @@ sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginWriteAccess(
 
   if (!BeginAccess(false /* readonly */, begin_semaphores, end_semaphores,
                    base::ScopedFD()))
-    return nullptr;
+    return {};
 
   *end_state = GetEndAccessState();
-  return promise_texture_;
+
+  if (!promise_texture_)
+    return {};
+  return {promise_texture_};
 }
 
 void SkiaVkAndroidImageRepresentation::EndWriteAccess() {
@@ -122,7 +130,8 @@ void SkiaVkAndroidImageRepresentation::EndWriteAccess() {
   EndAccess(false /* readonly */);
 }
 
-sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginReadAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaVkAndroidImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -132,10 +141,13 @@ sk_sp<SkPromiseImageTexture> SkiaVkAndroidImageRepresentation::BeginReadAccess(
 
   if (!BeginAccess(true /* readonly */, begin_semaphores, end_semaphores,
                    std::move(init_read_fence_)))
-    return nullptr;
+    return {};
 
   *end_state = GetEndAccessState();
-  return promise_texture_;
+
+  if (!promise_texture_)
+    return {};
+  return {promise_texture_};
 }
 
 void SkiaVkAndroidImageRepresentation::EndReadAccess() {

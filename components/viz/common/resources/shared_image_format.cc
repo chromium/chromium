@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace viz {
@@ -98,6 +99,23 @@ static_assert(std::is_trivially_destructible<SharedImageFormat>::value);
 
 bool SharedImageFormat::IsBitmapFormatSupported() const {
   return is_single_plane() && resource_format() == RGBA_8888;
+}
+
+int SharedImageFormat::NumberOfPlanes() const {
+  if (is_single_plane())
+    return 1;
+  if (is_multi_plane()) {
+    switch (plane_config()) {
+      case PlaneConfig::kY_V_U:
+        return 3;
+      case PlaneConfig::kY_UV:
+        return 2;
+      case PlaneConfig::kY_UV_A:
+        return 3;
+    }
+  }
+  NOTREACHED();
+  return 0;
 }
 
 std::string SharedImageFormat::ToString() const {

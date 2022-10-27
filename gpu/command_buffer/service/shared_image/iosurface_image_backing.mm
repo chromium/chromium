@@ -115,7 +115,7 @@ SkiaIOSurfaceRepresentation::~SkiaIOSurfaceRepresentation() {
   }
 }
 
-sk_sp<SkSurface> SkiaIOSurfaceRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkSurface>> SkiaIOSurfaceRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -126,15 +126,15 @@ sk_sp<SkSurface> SkiaIOSurfaceRepresentation::BeginWriteAccess(
     DCHECK(context_state_->GrContextIsGL());
     if (!client_->GLTextureImageRepresentationBeginAccess(
             /*readonly=*/false)) {
-      return nullptr;
+      return {};
     }
   }
 
   if (write_surface_)
-    return nullptr;
+    return {};
 
   if (!promise_texture_)
-    return nullptr;
+    return {};
 
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, format());
@@ -147,10 +147,14 @@ sk_sp<SkSurface> SkiaIOSurfaceRepresentation::BeginWriteAccess(
       backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
       &surface_props);
   write_surface_ = surface;
-  return surface;
+
+  if (!surface)
+    return {};
+  return {surface};
 }
 
-sk_sp<SkPromiseImageTexture> SkiaIOSurfaceRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaIOSurfaceRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -159,10 +163,12 @@ sk_sp<SkPromiseImageTexture> SkiaIOSurfaceRepresentation::BeginWriteAccess(
     DCHECK(context_state_->GrContextIsGL());
     if (!client_->GLTextureImageRepresentationBeginAccess(
             /*readonly=*/false)) {
-      return nullptr;
+      return {};
     }
   }
-  return promise_texture_;
+  if (!promise_texture_)
+    return {};
+  return {promise_texture_};
 }
 
 void SkiaIOSurfaceRepresentation::EndWriteAccess() {
@@ -177,7 +183,8 @@ void SkiaIOSurfaceRepresentation::EndWriteAccess() {
     client_->GLTextureImageRepresentationEndAccess(false /* readonly */);
 }
 
-sk_sp<SkPromiseImageTexture> SkiaIOSurfaceRepresentation::BeginReadAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaIOSurfaceRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -186,10 +193,12 @@ sk_sp<SkPromiseImageTexture> SkiaIOSurfaceRepresentation::BeginReadAccess(
     DCHECK(context_state_->GrContextIsGL());
     if (!client_->GLTextureImageRepresentationBeginAccess(
             /*readonly=*/true)) {
-      return nullptr;
+      return {};
     }
   }
-  return promise_texture_;
+  if (!promise_texture_)
+    return {};
+  return {promise_texture_};
 }
 
 void SkiaIOSurfaceRepresentation::EndReadAccess() {

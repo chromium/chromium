@@ -82,7 +82,7 @@ SkiaGLImageRepresentation::~SkiaGLImageRepresentation() {
     gl_representation_->OnContextLost();
 }
 
-sk_sp<SkSurface> SkiaGLImageRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -93,13 +93,13 @@ sk_sp<SkSurface> SkiaGLImageRepresentation::BeginWriteAccess(
 
   if (!gl_representation_->BeginAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM)) {
-    return nullptr;
+    return {};
   }
 
   mode_ = RepresentationAccessMode::kWrite;
-
-  if (surface_)
-    return surface_;
+  if (surface_) {
+    return {surface_};
+  }
 
   SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
       /*gpu_compositing=*/true, format());
@@ -108,10 +108,14 @@ sk_sp<SkSurface> SkiaGLImageRepresentation::BeginWriteAccess(
       surface_origin(), final_msaa_count, sk_color_type,
       backing()->color_space().ToSkColorSpace(), &surface_props);
   surface_ = surface;
-  return surface;
+
+  if (!surface)
+    return {};
+  return {surface};
 }
 
-sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaGLImageRepresentation::BeginWriteAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -120,23 +124,26 @@ sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginWriteAccess(
 
   if (!gl_representation_->BeginAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM)) {
-    return nullptr;
+    return {};
   }
   mode_ = RepresentationAccessMode::kWrite;
-  return promise_texture_;
+
+  if (!promise_texture_)
+    return {};
+  return {promise_texture_};
 }
 
 void SkiaGLImageRepresentation::EndWriteAccess() {
   DCHECK_EQ(mode_, RepresentationAccessMode::kWrite);
-  if (surface_) {
+  if (surface_)
     DCHECK(surface_->unique());
-  }
 
   gl_representation_->EndAccess();
   mode_ = RepresentationAccessMode::kNone;
 }
 
-sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginReadAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaGLImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
@@ -145,10 +152,13 @@ sk_sp<SkPromiseImageTexture> SkiaGLImageRepresentation::BeginReadAccess(
 
   if (!gl_representation_->BeginAccess(
           GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM)) {
-    return nullptr;
+    return {};
   }
   mode_ = RepresentationAccessMode::kRead;
-  return promise_texture_;
+
+  if (!promise_texture_)
+    return {};
+  return {promise_texture_};
 }
 
 void SkiaGLImageRepresentation::EndReadAccess() {

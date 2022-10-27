@@ -98,6 +98,9 @@ class SharedImageFormat {
   // export to the display compositor.
   bool IsBitmapFormatSupported() const;
 
+  // Return the number of planes associated with the format.
+  int NumberOfPlanes() const;
+
   std::string ToString() const;
 
   bool operator==(const SharedImageFormat& o) const;

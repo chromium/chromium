@@ -314,7 +314,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
                                          tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)) {}
 
-  sk_sp<SkSurface> BeginWriteAccess(
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -322,12 +322,12 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     // Writes are not intended to used for video backed representations.
     NOTIMPLEMENTED();
-    return nullptr;
+    return {};
   }
 
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
@@ -343,7 +343,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
     scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
-      return nullptr;
+      return {};
     }
     DCHECK(scoped_hardware_buffer_->buffer());
 
@@ -359,7 +359,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
           scoped_hardware_buffer_->TakeBuffer(), context_state(), size(),
           format(), VK_QUEUE_FAMILY_FOREIGN_EXT);
       if (!vulkan_image_)
-        return nullptr;
+        return {};
 
       // We always use VK_IMAGE_TILING_OPTIMAL while creating the vk image in
       // VulkanImplementationAndroid::CreateVkImageAndImportAHB. Hence pass

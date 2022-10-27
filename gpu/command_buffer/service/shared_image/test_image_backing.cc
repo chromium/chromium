@@ -68,39 +68,48 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
       : SkiaImageRepresentation(manager, backing, tracker) {}
 
  protected:
-  sk_sp<SkSurface> BeginWriteAccess(
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
-      return nullptr;
+      return {};
     }
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-    return SkSurface::MakeRasterN32Premul(size().width(), size().height(),
-                                          &props);
+    auto surface =
+        SkSurface::MakeRasterN32Premul(size().width(), size().height(), &props);
+    if (!surface)
+      return {};
+    return {surface};
   }
-  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
-      return nullptr;
+      return {};
     }
 
-    return SkPromiseImageTexture::Make(backend_tex());
+    auto promise_texture = SkPromiseImageTexture::Make(backend_tex());
+    if (!promise_texture)
+      return {};
+    return {promise_texture};
   }
   void EndWriteAccess() override {}
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
-      return nullptr;
+      return {};
     }
 
-    return SkPromiseImageTexture::Make(backend_tex());
+    auto promise_texture = SkPromiseImageTexture::Make(backend_tex());
+    if (!promise_texture)
+      return {};
+    return {promise_texture};
   }
   void EndReadAccess() override {}
 

@@ -125,20 +125,24 @@ bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {
 SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
     base::PassKey<SkiaImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    sk_sp<SkSurface> surface,
+    std::vector<sk_sp<SkSurface>> surfaces,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
     : ScopedAccessBase(representation),
-      surface_(std::move(surface)),
-      end_state_(std::move(end_state)) {}
+      surfaces_(std::move(surfaces)),
+      end_state_(std::move(end_state)) {
+  DCHECK(!surfaces_.empty());
+}
 
 SkiaImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
     base::PassKey<SkiaImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    sk_sp<SkPromiseImageTexture> promise_image_texture,
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
     : ScopedAccessBase(representation),
-      promise_image_texture_(std::move(promise_image_texture)),
-      end_state_(std::move(end_state)) {}
+      promise_image_textures_(std::move(promise_image_textures)),
+      end_state_(std::move(end_state)) {
+  DCHECK(!promise_image_textures_.empty());
+}
 
 SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
   if (end_state_) {
@@ -151,9 +155,9 @@ SkiaImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
       base::debug::DumpWithoutCrashing();
   }
 
-  // Ensure no one uses `surface_` by dropping the reference before calling
+  // Ensure no one uses `surfaces_` by dropping the reference before calling
   // EndWriteAccess.
-  surface_.reset();
+  surfaces_.clear();
   representation()->EndWriteAccess();
 }
 
@@ -177,10 +181,10 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
 
   std::unique_ptr<GrBackendSurfaceMutableState> end_state;
   if (use_sk_surface) {
-    sk_sp<SkSurface> surface =
+    std::vector<sk_sp<SkSurface>> surfaces =
         BeginWriteAccess(final_msaa_count, surface_props, begin_semaphores,
                          end_semaphores, &end_state);
-    if (!surface) {
+    if (surfaces.empty()) {
       LOG(ERROR) << "Unable to initialize SkSurface";
       return nullptr;
     }
@@ -188,12 +192,12 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
     backing()->OnWriteSucceeded();
 
     return std::make_unique<ScopedWriteAccess>(
-        base::PassKey<SkiaImageRepresentation>(), this, std::move(surface),
+        base::PassKey<SkiaImageRepresentation>(), this, std::move(surfaces),
         std::move(end_state));
   }
-  sk_sp<SkPromiseImageTexture> promise_image_texture =
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
       BeginWriteAccess(begin_semaphores, end_semaphores, &end_state);
-  if (!promise_image_texture) {
+  if (promise_image_textures.empty()) {
     LOG(ERROR) << "Unable to initialize SkPromiseImageTexture";
     return nullptr;
   }
@@ -202,7 +206,7 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
 
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<SkiaImageRepresentation>(), this,
-      std::move(promise_image_texture), std::move(end_state));
+      std::move(promise_image_textures), std::move(end_state));
 }
 
 std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
@@ -220,11 +224,13 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
 SkiaImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<SkiaImageRepresentation> /* pass_key */,
     SkiaImageRepresentation* representation,
-    sk_sp<SkPromiseImageTexture> promise_image_texture,
+    std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures,
     std::unique_ptr<GrBackendSurfaceMutableState> end_state)
     : ScopedAccessBase(representation),
-      promise_image_texture_(std::move(promise_image_texture)),
-      end_state_(std::move(end_state)) {}
+      promise_image_textures_(std::move(promise_image_textures)),
+      end_state_(std::move(end_state)) {
+  DCHECK(!promise_image_textures_.empty());
+}
 
 SkiaImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
   if (end_state_) {
@@ -250,7 +256,7 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
   auto sk_color_space =
       representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
   return SkImage::MakeFromTexture(
-      context, promise_image_texture_->backendTexture(), surface_origin,
+      context, promise_image_texture()->backendTexture(), surface_origin,
       color_type, alpha_type, sk_color_space, texture_release_proc,
       release_context);
 }
@@ -275,32 +281,33 @@ SkiaImageRepresentation::BeginScopedReadAccess(
   }
 
   std::unique_ptr<GrBackendSurfaceMutableState> end_state;
-  sk_sp<SkPromiseImageTexture> promise_image_texture =
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_image_textures =
       BeginReadAccess(begin_semaphores, end_semaphores, &end_state);
-  if (!promise_image_texture)
+  if (promise_image_textures.empty())
     return nullptr;
 
   backing()->OnReadSucceeded();
 
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<SkiaImageRepresentation>(), this,
-      std::move(promise_image_texture), std::move(end_state));
+      std::move(promise_image_textures), std::move(end_state));
 }
 
-sk_sp<SkSurface> SkiaImageRepresentation::BeginWriteAccess(
+std::vector<sk_sp<SkSurface>> SkiaImageRepresentation::BeginWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  return nullptr;
+  return {};
 }
 
-sk_sp<SkPromiseImageTexture> SkiaImageRepresentation::BeginReadAccess(
+std::vector<sk_sp<SkPromiseImageTexture>>
+SkiaImageRepresentation::BeginReadAccess(
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  return nullptr;
+  return {};
 }
 
 #if BUILDFLAG(IS_ANDROID)

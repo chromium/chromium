@@ -67,21 +67,24 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
-  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     NOTIMPLEMENTED();
-    return nullptr;
+    return {};
   }
 
   void EndWriteAccess() override { NOTIMPLEMENTED(); }
 
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    return raw_draw_backing()->BeginSkiaReadAccess();
+    auto promise_texture = raw_draw_backing()->BeginSkiaReadAccess();
+    if (!promise_texture)
+      return {};
+    return {promise_texture};
   }
 
   void EndReadAccess() override { raw_draw_backing()->EndReadAccess(); }

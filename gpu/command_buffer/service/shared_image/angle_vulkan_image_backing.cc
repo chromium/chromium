@@ -44,36 +44,44 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
   ~SkiaAngleVulkanImageRepresentation() override = default;
 
   // SkiaImageRepresentation implementation.
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!backing_impl()->BeginAccessSkia(/*readonly=*/true))
-      return nullptr;
-    return backing_impl()->promise_texture_;
+      return {};
+
+    if (!backing_impl()->promise_texture_)
+      return {};
+
+    return {backing_impl()->promise_texture_};
   }
 
   void EndReadAccess() override { backing_impl()->EndAccessSkia(); }
 
-  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
     if (!backing_impl()->BeginAccessSkia(/*readonly=*/false))
-      return nullptr;
-    return backing_impl()->promise_texture_;
+      return {};
+
+    if (!backing_impl()->promise_texture_)
+      return {};
+
+    return {backing_impl()->promise_texture_};
   }
 
-  sk_sp<SkSurface> BeginWriteAccess(
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {
-    auto promise_texture =
+    auto promise_textures =
         BeginWriteAccess(begin_semaphores, end_semaphores, end_state);
-    if (!promise_texture)
-      return nullptr;
+    if (promise_textures.empty())
+      return {};
 
     auto surface = backing_impl()->context_state_->GetCachedSkSurface(
         backing_impl()->promise_texture_.get());
@@ -91,7 +99,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
       if (!surface) {
         backing_impl()->context_state_->EraseCachedSkSurface(
             backing_impl()->promise_texture_.get());
-        return nullptr;
+        return {};
       }
       backing_impl()->surface_msaa_count_ = final_msaa_count;
       backing_impl()->context_state_->CacheSkSurface(
@@ -102,7 +110,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     DCHECK_EQ(count, 1);
 
     write_surface_ = surface;
-    return surface;
+    return {surface};
   }
 
   void EndWriteAccess() override {

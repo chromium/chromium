@@ -174,7 +174,7 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
     return wrapped_->SupportsMultipleConcurrentReadAccess();
   }
 
-  sk_sp<SkSurface> BeginWriteAccess(
+  std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
@@ -186,7 +186,7 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
                                       begin_semaphores, end_semaphores,
                                       end_state);
   }
-  sk_sp<SkPromiseImageTexture> BeginWriteAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) final {
@@ -197,7 +197,7 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
   }
   void EndWriteAccess() final { wrapped_->EndWriteAccess(); }
 
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
+  std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) final {
