@@ -5,7 +5,7 @@
 #include "base/strings/string_util_win.h"
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_util_internal.h"
+#include "base/strings/string_util_impl_helpers.h"
 
 namespace base {
 

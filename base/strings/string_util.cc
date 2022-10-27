@@ -23,6 +23,7 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util_impl_helpers.h"
 #include "base/strings/string_util_internal.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -80,14 +81,6 @@ std::string ToUpperASCII(StringPiece str) {
 
 std::u16string ToUpperASCII(StringPiece16 str) {
   return internal::ToUpperASCIIImpl(str);
-}
-
-int CompareCaseInsensitiveASCII(StringPiece a, StringPiece b) {
-  return internal::CompareCaseInsensitiveASCIIT(a, b);
-}
-
-int CompareCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
-  return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
 const std::string& EmptyString() {

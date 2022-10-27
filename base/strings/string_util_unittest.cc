@@ -1474,6 +1474,14 @@ TEST(StringUtilTest, CompareCaseInsensitiveASCII) {
   // Differing values.
   EXPECT_EQ(-1, CompareCaseInsensitiveASCII("AsdfA", "aSDfb"));
   EXPECT_EQ(1, CompareCaseInsensitiveASCII("Asdfb", "aSDfA"));
+
+  // For constexpr.
+  static_assert(CompareCaseInsensitiveASCII("", "") == 0);
+  static_assert(CompareCaseInsensitiveASCII("Asdf", "aSDf") == 0);
+  static_assert(CompareCaseInsensitiveASCII("Asdf", "aSDfA") == -1);
+  static_assert(CompareCaseInsensitiveASCII("AsdfA", "aSDf") == 1);
+  static_assert(CompareCaseInsensitiveASCII("AsdfA", "aSDfb") == -1);
+  static_assert(CompareCaseInsensitiveASCII("Asdfb", "aSDfA") == 1);
 }
 
 TEST(StringUtilTest, EqualsCaseInsensitiveASCII) {

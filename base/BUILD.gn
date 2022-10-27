@@ -672,6 +672,7 @@ mixed_component("base") {
     "strings/string_util.cc",
     "strings/string_util.h",
     "strings/string_util_constants.cc",
+    "strings/string_util_impl_helpers.h",
     "strings/string_util_internal.h",
     "strings/stringize_macros.h",
     "strings/stringprintf.cc",
