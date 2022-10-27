@@ -40,6 +40,7 @@ class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
+  bool IsCloseable() const override;
 
   infobars::InfoBar* info_bar_ = nullptr;
   base::WeakPtr<GlobalConfirmInfoBar> global_info_bar_;
@@ -65,6 +66,11 @@ std::u16string GlobalConfirmInfoBar::DelegateProxy::GetLinkText() const {
 GURL GlobalConfirmInfoBar::DelegateProxy::GetLinkURL() const {
   return global_info_bar_ ? global_info_bar_->delegate_->GetLinkURL()
                           : ConfirmInfoBarDelegate::GetLinkURL();
+}
+
+bool GlobalConfirmInfoBar::DelegateProxy::IsCloseable() const {
+  return global_info_bar_ ? global_info_bar_->delegate_->IsCloseable()
+                          : ConfirmInfoBarDelegate::IsCloseable();
 }
 
 bool GlobalConfirmInfoBar::DelegateProxy::LinkClicked(

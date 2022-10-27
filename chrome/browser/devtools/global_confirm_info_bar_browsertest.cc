@@ -35,6 +35,35 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
   }
 };
 
+class NonCloseableTestConfirmInfoBarDelegate
+    : public TestConfirmInfoBarDelegate {
+ public:
+  NonCloseableTestConfirmInfoBarDelegate() = default;
+
+  NonCloseableTestConfirmInfoBarDelegate(
+      const NonCloseableTestConfirmInfoBarDelegate&) = delete;
+  NonCloseableTestConfirmInfoBarDelegate& operator=(
+      const NonCloseableTestConfirmInfoBarDelegate&) = delete;
+
+  ~NonCloseableTestConfirmInfoBarDelegate() override = default;
+
+  bool IsCloseable() const override { return false; }
+};
+
+class CloseableTestConfirmInfoBarDelegate : public TestConfirmInfoBarDelegate {
+ public:
+  CloseableTestConfirmInfoBarDelegate() = default;
+
+  CloseableTestConfirmInfoBarDelegate(
+      const CloseableTestConfirmInfoBarDelegate&) = delete;
+  CloseableTestConfirmInfoBarDelegate& operator=(
+      const CloseableTestConfirmInfoBarDelegate&) = delete;
+
+  ~CloseableTestConfirmInfoBarDelegate() override = default;
+
+  bool IsCloseable() const override { return true; }
+};
+
 class GlobalConfirmInfoBarTest : public InProcessBrowserTest {
  public:
   GlobalConfirmInfoBarTest() = default;
@@ -109,18 +138,42 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, CreateAndCloseInfobar) {
   // Make sure the tab has no info bar.
   EXPECT_EQ(0u, infobar_manager->infobar_count());
 
-  auto delegate = std::make_unique<TestConfirmInfoBarDelegate>();
-  TestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
+  auto delegate = std::make_unique<CloseableTestConfirmInfoBarDelegate>();
+  CloseableTestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
 
   GlobalConfirmInfoBar* infobar =
       GlobalConfirmInfoBar::Show(std::move(delegate));
 
   // Verify that the info bar is shown.
   ASSERT_EQ(1u, infobar_manager->infobar_count());
-  EXPECT_TRUE(
-      infobar_manager->infobar_at(0)->delegate()->EqualsDelegate(delegate_ptr));
+
+  auto* test_infobar = infobar_manager->infobar_at(0)->delegate();
+  EXPECT_TRUE(test_infobar->EqualsDelegate(delegate_ptr));
+  EXPECT_TRUE(test_infobar->IsCloseable());
 
   // Close the infobar and make sure that the tab has no info bar.
   infobar->Close();
   EXPECT_EQ(0u, infobar_manager->infobar_count());
+}
+
+IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, VerifyInfobarIsNonCloseable) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  infobars::ContentInfoBarManager* infobar_manager =
+      GetInfoBarManagerFromTabIndex(0);
+
+  // Make sure the tab has no info bar.
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
+
+  auto delegate = std::make_unique<NonCloseableTestConfirmInfoBarDelegate>();
+  NonCloseableTestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
+
+  GlobalConfirmInfoBar::Show(std::move(delegate));
+
+  // Verify that the info bar is shown.
+  ASSERT_EQ(1u, infobar_manager->infobar_count());
+
+  auto* test_infobar = infobar_manager->infobar_at(0)->delegate();
+  EXPECT_TRUE(test_infobar->EqualsDelegate(delegate_ptr));
+  EXPECT_FALSE(test_infobar->IsCloseable());
 }
