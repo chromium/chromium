@@ -398,9 +398,7 @@ class DictationTestBase : public InProcessBrowserTest,
 
   void SendErrorAndWait() { test_helper_.SendErrorAndWait(); }
 
-  // TODO(crbug.com/1374425): Rename this to '...WaitForEditableValue' for
-  // consistency.
-  void SendFinalResultAndWaitForTextAreaValue(const std::string& result,
+  void SendFinalResultAndWaitForEditableValue(const std::string& result,
                                               const std::string& value) {
     // Ensure that the accessibility tree and the text area value are updated.
     content::AccessibilityNotificationWaiter waiter(
@@ -410,7 +408,7 @@ class DictationTestBase : public InProcessBrowserTest,
     // TODO(https://crbug.com/1333354): Investigate why this does not always
     // return true.
     ASSERT_TRUE(waiter.WaitForNotification());
-    WaitForTextAreaValue(value);
+    WaitForEditableValue(value);
   }
 
   void SendFinalResultAndWaitForSelectionChanged(const std::string& result) {
@@ -468,9 +466,7 @@ class DictationTestBase : public InProcessBrowserTest,
     return output;
   }
 
-  // TODO(crbug.com/1374425): Rename this 'WaitForEditableValue' for
-  // consistency.
-  void WaitForTextAreaValue(const std::string& value) {
+  void WaitForEditableValue(const std::string& value) {
     std::string error_message = "Still waiting for text area value: " + value;
     SuccessWaiter(base::BindLambdaForTesting(
                       [&]() { return value == GetEditableValue(); }),
@@ -654,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, StartsAndStopsRecognition) {
 IN_PROC_BROWSER_TEST_P(DictationTest, EntersFinalizedSpeech) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue(kFinalSpeechResult,
+  SendFinalResultAndWaitForEditableValue(kFinalSpeechResult,
                                          kFinalSpeechResult);
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
@@ -665,12 +661,12 @@ IN_PROC_BROWSER_TEST_P(DictationTest, EntersFinalizedSpeech) {
 IN_PROC_BROWSER_TEST_P(DictationTest, EntersMultipleFinalizedStrings) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("The rain in Spain",
+  SendFinalResultAndWaitForEditableValue("The rain in Spain",
                                          "The rain in Spain");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "falls mainly on the plain.",
       "The rain in Spain falls mainly on the plain.");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "Vega is a star.",
       "The rain in Spain falls mainly on the plain. Vega is a star.");
   ToggleDictationWithKeystroke();
@@ -680,16 +676,16 @@ IN_PROC_BROWSER_TEST_P(DictationTest, EntersMultipleFinalizedStrings) {
 IN_PROC_BROWSER_TEST_P(DictationTest, OnlyAddSpaceWhenNecessary) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("The rain in Spain",
+  SendFinalResultAndWaitForEditableValue("The rain in Spain",
                                          "The rain in Spain");
   // Artificially add a space to this utterance. Verify that only one space is
   // added.
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       " falls mainly on the plain.",
       "The rain in Spain falls mainly on the plain.");
   // Artificially add a space to this utterance. Verify that only one space is
   // added.
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       " Vega is a star.",
       "The rain in Spain falls mainly on the plain. Vega is a star.");
   ToggleDictationWithKeystroke();
@@ -699,7 +695,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, OnlyAddSpaceWhenNecessary) {
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWhenInputFieldLosesFocus) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("Vega is a star", "Vega is a star");
+  SendFinalResultAndWaitForEditableValue("Vega is a star", "Vega is a star");
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
   WaitForRecognitionStopped();
@@ -822,10 +818,10 @@ IN_PROC_BROWSER_TEST_P(DictationTest,
 IN_PROC_BROWSER_TEST_P(DictationTest, NoExtraSpaceForPunctuation) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
-  SendFinalResultAndWaitForTextAreaValue(".", "Hello world.");
-  SendFinalResultAndWaitForTextAreaValue("Goodnight", "Hello world. Goodnight");
-  SendFinalResultAndWaitForTextAreaValue("!", "Hello world. Goodnight!");
+  SendFinalResultAndWaitForEditableValue("Hello world", "Hello world");
+  SendFinalResultAndWaitForEditableValue(".", "Hello world.");
+  SendFinalResultAndWaitForEditableValue("Goodnight", "Hello world. Goodnight");
+  SendFinalResultAndWaitForEditableValue("!", "Hello world. Goodnight!");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -840,10 +836,10 @@ IN_PROC_BROWSER_TEST_P(DictationTest, StopListening) {
 IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("This", "This");
-  SendFinalResultAndWaitForTextAreaValue("Is", "This is");
-  SendFinalResultAndWaitForTextAreaValue("a test.", "This is a test.");
-  SendFinalResultAndWaitForTextAreaValue("you passed!",
+  SendFinalResultAndWaitForEditableValue("This", "This");
+  SendFinalResultAndWaitForEditableValue("Is", "This is");
+  SendFinalResultAndWaitForEditableValue("a test.", "This is a test.");
+  SendFinalResultAndWaitForEditableValue("you passed!",
                                          "This is a test. You passed!");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
@@ -852,8 +848,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalization) {
 IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalizationWithComma) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("Hello,", "Hello,");
-  SendFinalResultAndWaitForTextAreaValue("world", "Hello, world");
+  SendFinalResultAndWaitForEditableValue("Hello,", "Hello,");
+  SendFinalResultAndWaitForEditableValue("world", "Hello, world");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -867,7 +863,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalizationWithComma) {
 IN_PROC_BROWSER_TEST_P(DictationTest, SmartDeletePhraseNoChange) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  SendFinalResultAndWaitForEditableValue("Hello world", "Hello world");
   SendFinalResultAndWait("delete banana");
   SendFinalResultAndWait("cancel");
   WaitForRecognitionStopped();
@@ -918,7 +914,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, CanDictate) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  SendFinalResultAndWaitForEditableValue("Hello world", "Hello world");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -954,9 +950,9 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("this", "this");
-  SendFinalResultAndWaitForTextAreaValue(" Is", "this Is");
-  SendFinalResultAndWaitForTextAreaValue("a test.", "this Isa test.");
+  SendFinalResultAndWaitForEditableValue("this", "this");
+  SendFinalResultAndWaitForEditableValue(" Is", "this Is");
+  SendFinalResultAndWaitForEditableValue("a test.", "this Isa test.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -964,7 +960,7 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
 IN_PROC_BROWSER_TEST_P(DictationJaTest, CanDictate) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  SendFinalResultAndWaitForTextAreaValue("テニス", "テニス");
+  SendFinalResultAndWaitForEditableValue("テニス", "テニス");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -973,9 +969,9 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, DeleteCharacter) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Dictate "tennis".
-  SendFinalResultAndWaitForTextAreaValue("テニス", "テニス");
+  SendFinalResultAndWaitForEditableValue("テニス", "テニス");
   // Perform the 'delete' command.
-  SendFinalResultAndWaitForTextAreaValue("削除", "テニ");
+  SendFinalResultAndWaitForEditableValue("削除", "テニ");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -984,10 +980,10 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartDeletePhrase) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Dictate "I like basketball".
-  SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
+  SendFinalResultAndWaitForEditableValue("私はバスケットボールが好きです。",
                                          "私はバスケットボールが好きです。");
   // Delete "I" e.g. the first two characters in the sentence.
-  SendFinalResultAndWaitForTextAreaValue("私はを削除",
+  SendFinalResultAndWaitForEditableValue("私はを削除",
                                          "バスケットボールが好きです。");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
@@ -997,10 +993,10 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartReplacePhrase) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Dictate "I like basketball".
-  SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
+  SendFinalResultAndWaitForEditableValue("私はバスケットボールが好きです。",
                                          "私はバスケットボールが好きです。");
   // Replace "basketball" with "tennis".
-  SendFinalResultAndWaitForTextAreaValue("バスケットボールをテニスに置き換え",
+  SendFinalResultAndWaitForEditableValue("バスケットボールをテニスに置き換え",
                                          "私はテニスが好きです。");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
@@ -1010,11 +1006,11 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartInsertBefore) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Dictate "I like tennis".
-  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+  SendFinalResultAndWaitForEditableValue("私はテニスが好きです。",
                                          "私はテニスが好きです。");
   // Insert "basketball and" before "tennis".
   // Final text area value should be "I like basketball and tennis".
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "バスケットボールとをテニスの前に挿入",
       "私はバスケットボールとテニスが好きです。");
   ToggleDictationWithKeystroke();
@@ -1025,12 +1021,12 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDictate) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Dictate "I like tennis".
-  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+  SendFinalResultAndWaitForEditableValue("私はテニスが好きです。",
                                          "私はテニスが好きです。");
   // Select the entire text using the SMART_SELECT_BETWEEN command.
   SendFinalResultAndWaitForSelectionChanged("私はから好きですまで選択");
   // Dictate "congratulations", which should replace the selected text.
-  SendFinalResultAndWaitForTextAreaValue("おめでとう", "おめでとう。");
+  SendFinalResultAndWaitForEditableValue("おめでとう", "おめでとう。");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -1039,13 +1035,13 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartSelectBetweenAndDelete) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   // Dictate "I like tennis".
-  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+  SendFinalResultAndWaitForEditableValue("私はテニスが好きです。",
                                          "私はテニスが好きです。");
   // Select between "I" and "tennis" using the SMART_SELECT_BETWEEN command
   // (roughly the first half of the text).
   SendFinalResultAndWaitForSelectionChanged("私はからテニスまで選択");
   // Perform the delete command.
-  SendFinalResultAndWaitForTextAreaValue("削除", "が好きです。");
+  SendFinalResultAndWaitForEditableValue("削除", "が好きです。");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -1103,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
       expected_text += " ";
       expected_text += command;
     }
-    SendFinalResultAndWaitForTextAreaValue(type_command + command,
+    SendFinalResultAndWaitForEditableValue(type_command + command,
                                            expected_text);
     ++i;
   }
@@ -1111,76 +1107,76 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesCommands) {
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, TypesNonCommands) {
   // The phrase should be entered without the word "type".
-  SendFinalResultAndWaitForTextAreaValue("Type this is a test",
+  SendFinalResultAndWaitForEditableValue("Type this is a test",
                                          "This is a test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteCharacter) {
-  SendFinalResultAndWaitForTextAreaValue("Vega", "Vega");
+  SendFinalResultAndWaitForEditableValue("Vega", "Vega");
   // Capitalization and whitespace shouldn't matter.
-  SendFinalResultAndWaitForTextAreaValue(" Delete", "Veg");
-  SendFinalResultAndWaitForTextAreaValue("delete", "Ve");
-  SendFinalResultAndWaitForTextAreaValue("  delete ", "V");
-  SendFinalResultAndWaitForTextAreaValue("DELETE", "");
+  SendFinalResultAndWaitForEditableValue(" Delete", "Veg");
+  SendFinalResultAndWaitForEditableValue("delete", "Ve");
+  SendFinalResultAndWaitForEditableValue("  delete ", "V");
+  SendFinalResultAndWaitForEditableValue("DELETE", "");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByCharacter) {
-  SendFinalResultAndWaitForTextAreaValue("Lyra", "Lyra");
+  SendFinalResultAndWaitForEditableValue("Lyra", "Lyra");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
   // White space is added to the text on the left of the text caret, but not
   // to the right of the text caret.
-  SendFinalResultAndWaitForTextAreaValue("inserted", "Lyr inserted a");
+  SendFinalResultAndWaitForEditableValue("inserted", "Lyr inserted a");
   SendFinalResultAndWaitForCaretBoundsChanged("move TO the next character ");
-  SendFinalResultAndWaitForTextAreaValue("is a constellation",
+  SendFinalResultAndWaitForEditableValue("is a constellation",
                                          "Lyr inserted a is a constellation");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NewLineAndMoveByLine) {
-  SendFinalResultAndWaitForTextAreaValue("Line 1", "Line 1");
-  SendFinalResultAndWaitForTextAreaValue("new line", "Line 1\n");
-  SendFinalResultAndWaitForTextAreaValue("line 2", "Line 1\nline 2");
+  SendFinalResultAndWaitForEditableValue("Line 1", "Line 1");
+  SendFinalResultAndWaitForEditableValue("new line", "Line 1\n");
+  SendFinalResultAndWaitForEditableValue("line 2", "Line 1\nline 2");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the previous line ");
-  SendFinalResultAndWaitForTextAreaValue("up", "Line 1 up\nline 2");
+  SendFinalResultAndWaitForEditableValue("up", "Line 1 up\nline 2");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the next line");
-  SendFinalResultAndWaitForTextAreaValue("down", "Line 1 up\nline 2 down");
+  SendFinalResultAndWaitForEditableValue("down", "Line 1 up\nline 2 down");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, UndoAndRedo) {
-  SendFinalResultAndWaitForTextAreaValue("The constellation",
+  SendFinalResultAndWaitForEditableValue("The constellation",
                                          "The constellation");
-  SendFinalResultAndWaitForTextAreaValue(" Myra", "The constellation Myra");
-  SendFinalResultAndWaitForTextAreaValue("undo", "The constellation");
-  SendFinalResultAndWaitForTextAreaValue(" Lyra", "The constellation Lyra");
-  SendFinalResultAndWaitForTextAreaValue("undo", "The constellation");
-  SendFinalResultAndWaitForTextAreaValue("redo", "The constellation Lyra");
+  SendFinalResultAndWaitForEditableValue(" Myra", "The constellation Myra");
+  SendFinalResultAndWaitForEditableValue("undo", "The constellation");
+  SendFinalResultAndWaitForEditableValue(" Lyra", "The constellation Lyra");
+  SendFinalResultAndWaitForEditableValue("undo", "The constellation");
+  SendFinalResultAndWaitForEditableValue("redo", "The constellation Lyra");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectAllAndUnselect) {
-  SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
+  SendFinalResultAndWaitForEditableValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
   SendFinalResultAndWaitForSelectionChanged("Select all");
-  SendFinalResultAndWaitForTextAreaValue("delete", "");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue("delete", "");
+  SendFinalResultAndWaitForEditableValue(
       "Vega is the fifth brightest star in the sky",
       "Vega is the fifth brightest star in the sky");
   SendFinalResultAndWaitForSelectionChanged("Select all");
   SendFinalResultAndWaitForSelectionChanged("Unselect");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "!", "Vega is the fifth brightest star in the sky!");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CutCopyPaste) {
-  SendFinalResultAndWaitForTextAreaValue("Star", "Star");
+  SendFinalResultAndWaitForEditableValue("Star", "Star");
   SendFinalResultAndWaitForSelectionChanged("Select all");
   SendFinalResultAndWaitForClipboardChanged("Copy");
   EXPECT_EQ("Star", GetClipboardText());
   SendFinalResultAndWaitForSelectionChanged("unselect");
-  SendFinalResultAndWaitForTextAreaValue("paste", "StarStar");
+  SendFinalResultAndWaitForEditableValue("paste", "StarStar");
   SendFinalResultAndWaitForSelectionChanged("select ALL ");
   SendFinalResultAndWaitForClipboardChanged("cut");
   EXPECT_EQ("StarStar", GetClipboardText());
-  WaitForTextAreaValue("");
-  SendFinalResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
+  WaitForEditableValue("");
+  SendFinalResultAndWaitForEditableValue("  PaStE ", "StarStar");
 }
 
 // Ensures that a metric is recorded when a macro succeeds.
@@ -1188,7 +1184,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CutCopyPaste) {
 // a macro fails.
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MacroSucceededMetric) {
   base::HistogramTester histogram_tester_;
-  SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
+  SendFinalResultAndWaitForEditableValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
   histogram_tester_.ExpectUniqueSample(/*name=*/kMacroSucceededMetric,
                                        /*sample=*/kInputTextViewMetricValue,
@@ -1226,49 +1222,49 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MAYBE_Help) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordSimple) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test", "This is a test");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+  SendFinalResultAndWaitForEditableValue("This is a test", "This is a test");
+  SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This is a ");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordExtraSpace) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test ", "This is a test ");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+  SendFinalResultAndWaitForEditableValue("This is a test ", "This is a test ");
+  SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This is a ");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordNewLine) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test\n\n",
+  SendFinalResultAndWaitForEditableValue("This is a test\n\n",
                                          "This is a test\n\n");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+  SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This is a test\n");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordPunctuation) {
-  SendFinalResultAndWaitForTextAreaValue("This.is.a.test. ",
+  SendFinalResultAndWaitForEditableValue("This.is.a.test. ",
                                          "This.is.a.test. ");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+  SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This.is.a.test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordMiddleOfWord) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   // Move the text caret into the middle of the word "test".
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous word",
+  SendFinalResultAndWaitForEditableValue("delete the previous word",
                                          "This is a t.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextSimple) {
-  SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
-  SendFinalResultAndWaitForTextAreaValue("delete all", "");
+  SendFinalResultAndWaitForEditableValue("Hello, world.", "Hello, world.");
+  SendFinalResultAndWaitForEditableValue("delete all", "");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
   std::string text = " Hello, world. \n Hello, world. \n Hello, world. \n";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
-  SendFinalResultAndWaitForTextAreaValue("delete all", "");
+  SendFinalResultAndWaitForEditableValue(text, text);
+  SendFinalResultAndWaitForEditableValue("delete all", "");
 }
 
 // TODO(crbug.com/1362842) Add a test where
@@ -1277,224 +1273,225 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
 // Commands under that feature flag.
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextSimple) {
-  SendFinalResultAndWaitForTextAreaValue("Is good", "Is good");
+  SendFinalResultAndWaitForEditableValue("Is good", "Is good");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
-  SendFinalResultAndWaitForTextAreaValue("the weather outside",
+  SendFinalResultAndWaitForEditableValue("the weather outside",
                                          "the weather outside Is good");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavStartTextMultiLineString) {
   std::string text = "Is good\n and we should go for a run.";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
   std::string expected = "the weather outside " + text;
-  SendFinalResultAndWaitForTextAreaValue("the weather outside", expected);
+  SendFinalResultAndWaitForEditableValue("the weather outside", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextSimple) {
-  SendFinalResultAndWaitForTextAreaValue("The weather outside is", "The weather outside is");
+  SendFinalResultAndWaitForEditableValue("The weather outside is",
+                                         "The weather outside is");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the end");
   std::string expected = "The weather outside is good";
-  SendFinalResultAndWaitForTextAreaValue("good", expected);
+  SendFinalResultAndWaitForEditableValue("good", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, NavEndTextMultiLineString) {
   std::string text = "The weather outside is\n";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("move to the start");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the end");
   std::string expected = text + "good";
-  SendFinalResultAndWaitForTextAreaValue("good", expected);
+  SendFinalResultAndWaitForEditableValue("good", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordSimple) {
-  SendFinalResultAndWaitForTextAreaValue("The weather today is bad",
+  SendFinalResultAndWaitForEditableValue("The weather today is bad",
                                          "The weather today is bad");
   SendFinalResultAndWaitForSelectionChanged("highlight the previous word");
   std::string expected = "The weather today is nice";
-  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+  SendFinalResultAndWaitForEditableValue("nice", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevWordNewLine) {
   std::string text = "The weather today is bad\n";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWait("highlight the previous word");
   std::string expected = "The weather today is badnice";
-  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+  SendFinalResultAndWaitForEditableValue("nice", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextWordSimple) {
-  SendFinalResultAndWaitForTextAreaValue("The weather today is bad",
+  SendFinalResultAndWaitForEditableValue("The weather today is bad",
                                          "The weather today is bad");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
   SendFinalResultAndWaitForSelectionChanged("highlight the next word");
   std::string expected = "The weather today is nice";
-  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+  SendFinalResultAndWaitForEditableValue("nice", expected);
 }
 
 // TODO(crbug.com/1377314): Test is flaky.
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DISABLED_SelectNextWordNewLine) {
   std::string text = "The weather today is\n";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWait("move to the previous character");
   SendFinalResultAndWait("highlight the next word");
   std::string expected = "The weather today isnice";
-  SendFinalResultAndWaitForTextAreaValue("nice", expected);
+  SendFinalResultAndWaitForEditableValue("nice", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharSimple) {
-  SendFinalResultAndWaitForTextAreaValue("Text", "Text");
+  SendFinalResultAndWaitForEditableValue("Text", "Text");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
   SendFinalResultAndWaitForCaretBoundsChanged("highlight the next character");
   std::string expected = "ext";
-  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+  SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectNextCharMultiLineString) {
   std::string text = "Hello, world.\n";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
   SendFinalResultAndWait("highlight the next character");
   std::string expected = "Hello, world.";
-  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+  SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharSimple) {
-  SendFinalResultAndWaitForTextAreaValue("Text", "Text");
+  SendFinalResultAndWaitForEditableValue("Text", "Text");
   SendFinalResultAndWaitForCaretBoundsChanged("highlight the previous character");
   std::string expected = "Tex";
-  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+  SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SelectPrevCharMultiLineString) {
   std::string text = "Hello, world.\n";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWait("highlight the previous character");
   std::string expected = "Hello, world.";
-  SendFinalResultAndWaitForTextAreaValue("delete", expected);
+  SendFinalResultAndWaitForEditableValue("delete", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
-  SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");
+  SendFinalResultAndWaitForEditableValue("Hello, world.", "Hello, world.");
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence", "");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentWhiteSpace) {
-  SendFinalResultAndWaitForTextAreaValue("  \nHello, world.\n  ",
+  SendFinalResultAndWaitForEditableValue("  \nHello, world.\n  ",
                                          "  \nHello, world.\n  ");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence", "");
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence", "");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentPunctuation) {
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "Hello, world! Good afternoon; good evening? Goodnight, world.",
       "Hello, world! Good afternoon; good evening? Goodnight, world.");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "delete the previous sentence",
       "Hello, world! Good afternoon; good evening?");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence",
                                          "Hello, world! Good afternoon;");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence",
                                          "Hello, world!");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentTwoSentences) {
-  SendFinalResultAndWaitForTextAreaValue("Hello, world. Goodnight, world.",
+  SendFinalResultAndWaitForEditableValue("Hello, world. Goodnight, world.",
                                          "Hello, world. Goodnight, world.");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence",
                                          "Hello, world.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentMiddleOfSentence) {
-  SendFinalResultAndWaitForTextAreaValue("Hello, world. Goodnight, world.",
+  SendFinalResultAndWaitForEditableValue("Hello, world. Goodnight, world.",
                                          "Hello, world. Goodnight, world.");
   // Move the text caret into the middle of the second sentence.
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
   SendFinalResultAndWaitForCaretBoundsChanged("Move to the Previous character");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence",
                                          "Hello, world.d.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveByWord) {
-  SendFinalResultAndWaitForTextAreaValue("This is a quiz", "This is a quiz");
+  SendFinalResultAndWaitForEditableValue("This is a quiz", "This is a quiz");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForTextAreaValue("pop ", "This is a pop quiz");
+  SendFinalResultAndWaitForEditableValue("pop ", "This is a pop quiz");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the next word");
-  SendFinalResultAndWaitForTextAreaValue("folks!", "This is a pop quiz folks!");
+  SendFinalResultAndWaitForEditableValue("folks!", "This is a pop quiz folks!");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartDeletePhraseSimple) {
-  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+  SendFinalResultAndWaitForEditableValue("This is a difficult test",
                                          "This is a difficult test");
-  SendFinalResultAndWaitForTextAreaValue("delete difficult", "This is a test");
+  SendFinalResultAndWaitForEditableValue("delete difficult", "This is a test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
                        SmartDeletePhraseCaseInsensitive) {
-  SendFinalResultAndWaitForTextAreaValue("This is a DIFFICULT test",
+  SendFinalResultAndWaitForEditableValue("This is a DIFFICULT test",
                                          "This is a DIFFICULT test");
-  SendFinalResultAndWaitForTextAreaValue("delete difficult", "This is a test");
+  SendFinalResultAndWaitForEditableValue("delete difficult", "This is a test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
                        SmartDeletePhraseDuplicateMatches) {
-  SendFinalResultAndWaitForTextAreaValue("The cow jumped over the moon.",
+  SendFinalResultAndWaitForEditableValue("The cow jumped over the moon.",
                                          "The cow jumped over the moon.");
   // Deletes the right-most occurrence of "the".
-  SendFinalResultAndWaitForTextAreaValue("delete the",
+  SendFinalResultAndWaitForEditableValue("delete the",
                                          "The cow jumped over moon.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
                        SmartDeletePhraseDeletesLeftOfCaret) {
-  SendFinalResultAndWaitForTextAreaValue("The cow jumped over the moon.",
+  SendFinalResultAndWaitForEditableValue("The cow jumped over the moon.",
                                          "The cow jumped over the moon.");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous word");
-  SendFinalResultAndWaitForTextAreaValue("delete the",
+  SendFinalResultAndWaitForEditableValue("delete the",
                                          "cow jumped over the moon.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
                        SmartDeletePhraseDeletesAtWordBoundaries) {
-  SendFinalResultAndWaitForTextAreaValue("A square is also a rectangle.",
+  SendFinalResultAndWaitForEditableValue("A square is also a rectangle.",
                                          "A square is also a rectangle.");
   // Deletes the first word "a", not the first character "a".
-  SendFinalResultAndWaitForTextAreaValue("delete a",
+  SendFinalResultAndWaitForEditableValue("delete a",
                                          "A square is also rectangle.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartReplacePhrase) {
-  SendFinalResultAndWaitForTextAreaValue("This is a difficult test.",
+  SendFinalResultAndWaitForEditableValue("This is a difficult test.",
                                          "This is a difficult test.");
-  SendFinalResultAndWaitForTextAreaValue("replace difficult with simple",
+  SendFinalResultAndWaitForEditableValue("replace difficult with simple",
                                          "This is a simple test.");
-  SendFinalResultAndWaitForTextAreaValue("replace is with isn't",
+  SendFinalResultAndWaitForEditableValue("replace is with isn't",
                                          "This isn't a simple test.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartInsertBefore) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
-  SendFinalResultAndWaitForTextAreaValue("insert simple before test",
+  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForEditableValue("insert simple before test",
                                          "This is a simple test.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartSelectBetween) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test.", "This is a test.");
+  SendFinalResultAndWaitForEditableValue("This is a test.", "This is a test.");
   SendFinalResultAndWaitForSelectionChanged("select from this to test");
-  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world.");
+  SendFinalResultAndWaitForEditableValue("Hello world", "Hello world.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveBySentence) {
-  SendFinalResultAndWaitForTextAreaValue("Hello world! Goodnight world?",
+  SendFinalResultAndWaitForEditableValue("Hello world! Goodnight world?",
                                          "Hello world! Goodnight world?");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the previous sentence");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "Good evening.", "Hello world! Good evening. Goodnight world?");
   SendFinalResultAndWaitForCaretBoundsChanged("move to the next sentence");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "Time for a midnight snack",
       "Hello world! Good evening. Goodnight world? Time for a midnight snack");
 }
@@ -1504,34 +1501,34 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, MoveBySentence) {
 // command under test is performed.
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionDeleteSentence) {
-  SendFinalResultAndWaitForTextAreaValue("First. Second.", "First. Second.");
-  SendFinalResultAndWaitForTextAreaValue("delete the previous sentence",
+  SendFinalResultAndWaitForEditableValue("First. Second.", "First. Second.");
+  SendFinalResultAndWaitForEditableValue("delete the previous sentence",
                                          "First.");
-  SendFinalResultAndWaitForTextAreaValue("Third.", "First. Third.");
+  SendFinalResultAndWaitForEditableValue("Third.", "First. Third.");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartDeletePhrase) {
-  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+  SendFinalResultAndWaitForEditableValue("This is a difficult test",
                                          "This is a difficult test");
   SendFinalResultAndWaitForCaretBoundsChanged("delete difficult");
-  SendFinalResultAndWaitForTextAreaValue("simple", "This is a simple test");
+  SendFinalResultAndWaitForEditableValue("simple", "This is a simple test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest,
                        CursorPositionSmartReplacePhrase) {
-  SendFinalResultAndWaitForTextAreaValue("This is a difficult test",
+  SendFinalResultAndWaitForEditableValue("This is a difficult test",
                                          "This is a difficult test");
   SendFinalResultAndWaitForCaretBoundsChanged("replace difficult with simple");
-  SendFinalResultAndWaitForTextAreaValue("biology",
+  SendFinalResultAndWaitForEditableValue("biology",
                                          "This is a simple biology test");
-  SendFinalResultAndWaitForTextAreaValue(
+  SendFinalResultAndWaitForEditableValue(
       "and chemistry", "This is a simple biology and chemistry test");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, CursorPositionSmartInsertBefore) {
-  SendFinalResultAndWaitForTextAreaValue("This is a test", "This is a test");
+  SendFinalResultAndWaitForEditableValue("This is a test", "This is a test");
   SendFinalResultAndWaitForCaretBoundsChanged("insert simple before test");
-  SendFinalResultAndWaitForTextAreaValue("biology",
+  SendFinalResultAndWaitForEditableValue("biology",
                                          "This is a simple biology test");
 }
 
@@ -1566,8 +1563,8 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, SmartDeletePhraseLongContent) {
 
   std::string initial_value = first_sentence_initial + remaining_text;
   std::string final_value = first_sentence_final + remaining_text;
-  SendFinalResultAndWaitForTextAreaValue(initial_value, initial_value);
-  SendFinalResultAndWaitForTextAreaValue("delete familiaris", final_value);
+  SendFinalResultAndWaitForEditableValue(initial_value, initial_value);
+  SendFinalResultAndWaitForEditableValue("delete familiaris", final_value);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, Metrics) {
@@ -1847,7 +1844,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, MAYBE_HintsShownAfterTextSelected) {
   WaitForRecognitionStarted();
 
   // Perform a select all command.
-  SendFinalResultAndWaitForTextAreaValue("Vega is the brightest star in Lyra",
+  SendFinalResultAndWaitForEditableValue("Vega is the brightest star in Lyra",
                                          "Vega is the brightest star in Lyra");
   SendFinalResultAndWaitForSelectionChanged("Select all");
   WaitForProperties(/*visible=*/true,
@@ -1984,62 +1981,62 @@ INSTANTIATE_TEST_SUITE_P(
 #define MAYBE_Input Input
 #endif
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, MAYBE_Input) {
-  SendFinalResultAndWaitForTextAreaValue("dictate hello", "Hello");
+  SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, DeletePrevCharacter) {
-  SendFinalResultAndWaitForTextAreaValue("Testing", "Testing");
-  SendFinalResultAndWaitForTextAreaValue("Delete three characters", "Test");
-  SendFinalResultAndWaitForTextAreaValue("backspace", "Tes");
+  SendFinalResultAndWaitForEditableValue("Testing", "Testing");
+  SendFinalResultAndWaitForEditableValue("Delete three characters", "Test");
+  SendFinalResultAndWaitForEditableValue("backspace", "Tes");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavByCharacter) {
-  SendFinalResultAndWaitForTextAreaValue("Testing", "Testing");
+  SendFinalResultAndWaitForEditableValue("Testing", "Testing");
   SendFinalResultAndWaitForCaretBoundsChanged("left three characters");
-  SendFinalResultAndWaitForTextAreaValue("!", "Test!ing");
+  SendFinalResultAndWaitForEditableValue("!", "Test!ing");
   SendFinalResultAndWaitForCaretBoundsChanged("right two characters");
-  SendFinalResultAndWaitForTextAreaValue("@", "Test!in@g");
+  SendFinalResultAndWaitForEditableValue("@", "Test!in@g");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, NavByLine) {
   std::string text = "Line1\nLine2\nLine3\nLine4";
-  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForEditableValue(text, text);
   SendFinalResultAndWaitForCaretBoundsChanged("Up two lines");
   std::string expected = "Line1\nLine2 insertion\nLine3\nLine4";
-  SendFinalResultAndWaitForTextAreaValue("insertion", expected);
+  SendFinalResultAndWaitForEditableValue("insertion", expected);
   SendFinalResultAndWaitForCaretBoundsChanged("down two lines");
   expected = "Line1\nLine2 insertion\nLine3\nLine4 second insertion";
-  SendFinalResultAndWaitForTextAreaValue("second insertion", expected);
+  SendFinalResultAndWaitForEditableValue("second insertion", expected);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, CutCopyPasteSelectAll) {
-  SendFinalResultAndWaitForTextAreaValue("Star", "Star");
+  SendFinalResultAndWaitForEditableValue("Star", "Star");
   SendFinalResultAndWaitForSelectionChanged("Select everything");
   SendFinalResultAndWaitForClipboardChanged("Copy selected text");
   EXPECT_EQ("Star", GetClipboardText());
   SendFinalResultAndWaitForSelectionChanged("unselect selection");
-  SendFinalResultAndWaitForTextAreaValue("paste copied text", "StarStar");
+  SendFinalResultAndWaitForEditableValue("paste copied text", "StarStar");
   SendFinalResultAndWaitForSelectionChanged("highlight everything");
   SendFinalResultAndWaitForClipboardChanged("cut highlighted text");
   EXPECT_EQ("StarStar", GetClipboardText());
-  WaitForTextAreaValue("");
-  SendFinalResultAndWaitForTextAreaValue("paste the copied text", "StarStar");
+  WaitForEditableValue("");
+  SendFinalResultAndWaitForEditableValue("paste the copied text", "StarStar");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, UndoAndRedo) {
-  SendFinalResultAndWaitForTextAreaValue("The constellation",
+  SendFinalResultAndWaitForEditableValue("The constellation",
                                          "The constellation");
-  SendFinalResultAndWaitForTextAreaValue("myra", "The constellation myra");
-  SendFinalResultAndWaitForTextAreaValue("take that back", "The constellation");
-  SendFinalResultAndWaitForTextAreaValue("Lyra", "The constellation lyra");
-  SendFinalResultAndWaitForTextAreaValue("undo that", "The constellation");
-  SendFinalResultAndWaitForTextAreaValue("redo that", "The constellation lyra");
+  SendFinalResultAndWaitForEditableValue("myra", "The constellation myra");
+  SendFinalResultAndWaitForEditableValue("take that back", "The constellation");
+  SendFinalResultAndWaitForEditableValue("Lyra", "The constellation lyra");
+  SendFinalResultAndWaitForEditableValue("undo that", "The constellation");
+  SendFinalResultAndWaitForEditableValue("redo that", "The constellation lyra");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationPumpkinTest, Metrics) {
   base::HistogramTester histogram_tester_;
   HistogramWaiter waiter(kPumpkinMetric);
-  SendFinalResultAndWaitForTextAreaValue("dictate hello", "Hello");
+  SendFinalResultAndWaitForEditableValue("dictate hello", "Hello");
   waiter.Wait();
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
