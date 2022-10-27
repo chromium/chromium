@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_IN_PROCESS_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_IN_PROCESS_BROWSER_TEST_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -178,6 +179,13 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // instance through browser() but browser creation is delayed until after
   // PreRunTestOnMainThread().
   void SelectFirstBrowser();
+
+  // This function is used to record a set of properties for a test case in
+  // gtest result and that will be used by resultDB. The map's key value pair
+  // are defined by each test case. For use case check this bug:
+  // https://crbug.com/1365899
+  // The final value of the result is the format of key1=value1;key2=value2.
+  void RecordPropertyFromMap(const std::map<std::string, std::string>& tags);
 
  protected:
   // Closes the given browser and waits for it to release all its resources.
