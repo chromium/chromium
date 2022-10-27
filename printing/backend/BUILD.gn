@@ -149,6 +149,8 @@ component("backend") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "print_backend_test_constants.cc",
+    "print_backend_test_constants.h",
     "test_print_backend.cc",
     "test_print_backend.h",
   ]
@@ -156,6 +158,8 @@ source_set("test_support") {
   deps = [
     ":backend",
     "//base",
+    "//printing/backend/mojom",
     "//printing/mojom",
+    "//ui/gfx/geometry",
   ]
 }

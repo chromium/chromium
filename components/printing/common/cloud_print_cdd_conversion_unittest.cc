@@ -7,6 +7,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "printing/backend/print_backend.h"
+#include "printing/backend/print_backend_test_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cloud_print {
@@ -157,14 +158,14 @@ constexpr char kExpectedPageOutputQuality[] = R"json([
     "select_cap": {
       "option": [ {
         "display_name": "Normal",
-        "value": "ns0000:Normal"
+        "value": "ns000:Normal"
       }, {
         "display_name": "Draft",
-        "value": "ns0000:Draft",
+        "value": "ns000:Draft",
         "is_default": true
       }, {
-        "display_name": "Custom Settings",
-        "value": "ns0000:AdvancedSetting"
+        "display_name": "Advance",
+        "value": "ns000:Advance"
       } ]
     },
     "type": "SELECT"
@@ -178,130 +179,19 @@ constexpr char kExpectedPageOutputQualityNullDefault[] = R"json([
     "select_cap": {
       "option": [ {
         "display_name": "Normal",
-        "value": "ns0000:Normal"
+        "value": "ns000:Normal"
       }, {
         "display_name": "Draft",
-        "value": "ns0000:Draft"
+        "value": "ns000:Draft"
       }, {
-        "display_name": "Custom Settings",
-        "value": "ns0000:AdvancedSetting"
+        "display_name": "Advance",
+        "value": "ns000:Advance"
       } ]
     },
     "type": "SELECT"
   }
 ])json";
 #endif  // BUILDFLAG(IS_WIN)
-
-const printing::PrinterSemanticCapsAndDefaults::Paper kPaperA3{
-    /*display_name=*/"A3", /*vendor_id=*/"67",
-    /*size_um=*/gfx::Size(7016, 9921)};
-const printing::PrinterSemanticCapsAndDefaults::Paper kPaperA4{
-    /*display_name=*/"A4", /*vendor_id=*/"12",
-    /*size_um=*/gfx::Size(4961, 7016)};
-const printing::PrinterSemanticCapsAndDefaults::Paper kPaperLetter{
-    /*display_name=*/"Letter", /*vendor_id=*/"45",
-    /*size_um=*/gfx::Size(5100, 6600)};
-const printing::PrinterSemanticCapsAndDefaults::Paper kPaperLedger{
-    /*display_name=*/"Ledger", /*vendor_id=*/"89",
-    /*size_um=*/gfx::Size(6600, 10200)};
-
-#if BUILDFLAG(IS_CHROMEOS)
-const printing::AdvancedCapability kAdvancedCapability1(
-    /*name=*/"advanced_cap_bool",
-    /*display_name=*/"Advanced Capability #1 (bool)",
-    /*type=*/printing::AdvancedCapability::Type::kBoolean,
-    /*default_value=*/"true",
-    /*values=*/{});
-const printing::AdvancedCapability kAdvancedCapability2(
-    /*name=*/"advanced_cap_double",
-    /*display_name=*/"Advanced Capability #2 (double)",
-    /*type=*/printing::AdvancedCapability::Type::kFloat,
-    /*default_value=*/"3.14159",
-    /*values=*/
-    {
-        printing::AdvancedCapabilityValue(
-            /*name=*/"adv_cap_val_1",
-            /*display_name=*/"Advanced Capability #1"),
-        printing::AdvancedCapabilityValue(
-            /*name=*/"adv_cap_val_2",
-            /*display_name=*/"Advanced Capability #2"),
-        printing::AdvancedCapabilityValue(
-            /*name=*/"adv_cap_val_3",
-            /*display_name=*/"Advanced Capability #3"),
-    });
-const printing::AdvancedCapabilities kAdvancedCapabilities{
-    kAdvancedCapability1, kAdvancedCapability2};
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-const printing::PageOutputQuality
-    kPageOutputQuality(/*qualities=*/
-                       {
-                           printing::PageOutputQualityAttribute(
-                               /*display_name=*/"Normal",
-                               /*name=*/"ns0000:Normal"),
-                           printing::PageOutputQualityAttribute(
-                               /*display_name=*/"Draft",
-                               /*name=*/"ns0000:Draft"),
-                           printing::PageOutputQualityAttribute(
-                               /*display_name=*/"Custom Settings",
-                               /*name=*/"ns0000:AdvancedSetting"),
-                       },
-                       /*default_quality=*/"ns0000:Draft");
-#endif  // BUILDFLAG(IS_WIN)
-
-constexpr bool kCollateCapable = true;
-constexpr bool kCollateDefault = true;
-
-constexpr int32_t kCopiesMax = 123;
-
-const std::vector<printing::mojom::DuplexMode> kDuplexModes{
-    printing::mojom::DuplexMode::kSimplex,
-    printing::mojom::DuplexMode::kLongEdge,
-    printing::mojom::DuplexMode::kShortEdge};
-constexpr printing::mojom::DuplexMode kDuplexDefault =
-    printing::mojom::DuplexMode::kSimplex;
-
-constexpr bool kColorChangeable = true;
-constexpr bool kColorDefault = true;
-constexpr printing::mojom::ColorModel kColorModel =
-    printing::mojom::ColorModel::kRGB;
-constexpr printing::mojom::ColorModel kBwModel =
-    printing::mojom::ColorModel::kGrayscale;
-const printing::PrinterSemanticCapsAndDefaults::Papers kPapers{kPaperA4,
-                                                               kPaperLetter};
-const printing::PrinterSemanticCapsAndDefaults::Papers kUserDefinedPapers{
-    kPaperA3, kPaperLedger};
-const printing::PrinterSemanticCapsAndDefaults::Paper kDefaultPaper =
-    kPaperLetter;
-
-constexpr gfx::Size kDpi600(600, 600);
-constexpr gfx::Size kDpi1200(1200, 1200);
-constexpr gfx::Size kDpi1200x600(1200, 600);
-const std::vector<gfx::Size> kDpis{kDpi600, kDpi1200, kDpi1200x600};
-constexpr gfx::Size kDefaultDpi = kDpi600;
-
-printing::PrinterSemanticCapsAndDefaults
-GenerateSamplePrinterSemanticCapsAndDefaults() {
-  printing::PrinterSemanticCapsAndDefaults caps;
-
-  caps.collate_capable = kCollateCapable;
-  caps.collate_default = kCollateDefault;
-  caps.copies_max = kCopiesMax;
-  caps.duplex_modes = kDuplexModes;
-  caps.duplex_default = kDuplexDefault;
-  caps.color_changeable = kColorChangeable;
-  caps.color_default = kColorDefault;
-  caps.color_model = kColorModel;
-  caps.bw_model = kBwModel;
-  caps.papers = kPapers;
-  caps.user_defined_papers = kUserDefinedPapers;
-  caps.default_paper = kPaperLetter;
-  caps.dpis = kDpis;
-  caps.default_dpi = kDefaultDpi;
-
-  return caps;
-}
 
 const base::Value::Dict* GetPrinterDict(const base::Value& caps_value) {
   const base::Value::Dict* caps_dict = caps_value.GetIfDict();
@@ -317,10 +207,9 @@ const base::Value::Dict* GetPrinterDict(const base::Value& caps_value) {
 
 TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
   const printing::PrinterSemanticCapsAndDefaults input =
-      GenerateSamplePrinterSemanticCapsAndDefaults();
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
-
   ASSERT_TRUE(printer_dict);
 #if BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(9u, printer_dict->size());
@@ -351,7 +240,7 @@ TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
 
 TEST(CloudPrintCddConversionTest, MissingEntry) {
   printing::PrinterSemanticCapsAndDefaults input =
-      GenerateSamplePrinterSemanticCapsAndDefaults();
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.collate_capable = false;
   input.collate_default = false;
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
@@ -368,7 +257,7 @@ TEST(CloudPrintCddConversionTest, MissingEntry) {
 
 TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
   printing::PrinterSemanticCapsAndDefaults input =
-      GenerateSamplePrinterSemanticCapsAndDefaults();
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.collate_capable = true;
   input.collate_default = false;
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
@@ -387,9 +276,8 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
   printing::PrinterSemanticCapsAndDefaults input =
-      GenerateSamplePrinterSemanticCapsAndDefaults();
-  input.pin_supported = true;
-  input.advanced_capabilities = kAdvancedCapabilities;
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults(
+          printing::SampleWithPinAndAdvancedCapabilities());
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 
@@ -405,8 +293,9 @@ TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
 #if BUILDFLAG(IS_WIN)
 TEST(CloudPrintCddConversionTest, PageOutputQualityWithDefaultQuality) {
   printing::PrinterSemanticCapsAndDefaults input =
-      GenerateSamplePrinterSemanticCapsAndDefaults();
-  input.page_output_quality = kPageOutputQuality;
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults(
+          printing::SampleWithPageOutputQuality());
+  input.page_output_quality->default_quality = printing::kDefaultQuality;
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 
@@ -418,9 +307,8 @@ TEST(CloudPrintCddConversionTest, PageOutputQualityWithDefaultQuality) {
 
 TEST(CloudPrintCddConversionTest, PageOutputQualityNullDefaultQuality) {
   printing::PrinterSemanticCapsAndDefaults input =
-      GenerateSamplePrinterSemanticCapsAndDefaults();
-  input.page_output_quality = kPageOutputQuality;
-  input.page_output_quality->default_quality = absl::nullopt;
+      printing::GenerateSamplePrinterSemanticCapsAndDefaults(
+          printing::SampleWithPageOutputQuality());
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
   const base::Value::Dict* printer_dict = GetPrinterDict(output);
 

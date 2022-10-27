@@ -55,6 +55,7 @@ source_set("unit_tests") {
     ":common",
     "//base/test:test_support",
     "//printing/backend",
+    "//printing/backend:test_support",
     "//testing/gtest",
   ]
 }
