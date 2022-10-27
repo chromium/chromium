@@ -403,6 +403,7 @@ suite('PasswordEditDialog', function() {
   });
 
   test('hasCorrectInitialStateWhenAddPassword', function() {
+    loadTimeData.overrideValues({enablePasswordNotes: false});
     const addDialog = elementFactory.createPasswordEditDialog();
     assertAddDialogParts(addDialog);
     assertEquals(true, addDialog.$.websiteInput.autofocus);
