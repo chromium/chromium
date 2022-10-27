@@ -7082,10 +7082,6 @@
     'lacros_skylab_tests_amd64_generic': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_ATLAS_RELEASE_LKGM',
-          'CROS_ATLAS_RELEASE_DEV',
-          'CROS_ATLAS_RELEASE_BETA',
-          'CROS_ATLAS_RELEASE_STABLE',
           'CROS_EVE_RELEASE_LKGM',
           'CROS_EVE_RELEASE_DEV',
           'CROS_EVE_RELEASE_BETA',
