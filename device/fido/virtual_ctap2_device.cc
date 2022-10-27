@@ -2772,8 +2772,8 @@ void VirtualCtap2Device::InitPendingRegistrations(
   request_state_.Reset();
   for (const auto& registration : mutable_state()->registrations) {
     if (!registration.second.is_resident ||
-        !std::equal(rp_id_hash.begin(), rp_id_hash.end(),
-                    registration.second.application_parameter.begin())) {
+        !base::ranges::equal(rp_id_hash,
+                             registration.second.application_parameter)) {
       continue;
     }
     DCHECK(!registration.second.is_u2f && registration.second.user &&

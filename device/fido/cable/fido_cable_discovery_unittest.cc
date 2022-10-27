@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/fido_cable_discovery.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 

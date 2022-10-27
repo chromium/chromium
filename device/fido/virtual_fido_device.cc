@@ -4,7 +4,6 @@
 
 #include "device/fido/virtual_fido_device.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -616,9 +616,8 @@ VirtualFidoDevice::RegistrationData* VirtualFidoDevice::FindRegistrationData(
   if (it == mutable_state()->registrations.end())
     return nullptr;
 
-  if (!std::equal(application_parameter.begin(), application_parameter.end(),
-                  it->second.application_parameter.begin(),
-                  it->second.application_parameter.end())) {
+  if (!base::ranges::equal(application_parameter,
+                           it->second.application_parameter)) {
     return nullptr;
   }
 

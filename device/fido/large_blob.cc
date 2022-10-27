@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/fido/large_blob.h"
+
+#include <algorithm>
 #include <ostream>
 
-#include "device/fido/large_blob.h"
 #include "base/containers/span.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"

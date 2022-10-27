@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
+#include "device/fido/cbor_extract.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/ranges/algorithm.h"
 #include "components/cbor/values.h"
-#include "device/fido/cbor_extract.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,14 +19,6 @@ using cbor_extract::Is;
 using cbor_extract::Map;
 using cbor_extract::Stop;
 using cbor_extract::StringKey;
-
-template <typename T>
-bool VectorSpanEqual(const std::vector<T>& v, base::span<const T> s) {
-  if (v.size() != s.size()) {
-    return false;
-  }
-  return std::equal(v.begin(), v.end(), s.begin());
-}
 
 struct MakeCredRequest {
   // All fields below are not a raw_ptr<T> because cbor_extract.cc would
@@ -146,10 +137,10 @@ TEST(CBORExtract, Basic) {
   MakeCredRequest make_cred_request;
   ASSERT_TRUE(cbor_extract::Extract<MakeCredRequest>(
       &make_cred_request, kMakeCredParseSteps, make_cred));
-  EXPECT_TRUE(VectorSpanEqual<uint8_t>(*make_cred_request.client_data_hash,
-                                       kClientDataHash));
+  EXPECT_TRUE(base::ranges::equal(*make_cred_request.client_data_hash,
+                                  kClientDataHash));
   EXPECT_EQ(*make_cred_request.rp_id, "example.com");
-  EXPECT_TRUE(VectorSpanEqual<uint8_t>(*make_cred_request.user_id, kUserId));
+  EXPECT_TRUE(base::ranges::equal(*make_cred_request.user_id, kUserId));
   EXPECT_EQ(make_cred_request.cred_params->size(), 2u);
   EXPECT_EQ(make_cred_request.excluded_credentials->size(), 3u);
   EXPECT_TRUE(*make_cred_request.resident_key);
@@ -172,7 +163,7 @@ TEST(CBORExtract, Basic) {
           },
           base::Unretained(&algs))));
 
-  EXPECT_TRUE(VectorSpanEqual<int64_t>(algs, kAlgs));
+  EXPECT_TRUE(base::ranges::equal(algs, kAlgs));
 }
 
 TEST(CBORExtract, MissingRequired) {
