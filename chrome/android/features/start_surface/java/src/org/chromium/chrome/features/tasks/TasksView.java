@@ -9,7 +9,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -187,8 +187,8 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mSearchBoxCoordinator.setIncognitoMode(isIncognito);
         Drawable searchBackground = AppCompatResources.getDrawable(mContext,
                 isIncognito ? R.drawable.fake_search_box_bg_incognito : R.drawable.ntp_search_box);
-        if (searchBackground instanceof RippleDrawable) {
-            Drawable shapeDrawable = ((RippleDrawable) searchBackground)
+        if (searchBackground instanceof LayerDrawable) {
+            Drawable shapeDrawable = ((LayerDrawable) searchBackground)
                                              .findDrawableByLayerId(R.id.fake_search_box_bg_shape);
             if (shapeDrawable != null) {
                 @ColorInt

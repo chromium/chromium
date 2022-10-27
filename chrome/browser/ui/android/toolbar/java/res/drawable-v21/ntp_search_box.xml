@@ -4,11 +4,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/modern_grey_400" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/fake_search_box_bg_shape"
         android:drawable="@drawable/modern_toolbar_text_box_background"/>
 
-</ripple>
+</layer-list>
