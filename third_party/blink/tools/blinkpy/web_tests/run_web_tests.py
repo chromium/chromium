@@ -183,6 +183,8 @@ def parse_args(args):
             '--fuchsia-host-ip',
             help=('The IP address of the test host observed by the Fuchsia '
                   'device. Required if running on hardware devices.')),
+        optparse.make_option('--logs-dir',
+                             help='Location of diagnostics logs'),
     ]))
 
     option_group_definitions.append((
