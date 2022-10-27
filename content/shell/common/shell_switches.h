@@ -15,6 +15,7 @@ extern const char kDisableSystemFontCheck[];
 extern const char kExposeInternalsForTesting[];
 extern const char kContentShellHostWindowSize[];
 extern const char kContentShellHideToolbar[];
+extern const char kContentShellDevToolsTabTarget[];
 extern const char kRunWebTests[];
 
 // Helper that returns true if kRunWebTests is present in the command line,

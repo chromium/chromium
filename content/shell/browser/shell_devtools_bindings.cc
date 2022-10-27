@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/guid.h"
@@ -38,6 +39,7 @@
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "content/shell/common/shell_switches.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -225,7 +227,10 @@ void ShellDevToolsBindings::ReadyToCommitNavigation(
 void ShellDevToolsBindings::AttachInternal() {
   if (agent_host_)
     agent_host_->DetachClient(this);
-  agent_host_ = DevToolsAgentHost::GetOrCreateFor(inspected_contents_);
+  agent_host_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
+                    switches::kContentShellDevToolsTabTarget)
+                    ? DevToolsAgentHost::GetOrCreateForTab(inspected_contents_)
+                    : DevToolsAgentHost::GetOrCreateFor(inspected_contents_);
   agent_host_->AttachClient(this);
   if (inspect_element_at_x_ != -1) {
     agent_host_->InspectElement(inspected_contents_->GetFocusedFrame(),

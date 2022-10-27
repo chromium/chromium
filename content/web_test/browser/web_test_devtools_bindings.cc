@@ -16,6 +16,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/common/shell_switches.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "net/base/filename_util.h"
@@ -88,6 +89,10 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
   if (is_debug_dev_tools)
     url_string += "&debugFrontend=true";
   url_string += "&test=" + test_url_string;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kContentShellDevToolsTabTarget)) {
+    url_string += "&targetType=tab";
+  }
   return GURL(url_string);
 }
 
