@@ -55,6 +55,7 @@
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -908,19 +909,17 @@ bool EnableProcessHeapMetadataProtection() {
 
 absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
   base::FilePath temp_dir;
-  if (!base::PathService::Get(::IsUserAnAdmin() ? int{base::DIR_PROGRAM_FILES}
-                                                : int{base::DIR_TEMP},
-                              &temp_dir)) {
+  if (!update_client::CreateSecureTempDirectory(L"" COMPANY_SHORTNAME_STRING,
+                                                &temp_dir)) {
     return absl::nullopt;
   }
 
-  base::ScopedTempDir temp_path;
-  if (!temp_path.CreateUniqueTempDirUnderPath(
-          temp_dir.AppendASCII(COMPANY_SHORTNAME_STRING))) {
+  base::ScopedTempDir temp_dir_owner;
+  if (temp_dir_owner.Set(temp_dir)) {
+    return temp_dir_owner;
+  } else {
     return absl::nullopt;
   }
-
-  return temp_path;
 }
 
 base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {
@@ -992,17 +991,19 @@ bool StopGoogleUpdateProcesses(UpdaterScope scope) {
 }
 
 bool IsArchitectureSupported(const std::string& arch) {
-  // TODO(crbug.com/1375366) : use `GetArchitecture` after CL 3979988 lands.
+  constexpr char kArchAmd64Omaha3[] = "x64";
 
   if (arch.empty())
     return true;
 
-  // Offline manifests have `arch` as "x64", but
-  // `base::SysInfo().OperatingSystemArchitecture()` returns "x86_64" for amd64.
-  const std::string current_arch =
-      base::SysInfo().OperatingSystemArchitecture();
-  if (arch == current_arch || (arch == "x64" && current_arch == "x86_64"))
+  const std::string current_arch = update_client::GetArchitecture();
+
+  // This code accounts for Omaha 3 Offline manifests having `arch` as "x64",
+  // but `GetArchitecture` returning "x86_64" for amd64.
+  if (arch == current_arch ||
+      (arch == kArchAmd64Omaha3 && current_arch == update_client::kArchAmd64)) {
     return true;
+  }
 
   using IsWow64GuestMachineSupportedFunc = HRESULT(WINAPI*)(USHORT, BOOL*);
   const IsWow64GuestMachineSupportedFunc is_wow64_guest_machine_supported =
@@ -1012,10 +1013,10 @@ bool IsArchitectureSupported(const std::string& arch) {
   if (is_wow64_guest_machine_supported) {
     const base::flat_map<std::string, int> kNativeArchitectureStringsToImages =
         {
-            {"x86", IMAGE_FILE_MACHINE_I386},
-            {"x64", IMAGE_FILE_MACHINE_AMD64},
-            {"x86_64", IMAGE_FILE_MACHINE_AMD64},
-            {"arm64", IMAGE_FILE_MACHINE_ARM64},
+            {update_client::kArchIntel, IMAGE_FILE_MACHINE_I386},
+            {kArchAmd64Omaha3, IMAGE_FILE_MACHINE_AMD64},
+            {update_client::kArchAmd64, IMAGE_FILE_MACHINE_AMD64},
+            {update_client::kArchArm64, IMAGE_FILE_MACHINE_ARM64},
         };
 
     const auto image = kNativeArchitectureStringsToImages.find(arch);
@@ -1028,7 +1029,7 @@ bool IsArchitectureSupported(const std::string& arch) {
     }
   }
 
-  return arch == "x86";
+  return arch == update_client::kArchIntel;
 }
 
 }  // namespace updater
