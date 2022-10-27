@@ -2300,6 +2300,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Messages.Stacking" enum="StackingAnimationType"
+    expires_after="M115">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the type of stacking animation when it is triggered. The type
+    indicates the relation between current displayed messages and incoming
+    messages.
+  </summary>
+</histogram>
+
+<histogram name="Android.Messages.Stacking.ThreeStacked"
+    enum="StackingAnimationThreeStackedType" expires_after="M115">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the scenario when 3 message stacking could be possible.
+  </summary>
+</histogram>
+
+<histogram name="Android.Messages.Stacking.{Action}" enum="MessageIdentifier"
+    expires_after="M115">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/components/messages/OWNERS</owner>
+  <summary>
+    Records the message identifier when {Action} during a stacking animation.
+  </summary>
+  <token key="Action">
+    <variant name="InsertAtBack" summary="a message is inserted at back."/>
+    <variant name="InsertAtFront" summary="a message is inserted at front."/>
+    <variant name="PushToBack" summary="a front message is pushed to back."/>
+    <variant name="PushToFront" summary="a back message is pushed to front."/>
+    <variant name="RemoveBack" summary="a back message is removed."/>
+    <variant name="RemoveFront" summary="a front message is removed."/>
+  </token>
+</histogram>
+
 <histogram name="Android.Messages.TimeToAction.Dismiss{MessageIdentifier}"
     units="ms" expires_after="M115">
   <owner>lazzzis@chromium.org</owner>

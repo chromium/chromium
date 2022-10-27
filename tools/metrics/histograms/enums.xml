@@ -94529,6 +94529,38 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="17" label="Unknown"/>
 </enum>
 
+<enum name="StackingAnimationThreeStackedType">
+  <summary>
+    The scenarios of stacking animation when it is posisble to have 3 messages
+    on the screen.
+  </summary>
+  <int value="0"
+      label="HIGH_PRIORITY - A high-priority message is inserted to a full
+             container"/>
+  <int value="1"
+      label="IN_SEQUENCE - The front message is dismissed in a full container
+             and a 3rd message is incoming."/>
+</enum>
+
+<enum name="StackingAnimationType">
+  <summary>
+    The type of stacking animation when it is triggered. The type indicates the
+    relation between current displayed messages and incoming messages.
+  </summary>
+  <int value="0"
+      label="SHOW_ALL - 2 messages fill the empty message container"/>
+  <int value="1"
+      label="SHOW_FRONT_ONLY - 1 message fills the empty message container"/>
+  <int value="2"
+      label="REMOVE_FRONT_AND_SHOW_BACK - remove front and the back will be
+             brought to front"/>
+  <int value="3" label="REMOVE_ALL - remove 2 messages"/>
+  <int value="4" label="REMOVE_FRONT_ONLY - remove the only message"/>
+  <int value="5" label="REMOVE_BACK_ONLY - remove back message and keep front"/>
+  <int value="6" label="SHOW_BACK_ONLY - insert a new message at back"/>
+  <int value="7" label="INSERT_AT_FRONT - insert a new message at front"/>
+</enum>
+
 <enum name="StandardActions">
   <summary>
     Standard Activity Actions, as defined by

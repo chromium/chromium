@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -27,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageStateHandler.Position;
 
@@ -69,6 +71,7 @@ public class MessageAnimationCoordinatorUnitTest {
     @SmallTest
     public void testDoNothing_withoutStacking() {
         MessageState m1 = buildMessageState();
+
         // Initial setup
         mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
 
@@ -143,9 +146,20 @@ public class MessageAnimationCoordinatorUnitTest {
         // Initial values should be null.
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
-
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.SHOW_ALL);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_FRONT),
+                1);
+        HistogramDelta d3 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_BACK),
+                2);
         MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
@@ -155,6 +169,9 @@ public class MessageAnimationCoordinatorUnitTest {
 
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, m2}, currentMessages.toArray());
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
+        Assert.assertEquals(1, d3.getDelta());
     }
 
     // Test only front message becomes hidden.
@@ -163,12 +180,25 @@ public class MessageAnimationCoordinatorUnitTest {
     @SmallTest
     public void testHideFrontMessageOnly() {
         MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
+
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
 
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.REMOVE_FRONT_AND_SHOW_BACK);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.REMOVE_FRONT),
+                1);
+        HistogramDelta d3 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.PUSH_TO_FRONT),
+                2);
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, null), false, () -> {});
         verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
@@ -176,6 +206,9 @@ public class MessageAnimationCoordinatorUnitTest {
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
+        Assert.assertEquals(1, d3.getDelta());
     }
 
     // Test hiding front one and then showing a new one.
@@ -185,13 +218,17 @@ public class MessageAnimationCoordinatorUnitTest {
     @SmallTest
     public void testDismissFrontAndEnqueueNew() {
         MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
 
         MessageState m3 = buildMessageState();
+        setMessageIdentifier(m3, 3);
+
         // Hide the front one so that the back one is brought to front.
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
         verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
@@ -200,10 +237,18 @@ public class MessageAnimationCoordinatorUnitTest {
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, null}, currentMessages.toArray());
 
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.SHOW_BACK_ONLY);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.INSERT_AT_BACK),
+                3);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m2, m3), false, () -> {});
         verify(m3.handler).show(Position.FRONT, Position.BACK);
         currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m2, m3}, currentMessages.toArray());
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
     }
 
     // Test only back message becomes hidden.
@@ -212,18 +257,32 @@ public class MessageAnimationCoordinatorUnitTest {
     @SmallTest
     public void testHiddenBackMessageOnly() {
         MessageState m1 = buildMessageState();
+        setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
+        setMessageIdentifier(m2, 2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
         verify(m2.handler).show(Position.FRONT, Position.BACK);
 
+        HistogramDelta d1 = new HistogramDelta(MessagesMetrics.STACKING_HISTOGRAM_NAME,
+                MessagesMetrics.StackingAnimationType.REMOVE_BACK_ONLY);
+        HistogramDelta d2 = new HistogramDelta(MessagesMetrics.STACKING_ACTION_HISTOGRAM_PREFIX
+                        + MessagesMetrics.stackingAnimationActionToHistogramSuffix(
+                                MessagesMetrics.StackingAnimationAction.REMOVE_BACK),
+                2);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, null), false, () -> {});
         verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
         verify(m2.handler).hide(Position.BACK, Position.FRONT, true);
 
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {m1, null}, currentMessages.toArray());
+        Assert.assertEquals(1, d1.getDelta());
+        Assert.assertEquals(1, d2.getDelta());
+    }
+
+    private void setMessageIdentifier(MessageState message, int messageIdentifier) {
+        doReturn(messageIdentifier).when(message.handler).getMessageIdentifier();
     }
 
     private MessageState buildMessageState() {
