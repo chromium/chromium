@@ -140,6 +140,22 @@ class CheckOpResult {
   char* message_ = nullptr;
 };
 
+// Helper macro for binary operators.
+// The 'switch' is used to prevent the 'else' from being ambiguous when the
+// macro is used in an 'if' clause such as:
+// if (a == 1)
+//   CHECK_EQ(2, a);
+#define CHECK_OP_FUNCTION_IMPL(check_function, name, op, val1, val2) \
+  switch (0)                                                         \
+  case 0:                                                            \
+  default:                                                           \
+    if (::logging::CheckOpResult true_if_passed =                    \
+            ::logging::Check##name##Impl((val1), (val2),             \
+                                         #val1 " " #op " " #val2))   \
+      ;                                                              \
+    else                                                             \
+      check_function(__FILE__, __LINE__, &true_if_passed).stream()
+
 #if !CHECK_WILL_STREAM()
 
 // Discard log strings to reduce code bloat.
@@ -147,22 +163,8 @@ class CheckOpResult {
 
 #else
 
-// Helper macro for binary operators.
-// The 'switch' is used to prevent the 'else' from being ambiguous when the
-// macro is used in an 'if' clause such as:
-// if (a == 1)
-//   CHECK_EQ(2, a);
-#define CHECK_OP(name, op, val1, val2)                                    \
-  switch (0)                                                              \
-  case 0:                                                                 \
-  default:                                                                \
-    if (::logging::CheckOpResult true_if_passed =                         \
-            ::logging::Check##name##Impl((val1), (val2),                  \
-                                         #val1 " " #op " " #val2))        \
-      ;                                                                   \
-    else                                                                  \
-      ::logging::CheckError::CheckOp(__FILE__, __LINE__, &true_if_passed) \
-          .stream()
+#define CHECK_OP(name, op, val1, val2) \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::CheckOp, name, op, val1, val2)
 
 #endif
 
@@ -210,17 +212,8 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 
 #if DCHECK_IS_ON()
 
-#define DCHECK_OP(name, op, val1, val2)                                    \
-  switch (0)                                                               \
-  case 0:                                                                  \
-  default:                                                                 \
-    if (::logging::CheckOpResult true_if_passed =                          \
-            ::logging::Check##name##Impl((val1), (val2),                   \
-                                         #val1 " " #op " " #val2))         \
-      ;                                                                    \
-    else                                                                   \
-      ::logging::CheckError::DCheckOp(__FILE__, __LINE__, &true_if_passed) \
-          .stream()
+#define DCHECK_OP(name, op, val1, val2) \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::DCheckOp, name, op, val1, val2)
 
 #else
 
