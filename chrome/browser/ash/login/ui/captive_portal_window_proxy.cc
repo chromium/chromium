@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/login/ui/captive_portal_view.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/constrained_window/constrained_window_views.h"

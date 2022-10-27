@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -14,8 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace bluetooth {
+namespace ash::bluetooth {
 
 // Adds the strings needed for bluetooth elements to |html_source|. String ids
 // correspond to ids in ash/webui/common/resources/bluetooth/.
@@ -79,5 +78,4 @@ void AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddLocalizedStrings(html_source);
 }
 
-}  // namespace bluetooth
-}  // namespace chromeos
+}  // namespace ash::bluetooth

@@ -158,8 +158,8 @@ if (include_js_tests) {
       sources += [
         "../../../browser/resources/chromeos/login/components/oobe_types.js",
         "../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
-        "../../../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest.js",
-        "../../../browser/ui/webui/chromeos/certificate_manager_dialog_browsertest.js",
+        "../../../browser/ui/webui/ash/bluetooth_pairing_dialog_browsertest.js",
+        "../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
         "chromeos/account_manager/account_manager_browsertest.js",
         "chromeos/arc_account_picker/arc_account_picker_browsertest.js",
         "chromeos/ash_common/ash_common_resources_browsertest.js",

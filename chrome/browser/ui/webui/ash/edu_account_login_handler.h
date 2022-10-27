@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_ACCOUNT_LOGIN_HANDLER_CHROMEOS_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_ACCOUNT_LOGIN_HANDLER_CHROMEOS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_EDU_ACCOUNT_LOGIN_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_EDU_ACCOUNT_LOGIN_HANDLER_H_
 
 #include <map>
 #include <memory>
@@ -23,7 +23,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
-namespace chromeos {
+namespace ash {
 
 // Handler for EDU account login flow.
 class EduAccountLoginHandler : public content::WebUIMessageHandler,
@@ -154,6 +154,6 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   std::string parent_signin_callback_id_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EDU_ACCOUNT_LOGIN_HANDLER_CHROMEOS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EDU_ACCOUNT_LOGIN_HANDLER_H_

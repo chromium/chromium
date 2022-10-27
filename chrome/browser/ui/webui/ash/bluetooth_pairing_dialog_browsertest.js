@@ -17,7 +17,7 @@ BluetoothPairingDialogTest.prototype = {
 
   /** @override */
   testGenCppIncludes: function() {
-    GEN('#include "chrome/browser/ui/webui/chromeos/' +
+    GEN('#include "chrome/browser/ui/webui/ash/' +
         'bluetooth_pairing_dialog_browsertest-inl.h"');
   },
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/ash/edu_account_login_handler.h"
 
 #include <utility>
 
@@ -31,7 +31,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kImageFetcherUmaClientName[] =
@@ -357,4 +357,4 @@ void EduAccountLoginHandler::OnReAuthProofTokenFailure(
   parent_signin_callback_id_.clear();
 }
 
-}  // namespace chromeos
+}  // namespace ash

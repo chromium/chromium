@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/human_presence_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 
 #include <memory>
 
@@ -375,7 +375,7 @@ void HumanPresenceInternalsUIMessageHandler::OnJavascriptDisallowed() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 HumanPresenceInternalsUI::HumanPresenceInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -403,4 +403,4 @@ HumanPresenceInternalsUI::HumanPresenceInternalsUI(content::WebUI* web_ui)
 
 HumanPresenceInternalsUI::~HumanPresenceInternalsUI() = default;
 
-}  //  namespace chromeos
+}  //  namespace ash

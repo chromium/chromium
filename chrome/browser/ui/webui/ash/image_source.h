@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IMAGE_SOURCE_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IMAGE_SOURCE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IMAGE_SOURCE_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_IMAGE_SOURCE_H_
 
 #include <string>
 
@@ -16,7 +16,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Data source that reads and decodes an image from the RO file system.
 class ImageSource : public content::URLDataSource {
@@ -53,6 +53,6 @@ class ImageSource : public content::URLDataSource {
   base::WeakPtrFactory<ImageSource> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IMAGE_SOURCE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IMAGE_SOURCE_H_

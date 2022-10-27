@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -60,7 +60,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -505,7 +505,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
   }
 
   void UpdateMirrorSyncSection() {
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!features::IsDriveFsMirroringEnabled()) {
       SetSectionEnabled("mirror-sync-section", false);
       return;
     }
@@ -547,7 +547,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
 
   void ToggleSyncPath(drivefs::mojom::MirrorPathStatus status,
                       const base::Value::List& args) {
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!features::IsDriveFsMirroringEnabled()) {
       return;
     }
 
@@ -1044,4 +1044,4 @@ DriveInternalsUI::DriveInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(profile, source);
 }
 
-}  // namespace chromeos
+}  // namespace ash

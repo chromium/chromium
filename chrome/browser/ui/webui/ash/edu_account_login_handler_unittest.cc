@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
+#include "chrome/browser/ui/webui/ash/edu_account_login_handler.h"
 
 #include <memory>
 
@@ -36,7 +36,7 @@
 
 using testing::_;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -418,4 +418,4 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOnline) {
   ASSERT_TRUE(data.arg3()->GetBool());
 }
 
-}  // namespace chromeos
+}  // namespace ash

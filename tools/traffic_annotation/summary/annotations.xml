@@ -307,7 +307,7 @@ Refer to README.md for content description and update process.
  <item id="ambient_client" added_in_milestone="98" content_hash_code="062d821f" os_list="chromeos" file_path="chrome/browser/ui/ash/ambient/ambient_client_impl.cc" />
  <item id="calendar_get_events" added_in_milestone="98" content_hash_code="0108842a" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
  <item id="side_search_availability_test" added_in_milestone="98" content_hash_code="04b1ffa5" os_list="chromeos,linux,windows" file_path="chrome/browser/ui/side_search/side_search_tab_contents_helper.cc" />
- <item id="edu_account_login_profile_image_fetcher" added_in_milestone="98" content_hash_code="0689301c" os_list="chromeos" file_path="chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.cc" />
+ <item id="edu_account_login_profile_image_fetcher" added_in_milestone="98" content_hash_code="0689301c" os_list="chromeos" file_path="chrome/browser/ui/webui/ash/edu_account_login_handler.cc" />
  <item id="management_ui_customer_logo" added_in_milestone="98" content_hash_code="01a17a58" os_list="chromeos" file_path="chrome/browser/ui/webui/management/management_ui_handler_chromeos.cc" />
  <item id="gaia_reauth_token_fetcher" added_in_milestone="98" content_hash_code="04ff463d" os_list="chromeos" file_path="chrome/browser/ash/login/gaia_reauth_token_fetcher.cc" />
  <item id="partner_bookmarks_reader_get_favicon" added_in_milestone="98" content_hash_code="0186a55e" os_list="android" file_path="chrome/browser/android/bookmarks/partner_bookmarks_reader.cc" />

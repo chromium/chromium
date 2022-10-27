@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_BLUETOOTH_PAIRING_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_BLUETOOTH_PAIRING_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_BLUETOOTH_PAIRING_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_BLUETOOTH_PAIRING_DIALOG_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 class BluetoothPairingDialog : public SystemWebDialogDelegate {
  public:
@@ -73,11 +73,6 @@ class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash {
-using ::chromeos::BluetoothPairingDialog;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_BLUETOOTH_PAIRING_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_BLUETOOTH_PAIRING_DIALOG_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/cryptohome_web_ui_handler.h"
+#include "chrome/browser/ui/webui/ash/cryptohome_web_ui_handler.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -19,7 +19,7 @@
 
 using content::BrowserThread;
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -51,7 +51,7 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::Value::List& args) {
       user_data_auth::IsMountedRequest(),
       base::BindOnce(&CryptohomeWebUIHandler::OnIsMounted,
                      weak_ptr_factory_.GetWeakPtr()));
-  TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
       base::BindOnce(&CryptohomeWebUIHandler::OnGetTpmStatus,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -119,4 +119,4 @@ void CryptohomeWebUIHandler::SetCryptohomeProperty(
                                          destination_id_value, value);
 }
 
-}  // namespace chromeos
+}  // namespace ash

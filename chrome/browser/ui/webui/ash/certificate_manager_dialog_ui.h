@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CERTIFICATE_MANAGER_DIALOG_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CERTIFICATE_MANAGER_DIALOG_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CERTIFICATE_MANAGER_DIALOG_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CERTIFICATE_MANAGER_DIALOG_UI_H_
 
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 // A WebUI to host certificate manager UI.
 class CertificateManagerDialogUI : public ui::WebDialogUI {
@@ -21,6 +21,6 @@ class CertificateManagerDialogUI : public ui::WebDialogUI {
   ~CertificateManagerDialogUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CERTIFICATE_MANAGER_DIALOG_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CERTIFICATE_MANAGER_DIALOG_UI_H_

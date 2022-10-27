@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_dropdown_handler.h"
 
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -58,7 +58,7 @@ void NetworkDropdownHandler::HandleLaunchAddWiFiNetworkDialog() {
     handler->SetTechnologyEnabled(NetworkTypePattern::WiFi(), true,
                                   network_handler::ErrorCallback());
   }
-  chromeos::InternetConfigDialog::ShowDialogForNetworkType(
+  InternetConfigDialog::ShowDialogForNetworkType(
       ::onc::network_type::kWiFi,
       LoginDisplayHost::default_host()->GetNativeWindow());
 }
@@ -80,7 +80,7 @@ void NetworkDropdownHandler::HandleShowNetworkDetails(const std::string& type,
 }
 
 void NetworkDropdownHandler::HandleShowNetworkConfig(const std::string& guid) {
-  chromeos::InternetConfigDialog::ShowDialogForNetworkId(
+  InternetConfigDialog::ShowDialogForNetworkId(
       guid, LoginDisplayHost::default_host()->GetNativeWindow());
 }
 

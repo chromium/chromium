@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
-#include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 
 namespace ash {
 namespace shimless_rma {
@@ -34,7 +34,7 @@ void ChromeShimlessRmaDelegate::ShowDiagnosticsDialog() {
     return;
   }
 
-  chromeos::DiagnosticsDialog::ShowDialog();
+  DiagnosticsDialog::ShowDialog();
 }
 
 void ChromeShimlessRmaDelegate::RefreshAccessibilityManagerProfile() {

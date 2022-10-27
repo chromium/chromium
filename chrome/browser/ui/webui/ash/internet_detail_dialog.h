@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
+namespace ash {
+
+class NetworkState;
 
 class InternetDetailDialog : public SystemWebDialogDelegate {
  public:
@@ -66,12 +66,11 @@ class InternetDetailDialogUI : public ui::MojoWebDialogUI {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::InternetDetailDialog;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::InternetDetailDialog;
 }
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_INTERNET_DETAIL_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_INTERNET_DETAIL_DIALOG_H_

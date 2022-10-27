@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
+#include "chrome/browser/ui/webui/ash/certificate_manager_dialog_ui.h"
 
 #include <memory>
 
@@ -18,7 +18,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -71,4 +71,4 @@ CertificateManagerDialogUI::CertificateManagerDialogUI(content::WebUI* web_ui)
 
 CertificateManagerDialogUI::~CertificateManagerDialogUI() {}
 
-}  // namespace chromeos
+}  // namespace ash

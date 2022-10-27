@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CRYPTOHOME_WEB_UI_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CRYPTOHOME_WEB_UI_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_WEB_UI_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_WEB_UI_HANDLER_H_
 
 #include <string>
 
@@ -20,7 +20,7 @@ class Value;
 
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // Class to handle messages from chrome://cryptohome.
 class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
@@ -57,6 +57,6 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<CryptohomeWebUIHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CRYPTOHOME_WEB_UI_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CRYPTOHOME_WEB_UI_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 
 #include "ash/public/cpp/network_config_service.h"
 #include "base/json/json_writer.h"
@@ -25,7 +25,7 @@
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 #include "ui/wm/core/shadow_types.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -77,7 +77,7 @@ void InternetConfigDialog::ShowDialogForNetworkId(const std::string& network_id,
     return;
   }
   std::string network_type =
-      chromeos::network_util::TranslateShillTypeToONC(network_state->type());
+      network_util::TranslateShillTypeToONC(network_state->type());
   std::string id = GetId(network_type, network_id);
   auto* instance = SystemWebDialogDelegate::FindInstance(id);
   if (instance) {
@@ -175,9 +175,9 @@ InternetConfigDialogUI::~InternetConfigDialogUI() {}
 void InternetConfigDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
-  ash::GetNetworkConfigService(std::move(receiver));
+  GetNetworkConfigService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(InternetConfigDialogUI)
 
-}  // namespace chromeos
+}  // namespace ash

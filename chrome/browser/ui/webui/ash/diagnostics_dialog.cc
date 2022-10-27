@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 
 #include <string>
 
@@ -13,7 +13,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 std::string GetUrlForPage(DiagnosticsDialog::DiagnosticsPage page) {
@@ -40,8 +40,8 @@ void DiagnosticsDialog::ShowDialog(DiagnosticsDialog::DiagnosticsPage page,
   DiagnosticsDialog* dialog = new DiagnosticsDialog(page);
 
   // Ensure log controller configuration matches current session.
-  if (ash::features::IsLogControllerForDiagnosticsAppEnabled()) {
-    ash::diagnostics::DiagnosticsLogController::Get()
+  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
+    diagnostics::DiagnosticsLogController::Get()
         ->ResetAndInitializeLogWriters();
   }
 
@@ -70,4 +70,4 @@ void DiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
   *size = display_size;
 }
 
-}  // namespace chromeos
+}  // namespace ash

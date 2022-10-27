@@ -62,7 +62,7 @@
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/image_source.h"
+#include "chrome/browser/ui/webui/ash/image_source.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -369,8 +369,7 @@ void AboutHandler::RegisterMessages() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Handler for the product label image, which will be shown if available.
-  content::URLDataSource::Add(profile_,
-                              std::make_unique<chromeos::ImageSource>());
+  content::URLDataSource::Add(profile_, std::make_unique<ash::ImageSource>());
 #endif
   content::URLDataSource::Add(profile_,
                               std::make_unique<ThemeSource>(profile_));

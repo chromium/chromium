@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -28,7 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/core/shadow_types.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -45,7 +45,7 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   };
   for (const auto& entry : localized_strings)
     html_source->AddLocalizedString(entry.name, entry.id);
-  chromeos::bluetooth::AddLoadTimeData(html_source);
+  bluetooth::AddLoadTimeData(html_source);
 }
 
 }  // namespace
@@ -147,11 +147,11 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
 BluetoothPairingDialogUI::~BluetoothPairingDialogUI() = default;
 
 void BluetoothPairingDialogUI::BindInterface(
-    mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
+    mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
         receiver) {
-  ash::GetBluetoothConfigService(std::move(receiver));
+  GetBluetoothConfigService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothPairingDialogUI)
 
-}  // namespace chromeos
+}  // namespace ash

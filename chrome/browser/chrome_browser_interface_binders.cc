@@ -262,6 +262,7 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer.mojom.h"
@@ -271,6 +272,8 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -281,9 +284,6 @@
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -1126,7 +1126,7 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(PLATFORM_CFM)
       ash::cfm::NetworkSettingsDialogUi,
 #endif  // BUILDFLAG(PLATFORM_CFM)
-      chromeos::InternetConfigDialogUI, chromeos::InternetDetailDialogUI,
+      ash::InternetConfigDialogUI, ash::InternetDetailDialogUI,
       chromeos::NetworkUI, chromeos::OobeUI, ash::settings::OSSettingsUI,
       ash::LockScreenNetworkUI, ash::ShimlessRMADialogUI>(map);
 
@@ -1257,7 +1257,7 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::bluetooth_config::mojom::CrosBluetoothConfig,
-      chromeos::BluetoothPairingDialogUI, ash::settings::OSSettingsUI>(map);
+      ash::BluetoothPairingDialogUI, ash::settings::OSSettingsUI>(map);
 
   if (ash::features::IsAudioSettingsPageEnabled()) {
     RegisterWebUIControllerInterfaceBinder<

@@ -50,10 +50,10 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -402,7 +402,7 @@ void SystemTrayClientImpl::ShowBluetoothSettings(const std::string& device_id) {
 
 void SystemTrayClientImpl::ShowBluetoothPairingDialog(
     absl::optional<base::StringPiece> device_address) {
-  if (chromeos::BluetoothPairingDialog::ShowDialog(device_address)) {
+  if (ash::BluetoothPairingDialog::ShowDialog(device_address)) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Bluetooth_Connect_Unknown"));
   }
@@ -586,7 +586,7 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
     return;
   }
 
-  chromeos::InternetConfigDialog::ShowDialogForNetworkId(network_id);
+  ash::InternetConfigDialog::ShowDialogForNetworkId(network_id);
 }
 
 void SystemTrayClientImpl::ShowNetworkCreate(const std::string& type) {
@@ -594,7 +594,7 @@ void SystemTrayClientImpl::ShowNetworkCreate(const std::string& type) {
     ShowSettingsCellularSetup(/*show_psim_flow=*/false);
     return;
   }
-  chromeos::InternetConfigDialog::ShowDialogForNetworkType(type);
+  ash::InternetConfigDialog::ShowDialogForNetworkType(type);
 }
 
 void SystemTrayClientImpl::ShowSettingsCellularSetup(bool show_psim_flow) {
@@ -656,7 +656,7 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
   if (session_manager->IsInSecondaryLoginScreen())
     return;
   if (!session_manager->IsSessionStarted()) {
-    chromeos::InternetDetailDialog::ShowDialog(network_id);
+    ash::InternetDetailDialog::ShowDialog(network_id);
     return;
   }
 

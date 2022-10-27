@@ -766,7 +766,7 @@
       'filepath': 'ash/system/bluetooth/'\
                   '|chromeos/ash/components/hid_detection/'\
                   '|chromeos/ash/services/bluetooth_config/'\
-                  '|chrome/browser/ui/webui/chromeos/bluetooth'\
+                  '|chrome/browser/ui/webui/ash/bluetooth'\
                   '|chrome/browser/resources/settings/chromeos/os_bluetooth_page/'\
                   '|chrome/browser/resources/chromeos/bluetooth_pairing_dialog/'\
                   '|chrome/test/data/webui/cr_components/chromeos/bluetooth/'\

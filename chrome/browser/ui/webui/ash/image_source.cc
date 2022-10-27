@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/image_source.h"
+#include "chrome/browser/ui/webui/ash/image_source.h"
 
 #include <stddef.h>
 
@@ -22,7 +22,7 @@
 #include "components/user_manager/user_image/user_image.h"
 #include "net/base/mime_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char* const kAllowlistedDirectories[] = {"regulatory_labels"};
@@ -110,4 +110,4 @@ bool ImageSource::IsAllowlisted(const std::string& path) const {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

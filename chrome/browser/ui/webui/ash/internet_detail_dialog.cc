@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -31,7 +31,7 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -94,7 +94,7 @@ class PortalNetworkMessageHandler : public content::WebUIMessageHandler {
       return;
     }
     const std::string& guid = args[0].GetString();
-    ash::NetworkConnect::Get()->ShowPortalSignin(guid);
+    NetworkConnect::Get()->ShowPortalSignin(guid);
   }
 };
 
@@ -170,10 +170,10 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
       chrome::kChromeUIInternetDetailDialogHost);
   source->DisableTrustedTypesCSP();
   source->AddBoolean("showTechnologyBadge",
-                     !ash::features::IsSeparateNetworkIconsEnabled());
+                     !features::IsSeparateNetworkIconsEnabled());
   source->AddBoolean("captivePortalUI2022",
-                     ash::features::IsCaptivePortalUI2022Enabled());
-  source->AddBoolean("apnRevamp", ash::features::IsApnRevampEnabled());
+                     features::IsCaptivePortalUI2022Enabled());
+  source->AddBoolean("apnRevamp", features::IsApnRevampEnabled());
   cellular_setup::AddNonStringLoadTimeData(source);
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);
@@ -192,9 +192,9 @@ InternetDetailDialogUI::~InternetDetailDialogUI() {}
 void InternetDetailDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
-  ash::GetNetworkConfigService(std::move(receiver));
+  GetNetworkConfigService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(InternetDetailDialogUI)
 
-}  // namespace chromeos
+}  // namespace ash

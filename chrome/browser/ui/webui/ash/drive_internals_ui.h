@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_DRIVE_INTERNALS_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_DRIVE_INTERNALS_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_DRIVE_INTERNALS_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_DRIVE_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 // The WebUI controller for chrome::drive-internals, that is used for
 // diagnosing issues of Drive on Chrome OS.
@@ -19,6 +19,6 @@ class DriveInternalsUI : public content::WebUIController {
   DriveInternalsUI& operator=(const DriveInternalsUI&) = delete;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_DRIVE_INTERNALS_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_DRIVE_INTERNALS_UI_H_

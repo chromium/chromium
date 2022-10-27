@@ -165,7 +165,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
           this.shadowRoot!.querySelector('#navigationPanel');
       assert(navPanel);
       // Note: When adding a new page, update the DiagnosticsPage enum located
-      // in chrome/browser/ui/webui/chromeos/diagnostics_dialog.h.
+      // in chrome/browser/ui/webui/ash/diagnostics_dialog.h.
       const pages: SelectorItem[] = [navPanel.createSelectorItem(
           loadTimeData.getString('systemText'), 'system-page',
           getNavigationIcon('laptop-chromebook'), 'system')];

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_DIAGNOSTICS_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_DIAGNOSTICS_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_DIAGNOSTICS_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_DIAGNOSTICS_DIALOG_H_
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace chromeos {
+namespace ash {
 
 class DiagnosticsDialog : public SystemWebDialogDelegate {
  public:
@@ -44,6 +44,6 @@ class DiagnosticsDialog : public SystemWebDialogDelegate {
  private:
   const std::string id_ = "diagnostics-dialog";
 };
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_DIAGNOSTICS_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_DIAGNOSTICS_DIALOG_H_

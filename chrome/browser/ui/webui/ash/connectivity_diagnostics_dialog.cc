@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/connectivity_diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/connectivity_diagnostics_dialog.h"
 
 #include <string>
 
@@ -18,7 +18,7 @@ const float kConnectivityDiagnosticsDialogScale = .8;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 void ConnectivityDiagnosticsDialog::ShowDialog() {
@@ -41,4 +41,4 @@ void ConnectivityDiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
                 display.size().height() * kConnectivityDiagnosticsDialogScale);
 }
 
-}  // namespace chromeos
+}  // namespace ash

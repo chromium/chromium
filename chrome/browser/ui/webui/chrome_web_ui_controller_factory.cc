@@ -255,14 +255,21 @@
 #include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
+#include "chrome/browser/ui/webui/ash/certificate_manager_dialog_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
+#include "chrome/browser/ui/webui/ash/cryptohome_ui.h"
+#include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
+#include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
+#include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
@@ -275,13 +282,6 @@
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
-#include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
-#include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
-#include "chrome/browser/ui/webui/chromeos/human_presence_internals_ui.h"
-#include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/power_ui.h"
 #include "chrome/browser/ui/webui/chromeos/set_time_ui.h"
@@ -1008,9 +1008,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::AudioUI>;
   }
   if (url.host_piece() == chrome::kChromeUIBluetoothPairingHost)
-    return &NewWebUI<chromeos::BluetoothPairingDialogUI>;
+    return &NewWebUI<ash::BluetoothPairingDialogUI>;
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
-    return &NewWebUI<chromeos::CertificateManagerDialogUI>;
+    return &NewWebUI<ash::CertificateManagerDialogUI>;
   if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
     return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == ash::kChromeUIGuestOSInstallerHost)
@@ -1020,9 +1020,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)
     return &NewWebUI<ash::CrostiniUpgraderUI>;
   if (url.host_piece() == chrome::kChromeUICryptohomeHost)
-    return &NewWebUI<chromeos::CryptohomeUI>;
+    return &NewWebUI<ash::CryptohomeUI>;
   if (url.host_piece() == chrome::kChromeUIDriveInternalsHost)
-    return &NewWebUI<chromeos::DriveInternalsUI>;
+    return &NewWebUI<ash::DriveInternalsUI>;
   if (url.host_piece() == ash::kChromeUIFilesInternalsHost)
     return &NewWebUI<ash::FilesInternalsUI>;
   if (url.host_piece() == chrome::kChromeUILauncherInternalsHost)
@@ -1030,7 +1030,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIHumanPresenceInternalsHost)
-    return &NewWebUI<chromeos::HumanPresenceInternalsUI>;
+    return &NewWebUI<ash::HumanPresenceInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIManageMirrorSyncHost &&
       ash::features::IsDriveFsMirroringEnabled()) {
     return &NewWebUI<ash::ManageMirrorSyncUI>;
@@ -1076,9 +1076,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::multidevice::ProximityAuthUI>;
   }
   if (url.host_piece() == chrome::kChromeUIInternetConfigDialogHost)
-    return &NewWebUI<chromeos::InternetConfigDialogUI>;
+    return &NewWebUI<ash::InternetConfigDialogUI>;
   if (url.host_piece() == chrome::kChromeUIInternetDetailDialogHost)
-    return &NewWebUI<chromeos::InternetDetailDialogUI>;
+    return &NewWebUI<ash::InternetDetailDialogUI>;
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile) &&
       url.host_piece() == chrome::kChromeUINearbyShareHost &&

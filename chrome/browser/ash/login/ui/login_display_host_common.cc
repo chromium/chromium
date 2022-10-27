@@ -37,7 +37,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
@@ -402,7 +402,7 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
             IsDeviceDisabledDuringNormalOperation()) {
       return false;
     }
-    chromeos::DiagnosticsDialog::ShowDialog();
+    DiagnosticsDialog::ShowDialog();
     return true;
   }
 

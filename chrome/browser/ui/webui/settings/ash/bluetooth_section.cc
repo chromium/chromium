@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_shared_load_time_data_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/bluetooth_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/fast_pair_saved_devices_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
@@ -329,7 +329,7 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableFastPairFlag", features::IsFastPairEnabled());
   html_source->AddBoolean("enableSavedDevicesFlag",
                           features::IsFastPairSavedDevicesEnabled());
-  chromeos::bluetooth::AddLoadTimeData(html_source);
+  bluetooth::AddLoadTimeData(html_source);
 }
 
 void BluetoothSection::AddHandlers(content::WebUI* web_ui) {

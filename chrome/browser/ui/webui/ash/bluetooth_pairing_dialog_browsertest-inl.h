@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/auto_reset.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -64,7 +64,7 @@ void BluetoothPairingDialogTest::ShowDialog() {
       .WillRepeatedly(testing::Return(mock_device_.get()));
 
   chromeos::SystemWebDialogDelegate* dialog =
-      chromeos::BluetoothPairingDialog::ShowDialog(mock_device_->GetAddress());
+      ash::BluetoothPairingDialog::ShowDialog(mock_device_->GetAddress());
   content::WebUI* webui = dialog->GetWebUIForTest();
   content::WebContents* webui_webcontents = webui->GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(webui_webcontents));
