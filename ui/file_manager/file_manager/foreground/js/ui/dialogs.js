@@ -4,10 +4,8 @@
 
 import {isRTL} from 'chrome://resources/js/util.js';
 
-  /**
-   * @constructor
-   */
-  export function BaseDialog(parentNode) {
+export class BaseDialog {
+  constructor(parentNode) {
     this.parentNode_ = parentNode;
     this.document_ = parentNode.ownerDocument;
 
@@ -58,25 +56,25 @@ import {isRTL} from 'chrome://resources/js/util.js';
     /** @protected {?Element} */
     this.buttons = null;
 
+    /** @private @type {Function|undefined} */
+    this.onOk_ = null;
+
+    /** @private @type {Function|undefined} */
+    this.onCancel_ = null;
+
+    /** @private @type {?Element} */
+    this.shield_ = null;
+
+    /** @private @type {?Array<Element>} */
+    this.deactivatedNodes_ = null;
+
+    /** @private @type {?Array<string>} */
+    this.tabIndexes_ = null;
+
     this.initDom();
   }
 
-  /**
-   * Default text for Ok and Cancel buttons.
-   *
-   * Clients should override these with localized labels.
-   */
-  BaseDialog.OK_LABEL = '[LOCALIZE ME] Ok';
-  BaseDialog.CANCEL_LABEL = '[LOCALIZE ME] Cancel';
-
-  /**
-   * Number of miliseconds animation is expected to take, plus some margin for
-   * error.
-   */
-  BaseDialog.ANIMATE_STABLE_DURATION = 500;
-
-  /** @protected */
-  BaseDialog.prototype.initDom = function() {
+  initDom() {
     const doc = this.document_;
     this.container = doc.createElement('div');
     this.container.className = 'cr-dialog-container';
@@ -126,16 +124,11 @@ import {isRTL} from 'chrome://resources/js/util.js';
     this.buttons.appendChild(this.cancelButton);
 
     this.initialFocusElement_ = this.okButton;
-  };
+  }
 
-  /** @private {Function|undefined} */
-  BaseDialog.prototype.onOk_ = null;
-
-  /** @private {Function|undefined} */
-  BaseDialog.prototype.onCancel_ = null;
 
   /** @protected */
-  BaseDialog.prototype.onContainerKeyDown = function(event) {
+  onContainerKeyDown(event) {
     // 0=cancel, 1=ok.
     const focus = i => [this.cancelButton, this.okButton][i].focus();
 
@@ -151,10 +144,10 @@ import {isRTL} from 'chrome://resources/js/util.js';
     }
     event.stopPropagation();
     event.preventDefault();
-  };
+  }
 
   /** @private */
-  BaseDialog.prototype.onContainerMouseDown_ = function(event) {
+  onContainerMouseDown_(event) {
     if (event.target === this.container) {
       const classList = this.container.classList;
       // Start 'pulse' animation.
@@ -162,37 +155,37 @@ import {isRTL} from 'chrome://resources/js/util.js';
       setTimeout(classList.add.bind(classList, 'pulse'), 0);
       event.preventDefault();
     }
-  };
+  }
 
   /** @private */
-  BaseDialog.prototype.onOkClick_ = function(event) {
+  onOkClick_(event) {
     this.hide();
     if (this.onOk_) {
       this.onOk_();
     }
-  };
+  }
 
   /** @private */
-  BaseDialog.prototype.onCancelClick_ = function(event) {
+  onCancelClick_(event) {
     this.hide();
     if (this.onCancel_) {
       this.onCancel_();
     }
-  };
+  }
 
   /** @param {string} label */
-  BaseDialog.prototype.setOkLabel = function(label) {
+  setOkLabel(label) {
     this.okButton.textContent = label;
-  };
+  }
 
   /** @param {string} label */
-  BaseDialog.prototype.setCancelLabel = function(label) {
+  setCancelLabel(label) {
     this.cancelButton.textContent = label;
-  };
+  }
 
-  BaseDialog.prototype.setInitialFocusOnCancel = function() {
+  setInitialFocusOnCancel() {
     this.initialFocusElement_ = this.cancelButton;
-  };
+  }
 
   /**
    * @param {string} message
@@ -200,10 +193,9 @@ import {isRTL} from 'chrome://resources/js/util.js';
    * @param {Function=} opt_onCancel
    * @param {Function=} opt_onShow
    */
-  BaseDialog.prototype.show = function(
-      message, opt_onOk, opt_onCancel, opt_onShow) {
+  show(message, opt_onOk, opt_onCancel, opt_onShow) {
     this.showWithTitle('', message, opt_onOk, opt_onCancel, opt_onShow);
-  };
+  }
 
   /**
    * @param {string} title
@@ -212,14 +204,13 @@ import {isRTL} from 'chrome://resources/js/util.js';
    * @param {Function=} opt_onCancel
    * @param {Function=} opt_onShow
    */
-  BaseDialog.prototype.showHtml = function(
-      title, message, opt_onOk, opt_onCancel, opt_onShow) {
+  showHtml(title, message, opt_onOk, opt_onCancel, opt_onShow) {
     this.text.innerHTML = message;
     this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
-  };
+  }
 
   /** @private */
-  BaseDialog.prototype.findFocusableElements_ = function(doc) {
+  findFocusableElements_(doc) {
     let elements =
         Array.prototype.filter.call(doc.querySelectorAll('*'), function(n) {
           return n.tabIndex >= 0;
@@ -240,7 +231,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
       }
     }
     return elements;
-  };
+  }
 
   /**
    * @param {string} title
@@ -249,11 +240,10 @@ import {isRTL} from 'chrome://resources/js/util.js';
    * @param {Function=} opt_onCancel
    * @param {Function=} opt_onShow
    */
-  BaseDialog.prototype.showWithTitle = function(
-      title, message, opt_onOk, opt_onCancel, opt_onShow) {
+  showWithTitle(title, message, opt_onOk, opt_onCancel, opt_onShow) {
     this.text.textContent = message;
     this.show_(title, opt_onOk, opt_onCancel, opt_onShow);
-  };
+  }
 
   /**
    * @param {string} title
@@ -262,8 +252,7 @@ import {isRTL} from 'chrome://resources/js/util.js';
    * @param {Function=} opt_onShow
    * @private
    */
-  BaseDialog.prototype.show_ = function(
-      title, opt_onOk, opt_onCancel, opt_onShow) {
+  show_(title, opt_onOk, opt_onCancel, opt_onShow) {
     this.showing_ = true;
 
     // Modal containers manage dialog focus traversal. Otherwise, the focus
@@ -312,12 +301,12 @@ import {isRTL} from 'chrome://resources/js/util.js';
         if (opt_onShow) {
           opt_onShow();
         }
-      }, BaseDialog.ANIMATE_STABLE_DURATION);
+      }, ANIMATE_STABLE_DURATION);
     }, 0);
-  };
+  }
 
   /** @param {Function=} opt_onHide */
-  BaseDialog.prototype.hide = function(opt_onHide) {
+  hide(opt_onHide) {
     this.showing_ = false;
 
     // Restore focusability for the non-modal container case.
@@ -353,39 +342,41 @@ import {isRTL} from 'chrome://resources/js/util.js';
       if (opt_onHide) {
         opt_onHide();
       }
-    }, BaseDialog.ANIMATE_STABLE_DURATION);
-  };
+    }, ANIMATE_STABLE_DURATION);
+  }
+}
 
-  /**
-   * AlertDialog contains just a message and an ok button.
-   * @constructor
-   * @extends {BaseDialog}
-   */
-  export function AlertDialog(parentNode) {
-    BaseDialog.call(this, parentNode);
+/**
+ * Default text for Ok and Cancel buttons.
+ *
+ * Clients should override these with localized labels.
+ */
+BaseDialog.OK_LABEL = '[LOCALIZE ME] Ok';
+BaseDialog.CANCEL_LABEL = '[LOCALIZE ME] Cancel';
+
+/**
+ * Number of milliseconds animation is expected to take, plus some margin for
+ * error.
+ */
+const ANIMATE_STABLE_DURATION = 500;
+
+
+/** AlertDialog contains just a message and an ok button. */
+export class AlertDialog extends BaseDialog {
+  constructor(parentNode) {
+    super(parentNode);
     this.cancelButton.style.display = 'none';
   }
-
-  AlertDialog.prototype = {__proto__: BaseDialog.prototype};
 
   /**
    * @param {Function=} opt_onOk
    * @param {Function=} opt_onShow
    * @override
    */
-  AlertDialog.prototype.show = function(message, opt_onOk, opt_onShow) {
-    return BaseDialog.prototype.show.call(
-        this, message, opt_onOk, opt_onOk, opt_onShow);
-  };
-
-  /**
-   * ConfirmDialog contains a message, an ok button, and a cancel button.
-   * @constructor
-   * @extends {BaseDialog}
-   */
-  export function ConfirmDialog(parentNode) {
-    BaseDialog.call(this, parentNode);
+  show(message, opt_onOk, opt_onShow) {
+    return super.show(message, opt_onOk, opt_onOk, opt_onShow);
   }
+}
 
-  ConfirmDialog.prototype = {__proto__: BaseDialog.prototype};
-
+/** ConfirmDialog contains a message, an ok button, and a cancel button. */
+export class ConfirmDialog extends BaseDialog {}
