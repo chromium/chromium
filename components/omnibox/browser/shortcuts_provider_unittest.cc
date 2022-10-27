@@ -301,8 +301,9 @@ int ShortcutsProviderTest::CalculateAggregateScore(
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
   const int max_relevance =
       ShortcutsProvider::kShortcutsProviderDefaultMaxRelevance;
-  return provider_->CalculateAggregateScore(ASCIIToUTF16(terms), shortcuts,
-                                            max_relevance);
+  return provider_
+      ->CalculateAggregateScore(ASCIIToUTF16(terms), shortcuts, max_relevance)
+      .first;
 }
 
 // Actual tests ---------------------------------------------------------------

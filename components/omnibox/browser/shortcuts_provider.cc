@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -66,15 +67,21 @@ class DestinationURLEqualsURL {
 // matches to process.
 struct ShortcutMatch {
   ShortcutMatch(int relevance,
+                int aggregate_number_of_hits,
                 const GURL& stripped_destination_url,
                 const ShortcutsDatabase::Shortcut* shortcut)
       : relevance(relevance),
+        aggregate_number_of_hits(aggregate_number_of_hits),
         stripped_destination_url(stripped_destination_url),
         shortcut(shortcut),
         contents(shortcut->match_core.contents),
-        type(shortcut->match_core.type) {}
+        type(shortcut->match_core.type) {
+    DCHECK_GE(aggregate_number_of_hits, shortcut->number_of_hits);
+  }
 
   int relevance;
+  // The sum of `number_of_hits` of all deduped shortcuts.
+  int aggregate_number_of_hits;
   GURL stripped_destination_url;
   raw_ptr<const ShortcutsDatabase::Shortcut> shortcut;
   std::u16string contents;
@@ -259,7 +266,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
   }
 
   for (const auto& [url, shortcuts] : shortcuts_by_url) {
-    int relevance =
+    auto [relevance, number_of_hits] =
         CalculateAggregateScore(term_string, shortcuts, max_relevance);
 
     // Don't return shortcuts with zero relevance.
@@ -270,7 +277,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
       // are prefixes of each other.
       const ShortcutsDatabase::Shortcut* shortcut =
           ShortestShortcutContent(shortcuts);
-      ShortcutMatch shortcut_match = {relevance, url, shortcut};
+      ShortcutMatch shortcut_match = {relevance, number_of_hits, url, shortcut};
       if (shortcut->match_core.type ==
           AutocompleteMatch::Type::HISTORY_CLUSTER) {
         history_cluster_shortcut_matches.push_back(shortcut_match);
@@ -278,6 +285,22 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
         shortcut_matches.push_back(shortcut_match);
       }
     }
+  }
+
+  static const bool boost_enabled =
+      base::FeatureList::IsEnabled(omnibox::kShortcutBoost);
+  if (!shortcut_matches.empty() && boost_enabled) {
+    // Promote the shortcut with most hits to compete for the default slot.
+    // Won't necessarily be the highest scoring shortcut, as scoring also
+    // depends on visit times and input length. Therefore, has to be done before
+    // the partial sort before to ensure the match isn't erased. The match may
+    // be not-allowed-to-be-default, in which case, it'll be competing for top
+    // slot in the URL grouped suggestions.
+    base::ranges::max_element(shortcut_matches, {},
+                              [](const auto& shortcut_match) {
+                                return shortcut_match.aggregate_number_of_hits;
+                              })
+        ->relevance = HistoryURLProvider::kScoreForBestInlineableResult + 1;
   }
 
   // Find best matches.
@@ -476,7 +499,7 @@ ShortcutsBackend::ShortcutMap::const_iterator ShortcutsProvider::FindFirstMatch(
              : backend->shortcuts_map().end();
 }
 
-int ShortcutsProvider::CalculateAggregateScore(
+std::pair<int, int> ShortcutsProvider::CalculateAggregateScore(
     const std::u16string& terms,
     const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
     int max_relevance) {
@@ -486,7 +509,8 @@ int ShortcutsProvider::CalculateAggregateScore(
   const base::Time& last_access_time =
       MostRecentShortcut(shortcuts)->last_access_time;
   const int number_of_hits = SumNumberOfHits(shortcuts);
-  return CalculateScoreFromFactors(terms.length(), shortest_text_length,
-                                   last_access_time, number_of_hits,
-                                   max_relevance);
+  const int relevance = CalculateScoreFromFactors(
+      terms.length(), shortest_text_length, last_access_time, number_of_hits,
+      max_relevance);
+  return {relevance, number_of_hits};
 }

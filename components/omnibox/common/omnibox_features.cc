@@ -302,6 +302,14 @@ BASE_FEATURE(kShortcutExpanding,
              "OmniboxShortcutExpanding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the shortcut provider is more aggressive in scoring. The exact
+// details will change over time; but ATM, the shortcut provider will chose 1
+// candidate to compete with HUP's URL-what-you-typed suggestion for the default
+// slot.
+BASE_FEATURE(kShortcutBoost,
+             "OmniboxShortcutBoost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the relevant AutocompleteProviders will store "title" data in
 // AutocompleteMatch::contents and "URL" data in AutocompleteMatch::description
 // for URL-based omnibox suggestions (see crbug.com/1202964 for more details).

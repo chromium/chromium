@@ -65,8 +65,9 @@ class ShortcutsProvider : public AutocompleteProvider,
   // Aggregates the scoring factors from a vector of `shortcuts`. Specifically:
   // - Considers the shortest shortcut when computing fraction typed.
   // - Considers the most recent shortcut when considering last visit.
-  // - Considers the sum of visit counts.
-  int CalculateAggregateScore(
+  // - Considers the sum of `number_of_hits`.
+  // Returns the relevance score and summed `number_of_hits`.
+  std::pair<int, int> CalculateAggregateScore(
       const std::u16string& terms,
       const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
       int max_relevance);
