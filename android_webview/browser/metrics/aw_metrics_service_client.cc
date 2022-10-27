@@ -125,8 +125,20 @@ bool AwMetricsServiceClient::ShouldRecordPackageName() {
   base::UmaHistogramEnumeration(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
       package_name_record_status_);
-  return cached_package_name_record_.has_value() &&
-         cached_package_name_record_.value().IsAppPackageNameAllowed();
+  if (!cached_package_name_record_.has_value() ||
+      !cached_package_name_record_.value().IsAppPackageNameAllowed()) {
+    return false;
+  }
+  // Recording as a count not times histogram because time histograms offers
+  // reacording (milliseconds and microseconds) which is too granular. Expiry
+  // time can range from 0 up to 6 weeks (1008 hours). Although values over 1000
+  // will go to the max bucket, it should be fine for this, as we care only
+  // about small buckets when the allowlist is about to expire.
+  base::UmaHistogramCounts1000(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire",
+      (cached_package_name_record_.value().GetExpiryDate() - base::Time::Now())
+          .InHours());
+  return true;
 }
 
 void AwMetricsServiceClient::SetAppPackageNameLoggingRule(

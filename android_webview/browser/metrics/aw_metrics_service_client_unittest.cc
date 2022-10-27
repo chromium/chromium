@@ -111,6 +111,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_CacheNotSet) {
       AppPackageNameLoggingRuleStatus::kNotLoadedNoCache, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 0);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
@@ -119,9 +121,9 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   AwMetricsServiceClient* client = GetClient();
   TestingPrefServiceSimple* prefs = GetPrefs();
 
-  auto one_day_from_now = base::Time::Now() + base::Days(1);
+  base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule expected_record(
-      base::Version(kTestAllowlistVersion), one_day_from_now);
+      base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
   prefs->Set(prefs::kMetricsAppPackageNameLoggingRule,
              expected_record.ToDictionary());
 
@@ -138,6 +140,12 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
       AppPackageNameLoggingRuleStatus::kNotLoadedUseCache, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire",
+      expiry_time.InHours(), 1);
 }
 
 TEST_F(AwMetricsServiceClientTest,
@@ -162,17 +170,19 @@ TEST_F(AwMetricsServiceClientTest,
       AppPackageNameLoggingRuleStatus::kNewVersionLoaded, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 0);
 }
 
 TEST_F(AwMetricsServiceClientTest,
        TestShouldRecordPackageName_TestShouldRecordPackageName) {
   base::HistogramTester histogram_tester;
 
-  auto one_day_from_now = base::Time::Now() + base::Days(1);
-
   AwMetricsServiceClient* client = GetClient();
+
+  base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule expected_record(
-      base::Version(kTestAllowlistVersion), one_day_from_now);
+      base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
   client->SetAppPackageNameLoggingRule(expected_record);
   absl::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
@@ -188,17 +198,22 @@ TEST_F(AwMetricsServiceClientTest,
       AppPackageNameLoggingRuleStatus::kNewVersionLoaded, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire",
+      expiry_time.InHours(), 1);
 }
 
 TEST_F(AwMetricsServiceClientTest,
        TestShouldRecordPackageName_TestFailureAfterValidResult) {
   base::HistogramTester histogram_tester;
 
-  auto one_day_from_now = base::Time::Now() + base::Days(1);
-
   AwMetricsServiceClient* client = GetClient();
+
+  base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule expected_record(
-      base::Version(kTestAllowlistVersion), one_day_from_now);
+      base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
   client->SetAppPackageNameLoggingRule(expected_record);
   client->SetAppPackageNameLoggingRule(
       absl::optional<AppPackageNameLoggingRule>());
@@ -216,6 +231,11 @@ TEST_F(AwMetricsServiceClientTest,
       AppPackageNameLoggingRuleStatus::kNewVersionFailedUseCache, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire",
+      expiry_time.InHours(), 1);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
@@ -234,6 +254,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
       AppPackageNameLoggingRuleStatus::kNewVersionFailedNoCache, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 0);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
@@ -242,8 +264,9 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
   AwMetricsServiceClient* client = GetClient();
   TestingPrefServiceSimple* prefs = GetPrefs();
 
+  base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule record(base::Version(kTestAllowlistVersion),
-                                   base::Time::Now() + base::Days(1));
+                                   base::Time::Now() + expiry_time);
   prefs->Set(prefs::kMetricsAppPackageNameLoggingRule, record.ToDictionary());
   client->SetAppPackageNameLoggingRule(record);
 
@@ -256,6 +279,11 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
       AppPackageNameLoggingRuleStatus::kSameVersionAsCache, 1);
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Android.WebView.Metrics.PackagesAllowList.TimeToExpire",
+      expiry_time.InHours(), 1);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestGetAppPackageNameIfLoggable) {

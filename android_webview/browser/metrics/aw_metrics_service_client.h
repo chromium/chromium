@@ -154,7 +154,7 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
 
   static void RegisterMetricsPrefs(PrefRegistrySimple* registry);
 
-  AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
+  explicit AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
 
   AwMetricsServiceClient(const AwMetricsServiceClient&) = delete;
   AwMetricsServiceClient& operator=(const AwMetricsServiceClient&) = delete;

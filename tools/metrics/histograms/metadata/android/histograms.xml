@@ -4324,6 +4324,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Metrics.PackagesAllowList.TimeToExpire"
+    units="hours" expires_after="2023-03-01">
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    How long before the app package names allowlist record cached in the client
+    expires. This is only recorded from Apps that are in the app package names
+    allowlist. Recorded every time a metrics log is being created.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.MixedContent.Mode"
     enum="WebViewMixedContentMode" expires_after="2023-08-25">
   <owner>ntfschr@chromium.org</owner>
