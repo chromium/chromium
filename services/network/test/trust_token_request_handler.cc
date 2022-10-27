@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -109,16 +110,6 @@ struct TrustTokenRequestHandler::Rep {
   bssl::UniquePtr<TRUST_TOKEN_ISSUER> CreateIssuerContextFromUnexpiredKeys()
       const;
 
-  // Verifies the redemption request's client datal is a valid CBOR
-  // encoding of a structure matching the format specified in the design doc.
-  //
-  // If this is the case, returns true. Otherwise, returns false and, if |error|
-  // is not null, sets |error| to a human-readable explanation of why the input
-  // was not valid.
-  bool ConfirmClientDataIntegrityAndStoreKeyHash(
-      base::span<const uint8_t> client_data,
-      std::string* error = nullptr);
-
   // This is a structured representation of the most recent input to
   // RecordSignedRequest.
   absl::optional<TrustTokenSignedRequest> last_incoming_signed_request;
@@ -157,60 +148,6 @@ TrustTokenRequestHandler::Rep::CreateIssuerContextFromUnexpiredKeys() const {
     return nullptr;
 
   return ret;
-}
-
-bool TrustTokenRequestHandler::Rep::ConfirmClientDataIntegrityAndStoreKeyHash(
-    base::span<const uint8_t> client_data,
-    std::string* error) {
-  std::string dummy_error;
-  if (!error)
-    error = &dummy_error;
-
-  absl::optional<cbor::Value> maybe_value = cbor::Reader::Read(client_data);
-  if (!maybe_value) {
-    *error = "client data was invalid CBOR";
-    return false;
-  }
-
-  if (!maybe_value->is_map()) {
-    *error = "client data was valid CBOR but not a map";
-    return false;
-  }
-  const cbor::Value::MapValue& map = maybe_value->GetMap();
-
-  if (map.size() != 3u) {
-    *error = "Unexpected number of fields in client data";
-    return false;
-  }
-
-  auto it = map.find(cbor::Value("key-hash", cbor::Value::Type::STRING));
-  if (it == map.end()) {
-    *error = "client data was missing a 'key-hash' field";
-    return false;
-  }
-  if (!it->second.is_bytestring()) {
-    *error = "client data 'key-hash' field was not a bytestring";
-    return false;
-  }
-
-  // Even though we don't yet examine the remaining fields in detail, perform
-  // some structural integrity checks to make sure all's generally well:
-  cbor::Value redeeming_origin_key("redeeming-origin",
-                                   cbor::Value::Type::STRING);
-  if (!map.contains(redeeming_origin_key) ||
-      !map.at(redeeming_origin_key).is_string()) {
-    *error = "Missing or type-unsafe redeeming-origin field in client data";
-    return false;
-  }
-  cbor::Value redemption_timestamp_key("redemption-timestamp",
-                                       cbor::Value::Type::STRING);
-  if (!map.contains(redemption_timestamp_key) ||
-      !map.at(redemption_timestamp_key).is_unsigned()) {
-    *error = "Missing or type-unsafe redemption-timestamp field in client data";
-    return false;
-  }
-
-  return true;
 }
 
 TrustTokenRequestHandler::TrustTokenRequestHandler(Options options) {
@@ -314,8 +251,6 @@ absl::optional<std::string> TrustTokenRequestHandler::Issue(
   return base::Base64Encode(decoded_issuance_response.as_span());
 }
 
-constexpr base::TimeDelta TrustTokenRequestHandler::kRrLifetime =
-    base::Days(100);
 absl::optional<std::string> TrustTokenRequestHandler::Redeem(
     base::StringPiece redemption_request) {
   base::AutoLock lock(mutex_);
@@ -332,28 +267,26 @@ absl::optional<std::string> TrustTokenRequestHandler::Redeem(
   if (!base::Base64Decode(redemption_request, &decoded_redemption_request))
     return absl::nullopt;
 
-  ScopedBoringsslBytes decoded_redemption_response;
   TRUST_TOKEN* redeemed_token;
   ScopedBoringsslBytes redeemed_client_data;
-  uint64_t received_redemption_timestamp;
-  if (!TRUST_TOKEN_ISSUER_redeem(
-          issuer_ctx.get(), decoded_redemption_response.mutable_ptr(),
-          decoded_redemption_response.mutable_len(), &redeemed_token,
+  uint32_t received_public_metadata;
+  uint8_t received_private_metadata;
+  if (!TRUST_TOKEN_ISSUER_redeem_raw(
+          issuer_ctx.get(), &received_public_metadata,
+          &received_private_metadata, &redeemed_token,
           redeemed_client_data.mutable_ptr(),
-          redeemed_client_data.mutable_len(), &received_redemption_timestamp,
+          redeemed_client_data.mutable_len(),
           base::as_bytes(base::make_span(decoded_redemption_request)).data(),
-          decoded_redemption_request.size(), kRrLifetime.InSeconds())) {
+          decoded_redemption_request.size())) {
     return absl::nullopt;
   }
-
-  rep_->ConfirmClientDataIntegrityAndStoreKeyHash(
-      redeemed_client_data.as_span());
 
   // Put the issuer-receied token in a smart pointer so it will get deleted on
   // leaving scope.
   bssl::UniquePtr<TRUST_TOKEN> redeemed_token_scoper(redeemed_token);
 
-  return base::Base64Encode(decoded_redemption_response.as_span());
+  return base::Base64Encode(base::as_bytes(base::make_span(base::StringPrintf(
+      "%d:%d", received_public_metadata, received_private_metadata))));
 }
 
 void TrustTokenRequestHandler::RecordSignedRequest(

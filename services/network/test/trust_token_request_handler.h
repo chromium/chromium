@@ -104,17 +104,8 @@ class TrustTokenRequestHandler {
   absl::optional<std::string> Issue(base::StringPiece issuance_request);
 
   // Given a base64-encoded redemption request, processes the
-  // request and returns either nullopt (on error) or a base64-encoded response.
-  // On success, the response's redemption record will have a lifetime of
-  // |kRRLifetime|. We use a ludicrously long lifetime because there's no way
-  // to mock time in browser tests, and we don't want the RR expiring
-  // unexpectedly.
-  //
-  // TODO(davidvc): This needs to be expanded to be able to provide
-  // RRs that have already expired. (This seems like the easiest way of
-  // exercising client-side RR expiry logic in end-to-end tests, because
-  // there's no way to fast-forward a clock past an expiry time.)
-  static const base::TimeDelta kRrLifetime;
+  // request and returns either nullopt (on error) or a string containing
+  // the metadata values.
   absl::optional<std::string> Redeem(base::StringPiece redemption_request);
 
   // Stores a representation of a signed request with the given destination and
