@@ -241,7 +241,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   base::Value::List report_sources_;
-  bool plugin_vm_data_collection_enabled_;
+  bool plugin_vm_data_collection_enabled_ = false;
   base::WeakPtrFactory<ManagementUIHandler> weak_factory_{this};
 #endif
 };
