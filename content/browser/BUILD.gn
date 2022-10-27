@@ -2275,98 +2275,6 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "android/android_overlay_provider_impl.cc",
-      "android/android_overlay_provider_impl.h",
-      "android/app_web_message_port.cc",
-      "android/app_web_message_port.h",
-      "android/background_sync_network_observer_android.cc",
-      "android/background_sync_network_observer_android.h",
-      "android/battery_metrics.cc",
-      "android/battery_metrics.h",
-      "android/browser_startup_controller.cc",
-      "android/browser_startup_controller.h",
-      "android/client_data_json_android.cc",
-      "android/content_feature_list.cc",
-      "android/content_startup_flags.cc",
-      "android/content_startup_flags.h",
-      "android/content_url_loader_factory.cc",
-      "android/content_url_loader_factory.h",
-      "android/devtools_auth.cc",
-      "android/dialog_overlay_impl.cc",
-      "android/dialog_overlay_impl.h",
-      "android/gpu_process_callback.cc",
-      "android/java_interfaces_impl.cc",
-      "android/java_interfaces_impl.h",
-      "android/launcher_thread.cc",
-      "android/launcher_thread.h",
-      "android/scoped_surface_request_manager.cc",
-      "android/scoped_surface_request_manager.h",
-      "android/text_suggestion_host_android.cc",
-      "android/text_suggestion_host_android.h",
-      "android/text_suggestion_host_mojo_impl_android.cc",
-      "android/text_suggestion_host_mojo_impl_android.h",
-      "child_process_launcher_helper_android.cc",
-      "media/android/browser_gpu_video_accelerator_factories.cc",
-      "media/android/browser_gpu_video_accelerator_factories.h",
-      "media/android/media_player_renderer.cc",
-      "media/android/media_player_renderer.h",
-      "media/android/media_player_renderer_web_contents_observer.cc",
-      "media/android/media_player_renderer_web_contents_observer.h",
-      "media/android/media_resource_getter_impl.cc",
-      "media/android/media_resource_getter_impl.h",
-      "media/session/audio_focus_delegate_android.cc",
-      "media/session/audio_focus_delegate_android.h",
-      "media/session/media_session_android.cc",
-      "media/session/media_session_android.h",
-      "renderer_host/input/web_input_event_builders_android.cc",
-      "renderer_host/input/web_input_event_builders_android.h",
-      "renderer_host/navigation_controller_android.cc",
-      "renderer_host/navigation_controller_android.h",
-      "speech/speech_recognizer_impl_android.cc",
-      "speech/speech_recognizer_impl_android.h",
-      "speech/tts_android.cc",
-      "speech/tts_android.h",
-      "tracing/background_reached_code_tracing_observer_android.cc",
-      "tracing/background_reached_code_tracing_observer_android.h",
-    ]
-  }
-
-  if (is_win) {
-    sources += [
-      "accessibility/browser_accessibility_com_win.cc",
-      "accessibility/browser_accessibility_com_win.h",
-      "accessibility/browser_accessibility_manager_win.cc",
-      "accessibility/browser_accessibility_manager_win.h",
-      "accessibility/browser_accessibility_state_impl_win.cc",
-      "accessibility/browser_accessibility_win.cc",
-      "accessibility/browser_accessibility_win.h",
-      "child_process_launcher_helper_win.cc",
-      "media/key_system_support_win.cc",
-      "media/key_system_support_win.h",
-      "memory/swap_metrics_driver_impl_win.cc",
-      "network/network_service_process_tracker_win.cc",
-      "network/network_service_process_tracker_win.h",
-      "renderer_host/direct_manipulation_event_handler_win.cc",
-      "renderer_host/direct_manipulation_event_handler_win.h",
-      "renderer_host/direct_manipulation_helper_win.cc",
-      "renderer_host/direct_manipulation_helper_win.h",
-      "renderer_host/dwrite_font_file_util_win.cc",
-      "renderer_host/dwrite_font_file_util_win.h",
-      "renderer_host/dwrite_font_lookup_table_builder_win.cc",
-      "renderer_host/dwrite_font_lookup_table_builder_win.h",
-      "renderer_host/dwrite_font_proxy_impl_win.cc",
-      "renderer_host/dwrite_font_proxy_impl_win.h",
-      "renderer_host/dwrite_font_uma_logging_win.cc",
-      "renderer_host/dwrite_font_uma_logging_win.h",
-      "renderer_host/legacy_render_widget_host_win.cc",
-      "renderer_host/legacy_render_widget_host_win.h",
-      "screenlock_monitor/screenlock_monitor_device_source_win.cc",
-      "speech/tts_win.cc",
-    ]
-  }
-
   if (use_viz_debugger) {
     sources += [
       "$target_gen_dir/devtools/protocol/visual_debugger.cc",
@@ -2522,10 +2430,6 @@ source_set("browser") {
     ]
   }
 
-  if (!is_android) {
-    deps += [ "//content/browser/devtools:devtools_resources_extern" ]
-  }
-
   if (is_mac) {
     sources += [
       "../app_shim_remote_cocoa/ns_view_bridge_factory_impl.mm",
@@ -2632,27 +2536,6 @@ source_set("browser") {
     deps += [ "//sandbox" ]
   }
 
-  if (!is_android) {
-    deps += [
-      "//components/vector_icons",
-      "//content/browser/tracing:resources",
-    ]
-    sources += [
-      # Non-Android platforms that don't presently support
-      # enable_screen_capture, like Fuchsia, nevertheless compile
-      # these files. This follows the pattern of #ifdef-ing around Android
-      # to restrict APK-size, but not introducing the additional complexity
-      # this produces for other feature/platform pairs.
-      "media/capture/crop_id_web_contents_helper.cc",
-      "media/capture/crop_id_web_contents_helper.h",
-
-      # Support for restricting NetworkService disk access to a certain path.
-      # Not available on Android.
-      "network_sandbox.cc",
-      "network_sandbox.h",
-    ]
-  }
-
   # Desktop/Window/WebContents screen capture implementations, conditionally
   # built depending on the available implementations for each platform.
   if (enable_screen_capture) {
@@ -2731,12 +2614,43 @@ source_set("browser") {
 
   if (is_win) {
     sources += [
+      "accessibility/browser_accessibility_com_win.cc",
+      "accessibility/browser_accessibility_com_win.h",
+      "accessibility/browser_accessibility_manager_win.cc",
+      "accessibility/browser_accessibility_manager_win.h",
+      "accessibility/browser_accessibility_state_impl_win.cc",
+      "accessibility/browser_accessibility_win.cc",
+      "accessibility/browser_accessibility_win.h",
+      "child_process_launcher_helper_win.cc",
       "font_access/font_enumeration_data_source_win.cc",
       "font_access/font_enumeration_data_source_win.h",
       "installedapp/installed_app_provider_impl_win.cc",
       "installedapp/installed_app_provider_impl_win.h",
+      "media/dcomp_surface_registry_broker.cc",
+      "media/dcomp_surface_registry_broker.h",
+      "media/key_system_support_win.cc",
+      "media/key_system_support_win.h",
+      "memory/swap_metrics_driver_impl_win.cc",
+      "network/network_service_process_tracker_win.cc",
+      "network/network_service_process_tracker_win.h",
+      "renderer_host/direct_manipulation_event_handler_win.cc",
+      "renderer_host/direct_manipulation_event_handler_win.h",
+      "renderer_host/direct_manipulation_helper_win.cc",
+      "renderer_host/direct_manipulation_helper_win.h",
+      "renderer_host/dwrite_font_file_util_win.cc",
+      "renderer_host/dwrite_font_file_util_win.h",
+      "renderer_host/dwrite_font_lookup_table_builder_win.cc",
+      "renderer_host/dwrite_font_lookup_table_builder_win.h",
+      "renderer_host/dwrite_font_proxy_impl_win.cc",
+      "renderer_host/dwrite_font_proxy_impl_win.h",
+      "renderer_host/dwrite_font_uma_logging_win.cc",
+      "renderer_host/dwrite_font_uma_logging_win.h",
+      "renderer_host/legacy_render_widget_host_win.cc",
+      "renderer_host/legacy_render_widget_host_win.h",
       "renderer_host/virtual_keyboard_controller_win.cc",
       "renderer_host/virtual_keyboard_controller_win.h",
+      "screenlock_monitor/screenlock_monitor_device_source_win.cc",
+      "speech/tts_win.cc",
       "utility_sandbox_delegate_win.cc",
     ]
     defines += [
@@ -2879,13 +2793,6 @@ source_set("browser") {
     ]
   }
 
-  if (is_win) {
-    sources += [
-      "media/dcomp_surface_registry_broker.cc",
-      "media/dcomp_surface_registry_broker.h",
-    ]
-  }
-
   if (use_atk) {
     sources += [
       "accessibility/accessibility_event_recorder_auralinux.cc",
@@ -2930,16 +2837,36 @@ source_set("browser") {
       "accessibility/captioning_controller.h",
       "accessibility/web_contents_accessibility_android.cc",
       "accessibility/web_contents_accessibility_android.h",
+      "android/android_overlay_provider_impl.cc",
+      "android/android_overlay_provider_impl.h",
+      "android/app_web_message_port.cc",
+      "android/app_web_message_port.h",
+      "android/background_sync_network_observer_android.cc",
+      "android/background_sync_network_observer_android.h",
+      "android/battery_metrics.cc",
+      "android/battery_metrics.h",
       "android/browser_context_handle.cc",
+      "android/browser_startup_controller.cc",
+      "android/browser_startup_controller.h",
+      "android/client_data_json_android.cc",
+      "android/content_feature_list.cc",
+      "android/content_startup_flags.cc",
+      "android/content_startup_flags.h",
       "android/content_ui_event_handler.cc",
       "android/content_ui_event_handler.h",
+      "android/content_url_loader_factory.cc",
+      "android/content_url_loader_factory.h",
       "android/content_view_statics.cc",
       "android/date_time_chooser_android.cc",
       "android/date_time_chooser_android.h",
+      "android/devtools_auth.cc",
+      "android/dialog_overlay_impl.cc",
+      "android/dialog_overlay_impl.h",
       "android/drop_data_android.cc",
       "android/drop_data_android.h",
       "android/gesture_listener_manager.cc",
       "android/gesture_listener_manager.h",
+      "android/gpu_process_callback.cc",
       "android/ime_adapter_android.cc",
       "android/ime_adapter_android.h",
       "android/java/gin_java_bound_object.cc",
@@ -2964,8 +2891,12 @@ source_set("browser") {
       "android/java/java_type.h",
       "android/java/jni_reflect.cc",
       "android/java/jni_reflect.h",
+      "android/java_interfaces_impl.cc",
+      "android/java_interfaces_impl.h",
       "android/javascript_injector.cc",
       "android/javascript_injector.h",
+      "android/launcher_thread.cc",
+      "android/launcher_thread.h",
       "android/load_url_params.cc",
       "android/message_payload.cc",
       "android/navigation_handle_proxy.cc",
@@ -2976,6 +2907,8 @@ source_set("browser") {
       "android/overscroll_controller_android.h",
       "android/render_widget_host_connector.cc",
       "android/render_widget_host_connector.h",
+      "android/scoped_surface_request_manager.cc",
+      "android/scoped_surface_request_manager.h",
       "android/select_popup.cc",
       "android/select_popup.h",
       "android/selection/composited_touch_handle_drawable.cc",
@@ -2988,18 +2921,35 @@ source_set("browser") {
       "android/synchronous_compositor_host.h",
       "android/synchronous_compositor_sync_call_bridge.cc",
       "android/synchronous_compositor_sync_call_bridge.h",
+      "android/text_suggestion_host_android.cc",
+      "android/text_suggestion_host_android.h",
+      "android/text_suggestion_host_mojo_impl_android.cc",
+      "android/text_suggestion_host_mojo_impl_android.h",
       "android/tracing_controller_android.cc",
       "android/tracing_controller_android.h",
       "android/web_contents_observer_proxy.cc",
       "android/web_contents_observer_proxy.h",
+      "child_process_launcher_helper_android.cc",
       "contacts/contacts_provider_android.cc",
       "contacts/contacts_provider_android.h",
       "font_unique_name_lookup/font_unique_name_lookup.cc",
       "font_unique_name_lookup/font_unique_name_lookup.h",
       "font_unique_name_lookup/font_unique_name_lookup_service.cc",
       "font_unique_name_lookup/font_unique_name_lookup_service.h",
+      "media/android/browser_gpu_video_accelerator_factories.cc",
+      "media/android/browser_gpu_video_accelerator_factories.h",
+      "media/android/media_player_renderer.cc",
+      "media/android/media_player_renderer.h",
+      "media/android/media_player_renderer_web_contents_observer.cc",
+      "media/android/media_player_renderer_web_contents_observer.h",
+      "media/android/media_resource_getter_impl.cc",
+      "media/android/media_resource_getter_impl.h",
       "media/capture/screen_capture_device_android.cc",
       "media/capture/screen_capture_device_android.h",
+      "media/session/audio_focus_delegate_android.cc",
+      "media/session/audio_focus_delegate_android.h",
+      "media/session/media_session_android.cc",
+      "media/session/media_session_android.h",
       "memory/swap_metrics_driver_impl_linux.cc",
       "memory/swap_metrics_driver_impl_linux.h",
       "renderer_host/compositor_dependencies_android.cc",
@@ -3014,7 +2964,11 @@ source_set("browser") {
       "renderer_host/input/synthetic_gesture_target_android.h",
       "renderer_host/input/touch_selection_controller_client_manager_android.cc",
       "renderer_host/input/touch_selection_controller_client_manager_android.h",
+      "renderer_host/input/web_input_event_builders_android.cc",
+      "renderer_host/input/web_input_event_builders_android.h",
       "renderer_host/native_web_keyboard_event_android.cc",
+      "renderer_host/navigation_controller_android.cc",
+      "renderer_host/navigation_controller_android.h",
       "renderer_host/render_frame_host_android.cc",
       "renderer_host/render_frame_host_android.h",
       "renderer_host/render_widget_host_view_android.cc",
@@ -3023,8 +2977,14 @@ source_set("browser") {
       "screen_orientation/screen_orientation_delegate_android.h",
       "sms/sms_provider_gms.cc",
       "sms/sms_provider_gms.h",
+      "speech/speech_recognizer_impl_android.cc",
+      "speech/speech_recognizer_impl_android.h",
+      "speech/tts_android.cc",
+      "speech/tts_android.h",
       "speech/tts_environment_android_impl.cc",
       "speech/tts_environment_android_impl.h",
+      "tracing/background_reached_code_tracing_observer_android.cc",
+      "tracing/background_reached_code_tracing_observer_android.h",
       "web_contents/view_structure_builder_android.cc",
       "web_contents/view_structure_builder_android.h",
       "web_contents/web_contents_android.cc",
@@ -3082,6 +3042,19 @@ source_set("browser") {
       "direct_sockets/resolve_host_and_open_socket.cc",
       "direct_sockets/resolve_host_and_open_socket.h",
 
+      # Non-Android platforms that don't presently support
+      # enable_screen_capture, like Fuchsia, nevertheless compile
+      # these files. This follows the pattern of #ifdef-ing around Android
+      # to restrict APK-size, but not introducing the additional complexity
+      # this produces for other feature/platform pairs.
+      "media/capture/crop_id_web_contents_helper.cc",
+      "media/capture/crop_id_web_contents_helper.h",
+
+      # Support for restricting NetworkService disk access to a certain path.
+      # Not available on Android.
+      "network_sandbox.cc",
+      "network_sandbox.h",
+
       # The Serial API is not implemented on Android.
       "serial/serial_service.cc",
       "serial/serial_service.h",
@@ -3126,6 +3099,9 @@ source_set("browser") {
 
     deps += [
       "//components/speech",
+      "//components/vector_icons",
+      "//content/browser/devtools:devtools_resources_extern",
+      "//content/browser/tracing:resources",
       "//third_party/flac",
     ]
   }
