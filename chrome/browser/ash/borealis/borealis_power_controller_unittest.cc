@@ -82,78 +82,6 @@ class BorealisPowerControllerTest : public ChromeAshTestBase {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(BorealisPowerControllerTest, PreventSleepWhenBorealisWindowShown) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  std::unique_ptr<views::Widget> borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-}
-
-TEST_F(BorealisPowerControllerTest, DoNothingWhenRegularWindowShown) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  std::unique_ptr<views::Widget> not_borealis_widget =
-      CreateFakeWidget("org.chromium.noborealis.w1");
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  not_borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-}
-
-TEST_F(BorealisPowerControllerTest, WakeLockToggledWhenWindowFocusChanges) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  std::unique_ptr<views::Widget> borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  aura::Window* borealis_window = borealis_widget->GetNativeWindow();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  std::unique_ptr<views::Widget> second_borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  aura::Window* second_borealis_window =
-      second_borealis_widget->GetNativeWindow();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  std::unique_ptr<views::Widget> not_borealis_widget =
-      CreateFakeWidget("org.chromium.noborealis.w1");
-  aura::Window* not_borealis_window = not_borealis_widget->GetNativeWindow();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  borealis_window->Focus();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  second_borealis_window->Focus();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  not_borealis_window->Focus();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  not_borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  second_borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-}
-
-TEST_F(BorealisPowerControllerTest, WakeLockResetWhenBorealisShutsdown) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  std::unique_ptr<views::Widget> borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  power_controller_.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(CountActiveWakeLocks(), 0);
-}
-
 TEST_F(BorealisPowerControllerTest, WakeLockToggledByInhibitUninhibit) {
   EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
   vm_tools::cicerone::InhibitScreensaverSignal inhibit;
@@ -228,13 +156,8 @@ TEST_F(BorealisPowerControllerTest, UninhibitWithoutInhibit) {
   EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
 }
 
-TEST_F(BorealisPowerControllerTest, InhibitOnSteamClient) {
+TEST_F(BorealisPowerControllerTest, WakeLockResetWhenBorealisShutsdown) {
   EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  std::unique_ptr<views::Widget> borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
   vm_tools::cicerone::InhibitScreensaverSignal inhibit;
   inhibit.set_vm_name("borealis");
   inhibit.set_owner_id(owner_id_);
@@ -242,65 +165,9 @@ TEST_F(BorealisPowerControllerTest, InhibitOnSteamClient) {
   power_controller_->OnInhibitScreensaver(inhibit);
   EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
 
-  borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
-  uninhibit.set_vm_name("borealis");
-  uninhibit.set_owner_id(owner_id_);
-  uninhibit.set_cookie(1);
-  power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-}
-
-TEST_F(BorealisPowerControllerTest, UnfocusAfterInhibit) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  std::unique_ptr<views::Widget> borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  vm_tools::cicerone::InhibitScreensaverSignal inhibit;
-  inhibit.set_vm_name("borealis");
-  inhibit.set_owner_id(owner_id_);
-  inhibit.set_cookie(1);
-  power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
-  uninhibit.set_vm_name("borealis");
-  uninhibit.set_owner_id(owner_id_);
-  uninhibit.set_cookie(1);
-  power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-}
-
-TEST_F(BorealisPowerControllerTest, UninhibitWhileFocused) {
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
-
-  vm_tools::cicerone::InhibitScreensaverSignal inhibit;
-  inhibit.set_vm_name("borealis");
-  inhibit.set_owner_id(owner_id_);
-  inhibit.set_cookie(1);
-  power_controller_->OnInhibitScreensaver(inhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  std::unique_ptr<views::Widget> borealis_widget =
-      CreateFakeWidget("org.chromium.borealis.wmclass.Steam");
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  vm_tools::cicerone::UninhibitScreensaverSignal uninhibit;
-  uninhibit.set_vm_name("borealis");
-  uninhibit.set_owner_id(owner_id_);
-  uninhibit.set_cookie(1);
-  power_controller_->OnUninhibitScreensaver(uninhibit);
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 1);
-
-  borealis_widget->Hide();
-  EXPECT_EQ(FlushAndCountWakeLocks(*power_controller_), 0);
+  power_controller_.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(CountActiveWakeLocks(), 0);
 }
 
 }  // namespace

@@ -11,29 +11,21 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
-#include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window.h"
 
 class Profile;
 
 namespace borealis {
 
-// Prevents the device from going to sleep/dimming when Borealis requests it.
-// Conditions for this are either the Steam client is focused or the VM
-// sends an inhibit message.
-// TODO(b/244273692): Remove the window focus logic once download signals
-// are available.
-class BorealisPowerController : public aura::client::FocusChangeObserver,
-                                ash::CiceroneClient::Observer {
+// Prevents the device from going to sleep/dimming when the VM
+// receives an inhibit message
+// TODO(b/244273692): Add inhibit reason logic once implemented.
+class BorealisPowerController : public ash::CiceroneClient::Observer {
  public:
   explicit BorealisPowerController(Profile* profile);
   BorealisPowerController(const BorealisPowerController&) = delete;
   BorealisPowerController& operator=(const BorealisPowerController&) = delete;
   ~BorealisPowerController() override;
-
-  // Overridden from FocusChangeObserver
-  void OnWindowFocused(aura::Window* gained_focus,
-                       aura::Window* lost_focus) override;
 
   // ash::CiceroneClient::Observer override.
   void OnInhibitScreensaver(
@@ -60,8 +52,7 @@ class BorealisPowerController : public aura::client::FocusChangeObserver,
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
   // Cookies from Inhibit messages that have not yet received uninhibit.
-  std::set<int64_t> cookies_;
-  Profile* const profile_;
+  std::set<u_int32_t> cookies_;
   std::string const owner_id_;
 };
 
