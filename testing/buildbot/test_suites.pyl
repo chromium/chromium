@@ -496,7 +496,18 @@
         'mixins': [
           'skia_gold_test',
         ],
-      }
+      },
+      'content_browsertests_persistent_shell': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True,
+        'test': 'content_browsertests',
+        'experiment_percentage': 100,
+        'swarming': {
+          'shards': 20,
+        },     
+      },
     },
 
     'chrome_public_tests': {
