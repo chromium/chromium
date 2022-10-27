@@ -323,7 +323,7 @@ const char kAccessibilityFloatingMenuPosition[] =
 // A boolean pref which determines whether focus highlighting is enabled.
 const char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
-// A boolean pref which determines whether select-to-speak is enabled.
+// A boolean pref which determines whether Select-to-speak is enabled.
 const char kAccessibilitySelectToSpeakEnabled[] =
     "settings.a11y.select_to_speak";
 // A boolean pref which determines whether Switch Access is enabled.
@@ -379,9 +379,56 @@ const char kAccessibilityDictationLocale[] = "settings.a11y.dictation_locale";
 const char kAccessibilityDictationLocaleOfflineNudge[] =
     "settings.a11y.dictation_locale_offline_nudge";
 // A boolean pref which determines whether the enhanced network voices feature
-// in select-to-speak is allowed. This pref can only be set by policy.
+// in Select-to-speak is allowed. This pref can only be set by policy.
 const char kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed[] =
     "settings.a11y.enhanced_network_voices_in_select_to_speak_allowed";
+
+// A boolean pref which determines whether Select-to-speak shades the background
+// contents that aren't being read.
+const char kAccessibilitySelectToSpeakBackgroundShading[] =
+    "settings.a11y.select_to_speak_background_shading";
+
+// A boolean pref which determines whether enhanced network TTS voices are
+// enabled for Select-to-speak.
+const char kAccessibilitySelectToSpeakEnhancedNetworkVoices[] =
+    "settings.a11y.select_to_speak_enhanced_network_voices";
+
+// A string pref which determines the user's preferred enhanced voice for
+// Select-to-speak.
+const char kAccessibilitySelectToSpeakEnhancedVoiceName[] =
+    "settings.a11y.select_to_speak_enhanced_voice_name";
+
+// A boolean pref which determines whether the initial popup authorizing
+// enhanced network voices for Select-to-speak has been shown to the user.
+const char kAccessibilitySelectToSpeakEnhancedVoicesDialogShown[] =
+    "settings.a11y.select_to_speak_enhanced_voices_dialog_shown";
+
+// A string pref which determines the user's word highlighting color preference
+// for Select-to-speak, stored as a hex color string. (e.g. "#ae003f")
+const char kAccessibilitySelectToSpeakHighlightColor[] =
+    "settings.a11y.select_to_speak_highlight_color";
+
+// A boolean pref which determines whether Select-to-speak shows navigation
+// controls that allow the user to navigate to next/previous sentences,
+// paragraphs, and more.
+const char kAccessibilitySelectToSpeakNavigationControls[] =
+    "settings.a11y.select_to_speak_navigation_controls";
+
+// A string pref which determines the user's preferred voice for
+// Select-to-speak.
+const char kAccessibilitySelectToSpeakVoiceName[] =
+    "settings.a11y.select_to_speak_voice_name";
+
+// A boolean pref which determines whether Select-to-speak enables automatic
+// voice switching between different languages.
+const char kAccessibilitySelectToSpeakVoiceSwitching[] =
+    "settings.a11y.select_to_speak_voice_switching";
+
+// A boolean pref which determines whether Select-to-speak highlights each word
+// as it is read.
+const char kAccessibilitySelectToSpeakWordHighlight[] =
+    "settings.a11y.select_to_speak_word_highlight";
+
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 const char kShouldAlwaysShowAccessibilityMenu[] = "settings.a11y.enable_menu";

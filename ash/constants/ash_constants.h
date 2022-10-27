@@ -88,6 +88,46 @@ constexpr base::TimeDelta kDefaultKeyAutoRepeatInterval =
 const char kPrivacyIndicatorsNotificationIdPrefix[] = "privacy-indicators";
 const char kPrivacyIndicatorsNotifierId[] = "ash.privacy-indicators";
 
+// Whether the enhanced network voices feature in Select-to-speak is allowed by
+// default.
+constexpr bool
+    kDefaultAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed = true;
+
+// Whether Select-to-speak shades the background contents that aren't being read
+// by default.
+constexpr bool kDefaultAccessibilitySelectToSpeakBackgroundShading = false;
+
+// Whether enhanced network TTS voices are enabled for Select-to-speak by
+// default.
+constexpr bool kDefaultAccessibilitySelectToSpeakEnhancedNetworkVoices = false;
+
+// The default preferred enhanced voice for Select-to-speak.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDefaultAccessibilitySelectToSpeakEnhancedVoiceName[];
+
+// Whether the initial popup authorizing enhanced network voices for
+// Select-to-speak has been shown to the user by default.
+constexpr bool kDefaultAccessibilitySelectToSpeakEnhancedVoicesDialogShown =
+    false;
+
+// The default word highlighting color for Select-to-speak.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDefaultAccessibilitySelectToSpeakHighlightColor[];
+
+// Whether Select-to-speak shows navigation controls by default.
+constexpr bool kDefaultAccessibilitySelectToSpeakNavigationControls = true;
+
+// The default preferred voice for Select-to-speak.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDefaultAccessibilitySelectToSpeakVoiceName[];
+
+// Whether Select-to-speak enables automatic voice switching between different
+// languages by default.
+constexpr bool kDefaultAccessibilitySelectToSpeakVoiceSwitching = false;
+
+// Whether Select-to-speak highlights each word as it is read by default.
+constexpr bool kDefaultAccessibilitySelectToSpeakWordHighlight = true;
+
 }  // namespace ash
 
 #endif  // ASH_CONSTANTS_ASH_CONSTANTS_H_

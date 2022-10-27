@@ -185,6 +185,24 @@ extern const char kAccessibilityDictationLocaleOfflineNudge[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakBackgroundShading[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakEnhancedNetworkVoices[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakEnhancedVoiceName[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakEnhancedVoicesDialogShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakHighlightColor[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakNavigationControls[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakVoiceName[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakVoiceSwitching[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilitySelectToSpeakWordHighlight[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kShouldAlwaysShowAccessibilityMenu[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAltTabPerDesk[];

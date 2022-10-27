@@ -22,14 +22,17 @@ SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
     window.EventType = chrome.automation.EventType;
     window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 
-      await importModule(
-          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-      await importModule(
-          'SELECT_TO_SPEAK_TRAY_CLASS_NAME', '/select_to_speak/ui_manager.js');
-      await importModule(
-          'SelectToSpeakConstants',
-          '/select_to_speak/select_to_speak_constants.js');
-      selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
+    await importModule(
+        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+    await importModule(
+        'SELECT_TO_SPEAK_TRAY_CLASS_NAME', '/select_to_speak/ui_manager.js');
+    await importModule(
+        'SelectToSpeakConstants',
+        '/select_to_speak/select_to_speak_constants.js');
+    await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
+    chrome.settingsPrivate.setPref(
+        PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
+        '' /* unused, see crbug.com/866161 */, () => {});
   }
 
   tapTrayButton(desktop, callback) {
@@ -326,7 +329,8 @@ AX_TEST_F('SelectToSpeakMouseSelectionTest', 'SystemUI', async function() {
       assertTrue(this.mockTts.currentlySpeaking());
       // Sometimes we get "Select-to-speak button" and sometimes
       // "Select-to-speak". Either is acceptable.
-      this.assertEqualsCollapseWhitespace(utterance.replace(/button/, ''), 'Select-to-speak');
+      this.assertEqualsCollapseWhitespace(
+          utterance.replace(/button/, ''), 'Select-to-speak');
     })]);
 
     focusRingsCallback = this.newCallback((focusRings) => {

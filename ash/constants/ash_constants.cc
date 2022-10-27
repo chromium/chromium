@@ -19,4 +19,10 @@ const char kSwitchAccessUnknownDevice[] = "unknown";
 
 const char kFakeNowTimeStringInPixelTest[] = "Sun, 6 May 2018 14:30:00 CDT";
 
+const char kDefaultAccessibilitySelectToSpeakVoiceName[] =
+    "select_to_speak_system_voice";
+const char kDefaultAccessibilitySelectToSpeakHighlightColor[] = "#5e9bff";
+const char kDefaultAccessibilitySelectToSpeakEnhancedVoiceName[] =
+    "default-wavenet";
+
 }  // namespace ash

@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
-GEN_INCLUDE(['../common/testing/fake_chrome_event.js']);
-GEN_INCLUDE(['../common/testing/fake_settings_private.js']);
 GEN_INCLUDE(['../common/testing/mock_tts.js']);
 
 SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
@@ -20,16 +18,6 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
           this.confirmationDialogShowCount_ += 1;
           callback(this.confirmationDialogResponse_);
         };
-
-    this.enhancedNetworkVoicesPolicyKey_ =
-        'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed';
-    this.mockSettingsPrivate_ = new FakeSettingsPrivate([
-      {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
-      {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0},
-      {type: 'boolean', key: this.enhancedNetworkVoicesPolicyKey_, value: true},
-    ]);
-    this.mockSettingsPrivate_.allowSetPref();
-    chrome.settingsPrivate = this.mockSettingsPrivate_;
 
     chrome.i18n = {
       getMessage(msgid) {
@@ -47,8 +35,6 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
         'SelectToSpeakConstants',
         '/select_to_speak/select_to_speak_constants.js');
     await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
-
-    selectToSpeak.prefsManager_.initPreferences();
   }
 
   /** @override */
@@ -57,10 +43,9 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   }
 
   // Sets the policy to allow or disallow the network voices.
-  async setEnhancedNetworkVoicesPolicy(allowed) {
-    await new Promise(
-        resolve => this.mockSettingsPrivate_.setPref(
-            this.enhancedNetworkVoicesPolicyKey_, allowed, '', resolve));
+  setEnhancedNetworkVoicesPolicy(allowed) {
+    chrome.settingsPrivate.setPref(
+        PrefsManager.ENHANCED_VOICES_POLICY_KEY, allowed, '', () => {});
   }
 };
 
@@ -136,7 +121,9 @@ AX_TEST_F(
         assertTrue(selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
 
         // Sets the policy to disallow network voices.
-        await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
+        this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
+        // Pref change is slow to propagate so also set directly.
+        selectToSpeak.prefsManager_.enhancedNetworkVoicesAllowed_ = false;
         assertFalse(selectToSpeak.prefsManager_.enhancedNetworkVoicesEnabled());
       })]);
       const textNode = this.findTextNode(root, 'This is some text');
@@ -150,7 +137,7 @@ AX_TEST_F(
 AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
     'DisablesDialogIfDisallowedByPolicy', async function() {
-      await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
+      this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
 
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +

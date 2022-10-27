@@ -29,9 +29,6 @@ const SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 const GSUITE_APP_REGEXP =
     /^https:\/\/docs\.(?:sandbox\.)?google\.com\/(?:(?:presentation)|(?:document)|(?:spreadsheets)|(?:drawings)){1}\//;
 
-// Settings key for system speech rate setting.
-const SPEECH_RATE_KEY = 'settings.tts.speech_rate';
-
 /**
  * Determines if a node is in one of the known Google GSuite apps that needs
  * special case treatment for speaking selected text. Not all Google GSuite
@@ -172,9 +169,6 @@ export class SelectToSpeak {
      */
     this.supportsNavigationPanel_ = true;
 
-    /** @private {number} Default speech rate set in system settings. */
-    this.systemSpeechRate_ = 1.0;
-
     /** @private {!TtsManager} */
     this.ttsManager_ = new TtsManager();
 
@@ -240,13 +234,6 @@ export class SelectToSpeak {
             });
           }
         });
-
-    chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, pref => {
-      if (!pref) {
-        return;
-      }
-      this.systemSpeechRate_ = /** @type {number} */ (pref.value);
-    });
   }
 
   /**
@@ -284,7 +271,7 @@ export class SelectToSpeak {
 
   /**
    * Called in response to our hit test after the mouse is released,
-   * when the user is in a mode where select-to-speak is capturing
+   * when the user is in a mode where Select-to-speak is capturing
    * mouse events (for example holding down Search).
    * @param {!AutomationEvent} evt The automation event.
    * @private
@@ -822,8 +809,6 @@ export class SelectToSpeak {
     });
     this.inputHandler_.setUpEventListeners();
 
-    chrome.settingsPrivate.onPrefsChanged.addListener(
-        prefs => this.onPrefsChanged_(prefs));
     // Initialize the state to SelectToSpeakState.INACTIVE.
     chrome.accessibilityPrivate.setSelectToSpeakState(this.state_);
   }
@@ -915,18 +900,6 @@ export class SelectToSpeak {
       this.pause_().then(() => {
         this.resume_();
       });
-    }
-  }
-
-  /**
-   * Handles system preferences change.
-   * @param {!Array<!Object>} prefs
-   * @private
-   */
-  onPrefsChanged_(prefs) {
-    const ratePref = prefs.find(pref => pref.key === SPEECH_RATE_KEY);
-    if (ratePref) {
-      this.systemSpeechRate_ = ratePref.value;
     }
   }
 
@@ -1740,8 +1713,8 @@ export class SelectToSpeak {
    * @private
    */
   getSpeechRate_() {
-    // Multiply default system rate with user-selected multiplier.
-    const rate = this.systemSpeechRate_ * this.speechRateMultiplier_;
+    // Multiply default speech rate with user-selected multiplier.
+    const rate = this.prefsManager_.speechRate() * this.speechRateMultiplier_;
     // Then round to the nearest tenth (ex. 1.799999 becomes 1.8).
     return Math.round(rate * 10) / 10;
   }

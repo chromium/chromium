@@ -24,7 +24,10 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
     await importModule(
         'SelectToSpeakConstants',
         '/select_to_speak/select_to_speak_constants.js');
-    selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
+    await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
+    chrome.settingsPrivate.setPref(
+        PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
+        '' /* unused, see crbug.com/866161 */, () => {});
   }
 
   /**

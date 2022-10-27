@@ -13,7 +13,7 @@ class SelectToSpeakOptionsPage {
 
   /**
    * Translate the page and sync all of the control values to the
-   * values loaded from chrome.storage.
+   * values loaded from chrome.settingsPrivate.
    */
   init_() {
     this.addTranslatedMessagesToDom_();
@@ -31,7 +31,8 @@ class SelectToSpeakOptionsPage {
             window.speechSynthesis.onvoiceschanged = (() => {
               this.populateVoiceList_('voice');
             });
-            this.syncSelectControlToPref_('voice', 'voice', 'voiceName');
+            this.syncSelectControlToPref_(
+                'voice', PrefsManager.VOICE_NAME_KEY, 'voiceName');
           } else {
             // Show UI with natural voices
             this.hideElement(legacyElem);
@@ -47,9 +48,11 @@ class SelectToSpeakOptionsPage {
               this.populateVoicesAndLanguages_();
             };
 
-            this.syncSelectControlToPref_('localVoices', 'voice', 'voiceName');
             this.syncSelectControlToPref_(
-                'naturalVoice', 'enhancedVoiceName', 'voiceName');
+                'localVoices', PrefsManager.VOICE_NAME_KEY, 'voiceName');
+            this.syncSelectControlToPref_(
+                'naturalVoice', PrefsManager.ENHANCED_VOICE_NAME_KEY,
+                'voiceName');
             chrome.settingsPrivate.getPref(
                 PrefsManager.ENHANCED_VOICES_POLICY_KEY,
                 network_voices_allowed => {
@@ -64,7 +67,8 @@ class SelectToSpeakOptionsPage {
                   } else {
                     // If the feature is allowed, syncs the checkbox with pref.
                     this.syncCheckboxControlToPref_(
-                        'naturalVoices', 'enhancedNetworkVoices', checked => {
+                        'naturalVoices',
+                        PrefsManager.ENHANCED_NETWORK_VOICES_KEY, checked => {
                           this.setVoiceSelectionAndPreviewVisibility_(
                               /* isVisible = */ checked);
                         });
@@ -84,19 +88,21 @@ class SelectToSpeakOptionsPage {
         });
 
     this.syncCheckboxControlToPref_(
-        'wordHighlight', 'wordHighlight', checked => {
+        'wordHighlight', PrefsManager.WORD_HIGHLIGHT_KEY, checked => {
           const elem = document.getElementById('highlightSubOption');
           const select = document.getElementById('highlightColor');
           this.setElementVisible(elem, checked);
           select.disabled = !checked;
         });
     this.syncCheckboxControlToPref_(
-        'backgroundShading', 'backgroundShading', checked => {
+        'backgroundShading', PrefsManager.BACKGROUND_SHADING_KEY, checked => {
           const elem = document.getElementById('backgroundPreviewContainer');
           this.setElementVisible(elem, checked);
         });
-    this.syncCheckboxControlToPref_('navigationControls', 'navigationControls');
-    this.syncCheckboxControlToPref_('voiceSwitching', 'voiceSwitching');
+    this.syncCheckboxControlToPref_(
+        'navigationControls', PrefsManager.NAVIGATION_CONTROLS_KEY);
+    this.syncCheckboxControlToPref_(
+        'voiceSwitching', PrefsManager.VOICE_SWITCHING_KEY);
 
     this.setUpHighlightListener_();
     this.setUpTtsButtonClickListener_();
@@ -497,7 +503,7 @@ class SelectToSpeakOptionsPage {
   /**
    * Populate a checkbox with its current setting.
    * @param {string} checkboxId The id of the checkbox element.
-   * @param {string} pref The name for a chrome.storage pref.
+   * @param {string} pref The name for a chrome.settingsPrivate pref.
    * @param {?function(boolean): undefined=} opt_onChange A function
    * to be called every time the checkbox state is changed.
    * @private
@@ -506,13 +512,10 @@ class SelectToSpeakOptionsPage {
     const checkbox = document.getElementById(checkboxId);
 
     function updateFromPref() {
-      chrome.storage.sync.get(pref, function(items) {
-        const value = items[pref];
-        if (value != null) {
-          checkbox.checked = value;
-          if (opt_onChange) {
-            opt_onChange(checkbox.checked);
-          }
+      chrome.settingsPrivate.getPref(pref, ({value}) => {
+        checkbox.checked = value;
+        if (opt_onChange) {
+          opt_onChange(Boolean(checkbox.checked));
         }
       });
     }
@@ -525,21 +528,18 @@ class SelectToSpeakOptionsPage {
     });
 
     checkbox.addEventListener('change', function() {
-      const setParams = {};
-      setParams[pref] = checkbox.checked;
-      chrome.storage.sync.set(setParams);
+      chrome.settingsPrivate.setPref(pref, checkbox.checked);
     });
 
-    checkbox.updateFunction = updateFromPref;
     updateFromPref();
-    chrome.storage.onChanged.addListener(updateFromPref);
+    chrome.settingsPrivate.onPrefsChanged.addListener(updateFromPref);
   }
 
   /**
-   * Given the id of an HTML select element and the name of a chrome.storage
-   * pref, sync them both ways.
+   * Given the id of an HTML select element and the name of a
+   * chrome.settingsPrivate pref, sync them both ways.
    * @param {string} selectId The id of the select element.
-   * @param {string} pref The name of a chrome.storage pref.
+   * @param {string} pref The name of a chrome.settingsPrivate pref.
    * @param {string} valueKey The key of the option to use as value.
    * @param {?function(string): undefined=} opt_onChange Optional change
    *     listener to call when the setting has been changed.
@@ -548,8 +548,7 @@ class SelectToSpeakOptionsPage {
     var element = document.getElementById(selectId);
 
     function updateFromPref() {
-      chrome.storage.sync.get(pref, function(items) {
-        var value = items[pref];
+      chrome.settingsPrivate.getPref(pref, ({value}) => {
         element.selectedIndex = -1;
         for (var i = 0; i < element.options.length; ++i) {
           if (element.options[i][valueKey] === value) {
@@ -558,21 +557,19 @@ class SelectToSpeakOptionsPage {
           }
         }
         if (opt_onChange) {
-          opt_onChange(value);
+          opt_onChange(String(value));
         }
       });
     }
 
     element.addEventListener('change', function() {
-      var newValue = element.options[element.selectedIndex][valueKey];
-      var setParams = {};
-      setParams[pref] = newValue;
-      chrome.storage.sync.set(setParams);
+      const newValue = element.options[element.selectedIndex][valueKey];
+      chrome.settingsPrivate.setPref(pref, newValue);
     });
 
     element.updateFunction = updateFromPref;
     updateFromPref();
-    chrome.storage.onChanged.addListener(updateFromPref);
+    chrome.settingsPrivate.onPrefsChanged.addListener(updateFromPref);
   }
 
   /**
@@ -588,7 +585,7 @@ class SelectToSpeakOptionsPage {
     };
 
     this.syncSelectControlToPref_(
-        'highlightColor', 'highlightColor', 'value', onChange);
+        'highlightColor', PrefsManager.HIGHLIGHT_COLOR_KEY, 'value', onChange);
 
     document.getElementById('wordHighlightOption')
         .addEventListener('click', function(e) {

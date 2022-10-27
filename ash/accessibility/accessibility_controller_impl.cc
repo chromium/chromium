@@ -1003,7 +1003,44 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       kDefaultSwitchAccessPointScanSpeedDipsPerSecond,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
-      prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed, true,
+      prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed,
+      kDefaultAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilitySelectToSpeakBackgroundShading,
+      kDefaultAccessibilitySelectToSpeakBackgroundShading,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices,
+      kDefaultAccessibilitySelectToSpeakEnhancedNetworkVoices,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown,
+      kDefaultAccessibilitySelectToSpeakEnhancedVoicesDialogShown,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilitySelectToSpeakNavigationControls,
+      kDefaultAccessibilitySelectToSpeakNavigationControls,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilitySelectToSpeakVoiceSwitching,
+      kDefaultAccessibilitySelectToSpeakVoiceSwitching,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilitySelectToSpeakWordHighlight,
+      kDefaultAccessibilitySelectToSpeakWordHighlight,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(
+      prefs::kAccessibilitySelectToSpeakEnhancedVoiceName,
+      kDefaultAccessibilitySelectToSpeakEnhancedVoiceName,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(
+      prefs::kAccessibilitySelectToSpeakHighlightColor,
+      kDefaultAccessibilitySelectToSpeakHighlightColor,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterStringPref(
+      prefs::kAccessibilitySelectToSpeakVoiceName,
+      kDefaultAccessibilitySelectToSpeakVoiceName,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   if (::features::

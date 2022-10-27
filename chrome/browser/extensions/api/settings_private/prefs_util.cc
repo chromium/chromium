@@ -555,6 +555,25 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)
       [ash::prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed] =
           settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakBackgroundShading] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakEnhancedNetworkVoices] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakEnhancedVoiceName] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakHighlightColor] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakNavigationControls] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakVoiceName] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakVoiceSwitching] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakWordHighlight] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Text to Speech.
   (*s_allowlist)[::prefs::kTextToSpeechLangToVoiceName] =
