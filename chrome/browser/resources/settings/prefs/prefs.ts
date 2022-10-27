@@ -192,8 +192,10 @@ export class SettingsPrefsElement extends PolymerElement {
 
     this.boundPrefsChanged_ = this.onSettingsPrivatePrefsChanged_.bind(this);
     this.settingsApi_.onPrefsChanged.addListener(this.boundPrefsChanged_);
-    this.settingsApi_.getAllPrefs(
-        this.onSettingsPrivatePrefsFetched_.bind(this));
+    this.settingsApi_.getAllPrefs().then((prefs) => {
+      this.updatePrefs_(prefs);
+      CrSettingsPrefs.setInitialized();
+    });
   }
 
   private prefsChanged_(e: {path: string}) {
@@ -239,15 +241,6 @@ export class SettingsPrefsElement extends PolymerElement {
     if (CrSettingsPrefs.isInitialized) {
       this.updatePrefs_(prefs);
     }
-  }
-
-  /**
-   * Called when prefs are fetched from settingsPrivate.
-   */
-  private onSettingsPrivatePrefsFetched_(
-      prefs: chrome.settingsPrivate.PrefObject[]) {
-    this.updatePrefs_(prefs);
-    CrSettingsPrefs.setInitialized();
   }
 
   /**

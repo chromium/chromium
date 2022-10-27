@@ -43,17 +43,14 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
   }
 
   // chrome.settingsPrivate overrides.
-  getAllPrefs(callback: (prefs: chrome.settingsPrivate.PrefObject[]) => void) {
+  getAllPrefs(): Promise<chrome.settingsPrivate.PrefObject[]> {
     // Send a copy of prefs to keep our internal state private.
     const prefs = [];
     for (const key in this.prefs) {
       prefs.push(
           deepCopy(this.prefs[key]!) as chrome.settingsPrivate.PrefObject);
     }
-
-    // Run the callback asynchronously to test that the prefs aren't actually
-    // used before they become available.
-    setTimeout(callback.bind(null, prefs));
+    return Promise.resolve(prefs);
   }
 
   setPref(key: string, value: any, _pageId: string): Promise<boolean> {

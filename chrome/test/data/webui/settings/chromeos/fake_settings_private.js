@@ -44,16 +44,13 @@ export class FakeSettingsPrivate {
   }
 
   // chrome.settingsPrivate overrides.
-  getAllPrefs(callback) {
+  getAllPrefs() {
     // Send a copy of prefs to keep our internal state private.
     const prefs = [];
     for (const key in this.prefs) {
       prefs.push(deepCopy(this.prefs[key]));
     }
-
-    // Run the callback asynchronously to test that the prefs aren't actually
-    // used before they become available.
-    setTimeout(callback.bind(null, prefs));
+    return Promise.resolve(prefs);
   }
 
   setPref(key, value, pageId) {
