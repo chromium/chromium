@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/os_flags_system_web_app_info.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -19,10 +17,8 @@
 namespace {
 
 SkColor GetBgColor(bool use_dark_mode) {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kBgColor, use_dark_mode,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                   use_dark_mode);
 }
 
 }  // namespace

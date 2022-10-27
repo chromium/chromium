@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/web_applications/projector_system_web_app_info.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -19,10 +18,8 @@
 namespace {
 
 SkColor GetBgColor(bool use_dark_mode) {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kBgColor, use_dark_mode,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                   use_dark_mode);
 }
 
 }  // namespace

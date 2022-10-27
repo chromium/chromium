@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/display/screen.h"
 
@@ -29,10 +28,8 @@ constexpr int kFirmwareUpdateAppDefaultHeight = 640;
 // FirmwareUpdateApp's title bar and background needs to be bg-elevation-2 for
 // dark mode instead of the default dark mode background color.
 SkColor GetDarkModeBackgroundColor() {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kBgColorElevation2, /*use_dark_mode=*/true,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColorElevation2,
+                                   /*is_dark_mode=*/true);
 }
 }  // namespace
 

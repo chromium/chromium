@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -26,10 +24,8 @@ void CreateIconInfoForSystemWebApp(
 }
 
 SkColor GetDefaultBackgroundColor(const bool use_dark_mode) {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kBgColor, use_dark_mode,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                   use_dark_mode);
 }
 
 }  // namespace web_app

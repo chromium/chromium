@@ -25,10 +25,8 @@ namespace {
 bool g_enable_delegate_for_testing = false;
 
 SkColor GetBgColor(bool use_dark_mode) {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kBgColor, use_dark_mode,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                   use_dark_mode);
 }
 
 }  // namespace
