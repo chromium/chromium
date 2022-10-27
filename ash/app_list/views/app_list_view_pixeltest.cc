@@ -25,8 +25,7 @@ class AppListViewPixelRTLTest
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    pixel_test::InitParams init_params(
-        /*param_screenshot_prefix=*/"app_list_view_pixel");
+    pixel_test::InitParams init_params;
     init_params.under_rtl = GetParam();
     return init_params;
   }
@@ -83,8 +82,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
 
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetParam() ? "bubble_launcher_answer_card_search_results_rtl"
-                 : "bubble_launcher_answer_card_search_results",
+      "bubble_launcher_answer_card_search_results",
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -97,8 +95,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   ShowAppList();
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetParam() ? "bubble_launcher_basics_rtl" : "bubble_launcher_basics",
-      GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_basics", GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -118,9 +115,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetParam() ? "bubble_launcher_gradient_zone_rtl"
-                 : "bubble_launcher_gradient_zone",
-      GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_gradient_zone", GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 

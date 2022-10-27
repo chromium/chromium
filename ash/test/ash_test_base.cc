@@ -39,6 +39,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -140,7 +141,7 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   absl::optional<pixel_test::InitParams> pixel_test_init_params =
       CreatePixelTestInitParams();
   if (pixel_test_init_params) {
-    PrepareForPixelDiffTest(*pixel_test_init_params);
+    PrepareForPixelDiffTest();
     params.pixel_test_init_params = std::move(pixel_test_init_params);
   }
 
@@ -567,8 +568,7 @@ display::Display AshTestBase::GetSecondaryDisplay() const {
   return ash_test_helper_->GetSecondaryDisplay();
 }
 
-void AshTestBase::PrepareForPixelDiffTest(
-    const pixel_test::InitParams& init_params) {
+void AshTestBase::PrepareForPixelDiffTest() {
   // In pixel tests, we want to take screenshots then compare them with the
   // benchmark images. Therefore, enable pixel output in tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -580,8 +580,11 @@ void AshTestBase::PrepareForPixelDiffTest(
       switches::kStabilizeTimeDependentViewForTests);
 
   DCHECK(!pixel_differ_);
+  const testing::TestInfo* info =
+      ::testing::UnitTest::GetInstance()->current_test_info();
   pixel_differ_ = std::make_unique<AshPixelDiffer>(
-      init_params.screenshot_prefix, init_params.corpus);
+      base::StrCat({info->test_suite_name(), std::string("."), info->name()}),
+      /*corpus=*/std::string());
 }
 
 // ============================================================================

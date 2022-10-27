@@ -19,7 +19,7 @@ class DemoAshPixelDiffTest : public AshTestBase {
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams(/*param_screenshot_prefix=*/"ash_demo_test");
+    return pixel_test::InitParams();
   }
 
   // Creates a top level widget with the specified bounds and color.

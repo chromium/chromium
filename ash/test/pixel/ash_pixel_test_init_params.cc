@@ -6,9 +6,7 @@
 
 namespace ash::pixel_test {
 
-InitParams::InitParams(const std::string& param_screenshot_prefix,
-                       const std::string& param_corpus)
-    : screenshot_prefix(param_screenshot_prefix), corpus(param_corpus) {}
+InitParams::InitParams() = default;
 
 InitParams::InitParams(InitParams&&) = default;
 

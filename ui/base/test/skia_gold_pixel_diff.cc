@@ -68,6 +68,12 @@ const char* kDryRun = "dryrun";
 // the framework to save the screenshot png file to this path.
 const char* kPngFilePathDebugging = "skia-gold-local-png-write-directory";
 
+// The separator used in the names of the screenshots taken on Ash platform.
+constexpr char kAshSeparator[] = ".";
+
+// The separator used by non-Ash platforms.
+constexpr char kNonAshSeparator[] = "_";
+
 namespace {
 
 base::FilePath GetAbsoluteSrcRelativePath(base::FilePath::StringType path) {
@@ -326,11 +332,21 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
   // The golden image name should be unique on GCS per platform. And also the
   // name should be valid across all systems.
   std::string suffix = GetPlatform();
+  std::string normalized_prefix;
   std::string normalized_screenshot_name;
+
   // Parameterized tests have "/" in their names which isn't allowed in file
-  // names. Replace with "_".
-  base::ReplaceChars(screenshot_name, "/", "_", &normalized_screenshot_name);
-  std::string name = prefix_ + "_" + normalized_screenshot_name + "_" + suffix;
+  // names. Replace with `separator`.
+  const std::string separator =
+      suffix == std::string("ash") ? kAshSeparator : kNonAshSeparator;
+  base::ReplaceChars(prefix_, "/", separator, &normalized_prefix);
+  base::ReplaceChars(screenshot_name, "/", separator,
+                     &normalized_screenshot_name);
+  std::string name = normalized_prefix + separator +
+                     normalized_screenshot_name + separator + suffix;
+  CHECK_EQ(name.find_first_of(" /"), std::string::npos)
+      << " a golden image name should not contain any space or back slash";
+
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath temporary_path =
       working_dir_.Append(base::FilePath::FromUTF8Unsafe(name + ".png"));

@@ -66,10 +66,16 @@ class ViewSkiaGoldPixelDiffTest : public views::test::WidgetTest {
 
 TEST_F(ViewSkiaGoldPixelDiffTest, CompareScreenshotByView) {
   MockViewSkiaGoldPixelDiffMockUpload mock_pixel;
-  EXPECT_CALL(
-      mock_pixel,
-      UploadToSkiaGoldServer(
-          _, "Prefix_Demo_" + ui::test::SkiaGoldPixelDiff::GetPlatform(), _))
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  constexpr char kPrefix[] = "Prefix.Demo.";
+#else
+  constexpr char kPrefix[] = "Prefix_Demo_";
+#endif
+
+  EXPECT_CALL(mock_pixel,
+              UploadToSkiaGoldServer(
+                  _, kPrefix + ui::test::SkiaGoldPixelDiff::GetPlatform(), _))
       .Times(1)
       .WillOnce(Return(true));
   views::Widget* widget = CreateTopLevelNativeWidget();

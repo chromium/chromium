@@ -50,8 +50,7 @@ class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
   // LoginShelfViewPixelTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams(
-        /*param_screenshot_prefix=*/"login_shelf_view_pixel");
+    return pixel_test::InitParams();
   }
 };
 
@@ -116,8 +115,7 @@ class LoginShelfWithPolicyWallpaperPixelTestWithRTL
   // LoginShelfViewPixelTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    pixel_test::InitParams init_params(
-        /*param_screenshot_prefix=*/"login_shelf_view_policy_wallpaper_pixel");
+    pixel_test::InitParams init_params;
     init_params.wallpaper_init_type = pixel_test::WallpaperInitType::kPolicy;
     init_params.under_rtl = GetParam();
     return init_params;
@@ -133,8 +131,8 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
   FocusOnShutdownButton();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetParam() ? "focus_on_shutdown_button_rtl" : "focus_on_shutdown_button",
-      primary_big_user_view_, GetPrimaryShelf()->GetWindow()));
+      "focus_on_shutdown_button", primary_big_user_view_,
+      GetPrimaryShelf()->GetWindow()));
 }
 
 }  // namespace ash

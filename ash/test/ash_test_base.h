@@ -348,7 +348,9 @@ class AshTestBase : public testing::Test {
  private:
   void CreateWindowTreeIfNecessary();
 
-  void PrepareForPixelDiffTest(const pixel_test::InitParams& init_params);
+  // Prepares for pixel tests by enabling related flags and building
+  // `ash_test_helper_`.
+  void PrepareForPixelDiffTest();
 
   bool setup_called_ = false;
   bool teardown_called_ = false;

@@ -13,8 +13,7 @@ class FullscreenPixelTest : public AshTestBase {
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams(
-        /*param_screenshot_prefix=*/"fullscreen_test");
+    return pixel_test::InitParams();
   }
 
   bool ComparePrimaryFullScreen(const std::string& screenshot_name) {
