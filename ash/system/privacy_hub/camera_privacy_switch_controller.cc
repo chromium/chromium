@@ -132,6 +132,12 @@ void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStatusChanged(
       GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled) {
     ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
   }
+  if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
+    // Clear the notification that might have been displayed earlier
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
+        /*by_user=*/false);
+  }
 }
 
 cros::mojom::CameraPrivacySwitchState
@@ -164,7 +170,7 @@ void CameraPrivacySwitchController::ShowNotification(
     const int notification_message_id,
     const NotificationCatalogName catalog) {
   message_center::RichNotificationData notification_data;
-  notification_data.pinned = true;
+  notification_data.pinned = false;
   notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       action_enables_camera ? IDS_PRIVACY_HUB_TURN_ON_CAMERA_ACTION_BUTTON
                             : IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON));

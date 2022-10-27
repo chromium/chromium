@@ -144,6 +144,28 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 }
 
+// This test is a regression test for b/253407315
+TEST_F(PrivacyHubCameraControllerTests,
+       OnCameraHardwarePrivacySwitchChangedNotificationClearing) {
+  CameraPrivacySwitchController& controller =
+      Shell::Get()->privacy_hub_controller()->camera_controller();
+  SetUserPref(true);
+
+  controller.OnCameraHWPrivacySwitchStatusChanged(
+      0, cros::mojom::CameraPrivacySwitchState::ON);
+  const message_center::Notification* const notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId);
+  EXPECT_TRUE(notification);
+  // User should be able to clear the notification manually
+  EXPECT_FALSE(notification->rich_notification_data().pinned);
+  // Notification should be cleared when hardware mute is disabled
+  controller.OnCameraHWPrivacySwitchStatusChanged(
+      0, cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
+}
+
 TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
   SetUserPref(false);
   message_center::MessageCenter* const message_center =
