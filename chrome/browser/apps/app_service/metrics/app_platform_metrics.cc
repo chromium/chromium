@@ -1176,19 +1176,17 @@ void AppPlatformMetrics::UpdateUsageTime(
     usage_time_it->second.app_type_name = app_type_name;
     usage_time_it->second.running_time += running_time;
   }
+
+  // Also notify registered observers.
+  for (auto& observer : observers_) {
+    observer.OnAppUsage(app_id, GetAppType(profile_, app_id), running_time);
+  }
 }
 
 void AppPlatformMetrics::SaveUsageTime() {
   base::Value::Dict usage_time;
   for (auto it : usage_time_per_two_hours_) {
     usage_time.SetByDottedPath(it.first.ToString(), it.second.ConvertToValue());
-
-    // Also notify registered observers.
-    for (auto& observer : observers_) {
-      observer.OnAppUsage(it.second.app_id,
-                          GetAppType(profile_, it.second.app_id),
-                          it.second.running_time);
-    }
   }
   profile_->GetPrefs()->SetDict(kAppUsageTime, std::move(usage_time));
 }

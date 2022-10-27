@@ -62,6 +62,7 @@
 #include "ui/aura/window.h"
 
 using ::testing::_;
+using ::testing::Sequence;
 
 namespace apps {
 
@@ -2838,19 +2839,28 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
   window->Init(ui::LAYER_NOT_DRAWN);
 
   // Set the window active state and verify the observer is notified
-  // after a certain period.
+  // with the appropriate running time with every notification.
   const std::string& app_id = "a";
   ModifyInstance(base::UnguessableToken::Create(), app_id, window.get(),
                  kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(2));
 
-  // Set app inactive.
+  // Usage metrics are recorded every 5 minutes and on window inactivation, so
+  // we can expect two notifications with relevant usage times (5 minutes + 3
+  // minutes) across a 8 minute usage window.
+  Sequence s;
+  EXPECT_CALL(observer_, OnAppUsage(app_id, AppType::kArc, base::Minutes(5)))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(observer_, OnAppUsage(app_id, AppType::kArc, base::Minutes(3)))
+      .Times(1)
+      .InSequence(s);
+
+  // Fast forward to trigger first notification.
+  task_environment_.FastForwardBy(base::Minutes(8));
+
+  // Set app inactive. This should also trigger the second notification with
+  // usage time delta after the first one.
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
-  EXPECT_CALL(observer_, OnAppUsage(app_id, AppType::kArc, base::Minutes(2)))
-      .Times(1);
-
-  // Usage metrics recorded every 5 minutes, so we fast forward.
-  task_environment_.FastForwardBy(base::Minutes(3));
 }
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
