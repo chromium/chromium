@@ -1512,6 +1512,14 @@ void InputHandlerProxy::RequestAnimationForSnapFling() {
   RequestAnimation();
 }
 
+void InputHandlerProxy::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  DCHECK(input_handler_);
+  input_handler_->UpdateBrowserControlsState(constraints, current, animate);
+}
+
 void InputHandlerProxy::HandleOverscroll(
     const gfx::PointF& causal_event_viewport_point,
     const cc::InputHandlerScrollResult& scroll_result) {

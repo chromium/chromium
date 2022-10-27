@@ -197,6 +197,14 @@ void WidgetInputHandlerImpl::GetFrameWidgetInputHandler(
       std::move(frame_receiver));
 }
 
+void WidgetInputHandlerImpl::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  input_handler_manager_->UpdateBrowserControlsState(constraints, current,
+                                                     animate);
+}
+
 void WidgetInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {
   if (ThreadedCompositingEnabled()) {
     input_event_queue_->QueueClosure(base::BindOnce(

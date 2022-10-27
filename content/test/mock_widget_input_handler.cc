@@ -137,6 +137,11 @@ void MockWidgetInputHandler::GetFrameWidgetInputHandler(
     mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetInputHandler>
         interface_request) {}
 
+void MockWidgetInputHandler::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {}
+
 MockWidgetInputHandler::DispatchedMessage::DispatchedMessage(
     const std::string& name)
     : name_(name) {}

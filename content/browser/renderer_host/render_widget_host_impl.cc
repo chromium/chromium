@@ -341,6 +341,11 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
           request) override {
     NOTREACHED() << "Input request on unbound interface";
   }
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate) override {
+    NOTREACHED() << "Input request on unbound interface";
+  }
 };
 
 std::u16string GetWrappedTooltipText(
@@ -2634,6 +2639,14 @@ void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
 
 SiteInstanceGroup* RenderWidgetHostImpl::GetSiteInstanceGroup() {
   return &*site_instance_group_;
+}
+
+void RenderWidgetHostImpl::UpdateBrowserControlsState(
+    cc::BrowserControlsState constraints,
+    cc::BrowserControlsState current,
+    bool animate) {
+  GetWidgetInputHandler()->UpdateBrowserControlsState(constraints, current,
+                                                      animate);
 }
 
 // static

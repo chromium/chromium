@@ -117,6 +117,9 @@ class FakeCompositorDelegateForInput : public cc::CompositorDelegateForInput {
   const cc::LayerTreeHostImpl& GetImplDeprecated() const override {
     return host_impl_;
   }
+  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                  cc::BrowserControlsState current,
+                                  bool animate) override {}
 
  private:
   mutable cc::ScrollTree scroll_tree_;
@@ -234,6 +237,11 @@ class MockInputHandler : public cc::InputHandler {
   bool ScrollbarScrollIsActive() override { return false; }
 
   void SetDeferBeginMainFrame(bool defer_begin_main_frame) const override {}
+
+  MOCK_METHOD3(UpdateBrowserControlsState,
+               void(cc::BrowserControlsState constraints,
+                    cc::BrowserControlsState current,
+                    bool animate));
 
  private:
   bool is_scrolling_root_ = true;
@@ -2009,6 +2017,18 @@ TEST_P(InputHandlerProxyTest, TouchMoveBlockingAddedAfterPassiveTouchStart) {
       CreateWebTouchPoint(WebTouchPoint::State::kStateMoved, 10, 10);
   EXPECT_EQ(InputHandlerProxy::DID_NOT_HANDLE_NON_BLOCKING,
             HandleInputEventWithLatencyInfo(input_handler_.get(), touch));
+  VERIFY_AND_RESET_MOCKS();
+}
+
+TEST_P(InputHandlerProxyTest, UpdateBrowserControlsState) {
+  VERIFY_AND_RESET_MOCKS();
+  EXPECT_CALL(mock_input_handler_,
+              UpdateBrowserControlsState(cc::BrowserControlsState::kShown,
+                                         cc::BrowserControlsState::kBoth, true))
+      .Times(1);
+
+  input_handler_->UpdateBrowserControlsState(
+      cc::BrowserControlsState::kShown, cc::BrowserControlsState::kBoth, true);
   VERIFY_AND_RESET_MOCKS();
 }
 

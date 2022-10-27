@@ -2257,4 +2257,11 @@ void InputHandler::SetDeferBeginMainFrame(bool defer_begin_main_frame) const {
   compositor_delegate_.SetDeferBeginMainFrame(defer_begin_main_frame);
 }
 
+void InputHandler::UpdateBrowserControlsState(BrowserControlsState constraints,
+                                              BrowserControlsState current,
+                                              bool animate) {
+  compositor_delegate_.UpdateBrowserControlsState(constraints, current,
+                                                  animate);
+}
+
 }  // namespace cc

@@ -924,7 +924,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   MicroBenchmarkController micro_benchmark_controller_;
 
   // The pointer that input uses to communicate with the layer tree host impl.
-  // Must be dereferenced only from the input-handling thread.
+  // Must be dereferenced only from the input-handling thread. This is the same
+  // as the valid-compositor thread, which may be a separate thread for the
+  // compositor, or the main thread.
   base::WeakPtr<CompositorDelegateForInput> compositor_delegate_weak_ptr_;
 
   scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner_;
