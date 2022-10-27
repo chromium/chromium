@@ -33,10 +33,6 @@ constexpr int kClipboardDlpBlockDurationMs = 6000;
 // The duration of the clipboard warning shown before paste.
 constexpr int kClipboardDlpWarnDurationMs = 16000;
 
-// Link to the Help Center article about Data Leak Prevention.
-constexpr char kDlpLearnMoreUrl[] =
-    "https://support.google.com/chrome/a/?p=chromeos_datacontrols";
-
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_BUBBLE_CONSTANTS_H_

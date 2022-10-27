@@ -41,6 +41,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -98,6 +99,9 @@ constexpr char kFilePath2[] = "test2.txt";
 constexpr char kFilePath3[] = "test3.txt";
 constexpr char kFilePath4[] = "test4.txt";
 constexpr char kFilePath5[] = "test5.txt";
+
+constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
+constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
 
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
@@ -542,6 +546,8 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_MultiFolder) {
 }
 
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -567,9 +573,13 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
 
   ASSERT_EQ(0u, future.Get().size());
   EXPECT_EQ(filtered_uploads, future.Take());
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kUploadBlockedNotificationId));
 }
 
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_NonNativeFiles) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -604,9 +614,13 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_NonNativeFiles) {
 
   ASSERT_EQ(3u, future.Get().size());
   EXPECT_EQ(filtered_uploads, future.Take());
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kUploadBlockedNotificationId));
 }
 
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -652,9 +666,13 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_MixedFiles) {
 
   ASSERT_EQ(3u, future.Get().size());
   EXPECT_EQ(filtered_uploads, future.Take());
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kUploadBlockedNotificationId));
 }
 
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, temp_dir_.GetPath().AppendASCII(kFilePath1),
                      kExampleUrl1),
@@ -692,6 +710,8 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
                                              future.GetCallback());
 
   ASSERT_EQ(0u, future.Get().size());
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kUploadBlockedNotificationId));
 }
 
 TEST_F(DlpFilesControllerTest, GetDlpMetadata) {
@@ -837,6 +857,8 @@ TEST_F(DlpFilesControllerTest, GetBlockedComponents) {
 }
 
 TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   MockCheckIfDownloadAllowedCallback cb;
   EXPECT_CALL(cb, Run(/*is_allowed=*/true)).Times(1);
 
@@ -845,6 +867,9 @@ TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
       base::FilePath(
           "/home/chronos/u-0123456789abcdef/MyFiles/Downloads/img.jpg"),
       cb.Get());
+
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kDownloadBlockedNotificationId));
 }
 
 TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
@@ -1417,6 +1442,8 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
   EXPECT_CALL(*rules_manager_, GetReportingManager())
       .Times(::testing::AnyNumber());
 
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
@@ -1429,6 +1456,8 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
                              kExampleSourcePattern1, expected_component,
                              DlpRulesManager::Restriction::kFiles,
                              DlpRulesManager::Level::kBlock)));
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kDownloadBlockedNotificationId));
 }
 
 class DlpFilesUrlDestinationTest
@@ -1557,6 +1586,8 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
       storage::FileSystemMountOption(),
       base::FilePath(file_manager::util::kRemovableMediaPath)));
 
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
   std::unique_ptr<MockDlpWarnNotifier> wrapper =
       std::make_unique<MockDlpWarnNotifier>(choice_result);
   MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
@@ -1595,6 +1626,9 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
                 IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
                     kExampleSourcePattern1, DlpRulesManager::Component::kUsb,
                     DlpRulesManager::Restriction::kFiles)));
+  } else {
+    EXPECT_TRUE(
+        display_service_tester.GetNotification(kDownloadBlockedNotificationId));
   }
 
   EXPECT_THAT(

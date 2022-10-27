@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/window_tree_host.h"
@@ -95,7 +96,7 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnToastClicked() {
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kDlpLearnMoreUrl),
+      GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }

@@ -884,6 +884,20 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BUBBLE_MESSAGE" desc="Text for a bubble that informs the user that their copy and paste action has been blocked/warned with a link to a help center article about Data Leak Prevention.">
     <ph name="BUBBLE_MESSAGE">$1<ex>Pasting from corp.google.com to this location is blocked by administrator policy</ex></ph>. <ph name="LEARN_MORE_TEXT">$2<ex>Learn more</ex></ph>
   </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE" desc="The title of the notification informing the user that downloading files is blocked.">
+    Blocked download
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE" desc="The message of the notification informing the user that downloading files is blocked.">
+    Downloading this file is blocked by administrator policy
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE" desc="The title of the notification informing the user that uploading files is blocked.">
+    Blocked upload
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE" desc="The title of the notification informing the user that uploading files is blocked.">
+     {0, plural,
+                =1 {Uploading this file is blocked by administrator policy}
+                other {Uploading # files is blocked by administrator policy}}
+  </message>
   <message name="IDS_POLICY_DEVICE_SCHEDULED_REBOOT_TITLE" desc="The title for notification informing the user that the device will restart soon.">
     Device will restart very soon
   </message>

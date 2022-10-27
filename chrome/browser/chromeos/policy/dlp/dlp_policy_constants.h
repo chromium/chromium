@@ -29,6 +29,10 @@ constexpr char kBlockLevel[] = "BLOCK";
 constexpr char kWarnLevel[] = "WARN";
 constexpr char kReportLevel[] = "REPORT";
 
+// Link to the Help Center article about Data Leak Prevention.
+constexpr char kDlpLearnMoreUrl[] =
+    "https://support.google.com/chrome/a/?p=chromeos_datacontrols";
+
 }  // namespace dlp
 
 }  // namespace policy

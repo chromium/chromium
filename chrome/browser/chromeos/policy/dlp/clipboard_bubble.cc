@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,14 +133,14 @@ class Button : public views::LabelButton {
 void OnLearnMoreLinkClicked() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kDlpLearnMoreUrl),
+      GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   // The dlp policy applies to the main profile, so use the main profile for
   // opening the page.
   NavigateParams navigate_params(
-      ProfileManager::GetPrimaryUserProfile(), GURL(kDlpLearnMoreUrl),
+      ProfileManager::GetPrimaryUserProfile(), GURL(dlp::kDlpLearnMoreUrl),
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_FROM_API));
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

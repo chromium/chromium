@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -27,16 +28,22 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_event_storage.h"
+#include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -44,6 +51,8 @@
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -60,6 +69,9 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 // DlpFilesEventStorage.
 // TODO(crbug.com/1366299): determine the value to use.
 constexpr size_t kEntriesLimit = 100;
+
+constexpr char kUploadBlockedNotificationId[] = "upload_dlp_blocked";
+constexpr char kDownloadBlockedNotificationId[] = "download_dlp_blocked";
 
 // FileSystemContext instance set for testing.
 storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
@@ -292,6 +304,48 @@ void GotFilesSourcesOfCopy(
   chromeos::DlpClient::Get()->AddFile(request, base::DoNothing());
 }
 
+// Returns an instance of NotificationDisplayService for the primary profile.
+NotificationDisplayService* GetNotificationDisplayService() {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
+  auto* display_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile);
+  DCHECK(display_service);
+  return display_service;
+}
+
+// Opens DLP Learn more link and closes the notification having
+// `notification_id`.
+void OnLearnMoreButtonClicked(const std::string& notification_id,
+                              absl::optional<int> button_index) {
+  if (!button_index || button_index.value() != 0)
+    return;
+
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(dlp::kDlpLearnMoreUrl),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+
+  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                         notification_id);
+}
+
+// Shows a system notification having `notification_id`, `title`, and `message`.
+void ShowNotification(const std::string& notification_id,
+                      const std::u16string& title,
+                      const std::u16string& message) {
+  auto notification = file_manager::CreateSystemNotification(
+      notification_id, std::move(title), std::move(message),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&OnLearnMoreButtonClicked, notification_id)));
+  notification->set_buttons(
+      {message_center::ButtonInfo(l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
+
+  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
+                                           *notification,
+                                           /*metadata=*/nullptr);
+}
+
 }  // namespace
 
 DlpFilesController::DlpFileMetadata::DlpFileMetadata(
@@ -510,6 +564,14 @@ void DlpFilesController::CheckIfDownloadAllowed(
           [](CheckIfDownloadAllowedCallback result_callback,
              const std::vector<FileDaemonInfo>& restricted_files) {
             bool is_allowed = restricted_files.empty();
+            if (!is_allowed) {
+              ShowNotification(
+                  kDownloadBlockedNotificationId,
+                  l10n_util::GetStringUTF16(
+                      IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE),
+                  l10n_util::GetStringUTF16(
+                      IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_MESSAGE));
+            }
             std::move(result_callback).Run(is_allowed);
           },
           std::move(result_callback)));
@@ -771,6 +833,14 @@ void DlpFilesController::ReturnAllowedUploads(
   }
   std::set<std::string> restricted_files(response.files_paths().begin(),
                                          response.files_paths().end());
+  if (!restricted_files.empty()) {
+    ShowNotification(
+        kUploadBlockedNotificationId,
+        l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_TITLE),
+        l10n_util::GetPluralStringFUTF16(
+            IDS_POLICY_DLP_FILES_UPLOAD_BLOCK_MESSAGE,
+            restricted_files.size()));
+  }
   std::vector<blink::mojom::FileChooserFileInfoPtr> filtered_files;
   for (auto& file : uploaded_files) {
     if (file && file->is_native_file() &&
