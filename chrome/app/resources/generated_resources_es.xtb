@@ -884,6 +884,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Cambiar a otra aplicación abierta</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1809201888580326312">Has elegido no guardar las contraseñas de estos sitios y aplicaciones</translation>
 <translation id="1809483812148634490">Las aplicaciones que hayas descargado de Google Play se eliminarán de este Chromebook.
       <ph name="LINE_BREAKS1" />
       Es posible que también se elimine el contenido que hayas comprado, como películas, series de TV, música, libros u otras compras en la aplicación.
@@ -1797,6 +1798,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> no se puede descargar de forma segura.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Preparar modelo de voz del Asistente de Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" />)</translation>
 <translation id="26224892172169984">No permitir que los sitios procesen protocolos</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Esta página tiene acceso a la cámara y al micrófono.</translation>
@@ -4288,6 +4290,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Silenciar sitio}other{Silenciar sitios}}</translation>
 <translation id="497403230787583386">Se han realizado las comprobaciones de seguridad. El documento se imprimirá.</translation>
 <translation id="4975543297921324897">Fuente monoespaciada</translation>
+<translation id="4975771730019223894">Insignias de aplicaciones</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmar acceso</translation>
 <translation id="4980805016576257426">Esta extensión contiene malware.</translation>
@@ -4943,6 +4946,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5612734644261457353">No ha sido posible verificar tu contraseña. Nota: si has cambiado la contraseña recientemente, la nueva contraseña se aplicará una vez que hayas cerrado sesión. Utiliza la antigua contraseña aquí.</translation>
 <translation id="5614190747811328134">Aviso al usuario</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
+<translation id="5616571005307953937">Más antiguos</translation>
 <translation id="5616726534702877126">Reservar tamaño</translation>
 <translation id="561698261642843490">Cerrar Firefox</translation>
 <translation id="5620540760831960151">Esta lista se ve afectada por <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5273,7 +5277,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5927232971138258197">Esta extensión puede leer y modificar <ph name="HOST" /></translation>
 <translation id="592740088639760830">Detener este contenedor</translation>
 <translation id="592880897588170157">Descargar archivos PDF en lugar de abrirlos automáticamente en Chrome</translation>
-<translation id="5928969282301718193">Todo listo por ahora</translation>
+<translation id="5928969282301718193">Hecho por ahora</translation>
 <translation id="592919310198008711">Cuando haga clic en la extensión</translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> necesita que actualices tu <ph name="DEVICE_TYPE" /> de inmediato.</translation>
 <translation id="5932224571077948991">El sitio web muestra anuncios invasivos o engañosos</translation>
@@ -5574,6 +5578,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6212168817037875041">Apagar la pantalla</translation>
 <translation id="6212752530110374741">Enviar enlace por correo electrónico</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
+<translation id="6216239400972191926">Sitios y aplicaciones rechazados</translation>
 <translation id="6216601812881225442">Tu contenedor no puede cambiar de tamaño. Si quieres ajustar la cantidad de espacio asignado previamente a Linux, crea una copia de seguridad y restáurala en un nuevo contenedor.</translation>
 <translation id="6216696360484424239">Iniciar sesión automáticamente</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> no tiene conexión. Conéctate a Internet e inténtalo de nuevo.</translation>
@@ -7420,7 +7425,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7955177647836564772">Si Smart Lock está activado y tu teléfono está desbloqueado, no tendrás que introducir ni una contraseña ni un PIN</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>
-<translation id="7957186326898555886">Enviar comentarios sobre el ahorro de memoria</translation>
+<translation id="7957186326898555886">Enviar comentarios sobre Ahorro de memoria</translation>
 <translation id="7959074893852789871">El archivo contenía varios certificados, pero algunos de ellos no se han importado:</translation>
 <translation id="7959665254555683862">Nueva pestaña de Incógnito</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -7842,7 +7847,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que ha enviado muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que han enviado muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
-<translation id="8342399870062010251">Más información sobre el ahorro de memoria</translation>
+<translation id="8342399870062010251">Más información sobre Ahorro de memoria</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>

@@ -2264,6 +2264,7 @@
 <translation id="7012363358306927923">中国銀聯</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
+<translation id="7023162328967545559">管理者の警告</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030436163253143341">証明書が無効です</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>
@@ -2447,6 +2448,7 @@
 <translation id="7489473601138133813">キャリア設計、プランニング</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="7497998058912824456">[ドキュメントを作成] ボタンです。Enter キーを押すと、新しい Google ドキュメントをすばやく作成します</translation>
+<translation id="7501663406926337752">アクセスしようとしたサイトは組織でフラグが付けられています</translation>
 <translation id="7501853161948120656">教育リソース</translation>
 <translation id="7506488012654002225">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません<ph name="END_EMPHASIS" />。
           <ph name="BEGIN_LIST" />
@@ -2691,6 +2693,7 @@
 <translation id="8094917007353911263">ご利用のネットワークでは、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">無効なカードを削除しました</translation>
+<translation id="8100666323495101203">お客様の組織では、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> がポリシーに違反している可能性のあるサイトとして判別されています。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">学術会議、学術出版</translation>
 <translation id="8103161714697287722">お支払い方法</translation>
 <translation id="8103643211515685474">このまま印刷</translation>

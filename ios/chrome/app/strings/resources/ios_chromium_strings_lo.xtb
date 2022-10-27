@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">ຂໍ້ມູນຈາກການຊິ້ງຂໍ້ມູນຂອງ Chromium</translation>
 <translation id="1722370509450468186">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ບັນຊີຂອງທ່ານ (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">ລຶບລ້າງຂໍ້ມູນ Chromium ແລ້ວ</translation>
+<translation id="177102542580335555">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານສຳລັບໂປຣໄຟລ໌ Chromium ນີ້</translation>
 <translation id="1838412507805038478">Chromium ໄດ້ພິສູດຢືນຢັນວ່າ <ph name="ISSUER" /> ໄດ້ອອກໃບຮັບຮອງຂອງເວັບໄຊນີ້.</translation>
 <translation id="1843424232666537147">Chromium ມີຄຸນສົມບັດທີ່ຊ່ວຍໃຫ້ທ່ານຈັດການຂໍ້ມູນອິນເຕີເນັດຂອງທ່ານ ແລະ ຈັດການວ່າທ່ານສາມາດໂຫຼດໜ້າເວັບຕ່າງໆໄດ້ໄວສໍ່າໃດ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">ເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="4555020257205549924">ເມື່ອຄຸນສົມບັດນີ້ເປີດຢູ່, Chromium ຈະສະເໜີແປໜ້າຕ່າງໆທີ່ຂຽນເປັນພາສາອື່ນ ໂດຍໃຊ້ Google ແປພາສາ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະໃສ່ລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ.</translation>
+<translation id="4633738821577273991">ຮັບSafe Browsing ທີ່ປັບປຸງດີຂຶ້ນສຳລັບໂປຣໄຟລ໌ Chromium ນີ້ນຳ</translation>
 <translation id="4654936625574199632">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chromium ຈະສົ່ງລາຍງານການໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">ເປີດເຄື່ອງສະແກນ Chromium</translation>
 <translation id="4736424910885271643">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ດັ່ງນັ້ນຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບລ້າງຈາກອຸປະກອນນີ້</translation>
@@ -115,6 +117,7 @@
 <translation id="8073677936375100957">ລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານຈາກອຸປະກອນນີ້ອອກບໍ?</translation>
 <translation id="8240981428553046115">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="8308172444429103994">ເຄັດລັບ Chromium. ເຂົ້າສູ່ລະບົບໄດ້ໄວຂຶ້ນໂດຍການເລືອກລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານຢູ່ເທິງສຸດຂອງແປ້ນພິມ.</translation>
+<translation id="8409374867500149834">ທ່ານໄດ້ຮັບການດູແລຢ່າງເຂັ້ມງວດທີ່ສຸດຂອງ Chromium ໃຫ້ປອດໄພຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ</translation>
 <translation id="858114650497379505">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານໃນແອັບອື່ນຢູ່ iPhone ຂອງທ່ານໄດ້.</translation>
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="865600487977764604">ຮັກສາຄວາມປອດໄພຂອງທ່ານຢູ່ Chromium ແລະ ອາດຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພຂອງທ່ານໃນແອັບ Google ອື່ນໆເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>

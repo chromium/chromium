@@ -2304,6 +2304,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Dit kunnen eenmalige of terugkerende kosten zijn die misschien niet duidelijk worden aangegeven.</translation>
+<translation id="7023162328967545559">Beheerderswaarschuwing</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7030436163253143341">Certificaat is niet geldig</translation>
 <translation id="7031646650991750659">Welke Google Play-apps je hebt geïnstalleerd</translation>
@@ -2490,6 +2491,7 @@ Aanvullende informatie:
 <translation id="7489473601138133813">Loopbaanbronnen en -planning</translation>
 <translation id="7495528107193238112">Deze content is geblokkeerd. Neem contact op met de site-eigenaar om het probleem op te lossen.</translation>
 <translation id="7497998058912824456">Knop Document maken, druk op Enter om snel een nieuw Google-document te maken</translation>
+<translation id="7501663406926337752">De site die je wilt bezoeken, is gemarkeerd door je organisatie</translation>
 <translation id="7501853161948120656">Onderwijsinformatie</translation>
 <translation id="7506488012654002225">De volgende gegevens worden <ph name="BEGIN_EMPHASIS" />niet opgeslagen<ph name="END_EMPHASIS" /> in Chromium:
 <ph name="BEGIN_LIST" />
@@ -2736,6 +2738,7 @@ Aanvullende informatie:
 <translation id="8094917007353911263">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het netwerk dat je gebruikt.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">De ongeldige passen zijn verwijderd</translation>
+<translation id="8100666323495101203">Je organisatie heeft <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> geïdentificeerd als een site die misschien een beleid schendt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Academische conferenties en publicaties</translation>
 <translation id="8103161714697287722">Betaalmethode</translation>
 <translation id="8103643211515685474">Toch afdrukken</translation>

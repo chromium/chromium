@@ -3688,6 +3688,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4394049700291259645">Disable</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Open all}=1{&amp;Open bookmark}other{&amp;Open all ({COUNT})}}</translation>
 <translation id="4397372003838952832">You won't need to remember this password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
+<translation id="4397844455100743910">Learn more about access requests.</translation>
 <translation id="439817266247065935">Your device didn't shut down properly. Restart Linux to use Linux apps.</translation>
 <translation id="4400367121200150367">Sites which never save passwords will appear here</translation>
 <translation id="4400632832271803360">Hold the Launcher key to switch the behaviour of the top-row keys</translation>
@@ -4058,6 +4059,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4733793249294335256">Location</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Circle pointer</translation>
+<translation id="4735793370946506039">Learn more about Enhanced Safe Browsing.</translation>
 <translation id="4735803855089279419">The system failed to determine device identifiers for this device.</translation>
 <translation id="4736292055110123391">Sync your bookmarks, passwords, history and more on all your devices</translation>
 <translation id="473775607612524610">Update</translation>
@@ -4086,6 +4088,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{This device will be saved for one month and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {MONTHS} months and you can connect without a code next time. This is set by your administrator.}}</translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="4766598565665644999">All extensions can read and change <ph name="HOST" /></translation>
+<translation id="4767427586072640478">Learn more about disabled extensions.</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
 <translation id="4770119228883592393">Permission requested, press ⌘ + Option + Down arrow to respond</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
@@ -4313,6 +4316,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Mute site}other{Mute sites}}</translation>
 <translation id="497403230787583386">Security checks are complete. Your document will be printed.</translation>
 <translation id="4975543297921324897">Monospace font</translation>
+<translation id="4975771730019223894">App badging</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirm Access</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>

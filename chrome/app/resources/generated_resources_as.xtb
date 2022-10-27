@@ -893,6 +893,7 @@
 <translation id="1805967612549112634">পিন নিশ্চিত কৰক</translation>
 <translation id="1806335016774576568">অন্য এটা খোল খাই থকা এপলৈ সলনি কৰক</translation>
 <translation id="1807246157184219062">পাতল</translation>
+<translation id="1809201888580326312">আপুনি এই ছাইট আৰু এপ্‌সমূহৰ বাবে পাছৱৰ্ড ছেভ নকৰাৰ সিদ্ধান্ত লৈছে</translation>
 <translation id="1809483812148634490">আপুনি Google Playৰ পৰা ডাউনল’ড কৰা এপ্‌সমূহ এই Chromebookৰ পৰা মচা হ’ব।
     <ph name="LINE_BREAKS1" />
     আপুনি ক্ৰয় কৰা সমল যেনে চলচ্চিত্র, টিভি শ্ব', সংগীত, কিতাপ অথবা অন্য এপত কৰা ক্ৰয়সমূহো মচা হ’ব পাৰে।
@@ -1809,6 +1810,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" />ক সুৰক্ষিতভাৱে ডাউনল’ড কৰিব নোৱাৰি।</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
 <translation id="262154978979441594">Google Assistant ভইচ মডেলক প্ৰশিক্ষণ দিয়ক</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">প্ৰট’ক’ল তদাৰক কৰিবলৈ কোনো ছাইটক অনুমতি নিদিব</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">এই পৃষ্ঠাটোৱে আপোনাৰ কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছ কৰি আছে।</translation>
@@ -2434,6 +2436,7 @@
 <translation id="3201422919974259695">উপলব্ধ ইউএছবি ডিভাইচসমূহ ইয়াত দেখা পোৱা যাব।</translation>
 <translation id="3202131003361292969">পথ</translation>
 <translation id="3202173864863109533">এই টেবটোৰ অডিঅ’ মিউট কৰি থকা হৈছে।</translation>
+<translation id="3202578601642193415">একেবাৰে নতুন</translation>
 <translation id="3204648577100496185">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব পাৰে</translation>
 <translation id="3208321278970793882">এপ্‌</translation>
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
@@ -3716,6 +3719,7 @@
 <translation id="4424867131226116718"><ph name="BEGIN_PARAGRAPH1" />ChromeOS ডিভাইচক স্বয়ংক্ৰিয় ৰিপ’ৰ্ট পঠিওৱাৰ অনুমতি দিয়াটোৱে ChromeOSত কি সমস্যাৰ সমাধান কৰিব আৰু কি উন্নতি সাধিব লাগে তাত অগ্ৰাধিকাৰ দিয়াত আমাক সহায় কৰে। এই ৰিপ’ৰ্টসমূহত ChromeOS কেতিয়া ক্ৰেশ্ব হয়, কোনবোৰ সুবিধা ব্যৱহাৰ কৰা হৈছে আৰু সাধাৰণতে কিমান মেম’ৰী ব্যৱহাৰ কৰা হৈছে আদিৰ দৰে বস্তুবোৰ অন্তৰ্ভুক্ত হ’ব পাৰে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />আপুনি নিজৰ Chrome ডিভাইচৰ ছেটিঙত যিকোনো সময়তে এই ৰিপ’ৰ্টসমূহৰ অনুমতি দিয়া আৰম্ভ অথবা বন্ধ কৰিব পাৰে। আপুনি যদি ড’মেইনৰ প্ৰশাসক, তেন্তে আপুনি প্ৰশাসকৰ কনছ’লত এই ছেটিংটো সলনি কৰিব পাৰে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4426464032773610160">আৰম্ভ কৰিবলৈ, অনুগ্ৰহ কৰি আপোনাৰ ইউএছবি অথবা ব্লুটুথ ছুইচটো নিজৰ Chromebookৰ সৈতে সংযোগ হৈ থকাটো নিশ্চিত কৰক। আপুনি কীব'ৰ্ডৰ কীসমূহো ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="4426508677408162512">আটাইবোৰ বুকমাৰ্ক</translation>
 <translation id="4427306783828095590">বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে ফিশ্বিং আৰু মালৱেৰ অৱৰোধ কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="4427365070557649936">নিশ্চিতকৰণৰ ক'ড সত্যাপন কৰি থকা হৈছে...</translation>
 <translation id="4429163740524851942">কায়িক কীব’ৰ্ডৰ লে’আউট</translation>
@@ -4035,6 +4039,7 @@
 <translation id="4726710355753484204">জুম ইন কৰিবলৈ Ctrl + Alt + উজ্জ্বলতা বঢ়োৱা বুটামটো ব্যৱহাৰ কৰক।
 জুম আউট কৰিবলৈ Ctrl + Alt + উজ্জ্বলতা কমোৱা বুটামটো ব্যৱহাৰ কৰক।</translation>
 <translation id="4726710629007580002">এই এক্সটেনশ্বনটো ইনষ্টল কৰিবলৈ চেষ্টা কৰি থাকোঁতে কিবা সতৰ্কবাণী আহিছিল:</translation>
+<translation id="472738079453283624">প্ৰ’ডাক্ট</translation>
 <translation id="4727847987444062305">পৰিচালিত অতিথিৰ ছেশ্বন</translation>
 <translation id="4728558894243024398">প্লেটফ’ৰ্ম</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />আপোনাৰ প্ৰশাসকে<ph name="END_LINK" /> ক্ষতিকাৰক ছফ্টৱেৰ আছেনে নাই পৰীক্ষা কৰা সুবিধাটো অফ কৰিছে</translation>
@@ -4299,6 +4304,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{ছাইট মিউট কৰক}one{ছাইটসমূহ মিউট কৰক}other{ছাইটসমূহ মিউট কৰক}}</translation>
 <translation id="497403230787583386">সুৰক্ষা পৰীক্ষাসমূহ কৰা হৈছে। আপোনাৰ নথিখন প্ৰিণ্ট কৰা হ’ব।</translation>
 <translation id="4975543297921324897">Monospace ফণ্ট</translation>
+<translation id="4975771730019223894">এপত বেজ লগোৱা</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" /> টা/<ph name="CHARACTER_LIMIT" /> টা</translation>
 <translation id="4977942889532008999">এক্সেছ নিশ্চিত কৰক</translation>
 <translation id="4980805016576257426">এই এক্সটেনশ্বনটোত মালৱেৰ আছে</translation>
@@ -4954,6 +4960,7 @@
 <translation id="5612734644261457353">আমি দুঃখিত, আপোনাৰ পাছৱর্ড তথাপিও সত্যাপন কৰিব পৰা নগ’ল। টোকা: যদি আপুনি অলপতে আপোনাৰ পাছৱৰ্ডটো সলনি কৰিছিল তেন্তে আপুনি ছাইন আউট কৰাৰ পাছত নতুন পাছৱৰ্ডটো প্ৰযোজ্য হ‘ব। অনুগ্ৰহ কৰি ইয়াত পুৰণা পাছৱৰ্ডটো ব্যৱহাৰ কৰক।</translation>
 <translation id="5614190747811328134">ব্যৱহাৰকাৰীৰ জাননী</translation>
 <translation id="5614553682702429503">পাছৱৰ্ড ছেভ কৰিবনে?</translation>
+<translation id="5616571005307953937">আটাইতকৈ পুৰণি</translation>
 <translation id="5616726534702877126">সংৰক্ষণৰ আকাৰ</translation>
 <translation id="561698261642843490">Firefox বন্ধ কৰক</translation>
 <translation id="5620540760831960151">এই সূচীখনত <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5585,6 +5592,7 @@
 <translation id="6212168817037875041">ডিছপ্লে’ অফ কৰক</translation>
 <translation id="6212752530110374741">লিংক ইমেইল কৰক</translation>
 <translation id="621470880408090483">ছাইটক ব্লুটুথ ডিভাইচৰ সৈতে সংযোগ কৰাৰ অনুমতি নিদিব</translation>
+<translation id="6216239400972191926">প্ৰত্যাখ্যান কৰা ছাইট আৰু এপ্‌সমূহ</translation>
 <translation id="6216601812881225442">আপোনাৰ কণ্টেইনাৰটোৱে ইয়াৰ আকাৰ সলনি কৰাটো সমৰ্থন নকৰে। Linuxৰ বাবে পূৰ্বে আৱণ্টন কৰা ঠাইখিনি মিলাবলৈ বেক আপ লওক আৰু তাৰ পাছত এটা নতুন কণ্টেইনাৰত পুনঃস্থাপন কৰক।</translation>
 <translation id="6216696360484424239">স্বয়ংক্ৰিয়ভাৱে ছাইন ইন কৰক</translation>
 <translation id="6218058416316985984">’<ph name="DEVICE_TYPE" />’ অফলাইন আছে। ইণ্টাৰনেটৰ লগত সংযোগ কৰি আকৌ চেষ্টা কৰক।</translation>

@@ -2452,6 +2452,7 @@
 <translation id="3241680850019875542">प्याक गर्नको लागि एक्स्टेन्सनको मूल डाइरेक्टरी चयन गर्नुहोस्। कुनै एक्स्टेन्सनलाई अपडेट गर्न, पुन: प्रयोग गर्नकोो लागि निजी कुञ्जी फाइललाई पनि चयन गर्नुहोस्।</translation>
 <translation id="3242289508736283383">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किओस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="3242665648857227438">यो प्रोफाइलले ChromeOS को प्रोक्सीसम्बन्धी सेटिङ प्रयोग गर्छ।</translation>
+<translation id="3243017971870859287">ChromeOS Flex चल्ने डिभाइस र त्यसका कम्पोनेन्टका क्रम सङ्ख्या रिड गर्ने</translation>
 <translation id="3244294424315804309">आवाज म्युट गरिराख्नुहोस्</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क सम्बन्धी त्रुटि</translation>
 <translation id="3248902735035392926">सुरक्षासम्बन्धी विषयहरू केही क्षण निकालेर <ph name="BEGIN_LINK" />अहिले नै आफ्ना एक्स्टेन्सनहरू जाँच्नुहोस्<ph name="END_LINK" /></translation>
@@ -2508,6 +2509,7 @@
 <translation id="3297105622164376095">तेस्रो पक्षीय साइन इन प्रम्प्टहरू देखाउन अनुमति दिइएका साइटहरू</translation>
 <translation id="3297536526040732495">यो सुविधाले तपाईंको Google खाता Google का विभिन्न एपहरूमा सुरक्षित राख्ने प्रयोजनका लागि तपाईं साइन इन भएका बेला यो डेटा केही समयका लागि उक्त खातासँग लिंक गर्छ</translation>
 <translation id="329838636886466101">मर्मत गर्नुहोस्</translation>
+<translation id="3298438307450647315">ChromeOS चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने</translation>
 <translation id="3298789223962368867">अवैध URL प्रविष्ट गरियो।</translation>
 <translation id="32991397311664836">यन्त्रहरू:</translation>
 <translation id="33022249435934718">GDI ह्यान्डलहरू</translation>
@@ -2614,6 +2616,7 @@
 <translation id="3402255108239926910">कुनै अवतार रोज्नुहोस्</translation>
 <translation id="3402585168444815892">डेमो मोडमा दर्ता गर्दै</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">ChromeOS Flex चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने</translation>
 <translation id="3404065873681873169">यो साइटका लागि कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>
 <translation id="3405664148539009465">फन्टहरूलाई आफू अनुकूल गर्नुहोस्</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4025,6 +4028,7 @@
 <translation id="4726710355753484204">जुम इन गर्न Ctrl + Alt + चमक बढाउने की थिच्नुहोस्।
 जुम आउट गर्न Ctrl + Alt + चमक घटाउने की थिच्नुहोस्।</translation>
 <translation id="4726710629007580002">यो विस्तार स्थापना गर्न प्रयास गर्दा चेतावनी थिएः</translation>
+<translation id="472738079453283624">उत्पादनहरू</translation>
 <translation id="4727847987444062305">व्यवस्थापन गरिएको अतिथिको सत्र</translation>
 <translation id="4728558894243024398">प्लेटफर्म</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />तपाईंका एड्मिन<ph name="END_LINK" />ले हानिकारक सफ्टवेयर छन् कि छैनन् भनी जाँच्ने सुविधा अफ गर्नुभएको छ</translation>
@@ -4167,6 +4171,7 @@
 <translation id="486635084936119914">डाउनलोडपछि निश्चित प्रकारका फाइलहरू स्वतः खोल्नुहोस्</translation>
 <translation id="4868281708609571334">Google सहायकलाई <ph name="SUPERVISED_USER_NAME" /> को आवाज चिनाउनुहोस्</translation>
 <translation id="4868284252360267853">हाल यो डायलगमा फोकस गरिएको छैन। यो डायलगमा फोकस गर्न Command-Shift-Option A थिच्नुहोस्।</translation>
+<translation id="4869170227080975044">ChromeOS नेटवर्कसम्बन्धी जानकारी रिड गर्ने</translation>
 <translation id="4870724079713069532">तपाईं यो एप प्रयोग गरी खोल्न तथा सम्पादन गर्न मिल्ने फाइलहरू File Explorer वा अन्य एपमार्फत खोल्न तथा सम्पादन गर्न सक्नुहुन्छ। तपाईं कुन कुन फाइल यो एपमार्फत स्वतः खुल्छ भन्ने कुरा नियन्त्रण गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />Windows का सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="4870758487381879312">कन्फिगुरेसनसम्बन्धी जानकारी प्राप्त गर्न प्रशासकले उपलब्ध गराउनुभएको पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="4870995365819149457">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> र अर्को एउटा एपमा खुल्ने छन्।</translation>
@@ -4289,6 +4294,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{साइट म्युट गर्नुहोस्}other{साइटहरू म्युट गर्नुहोस्}}</translation>
 <translation id="497403230787583386">सुरक्षासम्बन्धी जाँचहरू गरिए। तपाईंको डकुमेन्ट प्रिन्ट गरिने छ।</translation>
 <translation id="4975543297921324897">मोनोस्पेस फन्ट</translation>
+<translation id="4975771730019223894">एपमा ब्याज देखाउने सुविधा</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">पहुँच यकिन गर्नुहोस्</translation>
 <translation id="4980805016576257426">यस विस्तारमा मालवेयर छ।</translation>
@@ -4899,6 +4905,7 @@
 <translation id="5571066253365925590">ब्लुटूथ सक्षम भयो</translation>
 <translation id="5571092938913434726">मिडियासम्बन्धी वैश्विक नियन्त्रणहरू</translation>
 <translation id="5571832155627049070">आफ्नो प्रोफाइल आफ्नो रोजाइ अनुकूल पार्नुहोस्</translation>
+<translation id="5572252023412311448"><ph name="SITE_GROUP" /> का साइटसम्बन्धी विवरणहरू देखाउनुहोस्</translation>
 <translation id="5572648434713976849">तपाईं एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="5572851009514199876">Chrome ले तपाईंलाई यस साइटमाथि पहुँच राख्ने अनुमति छ वा छैन भनी जाँच्न सकोस् भन्नका लागि कृपया Chrome सुरु गरी साइन इन गर्नुहोस्।</translation>
 <translation id="557506220935336383">अन्य साइटहरूलाई दिइएको एक्स्टेन्सनसम्बन्धी अनुमति हेर्नुहोस्</translation>
@@ -6087,6 +6094,7 @@
 <translation id="6703212423117969852">तपाईं पछि Chrome मार्फत फेरि प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="6703254819490889819">ब्याकअप रिस्टोर गर्नुहोस्</translation>
 <translation id="6706210727756204531">स्कोप</translation>
+<translation id="6707122714992751648">ChromeOS का डाइग्नोस्टिक परीक्षणहरू गर्ने</translation>
 <translation id="6707389671160270963">SSL सेवाग्राही प्रमाणपत्र</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> र अन्य १ ट्याब}other{<ph name="PAGE_TITLE" /> र अन्य # ट्याबहरू}}</translation>
 <translation id="6709133671862442373">समाचार</translation>
@@ -6266,6 +6274,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="6860097299815761905">प्रोक्सी सेटिङहरू...</translation>
 <translation id="6860427144121307915">ट्याबमा खोल्नुहोस्</translation>
+<translation id="6861179941841598556"><ph name="PROFILE_NAME" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="6863496016067551393">सबै एक्स्टेन्सन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="686366188661646310">पासवर्ड मेट्ने हो?</translation>
 <translation id="6865313869410766144">स्वत: भर्ने फारम लगत</translation>
@@ -6355,6 +6364,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         तपाईं कार्ड मेनुमार्फत सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
+<translation id="6949089178006131285">ChromeOS Flex नेटवर्कसम्बन्धी जानकारी रिड गर्ने</translation>
 <translation id="6949434160682548041">पासवर्ड (ऐच्छिक)</translation>
 <translation id="6950627417367801484">एपहरू पुनर्स्थापित गर्नुहोस्</translation>
 <translation id="6952242901357037157">तपाईं यहाँ आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" />मा सुरक्षित गरिएका पासवर्डहरू पनि देखाउन सक्नुहुन्छ</translation>
@@ -7971,6 +7981,7 @@
 <translation id="8463001014623882202">अनुमति दिइएको छैन</translation>
 <translation id="846374874681391779">डाउनलोडहरूको पट्टी</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> लाई असक्षम पारियो।</translation>
+<translation id="846399539692727039">ChromeOS Flex का डाइग्नोस्टिक परीक्षणहरू गर्ने</translation>
 <translation id="8464132254133862871">यो प्रयोगकर्ता खाता सेवाको लागि योग्य छैन।</translation>
 <translation id="8465252176946159372">मान्य छैन</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> सञ्चालन गर्नका लागि तपाईंको अनुमति चाहिन्छ</translation>
@@ -8117,6 +8128,7 @@
 <translation id="8624315169751085215">क्लिपबोर्डमा कपी गर्नुहोस्</translation>
 <translation id="8624354461147303341">छुट प्राप्त गर्नुहोस्</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">ChromeOS चल्ने डिभाइस र त्यसका कम्पोनेन्टका क्रम सङ्ख्या रिड गर्ने</translation>
 <translation id="862542460444371744">&amp;विस्तारहरू</translation>
 <translation id="8625663000550647058">तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8625916342247441948">साइटहरूलाई HID यन्त्रमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>

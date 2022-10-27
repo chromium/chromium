@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">আপোনাৰ ছিংক ডেটা সদায়ে এক্সেছ কৰিব পৰাটো নিশ্চিত কৰিবলৈ, এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="1870148520156231997">পাছৱর্ড দেখুৱাওক</translation>
 <translation id="1872096359983322073">টৰ্চ</translation>
+<translation id="1891796056033961979">আপুনি ছেভ কৰি থোৱা বুকমাৰ্ক, পাছৱৰ্ড, ছেটিং আৰু অধিক এই স্ক্ৰীনখনত উপলব্ধ।</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
 <translation id="1923342640370224680">যোৱা ১ঘণ্টাৰ</translation>
 <translation id="1930989359703290198">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">সকলো ইনক’গনিট’ টেব বন্ধ কৰক</translation>
 <translation id="3533436815740441613">নতুন টেব</translation>
 <translation id="3551320343578183772">টেব বন্ধ কৰক</translation>
+<translation id="3575234738189584619">Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="3595252146048399851">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">পঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="4908869848243824489">Googleৰ Discover</translation>
 <translation id="4916679969857390442">লেন্স</translation>
+<translation id="4922154083994158612">অধিক সুৰক্ষা লাগে নেকি?</translation>
 <translation id="4930714375720679147">অন কৰক</translation>
 <translation id="4941089862236492464">দুঃখিত, আপোনাৰ বস্তুটো শ্বেয়াৰ কৰাত কিবা সমস্যা হৈছে।</translation>
 <translation id="4944543191714094452">পৃষ্ঠাখনত বিচাৰক…</translation>
@@ -832,6 +835,7 @@
 <translation id="7435356471928173109">আপোনাৰ প্ৰশাসকে অফ কৰিছে</translation>
 <translation id="7438481509621345350">আপুনি এতিয়া এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="7454057999980797137">ৰাজ্য / দেশ</translation>
+<translation id="7459628154744868585">বৰ্ধিত সুৰক্ষা অন কৰা আছে</translation>
 <translation id="7464701184726199289">এইটোৱে সকলো ডিভাইচৰ পৰা ছিংক কৰি থোৱা ডেটা মচে। ছেভ কৰি থোৱা ছাইটৰ ছেটিংসমূহ মচা নাযায় আৰু আপোনাৰ ব্ৰাউজিঙৰ ধৰণ প্ৰতিফলিত কৰিব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">৩) Chrome বাছনি কৰক</translation>
 <translation id="7472734401283673885">কোম্পানীৰ নাম</translation>
@@ -1024,6 +1028,7 @@
 <translation id="9037965129289936994">প্ৰকৃত সমল দেখুৱাওক</translation>
 <translation id="9039373489628511875">বেণ্ডৱিথ</translation>
 <translation id="9055772144595778347">ছাইন ইন কৰিব নোৱাৰি</translation>
+<translation id="9055960261314198756">বৰ্ধিত সুৰক্ষা অফ কৰা আছে</translation>
 <translation id="9057972802061533987">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9068336935206019333">Chromeৰ ইনক’গনিট’ ম’ডত খোলক</translation>

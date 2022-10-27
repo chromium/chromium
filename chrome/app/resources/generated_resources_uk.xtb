@@ -2471,6 +2471,7 @@
 <translation id="3241680850019875542">Виберіть кореневий каталог для пакування розширення. Щоб оновити розширення, також виберіть файл секретного ключа для повторного використання.</translation>
 <translation id="3242289508736283383">Додаток з атрибутом маніфесту "kiosk_only" потрібно встановлювати в режимі термінала ОС Chrome</translation>
 <translation id="3242665648857227438">Для цього профілю використовуються налаштування проксі-сервера ОС Chrome.</translation>
+<translation id="3243017971870859287">Переглядати серійні номери пристрою з ChromeOS Flex і компонентів</translation>
 <translation id="3244294424315804309">Не вмикати звук</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – помилка мережі</translation>
 <translation id="3248902735035392926">Безпека важлива. <ph name="BEGIN_LINK" />Перевірте свої розширення<ph name="END_LINK" />.</translation>
@@ -2527,6 +2528,7 @@
 <translation id="3297105622164376095">Дозволено показувати підказки щодо входу через сторонні сервіси</translation>
 <translation id="3297536526040732495">Тимчасово зв’язує ці дані з обліковим записом Google, у який ви ввійшли, щоб захищати вас у всіх додатках Google</translation>
 <translation id="329838636886466101">Полагодити</translation>
+<translation id="3298438307450647315">Переглядати інформацію про пристрій із ChromeOS і дані на ньому</translation>
 <translation id="3298789223962368867">Введено недійсну URL-адресу.</translation>
 <translation id="32991397311664836">Пристрої:</translation>
 <translation id="33022249435934718">Обробка GDI</translation>
@@ -2633,6 +2635,7 @@
 <translation id="3402255108239926910">Виберіть аватар</translation>
 <translation id="3402585168444815892">Реєстрація в демоверсії</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Переглядати інформацію про пристрій із ChromeOS Flex і дані на ньому</translation>
 <translation id="3404065873681873169">Немає збережених паролів для цього сайту</translation>
 <translation id="3405664148539009465">Налаштувати шрифти</translation>
 <translation id="3405763860805964263">…</translation>
@@ -4187,6 +4190,7 @@
 <translation id="486635084936119914">Автоматично відкривати певні типи файлів після завантаження</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> може навчити Google Асистента розпізнавати свій голос</translation>
 <translation id="4868284252360267853">Це вікно не виділено. Щоб виділити його, натисніть Command + Shift + Option + A.</translation>
+<translation id="4869170227080975044">Переглядати інформацію про мережу ChromeOS</translation>
 <translation id="4870724079713069532">Ви можете відкривати й редагувати підтримувані файли в цьому додатку через файловий провідник або інші додатки. Щоб указати, які файли будуть відкриватися в цьому додатку за умовчанням, перейдіть у <ph name="BEGIN_LINK" />налаштування Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Введіть наданий адміністратором пароль, щоб отримати інформацію про налаштування</translation>
 <translation id="4870995365819149457">Деякі підтримувані посилання все ще відкриватимуться в <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> і ще 1 додатку.</translation>
@@ -4309,6 +4313,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Вимкнути звук на сайті}one{Вимкнути звук на сайтах}few{Вимкнути звук на сайтах}many{Вимкнути звук на сайтах}other{Вимкнути звук на сайтах}}</translation>
 <translation id="497403230787583386">Перевірку безпеки завершено. Ваш документ буде надруковано.</translation>
 <translation id="4975543297921324897">Моноширинний шрифт</translation>
+<translation id="4975771730019223894">Лічильники сповіщень на значках додатків</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Підтвердити доступ</translation>
 <translation id="4980805016576257426">Це розширення містить зловмисне програмне забезпечення.</translation>
@@ -4919,6 +4924,7 @@
 <translation id="5571066253365925590">Bluetooth увімкнено</translation>
 <translation id="5571092938913434726">Загальні елементи керування медіа</translation>
 <translation id="5571832155627049070">Налаштуйте свій профіль</translation>
+<translation id="5572252023412311448">Показати відомості про групу сайтів <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">В адресному рядку з’являтимуться покращені підказки</translation>
 <translation id="5572851009514199876">Увійдіть в обліковий запис Chrome, щоб веб-переглядач міг перевірити, чи ви маєте дозвіл відвідувати цей сайт.</translation>
 <translation id="557506220935336383">Переглянути дозволи розширень для інших сайтів</translation>
@@ -6111,6 +6117,7 @@
 <translation id="6703212423117969852">Спробуйте пізніше у веб-переглядачі Chrome.</translation>
 <translation id="6703254819490889819">Відновити резервну копію</translation>
 <translation id="6706210727756204531">Область дії</translation>
+<translation id="6707122714992751648">Виконувати діагностичні перевірки ChromeOS</translation>
 <translation id="6707389671160270963">Сертифікат клієнта SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> і ще одна вкладка}one{<ph name="PAGE_TITLE" /> і ще # вкладка}few{<ph name="PAGE_TITLE" /> і ще # вкладки}many{<ph name="PAGE_TITLE" /> і ще # вкладок}other{<ph name="PAGE_TITLE" /> і ще # вкладки}}</translation>
 <translation id="6709133671862442373">Новини</translation>
@@ -6289,6 +6296,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6860097299815761905">Налаштування проксі-сервера...</translation>
 <translation id="6860427144121307915">Відкрити у вкладці</translation>
+<translation id="6861179941841598556">Інші дії для профілю користувача <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Усі розширення дозволено</translation>
 <translation id="686366188661646310">Видалити пароль?</translation>
 <translation id="6865313869410766144">Дані автозаповнення форм</translation>
@@ -6378,6 +6386,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Ви можете керувати налаштуваннями в меню картки або переглянути інші опції в розділі "Налаштувати Chrome".</translation>
+<translation id="6949089178006131285">Переглядати інформацію про мережу ChromeOS Flex</translation>
 <translation id="6949434160682548041">Пароль (необов’язково)</translation>
 <translation id="6950627417367801484">Відновити додатки</translation>
 <translation id="6952242901357037157">Ви також можете переглядати тут паролі, збережені у вашому <ph name="BEGIN_LINK" />обліковому записі Google<ph name="END_LINK" /></translation>
@@ -7994,6 +8003,7 @@
 <translation id="8463001014623882202">Помилка авторизації</translation>
 <translation id="846374874681391779">Панель завантаження</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> вимкнено.</translation>
+<translation id="846399539692727039">Виконувати діагностичні перевірки ChromeOS Flex</translation>
 <translation id="8464132254133862871">Цей обліковий запис користувача не може використовуватися для цієї служби.</translation>
 <translation id="8465252176946159372">Недійсний</translation>
 <translation id="8465444703385715657">Щоб запустити плагін <ph name="PLUGIN_NAME" />, потрібен ваш дозвіл</translation>
@@ -8140,6 +8150,7 @@
 <translation id="8624315169751085215">Копіювати в буфер обміну</translation>
 <translation id="8624354461147303341">Отримувати знижки</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Переглядати серійні номери пристрою з ChromeOS і компонентів</translation>
 <translation id="862542460444371744">&amp;Розширення</translation>
 <translation id="8625663000550647058">Заборонено використовувати мікрофон</translation>
 <translation id="8625916342247441948">Заборонити сайтам підключатися до пристроїв HID</translation>

@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Rozmiar <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Średni storczykowy</translation>
+<translation id="1928535370180099152">podświetl poprzedni znak</translation>
 <translation id="1928932365747995741">Nie ma poprzedniego pola tekstowego do edytowania</translation>
 <translation id="1964135212174907577">Następny obiekt</translation>
 <translation id="1966649499058910679">Zaznacz słowo, gdy jest wymawiane</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Włącz lub wyłącz mowę</translation>
 <translation id="2390264819538553347">Aby kontynuować, naciśnij Enter. Aby się cofnąć, naciśnij Backspace.</translation>
 <translation id="2398579267367951220">Wpisz, by przeszukać stronę. Naciśnij Enter, by przejść do wyniku. Naciskaj strzałki w górę i w dół, by przeglądać wyniki. Pisz dalej, by zmienić wyszukiwane hasło. Aby anulować, naciśnij Escape.</translation>
+<translation id="2407047351320112166">podświetl następny znak</translation>
 <translation id="240709722712693803">Niebieskofioletowy</translation>
 <translation id="2410298923485357543">Używaj naturalnego głosu, gdy urządzenie jest online</translation>
 <translation id="2416512023405990736">Niezaznaczone pole</translation>

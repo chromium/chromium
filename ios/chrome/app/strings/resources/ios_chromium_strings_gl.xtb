@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Datos da sincronización de Chromium</translation>
 <translation id="1722370509450468186">O contrasinal gardarase na túa Conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Borráronse os datos de Chromium</translation>
+<translation id="177102542580335555">Contas cun sistema de seguranza estándar neste perfil de Chromium</translation>
 <translation id="1838412507805038478">Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste sitio web.</translation>
 <translation id="1843424232666537147">Chromium inclúe funcións que che axudan a xestionar os teus datos de Internet e a rapidez coa que podes cargar páxinas web.
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Inicia sesión para sacarlle o máximo partido a Chromium.</translation>
 <translation id="4555020257205549924">Se esta función está activada, Chromium utilizará o Tradutor de Google para ofrecer a tradución de páxinas escritas noutros idiomas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
+<translation id="4633738821577273991">Activa tamén neste perfil de Chromium a función Navegación segura mellorada</translation>
 <translation id="4654936625574199632">Para contribuír a mellorar a aplicación, Chromium envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activar escáner de Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="8308172444429103994">Consello de Chromium. Inicia sesión máis rápido ao seleccionar o teu contrasinal gardado na parte superior do teclado.</translation>
+<translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
 <translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="865600487977764604">Protéxete en Chromium e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>

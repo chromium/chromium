@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Spāņu valoda</translation>
 <translation id="5438282218546237410">Meklēšanas vienumam “<ph name="SEARCH_TERM" />” nav neviena rezultāta.</translation>
 <translation id="5449551289610225147">Parole nav derīga.</translation>
+<translation id="5459064203055649751">Fails ar nosaukumu “<ph name="FILENAME" />” jau pastāv. Vai vēlaties to aizstāt ar failu, ko pārvietojat?</translation>
 <translation id="5463231940765244860">Ievadīt</translation>
 <translation id="5469868506864199649">Itāļu valoda</translation>
 <translation id="5473333559083690127">Atkārtoti ievadiet jauno PIN.</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums<ph name="SIGNAL_STRENGTH" />%, pārvalda jūsu administrators, informācija</translation>
 <translation id="649877868557234318">Faila “<ph name="FILE_NAME" />” izvilkšana mapē “<ph name="FOLDER_NAME" />”</translation>
 <translation id="6499681088828539489">Neļaut starpniekserveru izmantošanu koplietotajiem tīkliem</translation>
+<translation id="6503285896705205014">Administratora politika bloķē vairāku failu kopēšanu (skaits: <ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">Norvēģu valoda</translation>
 <translation id="6528513914570774834">Atļaut citiem lietotājiem šajā ierīcē izmantot šo tīklu</translation>
 <translation id="653019979737152879">Notiek faila <ph name="FILE_NAME" /> sinhronizēšana...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Šis faila tips netiek atbalstīts. <ph name="BEGIN_LINK_HELP" />Uzziniet vairāk<ph name="END_LINK_HELP" /> par failu atvēršanu operētājsistēmā Chrome OS.</translation>
 <translation id="7359359531237882347">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu kopēšana...</translation>
 <translation id="7375951387215729722">Failu saraksts ir sakārtots pēc slejas “<ph name="COLUMN_NAME" />” dilstošā secībā.</translation>
+<translation id="7377161162143020057">Administratora politika bloķē šī faila kopēšanu</translation>
 <translation id="7402503521691663770">Chrome OS Flex ierīces</translation>
 <translation id="7408870451288633753">Čehu</translation>
 <translation id="7417453074306512035">Gēzu rakstības tastatūra</translation>

@@ -120,6 +120,7 @@
 <translation id="1857751338515529195">Перайсці на наступную ўкладку</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
+<translation id="1891796056033961979">На гэтым экране даступныя вашы захаваныя закладкі, паролі, налады і г. д.</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
 <translation id="1923342640370224680">За апошнюю гадзіну</translation>
 <translation id="1930989359703290198">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы. Уліковыя запісы, выкарыстоўваць якія не дазволена, не паказваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -330,6 +331,7 @@
 <translation id="3533202363250687977">Закрыць усе ўкладкі інкогніта</translation>
 <translation id="3533436815740441613">Новая ўкладка</translation>
 <translation id="3551320343578183772">Закрыць укладку</translation>
+<translation id="3575234738189584619">Пошук з дапамогай Аб'ектыва</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
 <translation id="3588820906588687999">Адкрыць відарыс у новай укладцы</translation>
 <translation id="3595252146048399851">Вы заўсёды можаце выбраць, якія даныя трэба сінхранізаваць, у <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове гісторыі прагляду вамі сайтаў.</translation>
@@ -498,6 +500,7 @@
 <translation id="4904877109095351937">Пазначыць як прачытанае</translation>
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
 <translation id="4916679969857390442">Аб'ектыў</translation>
+<translation id="4922154083994158612">Патрабуецца дадатковая бяспека?</translation>
 <translation id="4930714375720679147">Уключыць</translation>
 <translation id="4941089862236492464">Узнікла праблема з абагульваннем вашага элемента.</translation>
 <translation id="4944543191714094452">Пошук на старонцы…</translation>
@@ -838,6 +841,7 @@
 <translation id="7435356471928173109">Выключаны адміністратарам</translation>
 <translation id="7438481509621345350">Цяпер пры адкрыцці новай укладкі вы будзеце бачыць змесціва з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="7454057999980797137">Штат/акруга</translation>
+<translation id="7459628154744868585">Палепшаная абарона ўключана</translation>
 <translation id="7464701184726199289">Выдаляе сінхранізаваныя даныя з усіх прылад. Захаваныя налады сайтаў не будуць выдалены і могуць змяшчаць вашу гісторыю праглядаў. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Выберыце Chrome.</translation>
 <translation id="7472734401283673885">Назва кампаніі</translation>
@@ -1031,6 +1035,7 @@
 <translation id="9037965129289936994">Паказаць арыгінал</translation>
 <translation id="9039373489628511875">Паласа прапускання</translation>
 <translation id="9055772144595778347">Не ўдалося ўвайсці</translation>
+<translation id="9055960261314198756">Палепшаная абарона выключана</translation>
 <translation id="9057972802061533987">Не ўдалося падпісацца. Нешта пайшло не так.</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9068336935206019333">Адкрыць у Chrome у рэжыме інкогніта</translation>

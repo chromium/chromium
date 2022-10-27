@@ -651,6 +651,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> වෙත උපුටා ගනිමින්</translation>
 <translation id="6499681088828539489">බෙදා ගත් ජාල සඳහා ප්‍රොක්සිවලට ඉඩ නොදෙන්න</translation>
+<translation id="6503285896705205014">පරිපාලක ප්‍රතිපත්තිය මගින් ගොනු <ph name="COUNT" />ක් පිටපත් කිරීම අවහිර කර ඇත</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">මෙම උපාංගයේ වෙනත් පරිශීලකයින්ට මෙම ජාලය භාවිතා කිරීමට ඉඩ දෙන්න</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> සමමු වෙමින්...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">මෙම ගොනු වර්ගය සහාය නොදක්වයි. ChromeOS හි ගොනු විවෘත කිරීම ගැන <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් පිටපත් කෙරේ...</translation>
 <translation id="7375951387215729722">ගොනුව <ph name="COLUMN_NAME" /> ට අනුව අඩු වෙන පිළිවෙළට සකසනු ලැබේ.</translation>
+<translation id="7377161162143020057">මෙම ගොනුව පිටපත් කිරීම පරිපාලක ප්‍රතිපත්තිය මගින් අවහිර කර ඇත</translation>
 <translation id="7402503521691663770">ChromeOS Flex උපාංග</translation>
 <translation id="7408870451288633753">චෙක්</translation>
 <translation id="7417453074306512035">ඉතියෝපික් යතුරු පුවරුව</translation>

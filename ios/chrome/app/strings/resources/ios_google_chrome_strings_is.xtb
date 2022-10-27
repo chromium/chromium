@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Notaðu Chrome sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="1504372625950710826">Chrome gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
 <translation id="1511320244449497906">Þú ert innskráð(ur) og samstillir gögnin þín við reikning í umsjón <ph name="DOMAIN" />. Viðkomandi kerfisstjóri getur nú stillt notendareglur sem eru sértækar fyrir viðkomandi reikning og geta breytt virkni Chrome.</translation>
+<translation id="1554731936187952550">Þú ert með öflugustu öryggisráðstafanir Chrome gegn skaðlegum vefsvæðum</translation>
 <translation id="1682483655351012182">Samstilla gögnin þín í Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chrome og öðrum Google forritum á þessu tæki.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome sparar þér tíma með því að færa reikningana þína yfir á vefinn. Þú getur bætt við reikningum eða fjarlægt þá í stillingum.</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3345341804167540816">Notaðu Chrome alls staðar</translation>
+<translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="3533694711092285624">Engin vistuð aðgangsorð. Chrome getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="3641179212828090796">Notaðu aðgangsorðið sem þú vistaðir í Chrome til að skrá þig inn hraðar</translation>
@@ -135,6 +137,7 @@ Hafðu í huga:
 <ph name="BEGIN_INDENT" />  • Upplýsingar um notkun þína á Chrome eru sendar til Google en eru ekki tengdar við þig.
   • Ef Chrome hrynur gætu tilteknar persónuupplýsingar komið fram í upplýsingum um hrunið.
   • Ef þú kveikir að samstillingu gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Þú færð staðlaða öryggisvörn fyrir þennan Chrome-prófíl</translation>
 <translation id="9112744793181547300">Stilla Chrome sem sjálfgefið?</translation>
 <translation id="9122931302567044771">Þetta þýðir að Chrome biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
 </translationbundle>

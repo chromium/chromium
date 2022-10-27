@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Chromium ছিংকৰ ডেটা</translation>
 <translation id="1722370509450468186">আপোনাৰ পাছৱৰ্ডটো আপোনাৰ একাউণ্ট (<ph name="EMAIL" />)ত ছেভ কৰা হ’ব।</translation>
 <translation id="1736662517232558588">Chromium ডেটা মচা হ’ল</translation>
+<translation id="177102542580335555">আপুনি Chromiumৰ এই প্ৰ’ফাইলটোৰ বাবে মান্য সুৰক্ষা লাভ কৰি আছে</translation>
 <translation id="1838412507805038478">Chromiumএ সত্যাপন কৰিলে <ph name="ISSUER" />এ এই ৱেবছাইটৰ প্ৰমাণপত্ৰ প্ৰদান কৰে।</translation>
 <translation id="1843424232666537147">আপোনাক Chromiumত থকা সুবিধাসমূহে নিজৰ ইণ্টাৰনেট ডেটা আৰু কিমান ক্ষিপ্ৰতাৰে আপুনি ৱেবপৃষ্ঠাসমূহ ল’ড কৰিব পাৰে সেইয়া পৰিচালনা কৰাত সহায় কৰিব।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক।</translation>
 <translation id="4555020257205549924">যেতিয়া এই সুবিধাটো অন কৰি ৰখা হয় তেতিয়া Chromiumএ অন্য ভাষাত থকা পৃষ্ঠা Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ সুবিধা দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা লিংকত টিপিলে যিকোনো সময়তে Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="4633738821577273991">Chromiumৰ এই প্ৰ’ফাইলটোৰ বাবেও বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধা লাভ কৰক</translation>
 <translation id="4654936625574199632">এপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromiumএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্ব সম্পৰ্কীয় ডেটা পঠিয়ায়। <ph name="BEGIN_LINK" />পৰিচালনা কৰক<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium স্কেনাৰ অন কৰক</translation>
 <translation id="4736424910885271643">আপোনাৰ একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, গতিকে আপোনাৰ Chromiumৰ ডেটাখিনি এই ডিভাইচটোৰ পৰা মচা হ’ব</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">এই ডিভাইচটোৰ পৰা Chromium ডেটা মচিবনে?</translation>
 <translation id="8240981428553046115">Chromiumএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8308172444429103994">Chromium ব্যৱহাৰ সম্পৰ্কীয় কিটিপ। কীব’ৰ্ডখনৰ একেবাৰে ওপৰত আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ বাছনি কৰি অধিক ক্ষিপ্ৰতাৰে ছাইন ইন কৰক।</translation>
+<translation id="8409374867500149834">আপোনাৰ ওচৰত ক্ষতিকাৰক ৱেবছাইটৰ বিৰুদ্ধে Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষা ব্যৱস্থা আছে</translation>
 <translation id="858114650497379505">আপুনি অন্য এপত পাছৱৰ্ড পৰিচালকত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ নিজৰ iPhoneত ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="8586442755830160949">স্বত্ত্বাধিকাৰ <ph name="YEAR" /> The Chromium Authors. সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="865600487977764604">আপোনাক Chromiumত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>

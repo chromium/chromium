@@ -17,6 +17,7 @@
 <translation id="1617663976202781617">Chromium 同步功能中的数据</translation>
 <translation id="1722370509450468186">您的密码将会保存到您的帐号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 数据</translation>
+<translation id="177102542580335555">您的这份 Chromium 个人资料正在享受标准安全保护</translation>
 <translation id="1838412507805038478">Chromium 已证实：此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="1843424232666537147">Chromium 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -54,6 +55,7 @@
 <translation id="4432744876818348753">登录即可充分利用 Chromium。</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
+<translation id="4633738821577273991">同时也为这份 Chromium 个人资料启用“增强型安全浏览”功能</translation>
 <translation id="4654936625574199632">为帮助改进该应用，Chromium 会向 Google 发送使用情况统计信息和崩溃数据。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">开启 Chromium 扫描器</translation>
 <translation id="4736424910885271643">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
@@ -116,6 +118,7 @@
 <translation id="8073677936375100957">从这部设备中清除您的 Chromium 数据？</translation>
 <translation id="8240981428553046115">Chromium 无法检查是否有更新。请稍后再试。</translation>
 <translation id="8308172444429103994">Chromium 小窍门。在键盘顶部选择已保存的密码，即可更快完成登录。</translation>
+<translation id="8409374867500149834">Chromium 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
 <translation id="858114650497379505">您可在 iPhone 上的其他应用内使用已保存至密码管理器的密码。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="865600487977764604">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>

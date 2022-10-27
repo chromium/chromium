@@ -4046,6 +4046,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4726710355753484204">확대하려면 Ctrl + Alt+ 밝게 키를 사용하고,
 축소하려면 Ctrl + Alt + 어둡게 키를 사용하세요.</translation>
 <translation id="4726710629007580002">확장 프로그램을 설치하는 중에 다음과 같은 경고가 표시되었습니다.</translation>
+<translation id="472738079453283624">제품</translation>
 <translation id="4727847987444062305">관리되는 게스트 세션</translation>
 <translation id="4728558894243024398">플랫폼</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />관리자<ph name="END_LINK" />가 유해한 소프트웨어 확인을 사용 중지했습니다.</translation>
@@ -4311,6 +4312,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{사이트 음소거}other{사이트 음소거}}</translation>
 <translation id="497403230787583386">보안 확인이 완료되었습니다. 문서가 인쇄됩니다.</translation>
 <translation id="4975543297921324897">고정폭 글꼴</translation>
+<translation id="4975771730019223894">앱 배지 설정</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">액세스 확인</translation>
 <translation id="4980805016576257426">확장 프로그램에 멀웨어가 포함되어 있습니다.</translation>

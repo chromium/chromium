@@ -2455,6 +2455,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3241680850019875542">Vyberte koreňový adresár rozšírenia, ktoré chcete zbaliť. Ak chcete rozšírenie aktualizovať, vyberte tiež súbor súkromného kľúča, ktorý sa má znova použiť.</translation>
 <translation id="3242289508736283383">Aplikácia s atribútom manifestu „kiosk_only“ musí byť nainštalovaná v režime verejného terminálu systému Chrome OS</translation>
 <translation id="3242665648857227438">Tento profil používa nastavenia proxy servera v systéme Chrome OS.</translation>
+<translation id="3243017971870859287">Čítať sériové čísla zariadení ChromeOS Flex a komponentov</translation>
 <translation id="3244294424315804309">Ponechať zvuk vypnutý</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Chyba siete</translation>
 <translation id="3248902735035392926">Na bezpečnosti záleží. Strávte chvíľu <ph name="BEGIN_LINK" />kontrolou rozšírení<ph name="END_LINK" />.</translation>
@@ -2511,6 +2512,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3297105622164376095">Weby, ktoré môžu zobrazovať výzvy na prihlásenie od tretích strán</translation>
 <translation id="3297536526040732495">Dočasne prepojí tieto údaje s vaším prihláseným účtom Google, aby vás chránila v aplikáciách Googlu</translation>
 <translation id="329838636886466101">Opraviť</translation>
+<translation id="3298438307450647315">Čítať informácie zo zariadení ChromeOS a údaje o zariadeniach</translation>
 <translation id="3298789223962368867">Zadali ste neplatnú webovú adresu.</translation>
 <translation id="32991397311664836">Zariadenia:</translation>
 <translation id="33022249435934718">GDI – popisovače</translation>
@@ -2617,6 +2619,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3402255108239926910">Vyberte si avatar</translation>
 <translation id="3402585168444815892">Prebieha registrácia do ukážkového režimu</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Čítať informácie zo zariadení ChromeOS Flex a údaje o zariadeniach</translation>
 <translation id="3404065873681873169">Pre tento web neboli uložené žiadne heslá</translation>
 <translation id="3405664148539009465">Prispôsobiť písma</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4171,6 +4174,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="486635084936119914">Automaticky otvoriť určité typy súborov po ich stiahnutí</translation>
 <translation id="4868281708609571334">Naučte Asistenta Google rozpoznávať hlas dieťaťa <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Toto dialógové okno nie je momentálne označené. Označíte ho stlačením kombinácie klávesov Command-Shift-Option A.</translation>
+<translation id="4869170227080975044">Čítať informácie o sieťach v systéme ChromeOS</translation>
 <translation id="4870724079713069532">Pomocou tejto aplikácie môžete otvárať a upravovať podporované súbory z Prieskumníka súborov alebo iných aplikácií. Ak chcete ovládať, ktoré súbory predvolene otvoria túto aplikáciu, prejdite do <ph name="BEGIN_LINK" />nastavení systému Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Ak chcete získať informácie o konfigurácii, zadajte heslo od správcu</translation>
 <translation id="4870995365819149457">Niektoré podporované odkazy sa budú stále otvárať v aplikáciách <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> a 1 ďalšej.</translation>
@@ -4293,6 +4297,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Vypnúť zvuk webu}few{Vypnúť zvuk webov}many{Vypnúť zvuk webov}other{Vypnúť zvuk webov}}</translation>
 <translation id="497403230787583386">Kontroly boli dokončené. Dokument sa vytlačí.</translation>
 <translation id="4975543297921324897">Neproporcionálne písmo</translation>
+<translation id="4975771730019223894">Označenie aplikácie odznakom</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Potvrdenie prístupu</translation>
 <translation id="4980805016576257426">Toto rozšírenie obsahuje malvér.</translation>
@@ -4903,6 +4908,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5571066253365925590">Rozhranie Bluetooth je povolené</translation>
 <translation id="5571092938913434726">Globálne ovládacie prvky médií</translation>
 <translation id="5571832155627049070">Prispôsobenie profilu</translation>
+<translation id="5572252023412311448">Zobraziť podrobnosti o webe pre skupinu <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">V paneli s adresou budete dostávať zlepšené návrhy</translation>
 <translation id="5572851009514199876">Začnite a prihláste sa do Chromu, aby skontroloval, či môžete navštíviť tento web.</translation>
 <translation id="557506220935336383">Zobraziť povolenia rozšírení pre iné weby</translation>
@@ -6096,6 +6102,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6703212423117969852">Môžete to skúsiť neskôr v Nastaveniach.</translation>
 <translation id="6703254819490889819">Obnoviť zálohu</translation>
 <translation id="6706210727756204531">Rozsah</translation>
+<translation id="6707122714992751648">Spúšťať diagnostické testy systému ChromeOS</translation>
 <translation id="6707389671160270963">Klientsky certifikát SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> a 1 ďalšia karta}few{<ph name="PAGE_TITLE" /> a # ďalšie karty}many{<ph name="PAGE_TITLE" /> and # Other Tabs}other{<ph name="PAGE_TITLE" /> a # ďalších kariet}}</translation>
 <translation id="6709133671862442373">News</translation>
@@ -6274,6 +6281,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6860097299815761905">Nastavenia servera proxy...</translation>
 <translation id="6860427144121307915">Otvoriť na karte</translation>
+<translation id="6861179941841598556">Ďalšie akcie pre profil <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Všetky rozšírenia sú povolené</translation>
 <translation id="686366188661646310">Chcete heslo odstrániť?</translation>
 <translation id="6865313869410766144">Dáta automatického dopĺňania formulárov</translation>
@@ -6363,6 +6371,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
         <ph name="BREAK" />
         <ph name="BREAK" />
         Môžete spravovať nastavenia v ponuke karty alebo si zobraziť ďalšie možnosti v sekcii Prispôsobenie Chromu.</translation>
+<translation id="6949089178006131285">Čítať informácie o sieťach v systéme ChromeOS Flex</translation>
 <translation id="6949434160682548041">Heslo (nepovinné)</translation>
 <translation id="6950627417367801484">Obnoviť aplikácie</translation>
 <translation id="6952242901357037157">Môžete si tu zobraziť aj heslá zo svojho <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" /></translation>
@@ -7979,6 +7988,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8463001014623882202">Nepodarilo sa autorizovať</translation>
 <translation id="846374874681391779">Panel so stiahnutými súbormi</translation>
 <translation id="8463955938112983119">Doplnok <ph name="PLUGIN_NAME" /> je zakázaný.</translation>
+<translation id="846399539692727039">Spúšťať diagnostické testy systému ChromeOS Flex</translation>
 <translation id="8464132254133862871">Tento používateľský účet nie je pre danú službu vhodný.</translation>
 <translation id="8465252176946159372">Neplatné</translation>
 <translation id="8465444703385715657">Doplnok <ph name="PLUGIN_NAME" /> potrebuje na spustenie vaše povolenie</translation>
@@ -8125,6 +8135,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8624315169751085215">Kopírovať do schránky</translation>
 <translation id="8624354461147303341">Získať zľavy</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Čítať sériové čísla zariadení ChromeOS a komponentov</translation>
 <translation id="862542460444371744">&amp;Rozšírenia</translation>
 <translation id="8625663000550647058">Nemôže používať váš mikrofón</translation>
 <translation id="8625916342247441948">Nepovoliť webom pripájať sa k zariadeniam HID</translation>

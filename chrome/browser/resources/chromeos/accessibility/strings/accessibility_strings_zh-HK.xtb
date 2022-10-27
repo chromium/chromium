@@ -327,7 +327,7 @@
 <translation id="309749186376891736">移動游標</translation>
 <translation id="3103579948980282461">中紫紅色</translation>
 <translation id="3104705064753753826">通知對話方塊</translation>
-<translation id="3105857328626674463">醒目顯示上一個字詞</translation>
+<translation id="3105857328626674463">突顯上一個字詞</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="311015743332597320">以四隻手指向右滑動</translation>
 <translation id="3112457281078985179">如要開啟或關閉 ChromeVox，請按 Control + Alt + Z 鍵。</translation>
@@ -356,7 +356,7 @@
 <translation id="3241052487511142956">上一個瀏覽過的連結</translation>
 <translation id="3241638166094654466">每行的儲存格數量：</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />：<ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">移至最後方</translation>
+<translation id="3247621388192105674">移去最後</translation>
 <translation id="3260949043575829030">上一個類似的項目</translation>
 <translation id="3270069636408109001">冇下一個表格</translation>
 <translation id="3273791280096244679">儲存標籤</translation>
@@ -948,7 +948,7 @@
 <translation id="743783356331413498">例子</translation>
 <translation id="7439060726180460871">目錄</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">醒目顯示下一個字詞</translation>
+<translation id="7443479558101073378">突顯下一個字詞</translation>
 <translation id="7465123027577412805">要使用自然語音嗎？</translation>
 <translation id="7491962110804786152">分頁</translation>
 <translation id="7492497529767769458">移至下一個部分，例如「狀態列」和「啟動器」。</translation>

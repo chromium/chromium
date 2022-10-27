@@ -4038,6 +4038,7 @@
 <translation id="4726710355753484204">ಝೂಮ್ ಇನ್ ಮಾಡಲು, Ctrl + Alt + ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿ.
 ಝೂಮ್ ಔಟ್ ಮಾಡಲು, Ctrl + Alt + ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡುವ ಕೀ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="4726710629007580002">ಈ ವಿಸ್ತರಣೆಯನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿದಾಗ ಎಚ್ಚರಿಕೆಗಳು ಕಂಡುಬಂದಿವೆ:</translation>
+<translation id="472738079453283624">ಉತ್ಪನ್ನಗಳು</translation>
 <translation id="4727847987444062305">ನಿರ್ವಹಿಸಲಾದ ಅತಿಥಿ ಸೆಶನ್</translation>
 <translation id="4728558894243024398">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ನಿರ್ವಾಹಕರು<ph name="END_LINK" /> ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾಗಿ ಪರಿಶೀಲನೆಯನ್ನು ಆಫ್ ಮಾಡಿದ್ದಾರೆ</translation>
@@ -4304,6 +4305,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="497403230787583386">ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ. ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4975543297921324897">ಮೊನೋಸ್ಪೇಸ್ ಫಾಂಟ್</translation>
+<translation id="4975771730019223894">ಆ್ಯಪ್ ಬ್ಯಾಡ್ಜಿಂಗ್</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">ಪ್ರವೇಶ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4980805016576257426">ಈ ವಿಸ್ತರಣೆಯು ಮಾಲ್‌‌ವೇರ್ ಅನ್ನು ಹೊಂದಿದೆ.</translation>

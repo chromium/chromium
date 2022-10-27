@@ -2310,6 +2310,7 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Увеличение</translation>
 <translation id="7016992613359344582">Тези таксувания може да са еднократни или повтарящи се и е възможно да не са явни.</translation>
+<translation id="7023162328967545559">Предупреждение от администратор</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030436163253143341">Сертификатът не е валиден</translation>
 <translation id="7031646650991750659">Кои приложения от Google Play сте инсталирали</translation>
@@ -2496,6 +2497,7 @@
 <translation id="7489473601138133813">Ресурси и планиране на кариерата</translation>
 <translation id="7495528107193238112">Това съдържание е блокирано. Свържете се със собственика на сайта, за да отстрани проблема.</translation>
 <translation id="7497998058912824456">Бутон за създаване на документ. Натиснете Enter, за да създадете бързо документ в Google Документи</translation>
+<translation id="7501663406926337752">За сайта е подаден сигнал от организацията ви</translation>
 <translation id="7501853161948120656">Образователни ресурси</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />няма да съхранява<ph name="END_EMPHASIS" /> следната информация:
 <ph name="BEGIN_LIST" />
@@ -2742,6 +2744,7 @@
 <translation id="8094917007353911263">Използваната от вас мрежа може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Невалидните карти са премахнати</translation>
+<translation id="8100666323495101203">Организацията ви е идентифицирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> като сайт, който може да нарушава правилата. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Академични конференции и публикации</translation>
 <translation id="8103161714697287722">Начин на плащане</translation>
 <translation id="8103643211515685474">Отпечатване въпреки това</translation>

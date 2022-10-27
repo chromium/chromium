@@ -531,6 +531,7 @@
 <translation id="5428105026674456456">ພາສາສະເປນ</translation>
 <translation id="5438282218546237410">ບໍ່ມີຜົນການຊອກຫາສຳລັບ <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
+<translation id="5459064203055649751">ມີໄຟລ໌ຊື່ "<ph name="FILENAME" />" ຢູ່ແລ້ວ. ທ່ານຕ້ອງການປ່ຽນແທນໄຟລ໌ດັ່ງກ່າວດ້ວຍໄຟລ໌ທີ່ທ່ານກຳລັງຍ້າຍຢູ່ບໍ?</translation>
 <translation id="5463231940765244860">ປ້ອນ</translation>
 <translation id="5469868506864199649">ພາສາອີຕາລີ</translation>
 <translation id="5473333559083690127">ປ້ອນ​ PIN ໃໝ່​ຄືນອີກ</translation>
@@ -651,6 +652,7 @@
 <translation id="6495925982925244349">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
 <translation id="649877868557234318">ກຳລັງແຕກໄຟລ໌ <ph name="FILE_NAME" /> ໄປໃສ່ <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">ບໍ່ອະນຸຍາດພຣັອກຊີສຳລັບເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
+<translation id="6503285896705205014">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບລັອກການສຳເນົາໄຟລ໌ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="6509122719576673235">ພາສານັອກແວ</translation>
 <translation id="6528513914570774834">ອະນຸຍາດໃຫ້ຜູ້ໃຊ້ອື່ນຂອງອຸປະກອນນີ້ໃຊ້ເຄືອຂ່າຍນີ້</translation>
 <translation id="653019979737152879">ກໍາລັງຊິງຄ໌ <ph name="FILE_NAME" />...</translation>
@@ -753,6 +755,7 @@
 <translation id="7357762654218998920">ບໍ່ຮອງຮັບໄຟລ໌ປະເພດນີ້. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ຢູ່ ChromeOS.</translation>
 <translation id="7359359531237882347">ກຳລັງສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="7375951387215729722">ລາຍການໄຟລ໌ທີ່ຮຽງລຳດັບຕາມ <ph name="COLUMN_NAME" /> ແຕ່ໃຫຍ່ຫານ້ອຍ.</translation>
+<translation id="7377161162143020057">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບລັອກການສຳເນົາໄຟລ໌ນີ້</translation>
 <translation id="7402503521691663770">ອຸປະກອນ ChromeOS Flex</translation>
 <translation id="7408870451288633753">ພາສາເຊັກ</translation>
 <translation id="7417453074306512035">ຄີບອດພາສາເອທິໂອເປຍ</translation>

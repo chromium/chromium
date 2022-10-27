@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chrome'u varsayılan olarak ayarlayın</translation>
 <translation id="1504372625950710826">Chrome, güncellemeleri denetleyemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="1511320244449497906">Oturumunuz açık ve verilerinizi <ph name="DOMAIN" /> tarafından yönetilen bir hesapla senkronize ediyorsunuz. Buradaki yönetici artık söz konusu hesaba özel kullanıcı politikaları belirleyebilir ve bunlar da Chrome'un davranışını değiştirebilir.</translation>
+<translation id="1554731936187952550">Zararlı web sitelerine karşı Chrome'un en güçlü güvenlik avantajına sahipsiniz</translation>
 <translation id="1682483655351012182">Chrome Verilerimi Senkronize Et</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Bu hesap ve kaydedilmemiş tüm veriler, Chrome'un yanı sıra bu cihazdaki diğer Google uygulamalarından kaldırılacak.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome, hesaplarınızı web'e getirerek size zaman kazandırır. Hesapları Ayarlar'dan ekleyebilir veya kaldırabilirsiniz.</translation>
 <translation id="3282568296779691940">Chrome'da oturum aç</translation>
 <translation id="3345341804167540816">Chrome'u Her Yerde Kullanın</translation>
+<translation id="3503014945441706099">Bu Chrome profilinde Gelişmiş Güvenli Tarama'yı da edinin</translation>
 <translation id="3522659714780527202">Chrome kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın</translation>
 <translation id="3533694711092285624">Kaydedilen şifre yok. Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir.</translation>
 <translation id="3641179212828090796">Chrome'da kaydettiğiniz şifreyi kullanarak daha hızlı oturum açın</translation>
@@ -137,6 +139,7 @@ Dikkate alınması gereken noktalar:
   • Chrome kilitlenirse bu kilitlenmeyle ilgili ayrıntılarda bazı kişisel bilgiler yer alabilir.
 
   • Senkronizasyonu açarsanız ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Bu Chrome profilinde standart güvenlik korumasına sahipsiniz</translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>
 <translation id="9122931302567044771">Bu durumda Chrome her seferinde masaüstü siteyi ister.</translation>
 </translationbundle>

@@ -881,6 +881,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Pasar a otra app abierta</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1809201888580326312">Elegiste no guardar contraseñas para estos sitios y apps</translation>
 <translation id="1809483812148634490">Las apps que descargaste de Google Play se borrarán de esta Chromebook.
     <ph name="LINE_BREAKS1" />
     Es posible que también se borre el contenido que compraste, como películas, programas de TV, música, libros y otras compras directas desde la aplicación.
@@ -1793,6 +1794,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2620215283731032047">No se puede descargar el archivo <ph name="FILE_NAME" /> de forma segura.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="262154978979441594">Entrenar el modelo de voz del Asistente de Google</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">No permitir que los sitios web procesen protocolos</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Esta página está accediendo a la cámara y al micrófono.</translation>
@@ -4285,6 +4287,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Silenciar sitio}other{Silenciar sitios}}</translation>
 <translation id="497403230787583386">Se completaron los controles de seguridad. Se imprimirá el documento.</translation>
 <translation id="4975543297921324897">Fuente monoespaciada</translation>
+<translation id="4975771730019223894">Insignias de apps</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmar acceso</translation>
 <translation id="4980805016576257426">Esta extensión contiene software malicioso.</translation>
@@ -4940,6 +4943,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5612734644261457353">Aún no se pudo verificar tu contraseña. Ten en cuenta que si cambiaste tu contraseña recientemente, podrás usar tu nueva contraseña cuando salgas. Usa la contraseña antigua aquí.</translation>
 <translation id="5614190747811328134">Aviso de usuario</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
+<translation id="5616571005307953937">Más antiguos</translation>
 <translation id="5616726534702877126">Reservar espacio</translation>
 <translation id="561698261642843490">Cerrar Firefox</translation>
 <translation id="5620540760831960151">Esta lista se ve afectada por <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5571,6 +5575,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6212168817037875041">Apagar la pantalla</translation>
 <translation id="6212752530110374741">Compartir vínculo por correo electrónico</translation>
 <translation id="621470880408090483">No permitir que los sitios se conecten a dispositivos Bluetooth</translation>
+<translation id="6216239400972191926">Apps y sitios rechazados</translation>
 <translation id="6216601812881225442">El contenedor no admite un cambio de tamaño. Si quieres modificar el espacio preasignado a Linux, realiza una copia de seguridad y, luego, restablécela en un contenedor nuevo.</translation>
 <translation id="6216696360484424239">Acceder automáticamente</translation>
 <translation id="6218058416316985984">El dispositivo <ph name="DEVICE_TYPE" /> no está conectado a Internet. Conéctalo y vuelve a intentarlo.</translation>

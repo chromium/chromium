@@ -4296,6 +4296,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Vaigista sait}other{Vaigista saidid}}</translation>
 <translation id="497403230787583386">Turvakontrollid on tehtud. Teie dokument prinditakse.</translation>
 <translation id="4975543297921324897">Püsisammuga font</translation>
+<translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Juurdepääsu kinnitamine</translation>
 <translation id="4980805016576257426">Laiendus sisaldab pahavara.</translation>

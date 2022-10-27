@@ -2305,6 +2305,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Zoom-maila</translation>
 <translation id="7016992613359344582">Behin edo gehiagotan kobratzen saia liteke, eta baliteke zordunketa horiek begien bistakoak ez izatea.</translation>
+<translation id="7023162328967545559">Administratzailearen abisua</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7030436163253143341">Ziurtagiriak ez du balio</translation>
 <translation id="7031646650991750659">Instalatuta dauzkazun Google Play-ko aplikazioak.</translation>
@@ -2491,6 +2492,7 @@ Xehetasun gehiago:
 <translation id="7489473601138133813">Ibilbide profesionalerako baliabideak eta planifikazioa</translation>
 <translation id="7495528107193238112">Eduki hori blokeatuta dago. Jarri harremanetan webgunearen arduradunarekin arazoa konpontzeko.</translation>
 <translation id="7497998058912824456">Dokumentu bat sortzeko botoia: sakatu "Sartu" Google-ko dokumentu bat bizkor sortzeko</translation>
+<translation id="7501663406926337752">Webgune hori markatuta dauka erakundeak</translation>
 <translation id="7501853161948120656">Hezkuntza-baliabideak</translation>
 <translation id="7506488012654002225">Chromium-ek <ph name="BEGIN_EMPHASIS" />ez du gordeko<ph name="END_EMPHASIS" /> informazio hau:
         <ph name="BEGIN_LIST" />
@@ -2737,6 +2739,7 @@ Xehetasun gehiago:
 <translation id="8094917007353911263">Baliteke darabilzun sarearen <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> orrira joan behar izatea.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Kendu egin dira balio ez duten txartelak</translation>
+<translation id="8100666323495101203">Erakundeak identifikatu duenez, baliteke <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> webguneak gidalerroren bat urratzea. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Konferentzia eta argitalpen akademikoak</translation>
 <translation id="8103161714697287722">Ordainketa-metodoa</translation>
 <translation id="8103643211515685474">Inprimatu halere</translation>

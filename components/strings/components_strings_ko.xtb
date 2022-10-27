@@ -2310,6 +2310,7 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">확대/축소 수준</translation>
 <translation id="7016992613359344582">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다.</translation>
+<translation id="7023162328967545559">관리자 경고</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7030436163253143341">인증서가 올바르지 않음</translation>
 <translation id="7031646650991750659">내가 설치한 Google Play 앱</translation>
@@ -2495,6 +2496,7 @@
 <translation id="7489473601138133813">경력 리소스 및 개발 계획</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="7497998058912824456">문서 만들기 버튼, Enter를 눌러 빠르게 새 Google 문서 만들기</translation>
+<translation id="7501663406926337752">조직에서 신고한 사이트입니다</translation>
 <translation id="7501853161948120656">교육 리소스</translation>
 <translation id="7506488012654002225">Chromium에서는 다음 정보를 <ph name="BEGIN_EMPHASIS" />저장하지 않습니다<ph name="END_EMPHASIS" />.
           <ph name="BEGIN_LIST" />
@@ -2741,6 +2743,7 @@
 <translation id="8094917007353911263">사용 중인 네트워크에서 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> 방문을 요청할 수 있습니다.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">유효하지 않은 카드가 삭제되었습니다.</translation>
+<translation id="8100666323495101203">조직에서 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />을(를) 정책 위반 가능성이 있는 사이트로 식별했습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">학술회의 및 학술 출판물</translation>
 <translation id="8103161714697287722">결제 수단</translation>
 <translation id="8103643211515685474">무시하고 인쇄</translation>

@@ -653,7 +653,7 @@
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，詳情</translation>
 <translation id="649877868557234318">正在將「<ph name="FILE_NAME" />」解壓縮至「<ph name="FOLDER_NAME" />」</translation>
 <translation id="6499681088828539489">不允許共用網絡使用 Proxy</translation>
-<translation id="6503285896705205014">根據系統管理員政策，你無法複製這 <ph name="COUNT" /> 個檔案</translation>
+<translation id="6503285896705205014">管理員政策已禁止複製 <ph name="COUNT" /> 個檔案</translation>
 <translation id="6509122719576673235">挪威文</translation>
 <translation id="6528513914570774834">允許此裝置的其他使用者使用此網絡</translation>
 <translation id="653019979737152879">正在同步處理 <ph name="FILE_NAME" />…</translation>
@@ -756,7 +756,7 @@
 <translation id="7357762654218998920">不支援此檔案類型。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome OS 中開啟檔案。</translation>
 <translation id="7359359531237882347">正在複製 <ph name="NUMBER_OF_ITEMS" />個項目…</translation>
 <translation id="7375951387215729722">已經按 <ph name="COLUMN_NAME" /> 遞減排列檔案清單。</translation>
-<translation id="7377161162143020057">根據系統管理員政策，你無法複製這個檔案</translation>
+<translation id="7377161162143020057">管理員政策已禁止複製此檔案</translation>
 <translation id="7402503521691663770">ChromeOS Flex 裝置</translation>
 <translation id="7408870451288633753">捷克文</translation>
 <translation id="7417453074306512035">埃塞俄比亞文鍵盤</translation>

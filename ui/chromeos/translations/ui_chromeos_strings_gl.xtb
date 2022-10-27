@@ -531,6 +531,7 @@
 <translation id="5428105026674456456">Español</translation>
 <translation id="5438282218546237410">Non hai ningún resultado para <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Contrasinal non válido</translation>
+<translation id="5459064203055649751">Xa existe un ficheiro denominado "<ph name="FILENAME" />". Queres substituílo polo que estás transferindo?</translation>
 <translation id="5463231940765244860">Introducir</translation>
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5473333559083690127">Volve introducir o novo PIN</translation>
@@ -651,6 +652,7 @@
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="649877868557234318">Extraendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Non permitir proxys para redes compartidas</translation>
+<translation id="6503285896705205014">A política do administrador bloqueou a función de copiar <ph name="COUNT" /> ficheiros</translation>
 <translation id="6509122719576673235">Noruegués</translation>
 <translation id="6528513914570774834">Permitir que outros usuarios deste dispositivo utilicen esta rede</translation>
 <translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />...</translation>
@@ -753,6 +755,7 @@
 <translation id="7357762654218998920">Este tipo de ficheiro non é compatible. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="7359359531237882347">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="7375951387215729722">A lista de ficheiros está en orde descendente segundo os datos da columna <ph name="COLUMN_NAME" />.</translation>
+<translation id="7377161162143020057">A política do administrador bloqueou a función de copiar este ficheiro</translation>
 <translation id="7402503521691663770">Dispositivos Chrome OS Flex</translation>
 <translation id="7408870451288633753">Checo</translation>
 <translation id="7417453074306512035">Teclado etíope</translation>

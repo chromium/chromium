@@ -72,6 +72,7 @@
 <translation id="1567064801249837505">Albumit</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
+<translation id="160633243685262989">Esikatselukuva</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1639239467298939599">Ladataan</translation>
@@ -672,6 +673,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7535791657097741517">Laita vaalea teema päälle</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7551123448725492271">Laite on audiolaite.</translation>
+<translation id="7559239713112547082">Kuvakaappauksen esikatselu</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-kosketusnäyttö</translation>

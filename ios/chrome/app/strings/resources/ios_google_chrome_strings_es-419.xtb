@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Establece Chrome como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="1511320244449497906">Accediste y estás sincronizando tus datos en una cuenta administrada por <ph name="DOMAIN" />, donde su administrador puede establecer las políticas del usuario específicas para esa cuenta, que pueden cambiar el comportamiento de Chrome.</translation>
+<translation id="1554731936187952550">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
+<translation id="3503014945441706099">También obtén la Navegación segura mejorada para este perfil de Chrome</translation>
 <translation id="3522659714780527202">Para ver tus pestañas donde sea que uses Chrome, activa la sincronización</translation>
 <translation id="3533694711092285624">No hay contraseñas guardadas. Chrome puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="3641179212828090796">Usa la contraseña que guardaste en Chrome para acceder más rápido</translation>
@@ -137,6 +139,7 @@ Aspectos para tener en cuenta:
   • Si Chrome falla, los detalles sobre lo ocurrido pueden incluir información personal.
 
   • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Tienes seguridad estándar para este perfil de Chrome</translation>
 <translation id="9112744793181547300">¿Deseas establecer Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome solicitará la versión de escritorio del sitio cada vez.</translation>
 </translationbundle>

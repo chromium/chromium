@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በማውጣት ላይ</translation>
 <translation id="6499681088828539489">ለተጋሩ አውታረ መረቦች ተኪዎችን አትፍቀድ</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> ፋይሎችን ማባዛት በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="6509122719576673235">ኖርዌጂያን</translation>
 <translation id="6528513914570774834">ሌሎች የዚህ መሣሪያ ተጠቃሚዎች ይህን አውታረ መረብ እንዲጠቀሙ ይፍቀዱላቸው</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />ን በማመሳሰል ላይ...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">ይህ የፋይል ዓይነት አይደገፍም። በChromeOS ላይ ፋይሎችን ስለመክፈት<ph name="BEGIN_LINK_HELP" />የበለጠ ይወቁ<ph name="END_LINK_HELP" />።</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በመቅዳት ላይ...</translation>
 <translation id="7375951387215729722">የፋይል ዝርዝር በ<ph name="COLUMN_NAME" /> በቁልቁለት ተደርድሯል።</translation>
+<translation id="7377161162143020057">ይህን ፋይል ማባዛት በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="7402503521691663770">የChromeOS Flex መሣሪያዎች</translation>
 <translation id="7408870451288633753">ቼክ</translation>
 <translation id="7417453074306512035">የግዕዝ ቁልፍ ሰሌዳ</translation>

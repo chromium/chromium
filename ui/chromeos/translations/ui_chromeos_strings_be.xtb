@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="649877868557234318">Выманне файла "<ph name="FILE_NAME" />" ажыццяўляецца ў папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6499681088828539489">Забараніць проксі-серверы для абагуленых сетак</translation>
+<translation id="6503285896705205014">Зададзеная адміністратарам палітыка блакіруе магчымасць капіраваць файлы (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">Нарвежская</translation>
 <translation id="6528513914570774834">Дазволіць іншым карыстальнікам прылады выкарыстоўваць гэту сетку</translation>
 <translation id="653019979737152879">Ідзе сінхранізацыя файла "<ph name="FILE_NAME" />"...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Гэты тып файла не падтрымліваецца. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="7359359531237882347">Ідзе капіраванне элементаў (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Файлы ў спісе адсартаваны па параметры "<ph name="COLUMN_NAME" />" (у пачатку будуць нядаўна змененыя).</translation>
+<translation id="7377161162143020057">Зададзеная адміністратарам палітыка блакіруе магчымасць капіраваць гэты файл</translation>
 <translation id="7402503521691663770">Прылады з Chrome OS Flex</translation>
 <translation id="7408870451288633753">Чэшская</translation>
 <translation id="7417453074306512035">Эфіопская раскладка</translation>

@@ -884,6 +884,7 @@
 <translation id="1805967612549112634">රහස් අංකය තහවුරු කරන්න</translation>
 <translation id="1806335016774576568">වෙනත් විවෘත යෙදුමකට මාරු වන්න</translation>
 <translation id="1807246157184219062">එළිය</translation>
+<translation id="1809201888580326312">ඔබ මෙම අඩවි සහ යෙදුම් සඳහා මුරපද නොසුරැකීමට තෝරා ඇත.</translation>
 <translation id="1809483812148634490">ඔබ Google Play වෙතින් බාගෙන ඇති අන්තර්ගතය මෙම Chromebook වෙතින් මකනු ලැබේ.
       <ph name="LINE_BREAKS1" />
       ඔබ මිලදී ගත් චිත්‍රපට, TV දර්ශන, සංගීතය, පොත්, හෝ වෙනත් යෙදුම-තුළ මිලදී ගැනීම් යනාදී අන්තර්ගතයද මැකීමට හැකිය.
@@ -1800,6 +1801,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> සුරක්‍ෂිතව බාගත නොහැක.</translation>
 <translation id="2620436844016719705">පද්ධතිය</translation>
 <translation id="262154978979441594">Google සහකරු හඬ මාදිලිය පුහුණු කරන්න</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">ප්‍රොටොකෝල මෙහෙයවීමට කිසිදු අඩවියකට ඉඩ නොදෙන්න</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">මෙම පිටුව ඔබේ කැමරාව සහ මයික්‍රෆෝනය වෙත පිවිසේ.</translation>
@@ -4293,6 +4295,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{අඩවිය නිහඬ කරන්න}one{අඩවි නිහඬ කරන්න}other{අඩවිය නිහඬ කරන්න}}</translation>
 <translation id="497403230787583386">ආරක්ෂක පරීක්ෂා සිදු කර ඇත. ඔබගේ ලේඛනය මුද්‍රණය කරනු ඇත.</translation>
 <translation id="4975543297921324897">මොනොස්පේස් අකුරු වර්ගය</translation>
+<translation id="4975771730019223894">යෙදුම් ලාංඡනය</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">පිවිසුම තහවුරු කරන්න</translation>
 <translation id="4980805016576257426">මෙම දිගුවේ අනිෂ්ට මෘදුකාංග අඩංගු වේ.</translation>
@@ -4948,6 +4951,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5612734644261457353">කනගාටුයි, ඔබගේ මුරපදය තවමත් සත්‍යාපනය කළ නොහැකියියි විය. සටහන: ඔබ ඔබගේ මුරපදය මෑතකදී වෙනස් කළේ නම්, ඔබ වරක් වැරූ විට ඔබගේ නව මුරපදය යෙදවෙනු ඇත, කරුණාකර පැරණි මුරපදය මෙහි භාවිතා කරන්න.</translation>
 <translation id="5614190747811328134">පරිශීලක දැන්වීම</translation>
 <translation id="5614553682702429503">මුරපදය සුරකින්න ද?</translation>
+<translation id="5616571005307953937">පරණම</translation>
 <translation id="5616726534702877126">තරම වෙන් කරන්න</translation>
 <translation id="561698261642843490">Firefox වසන්න</translation>
 <translation id="5620540760831960151">මෙම ලැයිස්තුව <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5580,6 +5584,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6212168817037875041">සංදර්ශකය ක්‍රියා විරහිත කරන්න</translation>
 <translation id="6212752530110374741">සබැඳිය ඊ-තැපැල් කරන්න</translation>
 <translation id="621470880408090483">බ්ලූටූත් උපාංගවලට සම්බන්ධ වීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
+<translation id="6216239400972191926">ප්‍රතික්ෂේප කරන ලද අඩවි සහ යෙදුම්</translation>
 <translation id="6216601812881225442">ඔබේ බහාලුම ප්‍රතිප්‍රමාණ කිරීමට සහාය නොදක්වයි. Linux වෙත කලින් වෙන් කරන ලද ඉඩ ප්‍රමාණය සීරුමාරු කිරීමට, උපස්ථ කර අනතුරුව නව බහාලුමකට ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="6216696360484424239">ස්වයංක්‍රීයව පුරනන්න</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> නොබැඳිය. අන්තර්ජාලයට සම්බන්ධ වී නැවත උත්සාහ කරන්න.</translation>

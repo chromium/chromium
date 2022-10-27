@@ -2420,6 +2420,7 @@
 <translation id="3197453258332670132">მარჯვენა ღილაკზე დაწკაპუნების ან ხანგრძლივად დაჭერის შემთხვევაში მონიშნულ ტექსთან დაკავშირებული ინფორმაციის ჩვენება</translation>
 <translation id="3199127022143353223">სერვერები</translation>
 <translation id="3200061262156232574">თქვენს სავაჭრო კალათაში</translation>
+<translation id="3201237270673604992">ჰ-დან ა-მდე</translation>
 <translation id="3201422919974259695">აქ გამოჩნდება ხელმისაწვდომი USB-მოწყობილობები.</translation>
 <translation id="3202131003361292969">მდებარეობა</translation>
 <translation id="3202173864863109533">ამ ჩანართის აუდიო გამორთულია.</translation>
@@ -2453,6 +2454,7 @@
 <translation id="3241680850019875542">აირჩიეთ გაფართოების ძირითადი დირექტორია შეფუთვისთვის. გაფართოების განსაახლებლად, აირჩიეთ პირადი გასაღების ფაილი ხელახლა გამოსაყენებლად.</translation>
 <translation id="3242289508736283383">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს ChromeOS-ის კიოსკის რეჟიმში</translation>
 <translation id="3242665648857227438">ეს პროფილი იყენებს ChromeOS პროქსი-სერვერის პარამეტრებს.</translation>
+<translation id="3243017971870859287">ChromeOS Flex მოწყობილობისა და კომპონენტების სერიული ნომრების წაკითხვა</translation>
 <translation id="3244294424315804309">ხმის დადუმების გაგრძელება</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> — ქსელის შეცდომა</translation>
 <translation id="3248902735035392926">უსაფრთხოება მნიშვნელოვანია. დაუთმეთ დრო <ph name="BEGIN_LINK" />გამოყენებული გაფართოებების<ph name="END_LINK" /> შემოწმებას.</translation>
@@ -2509,6 +2511,7 @@
 <translation id="3297105622164376095">მესამე მხარის მეშვეობით სისტემაში შესვლასთან დაკავშირებული მოთხოვნების ჩვენება დაშვებულია</translation>
 <translation id="3297536526040732495">Google აპებში თქვენი დაცვის მიზნით, ეს მონაცემები დროებით მიებმება თქვენს Google ანგარიშს, როცა სისტემაში შესული ხართ</translation>
 <translation id="329838636886466101">აღდგენა</translation>
+<translation id="3298438307450647315">ChromeOS მოწყობილობის ინფორმაციისა და მოწყობილობის მონაცემების წაკითხვა</translation>
 <translation id="3298789223962368867">შეყვანილია არასწორი URL.</translation>
 <translation id="32991397311664836">მოწყობილობები:</translation>
 <translation id="33022249435934718">GDI მარკერები</translation>
@@ -2615,6 +2618,7 @@
 <translation id="3402255108239926910">აირჩიეთ ავატარი</translation>
 <translation id="3402585168444815892">მიმდინარეობს დემო-რეჟიმში რეგისტრაცია</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">ChromeOS Flex მოწყობილობის ინფორმაციისა და მოწყობილობის მონაცემების წაკითხვა</translation>
 <translation id="3404065873681873169">ამ საიტისთვის პაროლები შენახული არ არის</translation>
 <translation id="3405664148539009465">შრიფტების მორგება</translation>
 <translation id="3405763860805964263">...</translation>
@@ -3740,6 +3744,7 @@
 <translation id="4460014764210899310">დაჯგუფების გაუქმება</translation>
 <translation id="4462159676511157176">ინდივიდუალური სახელთა სერვერები</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-ისთვის დაყენებული დროის ლიმიტია <ph name="TIME" /></translation>
+<translation id="4465649939134800363">დალაგების ვარიანტები</translation>
 <translation id="4466839823729730432">იხილეთ თქვენი მოგონებები აქ</translation>
 <translation id="4469324811108161144">შესაძლებელია მაქსიმუმ <ph name="CHARACTER_LIMIT" /> სიმბოლოს ჩანიშვნა.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FOLDERNAME" />“-ში ფაილების რედაქტირება</translation>
@@ -4169,6 +4174,7 @@
 <translation id="486635084936119914">კონკრეტული ტიპის ფაილების ავტომატური გახსნა ჩამოტვირთვის შემდეგ</translation>
 <translation id="4868281708609571334">ასწავლეთ Google ასისტენტს <ph name="SUPERVISED_USER_NAME" />-ის ხმის ამოცნობა</translation>
 <translation id="4868284252360267853">ეს დიალოგი ამჟამად არ არის მოქცეული ფოკუსში. ამ დიალოგის ფოკუსში მოსაქცევად დააჭირეთ კლავიშთა კომბინაციას Command+Shift+Option+A.</translation>
+<translation id="4869170227080975044">ChromeOS ქსელის ინფორმაციის წაკითხვა</translation>
 <translation id="4870724079713069532">ამ აპის მეშვეობით შეგიძლიათ გახსნათ და დაარედაქტიროთ მხარდაჭერილი ფაილები File Explorer-იდან ან სხვა აპებიდან. იმისთვის, რომ გააკონტროლოთ, ნაგულისხმევად რომელმა ფაილებმა გახსნას ეს აპი, გადადით <ph name="BEGIN_LINK" />Windows-ის პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">კონფიგურაციის ინფორმაციის მისაღებად შეიყვანეთ ადმინისტრატორის მიერ მოწოდებული პაროლი</translation>
 <translation id="4870995365819149457">ზოგიერთი მხარდაჭერილი ბმული კვლავ გაიხსნება <ph name="APP_NAME" />-ში, <ph name="APP_NAME_2" />-ში, <ph name="APP_NAME_3" />-სა და 1 სხვა აპში.</translation>
@@ -4291,6 +4297,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{საიტის დადუმება}other{საიტების დადუმება}}</translation>
 <translation id="497403230787583386">უსაფრთხოების შემოწმებები შესრულებულია. თქვენი დოკუმენტი ამოიბეჭდება.</translation>
 <translation id="4975543297921324897">მონოგანივი შრიფტი</translation>
+<translation id="4975771730019223894">აპებზე ბეჯების მიმაგრება</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">წვდომის დადასტურება</translation>
 <translation id="4980805016576257426">ეს გაფართოება მავნე პროგრამას შეიცავს.</translation>
@@ -4901,6 +4908,7 @@
 <translation id="5571066253365925590">Bluetooth ჩართულია</translation>
 <translation id="5571092938913434726">მედიის მართვის გლობალური საშუალებები</translation>
 <translation id="5571832155627049070">მოირგეთ პროფილი</translation>
+<translation id="5572252023412311448">საიტის დეტალების ჩვენება <ph name="SITE_GROUP" />-ისთვის</translation>
 <translation id="5572648434713976849">მისამართთა ზოლში გაუმჯობესებული შემოთავაზებები დაგხვდებათ</translation>
 <translation id="5572851009514199876">გთხოვთ, გაუშვათ Chrome და შეხვიდეთ მასში, რათა Chrome-მა შეამოწმოს, გაქვთ თუ არა ამ საიტზე წვდომის უფლება.</translation>
 <translation id="557506220935336383">გაფართოებების ნებართვების ნახვა სხვა საიტებისთვის</translation>
@@ -6090,6 +6098,7 @@
 <translation id="6703212423117969852">შეგიძლიათ მოგვიანებით ხელახლა ცადოთ Chrome-იდან.</translation>
 <translation id="6703254819490889819">სარეზერვო ასლით აღდგენა</translation>
 <translation id="6706210727756204531">არეალი</translation>
+<translation id="6707122714992751648">ChromeOS-ის დიაგნოსტიკური ტესტების გაშვება</translation>
 <translation id="6707389671160270963">SSL კლიენტის სერთიფიკატი</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> და 1 სხვა ჩანართი}other{<ph name="PAGE_TITLE" /> და # სხვა ჩანართი}}</translation>
 <translation id="6709133671862442373">ახალი ამბები</translation>
@@ -6249,6 +6258,7 @@
 <translation id="6843264316370513305">ქსელის გამართვა</translation>
 <translation id="6843423766595476978">Ok Google მზად არის</translation>
 <translation id="6845038076637626672">გახსენით მაქსიმალური</translation>
+<translation id="6845231585063669905">ა-დან ჰ-მდე</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />“ ითხოვს <ph name="FILE_NAME" />-ის დაბეჭდვას <ph name="PRINTER_NAME" />-ით.</translation>
 <translation id="6847125920277401289">გასაგრძელებლად გაათავისუფლეთ მეხსიერება</translation>
 <translation id="6848388270925200958">ამჟამად თქვენ გაქვთ რამდენიმე ბარათი, რომელთა გამოყენებაც შეგიძლიათ მხოლოდ ამ მოწყობილობაზე</translation>
@@ -6268,6 +6278,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> წმ</translation>
 <translation id="6860097299815761905">პროქსის პარამეტრები…</translation>
 <translation id="6860427144121307915">გახსნა ჩანართზე</translation>
+<translation id="6861179941841598556">სხვა ქმედებები <ph name="PROFILE_NAME" />-ისთვის</translation>
 <translation id="6863496016067551393">ყველა გაფართოება დაშვებულია</translation>
 <translation id="686366188661646310">გსურთ პაროლის წაშლა?</translation>
 <translation id="6865313869410766144">ფორმათა მონაცემების ავტომატური შევსება</translation>
@@ -6357,6 +6368,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         სურვილისამებრ, შეგიძლიათ მართოთ პარამეტრები ბარათის მენიუდან, ან გაეცნოთ მეტ ვარიანტს „Chrome-ის მორგების“ სექციიდან.</translation>
+<translation id="6949089178006131285">ChromeOS Flex ქსელის ინფორმაციის წაკითხვა</translation>
 <translation id="6949434160682548041">პაროლი (არასავალდებულო)</translation>
 <translation id="6950627417367801484">აპების აღდგენა</translation>
 <translation id="6952242901357037157">აქ შეგიძლიათ თქვენს <ph name="BEGIN_LINK" />Google ანგარიშში<ph name="END_LINK" /> შენახული პაროლების გამოჩენაც</translation>
@@ -7401,6 +7413,7 @@
 <translation id="7939073735115504773">შეეხეთ ამ გაფართოების ხატულას <ph name="HOST" />-ის წასაკითხად და შესაცვლელად</translation>
 <translation id="7939328347457537652">მოწყობილობის სერტიფიკატების მართვა</translation>
 <translation id="7939412583708276221">მაინც შენახვა</translation>
+<translation id="7940265372707990269">დალაგება კრიტერიუმით: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ტეტერინგის მზადყოფნა:</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7943368935008348579">PDF-ების ჩამოტვირთვა</translation>
@@ -7972,6 +7985,7 @@
 <translation id="8463001014623882202">ავტორიზაცია ვერ მოხერხდა</translation>
 <translation id="846374874681391779">ჩამოტვირთვების ზოლი</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> გათიშულია.</translation>
+<translation id="846399539692727039">ChromeOS Flex-ის დიაგნოსტიკური ტესტების გაშვება</translation>
 <translation id="8464132254133862871">ამ მომხმარებლის ანგარიში არ არის დაშვებული მომსახურებისთვის.</translation>
 <translation id="8465252176946159372">არასწორია</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> გასაშვებად თქვენს ნებართვას საჭიროებს</translation>
@@ -8118,6 +8132,7 @@
 <translation id="8624315169751085215">გაცვლის ბუფერში კოპირება</translation>
 <translation id="8624354461147303341">ფასდაკლებების მიღება</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">ChromeOS მოწყობილობისა და კომპონენტების სერიული ნომრების წაკითხვა</translation>
 <translation id="862542460444371744">&amp;გაფართოებები</translation>
 <translation id="8625663000550647058">თქვენი მიკროფონის გამოყენება დაუშვებელია</translation>
 <translation id="8625916342247441948">საიტებისთვის HID მოწყობილობებთან დაკავშირების აკრძალვა</translation>

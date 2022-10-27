@@ -394,7 +394,7 @@
 <translation id="1916770123977586577">如要將您已更新的設定套到此網站，請重新載入此網頁</translation>
 <translation id="1919345977826869612">廣告</translation>
 <translation id="1919367280705858090">瞭解如何修正特定錯誤訊息指出的錯誤</translation>
-<translation id="1919526244108283799">400 x 600 公釐</translation>
+<translation id="1919526244108283799">400 x 600 毫米</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1927439593081478069">執行 Chrome 安全檢查按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
@@ -499,7 +499,7 @@
 <translation id="219906046732893612">家居裝修</translation>
 <translation id="2202020181578195191">請輸入有效的到期年份</translation>
 <translation id="22081806969704220">紙匣 3</translation>
-<translation id="2210794033760923560">上傳報告</translation>
+<translation id="2210794033760923560">上載報告</translation>
 <translation id="2212735316055980242">找不到政策</translation>
 <translation id="2213606439339815911">正在擷取項目…</translation>
 <translation id="2213612003795704869">已列印頁面</translation>
@@ -681,7 +681,7 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2679714844901977852">將信用卡和帳單資料儲存至 Google 帳戶 <ph name="USER_EMAIL" />，享受更安全快速的結帳程序</translation>
 <translation id="2687555958734450033">最適合</translation>
-<translation id="2688186765492306706">500 x 760 公釐</translation>
+<translation id="2688186765492306706">500 x 760 毫米</translation>
 <translation id="2688969097326701645">是，請繼續</translation>
 <translation id="2691924980723297736">安全警告</translation>
 <translation id="2692131511336778528">科幻小說及奇幻文學</translation>
@@ -727,10 +727,10 @@
 <translation id="2835170189407361413">清除表格</translation>
 <translation id="2839032553903800133">已封鎖通知</translation>
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
-<translation id="2851291081585704741">你已離線</translation>
+<translation id="2851291081585704741">您已離線</translation>
 <translation id="2854764410992194509">互聯網服務供應商 (ISP)</translation>
 <translation id="2856444702002559011">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取您的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="2858134430383535011">200 x 300 公釐</translation>
+<translation id="2858134430383535011">200 x 300 毫米</translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
 <translation id="287596039013813457">友善</translation>
 <translation id="28761159517501904">電影</translation>
@@ -993,9 +993,9 @@
 <translation id="3558573058928565255">日間</translation>
 <translation id="3560824484345057728">查看相關網站</translation>
 <translation id="3566021033012934673">您的連線不是私人連線</translation>
-<translation id="3566336457819493938">215 x 315 公釐</translation>
+<translation id="3566336457819493938">215 x 315 毫米</translation>
 <translation id="3567778190852720481">無法使用企業帳戶註冊 (企業賬戶不符合資格)。</translation>
-<translation id="3567901620846335314">100 x 150 公釐</translation>
+<translation id="3567901620846335314">100 x 150 毫米</translation>
 <translation id="3574305903863751447"><ph name="CITY" />，<ph name="STATE" />，<ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 上的嵌入式頁面顯示</translation>
@@ -1431,7 +1431,7 @@
 <translation id="4704732901923281920">生物科學</translation>
 <translation id="4708268264240856090">您的連線已中斷</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
-<translation id="4718897478554657123">600 x 900 公釐</translation>
+<translation id="4718897478554657123">600 x 900 毫米</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />執行 Windows 網絡診斷<ph name="END_LINK" /></translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4724144314178270921">可要求查看剪貼簿上的文字和圖片</translation>
@@ -1662,7 +1662,7 @@
 <translation id="5254043433801397071">優化列印內容</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">仍要擷取</translation>
-<translation id="5255833070095767006">350 x 460 公釐</translation>
+<translation id="5255833070095767006">350 x 460 毫米</translation>
 <translation id="5257739419779698609">{0,plural, =1{管理員政策不建議複製此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議複製這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">釘裝 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
@@ -1758,7 +1758,7 @@
 <translation id="5510481203689988000">您可在 Cookie 設定中控制此設定。</translation>
 <translation id="5510766032865166053">此檔案可能已被移動或刪除。</translation>
 <translation id="5513528801833998679">使用裝置登入</translation>
-<translation id="5515388687005870733">55 x 85 公釐</translation>
+<translation id="5515388687005870733">55 x 85 毫米</translation>
 <translation id="5518670652865028077">藝術和娛樂</translation>
 <translation id="5519516356611866228">包括您所作的變更</translation>
 <translation id="5523118979700054094">政策名稱</translation>
@@ -1775,7 +1775,7 @@
 <translation id="5541086400771735334">出紙槽 7</translation>
 <translation id="5541546772353173584">新增電郵地址</translation>
 <translation id="5545756402275714221">為您推薦的文章</translation>
-<translation id="5551890439174915351">100 x 200 公釐</translation>
+<translation id="5551890439174915351">100 x 200 毫米</translation>
 <translation id="5552137475244467770">Chrome 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5560088892362098740">到期日</translation>
@@ -2010,7 +2010,7 @@
 <translation id="6194209731893739467">在此查看您追蹤的所有產品</translation>
 <translation id="6195371403461054755">地質學</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
-<translation id="6197648101609735209">89 x 89 公釐</translation>
+<translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6203231073485539293">檢查互聯網連線</translation>
 <translation id="6218753634732582820">要從 Chromium 移除地址嗎？</translation>
 <translation id="622039917539443112">雙對摺</translation>
@@ -2095,7 +2095,7 @@
 <translation id="6427730057873428458">摺頁</translation>
 <translation id="6428450836711225518">請驗證您的電話號碼</translation>
 <translation id="643051589346665201">變更 Google 密碼</translation>
-<translation id="6431119592588449664">報告已上傳</translation>
+<translation id="6431119592588449664">上載咗報告</translation>
 <translation id="6433490469411711332">編輯聯絡人資料</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> 已拒絕連線。</translation>
 <translation id="6433797564277305076">現在就開始使用裝置解鎖功能，加快確認付款卡</translation>
@@ -2168,7 +2168,7 @@
 <translation id="6646269444027925224">{COUNT,plural, =0{無}=1{1 個網站 (您不會登出 Google 帳戶)}other{# 個網站 (您不會登出 Google 帳戶)}}</translation>
 <translation id="6648459603387803038">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chrome 以外的服務管理。</translation>
 <translation id="6648524591329069940">Serif 字型</translation>
-<translation id="6649510485211003056">195 x 270 公釐</translation>
+<translation id="6649510485211003056">195 x 270 毫米</translation>
 <translation id="6651270836885078973">管理員：</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -2236,7 +2236,7 @@
 <translation id="6828866289116430505">遺傳學</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6833752742582340615">將信用卡和帳單資料儲存至 Google 帳戶，享受更安全快速的結帳程序</translation>
-<translation id="6842196666980060516">184 x 260 公釐</translation>
+<translation id="6842196666980060516">184 x 260 毫米</translation>
 <translation id="6846340164947227603">使用虛擬付款卡號碼…</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6857776781123259569">管理密碼…</translation>
@@ -2771,7 +2771,7 @@
 <translation id="8201077131113104583">無效的擴充功能 (ID：<ph name="EXTENSION_ID" />) 更新網址。</translation>
 <translation id="8202097416529803614">訂單摘要</translation>
 <translation id="8202370299023114387">衝突</translation>
-<translation id="8208363704094329105">300 x 400 公釐</translation>
+<translation id="8208363704094329105">300 x 400 毫米</translation>
 <translation id="8210604850413485128">網頁寄存服務</translation>
 <translation id="8211406090763984747">己建立安全連線</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
@@ -2857,7 +2857,7 @@
 其他詳細資料：
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
-<translation id="8427848540066057481">500 x 750 公釐</translation>
+<translation id="8427848540066057481">500 x 750 毫米</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8428634594422941299">知道了</translation>
 <translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理 Cookie 偏好設定</translation>
@@ -2875,7 +2875,7 @@
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
 <translation id="8468358362970107653">C3 信封</translation>
-<translation id="8473626140772740486">300 x 450 公釐</translation>
+<translation id="8473626140772740486">300 x 450 毫米</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>
 <translation id="8474910779563686872">顯示開發人員詳情</translation>
 <translation id="8479754468255770962">釘裝 (左下方)</translation>
@@ -2923,12 +2923,12 @@
 <translation id="8623885649813806493">沒有相符的密碼。顯示所有已儲存的密碼。</translation>
 <translation id="8624354461147303341">取得折扣</translation>
 <translation id="8625384913736129811">將這張信用卡儲存至此裝置</translation>
-<translation id="8634957317623797170">54 x 86 公釐</translation>
+<translation id="8634957317623797170">54 x 86 毫米</translation>
 <translation id="8637577059508742477">您的個人檔案和瀏覽器由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="8643409044755049933">Kaku 3 信封</translation>
-<translation id="8647287295490773273">210 x 330 公釐</translation>
+<translation id="8647287295490773273">210 x 330 毫米</translation>
 <translation id="865032292777205197">動作感應器</translation>
-<translation id="8654126188050905496">55 x 91 公釐</translation>
+<translation id="8654126188050905496">55 x 91 毫米</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="8666678546361132282">英文</translation>
 <translation id="867224526087042813">簽名</translation>
@@ -2998,7 +2998,7 @@
 <translation id="8834380158646307944">閂無痕式視窗按鈕，㩒一下 Enter 鍵就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
 <translation id="883848425547221593">其他書籤</translation>
 <translation id="884264119367021077">運送地址</translation>
-<translation id="8849231003559822746">130 x 180 公釐</translation>
+<translation id="8849231003559822746">130 x 180 毫米</translation>
 <translation id="884923133447025588">未發現撤銷機制。</translation>
 <translation id="8849262850971482943">使用虛擬卡以提升安全性</translation>
 <translation id="8852567725116633427">迷你車及小型車</translation>

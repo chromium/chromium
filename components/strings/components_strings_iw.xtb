@@ -35,7 +35,7 @@
 <translation id="1058344460600311577">‏<ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לשחק במשחק Dino Run ב-Chrome</translation>
 <translation id="1058479211578257048">הכרטיסים נשמרים...</translation>
 <translation id="1060320201901229167">‏מעטפה – Kaku 5</translation>
-<translation id="10614374240317010">פריטים שאף פעם לא נשמרו</translation>
+<translation id="10614374240317010">פריטים שאף פעם לא יישמרו</translation>
 <translation id="106701514854093668">סימניות שולחן עבודה</translation>
 <translation id="1068672505746868501">אף פעם אין לתרגם דפים ב<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">כלי רכב היברידיים ואלטרנטיביים</translation>
@@ -356,6 +356,7 @@
 <translation id="1803351196216024260">האתר יכול לבקש הרשאה להשתמש במיקרופון</translation>
 <translation id="1807246157184219062">בהיר</translation>
 <translation id="1807528111851433570">גיליון ראשון</translation>
+<translation id="181000283860817563">מעקב אחר מחירים בכמה אתרים</translation>
 <translation id="1812527064848182527">לרוחב</translation>
 <translation id="1813414402673211292">ניקוי נתוני גלישה</translation>
 <translation id="182139138257690338">הורדות אוטומטיות</translation>

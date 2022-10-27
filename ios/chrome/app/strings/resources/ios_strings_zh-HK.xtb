@@ -120,7 +120,7 @@
 <translation id="1857751338515529195">前往下一個分頁</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
-<translation id="1891796056033961979">你可以在這個畫面查看已儲存的書籤、密碼、設定和其他內容。</translation>
+<translation id="1891796056033961979">您儲存嘅書籤、密碼、設定同其他內容會喺呢度顯示。</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1930989359703290198">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -331,7 +331,7 @@
 <translation id="3533202363250687977">關閉所有無痕式分頁</translation>
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
-<translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
+<translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
@@ -500,7 +500,7 @@
 <translation id="4904877109095351937">標示為已閱讀</translation>
 <translation id="4908869848243824489">Google 探索</translation>
 <translation id="4916679969857390442">透鏡</translation>
-<translation id="4922154083994158612">想要讓安全性更上一層樓嗎？</translation>
+<translation id="4922154083994158612">想增強安全性嗎？</translation>
 <translation id="4930714375720679147">開啟</translation>
 <translation id="4941089862236492464">很抱歉，分享您的項目時發生問題。</translation>
 <translation id="4944543191714094452">從網頁中尋找…</translation>
@@ -839,7 +839,7 @@
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7438481509621345350">您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="7454057999980797137">州/縣</translation>
-<translation id="7459628154744868585">強化防護功能已開啟</translation>
+<translation id="7459628154744868585">已開啟「強化保護功能」</translation>
 <translation id="7464701184726199289">這會清除所有裝置上已同步的資料。系統不會刪除已儲存的網站設定，這可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7472734401283673885">公司名稱</translation>
@@ -1033,7 +1033,7 @@
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9039373489628511875">頻寬</translation>
 <translation id="9055772144595778347">無法登入</translation>
-<translation id="9055960261314198756">強化防護功能已關閉</translation>
+<translation id="9055960261314198756">已關閉「強化保護功能」</translation>
 <translation id="9057972802061533987">無法追蹤，發生錯誤。</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9068336935206019333">在 Chrome 無痕模式中開啟</translation>

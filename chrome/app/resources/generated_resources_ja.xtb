@@ -2430,6 +2430,7 @@
 <translation id="3241680850019875542">パッケージ化する拡張機能のルート ディレクトリを選択します。拡張機能を更新するには、再使用する秘密鍵ファイルも選択してください。</translation>
 <translation id="3242289508736283383">「kiosk_only」マニフェスト属性が指定されているアプリは、Chrome OS キオスクモードでインストールする必要があります。</translation>
 <translation id="3242665648857227438">このプロフィールは Chrome OS のプロキシ設定を使用します。</translation>
+<translation id="3243017971870859287">ChromeOS Flex デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
@@ -2486,6 +2487,7 @@
 <translation id="3297105622164376095">サードパーティのログイン メッセージの表示を許可するサイト</translation>
 <translation id="3297536526040732495">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
 <translation id="329838636886466101">修復</translation>
+<translation id="3298438307450647315">ChromeOS のデバイス情報とデバイスデータを読み取る</translation>
 <translation id="3298789223962368867">入力された URL が無効です。</translation>
 <translation id="32991397311664836">デバイス:</translation>
 <translation id="33022249435934718">GDI ハンドル</translation>
@@ -2592,6 +2594,7 @@
 <translation id="3402255108239926910">アバターを選択</translation>
 <translation id="3402585168444815892">デモモードでの登録</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />、<ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">ChromeOS Flex のデバイス情報とデバイスデータを読み取る</translation>
 <translation id="3404065873681873169">このサイト用に保存されているパスワードはありません</translation>
 <translation id="3405664148539009465">フォントをカスタマイズ</translation>
 <translation id="3405763860805964263">...</translation>
@@ -3995,6 +3998,7 @@
 <translation id="4726710355753484204">拡大するには、Ctrl+Alt+明るさを上げるキーを使用します。
 縮小するには、Ctrl+Alt+明るさを下げるキーを使用します。</translation>
 <translation id="4726710629007580002">この拡張機能をインストールしようとしたときに、次の警告がありました。</translation>
+<translation id="472738079453283624">商品</translation>
 <translation id="4727847987444062305">管理対象のゲスト セッション</translation>
 <translation id="4728558894243024398">プラットフォーム</translation>
 <translation id="4728570203948182358">有害なソフトウェアの確認は、<ph name="BEGIN_LINK" />管理者<ph name="END_LINK" />によって無効にされています</translation>
@@ -4136,6 +4140,7 @@
 <translation id="486635084936119914">ダウンロード後に特定の種類のファイルを自動的に開きます</translation>
 <translation id="4868281708609571334">Google アシスタントに <ph name="SUPERVISED_USER_NAME" /> さんの声を認識させる</translation>
 <translation id="4868284252360267853">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには command+shift+option+a キーを押してください。</translation>
+<translation id="4869170227080975044">ChromeOS のネットワーク情報を読み取る</translation>
 <translation id="4870724079713069532">エクスプローラーからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />Windows の設定<ph name="END_LINK" />に移動してください。</translation>
 <translation id="4870758487381879312">設定情報を取得するには管理者から提供されたパスワードを入力してください</translation>
 <translation id="4870995365819149457">サポートされているリンクの一部は、引き続き <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、その他 1 件のアプリで開かれます。</translation>
@@ -4258,6 +4263,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="497403230787583386">セキュリティ チェックが完了しました。ドキュメントが印刷されます。</translation>
 <translation id="4975543297921324897">等幅フォント</translation>
+<translation id="4975771730019223894">アプリのバッジ</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" /> / <ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">アクセスの確認</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
@@ -4861,6 +4867,7 @@
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="5571092938913434726">グローバル メディア コントロール</translation>
 <translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
+<translation id="5572252023412311448"><ph name="SITE_GROUP" /> のサイトの詳細を表示</translation>
 <translation id="5572648434713976849">より関連性の高い候補がアドレスバーに表示されます</translation>
 <translation id="5572851009514199876">このサイトへのアクセス権があるかどうかを Chrome で確認できるように、Chrome を起動してログインしてください。</translation>
 <translation id="557506220935336383">他のサイトに対する拡張機能の権限を確認する</translation>
@@ -6042,6 +6049,7 @@
 <translation id="6703212423117969852">しばらくしてから Chrome でもう一度お試しください。</translation>
 <translation id="6703254819490889819">バックアップを復元</translation>
 <translation id="6706210727756204531">範囲</translation>
+<translation id="6707122714992751648">ChromeOS 診断テストを実行する</translation>
 <translation id="6707389671160270963">SSL クライアント証明書</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6709133671862442373">ニュース</translation>
@@ -6219,6 +6227,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">プロキシの設定...</translation>
 <translation id="6860427144121307915">タブで開く</translation>
+<translation id="6861179941841598556"><ph name="PROFILE_NAME" /> に対するその他の操作</translation>
 <translation id="6863496016067551393">すべての拡張機能を許可するサイト</translation>
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
@@ -6308,6 +6317,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         カードメニューから設定を管理することや、[Chrome をカスタマイズ] でその他のオプションを見ることができます。</translation>
+<translation id="6949089178006131285">ChromeOS Flex のネットワーク情報を読み取る</translation>
 <translation id="6949434160682548041">パスワード（任意）</translation>
 <translation id="6950627417367801484">アプリを復元</translation>
 <translation id="6952242901357037157"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存したパスワードもここに表示できます</translation>
@@ -7910,6 +7920,7 @@
 <translation id="8463001014623882202">認証に失敗しました</translation>
 <translation id="846374874681391779">ダウンロード バー</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> が無効になっています。</translation>
+<translation id="846399539692727039">ChromeOS Flex 診断テストを実行する</translation>
 <translation id="8464132254133862871">このユーザー アカウントはサービスを利用できません。</translation>
 <translation id="8465252176946159372">無効です</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> が実行の許可を求めています</translation>
@@ -8055,6 +8066,7 @@
 <translation id="8624315169751085215">クリップボードにコピー</translation>
 <translation id="8624354461147303341">割引情報を取得</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">ChromeOS デバイスとコンポーネントのシリアル番号を読み取る</translation>
 <translation id="862542460444371744">拡張機能(&amp;E)</translation>
 <translation id="8625663000550647058">マイクの使用を許可しないサイト</translation>
 <translation id="8625916342247441948">サイトに HID デバイスへの接続を許可しない</translation>

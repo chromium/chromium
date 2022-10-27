@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> dosyası <ph name="FOLDER_NAME" /> klasörüne çıkarılıyor</translation>
 <translation id="6499681088828539489">Paylaşılan ağlar için proxy'lere izin verme</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> dosyanın kopyalanması yönetici politikası tarafından engellendi</translation>
 <translation id="6509122719576673235">Norveççe</translation>
 <translation id="6528513914570774834">Bu cihazın diğer kullanıcılarının bu ağı kullanmalarına izin verin</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> senkronize ediliyor...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">Bu dosya türü desteklenmiyor. ChromeOS'de dosya açma hakkında <ph name="BEGIN_LINK_HELP" />daha fazla bilgi alın<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> öğe kopyalanıyor.</translation>
 <translation id="7375951387215729722">Dosya <ph name="COLUMN_NAME" /> sütununa göre azalan düzende sıralandı.</translation>
+<translation id="7377161162143020057">Bu dosyanın kopyalanması yönetici politikası tarafından engellendi</translation>
 <translation id="7402503521691663770">ChromeOS Flex cihazlar</translation>
 <translation id="7408870451288633753">Çekçe</translation>
 <translation id="7417453074306512035">Etiyopya dili klavye</translation>

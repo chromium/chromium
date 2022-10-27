@@ -2310,6 +2310,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Lefel chwyddo</translation>
 <translation id="7016992613359344582">Gallai'r taliadau hyn fod yn untro neu'n ailadrodd ac mae'n bosib na fydd yn amlwg.</translation>
+<translation id="7023162328967545559">Rhybudd gweinyddwr</translation>
 <translation id="7029809446516969842">Cyfrineiriau</translation>
 <translation id="7030436163253143341">Nid yw'r dystysgrif yn ddilys</translation>
 <translation id="7031646650991750659">Pa apiau Google Play rydych wedi'u gosod</translation>
@@ -2496,6 +2497,7 @@ Manylion ychwanegol:
 <translation id="7489473601138133813">Adnoddau a chynllunio gyrfa</translation>
 <translation id="7495528107193238112">Mae'r cynnwys hwn wedi'i rwystro. Cysylltwch â pherchennog y wefan i ddatrys y broblem.</translation>
 <translation id="7497998058912824456">Botwm creu dogfen, pwyswch Enter i greu Google Doc newydd yn gyflym</translation>
+<translation id="7501663406926337752">Mae'r wefan o'ch blaen wedi'i fflagio gan eich sefydliad</translation>
 <translation id="7501853161948120656">Adnoddau addysgol</translation>
 <translation id="7506488012654002225"><ph name="BEGIN_EMPHASIS" />Ni fydd<ph name="END_EMPHASIS" /> Chromium yn cadw'r wybodaeth ganlynol:
           <ph name="BEGIN_LIST" />
@@ -2742,6 +2744,7 @@ Manylion ychwanegol:
 <translation id="8094917007353911263">Mae'n bosib y bydd y rhwydwaith rydych yn ei ddefnyddio yn gofyn i chi fynd i <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Mae'r cardiau annilys wedi'u tynnu</translation>
+<translation id="8100666323495101203">Mae eich sefydliad wedi nodi <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> fel gwefan a allai dorri polisi. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Cynadleddau a chyhoeddiadau academaidd</translation>
 <translation id="8103161714697287722">Dull Talu</translation>
 <translation id="8103643211515685474">Argraffu beth bynnag</translation>

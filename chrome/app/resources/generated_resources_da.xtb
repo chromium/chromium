@@ -4043,6 +4043,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4726710355753484204">Brug Ctrl+Alt+Lysstyrke op for at zoome ind.
 Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4726710629007580002">Der blev vist advarsler ved forsøg på at installere denne udvidelse:</translation>
+<translation id="472738079453283624">Produkter</translation>
 <translation id="4727847987444062305">Administreret gæstesession</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Din administrator<ph name="END_LINK" /> har deaktiveret kontrol af skadelig software</translation>
@@ -4307,6 +4308,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Slå lyden fra på dette website}one{Slå lyden fra på dette website}other{Slå lyden fra på disse websites}}</translation>
 <translation id="497403230787583386">Sikkerhedstjekkene blev gennemført. Dit dokument udskrives.</translation>
 <translation id="4975543297921324897">Skrifttype med fast tegnbredde</translation>
+<translation id="4975771730019223894">Appbadges</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Bekræft adgang</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>

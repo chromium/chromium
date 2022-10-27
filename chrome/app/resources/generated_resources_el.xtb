@@ -2435,6 +2435,7 @@
 <translation id="3197453258332670132">Με δεξί κλικ ή παρατεταμένο πάτημα, εμφανίζονται πληροφορίες που σχετίζονται με την επιλογή κειμένου σας</translation>
 <translation id="3199127022143353223">Διακομιστές</translation>
 <translation id="3200061262156232574">Στο καλάθι αγορών σας</translation>
+<translation id="3201237270673604992">Ω έως A</translation>
 <translation id="3201422919974259695">Εδώ θα εμφανίζονται οι διαθέσιμες συσκευές USB.</translation>
 <translation id="3202131003361292969">Διαδρομή</translation>
 <translation id="3202173864863109533">Ο ήχος αυτής της καρτέλας έχει τεθεί σε σίγαση.</translation>
@@ -3758,6 +3759,7 @@
 <translation id="4460014764210899310">Κατάργηση ομαδοποίησης</translation>
 <translation id="4462159676511157176">Προσαρμοσμένοι διακομιστές ονομάτων</translation>
 <translation id="4465236939126352372">Έχει ρυθμιστεί χρονικό όριο <ph name="TIME" /> για την εφαρμογή <ph name="APP_NAME" /></translation>
+<translation id="4465649939134800363">Επιλογές ταξινόμησης</translation>
 <translation id="4466839823729730432">Δείτε εδώ τις αναμνήσεις σας</translation>
 <translation id="4469324811108161144">Μπορούν να αποθηκευτούν έως και <ph name="CHARACTER_LIMIT" /> χαρακτήρες στις σημειώσεις.</translation>
 <translation id="4469762931504673593">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί τα αρχεία στον φάκελο <ph name="FOLDERNAME" /></translation>
@@ -4311,6 +4313,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Σίγαση ιστοτόπου}other{Σίγαση ιστοτόπων}}</translation>
 <translation id="497403230787583386">Οι έλεγχοι ασφάλειας ολοκληρώθηκαν. Το έγγραφό σας θα εκτυπωθεί.</translation>
 <translation id="4975543297921324897">Γραμματοσειρά σταθερού πλάτους</translation>
+<translation id="4975771730019223894">Προσθήκη σήματος σε εφαρμογές</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Επιβεβαίωση πρόσβασης</translation>
 <translation id="4980805016576257426">Αυτή η επέκταση περιέχει κακόβουλο πρόγραμμα.</translation>
@@ -6272,6 +6275,7 @@
 <translation id="6843264316370513305">Εντοπισμός και διόρθωση σφαλμάτων δικτύου</translation>
 <translation id="6843423766595476978">Η εντολή "Ok Google" είναι έτοιμη</translation>
 <translation id="6845038076637626672">Άνοιγμα μεγιστοποιημένης εφαρμογής</translation>
+<translation id="6845231585063669905">A έως Ω</translation>
 <translation id="6846178040388691741">Η επέκταση "<ph name="EXTENSION_NAME" />" θέλει να εκτυπώσει το αρχείο <ph name="FILE_NAME" /> με τον εκτυπωτή <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Απελευθερώστε χώρο για να συνεχίσετε</translation>
 <translation id="6848388270925200958">Αυτήν τη στιγμή, έχετε ορισμένες κάρτες που μπορούν να χρησιμοποιηθούν μόνο σε αυτήν τη συσκευή</translation>
@@ -7426,6 +7430,7 @@
 <translation id="7939073735115504773">Κάντε κλικ στο εικονίδιο αυτής της επέκτασης για ανάγνωση και αλλαγή του ιστοτόπου <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Διαχείριση πιστοποιητικών συσκευής</translation>
 <translation id="7939412583708276221">Να συνεχιστεί</translation>
+<translation id="7940265372707990269">Ταξινόμηση κατά <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Ετοιμότητα σύνδεσης:</translation>
 <translation id="7942349550061667556">Κόκκινο</translation>
 <translation id="7943368935008348579">Λήψη PDF</translation>

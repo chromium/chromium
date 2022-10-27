@@ -651,6 +651,7 @@
 <translation id="6495925982925244349">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, detaje</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> po nxirret te "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6499681088828539489">Mos i lejo përfaqësuesit për rrjete të ndara</translation>
+<translation id="6503285896705205014">Kopjimi i <ph name="COUNT" /> skedarëve është bllokuar nga politika e administratorit</translation>
 <translation id="6509122719576673235">Norvegjisht</translation>
 <translation id="6528513914570774834">Lejo që përdoruesit e tjerë të kësaj pajisjeje të përdorin këtë rrjet</translation>
 <translation id="653019979737152879">Po sinkronizon <ph name="FILE_NAME" />...</translation>
@@ -753,6 +754,7 @@
 <translation id="7357762654218998920">Ky lloj skedari nuk mbështetet. <ph name="BEGIN_LINK_HELP" />Mëso më shumë<ph name="END_LINK_HELP" /> në lidhje me hapjen e skedarëve në ChromeOS.</translation>
 <translation id="7359359531237882347">Po kopjon <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="7375951387215729722">Lista e skedarëve është renditur sipas kolonës "<ph name="COLUMN_NAME" />" në rend zbritës.</translation>
+<translation id="7377161162143020057">Kopjimi i këtij skedari është bllokuar nga politika e administratorit</translation>
 <translation id="7402503521691663770">Pajisjet Chrome OS Flex</translation>
 <translation id="7408870451288633753">Çekisht</translation>
 <translation id="7417453074306512035">Tastiera në etiopisht</translation>

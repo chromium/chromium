@@ -532,6 +532,7 @@
 <translation id="5428105026674456456">Ispanų</translation>
 <translation id="5438282218546237410">Nėra jokių rezultatų pagal užklausą „<ph name="SEARCH_TERM" />“.</translation>
 <translation id="5449551289610225147">Netinkamas slaptažodis</translation>
+<translation id="5459064203055649751">Failas pavadinimu „<ph name="FILENAME" />“ jau yra. Ar norite jį pakeisti tuo, kurį perkeliate?</translation>
 <translation id="5463231940765244860">Įvesti</translation>
 <translation id="5469868506864199649">Italų</translation>
 <translation id="5473333559083690127">Iš naujo įveskite naują PIN kodą</translation>
@@ -652,6 +653,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, išsami informacija</translation>
 <translation id="649877868557234318">Failas <ph name="FILE_NAME" /> išarchyvuojamas į aplanką „<ph name="FOLDER_NAME" />“</translation>
 <translation id="6499681088828539489">Neleisti tarpinių serverių bendrai naudojamuose tinkluose</translation>
+<translation id="6503285896705205014">Pagal administratoriaus politiką neleidžiama kopijuoti tiek failų: <ph name="COUNT" /></translation>
 <translation id="6509122719576673235">Norvegų</translation>
 <translation id="6528513914570774834">Leisti kitiems šio įrenginio naudotojams naudoti šį tinklą</translation>
 <translation id="653019979737152879">Sinchronizuojamas failas „<ph name="FILE_NAME" />“...</translation>
@@ -754,6 +756,7 @@
 <translation id="7357762654218998920">Šio tipo failas nepalaikomas. <ph name="BEGIN_LINK_HELP" />Sužinokite daugiau<ph name="END_LINK_HELP" /> apie failų atidarymą naudojant „Chrome“ OS.</translation>
 <translation id="7359359531237882347">Kopijuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="7375951387215729722">Failų sąrašas surūšiuotas pagal stulpelį „<ph name="COLUMN_NAME" />“ mažėjimo tvarka.</translation>
+<translation id="7377161162143020057">Pagal administratoriaus politiką neleidžiama kopijuoti šio failo</translation>
 <translation id="7402503521691663770">„ChromeOS Flex“ įrenginiai</translation>
 <translation id="7408870451288633753">Čekų k.</translation>
 <translation id="7417453074306512035">Etiopiška klaviatūra</translation>

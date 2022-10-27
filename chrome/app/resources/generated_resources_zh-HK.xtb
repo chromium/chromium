@@ -894,7 +894,7 @@
 <translation id="1805967612549112634">確認 PIN</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
 <translation id="1807246157184219062">淺色</translation>
-<translation id="1809201888580326312">你已選擇不儲存這些網站和應用程式的密碼</translation>
+<translation id="1809201888580326312">您已選擇不儲存這些網站和應用程式的密碼</translation>
 <translation id="1809483812148634490">您從 Google Play 下載的應用程式將從此 Chromebook 中刪除。
     <ph name="LINE_BREAKS1" />
     系統可能會同時刪除您購買的內容 (例如電影、電視節目、音樂、書籍或其他應用程式內購買項目)。
@@ -4313,6 +4313,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{將單一網站靜音}other{將多個網站靜音}}</translation>
 <translation id="497403230787583386">已完成安全檢查。即將列印文件。</translation>
 <translation id="4975543297921324897">等寬字型</translation>
+<translation id="4975771730019223894">應用程式徽章</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">確認存取權</translation>
 <translation id="4980805016576257426">這個擴充程式含有惡意軟件。</translation>
@@ -5686,7 +5687,7 @@
 <translation id="6295855836753816081">正在儲存...</translation>
 <translation id="629730747756840877">帳戶</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
-<translation id="6300125580697461004">傳送有關慳電模式嘅意見</translation>
+<translation id="6300125580697461004">提供你對節能模式嘅意見</translation>
 <translation id="6300177430812514606">不允許完成傳送或接收資料</translation>
 <translation id="630065524203833229">結束(&amp;X)</translation>
 <translation id="6300718114348072351">無法自動設定「<ph name="PRINTER_NAME" />」。請指定進階打印機詳情。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5887,7 +5888,7 @@
 <translation id="6494327278868541139">顯示進階保護功能詳情</translation>
 <translation id="6494445798847293442">不是憑證授權單位</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{此資料含有敏感或危險的內容}=1{此檔案含有敏感或危險的內容}other{這些檔案含有敏感或危險的內容}}</translation>
-<translation id="6497548114956205206">進一步瞭解慳電模式</translation>
+<translation id="6497548114956205206">進一步了解節能模式</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選的全部語言(&amp;A)</translation>
@@ -7451,7 +7452,7 @@
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機已解鎖，您將不需要輸入密碼或 PIN</translation>
 <translation id="7956373551960864128">已儲存的打印機</translation>
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>
-<translation id="7957186326898555886">傳送有關記憶體節省模式嘅意見</translation>
+<translation id="7957186326898555886">提供你對記憶體節省模式嘅意見</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
 <translation id="7959665254555683862">新無痕式分頁</translation>
 <translation id="7961015016161918242">從來沒有</translation>
@@ -7873,7 +7874,7 @@
 <translation id="8340547030807793004">可以對　<ph name="DEVICE" />　執行嘅其他操作</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{審核最近曾傳送大量通知的 <ph name="BEGIN_BOLD" />1 個網站<ph name="END_BOLD" />}other{審核最近曾傳送大量通知的 <ph name="BEGIN_BOLD" />{NUM_SITES} 個網站<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">沒有試過</translation>
-<translation id="8342399870062010251">進一步瞭解記憶體節省模式</translation>
+<translation id="8342399870062010251">進一步了解記憶體節省模式</translation>
 <translation id="8342861492835240085">選取相片集</translation>
 <translation id="8345848587667658367">您現可查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>

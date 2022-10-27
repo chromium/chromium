@@ -2271,6 +2271,7 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Մասշտաբ</translation>
 <translation id="7016992613359344582">Այս գանձումները կարող են մեկանգամյա կամ պարբերական լինել և հնարավոր է ակնհայտ չերևան:</translation>
+<translation id="7023162328967545559">Ադմինիստրատորի նախազգուշացում</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030436163253143341">Հավաստագիրն անվավեր է</translation>
 <translation id="7031646650991750659">Ինչ Google Play հավելվածներ եք դուք տեղադրել</translation>
@@ -2455,6 +2456,7 @@
 <translation id="7489473601138133813">Կարիերայի զարգացման ռեսուրսներ և պլանավոում</translation>
 <translation id="7495528107193238112">Այս բովանդակությունն արգելափակված է։ Խնդիրը վերացնելու համար դիմեք կայքի սեփականատիրոջը։</translation>
 <translation id="7497998058912824456">«Ստեղծել փաստաթուղթ» կոճակ։ Արագ Google փաստաթուղթ ստեղծելու համար սեղմեք Enter։</translation>
+<translation id="7501663406926337752">Այս կայքը ձեր կազմակերպության կողմից նշվել է որպես կանոններին չհամապատասխանող կայք</translation>
 <translation id="7501853161948120656">Կրթական ռեսուրսներ</translation>
 <translation id="7506488012654002225">Chromium-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
           <ph name="BEGIN_LIST" />
@@ -2699,6 +2701,7 @@
 <translation id="8094917007353911263">Ցանցը, որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />:</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Անվավեր քարտերը հեռացվեցին</translation>
+<translation id="8100666323495101203">Այս կայքը (<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />) ձեր կազմակերպության կողմից ճանաչվել է որպես կայք, որը հավանաբար խախտում է կանոնները։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Գիտաժողովներ և հրապարակումներ</translation>
 <translation id="8103161714697287722">Վճարման եղանակ</translation>
 <translation id="8103643211515685474">Տպել</translation>

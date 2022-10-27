@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chrome kā noklusējuma pārlūku</translation>
 <translation id="1504372625950710826">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
 <translation id="1511320244449497906">Jūs esat pierakstījies domēna <ph name="DOMAIN" /> pārvaldītā kontā un sinhronizējat ar to datus. Tagad šī konta administrators var kontā iestatīt lietotāju politikas, kas var mainīt pārlūka Chrome darbību.</translation>
+<translation id="1554731936187952550">Jūs izmantojat Chrome visaugstāko drošības līmeni pret kaitīgām vietnēm</translation>
 <translation id="1682483655351012182">Sinhronizēt jūsu Chrome datus</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chrome un citām Google lietotnēm šajā ierīcē.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome ietaupa jūsu laiku, pievienojot jūsu kontus tīmeklim. Kontus varat pievienot vai noņemt sadaļā Iestatījumi.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3345341804167540816">Izmantojiet Chrome visur</translation>
+<translation id="3503014945441706099">Iegūstiet šim Chrome profilam arī drošu pārlūkošanu ar papildu aizsardzību</translation>
 <translation id="3522659714780527202">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, ieslēdziet sinhronizāciju.</translation>
 <translation id="3533694711092285624">Nav saglabātu paroļu. Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="3641179212828090796">Lai pierakstītos ātrāk, izmantojiet paroli, ko saglabājāt pārlūkā Chrome.</translation>
@@ -137,6 +139,7 @@ Svarīga informācija
   • Ja pārlūks Chrome avarē, informācija par avāriju var ietvert noteiktu personas informāciju.
 
   • Ja ieslēgsiet sinhronizāciju, dati var ietvert arī informāciju par jūsu apmeklētajiem vietrāžiem URL.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Jūs šim Chrome profilam saņemat standarta aizsardzību</translation>
 <translation id="9112744793181547300">Vai iestatīt Chrome kā noklusējuma pārlūku?</translation>
 <translation id="9122931302567044771">Tas nozīmē, ka Chrome katru reizi pieprasīs datoriem paredzēto vietni.</translation>
 </translationbundle>

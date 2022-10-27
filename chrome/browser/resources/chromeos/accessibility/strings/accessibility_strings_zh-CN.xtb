@@ -327,6 +327,7 @@
 <translation id="309749186376891736">移动光标</translation>
 <translation id="3103579948980282461">中青紫红色</translation>
 <translation id="3104705064753753826">提醒对话框</translation>
+<translation id="3105857328626674463">突出显示上一个字词</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="311015743332597320">四根手指向右滑动</translation>
 <translation id="3112457281078985179">要开启或关闭 ChromeVox，请按 Ctrl+Alt+Z。</translation>
@@ -355,6 +356,7 @@
 <translation id="3241052487511142956">上一个访问过的链接</translation>
 <translation id="3241638166094654466">每行中的单元格数：</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />：<ph name="CONTENT" /></translation>
+<translation id="3247621388192105674">移到末尾</translation>
 <translation id="3260949043575829030">上一个相似项</translation>
 <translation id="3270069636408109001">没有下一个表格</translation>
 <translation id="3273791280096244679">保存标签</translation>
@@ -381,6 +383,7 @@
 <translation id="3389259863310851658">上一个表单字段</translation>
 <translation id="3393605254399152980">拖动 1 根手指即可听取您所触摸的内容</translation>
 <translation id="3406283310380167331">显示表单列表</translation>
+<translation id="3407726812456125464">朗读所选文字</translation>
 <translation id="3414400929511680526">爱丽丝蓝色</translation>
 <translation id="3418936350470374046">下方没有单元格</translation>
 <translation id="3419269701801640163">粘贴</translation>
@@ -947,6 +950,7 @@
 <translation id="743783356331413498">示例</translation>
 <translation id="7439060726180460871">目录</translation>
 <translation id="744163271241493234">pwded</translation>
+<translation id="7443479558101073378">突出显示下一个字词</translation>
 <translation id="7465123027577412805">使用自然语音？</translation>
 <translation id="7491962110804786152">标签</translation>
 <translation id="7492497529767769458">移到下一部分。例如，状态栏和启动器。</translation>

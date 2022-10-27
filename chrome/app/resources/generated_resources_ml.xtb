@@ -2452,6 +2452,7 @@
 <translation id="3241680850019875542">പായ്ക്ക് ചെയ്യുന്നതിന് വിപുലീകരണത്തിന്‍റെ റൂട്ട് ഡയറക്‌റ്ററി തിരഞ്ഞെടുക്കുക. വിപുലീകരണം അപ്‌ഡേറ്റ് ചെയ്യുന്നതിന്, വീണ്ടും ഉപയോഗിക്കുന്നതിന് സ്വകാര്യ കീ ഫയലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3242289508736283383">ChromeOS കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="3242665648857227438">ഈ പ്രൊഫൈൽ ChromeOS പ്രോക്‌സി ക്രമീകരണം ഉപയോഗിക്കുന്നു.</translation>
+<translation id="3243017971870859287">ChromeOS Flex ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും റീഡ് ചെയ്യുക</translation>
 <translation id="3244294424315804309">ശബ്ദം മ്യൂട്ട് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - നെറ്റ്‌വർക്ക് പിശക്</translation>
 <translation id="3248902735035392926">സുരക്ഷ പ്രധാനമാണ്. അൽപ്പസമയം ചെലവഴിച്ച് <ph name="BEGIN_LINK" />നിങ്ങളുടെ വിപുലീകരണങ്ങൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കുക<ph name="END_LINK" /></translation>
@@ -2508,6 +2509,7 @@
 <translation id="3297105622164376095">മൂന്നാം കക്ഷി സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ കാണിക്കാൻ അനുവാദമുള്ളവ</translation>
 <translation id="3297536526040732495">നിങ്ങളെ Google ആപ്പുകളിലുടനീളം പരിരക്ഷിക്കുന്നതിന്, നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ ഈ ഡാറ്റ Google അക്കൗണ്ടിലേക്ക് താൽക്കാലികമായി ലിങ്ക് ചെയ്യുന്നു</translation>
 <translation id="329838636886466101">റിപ്പയർ ചെയ്യുക</translation>
+<translation id="3298438307450647315">ChromeOS ഉപകരണ വിവരങ്ങളും ഉപകരണ ഡാറ്റയും റീഡ് ചെയ്യുക</translation>
 <translation id="3298789223962368867">അസാധുവായ URL നല്‍കി.</translation>
 <translation id="32991397311664836">ഉപകരണങ്ങൾ:</translation>
 <translation id="33022249435934718">GDI കൈകാര്യംചെയ്യുന്നവ</translation>
@@ -2614,6 +2616,7 @@
 <translation id="3402255108239926910">അവതാർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3402585168444815892">ഡെമോ മോഡിൽ എൻറോൾ ചെയ്യുന്നു</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">ChromeOS Flex ഉപകരണ വിവരങ്ങളും ഉപകരണ ഡാറ്റയും റീഡ് ചെയ്യുക</translation>
 <translation id="3404065873681873169">ഈ സൈറ്റിനായി പാസ്‍വേഡുകളൊന്നും സംരക്ഷിച്ചിട്ടില്ല</translation>
 <translation id="3405664148539009465">ഫോണ്ടുകള്‍ ഇച്ഛാനുസൃതമാക്കുക</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4166,6 +4169,7 @@
 <translation id="486635084936119914">ചില ഫയൽ തരങ്ങളെ ഡൗൺലോഡ് ചെയ്‌ത ശേഷം സ്വയം തുറക്കുക</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> എന്നയാളുടെ ശബ്‌ദം തിരിച്ചറിയാൻ Google Assistant-നെ പഠിപ്പിക്കുക</translation>
 <translation id="4868284252360267853">ഈ ഡയലോഗ് നിലവിൽ ഫോക്കസ് ചെയ്തിട്ടില്ല. ഈ ഡയലോഗ് ഫോക്കസ് ചെയ്യാൻ Command-Shift-Option A അമർത്തുക.</translation>
+<translation id="4869170227080975044">ChromeOS നെറ്റ്‌വർക്ക് വിവരങ്ങൾ റീഡ് ചെയ്യുക</translation>
 <translation id="4870724079713069532">File Explorer-ൽ നിന്നോ മറ്റ് ആപ്പുകളിൽ നിന്നോ ഈ ആപ്പ് ഉപയോഗിച്ച് പിന്തുണയ്ക്കുന്ന ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാനും എഡിറ്റ് ചെയ്യാനുമാകും. ഡിഫോൾട്ടായി ഏതൊക്കെ ഫയലുകൾ തുറക്കാൻ ഈ ആപ്പിന് കഴിയുമെന്നത് നിയന്ത്രിക്കാൻ, <ph name="BEGIN_LINK" />Windows ക്രമീകരണത്തിലേക്ക് പോകുക<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">കോൺഫിഗറേഷൻ വിവരം ലഭിക്കാൻ അഡ്‌മിൻ നൽകിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4870995365819149457"><ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> എന്നിവയിലും മറ്റൊരു ആപ്പിലും ചില പിന്തുണാ ലിങ്കുകൾ തുടർന്നും തുറക്കാനാകും.</translation>
@@ -4288,6 +4292,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{സൈറ്റ് മ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ മ്യൂട്ട് ചെയ്യുക}}</translation>
 <translation id="497403230787583386">സുരക്ഷാപരിശോധനകൾ പൂർത്തിയായി. നിങ്ങളുടെ ഡോക്യുമെന്റ് പ്രിന്റ് ചെയ്യും.</translation>
 <translation id="4975543297921324897">മോണോസ്പെയ്‌സ് ഫോണ്ട്</translation>
+<translation id="4975771730019223894">ആപ്പ് ബാഡ്‌ജ് ചെയ്യൽ</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">ആക്‌സസ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="4980805016576257426">ഈ വിപുലീകരണത്തിൽ മാൽവെയർ അടങ്ങിയിരിക്കുന്നു.</translation>
@@ -4898,6 +4903,7 @@
 <translation id="5571066253365925590">Bluetooth പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5571092938913434726">ആഗോള മീഡിയാ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="5571832155627049070">നിങ്ങളുടെ പ്രൊഫൈൽ ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
+<translation id="5572252023412311448"><ph name="SITE_GROUP" /> എന്നതിന്റെ സൈറ്റ് വിശദാംശങ്ങൾ കാണിക്കുക</translation>
 <translation id="5572648434713976849">വിലാസ ബാറിൽ നിങ്ങൾക്ക്, മെച്ചപ്പെടുത്തിയ നിർദ്ദേശങ്ങൾ ലഭിക്കും</translation>
 <translation id="5572851009514199876">ആരംഭിച്ച് Chrome-ൽ സൈൻ ഇൻ ചെയ്യുന്നതിലൂടെ, നിങ്ങൾക്ക് ഈ സൈറ്റ് ആക്‌സസ് ചെയ്യാൻ അനുവാദമുണ്ടോയെന്ന് Chrome-ന് പരിശോധിക്കാനാവും.</translation>
 <translation id="557506220935336383">മറ്റ് സൈറ്റുകൾക്കുള്ള വിപുലീകരണ അനുമതികൾ കാണുക</translation>
@@ -6089,6 +6095,7 @@
 <translation id="6703212423117969852">നിങ്ങൾക്ക് പിന്നീട് Chrome-ൽ വീണ്ടും ശ്രമിക്കാം.</translation>
 <translation id="6703254819490889819">ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6706210727756204531">വ്യാപ്‌തി</translation>
+<translation id="6707122714992751648">Chrome OS ഡയഗ്‌നോസ്‌റ്റിക് ടെസ്റ്റുകൾ റൺ ചെയ്യുക</translation>
 <translation id="6707389671160270963">SSL ക്ലയന്‍റ് സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> എന്നതും മറ്റൊരു ടാബും}other{<ph name="PAGE_TITLE" /> എന്നതും മറ്റ് # ടാബുകളും}}</translation>
 <translation id="6709133671862442373">News</translation>
@@ -6267,6 +6274,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">പ്രോക്സി ക്രമീകരണങ്ങള്‍...</translation>
 <translation id="6860427144121307915">ടാബിൽ തുറക്കുക</translation>
+<translation id="6861179941841598556"><ph name="PROFILE_NAME" /> എന്നയാൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="6863496016067551393">എല്ലാ വിപുലീകരണങ്ങളും അനുവദിച്ചവ</translation>
 <translation id="686366188661646310">പാസ്‌വേഡ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="6865313869410766144">ഓട്ടോഫിൽ ഫോം ഡാറ്റ</translation>
@@ -6356,6 +6364,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         നിങ്ങൾക്ക് കാർഡ് മെനുവിൽ നിന്ന് ക്രമീകരണം മാനേജ് ചെയ്യാം അല്ലെങ്കിൽ Chrome ഇഷ്ടാനുസൃതമാക്കൂ എന്നതിൽ, കൂടുതൽ ഓപ്ഷനുകൾ കാണാം.</translation>
+<translation id="6949089178006131285">ChromeOS Flex നെറ്റ്‌വർക്ക് വിവരങ്ങൾ റീഡ് ചെയ്യുക</translation>
 <translation id="6949434160682548041">പാസ്‌വേഡ് (ഓപ്‌ഷണൽ)</translation>
 <translation id="6950627417367801484">ആപ്പുകൾ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6952242901357037157">നിങ്ങളുടെ <ph name="BEGIN_LINK" />Google അക്കൗണ്ടിൽ<ph name="END_LINK" /> നിന്നുള്ള പാസ്‌വേഡുകളും ഇവിടെ കാണിക്കാം</translation>
@@ -7972,6 +7981,7 @@
 <translation id="8463001014623882202">അംഗീകരിക്കാനായില്ല</translation>
 <translation id="846374874681391779">ഡൗണ്‍ലോഡ് വിവരങ്ങളുടെ ബാര്‍</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> പ്രവർത്തനരഹിതമാക്കി.</translation>
+<translation id="846399539692727039">ChromeOS Flex ഡയഗ്‌നോസ്‌റ്റിക് ടെസ്റ്റുകൾ റൺ ചെയ്യുക</translation>
 <translation id="8464132254133862871">സേവനത്തിനായി ഈ ഉപയോക്തൃ അക്കൗണ്ട് യോഗ്യമല്ല.</translation>
 <translation id="8465252176946159372">അസാധുവാണ്</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> പ്ലഗിന് പ്രവർത്തിക്കാൻ നിങ്ങളുടെ അനുമതി ആവശ്യമുണ്ട്</translation>
@@ -8118,6 +8128,7 @@
 <translation id="8624315169751085215">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
 <translation id="8624354461147303341">ഡിസ്‌കൗണ്ടുകൾ നേടുക</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">ChromeOS ഉപകരണവും കമ്പോണന്റ് സീരിയൽ നമ്പറുകളും റീഡ് ചെയ്യുക</translation>
 <translation id="862542460444371744">&amp;വിപുലീകരണങ്ങള്‍</translation>
 <translation id="8625663000550647058">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
 <translation id="8625916342247441948">HID ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>

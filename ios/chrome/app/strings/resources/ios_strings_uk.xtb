@@ -117,6 +117,7 @@
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1820259098641718022">Додано в список читання</translation>
 <translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
+<translation id="1857751338515529195">Перейти на наступну вкладку</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
 <translation id="1891796056033961979">На цьому екрані відображаються збережені закладки, паролі, налаштування тощо.</translation>
@@ -147,6 +148,7 @@
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
 <translation id="214201757571129614">Увійти…</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
+<translation id="2150175299852799498">Chrome для мобільних пристроїв</translation>
 <translation id="2155145621546387786">Посилання на додаток Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2178545675770638239">Виберіть пароль</translation>
@@ -226,6 +228,7 @@
 <translation id="2783054063075604403">Не вдалося створити посилання</translation>
 <translation id="2786701870377699570">Пошук вкладок на синхронізованих пристроях</translation>
 <translation id="2800683595868705743">Закрити перемикач вкладок</translation>
+<translation id="2812727400746650635">Перейти на попередню вкладку</translation>
 <translation id="2815198996063984598">2. Натисніть "Веб-переглядач за умовчанням"</translation>
 <translation id="2820289420301699633">Адміністратор зможе контролювати Chrome і отримувати доступ до даних</translation>
 <translation id="2830972654601096923">Керувати адресами…</translation>
@@ -450,6 +453,7 @@
 <translation id="4630540211544979320">Перекласти сторінки</translation>
 <translation id="4634124774493850572">Прийняти пароль</translation>
 <translation id="4636930964841734540">Інформація</translation>
+<translation id="4649294145748405669">Швидша, безпечніша й персоналізована взаємодія з Інтернетом завдяки веб-переглядачу Google Chrome. Завантажити його можна тут.</translation>
 <translation id="4650125387981512669">Продовжити як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Ця функція вмикається, коли ви входите в обліковий запис Google.</translation>
 <translation id="4659667755519643272">Відкрити перемикач вкладок</translation>
@@ -618,6 +622,7 @@
 <translation id="5913600720976431809">Опції перекладу сторінки</translation>
 <translation id="5938160824633642847">Пам’ять на пристрої майже заповнено. Звільніть місце та повторіть спробу.</translation>
 <translation id="5948291296578561264">Ви зможете зберігати знімки в бібліотеці фотографій.</translation>
+<translation id="5949969988218625680">Показати історію</translation>
 <translation id="5951816930277761335">Поділіться посиланням</translation>
 <translation id="5955891643922670672">Перегляд офлайн-версії</translation>
 <translation id="5957613098218939406">Інші параметри</translation>
@@ -698,6 +703,7 @@
 Ваші дані було зашифровано <ph name="TIME" /> за допомогою парольної фрази для синхронізації. Введіть її, щоб почати синхронізацію.</translation>
 <translation id="6418346271604475326">Підготовка PDF</translation>
 <translation id="6434591244308415567">Сталася помилка. Спробуйте пізніше.</translation>
+<translation id="6435817889602303010">Відкрити останню закриту вкладку</translation>
 <translation id="6439338047467462846">Дозволити всі</translation>
 <translation id="6445051938772793705">Країна</translation>
 <translation id="6445981559479772097">Повідомлення надіслано.</translation>
@@ -864,6 +870,7 @@
 <translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7726702057919861819">Меню → Історія → Очистити історію</translation>
 <translation id="7741325291586284254">Сторінка нової анонімної вкладки</translation>
+<translation id="7743314735291715910">Відкрити URL-адресу</translation>
 <translation id="7756478488453921771">Меню → Налаштування → Способи оплати</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>

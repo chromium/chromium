@@ -531,6 +531,7 @@
 <translation id="5428105026674456456">স্পেনিশ্ব</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />ৰ কোনো ফলাফল নাই।</translation>
 <translation id="5449551289610225147">অমান্য পাছৱৰ্ড</translation>
+<translation id="5459064203055649751">"<ph name="FILENAME" />" নামৰ এটা ফাইল ইতিমধ্যে আছেই। আপুনি স্থানান্তৰ কৰি থকাটোৰে এইটো সলনি কৰিব বিচাৰেনে?</translation>
 <translation id="5463231940765244860">দিয়ক</translation>
 <translation id="5469868506864199649">ইটালিয়ান</translation>
 <translation id="5473333559083690127">আপোনাৰ নতুন পিনটো আকৌ দিয়ক</translation>
@@ -651,6 +652,7 @@
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে, সবিশেষ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ক <ph name="FOLDER_NAME" />ত আহৰণ কৰি থকা হৈছে</translation>
 <translation id="6499681088828539489">শ্বেয়াৰ কৰি থোৱা নেটৱৰ্কৰ বাবে প্ৰ’ক্সিৰ অনুমতি নিদিব</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> টা ফাইল প্ৰতিলিপি কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="6509122719576673235">ন’ৰৱেজিয়ান</translation>
 <translation id="6528513914570774834">এই ডিভাইচটোৰ অন্য ব্যৱহাৰকাৰীসকলক এই নেটৱৰ্কটো ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ছিংক কৰি থকা হৈছে…</translation>
@@ -753,6 +755,7 @@
 <translation id="7357762654218998920">এইধৰণৰ ফাইল সমৰ্থিত নহয়। ChromeOSত ফাইল খোলাৰ বিষয়ে <ph name="BEGIN_LINK_HELP" />অধিক জানক<ph name="END_LINK_HELP" />।</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" />টা বস্তু প্ৰতিলিপি কৰি থকা হৈছে...</translation>
 <translation id="7375951387215729722">ফাইলৰ সূচী <ph name="COLUMN_NAME" /> অনুসৰি অধোগামীভাৱে সজোৱা হৈছে।</translation>
+<translation id="7377161162143020057">এই ফাইলটোৰ প্ৰতিলিপি কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="7402503521691663770">ChromeOS Flex ডিভাইচ</translation>
 <translation id="7408870451288633753">ছেক</translation>
 <translation id="7417453074306512035">ইথিঅ’পিক কীব’র্ড</translation>

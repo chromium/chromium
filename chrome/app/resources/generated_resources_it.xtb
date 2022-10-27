@@ -2420,6 +2420,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3197453258332670132">Se fai clic con il pulsante destro del mouse o se applichi una pressione prolungata, vengono mostrate informazioni correlate al testo selezionato</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3200061262156232574">Nel tuo carrello degli acquisti</translation>
+<translation id="3201237270673604992">Dalla Z alla A</translation>
 <translation id="3201422919974259695">I dispositivi USB disponibili vengono indicati qui.</translation>
 <translation id="3202131003361292969">Percorso</translation>
 <translation id="3202173864863109533">L'audio di questa scheda sta per essere disattivato.</translation>
@@ -2453,6 +2454,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3241680850019875542">Seleziona la directory principale dell'estensione di cui creare il pacchetto. Per aggiornare un'estensione, seleziona anche il file delle chiave privata da riutilizzare.</translation>
 <translation id="3242289508736283383">L'app con l'attributo del file manifest "kiosk_only" deve essere installata in modalità kiosk di ChromeOS</translation>
 <translation id="3242665648857227438">Questo profilo usa le impostazioni del proxy di ChromeOS.</translation>
+<translation id="3243017971870859287">Lettura dei numeri di serie del dispositivo ChromeOS Flex e dei componenti</translation>
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
 <translation id="3248902735035392926">La sicurezza è importante. Prenditi un attimo per <ph name="BEGIN_LINK" />controllare ora le tue estensioni<ph name="END_LINK" /></translation>
@@ -2509,6 +2511,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3297105622164376095">Autorizzati a mostrare richieste di accesso di terze parti</translation>
 <translation id="3297536526040732495">Se hai eseguito l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google</translation>
 <translation id="329838636886466101">Ripara</translation>
+<translation id="3298438307450647315">Lettura di dati e informazioni del dispositivo ChromeOS</translation>
 <translation id="3298789223962368867">L'URL inserito non è valido.</translation>
 <translation id="32991397311664836">Dispositivi:</translation>
 <translation id="33022249435934718">Handle GDI</translation>
@@ -2615,6 +2618,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3402255108239926910">Scegli un avatar</translation>
 <translation id="3402585168444815892">Registrazione alla modalità demo</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Lettura di dati e informazioni del dispositivo ChromeOS Flex</translation>
 <translation id="3404065873681873169">Nessuna password salvata per questo sito</translation>
 <translation id="3405664148539009465">Personalizza caratteri</translation>
 <translation id="3405763860805964263">...</translation>
@@ -3740,6 +3744,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4460014764210899310">Separa</translation>
 <translation id="4462159676511157176">Assegna nomi personalizzati a server</translation>
 <translation id="4465236939126352372">Limite di tempo di <ph name="TIME" /> impostato per <ph name="APP_NAME" /></translation>
+<translation id="4465649939134800363">Opzioni di ordinamento</translation>
 <translation id="4466839823729730432">Visualizza i tuoi ricordi qui</translation>
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> può modificare i file nella cartella <ph name="FOLDERNAME" /></translation>
@@ -4169,6 +4174,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="486635084936119914">Apri automaticamente determinati tipi di file dopo il download</translation>
 <translation id="4868281708609571334">Insegna all'Assistente Google a riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Questa finestra di dialogo non è attualmente attiva. Premi Comando+Maiusc+Opzione+A per attivarla.</translation>
+<translation id="4869170227080975044">Lettura di informazioni di rete di ChromeOS</translation>
 <translation id="4870724079713069532">Puoi aprire e modificare i file supportati con questa app da Esplora file o con altre app. Per stabilire quali file aprire per impostazione predefinita in questa app, vai alle <ph name="BEGIN_LINK" />impostazioni di Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Inserisci la password fornita dall'amministratore per ricevere informazioni sulla configurazione</translation>
 <translation id="4870995365819149457">Alcuni link supportati saranno comunque aperti in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e in un'altra app.</translation>
@@ -4291,6 +4297,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Disattiva l'audio del sito}other{Disattiva l'audio dei siti}}</translation>
 <translation id="497403230787583386">Controlli di sicurezza effettuati. Il documento sarà stampato.</translation>
 <translation id="4975543297921324897">Carattere monospace</translation>
+<translation id="4975771730019223894">Badge dell'app</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Conferma accesso</translation>
 <translation id="4980805016576257426">Questa estensione contiene malware.</translation>
@@ -4901,6 +4908,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Personalizza il tuo profilo</translation>
+<translation id="5572252023412311448">Mostra i dettagli del sito per <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Riceverai suggerimenti migliori nella barra degli indirizzi</translation>
 <translation id="5572851009514199876">Accedi a Chrome per consentire al browser di verificare che tu sia autorizzato ad accedere a questo sito.</translation>
 <translation id="557506220935336383">Visualizza autorizzazioni per le estensioni per altri siti</translation>
@@ -6087,6 +6095,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6703212423117969852">Puoi riprovare più tardi in Chrome.</translation>
 <translation id="6703254819490889819">Ripristina copia di backup</translation>
 <translation id="6706210727756204531">Ambito</translation>
+<translation id="6707122714992751648">Esecuzione di test diagnostici di ChromeOS</translation>
 <translation id="6707389671160270963">Certificato client SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 altra scheda}other{<ph name="PAGE_TITLE" /> e altre # schede}}</translation>
 <translation id="6709133671862442373">Notizie</translation>
@@ -6246,6 +6255,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6843264316370513305">Debug rete</translation>
 <translation id="6843423766595476978">Ok Google impostato</translation>
 <translation id="6845038076637626672">Apri ingrandita</translation>
+<translation id="6845231585063669905">Dalla A alla Z</translation>
 <translation id="6846178040388691741">L'estensione "<ph name="EXTENSION_NAME" />" vuole stampare il file <ph name="FILE_NAME" /> con la stampante <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libera spazio per continuare</translation>
 <translation id="6848388270925200958">Al momento hai delle carte che possono essere utilizzate solo da questo dispositivo.</translation>
@@ -6265,6 +6275,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6860097299815761905">Impostazioni proxy...</translation>
 <translation id="6860427144121307915">Apri in una scheda</translation>
+<translation id="6861179941841598556">Altre azioni per <ph name="PROFILE_NAME" /></translation>
 <translation id="6863496016067551393">Uso di tutte le estensioni consentito</translation>
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
@@ -6354,6 +6365,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
         <ph name="BREAK" />
         <ph name="BREAK" />
         Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
+<translation id="6949089178006131285">Lettura di informazioni di rete di ChromeOS Flex</translation>
 <translation id="6949434160682548041">Password (facoltativa)</translation>
 <translation id="6950627417367801484">Ripristina le app</translation>
 <translation id="6952242901357037157">Puoi visualizzare le password del tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /> anche qui</translation>
@@ -7398,6 +7410,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7939073735115504773">Fai clic sull'icona di questa estensione per consentire di leggere e modificare <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>
 <translation id="7939412583708276221">Mantieni comunque</translation>
+<translation id="7940265372707990269">Ordina per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Disponibilità tethering:</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7943368935008348579">Scarica PDF</translation>
@@ -7970,6 +7983,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8463001014623882202">Autorizzazione negata</translation>
 <translation id="846374874681391779">Barra dei download</translation>
 <translation id="8463955938112983119">Plug-in <ph name="PLUGIN_NAME" /> disabilitato.</translation>
+<translation id="846399539692727039">Esecuzione di test diagnostici di ChromeOS Flex</translation>
 <translation id="8464132254133862871">Questo account utente non è idoneo per il servizio.</translation>
 <translation id="8465252176946159372">Non valido</translation>
 <translation id="8465444703385715657">Per poter eseguire <ph name="PLUGIN_NAME" /> è necessaria la tua autorizzazione</translation>
@@ -8116,6 +8130,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8624315169751085215">Copia negli appunti</translation>
 <translation id="8624354461147303341">Ricevi sconti</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Lettura dei numeri di serie del dispositivo ChromeOS e dei componenti</translation>
 <translation id="862542460444371744">&amp;Estensioni</translation>
 <translation id="8625663000550647058">Non possono utilizzare il microfono</translation>
 <translation id="8625916342247441948">Non consentire ai siti di connettersi ai dispositivi HID</translation>

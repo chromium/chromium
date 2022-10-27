@@ -36,6 +36,7 @@
 <translation id="1058479211578257048">กำลังบันทึกบัตร...</translation>
 <translation id="1060320201901229167">Envelope Kaku 5</translation>
 <translation id="10614374240317010">ไม่เคยบันทึก</translation>
+<translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">บุ๊กมาร์กบนเดสก์ท็อป</translation>
 <translation id="1068672505746868501">ไม่ต้องแปลหน้าเว็บภาษา<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">ยานพาหนะไฮบริดและยานพาหนะทางเลือก</translation>
@@ -51,6 +52,7 @@
 <translation id="1100782917270858593">ปุ่มสำรวจต่อ กด Enter เพื่อสำรวจต่อและดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="1101672080107056897">การดำเนินการผิดพลาด</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
+<translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">โบราณวัตถุและของสะสม</translation>
 <translation id="1113869188872983271">&amp;เลิกทำการจัดลำดับใหม่</translation>
@@ -93,6 +95,7 @@
 <translation id="121201262018556460">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่มีคีย์ที่ไม่รัดกุม ผู้โจมตีอาจทำให้คีย์ส่วนตัวเสียหายไปแล้วและเซิร์ฟเวอร์นี้อาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
 <translation id="1222060260947439312">ถาดขวา</translation>
+<translation id="1224330468394120478">A3x6</translation>
 <translation id="1225570101506606926">บิลเลียด</translation>
 <translation id="1225607422885279949">Google จะค้นหาส่วนลดให้คุณ</translation>
 <translation id="1227224963052638717">นโยบายที่ไม่รู้จัก</translation>
@@ -404,6 +407,7 @@
 <translation id="1945968466830820669">คุณอาจเข้าถึงบัญชีขององค์กรไม่ได้หรือถูกโจรกรรมข้อมูลประจำตัว Chromium ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="1946849748901605102">12 x 15 นิ้ว</translation>
 <translation id="1947454675006758438">เย็บด้วยลวดเย็บกระดาษด้านขวาบน</translation>
+<translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">หา รักษาความปลอดภัย หรือลบข้อมูลในอุปกรณ์</translation>
 <translation id="1958218078413065209">คะแนนสูงสุดของคุณคือ <ph name="SCORE" /></translation>
 <translation id="1959001866257244765">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตสำหรับทุกคนโดยการส่ง <ph name="BEGIN_WHITEPAPER_LINK" />URL ของหน้าเว็บบางหน้าที่คุณเข้าชม ข้อมูลระบบที่จำกัด และเนื้อหาบางส่วนของหน้า<ph name="END_WHITEPAPER_LINK" />ให้ Google <ph name="BEGIN_PRIVACY_PAGE_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -473,6 +477,7 @@
 <translation id="2122719317867821810">นโยบายนี้ทำงานตามที่ควรจะเป็นแต่มีการตั้งค่าที่ขัดแย้งกันไว้ที่อื่นและถูกลบล้างโดยนโยบายนี้</translation>
 <translation id="2126374524350484896">โปรแกรมสร้าง PDF:</translation>
 <translation id="2130448033692577677">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากไม่มีการตั้งค่านโยบาย DnsOverHttpsMode ไว้</translation>
+<translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">เสื้อผ้าบุรุษ</translation>
 <translation id="213826338245044447">บุ๊กมาร์กบนอุปกรณ์เคลื่อนที่</translation>
 <translation id="214556005048008348">ยกเลิกการชำระเงิน</translation>
@@ -713,6 +718,7 @@
 <translation id="277499241957683684">ไม่มีอุปกรณ์บันทึก</translation>
 <translation id="2775884851269838147">หน้าที่พิมพ์หน้าแรก</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">การเชื่อมต่อได้รับการรีเซ็ตแล้ว</translation>
 <translation id="2791176355335562114">ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="2792012897584536778">ผู้ดูแลระบบของอุปกรณ์นี้ได้ตั้งค่าใบรับรองความปลอดภัยที่อาจอนุญาตให้ตนดูเนื้อหาของเว็บไซต์ที่คุณเข้าชมได้</translation>
@@ -768,6 +774,7 @@
 <translation id="2949183777371959169">ไม่สนใจเนื่องจากไม่ได้ลงทะเบียนเครื่องกับการจัดการระบบคลาวด์ของเบราว์เซอร์ Chrome</translation>
 <translation id="2951588413176968965">กล่องจดหมายของฉัน</translation>
 <translation id="2952820037279740115">ปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
+<translation id="2952904171810469095">A2x5</translation>
 <translation id="295526156371527179">คำเตือน: ระบบไม่ได้รวมนโยบายนี้เป็นพจนานุกรมตามที่นโยบายระบุเพราะไม่ใช่พจนานุกรม</translation>
 <translation id="2955913368246107853">ปิดแถบค้นหา</translation>
 <translation id="2958544468932521864">คริกเก็ต</translation>
@@ -898,6 +905,7 @@
 <translation id="3303176609391916566">30 x 42 นิ้ว</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
 <translation id="3304073249511302126">การสแกนหาบลูทูธ</translation>
+<translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านนี้ทันที</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>
 <translation id="3308738399950580893">โฆษณา</translation>
@@ -912,6 +920,7 @@
 <translation id="3340978935015468852">การตั้งค่า</translation>
 <translation id="3342366525167526994">ศิลปะบนร่างกาย</translation>
 <translation id="3345782426586609320">ตา</translation>
+<translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">เปลี่ยนการตั้งค่าพร็อกซี...</translation>
 <translation id="3359565626472459400">การแต่งงาน</translation>
 <translation id="3360103848165129075">แผ่นงานของเครื่องจัดการการชำระเงิน</translation>
@@ -998,6 +1007,7 @@
 <translation id="3567901620846335314">100 x 150 มม.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
+<translation id="3575168918110434329">A4x7</translation>
 <translation id="3576616784287504635">หน้าที่ฝังไว้ใน <ph name="SITE" /> บอกว่า</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577902790357386792">ยิมนาสติก</translation>
@@ -1115,6 +1125,7 @@
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ได้ติดตั้งส่วนขยายสำหรับฟังก์ชันเพิ่มเติม ส่วนขยายเข้าถึงข้อมูลบางส่วนของคุณได้</translation>
 <translation id="3832522519263485449">เจาะรูด้านซ้ายหลายรู</translation>
 <translation id="3835233591525155343">การใช้งานอุปกรณ์ของคุณ</translation>
+<translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างเอกสารใหม่ใน Google เอกสารอย่างรวดเร็ว</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3853684360927654006">เครื่องคำนวณระดับความปลอดภัยของรหัสผ่าน</translation>
@@ -1201,6 +1212,7 @@
 <translation id="4114146879518089587">ไปที่เว็บไซต์</translation>
 <translation id="4116663294526079822">อนุญาตบนไซต์นี้เสมอ</translation>
 <translation id="4116701314593212016">JIS B7</translation>
+<translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">ขอบข่ายนโยบายไม่ได้รับการสนับสนุน</translation>
 <translation id="4121428309786185360">หมดอายุเมื่อวันที่</translation>
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
@@ -1264,6 +1276,7 @@
 <translation id="4235360514405112390">ถูกต้อง</translation>
 <translation id="4250431568374086873">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัยโดยสมบูรณ์</translation>
 <translation id="4250680216510889253">ไม่</translation>
+<translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">หมายเหตุ</translation>
 <translation id="425582637250725228">ระบบอาจไม่ได้บันทึกการเปลี่ยนแปลงของคุณ</translation>
 <translation id="425869179292622354">เพิ่มความปลอดภัยด้วยบัตรเสมือนไหม</translation>
@@ -1323,6 +1336,7 @@
 <translation id="4372948949327679948">ค่า <ph name="VALUE_TYPE" /> ที่คาดไว้</translation>
 <translation id="4377125064752653719">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่ใบรับรองที่เซิร์ฟเวอร์แจ้งมาถูกเพิกถอนโดยผู้ออกใบรับรอง ซึ่งหมายความว่าข้อมูลรับรองด้านความปลอดภัยที่เซิร์ฟเวอร์แจ้งมานั้นไม่สามารถเชื่อถือได้ คุณอาจกำลังติดต่อกับคนที่คิดจะโจมตีคุณ</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
+<translation id="4384395682990721132">A4x3</translation>
 <translation id="4386413576162606861">เกมสวมบทบาท</translation>
 <translation id="4390472908992056574">Brim</translation>
 <translation id="4393632246160856858">ผลิตภัณฑ์ดูแลเล็บ</translation>
@@ -1400,6 +1414,7 @@
 <translation id="4622292761762557753">โอนต่อไป</translation>
 <translation id="4627675673814409125">ตั้งค่านโยบายนี้ในระดับโปรไฟล์ Chrome ไม่ได้ และระบบจะไม่สนใจ</translation>
 <translation id="4628948037717959914">รูปภาพ</translation>
+<translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">บริการคืนเงินที่ลิงก์อยู่</translation>
 <translation id="4636930964841734540">ข้อมูล</translation>
 <translation id="4638670630777875591">โหมดไม่ระบุตัวตนใน Chromium</translation>
@@ -1569,6 +1584,7 @@
 <translation id="5031870354684148875">เกี่ยวกับ Google แปลภาษา</translation>
 <translation id="503498442187459473"><ph name="HOST" /> ต้องการใช้กล้องถ่ายรูปและไมโครโฟนของคุณ</translation>
 <translation id="5035135400558156732">การทำสวน</translation>
+<translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">ขนาดแบบอักษร</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5040262127954254034">ความเป็นส่วนตัว</translation>
@@ -1653,6 +1669,7 @@
 <translation id="5229588705416009823">เกมแบบผู้เล่นจำนวนมาก</translation>
 <translation id="5230733896359313003">ที่อยู่ในการจัดส่ง</translation>
 <translation id="5230815978613972521">B8</translation>
+<translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="5239623327352565343">อนุญาตให้เข้าถึงตําแหน่ง</translation>
 <translation id="5242889659037569123">กระเป๋าและอุปกรณ์สำหรับการเดินทาง</translation>
@@ -1713,6 +1730,7 @@
 <translation id="5363309033720083897">พอร์ตอนุกรมนี้ได้รับอนุญาตจากผู้ดูแลระบบ</translation>
 <translation id="5363713372507812442">ค้นหาเส้นทางการท่องเว็บ</translation>
 <translation id="5371425731340848620">อัปเดตบัตร</translation>
+<translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"นาฬิกาของคุณช้ากว่าปัจจุบัน" หรือ "นาฬิกาของคุณเร็วกว่าปัจจุบัน" หรือ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">ปุ่มสร้างงานนำเสนอ กด Enter เพื่อสร้างงานนำเสนอใหม่ใน Google สไลด์อย่างรวดเร็ว</translation>
 <translation id="5385857628869214740">อารมณ์ขัน</translation>
@@ -1883,6 +1901,7 @@
 <translation id="583281660410589416">ไม่รู้จัก</translation>
 <translation id="5838278095973806738">คุณไม่ควรป้อนข้อมูลที่ละเอียดอ่อนบนเว็บไซต์นี้ (ตัวอย่างเช่น รหัสผ่านหรือบัตรเครดิต) เนื่องจากผู้โจมตีอาจขโมยข้อมูลดังกล่าวไปได้</translation>
 <translation id="5851548754964597211">รายการแท็บ</translation>
+<translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5862579898803147654">สแต็กเกอร์ 8</translation>
 <translation id="5863847714970149516">ระบบอาจพยายามเรียกเก็บเงินจากคุณในหน้าถัดไป</translation>
@@ -2006,6 +2025,7 @@
 <translation id="6177128806592000436">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัย</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">ช่วงเว้นระหว่างการลองใหม่แต่ละครั้ง</translation>
+<translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">เสื้อผ้าสตรี</translation>
 <translation id="6194209731893739467">ดูผลิตภัณฑ์ที่ติดตามทั้งหมดที่นี่</translation>
 <translation id="6195371403461054755">ธรณีวิทยา</translation>
@@ -2090,10 +2110,12 @@
 <translation id="6404511346730675251">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="6405181733356710802">ไปที่ <ph name="APP_NAME" /> ไหม</translation>
 <translation id="6410264514553301377">ป้อนวันหมดอายุและ CVC ของ <ph name="CREDIT_CARD" /></translation>
+<translation id="6411107829285739505">A4x8</translation>
 <translation id="6415778972515849510">Chromium ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>
 <translation id="6425092077175753609">วัสดุ</translation>
 <translation id="6427730057873428458">พับทบ</translation>
 <translation id="6428450836711225518">ยืนยันเบอร์โทรศัพท์</translation>
+<translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">เปลี่ยนรหัสผ่าน Google</translation>
 <translation id="6431119592588449664">อัปโหลดรายงานแล้ว</translation>
 <translation id="6433490469411711332">แก้ไขข้อมูลติดต่อ</translation>
@@ -2105,6 +2127,7 @@
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6450212216969386944">Envelope Chou 40</translation>
 <translation id="6451458296329894277">ยืนยันการส่งแบบฟอร์มอีกครั้ง</translation>
+<translation id="6452889436791091116">ISO ID-1</translation>
 <translation id="6456955391422100996">นำโฆษณาออกแล้ว</translation>
 <translation id="6457206614190510200">เย็บด้วยลวดเย็บกระดาษที่สัน</translation>
 <translation id="6457455098507772300">การแจ้งเตือนราคาลดลงจะแสดงเป็นแบบป๊อปอัปบนเดสก์ท็อป</translation>
@@ -2201,6 +2224,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
 <translation id="6718612893943028815">ใช้กล้องถ่ายรูปไหม</translation>
 <translation id="6721678857435001674">ดูยี่ห้อและรุ่นของคีย์ความปลอดภัย</translation>
+<translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6738516213925468394">ข้อมูลของคุณเข้ารหัสลับไว้ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />เมื่อ <ph name="TIME" /> ป้อนรหัสผ่านเพื่อเริ่มซิงค์</translation>
 <translation id="674375294223700098">ข้อผิดพลาดใบรับรองของเซิร์ฟเวอร์ที่ไม่รู้จัก</translation>
@@ -2240,6 +2264,7 @@
 <translation id="6846340164947227603">ใช้หมายเลขบัตรเสมือน...</translation>
 <translation id="6852204201400771460">โหลดแอปซ้ำไหม</translation>
 <translation id="6857776781123259569">จัดการรหัสผ่าน...</translation>
+<translation id="6858034839887287663">A2x4</translation>
 <translation id="6864189428899665393">267 x 389 มม.</translation>
 <translation id="686485648936420384">แหล่งข้อมูลสำหรับผู้บริโภค</translation>
 <translation id="6865412394715372076">ยืนยันบัตรนี้ไม่ได้ในขณะนี้</translation>
@@ -2274,6 +2299,7 @@
 <translation id="6946722113367118030">ใช้ความคิด</translation>
 <translation id="6948051842255602737">เกมจบแล้ว คะแนนของคุณคือ <ph name="SCORE" /></translation>
 <translation id="6948701128805548767">หากต้องการดูวิธีการรับสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
+<translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">รีเซ็ตรหัสผ่าน</translation>
 <translation id="6950684638814147129">เกิดข้อผิดพลาดขณะแยกวิเคราะห์ค่า JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">รีเซ็ตทั้งหมด</translation>
@@ -2327,6 +2353,7 @@
 <translation id="7068733155164172741">ป้อนรหัส <ph name="OTP_LENGTH" /> หลัก</translation>
 <translation id="70705239631109039">การเชื่อมต่อไม่ปลอดภัยอย่างสมบูรณ์</translation>
 <translation id="7075452647191940183">คำขอมีขนาดใหญ่เกินไป</translation>
+<translation id="7078665357168027058">RA3</translation>
 <translation id="7079718277001814089">เว็บไซต์นี้มีมัลแวร์</translation>
 <translation id="7081308185095828845">ฟีเจอร์นี้ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
 <translation id="7083258188081898530">ถาด 9</translation>
@@ -2391,6 +2418,7 @@
 <translation id="7238585580608191973">ลายนิ้วมือ SHA-256</translation>
 <translation id="7240120331469437312">ชื่อสำรองของหัวเรื่องใบรับรอง</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" /> <ph name="SIGNIN_DATA" /></translation>
+<translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{ตรงกัน # รายการ}other{ตรงกัน # รายการ}}</translation>
 <translation id="724691107663265825">ไซต์ที่จะเปิดมีมัลแวร์</translation>
 <translation id="724975217298816891">ป้อนวันหมดอายุและ CVC สำหรับ <ph name="CREDIT_CARD" /> เพื่ออัปเดตรายละเอียดของบัตร เมื่อคุณยืนยันแล้ว รายละเอียดบัตรของคุณจะแชร์กับเว็บไซต์นี้</translation>
@@ -2482,6 +2510,7 @@
 <translation id="7445762425076701745">ไม่สามารถตรวจสอบความถูกต้องของข้อมูลประจำตัวของเซิร์ฟเวอร์ที่คุณเชื่อมต่ออยู่ได้ทั้งหมด คุณกำลังเชื่อมต่อกับเซิร์ฟเวอร์ที่ใช้ชื่อที่ใช้ได้เฉพาะในเครือข่ายของคุณ ซึ่งผู้ออกใบรับรองภายนอกไม่สามารถตรวจสอบการเป็นเจ้าของได้ เนื่องจากผู้ออกใบรับรองบางรายจะยังคงออกใบรับรองให้กับชื่อเหล่านี้อยู่ คุณจึงไม่มีทางมั่นใจได้ว่ากำลังเชื่อมต่อกับเว็บไซต์ที่คุณต้องการดูโดยไม่ใช่ผู้โจมตี</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับปัญหานี้</translation>
 <translation id="7455133967321480974">ใช้ค่าเริ่มต้นสากล (บล็อก)</translation>
+<translation id="745640750744109667">A0x3</translation>
 <translation id="7460618730930299168">การแสดงบนหน้าจอแตกต่างจากที่คุณเลือก ต้องการดำเนินการต่อไหม</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="7463075493919226237">ออสเตรเลียนฟุตบอล</translation>
@@ -2552,6 +2581,7 @@
 <translation id="7591288787774558753">แชร์เนื้อหาที่เป็นความลับไหม</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ต้องการใช้คุกกี้และข้อมูลเว็บไซต์ใน <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">ใบรับรองของเซิร์ฟเวอร์ละเมิดข้อกำหนดชื่อ</translation>
+<translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">ไม่ถึง <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ไม่สามารถดำเนินการกับคำขอนี้ในขณะนี้</translation>
 <translation id="7600965453749440009">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
@@ -2741,6 +2771,7 @@
 <translation id="8092254339843485299">6 x 8 นิ้ว</translation>
 <translation id="8092774999298748321">ม่วงเข้ม</translation>
 <translation id="8094917007353911263">เครือข่ายที่คุณใช้อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
+<translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">นำบัตรที่ใช้ไม่ได้ออกแล้ว</translation>
 <translation id="8100666323495101203">องค์กรของคุณได้ระบุไว้ว่า <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> เป็นเว็บไซต์ที่อาจละเมิดนโยบาย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2899,6 +2930,7 @@
 <translation id="8539500321752640291">อนุญาตให้เข้าถึงสิทธิ์ 2 รายการไหม</translation>
 <translation id="8541158209346794904">อุปกรณ์บลูทูธ</translation>
 <translation id="8542014550340843547">เย็บด้วยลวดเย็บกระดาษด้านล่าง 3 ครั้ง</translation>
+<translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">คุณสามารถ<ph name="BEGIN_ERROR_LINK" />รายงานปัญหาในการตรวจหา<ph name="END_ERROR_LINK" />ได้ หรือหากคุณเข้าใจถึงความเสี่ยงต่อความปลอดภัยของคุณ คุณสามารถ<ph name="BEGIN_LINK" />เข้าชมเว็บไซต์ที่ไม่ปลอดภัย<ph name="END_LINK" />ได้</translation>
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8553387990086529628">แหล่งท่องเที่ยว</translation>
@@ -2969,6 +3001,7 @@
 <translation id="8742371904523228557">รหัสสำหรับ <ph name="ORIGIN" /> คือ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">บุ๊กมาร์กแท็บนี้</translation>
 <translation id="8751426954251315517">โปรดลองอีกครั้งในคราวหน้า</translation>
+<translation id="8755125092386286553">A4x9</translation>
 <translation id="8757526089434340176">มีข้อเสนอจาก Google Pay</translation>
 <translation id="8758885506338294482">วิดีโอเกมแบบแข่งขัน</translation>
 <translation id="8759274551635299824">บัตรนี้หมดอายุแล้ว</translation>
@@ -3036,6 +3069,7 @@
 <translation id="893332455753468063">เพิ่มชื่อ</translation>
 <translation id="8942355029279167844">ผู้ดูแลระบบของคุณอนุญาตให้ <ph name="APP_NAME" /> รวบรวมข้อมูลการวิเคราะห์เพื่อปรับปรุงประสบการณ์การใช้ผลิตภัณฑ์ ดูข้อมูลเพิ่มเติมได้ที่ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /></translation>
 <translation id="8943282376843390568">เหลืองมะนาว</translation>
+<translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">กฎหมายและการปกครอง</translation>
 <translation id="8957210676456822347">การให้สิทธิ์แคปทีฟพอร์ทัล</translation>
 <translation id="8962950042226115166">เว็บไซต์ที่น่าสงสัย</translation>

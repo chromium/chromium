@@ -117,6 +117,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1815941218935345331">Passcode</translation>
 <translation id="1820259098641718022">Aggiunta all'elenco di lettura</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
+<translation id="1857751338515529195">Passa alla scheda successiva</translation>
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
 <translation id="1891796056033961979">I tuoi preferiti, le password, le impostazioni e altri dati salvati sono disponibili da questa schermata.</translation>
@@ -147,6 +148,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2139867232736819575">Cerca il testo copiato</translation>
 <translation id="214201757571129614">Accedi…</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
+<translation id="2150175299852799498">Chrome per dispositivi mobili</translation>
 <translation id="2155145621546387786">Condividi Chrome</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2178545675770638239">Seleziona password</translation>
@@ -226,6 +228,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2783054063075604403">Impossibile creare il link</translation>
 <translation id="2786701870377699570">Cerca tra le schede sui dispositivi sincronizzati</translation>
 <translation id="2800683595868705743">Chiudi selettore di schede</translation>
+<translation id="2812727400746650635">Passa alla scheda precedente</translation>
 <translation id="2815198996063984598">2. Tocca App browser predefinita</translation>
 <translation id="2820289420301699633">L'amministratore ha il controllo di Chrome e può accedere ai relativi dati</translation>
 <translation id="2830972654601096923">Gestisci indirizzi…</translation>
@@ -450,6 +453,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4630540211544979320">Traduci pagine</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4649294145748405669">Chrome è più veloce, più sicuro e personalizzato. Scaricalo qui.</translation>
 <translation id="4650125387981512669">Continua come <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Questa funzionalità viene attivata quando accedi al tuo Account Google.</translation>
 <translation id="4659667755519643272">Apri selettore di schede</translation>
@@ -618,6 +622,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5913600720976431809">Opzioni per tradurre la pagina</translation>
 <translation id="5938160824633642847">Il dispositivo è quasi pieno. Libera spazio e riprova.</translation>
 <translation id="5948291296578561264">In questo modo puoi salvare le foto nella raccolta di foto.</translation>
+<translation id="5949969988218625680">Mostra la Cronologia</translation>
 <translation id="5951816930277761335">Condividi il link</translation>
 <translation id="5955891643922670672">È visualizzata la versione offline</translation>
 <translation id="5957613098218939406">Altre opzioni</translation>
@@ -698,6 +703,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 I tuoi dati sono stati criptati con la tua passphrase di sincronizzazione in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="6418346271604475326">Preparazione del PDF</translation>
 <translation id="6434591244308415567">Si è verificato un errore. Riprova più tardi.</translation>
+<translation id="6435817889602303010">Riapri l'ultima scheda chiusa</translation>
 <translation id="6439338047467462846">Consenti tutti</translation>
 <translation id="6445051938772793705">Paese</translation>
 <translation id="6445981559479772097">Messaggio inviato.</translation>
@@ -864,6 +870,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7720410380936703141">RIPROVA</translation>
 <translation id="7726702057919861819">Menu → Cronologia → Cancella dati di navigazione</translation>
 <translation id="7741325291586284254">Pagina Nuova scheda in incognito</translation>
+<translation id="7743314735291715910">Apri il percorso</translation>
 <translation id="7756478488453921771">Menu → Impostazioni → Metodi di pagamento</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>

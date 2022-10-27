@@ -4026,6 +4026,7 @@
 <translation id="4726710355753484204">Օգտագործեք Ctrl + Alt + Ավելացնել պայծառությունը դյուրանցումը՝ մասշտաբը մեծացնելու համար։
 Օգտագործեք Ctrl + Alt + Պակասեցնել պայծառությունը դյուրանցումը՝ մասշտաբը փոքրացնելու համար։</translation>
 <translation id="4726710629007580002">Այս ընդլայնումը տեղադրելիս զգուշացումներ են եղել.</translation>
+<translation id="472738079453283624">Ապրանքներ</translation>
 <translation id="4727847987444062305">Հյուրի կառավարվող աշխատաշրջան</translation>
 <translation id="4728558894243024398">Հենք</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Ձեր ադմինիստրատորը<ph name="END_LINK" /> անջատել է վնասաբեր ծրագրերի առկայության ստուգումը</translation>
@@ -4291,6 +4292,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Անջատել կայքի ձայնը}one{Անջատել կայքի ձայնը}other{Անջատել կայքերի ձայնը}}</translation>
 <translation id="497403230787583386">Անվտանգության ստուգումներն ավարտված են։ Ձեր փաստաթուղթը կտպվի։</translation>
 <translation id="4975543297921324897">Monospace տառատեսակ</translation>
+<translation id="4975771730019223894">Նշանակների ավելացում հավելվածներին</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Մուտքի հաստատում</translation>
 <translation id="4980805016576257426">Այս ընդլայնումը վնասաբեր ծրագիր է պարունակում:</translation>

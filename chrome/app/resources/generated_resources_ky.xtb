@@ -2468,6 +2468,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3241680850019875542">Кеңейтүүнүн топтомдоло турган өзөктүк каталогун, ошондой эле кеңейтүүнү жаңыртуу үчүн, кайра колдонула турган жеке ачкыч файлын тандаңыз.</translation>
 <translation id="3242289508736283383">"Киоск_гана" деген манифести бар колдонмо ChromeOS киоск режиминде орнотулушу керек</translation>
 <translation id="3242665648857227438">Бул профиль ChromeOS прокси параметрлерин колдонот.</translation>
+<translation id="3243017971870859287">ChromeOS Flex түзмөгүн жана курамчанын сериялык номерлерин окуу</translation>
 <translation id="3244294424315804309">Үнүн басууну улантуу</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Тармактагы ката</translation>
 <translation id="3248902735035392926">Коопсуздук маанилүү. Бир аз убакыт бөлүп, <ph name="BEGIN_LINK" />кеңейтүүлөрдү текшериңиз<ph name="END_LINK" />.</translation>
@@ -2524,6 +2525,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3297105622164376095">Үчүнчү тараптын кирүү сурамдарын көрсөтүүгө уруксат берилди</translation>
 <translation id="3297536526040732495">Google колдонмолорунда коопсуздугуңузду коргоо үчүн аккаунтуңузга кирип турганда бул маалыматты Google аккаунтуңуз менен байланыштырат</translation>
 <translation id="329838636886466101">Оңдоо</translation>
+<translation id="3298438307450647315">Chrome OS түзмөгү тууралуу маалыматты жана түзмөктөгү дайын-даректерди окуу</translation>
 <translation id="3298789223962368867">Жараксыз URL киргизилди.</translation>
 <translation id="32991397311664836">Түзмөктөр:</translation>
 <translation id="33022249435934718">GDI маркерлери</translation>
@@ -2630,6 +2632,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3402255108239926910">Аватар тандаңыз</translation>
 <translation id="3402585168444815892">Демо режимине катталууда</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">ChromeOS Flex түзмөгү тууралуу маалыматты жана түзмөктөгү дайын-даректерди окуу</translation>
 <translation id="3404065873681873169">Бул сайт үчүн бир да сырсөз сакталган эмес</translation>
 <translation id="3405664148539009465">Ариптерди өзгөчөлөштүрүү</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4042,6 +4045,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4726710355753484204">Жакындатуу үчүн Ctrl + Alt + Жарыктыгын көбөйтүүнү басыңыз.
 Жакындатуу үчүн Ctrl + Alt + Жарыктыгын азайтууну басыңыз.</translation>
 <translation id="4726710629007580002">Бул кеңейтүү орнотулуп жатканда бир нече эскертүү берилген:</translation>
+<translation id="472738079453283624">Товарлар</translation>
 <translation id="4727847987444062305">Конок сеансын башкаруу</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Администраторуңуз<ph name="END_LINK" /> зыяндуу программаларды издөөнү өчүрүп койгон</translation>
@@ -4184,6 +4188,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="486635084936119914">Айрым файл форматтары жүктөлүп алынгандан кийин автоматтык түрдө ачуу</translation>
 <translation id="4868281708609571334">Google Жардамчыга <ph name="SUPERVISED_USER_NAME" /> аттуу колдонуучунун үнүн тааныганды үйрөтүү</translation>
 <translation id="4868284252360267853">Учурда бул диалог тандалбай турат. Бул диалогду тандоо үчүн Command-Shift-Option A баскычын басыңыз.</translation>
+<translation id="4869170227080975044">ChromeOS тармагынын маалыматын окуу</translation>
 <translation id="4870724079713069532">Бул колдонмодо колдоого алынган файлдарды File Explorer же башка колдонмолордо ачып, түзөтө аласыз. Бул колдонмодо демейки шартта кайсы файлдар ачыларын көзөмөлдөө үчүн <ph name="BEGIN_LINK" />Терезелердин жөндөөлөрүнө<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4870758487381879312">Конфигурация тууралуу маалыматты алуу үчүн администратор берген сырсөздү киргизиңиз</translation>
 <translation id="4870995365819149457">Колдоого алынган айрым шилтемелер <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> жана дагы 1 колдонмодо ачыла берет.</translation>
@@ -4306,6 +4311,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Сайттын үнүн басуу}other{Сайттардын үнүн басуу}}</translation>
 <translation id="497403230787583386">Коопсуздук текшерилди. Документ кагазга басылып чыгарылат.</translation>
 <translation id="4975543297921324897">Monospace ариби</translation>
+<translation id="4975771730019223894">Колдонмолорго бейжик тагуу</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Жеткини ырастоо</translation>
 <translation id="4980805016576257426">Бул кеңейтүүдө кесепеттүү программа бар.</translation>
@@ -4916,6 +4922,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5571066253365925590">Bluetooth иштетилди</translation>
 <translation id="5571092938913434726">Жалпы медианы башкаруу элементтери</translation>
 <translation id="5571832155627049070">Профилиңизди ыңгайлаштырыңыз</translation>
+<translation id="5572252023412311448"><ph name="SITE_GROUP" /> сайтынын чоо-жайын көрүү</translation>
 <translation id="5572648434713976849">Дарек тилкесинде жакшыртылган сунуштарды аласыз</translation>
 <translation id="5572851009514199876">Chrome'ду иштетип, аккаунтка кириңиз. Chrome бул сайтка кирүүгө уруксатыңыз бар-жогун текшериши керек.</translation>
 <translation id="557506220935336383">Башка сайттар үчүн кеңейтүүлөрдүн уруксаттарын көрүү</translation>
@@ -6105,6 +6112,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6703212423117969852">Бир аздан кийин Chrome'го өтүп, кайра аракет кылып көрсөңүз болот.</translation>
 <translation id="6703254819490889819">Камдык көчүрмөнү калыбына келтирүү</translation>
 <translation id="6706210727756204531">Масштабы</translation>
+<translation id="6707122714992751648">ChromeOS тутумундагы мүчүлүштүктөрдү аныктоо сынактарын аткаруу</translation>
 <translation id="6707389671160270963">SSL кардар тастыктамасы</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> жана дагы башка 1 өтмөк}other{<ph name="PAGE_TITLE" /> жана дагы башка # өтмөк}}</translation>
 <translation id="6709133671862442373">Жаңылыктар</translation>
@@ -6283,6 +6291,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Прокси жөндөөлөрү…</translation>
 <translation id="6860427144121307915">Өтмөктө ачуу</translation>
+<translation id="6861179941841598556"><ph name="PROFILE_NAME" /> боюнча башка аракеттер</translation>
 <translation id="6863496016067551393">Бардык кеңейтүүлөрдү колдоно алат</translation>
 <translation id="686366188661646310">Сырсөз жок кылынсынбы?</translation>
 <translation id="6865313869410766144">Автотолтуруу формасынын дайындары</translation>
@@ -6372,6 +6381,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
         <ph name="BREAK" />
         <ph name="BREAK" />
         Картанын менюсунан параметрлерди тескесеңиз болот же көбүрөөк параметрлерди көрүү үчүн Chrome'ду ыңгайлаштыруу бөлүмүнө өтүңүз.</translation>
+<translation id="6949089178006131285">ChromeOS Flex тармагынын маалыматын окуу</translation>
 <translation id="6949434160682548041">Сырсөз (милдеттүү эмес)</translation>
 <translation id="6950627417367801484">Колдонмолорду калыбына келтирүү</translation>
 <translation id="6952242901357037157">Ошондой эле <ph name="BEGIN_LINK" />Google аккаунтуңуздагы<ph name="END_LINK" /> сырсөздөрдү бул жерде көрсөтсөңүз болот</translation>
@@ -7987,6 +7997,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8463001014623882202">Уруксат берилбей калды</translation>
 <translation id="846374874681391779">Жүктөлүп алынгандар тилкеси</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> өчүрүлгөн.</translation>
+<translation id="846399539692727039">ChromeOS Flex тутумундагы мүчүлүштүктөрдү аныктоо сынактарын аткаруу</translation>
 <translation id="8464132254133862871">Бул колдонуучунун каттоо эсеби бул кызмат үчүн ишенимдүү эмес.</translation>
 <translation id="8465252176946159372">Жараксыз</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> плагинин иштетүү үчүн сиздин уруксатыңыз талап кылынат</translation>
@@ -8133,6 +8144,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8624315169751085215">Алмашуу буферине көчүрүү</translation>
 <translation id="8624354461147303341">Арзандатууларга ээ болуу</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">ChromeOS түзмөгүн жана курамчанын сериялык номерлерин окуу</translation>
 <translation id="862542460444371744">&amp;Кеңейтүүлөр</translation>
 <translation id="8625663000550647058">Микрофонуңузду колдоно албайт</translation>
 <translation id="8625916342247441948">Сайттар HID түзмөктөрүнө туташа албасын</translation>

@@ -652,6 +652,7 @@
 <translation id="6495925982925244349">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ஃபைல் <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பிரித்தெடுக்கப்படுகிறது</translation>
 <translation id="6499681088828539489">பகிர்ந்த நெட்வொர்க்குகளுக்கு ப்ராக்ஸிகளை அனுமதிக்காதே</translation>
+<translation id="6503285896705205014"><ph name="COUNT" /> ஃபைல்களை நகலெடுப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="6509122719576673235">நார்வேஜியன்</translation>
 <translation id="6528513914570774834">இந்தச் சாதனத்தின் பிற பயனர்களையும் இந்த நெட்வொர்க்கைப் பயன்படுத்த அனுமதி</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ஐ ஒத்திசைக்கிறது...</translation>
@@ -754,6 +755,7 @@
 <translation id="7357762654218998920">இந்த ஃபைல் வகை ஆதரிக்கப்படவில்லை. ChromeOSஸில் ஃபைல்களைத் திறப்பது குறித்து <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" />.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நகலெடுக்கிறது...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> அடிப்படையில் ஃபைல் பட்டியல் இறங்கு வரிசையில் காட்டப்பட்டுள்ளது.</translation>
+<translation id="7377161162143020057">இந்த ஃபைலை நகலெடுப்பது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="7402503521691663770">ChromeOS Flex சாதனங்கள்</translation>
 <translation id="7408870451288633753">செக்</translation>
 <translation id="7417453074306512035">எத்தியோபிக் கீபோர்டு</translation>

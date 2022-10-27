@@ -117,6 +117,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1815941218935345331">Geslo</translation>
 <translation id="1820259098641718022">Dodano na bralni seznam</translation>
 <translation id="1832848789136765277">Če želite poskrbeti, da boste vedno lahko dostopali do sinhroniziranih podatkov, potrdite, da ste to vi.</translation>
+<translation id="1857751338515529195">Premik na naslednji zavihek</translation>
 <translation id="1870148520156231997">Razkrijte geslo</translation>
 <translation id="1872096359983322073">Svetilka</translation>
 <translation id="1891796056033961979">Vaši shranjeni zaznamki, gesla, nastavitve in drugo so na voljo na tem zaslonu.</translation>
@@ -147,6 +148,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2139867232736819575">Iskanje besedila, ki ste ga kopirali</translation>
 <translation id="214201757571129614">Prijava …</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
+<translation id="2150175299852799498">Google Chrome za mobilne naprave</translation>
 <translation id="2155145621546387786">Delite Chrome z drugimi</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="2178545675770638239">Izbira gesla</translation>
@@ -226,6 +228,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2783054063075604403">Povezave ni mogoče ustvariti</translation>
 <translation id="2786701870377699570">Iskanje zavihkov v sinhroniziranih napravah</translation>
 <translation id="2800683595868705743">Leave Tab Switcher</translation>
+<translation id="2812727400746650635">Premik na prejšnji zavihek</translation>
 <translation id="2815198996063984598">2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.</translation>
 <translation id="2820289420301699633">Skrbnik ima nadzor nad Chromom in lahko dostopa do podatkov v njem.</translation>
 <translation id="2830972654601096923">Upravljanje naslovov ...</translation>
@@ -450,6 +453,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4630540211544979320">Prevajanje strani</translation>
 <translation id="4634124774493850572">Uporabi geslo</translation>
 <translation id="4636930964841734540">Informacije</translation>
+<translation id="4649294145748405669">Chrome je hitrejši, varnejši in vaš. Prenesite ga tukaj.</translation>
 <translation id="4650125387981512669">Nadaljuj kot <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Ko se prijavite v račun Google, se ta funkcija vklopi.</translation>
 <translation id="4659667755519643272">Enter Tab Switcher</translation>
@@ -618,6 +622,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5913600720976431809">Možnosti za prevod strani</translation>
 <translation id="5938160824633642847">Shramba naprave je skoraj polna. Sprostite prostor in poskusite znova.</translation>
 <translation id="5948291296578561264">S tem je mogoče shranjevati fotografije v knjižnico fotografij.</translation>
+<translation id="5949969988218625680">Pokaži zgodovino</translation>
 <translation id="5951816930277761335">Deljenje povezave</translation>
 <translation id="5955891643922670672">Ogled različice brez povezave</translation>
 <translation id="5957613098218939406">Več možnosti</translation>
@@ -698,6 +703,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 Podatki so bili šifrirani z vašim geslom za sinhronizacijo <ph name="TIME" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
 <translation id="6434591244308415567">Prišlo je do napake. Poskusite znova pozneje.</translation>
+<translation id="6435817889602303010">Znova odpri nazadnje zaprt zavihek</translation>
 <translation id="6439338047467462846">Dovoli vse</translation>
 <translation id="6445051938772793705">Država</translation>
 <translation id="6445981559479772097">Sporočilo poslano.</translation>
@@ -864,6 +870,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7720410380936703141">POSKUSI ZNOVA</translation>
 <translation id="7726702057919861819">Meni → Zgodovina → Izbriši podatke brskanja</translation>
 <translation id="7741325291586284254">Stran z novim anonimnim zavihkom</translation>
+<translation id="7743314735291715910">Odpri lokacijo …</translation>
 <translation id="7756478488453921771">Meni → Nastavitve → Plačilna sredstva</translation>
 <translation id="7765158879357617694">Premakni</translation>
 <translation id="7772032839648071052">Potrdi geslo</translation>

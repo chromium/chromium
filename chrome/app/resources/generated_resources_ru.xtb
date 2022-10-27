@@ -4292,6 +4292,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Отключить звук на сайте}one{Отключить звук на сайтах}few{Отключить звук на сайтах}many{Отключить звук на сайтах}other{Отключить звук на сайтах}}</translation>
 <translation id="497403230787583386">Проверка безопасности выполнена. Документ будет распечатан.</translation>
 <translation id="4975543297921324897">Моноширинный шрифт</translation>
+<translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Подтверждение доступа</translation>
 <translation id="4980805016576257426">Это расширение содержит вредоносное ПО.</translation>

@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Define Chrome como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="1504372625950710826">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="1511320244449497906">Tes a sesión iniciada e estás sincronizando os teus datos cunha conta xestionada por <ph name="DOMAIN" /> cuxo administrador xa pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chrome.</translation>
+<translation id="1554731936187952550">Contas coa máxima seguranza de Chrome contra sitios web daniños</translation>
 <translation id="1682483655351012182">Sincronizar os teus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Esta conta e os datos que estean sen gardar quitaranse de Chrome e das aplicacións de Google deste dispositivo.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
+<translation id="3503014945441706099">Activa tamén neste perfil de Chrome a función Navegación segura mellorada</translation>
 <translation id="3522659714780527202">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, activa a sincronización</translation>
 <translation id="3533694711092285624">Non hai contrasinais gardados. Chrome pode comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="3641179212828090796">Usa o contrasinal que gardaches en Chrome para iniciar sesión máis rápido</translation>
@@ -137,6 +139,7 @@ Cuestións que se deben ter en conta:
   • Se se produce un erro en Chrome, entre os datos sobre o fallo podería incluírse algunha información persoal.
 
   • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Contas cun sistema de seguranza estándar neste perfil de Chrome</translation>
 <translation id="9112744793181547300">Queres definir Chrome como navegador predeterminado?</translation>
 <translation id="9122931302567044771">En consecuencia, Chrome sempre solicitará abrir o sitio para ordenadores.</translation>
 </translationbundle>

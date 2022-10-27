@@ -4042,6 +4042,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4726710355753484204">Zooma in med Ctrl + Alt + Öka ljusstyrkan.
 Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4726710629007580002">Varningar aktiverades när tillägget skulle installeras:</translation>
+<translation id="472738079453283624">Produkter</translation>
 <translation id="4727847987444062305">Hanterad gästsession</translation>
 <translation id="4728558894243024398">Plattform</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Administratören<ph name="END_LINK" /> har inaktiverat sökningar efter skadlig programvara</translation>
@@ -4306,6 +4307,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Stäng av webbplatsens ljud}other{Stäng av webbplatsernas ljud}}</translation>
 <translation id="497403230787583386">Säkerhetskontrollen är klar. Dokumentet skrivs ut.</translation>
 <translation id="4975543297921324897">Jämnbrett teckensnitt</translation>
+<translation id="4975771730019223894">Appmärkning</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Bekräfta åtkomst</translation>
 <translation id="4980805016576257426">Tillägget innehåller skadlig programvara.</translation>

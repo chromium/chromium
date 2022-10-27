@@ -531,6 +531,7 @@
 <translation id="5428105026674456456">Spænskt</translation>
 <translation id="5438282218546237410">Engar niðurstöður fyrir <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Ógilt aðgangsorð</translation>
+<translation id="5459064203055649751">Skrá með heitið „<ph name="FILENAME" />“ er þegar til staðar. Viltu skipta henni út fyrir skrána sem þú ert að flytja?</translation>
 <translation id="5463231940765244860">Slá inn</translation>
 <translation id="5469868506864199649">Ítalskt</translation>
 <translation id="5473333559083690127">Sláðu nýtt PIN-númer inn aftur</translation>
@@ -651,6 +652,7 @@
 <translation id="6495925982925244349">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, stjórnað af kerfisstjóra, upplýsingar</translation>
 <translation id="649877868557234318">Draga út <ph name="FILE_NAME" /> í <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Ekki leyfa staðgengilsþjóna fyrir samnýtt netkerfi</translation>
+<translation id="6503285896705205014">Regla stjórnanda kemur í veg fyrir að hægt sé að afrita <ph name="COUNT" /> skrár</translation>
 <translation id="6509122719576673235">Norskt</translation>
 <translation id="6528513914570774834">Heimila öðrum notendum tækisins að nota þetta netkerfi</translation>
 <translation id="653019979737152879">Samstillir <ph name="FILE_NAME" />...</translation>
@@ -753,6 +755,7 @@
 <translation id="7357762654218998920">Þessi skráargerð er ekki studd. <ph name="BEGIN_LINK_HELP" />Nánar<ph name="END_LINK_HELP" /> um að opna skrár í ChromeOS.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð...</translation>
 <translation id="7375951387215729722">Skráalista raðað eftir <ph name="COLUMN_NAME" /> í lækkandi röð.</translation>
+<translation id="7377161162143020057">Regla stjórnanda kemur í veg fyrir að hægt sé að afrita þessa skrá</translation>
 <translation id="7402503521691663770">ChromeOS Flex tæki</translation>
 <translation id="7408870451288633753">Tékkneska</translation>
 <translation id="7417453074306512035">Eþíópískt lyklaborð</translation>

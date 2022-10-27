@@ -2310,6 +2310,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer.</translation>
+<translation id="7023162328967545559">Varning från administratören</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7030436163253143341">Certifikatet är ogiltigt</translation>
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
@@ -2496,6 +2497,7 @@ Mer information.
 <translation id="7489473601138133813">Yrkesvägledare</translation>
 <translation id="7495528107193238112">Det här innehållet har blockerats. Kontakta webbplatsägaren om du vill åtgärda problemet.</translation>
 <translation id="7497998058912824456">Knappen Skapa Google-dokument: tryck på Retur om du snabbt vill skapa ett nytt Google-dokument</translation>
+<translation id="7501663406926337752">Webbplatsen har flaggats av din organisation</translation>
 <translation id="7501853161948120656">Utbildningsresurser</translation>
 <translation id="7506488012654002225">Följande information sparas <ph name="BEGIN_EMPHASIS" />inte<ph name="END_EMPHASIS" /> i Chromium:
         <ph name="BEGIN_LIST" />
@@ -2742,6 +2744,7 @@ Mer information.
 <translation id="8094917007353911263">Nätverket du använder kanske kräver att du besöker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">De ogiltiga korten har tagits bort</translation>
+<translation id="8100666323495101203">Organisationen har identifierat <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> som en webbplats som kanske bryter mot en policy. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Akademiska konferenser och publikationer</translation>
 <translation id="8103161714697287722">Betalningsmetod</translation>
 <translation id="8103643211515685474">Skriv ut ändå</translation>

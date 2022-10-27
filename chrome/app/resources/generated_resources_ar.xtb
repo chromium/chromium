@@ -2417,6 +2417,7 @@
 <translation id="3197453258332670132">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار لعرض المعلومات ذات الصلة بالنص الذي اختَرته.</translation>
 <translation id="3199127022143353223">الخوادم</translation>
 <translation id="3200061262156232574">المنتجات داخل سلّة التسوّق</translation>
+<translation id="3201237270673604992">من الياء إلى الألف</translation>
 <translation id="3201422919974259695">‏ستظهر أجهزة USB المتاحة هنا.</translation>
 <translation id="3202131003361292969">المسار</translation>
 <translation id="3202173864863109533">تم كتم صوت علامة التبويب.</translation>
@@ -3732,6 +3733,7 @@
 <translation id="4460014764210899310">إلغاء التجميع</translation>
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
 <translation id="4465236939126352372">تم ضبط الحد الأقصى المسموح به لاستخدام تطبيق <ph name="APP_NAME" /> على <ph name="TIME" />.</translation>
+<translation id="4465649939134800363">خيارات الترتيب</translation>
 <translation id="4466839823729730432">الاطّلاع على ذكرياتك هنا</translation>
 <translation id="4469324811108161144">الحد الأقصى لعدد الأحرف في الملاحظات هو <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">بإمكان <ph name="ORIGIN" /> تعديل الملفات في <ph name="FOLDERNAME" />.</translation>
@@ -4281,6 +4283,7 @@
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{كتم صوت الموقع الإلكتروني}zero{كتم صوت المواقع الإلكترونية}two{كتم صوت الموقعَين الإلكترونيين}few{كتم صوت المواقع الإلكترونية}many{كتم صوت المواقع الإلكترونية}other{كتم صوت المواقع الإلكترونية}}</translation>
 <translation id="497403230787583386">اكتملت عمليات فحص الأمان. ستتم طباعة المستند.</translation>
 <translation id="4975543297921324897">خط أحادي المسافة</translation>
+<translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">تأكيد الدخول</translation>
 <translation id="4980805016576257426">تحتوي هذه الإضافة على برامج ضارة.</translation>
@@ -6240,6 +6243,7 @@
 <translation id="6843264316370513305">تصحيح الأخطاء في الشبكة</translation>
 <translation id="6843423766595476978">‏Ok Google جاهز تمامًا</translation>
 <translation id="6845038076637626672">فتح في وضع التكبير</translation>
+<translation id="6845231585063669905">من الألف إلى الياء</translation>
 <translation id="6846178040388691741">تريد الإضافة "<ph name="EXTENSION_NAME" />" طباعة <ph name="FILE_NAME" /> باستخدام <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">إخلاء بعض المساحة للمواصلة</translation>
 <translation id="6848388270925200958">تمتلك الآن بعض البطاقات التي يمكن استخدامها فقط على هذا الجهاز</translation>
@@ -7389,6 +7393,7 @@
 <translation id="7939073735115504773">انقر على رمز هذه الإضافة لمنحها إذن قراءة محتوى الموقع الإلكتروني <ph name="HOST" /> وتغييره.</translation>
 <translation id="7939328347457537652">إدارة شهادات الجهاز</translation>
 <translation id="7939412583708276221">المتابعة على أيّ حال</translation>
+<translation id="7940265372707990269">الترتيب حسب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">جاهزية التوصيل:</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7943368935008348579">‏تنزيل ملفات PDF</translation>

@@ -2307,6 +2307,7 @@
 <translation id="7012363358306927923">चीन UnionPay</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
 <translation id="7016992613359344582">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यस सम्बन्धमा स्पष्टता नहुन पनि सक्छ।</translation>
+<translation id="7023162328967545559">एड्मिनले दिएका चेतावनी</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030436163253143341">प्रमाणपत्र वैध छैन</translation>
 <translation id="7031646650991750659">तपाईंले स्थापना गर्नुभएका Google Play एपहरू</translation>
@@ -2493,6 +2494,7 @@
 <translation id="7489473601138133813">करिअरसम्बन्धी स्रोतसाधन तथा योजना</translation>
 <translation id="7495528107193238112">यो सामग्रीलाई रोक लगाइएको छ। यो समस्या समाधान गर्न उक्त साइटका मालिकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="7497998058912824456">"डकुमेन्ट बनाउनुहोस्" नामक बटन, Google डकुमेन्ट प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Enter थिच्नुहोस्</translation>
+<translation id="7501663406926337752">तपाईंले खोल्न लाग्नुभएको फाइललाई तपाईंको सङ्गठनले फ्ल्याग गरेको छ</translation>
 <translation id="7501853161948120656">शैक्षिक स्रोतसाधनहरू</translation>
 <translation id="7506488012654002225">Chromium ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सेभ गर्ने छैन<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -2739,6 +2741,7 @@
 <translation id="8094917007353911263">तपाईँले प्रयोग गर्नुभएको सञ्जाललाई तपाईँले <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> भ्रमण गर्ने आवश्यकता हुन सक्छ।</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">अमान्य कार्डहरूलाई हटाइएको छ</translation>
+<translation id="8100666323495101203">तपाईंको सङ्गठनले  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> लाई नीति उल्लङ्घन गर्न सक्ने साइटका रूपमा पहिचान गरेको छ। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">शैक्षिक सम्मेलन तथा प्रकाशनहरू</translation>
 <translation id="8103161714697287722">भुक्तानी विधि</translation>
 <translation id="8103643211515685474">जे भए तापनि प्रिन्ट गर्नुहोस्</translation>

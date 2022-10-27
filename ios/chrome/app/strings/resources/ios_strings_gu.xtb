@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="1870148520156231997">પાસવર્ડ જણાવો</translation>
 <translation id="1872096359983322073">ટોર્ચ</translation>
+<translation id="1891796056033961979">તમારા સાચવેલા બુકમાર્ક, પાસવર્ડ, સેટિંગ અને બીજી ઘણી વસ્તુઓ આ સ્ક્રીન પર ઉપલબ્ધ છે.</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
 <translation id="1923342640370224680">છેલ્લી કલાક</translation>
 <translation id="1930989359703290198">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">બધાં છૂપા ટૅબ બંધ કરો</translation>
 <translation id="3533436815740441613">નવું ટૅબ</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
+<translation id="3575234738189584619">Lens વડે શોધો</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
 <translation id="3595252146048399851">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">વાંચેલ તરીકે ચિહ્નિત કરો</translation>
 <translation id="4908869848243824489">Googleનું Discover</translation>
 <translation id="4916679969857390442">લેન્સ</translation>
+<translation id="4922154083994158612">વધુ સુરક્ષાની જરૂર છે?</translation>
 <translation id="4930714375720679147">ચાલુ કરો</translation>
 <translation id="4941089862236492464">માફ કરશો, તમારી આઇટમને શેર કરવામાં સમસ્યા આવી હતી.</translation>
 <translation id="4944543191714094452">પેજમાં શોધો…</translation>
@@ -832,6 +835,7 @@
 <translation id="7435356471928173109">તમારા વ્યવસ્થાપક દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7438481509621345350">જ્યારે તમે કોઈ નવી ટૅબ ખોલશો, ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી હવે સ્ટોરી દેખાશે.</translation>
 <translation id="7454057999980797137">રાજ્ય / કાઉન્ટી</translation>
+<translation id="7459628154744868585">વધારેલું સંરક્ષણ ચાલુ છે</translation>
 <translation id="7464701184726199289">આનાથી તમામ ડિવાઇસમાંથી સિંક ડેટા સાફ થાય છે. સાચવેલા સાઇટ સેટિંગ ડિલીટ કરવામાં આવશે નહીં અને તે તમારી બ્રાઉઝિંગ ટેવોને પ્રતિબિંબિત કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome પસંદ કરો</translation>
 <translation id="7472734401283673885">કંપનીનું નામ</translation>
@@ -1024,6 +1028,7 @@
 <translation id="9037965129289936994">મૂળ બતાવો</translation>
 <translation id="9039373489628511875">બેન્ડવિડ્થ</translation>
 <translation id="9055772144595778347">સાઇન ઇન કરી શકાતું નથી</translation>
+<translation id="9055960261314198756">વધારેલું સંરક્ષણ બંધ છે</translation>
 <translation id="9057972802061533987">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9068336935206019333">Chromeના છૂપા મોડમાં ખોલો</translation>

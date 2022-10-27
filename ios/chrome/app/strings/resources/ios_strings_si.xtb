@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">ඔබට සැම විටම ඔබගේ සමමුහුර්ත දත්ත වෙත ප්‍රවේශ විය හැකි බව සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="1870148520156231997">මුරපදය අනාවරණ කරන්න</translation>
 <translation id="1872096359983322073">පන්දම</translation>
+<translation id="1891796056033961979">ඔබේ සුරැකි පිටුසන්, මුරපද, සැකසීම්, සහ තවත් දේ මෙම තිරයෙන් ලබා ගත හැක.</translation>
 <translation id="1911619930368729126">Google Drive වෙත උඩුගත කරන්න</translation>
 <translation id="1923342640370224680">අවසන් පැයේ</translation>
 <translation id="1930989359703290198">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි. ඉඩ නොදෙන ගිණුම් සඟවා ඇත. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
@@ -327,6 +328,7 @@
 <translation id="3533202363250687977">සියලු අප්‍රසිද්ධ පටිති වසන්න</translation>
 <translation id="3533436815740441613">නව පටිත්ත</translation>
 <translation id="3551320343578183772">ටැබය වසන්න</translation>
+<translation id="3575234738189584619">Lens සමග සොයන්න</translation>
 <translation id="3581564640715911333">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
 <translation id="3588820906588687999">රූපය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="3595252146048399851">ඔබට සැම විට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහුර්ත කළ යුතු දේ තෝරා ගත හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
@@ -494,6 +496,7 @@
 <translation id="4904877109095351937">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="4908869848243824489">Google වෙතින් Discover</translation>
 <translation id="4916679969857390442">කාච</translation>
+<translation id="4922154083994158612">තව ආරක්ෂාවක්?</translation>
 <translation id="4930714375720679147">ක්‍රියාත්මක කරන්න</translation>
 <translation id="4941089862236492464">කනගාටුයි, ඔබේ අයිතමය බෙදා ගැනීමේ ගැටලුවක් විය.</translation>
 <translation id="4944543191714094452">පිටුව තුළ සොයන්න…</translation>
@@ -832,6 +835,7 @@
 <translation id="7435356471928173109">ඔබේ පරිපාලක විසින් ක්‍රියාවිරහිත කරන ලදි</translation>
 <translation id="7438481509621345350">ඔබ දැන් නව ටැබයක් විවෘත කරන විට <ph name="CHANNEL_NAME" /> වෙතින් නව කතන්දර දකිනු ඇත.</translation>
 <translation id="7454057999980797137">රාජ්‍යය / ජනපදය</translation>
+<translation id="7459628154744868585">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාත්මකයි</translation>
 <translation id="7464701184726199289">සියලු උපාංග වලින් සමමුහුර්ත කළ දත්ත මෙයින් හිස් කරයි. සුරැකි අඩවි සැකසීම් නොමැකෙනු ඇති අතර එයින් ඔබගේ බ්‍රවුස් කිරීමේ පුරුදු පිළිබිඹු විය හැක. <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Chrome තෝරන්න</translation>
 <translation id="7472734401283673885">සමාගමේ නම</translation>
@@ -1024,6 +1028,7 @@
 <translation id="9037965129289936994">මුල් පිටපත පෙන්වන්න</translation>
 <translation id="9039373489628511875">කලාප පළල</translation>
 <translation id="9055772144595778347">පුරනය වීමට නොහැක</translation>
+<translation id="9055960261314198756">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාවිරහිතයි</translation>
 <translation id="9057972802061533987">අනුගමනය කළ නොහැකිය. යම් දෙයක් වැරදිණි.</translation>
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9068336935206019333">Chrome අප්‍රසිද්ධ තුළ විවෘත කරන්න</translation>

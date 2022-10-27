@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no ha podido comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
 <translation id="1511320244449497906">Has iniciado sesión y se están sincronizando tus datos con una cuenta gestionada por <ph name="DOMAIN" />, cuyo administrador ahora puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
+<translation id="1554731936187952550">Tienes el sistema de seguridad más resistente de Chrome frente a sitios web dañinos</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Esta cuenta y los datos sin guardar se quitarán de Chrome y de las demás aplicaciones de Google instaladas en este dispositivo.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome te permite llevar tus cuentas a la Web para ahorrar tiempo. Puedes añadirlas o quitarlas en los ajustes.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
+<translation id="3503014945441706099">Usa Navegación segura mejorada en este perfil de Chrome también</translation>
 <translation id="3522659714780527202">Activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="3533694711092285624">No hay ninguna contraseña guardada. Chrome puede comprobar tus contraseñas cuando las guardas.</translation>
 <translation id="3641179212828090796">Usa la contraseña que guardaste en Chrome para iniciar sesión más rápido</translation>
@@ -137,6 +139,7 @@ Notas importantes:
   • Si Chrome falla, puede que los detalles sobre el fallo incluyan alguna información personal.
 
   • Si activas la sincronización, puede que las métricas también incluyan información sobre las URLs que visites.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Estás usando la protección de seguridad estándar en este perfil de Chrome</translation>
 <translation id="9112744793181547300">¿Establecer Chrome como predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome siempre solicitará la vista del sitio web como ordenador.</translation>
 </translationbundle>

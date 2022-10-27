@@ -2306,6 +2306,7 @@
 <translation id="7012363358306927923">Çin UnionPay</translation>
 <translation id="7014741021609395734">Miqyas səviyyəsi</translation>
 <translation id="7016992613359344582">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Onlar, eyni zamanda görünməyə bilər.</translation>
+<translation id="7023162328967545559">Admin xəbərdarlığı</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030436163253143341">Sertifikat etibarlı deyil</translation>
 <translation id="7031646650991750659">Quraşdırdığınız Google Play tətbiqləri</translation>
@@ -2492,6 +2493,7 @@
 <translation id="7489473601138133813">Karyera resursları və planlaşdırması</translation>
 <translation id="7495528107193238112">Bu məzmun bloklanıb. Problemi düzəltmək üçün sayt sahibi ilə əlaqə saxlayın.</translation>
 <translation id="7497998058912824456">"Sənəd yaradın" düyməsi, Enter düyməsinə basaraq cəld yeni Google Sənəd yaradın</translation>
+<translation id="7501663406926337752">Qarşıdakı sayt təşkilatınız tərəfindən işarələnib</translation>
 <translation id="7501853161948120656">Təhsil resursları</translation>
 <translation id="7506488012654002225">Chromium aşağıdakı məlumatları <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -2738,6 +2740,7 @@
 <translation id="8094917007353911263">İşlətdiyiniz şəbəkə buraya girməyinizi tələb edə bilər: <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Etibarsız kartlar silinib</translation>
+<translation id="8100666323495101203">Təşkilatınız <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> saytını siyasəti poza biləcək sayt kimi müəyyən edib. <ph name="BEGIN_LEARN_MORE_LINK" />Ətraflı məlumat<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Akademik konfranslar və nəşrlər</translation>
 <translation id="8103161714697287722">Ödəniş Üsulu</translation>
 <translation id="8103643211515685474">İstənilən halda çap edin</translation>

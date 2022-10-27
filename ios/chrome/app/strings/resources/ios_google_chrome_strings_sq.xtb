@@ -8,6 +8,7 @@
 <translation id="1493827051843127077">Caktoje Chrome si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="1504372625950710826">Chrome nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="1511320244449497906">Je identifikuar dhe po sinkronizon të dhënat me një llogari të menaxhuar nga <ph name="DOMAIN" />, ku administratori i saj tani mund të caktojë politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chrome.</translation>
+<translation id="1554731936187952550">Ti ke sigurinë më të fortë të Chrome kundër sajteve të dëmshme të uebit</translation>
 <translation id="1682483655351012182">Sinkronizo të dhënat e tua të Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Kjo llogari dhe të dhënat e paruajtura do të hiqen nga Chrome dhe nga aplikacionet e tjera në këtë pajisje.</translation>
@@ -39,6 +40,7 @@
 <translation id="3196546062792660320">Chrome të kursen kohë duke i sjellë llogaritë e  tua në ueb. Mund të shtosh ose të heqësh llogari te "Cilësimet".</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3345341804167540816">Përdor Chrome kudo</translation>
+<translation id="3503014945441706099">Merr gjithashtu "Shfletimin e sigurt të përmirësuar" për këtë profil të Chrome</translation>
 <translation id="3522659714780527202">Për të parë skedat e tua nga çdo vend ku përdor Chrome, aktivizo sinkronizimin</translation>
 <translation id="3533694711092285624">Nuk ka asnjë fjalëkalim të ruajtur. Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="3641179212828090796">Përdor fjalëkalimin që ruajte në Chrome për t'u identifikuar më shpejt</translation>
@@ -137,6 +139,7 @@ Gjëra për të pasur parasysh:
   • Nëse Chrome ndërpritet aksidentalisht, detajet në lidhje me ndërprerjen mund të përfshijnë disa informacione personale.
 
   • Nëse aktivizon sinkronizimin, metrikat mund të përfshijnë gjithashtu informacione rreth URL-ve që ti viziton.<ph name="END_INDENT" /></translation>
+<translation id="9103442491611662960">Po merr mbrojtjen standarde të sigurisë për këtë profil të Chrome</translation>
 <translation id="9112744793181547300">Të caktohet Chrome si parazgjedhje?</translation>
 <translation id="9122931302567044771">Kjo do të thotë që Chrome do kërkojë sajtin në desktop çdo herë.</translation>
 </translationbundle>

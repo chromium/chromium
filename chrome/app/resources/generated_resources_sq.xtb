@@ -881,6 +881,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1805967612549112634">Konfirmo kodin PIN</translation>
 <translation id="1806335016774576568">Kalo te një aplikacion tjetër i hapur</translation>
 <translation id="1807246157184219062">I lehtë</translation>
+<translation id="1809201888580326312">Ke zgjedhur që të mos i ruash fjalëkalimet për këto sajte dhe aplikacione</translation>
 <translation id="1809483812148634490">Aplikacionet që ke shkarkuar nga Google Play do të fshihen nga ky Chromebook.
     <ph name="LINE_BREAKS1" />
       Përmbajtja që ke blerë si filmat, shfaqjet televizive, muzika, librat ose blerjet e tjera përmes aplikacionit mund të fshihen po ashtu.
@@ -1794,6 +1795,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> nuk mund të shkarkohet në mënyrë të sigurt.</translation>
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="262154978979441594">Trajno modelin e zërit të "Asistentit të Google"</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">Mos lejo asnjë sajt që të administrojë protokollet</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Kjo faqe po qaset te kamera dhe mikrofoni yt.</translation>
@@ -4286,6 +4288,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Hiq zërin e sajtit}other{Hiq zërin e sajteve}}</translation>
 <translation id="497403230787583386">Kontrollet e sigurisë përfunduan. Dokumenti yt do të printohet.</translation>
 <translation id="4975543297921324897">Fonti me hapësirë fikse</translation>
+<translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Konfirmo qasjen</translation>
 <translation id="4980805016576257426">Kjo shtesë përmban një softuer keqdashës.</translation>
@@ -4941,6 +4944,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5612734644261457353">Na vjen keq, por fjalëkalimi sërish nuk mund të verifikohet. Shënim. Nëse ke ndryshuar fjalëkalimin së fundi, fjalëkalimi i ri do të zbatohet pasi të dalësh nga llogaria, prandaj përdor këtu fjalëkalimin e vjetër.</translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
+<translation id="5616571005307953937">Më e vjetra</translation>
 <translation id="5616726534702877126">Rezervo madhësinë</translation>
 <translation id="561698261642843490">Mbyll Firefox</translation>
 <translation id="5620540760831960151">Kjo listë ndikohet nga <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5572,6 +5576,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6212168817037875041">Fik ekranin</translation>
 <translation id="6212752530110374741">Dërgo me email lidhjen</translation>
 <translation id="621470880408090483">Mos lejo që sajtet të lidhen me pajisjet me Bluetooth</translation>
+<translation id="6216239400972191926">Sajtet dhe aplikacionet e refuzuara</translation>
 <translation id="6216601812881225442">Kontejneri yt nuk mbështet ndryshimin e madhësisë. Për të rregulluar sasinë e hapësirës që i është paracaktuar për Linux, rezervoje dhe më pas restauroje në një kontejner të ri.</translation>
 <translation id="6216696360484424239">Identifikohu automatikisht</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> është jashtë linje. Lidhu me internetin dhe provo sërish.</translation>
@@ -7417,7 +7422,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7955177647836564772">Nëse Smart Lock është aktivizuar dhe telefoni yt është i shkyçur, nuk është e nevojshme të futësh një fjalëkalim ose kod PIN</translation>
 <translation id="7956373551960864128">Printerët e tu të ruajtur</translation>
 <translation id="7957074856830851026">Të shikojë informacionet e pajisjes, të tilla si numri i serisë ose ID-ja e punës</translation>
-<translation id="7957186326898555886">Dërgo komente për kursyesin e energjisë</translation>
+<translation id="7957186326898555886">Dërgo komente për kursyesin e memories</translation>
 <translation id="7959074893852789871">Skedari përmbante shumë certifikata, disa prej të cilave nuk u importuan:</translation>
 <translation id="7959665254555683862">Skedë &amp;e re "e fshehtë"</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
@@ -7838,7 +7843,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8340547030807793004">Më shumë veprime për <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Rishiko <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> që ka dërguar së fundi shumë njoftime}other{Rishiko <ph name="BEGIN_BOLD" />{NUM_SITES} sajte<ph name="END_BOLD" /> që kanë dërguar së fundi shumë njoftime}}</translation>
 <translation id="8342221978608739536">Nuk e provova</translation>
-<translation id="8342399870062010251">Mëso më shumë për kursyesin e energjisë</translation>
+<translation id="8342399870062010251">Mëso më shumë për kursyesin e memories</translation>
 <translation id="8342861492835240085">Zgjidh një koleksion</translation>
 <translation id="8345848587667658367">Tani mund të shikosh aplikacionet, njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="8347227221149377169">Printimet</translation>

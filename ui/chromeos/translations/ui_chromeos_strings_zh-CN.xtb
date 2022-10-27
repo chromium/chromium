@@ -527,6 +527,7 @@
 <translation id="5428105026674456456">西班牙语</translation>
 <translation id="5438282218546237410">没有与“<ph name="SEARCH_TERM" />”相符的结果。</translation>
 <translation id="5449551289610225147">密码无效</translation>
+<translation id="5459064203055649751">已有一个名为“<ph name="FILENAME" />”的文件。要将它替换为您想移动的文件吗？</translation>
 <translation id="5463231940765244860">输入</translation>
 <translation id="5469868506864199649">意大利语</translation>
 <translation id="5473333559083690127">请重新输入新的 PIN 码</translation>
@@ -647,6 +648,7 @@
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>
 <translation id="6499681088828539489">禁止共享网络使用代理</translation>
+<translation id="6503285896705205014">管理员政策禁止复制 <ph name="COUNT" /> 个文件</translation>
 <translation id="6509122719576673235">挪威语</translation>
 <translation id="6528513914570774834">允许此设备的其他用户使用此网络</translation>
 <translation id="653019979737152879">正在同步<ph name="FILE_NAME" />…</translation>
@@ -749,6 +751,7 @@
 <translation id="7357762654218998920">此文件类型不受支持。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="7359359531237882347">正在复制 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="7375951387215729722">文件列表按<ph name="COLUMN_NAME" />降序排列。</translation>
+<translation id="7377161162143020057">管理员政策禁止复制此文件</translation>
 <translation id="7402503521691663770">ChromeOS Flex 设备</translation>
 <translation id="7408870451288633753">捷克语</translation>
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>
