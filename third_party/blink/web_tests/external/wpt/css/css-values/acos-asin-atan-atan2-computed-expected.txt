@@ -3,8 +3,8 @@ PASS acos(1) should be used-value-equivalent to 0deg
 PASS atan(0) should be used-value-equivalent to 0deg
 PASS asin(0) should be used-value-equivalent to 0deg
 FAIL atan2(0,0) should be used-value-equivalent to 0deg assert_not_equals: rotate(atan2(0,0)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(asin(sin(pi/2))) should be used-value-equivalent to 90deg assert_not_equals: calc(asin(sin(pi/2))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(acos(cos(pi - 3.14159265358979323846))) should be used-value-equivalent to 0deg assert_not_equals: calc(acos(cos(pi - 3.14159265358979323846))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+PASS calc(asin(sin(pi/2))) should be used-value-equivalent to 90deg
+PASS calc(acos(cos(pi - 3.14159265358979323846))) should be used-value-equivalent to 0deg
 FAIL calc(atan(e - 2.7182818284590452354) ) should be used-value-equivalent to 0deg assert_not_equals: calc(atan(e - 2.7182818284590452354) ) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 PASS calc(asin(sin(30deg + 1.0471967rad ) )) should be used-value-equivalent to 90deg
 FAIL calc(acos(cos(30deg - 0.523599rad ) )) should be used-value-equivalent to 0deg assert_not_equals: calc(acos(cos(30deg - 0.523599rad ) )) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
@@ -19,8 +19,8 @@ FAIL calc(atan2(0,1)) should be used-value-equivalent to 0deg assert_not_equals:
 FAIL calc(atan2(0,-1)) should be used-value-equivalent to -180deg assert_not_equals: calc(atan2(0,-1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(atan2(1,-1)) should be used-value-equivalent to 135deg assert_not_equals: calc(atan2(1,-1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL calc(atan2(-1,1)) should be used-value-equivalent to -45deg assert_not_equals: calc(atan2(-1,1)) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(cos(sin(acos(cos(pi))))) should be used-value-equivalent to 1 assert_not_equals: calc(cos(sin(acos(cos(pi))))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
-FAIL calc(sin(atan(tan(pi/2)))) should be used-value-equivalent to 1 assert_not_equals: calc(sin(atan(tan(pi/2)))) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
+PASS calc(cos(sin(acos(cos(pi))))) should be used-value-equivalent to 1
+PASS calc(sin(atan(tan(pi/2)))) should be used-value-equivalent to 1
 FAIL atan2(1px, -1px) should be used-value-equivalent to 135deg assert_not_equals: atan2(1px, -1px) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL atan2(1cm, -1cm) should be used-value-equivalent to 135deg assert_not_equals: atan2(1cm, -1cm) isn't valid in 'transform'; got the default value instead. got disallowed value "none"
 FAIL atan2(1mm, -1mm) should be used-value-equivalent to 135deg assert_not_equals: atan2(1mm, -1mm) isn't valid in 'transform'; got the default value instead. got disallowed value "none"

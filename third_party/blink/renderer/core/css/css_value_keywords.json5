@@ -1362,6 +1362,8 @@
     // "atan2",
     "acos",
 
+    "pi",
+
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
     "infinity",

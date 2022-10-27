@@ -1425,6 +1425,10 @@ class CSSMathExpressionNodeParser {
           std::numeric_limits<double>::quiet_NaN(),
           CSSPrimitiveValue::UnitType::kNumber);
     }
+    if (token.Id() == CSSValueID::kPi) {
+      return CSSMathExpressionNumericLiteral::Create(
+          M_PI, CSSPrimitiveValue::UnitType::kNumber);
+    }
     if (!(token.GetType() == kNumberToken ||
           token.GetType() == kPercentageToken ||
           token.GetType() == kDimensionToken))
