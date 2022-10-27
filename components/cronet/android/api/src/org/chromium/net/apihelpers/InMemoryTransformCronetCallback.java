@@ -35,7 +35,9 @@ public abstract class InMemoryTransformCronetCallback<T> extends ImplicitFlowCon
     private ByteArrayOutputStream mResponseBodyStream;
     private WritableByteChannel mResponseBodyChannel;
 
-    /** The set of listeners observing the associated request. */
+    /**
+     * The set of listeners observing the associated request.
+     */
     private final Set<CronetRequestCompletionListener<? super T>> mListeners =
             new LinkedHashSet<>();
 

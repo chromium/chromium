@@ -7,8 +7,8 @@ package org.chromium.net.apihelpers;
 import org.chromium.net.UrlResponseInfo;
 
 /**
- * A specialization of {@link InMemoryTransformCronetCallback} which returns the body bytes
- * verbatim without any interpretation.
+ * A specialization of {@link InMemoryTransformCronetCallback} which returns the body bytes verbatim
+ * without any interpretation.
  */
 public abstract class ByteArrayCronetCallback extends InMemoryTransformCronetCallback<byte[]> {
     @Override // Override to return the subtype

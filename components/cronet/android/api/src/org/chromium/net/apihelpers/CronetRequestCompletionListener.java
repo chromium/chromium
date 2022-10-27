@@ -20,8 +20,8 @@ import org.chromium.net.UrlResponseInfo;
 public interface CronetRequestCompletionListener<T> {
     /**
      * Invoked if request failed for any reason after starting the request. Once invoked, no other
-     * methods will be invoked on this object. {@code exception} provides information
-     * about the failure.
+     * methods will be invoked on this object. {@code exception} provides information about the
+     * failure.
      *
      * @param info Response information. May be {@code null} if no response was received.
      * @param exception detailed information about the error that occurred.
@@ -29,8 +29,8 @@ public interface CronetRequestCompletionListener<T> {
     void onFailed(@Nullable UrlResponseInfo info, CronetException exception);
 
     /**
-     * Invoked if request was canceled via {@code UrlRequest#cancel}. Once invoked, no other
-     * methods will be invoked on this object.
+     * Invoked if request was canceled via {@code UrlRequest#cancel}. Once invoked, no other methods
+     * will be invoked on this object.
      *
      * @param info Response information. May be {@code null} if no response was received.
      */

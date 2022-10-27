@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Provides a factory method to create {@link CronetEngine.Builder} instances.
- * A {@code CronetEngine.Builder} instance can be used to create a specific {@link CronetEngine}
- * implementation. To get the list of available {@link CronetProvider}s call
- * {@link #getAllProviders(Context)}.
+ * Provides a factory method to create {@link CronetEngine.Builder} instances. A {@code
+ * CronetEngine.Builder} instance can be used to create a specific {@link CronetEngine}
+ * implementation. To get the list of available {@link CronetProvider}s call {@link
+ * #getAllProviders(Context)}.
  * <p/>
  * <b>NOTE:</b> This class is for advanced users that want to select a particular
  * Cronet implementation. Most users should simply use {@code new} {@link
@@ -29,19 +29,18 @@ import java.util.Set;
  */
 public abstract class CronetProvider {
     /**
-     * String returned by {@link CronetProvider#getName} for {@link CronetProvider}
-     * that provides native Cronet implementation packaged inside an application.
-     * This implementation offers significantly higher performance relative to the
-     * fallback Cronet implementations (see {@link #PROVIDER_NAME_FALLBACK}).
+     * String returned by {@link CronetProvider#getName} for {@link CronetProvider} that provides
+     * native Cronet implementation packaged inside an application. This implementation offers
+     * significantly higher performance relative to the fallback Cronet implementations (see {@link
+     * #PROVIDER_NAME_FALLBACK}).
      */
     public static final String PROVIDER_NAME_APP_PACKAGED = "App-Packaged-Cronet-Provider";
 
     /**
-     * String returned by {@link CronetProvider#getName} for {@link CronetProvider}
-     * that provides Cronet implementation based on the system's
-     * {@link java.net.HttpURLConnection} implementation. This implementation
-     * offers significantly degraded performance relative to native Cronet
-     * implementations (see {@link #PROVIDER_NAME_APP_PACKAGED}).
+     * String returned by {@link CronetProvider#getName} for {@link CronetProvider} that provides
+     * Cronet implementation based on the system's {@link java.net.HttpURLConnection}
+     * implementation. This implementation offers significantly degraded performance relative to
+     * native Cronet implementations (see {@link #PROVIDER_NAME_APP_PACKAGED}).
      */
     public static final String PROVIDER_NAME_FALLBACK = "Fallback-Cronet-Provider";
 
@@ -86,18 +85,17 @@ public abstract class CronetProvider {
     public abstract String getName();
 
     /**
-     * Returns the provider version. The version can be used to select the newest
-     * available provider if multiple providers are available.
+     * Returns the provider version. The version can be used to select the newest available provider
+     * if multiple providers are available.
      *
      * @return provider version.
      */
     public abstract String getVersion();
 
     /**
-     * Returns whether the provider is enabled and can be used to instantiate the Cronet engine.
-     * A provider being out-of-date (older than the API) and needing updating is one potential
-     * reason it could be disabled. Please read the provider documentation for
-     * enablement procedure.
+     * Returns whether the provider is enabled and can be used to instantiate the Cronet engine. A
+     * provider being out-of-date (older than the API) and needing updating is one potential reason
+     * it could be disabled. Please read the provider documentation for enablement procedure.
      *
      * @return {@code true} if the provider is enabled.
      */
@@ -131,17 +129,16 @@ public abstract class CronetProvider {
             "com.google.android.gms.net.PlayServicesCronetProvider";
 
     /**
-     * {@link CronetProvider} a deprecated class that may be packaged with
-     * some old versions of Google Play Services.
+     * {@link CronetProvider} a deprecated class that may be packaged with some old versions of
+     * Google Play Services.
      */
     private static final String GMS_CORE_CRONET_PROVIDER_CLASS =
             "com.google.android.gms.net.GmsCoreCronetProvider";
 
     /**
-     * Returns an unmodifiable list of all available {@link CronetProvider}s.
-     * The providers are returned in no particular order. Some of the returned
-     * providers may be in a disabled state and should be enabled by the invoker.
-     * See {@link CronetProvider#isEnabled()}.
+     * Returns an unmodifiable list of all available {@link CronetProvider}s. The providers are
+     * returned in no particular order. Some of the returned providers may be in a disabled state
+     * and should be enabled by the invoker. See {@link CronetProvider#isEnabled()}.
      *
      * @return the list of available providers.
      */
@@ -162,8 +159,8 @@ public abstract class CronetProvider {
      *
      * @param className the class name of the provider that should be instantiated.
      * @param providers the set of providers to add the new provider to.
-     * @return {@code true} if the provider was added to the set; {@code false}
-     *         if the provider couldn't be instantiated.
+     * @return {@code true} if the provider was added to the set; {@code false} if the provider
+     * couldn't be instantiated.
      */
     private static boolean addCronetProviderImplByClassName(
             Context context, String className, Set<CronetProvider> providers, boolean logError) {
@@ -190,8 +187,8 @@ public abstract class CronetProvider {
     }
 
     /**
-     * De-duplicates exception handling logic in {@link #addCronetProviderImplByClassName}.
-     * It should be removed when support of API Levels lower than 19 is deprecated.
+     * De-duplicates exception handling logic in {@link #addCronetProviderImplByClassName}. It
+     * should be removed when support of API Levels lower than 19 is deprecated.
      */
     private static void logReflectiveOperationException(
             String className, boolean logError, Exception e) {
@@ -210,9 +207,8 @@ public abstract class CronetProvider {
      * Attempts to add a provider specified in the app resource file to a set.
      *
      * @param providers the set of providers to add the new provider to.
-     * @return {@code true} if the provider was added to the set; {@code false}
-     *         if the app resources do not include the string with
-     *         {@link #RES_KEY_CRONET_IMPL_CLASS} key.
+     * @return {@code true} if the provider was added to the set; {@code false} if the app resources
+     * do not include the string with {@link #RES_KEY_CRONET_IMPL_CLASS} key.
      * @throws RuntimeException if the provider cannot be found or instantiated.
      */
     // looking up resources from other apps requires the use of getIdentifier()

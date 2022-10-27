@@ -34,48 +34,53 @@ METHOD_RE = re.compile(r'.* ([^ ]*)\(.*\);')
 # the first version of Cronet and will be supported forever.
 # TODO(pauljensen): Remove these.
 ALLOWED_EXCEPTIONS = [
-'org.chromium.net.impl.CronetEngineBuilderImpl/build ->'
+    'org.chromium.net.impl.CronetEngineBuilderImpl/build ->'
     ' org/chromium/net/ExperimentalCronetEngine/getVersionString:'
     '()Ljava/lang/String;',
-'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderI'
+    'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderI'
     'mpl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
-'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderI'
+    'org.chromium.net.urlconnection.CronetFixedModeOutputStream$UploadDataProviderI'
     'mpl/rewind -> org/chromium/net/UploadDataSink/onRewindError:'
     '(Ljava/lang/Exception;)V',
-'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
     ' org/chromium/net/UrlRequest/cancel:()V',
-'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
     ' org/chromium/net/UrlResponseInfo/getHttpStatusText:()Ljava/lang/String;',
-'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/disconnect ->'
     ' org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
-'org.chromium.net.urlconnection.CronetHttpURLConnection/getHeaderField ->'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getHeaderField ->'
     ' org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
-'org.chromium.net.urlconnection.CronetHttpURLConnection/getErrorStream ->'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/getErrorStream ->'
     ' org/chromium/net/UrlResponseInfo/getHttpStatusCode:()I',
-'org.chromium.net.urlconnection.CronetHttpURLConnection/setConnectTimeout ->'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection/setConnectTimeout ->'
     ' org/chromium/net/UrlRequest/read:(Ljava/nio/ByteBuffer;)V',
-'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallbac'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallbac'
     'k/onRedirectReceived -> org/chromium/net/UrlRequest/followRedirect:()V',
-'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallbac'
+    'org.chromium.net.urlconnection.CronetHttpURLConnection$CronetUrlRequestCallbac'
     'k/onRedirectReceived -> org/chromium/net/UrlRequest/cancel:()V',
-'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImp'
+    'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImp'
     'l/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
-'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImp'
+    'org.chromium.net.urlconnection.CronetChunkedOutputStream$UploadDataProviderImp'
     'l/rewind -> org/chromium/net/UploadDataSink/onRewindError:'
     '(Ljava/lang/Exception;)V',
-'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderIm'
+    'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderIm'
     'pl/read -> org/chromium/net/UploadDataSink/onReadSucceeded:(Z)V',
-'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderIm'
+    'org.chromium.net.urlconnection.CronetBufferedOutputStream$UploadDataProviderIm'
     'pl/rewind -> org/chromium/net/UploadDataSink/onRewindSucceeded:()V',
-'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.url'
+    'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.url'
     'connection.CronetHttpURLStreamHandler -> org/chromium/net/ExperimentalCron'
     'etEngine/openConnection:(Ljava/net/URL;)Ljava/net/URLConnection;',
-'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.url'
+    'org.chromium.net.urlconnection.CronetHttpURLStreamHandler/org.chromium.net.url'
     'connection.CronetHttpURLStreamHandler -> org/chromium/net/ExperimentalCron'
     'etEngine/openConnection:(Ljava/net/URL;Ljava/net/Proxy;)Ljava/net/URLConne'
     'ction;',
-# getMessage() is an java.lang.Exception member, and so cannot be removed.
-'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> '
+    'org.chromium.net.impl.CronetEngineBase/newBidirectionalStreamBuilder -> org/ch'
+    'romium/net/ExperimentalCronetEngine/newBidirectionalStreamBuilder:(Ljava/l'
+    'ang/String;Lorg/chromium/net/BidirectionalStream$Callback;Ljava/util/concu'
+    'rrent/Executor;)Lorg/chromium/net/ExperimentalBidirectionalStream$'
+    'Builder;',
+    # getMessage() is an java.lang.Exception member, and so cannot be removed.
+    'org.chromium.net.impl.NetworkExceptionImpl/getMessage -> '
     'org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
 ]
 

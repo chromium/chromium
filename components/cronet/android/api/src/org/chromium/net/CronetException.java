@@ -15,8 +15,8 @@ public abstract class CronetException extends IOException {
      *
      * @param message explanation of failure.
      * @param cause the cause (which is saved for later retrieval by the {@link
-     *         java.io.IOException#getCause getCause()} method). A null value is permitted, and
-     *         indicates that the cause is nonexistent or unknown.
+     * java.io.IOException#getCause getCause()} method). A null value is permitted, and indicates
+     * that the cause is nonexistent or unknown.
      */
     protected CronetException(String message, Throwable cause) {
         super(message, cause);

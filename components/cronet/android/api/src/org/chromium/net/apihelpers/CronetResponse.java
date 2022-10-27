@@ -11,14 +11,19 @@ import org.chromium.net.UrlResponseInfo;
 import java.util.Objects;
 
 /**
- * A helper object encompassing the headers, body and metadata of a response to Cronet URL requests.
+ * A helper object encompassing the headers, body and metadata of a response to Cronet URL
+ * requests.
  *
  * @param <T> the response body type
  */
 public class CronetResponse<T> {
-    /** The headers and other metadata of the response. */
+    /**
+     * The headers and other metadata of the response.
+     */
     private final UrlResponseInfo mUrlResponseInfo;
-    /** The full body of the response, after performing a user-defined deserialization. */
+    /**
+     * The full body of the response, after performing a user-defined deserialization.
+     */
     private final @Nullable T mResponseBody;
 
     CronetResponse(UrlResponseInfo urlResponseInfo, @Nullable T responseBody) {
@@ -26,20 +31,28 @@ public class CronetResponse<T> {
         this.mResponseBody = responseBody;
     }
 
-    /** Returns the headers and other metadata of the response. */
+    /**
+     * Returns the headers and other metadata of the response.
+     */
     public UrlResponseInfo getUrlResponseInfo() {
         return mUrlResponseInfo;
     }
 
-    /** Returns the full body of the response, after performing a user-defined deserialization. */
+    /**
+     * Returns the full body of the response, after performing a user-defined deserialization.
+     */
     public @Nullable T getResponseBody() {
         return mResponseBody;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CronetResponse)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof CronetResponse)) {
+            return false;
+        }
         CronetResponse<?> that = (CronetResponse<?>) o;
         return Objects.equals(mUrlResponseInfo, that.mUrlResponseInfo)
                 && Objects.equals(mResponseBody, that.mResponseBody);

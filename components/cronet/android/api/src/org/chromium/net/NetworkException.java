@@ -6,10 +6,10 @@ package org.chromium.net;
 
 /**
  * Exception passed to {@link UrlRequest.Callback#onFailed UrlRequest.Callback.onFailed()} when
- * Cronet fails to process a network request. In this case {@link #getErrorCode} and
- * {@link #getCronetInternalErrorCode} can be used to get more information about the specific
- * type of failure. If {@link #getErrorCode} returns {@link #ERROR_QUIC_PROTOCOL_FAILED},
- * this exception can be cast to a {@link QuicException} which can provide further details.
+ * Cronet fails to process a network request. In this case {@link #getErrorCode} and {@link
+ * #getCronetInternalErrorCode} can be used to get more information about the specific type of
+ * failure. If {@link #getErrorCode} returns {@link #ERROR_QUIC_PROTOCOL_FAILED}, this exception can
+ * be cast to a {@link QuicException} which can provide further details.
  */
 public abstract class NetworkException extends CronetException {
     /**
@@ -22,9 +22,9 @@ public abstract class NetworkException extends CronetException {
     public static final int ERROR_INTERNET_DISCONNECTED = 2;
     /**
      * Error code indicating that as the request was processed the network configuration changed.
-     * When {@link #getErrorCode} returns this code, this exception may be cast to
-     * {@link QuicException} for more information if <a href="https://www.chromium.org/quic">
-     * QUIC</a> protocol is used.
+     * When
+     * {@link #getErrorCode} returns this code, this exception may be cast to {@link QuicException}
+     * for more information if <a href="https://www.chromium.org/quic"> QUIC</a> protocol is used.
      */
     public static final int ERROR_NETWORK_CHANGED = 3;
     /**
@@ -60,8 +60,8 @@ public abstract class NetworkException extends CronetException {
      */
     public static final int ERROR_QUIC_PROTOCOL_FAILED = 10;
     /**
-     * Error code indicating another type of error was encountered.
-     * {@link #getCronetInternalErrorCode} can be consulted to get a more specific cause.
+     * Error code indicating another type of error was encountered. {@link
+     * #getCronetInternalErrorCode} can be consulted to get a more specific cause.
      */
     public static final int ERROR_OTHER = 11;
 
@@ -70,8 +70,8 @@ public abstract class NetworkException extends CronetException {
      *
      * @param message explanation of failure.
      * @param cause the cause (which is saved for later retrieval by the {@link
-     *         java.io.IOException#getCause getCause()} method). A null value is permitted, and
-     *         indicates that the cause is nonexistent or unknown.
+     * java.io.IOException#getCause getCause()} method). A null value is permitted, and indicates
+     * that the cause is nonexistent or unknown.
      */
     protected NetworkException(String message, Throwable cause) {
         super(message, cause);
@@ -85,9 +85,9 @@ public abstract class NetworkException extends CronetException {
     public abstract int getErrorCode();
 
     /**
-     * Returns a Cronet internal error code. This may provide more specific error
-     * diagnosis than {@link #getErrorCode}, but the constant values are not exposed to Java and
-     * may change over time. See
+     * Returns a Cronet internal error code. This may provide more specific error diagnosis than
+     * {@link #getErrorCode}, but the constant values are not exposed to Java and may change over
+     * time. See
      * <a href=https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h>
      * here</a> for the lastest list of values.
      *
@@ -97,15 +97,14 @@ public abstract class NetworkException extends CronetException {
 
     /**
      * Returns {@code true} if retrying this request right away might succeed, {@code false}
-     * otherwise. For example returns {@code true} when {@link #getErrorCode} returns
-     * {@link #ERROR_NETWORK_CHANGED} because trying the request might succeed using the new
-     * network configuration, but {@code false} when {@code getErrorCode()} returns
-     * {@link #ERROR_INTERNET_DISCONNECTED} because retrying the request right away will
-     * encounter the same failure (instead retrying should be delayed until device regains
-     * network connectivity).
+     * otherwise. For example returns {@code true} when {@link #getErrorCode} returns {@link
+     * #ERROR_NETWORK_CHANGED} because trying the request might succeed using the new network
+     * configuration, but {@code false} when {@code getErrorCode()} returns {@link
+     * #ERROR_INTERNET_DISCONNECTED} because retrying the request right away will encounter the same
+     * failure (instead retrying should be delayed until device regains network connectivity).
      *
      * @return {@code true} if retrying this request right away might succeed, {@code false}
-     *         otherwise.
+     * otherwise.
      */
     public abstract boolean immediatelyRetryable();
 }

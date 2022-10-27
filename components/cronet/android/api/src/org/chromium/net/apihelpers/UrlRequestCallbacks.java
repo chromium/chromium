@@ -22,9 +22,9 @@ import java.util.concurrent.Future;
  * recommend using them if it's possible to stream the response body, or if the response body sizes
  * can cause strain on the on-device resources.
  *
- * <p>The helper callbacks come in two flavors - either the caller provides a callback to be invoked
- * when the request finishes (successfully or not), or the caller is given a {@link Future} which
- * completes when Cronet finishes processing the request.
+ * <p>The helper callbacks come in two flavors - either the caller provides a callback to be
+ * invoked when the request finishes (successfully or not), or the caller is given a {@link Future}
+ * which completes when Cronet finishes processing the request.
  */
 public class UrlRequestCallbacks {
     public static ByteArrayCronetCallback forByteArrayBody(

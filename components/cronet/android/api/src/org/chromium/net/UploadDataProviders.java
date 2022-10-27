@@ -30,8 +30,8 @@ public final class UploadDataProviders {
      * Uploads an entire file, closing the descriptor when it is no longer needed.
      *
      * @param fd The file descriptor to upload
-     * @throws IllegalArgumentException if {@code fd} is not a file.
      * @return A new UploadDataProvider for the given file descriptor
+     * @throws IllegalArgumentException if {@code fd} is not a file.
      */
     public static UploadDataProvider create(final ParcelFileDescriptor fd) {
         return org.chromium.net.apihelpers.UploadDataProviders.create(fd);
