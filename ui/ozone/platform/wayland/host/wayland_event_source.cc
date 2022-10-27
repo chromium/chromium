@@ -702,13 +702,25 @@ void WaylandEventSource::OnPointerStylusToolChanged(
 }
 
 void WaylandEventSource::OnPointerStylusForceChanged(float force) {
-  DCHECK(last_pointer_stylus_tool_.has_value());
+  if (!last_pointer_stylus_tool_.has_value()) {
+    // This is a stray force event that the default tool cannot accept.
+    LOG(WARNING) << "Cannot handle force for the default tool!  (the value is "
+                 << force << ")";
+    return;
+  }
+
   last_pointer_stylus_tool_->force = force;
 }
 
 void WaylandEventSource::OnPointerStylusTiltChanged(
     const gfx::Vector2dF& tilt) {
-  DCHECK(last_pointer_stylus_tool_.has_value());
+  if (!last_pointer_stylus_tool_.has_value()) {
+    // This is a stray tilt event that the default tool cannot accept.
+    LOG(WARNING) << "Cannot handle tilt for the default tool!  (the value is ["
+                 << tilt.x() << "," << tilt.y() << "])";
+    return;
+  }
+
   last_pointer_stylus_tool_->tilt = tilt;
 }
 
