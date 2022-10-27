@@ -61,6 +61,17 @@ struct ServerConfig {
       ShouldUseExplicitSynchronizationProtocol::kUse;
 };
 
+class TestWaylandServerThread;
+
+// A custom listener that holds wl_listener and the pointer to a test_server.
+struct TestServerListener {
+ public:
+  explicit TestServerListener(TestWaylandServerThread* server)
+      : test_server(server) {}
+  wl_listener listener;
+  TestWaylandServerThread* const test_server;
+};
+
 class TestSelectionDeviceManager;
 
 class TestWaylandServerThread : public base::Thread,
@@ -144,6 +155,8 @@ class TestWaylandServerThread : public base::Thread,
 
   wl_client* client() const { return client_; }
 
+  void OnClientDestroyed(wl_client* client);
+
  private:
   void SetupOutputs();
   bool SetupPrimarySelectionManager(PrimarySelectionProtocol protocol);
@@ -158,6 +171,7 @@ class TestWaylandServerThread : public base::Thread,
   void OnFileCanWriteWithoutBlocking(int fd) override;
 
   std::unique_ptr<wl_display, DisplayDeleter> display_;
+  TestServerListener client_destroy_listener_;
   raw_ptr<wl_client> client_ = nullptr;
   raw_ptr<wl_event_loop> event_loop_ = nullptr;
 

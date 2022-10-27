@@ -26,6 +26,16 @@ namespace {
 // TODO(1365887): This is a lock that workarounds a problem when wl_client_flush
 // is called from multiple threads.
 static base::Lock g_global_lock_;
+
+void handle_client_destroyed(struct wl_listener* listener, void* data) {
+  TestServerListener* destroy_listener =
+      wl_container_of(listener, /*sample=*/destroy_listener,
+                      /*member=*/listener);
+  DCHECK(destroy_listener);
+  destroy_listener->test_server->OnClientDestroyed(
+      static_cast<struct wl_client*>(data));
+}
+
 }  // namespace
 
 void DisplayDeleter::operator()(wl_display* display) {
@@ -34,6 +44,7 @@ void DisplayDeleter::operator()(wl_display* display) {
 
 TestWaylandServerThread::TestWaylandServerThread()
     : Thread("test_wayland_server"),
+      client_destroy_listener_(this),
       pause_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                    base::WaitableEvent::InitialState::NOT_SIGNALED),
       resume_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -43,15 +54,21 @@ TestWaylandServerThread::TestWaylandServerThread()
       controller_(FROM_HERE) {}
 
 TestWaylandServerThread::~TestWaylandServerThread() {
-  if (client_)
-    wl_client_destroy(client_);
-
-  // Stop watching the descriptor here to guarantee that no new events will come
-  // during or after the destruction of the display.
+  // Stop watching the descriptor here to guarantee that no new events
+  // will come during or after the destruction of the display.
   controller_.StopWatchingFileDescriptor();
 
   Resume();
   Stop();
+
+  // Check if the client has been destroyed after the thread is stopped. This
+  // most probably will happen if the real client has closed its fd resulting
+  // in a closed socket. The server's event loop will then see that and destroy
+  // the client automatically. This may or may not happen - depends on whether
+  // the events will be processed after the real client closes its end or not.
+  if (client_)
+    wl_client_destroy(client_);
+  client_ = nullptr;
 }
 
 // static
@@ -128,6 +145,9 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   if (!client_)
     return false;
 
+  client_destroy_listener_.listener.notify = handle_client_destroyed;
+  wl_client_add_destroy_listener(client_, &client_destroy_listener_.listener);
+
   base::Thread::Options options;
   options.message_pump_factory = base::BindRepeating(
       &TestWaylandServerThread::CreateMessagePump, base::Unretained(this));
@@ -165,6 +185,14 @@ TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
   if (surface_augmenter_.Initialize(display_.get()))
     return &surface_augmenter_;
   return nullptr;
+}
+
+void TestWaylandServerThread::OnClientDestroyed(wl_client* client) {
+  if (!client_)
+    return;
+
+  DCHECK_EQ(client_, client);
+  client_ = nullptr;
 }
 
 // By default, just make sure primary screen has bounds set. Otherwise delegates
