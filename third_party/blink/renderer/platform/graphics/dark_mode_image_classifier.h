@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -24,8 +23,7 @@ FORWARD_DECLARE_TEST(DarkModeImageClassifierTest, FeaturesAndClassification);
 // results is not threadsafe. So it can be used only in blink main thread.
 class PLATFORM_EXPORT DarkModeImageClassifier {
  public:
-  explicit DarkModeImageClassifier(
-      DarkModeImageClassifierPolicy image_classifier_policy);
+  DarkModeImageClassifier();
   ~DarkModeImageClassifier();
 
   struct Features {
@@ -80,8 +78,6 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
   // is grayscale, each bucket is a 4 bit representation of luminance.
   float ComputeColorBucketsRatio(const std::vector<SkColor>& sampled_pixels,
                                  const ColorMode color_mode) const;
-
-  const DarkModeImageClassifierPolicy image_classifier_policy_;
 
   FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest, BlockSamples);
   FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest,
