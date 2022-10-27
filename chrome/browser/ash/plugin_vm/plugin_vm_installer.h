@@ -194,7 +194,7 @@ class PluginVmInstaller : public KeyedService,
       absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
   void CheckDiskSpace();
-  void OnAvailableDiskSpace(int64_t bytes);
+  void OnAvailableDiskSpace(absl::optional<int64_t> bytes);
 
   void StartDlcDownload();
   // Called repeatedly.

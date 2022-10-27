@@ -13,7 +13,6 @@
 #include "base/files/scoped_file.h"
 #include "base/guid.h"
 #include "base/strings/string_util.h"
-#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_drive_image_download_service.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/prefs/pref_service.h"
@@ -55,7 +55,7 @@ constexpr int64_t kDownloadSizeFallbackEstimate = 15LL * kBytesPerGigabyte;
 constexpr char kFailureReasonHistogram[] = "PluginVm.SetupFailureReason";
 constexpr char kSetupTimeHistogram[] = "PluginVm.SetupTime";
 
-constexpr char kHomeDirectory[] = "/home";
+constexpr char kHomeDirectory[] = "/home/chronos/user";
 
 ash::ConciergeClient* GetConciergeClient() {
   return ash::ConciergeClient::Get();
@@ -433,24 +433,21 @@ void PluginVmInstaller::CheckDiskSpace() {
   DCHECK_EQ(installing_state_, InstallingState::kCheckingForExistingVm);
   UpdateInstallingState(InstallingState::kCheckingDiskSpace);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     base::FilePath(kHomeDirectory)),
-      base::BindOnce(&PluginVmInstaller::OnAvailableDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr()));
+  ash::SpacedClient::Get()->GetFreeDiskSpace(
+      kHomeDirectory, base::BindOnce(&PluginVmInstaller::OnAvailableDiskSpace,
+                                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PluginVmInstaller::OnAvailableDiskSpace(int64_t bytes) {
+void PluginVmInstaller::OnAvailableDiskSpace(absl::optional<int64_t> bytes) {
   if (state_ == State::kCancelling) {
     CancelFinished();
     return;
   }
 
   if (free_disk_space_for_testing_ != -1)
-    bytes = free_disk_space_for_testing_;
+    bytes = absl::optional<int64_t>(free_disk_space_for_testing_);
 
-  if (bytes < RequiredFreeDiskSpace()) {
+  if (!bytes.has_value() || bytes.value() < RequiredFreeDiskSpace()) {
     InstallFailed(FailureReason::INSUFFICIENT_DISK_SPACE);
     return;
   }
