@@ -379,7 +379,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_EQ("no-repeat", theme->background_image->repeat_y);
   EXPECT_EQ("center", theme->background_image->position_x);
   EXPECT_EQ("top", theme->background_image->position_y);
-  if (ComprehensiveTheme() || !RemoveScrim()) {
+  if (!RemoveScrim()) {
     EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
     EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->logo_color);
     EXPECT_EQ(RemoveScrim(),
@@ -394,9 +394,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_FALSE(theme->background_image_attribution_2.has_value());
   EXPECT_FALSE(theme->background_image_attribution_url.has_value());
   ASSERT_TRUE(theme->most_visited);
-  if (ComprehensiveTheme()) {
-    EXPECT_EQ(SkColorSetRGB(0, 0, 7), theme->most_visited->background_color);
-  } else if (RemoveScrim()) {
+  if (RemoveScrim()) {
     EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
     EXPECT_FALSE(theme->most_visited->use_title_pill);
   } else {
