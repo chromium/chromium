@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -422,6 +423,9 @@ void ArcAppQueueRestoreHandler::PrepareAppLaunching(const std::string& app_id) {
     handler_->restore_data()->RemoveApp(app_id);
     return;
   }
+
+  // Activate ARC in case still not active.
+  arc::ArcSessionManager::Get()->AllowActivation();
 
   for (const auto& [window_id, app_restore_data] : launch_list) {
     handler_->RecordRestoredAppLaunch(apps::AppTypeName::kArc);
