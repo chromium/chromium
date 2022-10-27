@@ -163,7 +163,7 @@ class PLATFORM_EXPORT Color {
                        absl::optional<float> a,
                        absl::optional<float> b,
                        absl::optional<float> alpha);
-  static Color FromOKLab(absl::optional<float> L,
+  static Color FromOklab(absl::optional<float> L,
                          absl::optional<float> a,
                          absl::optional<float> b,
                          absl::optional<float> alpha);
@@ -172,13 +172,11 @@ class PLATFORM_EXPORT Color {
   // none should be specified as absl::nullopt. The value for `L` and `chroma`
   // will be clamped to be non-negative. The value for `alpha` will be clamped
   // to the [0, 1] interval.
-  // TODO(1021287), fix the capitalization of these methods so it's coherent
-  // with the spec.
-  static Color FromLCH(absl::optional<float> L,
+  static Color FromLch(absl::optional<float> L,
                        absl::optional<float> chroma,
                        absl::optional<float> hue,
                        absl::optional<float> alpha);
-  static Color FromOKLCH(absl::optional<float> L,
+  static Color FromOklch(absl::optional<float> L,
                          absl::optional<float> chroma,
                          absl::optional<float> hue,
                          absl::optional<float> alpha);
@@ -190,12 +188,10 @@ class PLATFORM_EXPORT Color {
     kSRGBLinear,
     // Perceptually uniform
     kLab,
-    kOKLab,
+    kOklab,
     // Maximizing chroma
-    // TODO(1021287), fix the capitalization of these enums so it's coherent
-    // with the spec.
-    kLCH,
-    kOKLCH,
+    kLch,
+    kOklch,
     // Legacy fallback
     kSRGB,
     // Polar spaces

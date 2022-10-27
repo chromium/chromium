@@ -832,7 +832,7 @@ bool CSSGradientValue::ShouldSerializeColorSpace() const {
   // OKLab is the default and should not be serialized unless all colors are
   // legacy colors.
   if (!has_only_legacy_colors &&
-      color_interpolation_space_ == Color::ColorInterpolationSpace::kOKLab)
+      color_interpolation_space_ == Color::ColorInterpolationSpace::kOklab)
     return false;
 
   // sRGB is the default if all colors are legacy colors and should not be

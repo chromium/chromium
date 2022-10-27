@@ -180,9 +180,9 @@ TEST(BlinkColor, toSkColor4fValidation) {
       Color::ColorInterpolationSpace::kXYZD50,
       Color::ColorInterpolationSpace::kSRGBLinear,
       Color::ColorInterpolationSpace::kLab,
-      Color::ColorInterpolationSpace::kOKLab,
-      Color::ColorInterpolationSpace::kLCH,
-      Color::ColorInterpolationSpace::kOKLCH,
+      Color::ColorInterpolationSpace::kOklab,
+      Color::ColorInterpolationSpace::kLch,
+      Color::ColorInterpolationSpace::kOklch,
       Color::ColorInterpolationSpace::kSRGB,
       Color::ColorInterpolationSpace::kHSL,
       Color::ColorInterpolationSpace::kHWB,
@@ -206,16 +206,16 @@ TEST(BlinkColor, toSkColor4fValidation) {
                                color_function_value.param2, 1.0f);
       } else if (color_function_value.color_space ==
                  Color::ColorSpace::kOklab) {
-        input = Color::FromOKLab(color_function_value.param0,
+        input = Color::FromOklab(color_function_value.param0,
                                  color_function_value.param1,
                                  color_function_value.param2, 1.0f);
       } else if (color_function_value.color_space == Color::ColorSpace::kLch) {
-        input = Color::FromLCH(color_function_value.param0,
+        input = Color::FromLch(color_function_value.param0,
                                color_function_value.param1,
                                color_function_value.param2, 1.0f);
       } else if (color_function_value.color_space ==
                  Color::ColorSpace::kOklch) {
-        input = Color::FromOKLCH(color_function_value.param0,
+        input = Color::FromOklch(color_function_value.param0,
                                  color_function_value.param1,
                                  color_function_value.param2, 1.0f);
       } else if (color_function_value.color_space ==
@@ -259,9 +259,9 @@ TEST(BlinkColor, ExportAsXYZD50Floats) {
       Color::ColorInterpolationSpace::kXYZD50,
       Color::ColorInterpolationSpace::kSRGBLinear,
       Color::ColorInterpolationSpace::kLab,
-      Color::ColorInterpolationSpace::kOKLab,
-      Color::ColorInterpolationSpace::kLCH,
-      Color::ColorInterpolationSpace::kOKLCH,
+      Color::ColorInterpolationSpace::kOklab,
+      Color::ColorInterpolationSpace::kLch,
+      Color::ColorInterpolationSpace::kOklch,
       Color::ColorInterpolationSpace::kSRGB,
       Color::ColorInterpolationSpace::kHSL,
       Color::ColorInterpolationSpace::kHWB};

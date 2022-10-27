@@ -230,7 +230,7 @@ Color Color::FromLab(absl::optional<float> L,
 }
 
 // static
-Color Color::FromOKLab(absl::optional<float> L,
+Color Color::FromOklab(absl::optional<float> L,
                        absl::optional<float> a,
                        absl::optional<float> b,
                        absl::optional<float> alpha) {
@@ -248,7 +248,7 @@ Color Color::FromOKLab(absl::optional<float> L,
 }
 
 // static
-Color Color::FromLCH(absl::optional<float> L,
+Color Color::FromLch(absl::optional<float> L,
                      absl::optional<float> chroma,
                      absl::optional<float> hue,
                      absl::optional<float> alpha) {
@@ -266,7 +266,7 @@ Color Color::FromLCH(absl::optional<float> L,
 }
 
 // static
-Color Color::FromOKLCH(absl::optional<float> L,
+Color Color::FromOklch(absl::optional<float> L,
                        absl::optional<float> chroma,
                        absl::optional<float> hue,
                        absl::optional<float> alpha) {
@@ -404,7 +404,7 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kLab;
       return;
     }
-    case ColorInterpolationSpace::kOKLab:
+    case ColorInterpolationSpace::kOklab:
     // As per CSS Color 4 Spec, "If the host syntax does not define what color
     // space interpolation should take place in, it defaults to OKLab".
     // (https://www.w3.org/TR/css-color-4/#interpolation-space)
@@ -433,7 +433,7 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kOklab;
       return;
     }
-    case ColorInterpolationSpace::kLCH: {
+    case ColorInterpolationSpace::kLch: {
       if (color_space_ == ColorSpace::kLch) {
         return;
       }
@@ -451,7 +451,7 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kLch;
       return;
     }
-    case ColorInterpolationSpace::kOKLCH: {
+    case ColorInterpolationSpace::kOklch: {
       if (color_space_ == ColorSpace::kOklch) {
         return;
       }
@@ -1000,7 +1000,7 @@ Color::ColorInterpolationSpace Color::GetColorInterpolationSpace() const {
   if (IsLegacyColor())
     return ColorInterpolationSpace::kSRGB;
 
-  return ColorInterpolationSpace::kOKLab;
+  return ColorInterpolationSpace::kOklab;
 }
 
 // static
@@ -1012,13 +1012,13 @@ String Color::ColorInterpolationSpaceToString(
     case Color::ColorInterpolationSpace::kLab:
       result.Append("lab");
       break;
-    case Color::ColorInterpolationSpace::kOKLab:
+    case Color::ColorInterpolationSpace::kOklab:
       result.Append("oklab");
       break;
-    case Color::ColorInterpolationSpace::kLCH:
+    case Color::ColorInterpolationSpace::kLch:
       result.Append("lch");
       break;
-    case Color::ColorInterpolationSpace::kOKLCH:
+    case Color::ColorInterpolationSpace::kOklch:
       result.Append("oklch");
       break;
     case Color::ColorInterpolationSpace::kSRGBLinear:
@@ -1044,8 +1044,8 @@ String Color::ColorInterpolationSpaceToString(
       break;
   }
 
-  if (color_space == Color::ColorInterpolationSpace::kLCH ||
-      color_space == Color::ColorInterpolationSpace::kOKLCH ||
+  if (color_space == Color::ColorInterpolationSpace::kLch ||
+      color_space == Color::ColorInterpolationSpace::kOklch ||
       color_space == Color::ColorInterpolationSpace::kHSL ||
       color_space == Color::ColorInterpolationSpace::kHWB) {
     switch (hue_interpolation_method) {
