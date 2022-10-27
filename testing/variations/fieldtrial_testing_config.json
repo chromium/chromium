@@ -7476,6 +7476,21 @@
             ]
         }
     ],
+    "OmniboxOnClobberFocusTypeOnContent": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_V2",
+                    "enable_features": [
+                        "OmniboxOnClobberFocusTypeOnContent"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPrerender": [
         {
             "platforms": [
