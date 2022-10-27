@@ -21,10 +21,6 @@
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_export.h"
 
-namespace gl {
-class GLImage;
-}
-
 namespace ui {
 
 // Mirrors core animation layer edge constants.
@@ -43,21 +39,6 @@ struct GL_EXPORT CARendererLayerParams {
                         const gfx::Transform& transform,
                         gfx::ScopedIOSurface io_surface,
                         const gfx::ColorSpace& io_surface_color_space,
-                        const gfx::RectF& contents_rect,
-                        const gfx::Rect& rect,
-                        unsigned background_color,
-                        unsigned edge_aa_mask,
-                        float opacity,
-                        unsigned filter,
-                        absl::optional<gfx::HDRMetadata> hdr_metadata,
-                        gfx::ProtectedVideoType protected_video_type);
-  // TODO(crbug.com/1366805): remove this ctor when it is not used anywhere.
-  CARendererLayerParams(bool is_clipped,
-                        const gfx::Rect clip_rect,
-                        const gfx::RRectF rounded_corner_bounds,
-                        unsigned sorting_context_id,
-                        const gfx::Transform& transform,
-                        gl::GLImage* image,
                         const gfx::RectF& contents_rect,
                         const gfx::Rect& rect,
                         unsigned background_color,

@@ -26,7 +26,6 @@
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
-#include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/scoped_cgl.h"
 
@@ -281,12 +280,6 @@ bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
     DLOG(ERROR) << "Invalid non-zero Z order.";
     return false;
   }
-  gl::GLImageIOSurface* io_surface_image =
-      gl::GLImageIOSurface::FromGLImage(image);
-  if (!io_surface_image) {
-    DLOG(ERROR) << "Not an IOSurface image.";
-    return false;
-  }
   // TODO(1290313): the display_bounds might not need to be rounded to the
   // nearest rect as this eventually gets made into a CALayer. CALayers work in
   // floats.
@@ -295,7 +288,7 @@ bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
       gfx::Rect(),    // clip_rect
       gfx::RRectF(),  // rounded_corner_bounds
       0,              // sorting_context_id
-      gfx::Transform(), image,
+      gfx::Transform(), std::move(image), overlay_plane_data.color_space,
       overlay_plane_data.crop_rect,                           // contents_rect
       gfx::ToNearestRect(overlay_plane_data.display_bounds),  // rect
       SK_ColorTRANSPARENT,               // background_color
@@ -618,12 +611,6 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
     DLOG(ERROR) << "Invalid non-zero Z order.";
     return false;
   }
-  gl::GLImageIOSurface* io_surface_image =
-      gl::GLImageIOSurface::FromGLImage(image);
-  if (!io_surface_image) {
-    DLOG(ERROR) << "Not an IOSurface image.";
-    return false;
-  }
   // TODO(1290313): the display_bounds might not need to be rounded to the
   // nearest rect as this eventually gets made into a CALayer. CALayers work in
   // floats.
@@ -632,7 +619,7 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
       gfx::Rect(),    // clip_rect
       gfx::RRectF(),  // rounded_corner_bounds
       0,              // sorting_context_id
-      gfx::Transform(), image,
+      gfx::Transform(), image, overlay_plane_data.color_space,
       overlay_plane_data.crop_rect,                           // contents_rect
       gfx::ToNearestRect(overlay_plane_data.display_bounds),  // rect
       SK_ColorTRANSPARENT,               // background_color

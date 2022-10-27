@@ -34,6 +34,10 @@
 #include "ui/gfx/native_pixmap.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/gfx/mac/io_surface.h"
+#endif
+
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
@@ -58,6 +62,8 @@ class EGLTimestampClient;
 // OverlayImage is a platform specific type for overlay plane image data.
 #if defined(USE_OZONE)
 using OverlayImage = scoped_refptr<gfx::NativePixmap>;
+#elif BUILDFLAG(IS_MAC)
+using OverlayImage = gfx::ScopedIOSurface;
 #else
 using OverlayImage = GLImage*;
 #endif

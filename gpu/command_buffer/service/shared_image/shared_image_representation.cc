@@ -325,6 +325,9 @@ OverlayImageRepresentation::GetDCOMPSurfaceProxy() {
   return nullptr;
 }
 #elif BUILDFLAG(IS_MAC)
+gfx::ScopedIOSurface OverlayImageRepresentation::GetIOSurface() const {
+  return gfx::ScopedIOSurface();
+}
 bool OverlayImageRepresentation::IsInUseByWindowServer() const {
   return false;
 }

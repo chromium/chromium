@@ -29,6 +29,10 @@
 #include "ui/gl/dcomp_surface_proxy.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/gfx/mac/io_surface.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 #endif
@@ -485,6 +489,9 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
       return representation()->GetDCOMPSurfaceProxy();
     }
 #elif BUILDFLAG(IS_MAC)
+    gfx::ScopedIOSurface GetIOSurface() const {
+      return representation()->GetIOSurface();
+    }
     bool IsInUseByWindowServer() const {
       return representation()->IsInUseByWindowServer();
     }
@@ -530,6 +537,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 #elif BUILDFLAG(IS_WIN)
   virtual scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy();
 #elif BUILDFLAG(IS_MAC)
+  virtual gfx::ScopedIOSurface GetIOSurface() const;
   // Return true if the macOS WindowServer is currently using the underlying
   // storage for the image.
   virtual bool IsInUseByWindowServer() const;

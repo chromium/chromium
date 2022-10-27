@@ -77,10 +77,15 @@ void PresenterImageGL::BeginPresent() {
   DCHECK(!sk_surface());
   DCHECK(!scoped_overlay_read_access_);
 
-    scoped_overlay_read_access_ =
-        overlay_representation_->BeginScopedReadAccess(
-            true /* need_gl_image */);
-    DCHECK(scoped_overlay_read_access_);
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
+  const bool needs_gl_image = false;
+#else
+  const bool needs_gl_image = true;
+#endif  // defined(USE_OZONE)
+
+  scoped_overlay_read_access_ =
+      overlay_representation_->BeginScopedReadAccess(needs_gl_image);
+  DCHECK(scoped_overlay_read_access_);
 }
 
 void PresenterImageGL::EndPresent(gfx::GpuFenceHandle release_fence) {
@@ -110,6 +115,8 @@ gl::OverlayImage PresenterImageGL::GetOverlayImage(
   }
 #if BUILDFLAG(IS_OZONE)
   return scoped_overlay_read_access_->GetNativePixmap();
+#elif BUILDFLAG(IS_MAC)
+  return scoped_overlay_read_access_->GetIOSurface();
 #else
   return scoped_overlay_read_access_->gl_image();
 #endif
@@ -425,13 +432,14 @@ void OutputPresenterGL::ScheduleOverlayPlane(
             overlay_plane_candidate.clip_rect));
   }
 #elif BUILDFLAG(IS_APPLE)
-  auto* gl_image = access ? access->gl_image() : nullptr;
   gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(
       overlay_plane_candidate.shared_state->is_clipped,
       gfx::ToEnclosingRect(overlay_plane_candidate.shared_state->clip_rect),
       overlay_plane_candidate.shared_state->rounded_corner_bounds,
       overlay_plane_candidate.shared_state->sorting_context_id,
-      gfx::Transform(overlay_plane_candidate.shared_state->transform), gl_image,
+      gfx::Transform(overlay_plane_candidate.shared_state->transform),
+      access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
+      access ? access->representation()->color_space() : gfx::ColorSpace(),
       overlay_plane_candidate.contents_rect,
       gfx::ToEnclosingRect(overlay_plane_candidate.bounds_rect),
       overlay_plane_candidate.background_color.toSkColor(),

@@ -69,10 +69,16 @@ scoped_refptr<gl::GLImageIOSurface> CreateGLImage(const gfx::Size& size,
 
 bool ScheduleCALayer(ui::CARendererLayerTree* tree,
                      CALayerProperties* properties) {
+  gfx::ScopedIOSurface io_surface;
+  gfx::ColorSpace io_surface_color_space;
+  if (properties->gl_image) {
+    io_surface = properties->gl_image->io_surface();
+    io_surface_color_space = properties->gl_image->color_space();
+  }
   return tree->ScheduleCALayer(ui::CARendererLayerParams(
       properties->is_clipped, properties->clip_rect,
       properties->rounded_corner_bounds, properties->sorting_context_id,
-      properties->transform, properties->gl_image.get(),
+      properties->transform, io_surface, io_surface_color_space,
       properties->contents_rect, properties->rect, properties->background_color,
       properties->edge_aa_mask, properties->opacity, properties->filter,
       absl::nullopt, gfx::ProtectedVideoType::kClear));

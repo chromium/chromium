@@ -245,6 +245,12 @@ void OverlayIOSurfaceRepresentation::EndReadAccess(
   gl_backing->SetReleaseFence(std::move(release_fence));
 }
 
+gfx::ScopedIOSurface OverlayIOSurfaceRepresentation::GetIOSurface() const {
+  if (gl_image_->GetType() != gl::GLImage::Type::IOSURFACE)
+    return gfx::ScopedIOSurface();
+  return static_cast<gl::GLImageIOSurface*>(gl_image_.get())->io_surface();
+}
+
 bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
   // IOSurfaceIsInUse() will always return true if the IOSurface is wrapped in
   // a CVPixelBuffer. Ignore the signal for such IOSurfaces (which are the ones
@@ -260,7 +266,8 @@ bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
 }
 
 gl::GLImage* OverlayIOSurfaceRepresentation::GetGLImage() {
-  return gl_image_.get();
+  NOTREACHED();
+  return nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
