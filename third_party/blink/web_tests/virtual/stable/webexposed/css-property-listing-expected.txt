@@ -209,6 +209,7 @@ All changes to this list should go through Blink's feature review process: http:
     grid-template-rows
     height
     hyphenate-character
+    hyphenate-limit-chars
     hyphens
     image-orientation
     image-rendering

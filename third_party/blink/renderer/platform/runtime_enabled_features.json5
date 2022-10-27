@@ -736,7 +736,8 @@
     {
       // crbug.com/924069
       name: "CSSHyphenateLimitChars",
-      status: "test",
+      status: "stable",
+      base_feature: "CSSHyphenateLimitChars",
     },
     {
       name: "CSSIcUnit",
