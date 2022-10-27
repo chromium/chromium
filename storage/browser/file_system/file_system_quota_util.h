@@ -41,6 +41,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaUtil {
       const blink::StorageKey& storage_key,
       FileSystemType type) = 0;
 
+  // Deletes the cached default bucket for `storage_key` of type
+  // StorageType::kTemporary. Called when the default bucket is deleted from
+  // Quota service.
+  virtual void DeleteCachedDefaultBucket(
+      const blink::StorageKey& storage_key) = 0;
+
   // Deletes the data on the bucket and reports the amount of deleted data
   // to the quota manager via |proxy|.
   virtual base::File::Error DeleteBucketDataOnFileTaskRunner(

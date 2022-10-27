@@ -346,6 +346,16 @@ SandboxFileSystemBackendDelegate::CreateFileStreamWriter(
                                                    *observers);
 }
 
+void SandboxFileSystemBackendDelegate::DeleteCachedDefaultBucket(
+    const blink::StorageKey& storage_key) {
+  // Delete cache for the default bucket in obfuscated_file_util() if one
+  // exists. NOTE: one StorageKey may map to many BucketLocators depending on
+  // the type. We only want to cache and delete kFileSystemTypeTemporary
+  // buckets. Otherwise, we may accidentally delete the wrong databases.
+  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+  obfuscated_file_util()->DeleteDefaultBucketForStorageKey(storage_key);
+}
+
 base::File::Error
 SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
     FileSystemContext* file_system_context,
@@ -363,16 +373,6 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
         QuotaClientType::kFileSystem, storage_key,
         FileSystemTypeToQuotaStorageType(type), -usage, base::Time::Now(),
         base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
-  }
-
-  // If obfuscated_file_util() was caching the default bucket for this
-  // StorageKey, it should be deleted as well. If it was not cached, result is a
-  // no-op. NOTE: one StorageKey may map to many BucketLocators depending on the
-  // type. We only want to cache and delete kFileSystemTypeTemporary buckets.
-  // Otherwise, we may accidentally delete the wrong databases.
-  if (FileSystemTypeToQuotaStorageType(type) ==
-      blink::mojom::StorageType::kTemporary) {
-    obfuscated_file_util()->DeleteDefaultBucketForStorageKey(storage_key);
   }
 
   if (result)
@@ -398,16 +398,6 @@ SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
                                 -usage, base::Time::Now(),
                                 base::SequencedTaskRunnerHandle::Get(),
                                 base::DoNothing());
-  }
-
-  // If obfuscated_file_util() was caching this default bucket, it should be
-  // deleted as well. If it was not cached, result is a no-op. NOTE: We only
-  // want to cache and delete kTemporary buckets. Otherwise, we may accidentally
-  // delete the wrong databases.
-  if (FileSystemTypeToQuotaStorageType(type) ==
-          blink::mojom::StorageType::kTemporary &&
-      bucket_locator.is_default) {
-    obfuscated_file_util()->DeleteDefaultBucket(bucket_locator);
   }
 
   if (result)

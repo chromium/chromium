@@ -277,6 +277,7 @@ bool FileSystemContext::DeleteDataForStorageKeyOnFileTaskRunner(
   DCHECK(!storage_key.origin().opaque());
 
   bool success = true;
+  bool delete_default_cache = false;
   for (auto& type_backend_pair : backend_map_) {
     FileSystemBackend* backend = type_backend_pair.second;
     if (!backend->GetQuotaUtil())
@@ -287,6 +288,19 @@ bool FileSystemContext::DeleteDataForStorageKeyOnFileTaskRunner(
       // Continue the loop, but record the failure.
       success = false;
     }
+
+    if (FileSystemTypeToQuotaStorageType(type_backend_pair.first) ==
+        blink::mojom::StorageType::kTemporary) {
+      delete_default_cache = true;
+    }
+  }
+
+  // Trigger cache deletion for the default bucket once. This is done after
+  // `storage_key` data deletion so deletion doesn't trigger twice for
+  // kFileSystemTypeTemporary and kFileSystemTypePersistent.
+  if (delete_default_cache) {
+    if (auto* quota_util = GetQuotaUtil(kFileSystemTypeTemporary))
+      quota_util->DeleteCachedDefaultBucket(storage_key);
   }
 
   return success;

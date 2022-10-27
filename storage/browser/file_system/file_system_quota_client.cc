@@ -93,6 +93,17 @@ blink::mojom::QuotaStatusCode DeleteBucketOnFileTaskRunner(
   base::File::Error result =
       provider->GetQuotaUtil()->DeleteBucketDataOnFileTaskRunner(
           context, context->quota_manager_proxy().get(), bucket_locator, type);
+
+  // If obfuscated_file_util() was caching this default bucket, it should be
+  // deleted as well. If it was not cached, result is a no-op. NOTE: We only
+  // want to cache and delete kTemporary buckets. Otherwise, we may accidentally
+  // delete the wrong databases.
+  if (bucket_locator.is_default &&
+      bucket_locator.type == blink::mojom::StorageType::kTemporary) {
+    provider->GetQuotaUtil()->DeleteCachedDefaultBucket(
+        bucket_locator.storage_key);
+  }
+
   if (result == base::File::FILE_OK)
     return blink::mojom::QuotaStatusCode::kOk;
   return blink::mojom::QuotaStatusCode::kErrorInvalidModification;

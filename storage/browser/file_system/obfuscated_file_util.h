@@ -281,12 +281,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // that change in state.
   void DeleteDefaultBucketForStorageKey(const blink::StorageKey& storage_key);
 
-  // This function removes the key-value pair(s) from default_buckets_ with the
-  // value `bucket_locator`. Called when a default bucket is deleted from Quota
-  // management and the default_buckets_ cache needs to be updated to reflect
-  // that change in state.
-  void DeleteDefaultBucket(const BucketLocator& bucket_locator);
-
   bool is_incognito() { return is_incognito_; }
 
   ObfuscatedFileUtilDelegate* delegate() { return delegate_.get(); }

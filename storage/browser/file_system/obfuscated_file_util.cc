@@ -1521,27 +1521,6 @@ void ObfuscatedFileUtil::DeleteDefaultBucketForStorageKey(
   default_buckets_.erase(default_bucket_iter);
 }
 
-void ObfuscatedFileUtil::DeleteDefaultBucket(
-    const BucketLocator& bucket_locator) {
-  blink::StorageKey storage_key = bucket_locator.storage_key;
-  auto default_bucket_iter = default_buckets_.find(storage_key);
-  // If we are not already caching the bucket for that StorageKey, it does not
-  // need to be deleted.
-  if (default_bucket_iter == default_buckets_.end())
-    return;
-  BucketLocator default_bucket = default_buckets_[storage_key];
-  // Ensure that `default_bucket` matches `bucket_locator`
-  DCHECK(default_bucket == bucket_locator);
-  // Ensure that all directories with that StorageKey and bucket have been
-  // erased.
-  DCHECK(directories_.find(
-             DatabaseKey(storage_key, default_bucket,
-                         SandboxFileSystemBackendDelegate::GetTypeString(
-                             FileSystemType::kFileSystemTypeTemporary))) ==
-         directories_.end());
-  default_buckets_.erase(default_bucket_iter);
-}
-
 bool ObfuscatedFileUtil::InitOriginDatabase(const url::Origin& origin_hint,
                                             bool create) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -160,6 +160,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       QuotaManagerProxy* proxy,
       const blink::StorageKey& storage_key,
       FileSystemType type) override;
+  void DeleteCachedDefaultBucket(const blink::StorageKey& storage_key) override;
   base::File::Error DeleteBucketDataOnFileTaskRunner(
       FileSystemContext* context,
       QuotaManagerProxy* proxy,
