@@ -4,7 +4,9 @@
 
 #include "components/password_manager/core/browser/ui/password_grouping_util.h"
 
+#include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
@@ -24,6 +26,20 @@ PasswordGroupingInfo& PasswordGroupingInfo::operator=(
 
 PasswordGroupingInfo& PasswordGroupingInfo::operator=(
     PasswordGroupingInfo&& other) = default;
+
+FacetBrandingInfo CreateBrandingInfoFromFacetURI(const FacetURI& facet_uri) {
+  FacetBrandingInfo branding_info;
+  if (facet_uri.IsValidAndroidFacetURI()) {
+    branding_info.name = SplitByDotAndReverse(facet_uri.android_package_name());
+
+    // TODO(crbug.com/1355956): Handle Android App icon URL.
+    return branding_info;
+  }
+  branding_info.name =
+      GetShownOrigin(url::Origin::Create(GURL(facet_uri.canonical_spec())));
+  // TODO(crbug.com/1355956): Handle default icon URL.
+  return branding_info;
+}
 
 // Returns a map of facet URI to group id. Create missing group id with
 // password's sign-on realm that are not present in the grouped facets received.
@@ -58,11 +74,16 @@ std::map<std::string, GroupId> MapFacetsToGroupId(
   // Create a group ID for the sign-on realms that are not part of any grouped
   // facets.
   for (const std::string& signon_realm : signon_realms) {
+    GroupId unique_group_id(group_id_int);
     FacetURI uri(FacetURI::FromPotentiallyInvalidSpec(signon_realm));
     if (facet_uri_in_groups.find(uri.canonical_spec()) ==
         facet_uri_in_groups.end()) {
-      map_facet_to_group_id[uri.canonical_spec()] = GroupId(group_id_int);
+      map_facet_to_group_id[uri.canonical_spec()] = unique_group_id;
       facet_uri_in_groups.insert(uri.canonical_spec());
+
+      // Store default branding information for the affiliated group.
+      password_grouping_info.map_group_id_to_branding_info[unique_group_id] =
+          CreateBrandingInfoFromFacetURI(uri);
 
       group_id_int++;
     }
@@ -125,17 +146,26 @@ std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo(
   for (auto const& it : password_grouping_info.map_group_id_to_forms) {
     AffiliatedGroup affiliated_group;
 
+    // Key: Username-password key | Value: vector of password forms.
+    for (auto const& it3 : it.second) {
+      CredentialUIEntry credential(it3.second);
+      affiliated_group.AddCredential(std::move(credential));
+    }
+
     // Add branding information to the affiliated group.
     auto it2 =
         password_grouping_info.map_group_id_to_branding_info.find(it.first);
-    // TODO(crbug.com/1354196): Implement fallback.
     if (it2 != password_grouping_info.map_group_id_to_branding_info.end()) {
       affiliated_group.SetBrandingInfo(it2->second);
     }
-
-    // Key: Username-password key | Value: vector of password forms.
-    for (auto const& it3 : it.second) {
-      affiliated_group.AddCredential(CredentialUIEntry(it3.second));
+    // If the branding information is missing, create a default one with the
+    // sign-on realm.
+    if (affiliated_group.GetBrandingInfo().name.empty() &&
+        affiliated_group.GetBrandingInfo().icon_url.is_empty()) {
+      std::string signon_realm =
+          affiliated_group.GetCredentialGroups()[0].GetFirstSignonRealm();
+      FacetURI uri(FacetURI::FromPotentiallyInvalidSpec(signon_realm));
+      affiliated_group.SetBrandingInfo(CreateBrandingInfoFromFacetURI(uri));
     }
     affiliated_groups.push_back(std::move(affiliated_group));
   }

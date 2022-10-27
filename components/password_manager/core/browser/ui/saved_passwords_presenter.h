@@ -160,7 +160,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   std::vector<CredentialUIEntry> GetSavedCredentials() const;
 
   // Returns a list of affiliated groups for the Password Manager.
-  std::vector<AffiliatedGroup> GetAffiliatedGroups() const;
+  std::vector<AffiliatedGroup> GetAffiliatedGroups();
 
   // Returns a list of sites blocked by users for the Password Manager.
   std::vector<CredentialUIEntry> GetBlockedSites();
@@ -233,6 +233,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Cache of the most recently obtained saved passwords.
   std::vector<PasswordForm> passwords_;
+
+  // Cache of the most recently generated affiliated groups.
+  std::vector<AffiliatedGroup> affiliated_groups_;
 
   // Structure used to deduplicate list of passwords.
   DuplicatePasswordsMap sort_key_to_password_forms_;

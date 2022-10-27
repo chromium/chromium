@@ -446,9 +446,13 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
   return credentials;
 }
 
-std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups()
-    const {
-  return GetAffiliatedGroupsWithGroupingInfo(password_grouping_info_);
+std::vector<AffiliatedGroup> SavedPasswordsPresenter::GetAffiliatedGroups() {
+  // Sort affiliated groups.
+  std::sort(affiliated_groups_.begin(), affiliated_groups_.end(),
+            [](const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
+              return lhs.GetBrandingInfo().name < rhs.GetBrandingInfo().name;
+            });
+  return affiliated_groups_;
 }
 
 std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
@@ -560,6 +564,10 @@ void SavedPasswordsPresenter::OnGetAllGroupsResultsFrom(
     const std::vector<GroupedFacets>& groups) {
   // Call grouping algorithm.
   password_grouping_info_ = GroupPasswords(groups, sort_key_to_password_forms_);
+
+  // Update affiliated groups cache.
+  affiliated_groups_ =
+      GetAffiliatedGroupsWithGroupingInfo(password_grouping_info_);
 
   NotifySavedPasswordsChanged();
 }
