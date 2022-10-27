@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FetchQueuedPreloadsTime.{FrameType}.{IsInitial}"
-    units="ms" expires_after="2022-11-29">
+    units="ms" expires_after="2023-05-29">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2290,7 +2290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ScanAndPreloadTime.{FrameType}.{IsInitial}" units="ms"
-    expires_after="2022-11-29">
+    expires_after="2023-05-29">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>

@@ -2958,7 +2958,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.ParseTiming.ParseBlockedOnScriptExecutionFromDocumentWrite"
-    units="ms" expires_after="2022-12-01">
+    units="ms" expires_after="2023-05-29">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
