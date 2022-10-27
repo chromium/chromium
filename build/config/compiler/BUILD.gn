@@ -590,13 +590,7 @@ config("compiler") {
         cflags_cc += [ "-fno-trigraphs" ]
       }
     } else if (is_clang) {
-      if (is_chromeos_lacros) {
-        # TODO(crbug.com/1376742): LaCrOS currently triggers a strange DCHECK
-        # failure in C++20 mode. Switch to C++20 when this is resolved.
-        cflags_cc += [ "-std=${standard_prefix}++17" ]
-      } else {
-        cflags_cc += [ "-std=${standard_prefix}++20" ]
-      }
+      cflags_cc += [ "-std=${standard_prefix}++20" ]
     } else {
       # The gcc bots are currently using GCC 9, which is not new enough to
       # support "c++20"/"gnu++20".
