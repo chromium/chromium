@@ -1001,7 +1001,7 @@
         'swarming': {
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
-          'shards': 15,
+          'shards': 55,
           'quickrun_shards': 40,
         }
       },
@@ -2492,6 +2492,7 @@
       },
       'Win10 Tests x64': {
         'swarming': {
+          'shards': 9,
           'quickrun_shards': 8,
         },
       },
