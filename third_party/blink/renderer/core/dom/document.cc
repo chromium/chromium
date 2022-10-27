@@ -8399,8 +8399,11 @@ scoped_refptr<base::SingleThreadTaskRunner> Document::GetTaskRunner(
   if (GetExecutionContext())
     return GetExecutionContext()->GetTaskRunner(type);
   // GetExecutionContext() can be nullptr in unit tests and after Shutdown().
-  // Fallback to the default task runner for this thread if all else fails.
-  return Thread::Current()->GetDeprecatedTaskRunner();
+  // Fallback to the Agent's default task runner for this thread if all else
+  // fails.
+  return To<WindowAgent>(GetAgent())
+      .GetAgentGroupScheduler()
+      .DefaultTaskRunner();
 }
 
 DOMFeaturePolicy* Document::featurePolicy() {
