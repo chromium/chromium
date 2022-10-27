@@ -155,7 +155,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     base::Value languages_list =
         content::EvalJs(web_contents, "navigator.languages").ExtractList();
     std::vector<std::string> actual_languages;
-    for (auto& result : languages_list.GetListDeprecated())
+    for (const auto& result : languages_list.GetList())
       actual_languages.push_back(result.GetString());
 
     EXPECT_EQ(expect_languages, actual_languages);
