@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ElementConditionProto;
@@ -73,6 +74,7 @@ public class AutofillAssistantSemanticPredictionIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1379094")
     public void happyPath() throws Exception {
         ArrayList<ActionProto> actions = new ArrayList<>();
 
