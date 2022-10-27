@@ -7,9 +7,13 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
@@ -47,6 +51,9 @@ char kTitle2[] = "Page 2";
 char kResponse1[] = "Test Page 1 content";
 char kResponse2[] = "Test Page 2 content";
 char kResponse3[] = "Test Page 3 content";
+
+// Constant for timeout while waiting for asynchronous sync operations.
+const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Matcher for the edit button in the navigation bar.
 id<GREYMatcher> NavigationEditButton() {
@@ -258,6 +265,81 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                       FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
                           _URL1)),
               kTitle1)] assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL2)),
+              kTitle2)] assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL3)),
+              _URL3.GetContent())] assertWithMatcher:grey_nil()];
+}
+
+// Tests that searching a typed URL (after Sync is enabled and the URL is
+// uploaded to the Sync server) displays only entries matching the search term.
+- (void)testSearchSyncedHistory {
+  const char syncedURL[] = "http://mockurl/sync/";
+  const GURL mockURL(syncedURL);
+  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+
+  // Sign in to sync.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
+
+  [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::TYPED_URLS
+                                               name:mockURL.spec()
+                                              count:1
+                                            timeout:kSyncOperationTimeout];
+
+  [self loadTestURLs];
+  [self openHistoryPanel];
+
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_tap()];
+
+  // Verify that scrim is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistorySearchScrimIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  NSString* searchString = base::SysUTF8ToNSString(mockURL.spec().c_str());
+
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_typeText(searchString)];
+
+  // Verify that scrim is not visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHistorySearchScrimIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
+                         @"mockurl/sync/"),
+                     grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
+                     grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
   [[EarlGrey
       selectElementWithMatcher:
           HistoryEntry(
