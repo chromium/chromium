@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -18,6 +19,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -130,6 +132,13 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
         scroll_content(), SinkIconTypeToIcon(sink.sink_icon_type),
         base::UTF8ToUTF16(sink.name));
     view_to_sink_map_[container] = sink.id;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceQuickSettingsCast)) {
+    // Don't associate this placeholder item with a sink, since it's not a real
+    // device.
+    AddScrollListItem(scroll_content(), kSystemMenuCastGenericIcon, u"Device");
   }
 
   scroll_content()->SizeToPreferredSize();

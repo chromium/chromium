@@ -4,6 +4,7 @@
 
 #include "ash/system/cast/cast_feature_pod_controller.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -13,6 +14,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/command_line.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -81,11 +83,15 @@ void CastFeaturePodController::OnDevicesUpdated(
 }
 
 void CastFeaturePodController::Update() {
+  // Allow the pod to be forced on in the emulator when no cast devices exist.
+  bool force_show = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kForceQuickSettingsCast);
   auto* cast_config = CastConfigController::Get();
-  button_->SetVisible(cast_config &&
-                      (cast_config->HasSinksAndRoutes() ||
-                       cast_config->AccessCodeCastingEnabled()) &&
-                      !cast_config->HasActiveRoute());
+  button_->SetVisible(force_show ||
+                      (cast_config &&
+                       (cast_config->HasSinksAndRoutes() ||
+                        cast_config->AccessCodeCastingEnabled()) &&
+                       !cast_config->HasActiveRoute()));
 }
 
 }  // namespace ash
