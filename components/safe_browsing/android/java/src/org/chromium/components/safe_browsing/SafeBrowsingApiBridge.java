@@ -125,6 +125,11 @@ public final class SafeBrowsingApiBridge {
         public void onUrlCheckDone(
                 long callbackId, int resultStatus, String metadata, long checkDelta) {
             synchronized (sLock) {
+                if (DEBUG) {
+                    Log.i(TAG,
+                            "onUrlCheckDone resultStatus=" + resultStatus
+                                    + ", metadata=" + metadata);
+                }
                 if (sUrlCheckTimeObserver != null) {
                     sUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
                     TraceEvent.instant("FirstSafeBrowsingResponse", String.valueOf(checkDelta));
