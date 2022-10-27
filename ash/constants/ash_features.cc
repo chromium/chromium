@@ -1854,6 +1854,9 @@ BASE_FEATURE(kSmartLockUIRevamp,
              "SmartLockUIRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the snap group feature is enabled or not.
+BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables battery indicator for styluses in the palette tray
 BASE_FEATURE(kStylusBatteryStatus,
              "StylusBatteryStatus",
@@ -2958,6 +2961,10 @@ bool IsShimlessRMADarkModeDisabled() {
 
 bool IsSimLockPolicyEnabled() {
   return base::FeatureList::IsEnabled(kSimLockPolicy);
+}
+
+bool IsSnapGroupEnabled() {
+  return base::FeatureList::IsEnabled(kSnapGroup);
 }
 
 bool IsSystemTrayShadowEnabled() {
