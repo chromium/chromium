@@ -430,13 +430,13 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // dragged to.
   std::pair<size_t, size_t> GetDragRange(size_t index);
 
-  // Checks if the item at |dragged_item_index| should be pinned or unpinned on
-  // pointer release.
+  // Checks if the item at |dragged_item_index| should be pinned on pointer
+  // release.
   bool ShouldUpdateDraggedViewPinStatus(size_t dragged_item_index);
 
   // Checks if |dragged_view| is allowed to be dragged across the separator to
-  // perform pinning and unpinning. Note that this function doesn't check if the
-  // separator exists.
+  // perform pinning. Note that this function doesn't check if the separator
+  // exists.
   bool CanDragAcrossSeparator(views::View* dragged_view) const;
 
   // If there is a drag operation in progress it's canceled. If |modified_index|

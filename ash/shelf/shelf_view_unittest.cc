@@ -800,9 +800,8 @@ TEST_P(LtrRtlShelfViewTest, SimultaneousDrag) {
   EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
-// Ensure that the behavior of pinning and unpinning by dragging works as
-// expected.
-TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
+// Ensure that the behavior of pinning by dragging works as expected.
+TEST_F(ShelfViewDragToPinTest, DragAppsToPin) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
   size_t pinned_apps_size = id_map.size();
@@ -810,52 +809,46 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
   const ShelfID open_app_id = AddApp();
   id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
 
-  // Run the pinned app at index 1.
-  ShelfItem item = model_->items()[1];
-  item.status = STATUS_RUNNING;
-  model_->Set(1, item);
-  id_map[1].second = GetButtonByID(item.id);
-
-  ASSERT_TRUE(static_cast<ShelfAppButton*>(id_map[1].second)->state() &
-              ShelfAppButton::STATE_RUNNING);
-  ASSERT_FALSE(static_cast<ShelfAppButton*>(id_map[2].second)->state() &
-               ShelfAppButton::STATE_RUNNING);
   ASSERT_TRUE(GetButtonByID(open_app_id)->state() &
               ShelfAppButton::STATE_RUNNING);
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
 
-  // Drag the app at index 1 and move it to the end of the shelf. With separator
-  // available and the app is dragged to the unpinned app side, the dragged open
-  // app should be unpinned and moved to the released position.
+  // Drag the browser shortcut at index 0 and move it to the end of the shelf.
+  // The browser shortcut are not allowed to be moved across the separator so
+  // the dragged browser shortcut will stay pinned beside the separator after
+  // release.
   views::View* dragged_button =
-      SimulateDrag(ShelfView::MOUSE, 1, id_map.size() - 1, false);
+      SimulateDrag(ShelfView::MOUSE, 0, id_map.size() - 1, false);
   EXPECT_EQ(1, GetHapticTickEventsCount());
-  std::rotate(id_map.begin() + 1, id_map.begin() + 2, id_map.end());
+  std::rotate(id_map.begin(), id_map.begin() + 1,
+              id_map.begin() + pinned_apps_size);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, GetHapticTickEventsCount());
-  EXPECT_FALSE(IsAppPinned(id_map.back().first));
-  --pinned_apps_size;
+  EXPECT_TRUE(IsAppPinned(id_map[pinned_apps_size - 1].first));
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
 
-  // Drag the app at index 2 and move it to the end of the shelf. With separator
-  // available and the app is dragged to the unpinned app side, the dragged app
-  // with no running instance should be unpinned and removed from shelf.
-  dragged_button = SimulateDrag(ShelfView::MOUSE, 2, id_map.size() - 1, false);
+  // Drag the app at index 1 and move it to the end of the shelf. The pinned
+  // apps are not allowed to be moved across the separator so the dragged app
+  // will stay pinned beside the separator after release.
+  dragged_button = SimulateDrag(ShelfView::MOUSE, 1, id_map.size() - 1, false);
   EXPECT_EQ(2, GetHapticTickEventsCount());
-  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
-  id_map.erase(id_map.begin() + 2);
-  EXPECT_EQ(id_map.size(), model_->items().size());
+  std::rotate(id_map.begin() + 1, id_map.begin() + 2,
+              id_map.begin() + pinned_apps_size);
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
-  --pinned_apps_size;
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(2, GetHapticTickEventsCount());
+  EXPECT_TRUE(IsAppPinned(id_map[pinned_apps_size - 1].first));
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
 
   // Drag an app in unpinned app side and move it to the beginning of the shelf.
   // With separator available and the app is dragged to the pinned app side, the
   // dragged app should be pinned and moved to the released position.
-  dragged_button = SimulateDrag(ShelfView::MOUSE, id_map.size() - 2, 0, false);
+  dragged_button = SimulateDrag(ShelfView::MOUSE, id_map.size() - 1, 0, false);
   EXPECT_EQ(3, GetHapticTickEventsCount());
-  std::rotate(id_map.rbegin() + 1, id_map.rbegin() + 2, id_map.rend());
+  std::rotate(id_map.rbegin(), id_map.rbegin() + 1, id_map.rend());
   ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
   shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
   test_api_->RunMessageLoopUntilAnimationsDone();
@@ -863,36 +856,9 @@ TEST_F(ShelfViewDragToPinTest, DragAppsToPinAndUnpin) {
   EXPECT_TRUE(IsAppPinned(id_map[0].first));
   ++pinned_apps_size;
 
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
-}
-
-// Check that the Browser Shortcut will not be dragged to the unpinned app side
-// or be unpinned by dragging.
-TEST_F(ShelfViewDragToPinTest, BlockBrowserShortcutFromUnpinningByDragging) {
-  std::vector<std::pair<ShelfID, views::View*>> id_map;
-  SetupForDragTest(&id_map);
-  const size_t pinned_apps_size = id_map.size();
-
-  const ShelfID open_app_id = AddApp();
-  id_map.emplace_back(open_app_id, GetButtonByID(open_app_id));
-
-  EXPECT_TRUE(model_->items()[0].type == TYPE_BROWSER_SHORTCUT);
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
-
-  // Dragging the browser shortcut to the unpinned app side should not make it
-  // unpinned.
-  views::View* dragged_button =
-      SimulateDrag(ShelfView::MOUSE, 0, id_map.size() - 1, false);
-  EXPECT_EQ(1, GetHapticTickEventsCount());
-  std::rotate(id_map.begin(), id_map.begin() + 1,
-              id_map.begin() + pinned_apps_size);
-  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
-
-  // When drag pointer released, the browser shortcut should be the last app in
-  // the pinned app side.
-  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
-  EXPECT_EQ(model_->items()[pinned_apps_size - 1].type, TYPE_BROWSER_SHORTCUT);
-  EXPECT_EQ(1, GetHapticTickEventsCount());
+  // After pinning the last unpinned app by dragging, the separator is removed
+  // as there is no unpinned app on the shelf.
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), absl::nullopt);
 }
 
 // Check that separator index updates as expected when a drag view is dragged
@@ -937,29 +903,6 @@ TEST_F(ShelfViewDragToPinTest, DragAppAroundSeparator) {
   EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
   generator->ReleaseLeftButton();
   EXPECT_EQ(1, GetHapticTickEventsCount());
-
-  // Drag an pinned app that is beside the separator around and check that the
-  // separator is correctly placed. Check that the dragged app is not a browser
-  // shortcut, which can not be dragged across the separator.
-  ASSERT_NE(model_->items()[pinned_apps_size - 1].type, TYPE_BROWSER_SHORTCUT);
-  ASSERT_EQ(static_cast<size_t>(
-                model_->ItemIndexByID(id_map[pinned_apps_size - 1].first)),
-            test_api_->GetSeparatorIndex());
-  gfx::Point pinned_app_location =
-      GetButtonCenter(id_map[pinned_apps_size - 1].first);
-  generator->set_current_screen_location(pinned_app_location);
-  generator->PressLeftButton();
-  // Drag the mouse slightly to the right. The dragged app will stay at the same
-  // index but the separator will move to the left.
-  generator->MoveMouseBy(button_width / 4, 0);
-  EXPECT_EQ(2, GetHapticTickEventsCount());
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 2);
-  // Drag the mouse slightly to the left. The dragged app will stay at the same
-  // index but the separator will move to the right.
-  generator->MoveMouseBy(-button_width / 2, 0);
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
-  generator->ReleaseLeftButton();
-  EXPECT_EQ(2, GetHapticTickEventsCount());
 }
 
 // Ensure that clicking on one item and then dragging another works as expected.

@@ -1036,14 +1036,15 @@ void ShelfView::UpdateSeparatorIndex() {
 
   const bool can_drag_view_across_separator =
       drag_view_ && CanDragAcrossSeparator(drag_view_);
-  for (size_t index = model()->item_count(); index > 0; --index) {
-    const size_t i = index - 1;
+  for (int index = model()->item_count(); index > 0; --index) {
+    const int i = index - 1;
+    DCHECK_GE(i, 0);
     const auto& item = model()->items()[i];
     if (IsItemPinned(item)) {
-      // Dragged pinned item may be moved to the unpinned side of the shelf and
-      // may end up right of an unpinned app. Dismisses the dragged item to
-      // check the next one.
-      if (i == dragged_item_index && can_drag_view_across_separator)
+      // The dragged item is temporarily moved to the end of the shelf if it is
+      // ripped off by dragging. Ignore this case and continue to find the
+      // correct separator index.
+      if (dragged_off_shelf_ && i == model()->item_count() - 1)
         continue;
 
       last_pinned_index = i;
@@ -1614,7 +1615,7 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
   target_index = base::clamp(target_index, indices.first, indices.second);
 
   // Check the relative position of |drag_view_| and its ideal bounds if it can
-  // be dragged across the separator to pin or unpin.
+  // be dragged across the separator to pin.
   if (CanDragAcrossSeparator(drag_view_)) {
     // Compare the center points of |drag_view_| and its ideal bounds to
     // determine whether the separator should be moved to the left or right by
@@ -1893,13 +1894,11 @@ bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
     return false;
 
   DCHECK(drag_view);
-  // The dragged item is not allowed to be unpinned if |drag_view| is pinned by
-  // policy, dragged from app list, or its item type is TYPE_BROWSER_SHORTCUT
-  // or TYPE_UNPINNED_BROWSER_SHORTCUT.
-  // Therefore, the |drag_view| can not be dragged across the separator.
-  bool can_change_pin_state =
-      ShelfItemForView(drag_view)->type == TYPE_PINNED_APP ||
-      ShelfItemForView(drag_view)->type == TYPE_APP;
+
+  // Only unpinned running apps on shelf can be dragged across the separator to
+  // pin.
+  bool can_change_pin_state = ShelfItemForView(drag_view)->type == TYPE_APP;
+
   // Note that |drag_and_drop_shelf_id_| is set only when the current drag view
   // is from app list, which can not be dragged to the unpinned app side.
   return !ShelfItemForView(drag_view)->pinned_by_policy &&
