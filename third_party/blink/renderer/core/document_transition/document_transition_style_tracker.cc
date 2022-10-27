@@ -96,8 +96,8 @@ absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
 
 // TODO(vmpstr): This could be optimized by caching values for individual layout
 // boxes. However, it's unclear when the cache should be cleared.
-PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
-  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(*box)) {
+PhysicalRect ComputeVisualOverflowRect(LayoutBoxModelObject& box) {
+  if (auto clip_path_bounds = ClipPathClipper::LocalClipPathBoundingBox(box)) {
     // TODO(crbug.com/1326514): This is just the bounds of the clip-path, as
     // opposed to the intersection between the clip-path and the border box
     // bounds. This seems suboptimal, but that's the rect that we use further
@@ -106,17 +106,27 @@ PhysicalRect ComputeVisualOverflowRect(LayoutBox* box) {
   }
 
   PhysicalRect result;
-  for (auto* child = box->Layer()->FirstChild(); child;
+  for (auto* child = box.Layer()->FirstChild(); child;
        child = child->NextSibling()) {
-    auto* child_box = child->GetLayoutBox();
+    LayoutBoxModelObject& child_box = child->GetLayoutObject();
     PhysicalRect overflow_rect = ComputeVisualOverflowRect(child_box);
-    child_box->MapToVisualRectInAncestorSpace(box, overflow_rect);
+    child_box.MapToVisualRectInAncestorSpace(&box, overflow_rect);
     result.Unite(overflow_rect);
   }
-  // Clip self painting descendant overflow by the overflow clip rect, then add
-  // in the visual overflow from the own painting layer.
-  result.Intersect(box->OverflowClipRect(PhysicalOffset()));
-  result.Unite(box->PhysicalVisualOverflowRectIncludingFilters());
+
+  if (auto* layout_box = DynamicTo<LayoutBox>(&box)) {
+    // Clip self painting descendant overflow by the overflow clip rect, then
+    // add in the visual overflow from the own painting layer.
+    result.Intersect(layout_box->OverflowClipRect(PhysicalOffset()));
+    result.Unite(layout_box->PhysicalVisualOverflowRectIncludingFilters());
+  } else {
+    // In this case we cannot clip children so just take the visual overflow
+    // rect.
+    // TODO(bokan): This does need to account for filters though.
+    // https://crbug.com/1379079.
+    result.Unite(box.PhysicalVisualOverflowRect());
+  }
+
   return result;
 }
 
@@ -762,7 +772,7 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
 
     PhysicalRect visual_overflow_rect_in_layout_space;
     if (auto* box = DynamicTo<LayoutBox>(layout_object))
-      visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(box);
+      visual_overflow_rect_in_layout_space = ComputeVisualOverflowRect(*box);
 
     WritingMode writing_mode = layout_object->StyleRef().GetWritingMode();
 
