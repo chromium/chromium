@@ -18,6 +18,7 @@ non_web_component_files = [
   "diagnostics_types.ts",
   "diagnostics_utils.ts",
   "drawing_provider.ts",
+  "drawing_provider_utils.ts",
   "fake_data.ts",
   "fake_input_data_provider.ts",
   "fake_network_health_provider.ts",

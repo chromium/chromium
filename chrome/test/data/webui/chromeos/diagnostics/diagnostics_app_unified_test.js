@@ -12,6 +12,7 @@ import {diagnosticsNetworkIconTestSuite} from './diagnostics_network_icon_test.j
 import {diagnosticsStickyBannerTestSuite} from './diagnostics_sticky_banner_test.js';
 import {diagnosticsUtilsTestSuite} from './diagnostics_utils_test.js';
 import {drawingProviderTestSuite} from './drawing_provider_test.js';
+import {drawingProviderUtilsTestSuite} from './drawing_provider_utils_test.js';
 import {ethernetInfoTestSuite} from './ethernet_info_test.js';
 import {fakeNetworkHealthProviderTestSuite} from './fake_network_health_provider_test.js';
 import {fakeSystemDataProviderTestSuite} from './fake_system_data_provider_test.js';
@@ -65,6 +66,7 @@ runSuite('DiagnosticsNetworkIcon', diagnosticsNetworkIconTestSuite, 'network');
 runSuite('DiagnosticsStickyBanner', diagnosticsStickyBannerTestSuite);
 runSuite('DiagnosticsUtils', diagnosticsUtilsTestSuite);
 runSuite('DrawingProvider', drawingProviderTestSuite);
+runSuite('DrawingProviderUtils', drawingProviderUtilsTestSuite);
 runSuite('EthernetInfo', ethernetInfoTestSuite, 'network');
 runSuite('FakeMojoInterface', fakeMojoProviderTestSuite);
 runSuite('FakeNetworkHealthProvider', fakeNetworkHealthProviderTestSuite);

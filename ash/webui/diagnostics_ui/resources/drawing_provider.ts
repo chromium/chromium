@@ -4,15 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-export const LINE_CAP = 'round';
-export const LINE_WIDTH = 20;
-export const MARK_RADIUS = 10;
-export const MARK_COLOR = '--cros-icon-color-prominent';
-export const MARK_OPACITY = '--cros-second-tone-opacity';
-export const TRAIL_COLOR = '--google-blue-50';
-export const TRAIL_MAX_OPACITY = 0.3;
-export const SOURCE_OVER = 'source-over';
-export const DESTINATION_OVER = 'destination-over';
+import {constructRgba, DESTINATION_OVER, getTrailOpacityFromPressure, LINE_CAP, LINE_WIDTH, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, MARK_RADIUS, SOURCE_OVER, TRAIL_COLOR} from './drawing_provider_utils.js';
+
 
 /**
  * DrawingProvider interface provides drawing methods for touchscreen and
@@ -103,36 +96,14 @@ export class CanvasDrawingProvider implements DrawingProvider {
   }
 
   /**
-   * Get original value from css variable.
-   * e.g. --cros-icon-color-prominent => rgb(232, 240, 254)
-   * @param varName css variable
-   * @returns original value
-   */
-  private getCssStyle(varName: string): string {
-    return window.getComputedStyle(document.documentElement)
-        .getPropertyValue(varName);
-  }
-
-  /**
-   * Construct rgba color from rgb color and opacity value.
-   * @param rgb e.g. rgb(232, 240, 254)
-   * @param opacity e.g. 0.3
-   * @returns rgba value. e.g. rgba(232, 240, 254, 0.3)
-   */
-  private constructRgba(rgb: string, opacity: string): string {
-    const rgbValue =
-        rgb.substring(rgb.indexOf('(') + 1, rgb.indexOf(')')).trim();
-    return `rgba(${rgbValue}, ${opacity})`;
-  }
-
-  /**
    * Draw a line on canvas.
    */
   drawTrail(x0: number, y0: number, x1: number, y1: number, pressure: number):
       void {
     assert(this.ctx);
-    this.ctx.strokeStyle = this.constructRgba(
-        this.getCssStyle(TRAIL_COLOR), this.getOpacityFromPressure(pressure));
+    this.ctx.strokeStyle = constructRgba(
+        lookupCssVariableValue(TRAIL_COLOR),
+        getTrailOpacityFromPressure(pressure));
     this.ctx.beginPath();
     this.ctx.moveTo(x0, y0);
     this.ctx.lineTo(x1, y1);
@@ -146,21 +117,12 @@ export class CanvasDrawingProvider implements DrawingProvider {
     assert(this.ctx);
     // Making sure the mark is always on top.
     this.ctx.globalCompositeOperation = SOURCE_OVER;
-    this.ctx.fillStyle = this.constructRgba(
-        this.getCssStyle(MARK_COLOR), this.getCssStyle(MARK_OPACITY));
+    this.ctx.fillStyle = constructRgba(
+        lookupCssVariableValue(MARK_COLOR),
+        lookupCssVariableValue(MARK_OPACITY));
     this.ctx.beginPath();
     this.ctx.arc(x, y, MARK_RADIUS, 0, 2 * Math.PI);
     this.ctx.fill();
     this.ctx.globalCompositeOperation = DESTINATION_OVER;
-  }
-
-  /**
-   * Get trail's opacity based on touch pressure for touchscreen.
-   * TODO(wenyu): this function needs further fine-tune based on the
-   * distribution of pressure value. The pressure value usually is
-   * around 0.3~0.6.
-   */
-  private getOpacityFromPressure(pressure: number): string {
-    return String(TRAIL_MAX_OPACITY * pressure);
   }
 }

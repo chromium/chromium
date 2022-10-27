@@ -85,6 +85,7 @@ const debug_suites_list = [
   'DiagnosticsStickyBanner',
   'DiagnosticsUtils',
   'DrawingProvider',
+  'DrawingProviderUtils',
   'EthernetInfo',
   'FakeMojoInterface',
   'FakeNetworkHealthProvider',
