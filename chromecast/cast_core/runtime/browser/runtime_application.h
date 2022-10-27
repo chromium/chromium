@@ -77,6 +77,10 @@ class RuntimeApplication : public cast_receiver::RuntimeApplicationState {
   // if the operation succeeded or not.
   virtual void Launch(StatusCallback callback) = 0;
 
+  // Called to stop the application. The |callback| will be called indicating
+  // if the operation succeeded or not.
+  virtual void Stop(StatusCallback callback) = 0;
+
   // Sets URL rewrite rules.
   virtual void SetUrlRewriteRules(
       url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) = 0;

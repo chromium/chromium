@@ -116,7 +116,14 @@ void RuntimeApplicationServiceImpl::Launch(
   runtime_application_->SetVisibility(request.visibility());
   runtime_application_->SetTouchInput(request.touch_input());
 
-  std::move(callback).Run(true);
+  runtime_application_->Launch(std::move(callback));
+}
+
+void RuntimeApplicationServiceImpl::Stop(
+    const cast::runtime::StopApplicationRequest& request,
+    RuntimeApplication::StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  runtime_application_->Stop(std::move(callback));
 }
 
 void RuntimeApplicationServiceImpl::HandlePostMessage(
@@ -147,6 +154,7 @@ void RuntimeApplicationServiceImpl::HandleSetUrlRewriteRules(
     cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!runtime_application_->IsApplicationRunning()) {
     reactor->Write(
         grpc::Status(grpc::StatusCode::NOT_FOUND,
@@ -167,6 +175,7 @@ void RuntimeApplicationServiceImpl::HandleSetMediaState(
     cast::v2::RuntimeApplicationServiceHandler::SetMediaState::Reactor*
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   runtime_application_->SetMediaState(request.media_state());
   reactor->Write(cast::v2::SetMediaStateResponse());
 }
@@ -176,6 +185,7 @@ void RuntimeApplicationServiceImpl::HandleSetVisibility(
     cast::v2::RuntimeApplicationServiceHandler::SetVisibility::Reactor*
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   runtime_application_->SetVisibility(request.visibility());
   reactor->Write(cast::v2::SetVisibilityResponse());
 }
@@ -185,6 +195,7 @@ void RuntimeApplicationServiceImpl::HandleSetTouchInput(
     cast::v2::RuntimeApplicationServiceHandler::SetTouchInput::Reactor*
         reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   runtime_application_->SetTouchInput(request.touch_input());
   reactor->Write(cast::v2::SetTouchInputResponse());
 }
@@ -192,6 +203,8 @@ void RuntimeApplicationServiceImpl::HandleSetTouchInput(
 void RuntimeApplicationServiceImpl::NotifyApplicationStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
+
+  LOG(INFO) << "Application is started: " << *runtime_application_;
 
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::ApplicationStarted>();
@@ -210,6 +223,9 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
     int32_t net_error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
+
+  LOG(INFO) << "Application is stopped: stop_reason=" << stop_reason << ", "
+            << *runtime_application_;
 
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::ApplicationStopped>();
@@ -231,6 +247,9 @@ void RuntimeApplicationServiceImpl::NotifyApplicationStopped(
 void RuntimeApplicationServiceImpl::NotifyMediaPlaybackChanged(bool playing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(core_app_stub_);
+
+  DLOG(INFO) << "Media playback changed: playing=" << playing << ", "
+            << *runtime_application_;
 
   auto call = core_app_stub_->CreateCall<
       cast::v2::CoreApplicationServiceStub::MediaPlaybackChanged>();

@@ -57,6 +57,9 @@ void WebRuntimeApplication::Launch(
       task_runner(),
       base::BindOnce(&WebRuntimeApplication::OnAllBindingsReceived,
                      weak_factory_.GetWeakPtr())));
+
+  // Signal that application is launching.
+  std::move(callback).Run(true);
 }
 
 bool WebRuntimeApplication::IsStreamingApplication() const {

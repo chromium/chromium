@@ -161,6 +161,7 @@ void RuntimeServiceImpl::HandleLoadApplication(
     return;
   }
 
+  LOG(INFO) << "Loading application: session_id=" << request.cast_session_id();
   RuntimeApplicationServiceImpl* platform_app = CreateApplication(
       request.cast_session_id(), request.application_config(),
       base::BindOnce(
@@ -170,7 +171,6 @@ void RuntimeServiceImpl::HandleLoadApplication(
                 std::move(runtime_application), std::move(task_runner));
           },
           task_runner_));
-
   platform_app->Load(
       request,
       base::BindPostTask(
@@ -191,8 +191,8 @@ void RuntimeServiceImpl::HandleLaunchApplication(
     return;
   }
 
-  std::string session_id = request.cast_session_id();
-  RuntimeApplicationServiceImpl* platform_app = GetApplication(session_id);
+  RuntimeApplicationServiceImpl* platform_app =
+      GetApplication(request.cast_session_id());
   if (!platform_app) {
     LOG(ERROR) << "Application does not exist";
     reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
@@ -200,12 +200,15 @@ void RuntimeServiceImpl::HandleLaunchApplication(
     return;
   }
 
+  LOG(INFO) << "Launching application: session_id="
+            << request.cast_session_id();
   platform_app->Launch(
-      request, base::BindPostTask(
-                   task_runner_,
-                   base::BindOnce(&RuntimeServiceImpl::OnApplicationLaunching,
-                                  weak_factory_.GetWeakPtr(),
-                                  std::move(session_id), std::move(reactor))));
+      request,
+      base::BindPostTask(
+          task_runner_,
+          base::BindOnce(&RuntimeServiceImpl::OnApplicationLaunching,
+                         weak_factory_.GetWeakPtr(), request.cast_session_id(),
+                         std::move(reactor))));
 }
 
 void RuntimeServiceImpl::HandleStopApplication(
@@ -229,13 +232,11 @@ void RuntimeServiceImpl::HandleStopApplication(
     return;
   }
 
-  // Reset the app only after the response is constructed.
-  cast::runtime::StopApplicationResponse response;
-  response.set_app_id(platform_app->app_id());
-  response.set_cast_session_id(request.cast_session_id());
-  reactor->Write(std::move(response));
-
-  DestroyApplication(request.cast_session_id());
+  LOG(INFO) << "Stopping application: session_id=" << request.cast_session_id();
+  platform_app->Stop(
+      request, base::BindOnce(&RuntimeServiceImpl::OnApplicationStopping,
+                              weak_factory_.GetWeakPtr(),
+                              request.cast_session_id(), std::move(reactor)));
 }
 
 void RuntimeServiceImpl::HandleHeartbeat(
@@ -350,6 +351,22 @@ void RuntimeServiceImpl::OnApplicationLaunching(
   }
 
   reactor->Write(cast::runtime::LaunchApplicationResponse());
+}
+
+void RuntimeServiceImpl::OnApplicationStopping(
+    std::string session_id,
+    cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor,
+    cast_receiver::Status success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto platform_app = DestroyApplication(session_id);
+  DCHECK(platform_app);
+
+  // Reset the app only after the response is constructed.
+  cast::runtime::StopApplicationResponse response;
+  response.set_app_id(platform_app->app_id());
+  response.set_cast_session_id(session_id);
+  reactor->Write(std::move(response));
 }
 
 void RuntimeServiceImpl::SendHeartbeat() {

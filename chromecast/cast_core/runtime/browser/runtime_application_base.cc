@@ -69,8 +69,19 @@ void RuntimeApplicationBase::Load(RuntimeApplication::StatusCallback callback) {
 
   is_application_running_ = true;
   cast_web_view_ = CreateCastWebView();
+  if (cached_mojom_rules_) {
+    // Apply cached URL rewrite rules before anything is done with the page.
+    cast_web_view_->cast_web_contents()->SetUrlRewriteRules(
+        std::move(cached_mojom_rules_));
+  }
 
-  LOG(INFO) << "Loaded application" << *this;
+  LOG(INFO) << "Loaded application: " << *this;
+  std::move(callback).Run(true);
+}
+
+void RuntimeApplicationBase::Stop(StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopApplication(cast::common::StopReason::USER_REQUEST, /*net_error_code=*/0);
   std::move(callback).Run(true);
 }
 
@@ -220,7 +231,7 @@ void RuntimeApplicationBase::LoadPage(const GURL& url) {
 
 void RuntimeApplicationBase::OnPageLoaded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LOG(INFO) << "Application started: " << *this;
+  DLOG(INFO) << "Page loaded: " << *this;
 
   cast_web_view_->window()->AddObserver(this);
   cast_web_view_->window()->EnableTouchInput(touch_input_ ==
@@ -228,12 +239,12 @@ void RuntimeApplicationBase::OnPageLoaded() {
 
   // Create the window and show the web view.
   if (visibility_ == cast::common::Visibility::FULL_SCREEN) {
-    LOG(INFO) << "Loading application in full screen: " << *this;
+    LOG(INFO) << "Loading page in full screen: " << *this;
     cast_web_view_->window()->GrantScreenAccess();
     cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
                                            VisibilityPriority::STICKY_ACTIVITY);
   } else {
-    LOG(INFO) << "Loading application in background: " << *this;
+    LOG(INFO) << "Loading page in background: " << *this;
     cast_web_view_->window()->CreateWindow(mojom::ZOrder::APP,
                                            VisibilityPriority::HIDDEN);
   }
@@ -256,6 +267,10 @@ CastWebView::Scoped RuntimeApplicationBase::CreateCastWebView() {
 
 void RuntimeApplicationBase::SetUrlRewriteRules(
     url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) {
+  if (!cast_web_view_) {
+    cached_mojom_rules_ = std::move(mojom_rules);
+    return;
+  }
   cast_web_contents()->SetUrlRewriteRules(std::move(mojom_rules));
 }
 

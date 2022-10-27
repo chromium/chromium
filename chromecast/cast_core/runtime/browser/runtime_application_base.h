@@ -61,6 +61,7 @@ class RuntimeApplicationBase : public RuntimeApplication,
   const std::string& GetAppId() const override;
   const std::string& GetCastSessionId() const override;
   void Load(StatusCallback callback) override;
+  void Stop(StatusCallback callback) override;
   void SetUrlRewriteRules(
       url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules) override;
   void SetMediaState(cast::common::MediaState::Type media_state) override;
@@ -110,7 +111,10 @@ class RuntimeApplicationBase : public RuntimeApplication,
   CastWebService* const web_service_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::raw_ptr<Delegate> delegate_;
+  base::raw_ptr<Delegate> delegate_{nullptr};
+  // Cached mojom rules that are set iff |cast_web_view_| is not created before
+  // SetUrlRewriteRules is called.
+  url_rewrite::mojom::UrlRequestRewriteRulesPtr cached_mojom_rules_{nullptr};
 
   // The WebView associated with the window in which the Cast application is
   // displayed.

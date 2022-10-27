@@ -35,15 +35,14 @@ class RuntimeApplicationServiceImpl : public RuntimeApplication::Delegate {
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~RuntimeApplicationServiceImpl() override;
 
-  const std::string& app_id() const {
-    DCHECK(runtime_application_);
-    return runtime_application_->GetAppId();
-  }
+  const std::string& app_id() const { return runtime_application_->GetAppId(); }
 
   void Load(const cast::runtime::LoadApplicationRequest& request,
             RuntimeApplication::StatusCallback callback);
   void Launch(const cast::runtime::LaunchApplicationRequest& request,
               RuntimeApplication::StatusCallback callback);
+  void Stop(const cast::runtime::StopApplicationRequest& request,
+            RuntimeApplication::StatusCallback callback);
 
   // RuntimeApplication::Delegate implementation:
   void NotifyApplicationStarted() override;

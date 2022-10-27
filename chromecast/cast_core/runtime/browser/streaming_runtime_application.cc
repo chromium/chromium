@@ -109,6 +109,7 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
       kStreamingPageUrlTemplate,
       cast_streaming::GetCastStreamingMediaSourceUrl().spec().c_str())));
 
+  // Signal that application is launching.
   std::move(callback).Run(true);
 }
 
