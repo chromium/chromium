@@ -70,7 +70,7 @@ TEST(AttributionOsParsing, OsSourceRegistrationHeader) {
       {
           "valid_header",
           R"("https://d.test"; web-destination="https://e.test"; os-destination="com.d.app")",
-          OsSource::CreateForTesting(
+          *OsSource::Create(
               /*url=*/GURL("https://d.test"),
               /*os_destination=*/"com.d.app",
               /*web_destination=*/url::Origin::Create(GURL("https://e.test"))),
@@ -88,7 +88,7 @@ TEST(AttributionOsParsing, OsSourceRegistrationHeader) {
       {
           "extra_params_ignored",
           R"("https://d.test"; web-destination="https://e.test"; os-destination="com.d.app"; y=1)",
-          OsSource::CreateForTesting(
+          *OsSource::Create(
               /*url=*/GURL("https://d.test"),
               /*os_destination=*/"com.d.app",
               /*web_destination=*/
@@ -97,7 +97,7 @@ TEST(AttributionOsParsing, OsSourceRegistrationHeader) {
       {
           "web_dest_full_url",
           R"("https://d.test"; web-destination="https://e.test/x"; os-destination="com.d.app"; y=1)",
-          OsSource::CreateForTesting(
+          *OsSource::Create(
               /*url=*/GURL("https://d.test"),
               /*os_destination=*/"com.d.app",
               /*web_destination=*/
@@ -125,48 +125,53 @@ TEST(AttributionOsParsing, OsTriggerRegistrationHeader) {
   const struct {
     const char* description;
     base::StringPiece header;
-    GURL expected;
+    absl::optional<OsTrigger> expected;
   } kTestCases[] = {
       {
           "empty",
           base::StringPiece(),
-          GURL(),
+          absl::nullopt,
       },
       {
           "invalid_url",
           R"("foo")",
-          GURL(),
+          absl::nullopt,
       },
       {
           "not_string",
           "123",
-          GURL(),
+          absl::nullopt,
       },
       {
           "url_not_in_http_family",
           R"("wss://d.test")",
-          GURL(),
+          absl::nullopt,
       },
       {
           "url_not_potentially_trustworthy",
           R"("http://d.test")",
-          GURL(),
+          absl::nullopt,
       },
       {
           "valid_url",
           R"("https://d.test")",
-          GURL("https://d.test"),
+          *OsTrigger::Create(GURL("https://d.test")),
       },
       {
           "params_ignored",
           R"("https://d.test"; x=1)",
-          GURL("https://d.test"),
+          *OsTrigger::Create(GURL("https://d.test")),
       },
   };
 
   for (const auto& test_case : kTestCases) {
-    GURL actual = ParseOsTriggerRegistrationHeader(test_case.header);
-    EXPECT_EQ(actual, test_case.expected) << test_case.description;
+    auto actual = OsTrigger::Parse(test_case.header);
+    if (test_case.expected) {
+      EXPECT_EQ(actual->url(), test_case.expected->url())
+          << test_case.description;
+    } else {
+      EXPECT_FALSE(actual) << test_case.description;
+    }
   }
 }
 

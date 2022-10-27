@@ -7,25 +7,31 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace attribution_reporting {
 
 namespace {
 
-url::Origin OriginIfHttpAndPotentiallyTrustworthy(const GURL& url) {
-  url::Origin url_origin = url::Origin::Create(url);
-  if (!url.SchemeIsHTTPOrHTTPS())
-    return url::Origin();
+bool IsValidUrl(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS() &&
+         network::IsOriginPotentiallyTrustworthy(url::Origin::Create(url));
+}
 
-  auto origin = url::Origin::Create(url);
-  return network::IsOriginPotentiallyTrustworthy(origin) ? origin
-                                                         : url::Origin();
+bool IsValidWebDestination(const url::Origin& origin) {
+  if (origin.scheme() != url::kHttpScheme &&
+      origin.scheme() != url::kHttpsScheme) {
+    return false;
+  }
+
+  return network::IsOriginPotentiallyTrustworthy(origin);
 }
 
 }  // namespace
@@ -39,7 +45,7 @@ absl::optional<OsSource> OsSource::Parse(base::StringPiece header) {
 
   GURL url(item->item.GetString());
 
-  if (OriginIfHttpAndPotentiallyTrustworthy(url).opaque())
+  if (!IsValidUrl(url))
     return absl::nullopt;
 
   std::string os_destination;
@@ -59,10 +65,9 @@ absl::optional<OsSource> OsSource::Parse(base::StringPiece header) {
       if (!it.second.is_string())
         return absl::nullopt;
 
-      web_destination =
-          OriginIfHttpAndPotentiallyTrustworthy(GURL(it.second.GetString()));
+      web_destination = url::Origin::Create(GURL(it.second.GetString()));
 
-      if (web_destination.opaque())
+      if (!IsValidWebDestination(web_destination))
         return absl::nullopt;
 
       has_web = true;
@@ -77,34 +82,59 @@ absl::optional<OsSource> OsSource::Parse(base::StringPiece header) {
                   std::move(web_destination));
 }
 
-// static
-OsSource OsSource::CreateForTesting(GURL url,
-                                    std::string os_destination,
-                                    url::Origin web_destination) {
+absl::optional<OsSource> OsSource::Create(GURL url,
+                                          std::string os_destination,
+                                          url::Origin web_destination) {
+  if (!IsValidUrl(url) || !IsValidWebDestination(web_destination))
+    return absl::nullopt;
+
   return OsSource(std::move(url), std::move(os_destination),
                   std::move(web_destination));
 }
 
-GURL ParseOsTriggerRegistrationHeader(base::StringPiece header) {
+absl::optional<OsTrigger> OsTrigger::Parse(base::StringPiece header) {
   const auto item = net::structured_headers::ParseItem(header);
 
   if (!item || !item->item.is_string())
-    return GURL();
+    return absl::nullopt;
 
-  GURL url(item->item.GetString());
-
-  if (OriginIfHttpAndPotentiallyTrustworthy(url).opaque())
-    return GURL();
-
-  return url;
+  return Create(GURL(item->item.GetString()));
 }
+
+absl::optional<OsTrigger> OsTrigger::Create(GURL url) {
+  if (!IsValidUrl(url))
+    return absl::nullopt;
+
+  return OsTrigger(std::move(url));
+}
+
+OsTrigger::OsTrigger() = default;
+
+OsTrigger::OsTrigger(GURL url) : url_(std::move(url)) {
+  DCHECK(IsValidUrl(url_));
+}
+
+OsTrigger::~OsTrigger() = default;
+
+OsTrigger::OsTrigger(const OsTrigger&) = default;
+
+OsTrigger& OsTrigger::operator=(const OsTrigger&) = default;
+
+OsTrigger::OsTrigger(OsTrigger&&) = default;
+
+OsTrigger& OsTrigger::operator=(OsTrigger&&) = default;
+
+OsSource::OsSource() = default;
 
 OsSource::OsSource(GURL url,
                    std::string os_destination,
                    url::Origin web_destination)
     : url_(std::move(url)),
       os_destination_(std::move(os_destination)),
-      web_destination_(std::move(web_destination)) {}
+      web_destination_(std::move(web_destination)) {
+  DCHECK(IsValidUrl(url_));
+  DCHECK(IsValidWebDestination(web_destination_));
+}
 
 OsSource::~OsSource() = default;
 

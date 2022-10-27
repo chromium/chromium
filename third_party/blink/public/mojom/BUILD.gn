@@ -525,6 +525,22 @@ mojom("mojom_platform") {
       traits_headers = [ "//third_party/blink/public/common/link_to_text/link_to_text_mojom_traits.h" ]
       traits_public_deps = [ "//components/shared_highlighting/core/common" ]
     },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.AttributionOsSource"
+          cpp = "::attribution_reporting::OsSource"
+          move_only = true
+        },
+        {
+          mojom = "blink.mojom.AttributionOsTrigger"
+          cpp = "::attribution_reporting::OsTrigger"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/attribution_reporting/mojom_traits.h" ]
+      traits_public_deps = [ "//components/attribution_reporting" ]
+    },
   ]
   cpp_typemaps = [
     {

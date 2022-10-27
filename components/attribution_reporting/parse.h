@@ -13,23 +13,51 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace mojo {
+struct DefaultConstructTraits;
+}  // namespace mojo
+
 namespace attribution_reporting {
 
-// Parses Attribution-Reporting-Register-OS-Trigger header in form of a string
-// and returns a GURL object of the specified header URL.
-// The structured-header item may have parameters, but they are ignored.
-//
-// Returns a null GURL if `header` is not parsable as a structured-header
-// item, if the item is not a string, if the string is not a valid URL, or if
-// the URL is not potentially trustworthy.
-//
-// Example:
-//
-// "https://x.test/abc"
-//
-// TODO(apaseltiner): Add a fuzzer for this.
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-GURL ParseOsTriggerRegistrationHeader(base::StringPiece header);
+class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsTrigger {
+ public:
+  // Parses Attribution-Reporting-Register-OS-Trigger header in form of a string
+  // and returns a GURL object of the specified header URL.
+  // The structured-header item may have parameters, but they are ignored.
+  //
+  // Returns `absl::nullopt` if `header` is not parsable as a structured-header
+  // item, if the item is not a string, if the string is not a valid URL, or if
+  // the URL is not potentially trustworthy.
+  //
+  // Example:
+  //
+  // "https://x.test/abc"
+  //
+  // TODO(apaseltiner): Add a fuzzer for this.
+  static absl::optional<OsTrigger> Parse(base::StringPiece);
+
+  static absl::optional<OsTrigger> Create(GURL url);
+
+  ~OsTrigger();
+
+  OsTrigger(const OsTrigger&);
+  OsTrigger& operator=(const OsTrigger&);
+
+  OsTrigger(OsTrigger&&);
+  OsTrigger& operator=(OsTrigger&&);
+
+  const GURL& url() const { return url_; }
+
+ private:
+  friend mojo::DefaultConstructTraits;
+
+  // Exposed for Mojo type-mapping.
+  OsTrigger();
+
+  explicit OsTrigger(GURL url);
+
+  GURL url_;
+};
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsSource {
  public:
@@ -50,9 +78,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsSource {
   // TODO(apaseltiner): Add a fuzzer for this.
   static absl::optional<OsSource> Parse(base::StringPiece);
 
-  static OsSource CreateForTesting(GURL url,
-                                   std::string os_destination,
-                                   url::Origin web_destination);
+  static absl::optional<OsSource> Create(GURL url,
+                                         std::string os_destination,
+                                         url::Origin web_destination);
 
   ~OsSource();
 
@@ -69,6 +97,11 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsSource {
   const url::Origin& web_destination() const { return web_destination_; }
 
  private:
+  friend mojo::DefaultConstructTraits;
+
+  // Exposed for Mojo type-mapping.
+  OsSource();
+
   OsSource(GURL url, std::string os_destination, url::Origin web_destination);
 
   GURL url_;

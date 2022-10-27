@@ -19,7 +19,7 @@ struct Environment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  attribution_reporting::ParseOsTriggerRegistrationHeader(
+  attribution_reporting::OsTrigger::Parse(
       base::StringPiece(reinterpret_cast<const char*>(data), size));
   return 0;
 }

@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 
 struct AttributionDebugKey {
   uint64 value;
@@ -127,6 +128,25 @@ struct AttributionTriggerData {
   // Key which allows deduplication against existing aggregatable reports for
   // the same source.
   AttributionTriggerDedupKey? aggregatable_dedup_key;
+};
+
+struct AttributionOsSource {
+  // The URL to which the OS will make a request. Must use HTTP or HTTPS and
+  // its origin must be potentially trustworthy.
+  url.mojom.Url url;
+
+  // A platform-specific destination on which attribution will occur.
+  string os_destination;
+
+  // Allows the browser to enforce destination matching. Must use HTTP or HTTPS
+  // and be potentially trustworthy.
+  url.mojom.Origin web_destination;
+};
+
+struct AttributionOsTrigger {
+  // The URL to which the OS will make a request. Must use HTTP or HTTPS and
+  // its origin must be potentially trustworthy.
+  url.mojom.Url url;
 };
 
 // Browser-process interface responsible for processing attribution
