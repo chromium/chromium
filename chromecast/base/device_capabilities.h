@@ -114,7 +114,7 @@ class DeviceCapabilities {
     Data& operator=(const Data&) = delete;
 
     // Accessor for complete capabilities in dictionary format.
-    const base::Value& dictionary() const { return dictionary_; }
+    const base::Value::Dict& dictionary() const { return dictionary_; }
 
     // Accessor for complete capabilities string in JSON format.
     const std::string& json_string() const { return json_string_; }
@@ -128,10 +128,10 @@ class DeviceCapabilities {
     // Constructs empty dictionary with no capabilities.
     Data();
     // Uses |dictionary| as capabilities dictionary.
-    explicit Data(base::Value dictionary);
+    explicit Data(base::Value::Dict dictionary);
     ~Data();
 
-    const base::Value dictionary_;
+    const base::Value::Dict dictionary_;
     std::string json_string_;
   };
 
@@ -238,7 +238,7 @@ class DeviceCapabilities {
   // Creates empty dictionary with no capabilities.
   static scoped_refptr<Data> CreateData();
   // Uses |dictionary| as capabilities dictionary.
-  static scoped_refptr<Data> CreateData(base::Value dictionary);
+  static scoped_refptr<Data> CreateData(base::Value::Dict dictionary);
 
  private:
   // Internally update the capability residing at |path| to |new_value|. This

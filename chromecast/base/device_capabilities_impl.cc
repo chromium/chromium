@@ -76,8 +76,7 @@ scoped_refptr<DeviceCapabilities::Data> DeviceCapabilities::CreateData() {
 }
 
 scoped_refptr<DeviceCapabilities::Data> DeviceCapabilities::CreateData(
-    base::Value dictionary) {
-  DCHECK(dictionary.is_dict());
+    base::Value::Dict dictionary) {
   return base::WrapRefCounted(new Data(std::move(dictionary)));
 }
 
@@ -98,13 +97,12 @@ void DeviceCapabilities::Validator::SetPrivateValidatedValue(
   capabilities_->SetPrivateValidatedValue(path, std::move(new_value));
 }
 
-DeviceCapabilities::Data::Data() : dictionary_(base::Value::Type::DICTIONARY) {
+DeviceCapabilities::Data::Data() {
   base::JSONWriter::Write(dictionary_, &json_string_);
 }
 
-DeviceCapabilities::Data::Data(base::Value dictionary)
+DeviceCapabilities::Data::Data(base::Value::Dict dictionary)
     : dictionary_(std::move(dictionary)) {
-  DCHECK(dictionary_.is_dict());
   base::JSONWriter::Write(dictionary_, &json_string_);
 }
 
@@ -191,7 +189,7 @@ DeviceCapabilities::Validator* DeviceCapabilitiesImpl::GetValidator(
 bool DeviceCapabilitiesImpl::BluetoothSupported() const {
   scoped_refptr<Data> data_ref = GetAllData();
   auto bluetooth_supported =
-      data_ref->dictionary().FindBoolKey(kKeyBluetoothSupported);
+      data_ref->dictionary().FindBool(kKeyBluetoothSupported);
   DCHECK(bluetooth_supported);
   return *bluetooth_supported;
 }
@@ -199,7 +197,7 @@ bool DeviceCapabilitiesImpl::BluetoothSupported() const {
 bool DeviceCapabilitiesImpl::DisplaySupported() const {
   scoped_refptr<Data> data_ref = GetAllData();
   auto display_supported =
-      data_ref->dictionary().FindBoolKey(kKeyDisplaySupported);
+      data_ref->dictionary().FindBool(kKeyDisplaySupported);
   DCHECK(display_supported);
   return *display_supported;
 }
@@ -207,7 +205,7 @@ bool DeviceCapabilitiesImpl::DisplaySupported() const {
 bool DeviceCapabilitiesImpl::HiResAudioSupported() const {
   scoped_refptr<Data> data_ref = GetAllData();
   auto hi_res_audio_supported =
-      data_ref->dictionary().FindBoolKey(kKeyHiResAudioSupported);
+      data_ref->dictionary().FindBool(kKeyHiResAudioSupported);
   DCHECK(hi_res_audio_supported);
   return *hi_res_audio_supported;
 }
@@ -215,7 +213,7 @@ bool DeviceCapabilitiesImpl::HiResAudioSupported() const {
 bool DeviceCapabilitiesImpl::AssistantSupported() const {
   scoped_refptr<Data> data_ref = GetAllData();
   auto assistant_supported =
-      data_ref->dictionary().FindBoolKey(kKeyAssistantSupported);
+      data_ref->dictionary().FindBool(kKeyAssistantSupported);
   DCHECK(assistant_supported);
   return *assistant_supported;
 }
@@ -223,7 +221,7 @@ bool DeviceCapabilitiesImpl::AssistantSupported() const {
 base::Value DeviceCapabilitiesImpl::GetCapability(
     const std::string& path) const {
   scoped_refptr<Data> data_ref = GetAllData();
-  const base::Value* value = data_ref->dictionary().FindPath(path);
+  const base::Value* value = data_ref->dictionary().FindByDottedPath(path);
   return value ? value->Clone() : base::Value();
 }
 
@@ -312,8 +310,8 @@ void DeviceCapabilitiesImpl::SetPublicValidatedValue(const std::string& path,
   // If the capability exists, it must be public (present in all_data_ and
   // public_data_). We cannot change the privacy of an already existing
   // capability.
-  bool is_private = all_data_->dictionary().FindKey(path) &&
-                    !public_data_->dictionary().FindKey(path);
+  bool is_private = all_data_->dictionary().Find(path) &&
+                    !public_data_->dictionary().Find(path);
   if (is_private) {
     NOTREACHED() << "Cannot make a private capability '" << path << "' public.";
     return;
@@ -322,7 +320,8 @@ void DeviceCapabilitiesImpl::SetPublicValidatedValue(const std::string& path,
   // We don't need to acquire lock here when reading public_data_ because we
   // know that all writes to public_data_ must occur serially on thread that
   // we're on.
-  const base::Value* cur_value = public_data_->dictionary().FindPath(path);
+  const base::Value* cur_value =
+      public_data_->dictionary().FindByDottedPath(path);
   bool capability_unchanged = cur_value && *cur_value == new_value;
   if (capability_unchanged) {
     DVLOG(1) << "Ignoring unchanged public capability: " << path;
@@ -370,7 +369,7 @@ void DeviceCapabilitiesImpl::SetPrivateValidatedValue(const std::string& path,
 
   // If the capability exists, it must be private (present in all_data_ only).
   // We cannot change the privacy of an already existing capability.
-  const auto* is_public = public_data_->dictionary().FindKey(path);
+  const auto* is_public = public_data_->dictionary().Find(path);
   if (is_public) {
     NOTREACHED() << "Cannot make a public capability '" << path << "' private.";
     return;
@@ -378,7 +377,7 @@ void DeviceCapabilitiesImpl::SetPrivateValidatedValue(const std::string& path,
 
   // We don't need to acquire lock here when reading all_data_ because we know
   // that all writes to all_data_ must occur serially on thread that we're on.
-  const base::Value* cur_value = all_data_->dictionary().FindPath(path);
+  const base::Value* cur_value = all_data_->dictionary().FindByDottedPath(path);
   bool capability_unchanged = cur_value && *cur_value == new_value;
   if (capability_unchanged) {
     DVLOG(1) << "Ignoring unchanged capability: " << path;
@@ -408,11 +407,11 @@ void DeviceCapabilitiesImpl::SetPrivateValidatedValue(const std::string& path,
 }
 
 scoped_refptr<DeviceCapabilities::Data>
-DeviceCapabilitiesImpl::GenerateDataWithNewValue(const base::Value& dict,
+DeviceCapabilitiesImpl::GenerateDataWithNewValue(const base::Value::Dict& dict,
                                                  const std::string& path,
                                                  base::Value new_value) {
-  base::Value dict_deep_copy(dict.Clone());
-  dict_deep_copy.SetPath(path, std::move(new_value));
+  base::Value::Dict dict_deep_copy(dict.Clone());
+  dict_deep_copy.SetByDottedPath(path, std::move(new_value));
   return CreateData(std::move(dict_deep_copy));
 }
 

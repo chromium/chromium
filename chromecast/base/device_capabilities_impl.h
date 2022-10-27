@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
+#include "base/values.h"
 #include "chromecast/base/device_capabilities.h"
 
 namespace base {
@@ -86,7 +87,7 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
   void SetValidatedValueInternal(const std::string& path,
                                  base::Value new_value);
 
-  scoped_refptr<Data> GenerateDataWithNewValue(const base::Value& dict,
+  scoped_refptr<Data> GenerateDataWithNewValue(const base::Value::Dict& dict,
                                                const std::string& path,
                                                base::Value new_value);
 

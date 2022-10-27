@@ -272,7 +272,7 @@ TEST_F(DeviceCapabilitiesImplTest, Create) {
   base::JSONWriter::Write(base::Value(base::Value::Type::DICTIONARY),
                           &empty_dict_string);
   EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
-  EXPECT_TRUE(capabilities()->GetAllData()->dictionary().DictEmpty());
+  EXPECT_TRUE(capabilities()->GetAllData()->dictionary().empty());
 }
 
 // Tests Register() of a default capability.
@@ -421,12 +421,12 @@ TEST_F(DeviceCapabilitiesImplTest, SetPublicPrivateCapabilities) {
   base::Value init_value(true);
 
   // Dictionary of only public values.
-  base::Value public_dict(base::Value::Type::DICTIONARY);
-  public_dict.SetKey(key_public, init_value.Clone());
+  base::Value::Dict public_dict;
+  public_dict.Set(key_public, init_value.Clone());
   // Dictionary of public and private values.
-  base::Value full_dict(base::Value::Type::DICTIONARY);
-  full_dict.SetKey(key_public, init_value.Clone());
-  full_dict.SetKey(key_private, init_value.Clone());
+  base::Value::Dict full_dict;
+  full_dict.Set(key_public, init_value.Clone());
+  full_dict.Set(key_private, init_value.Clone());
 
   FakeCapabilityManagerSimple public_manager(capabilities(), key_public,
                                              init_value.Clone(), true, false);
@@ -444,12 +444,12 @@ TEST_F(DeviceCapabilitiesImplTest, NoValidatorDefaultsToPublicCapability) {
   base::Value init_value(true);
 
   // Dictionary of only public values.
-  base::Value public_dict(base::Value::Type::DICTIONARY);
-  public_dict.SetKey(key_public, init_value.Clone());
+  base::Value::Dict public_dict;
+  public_dict.Set(key_public, init_value.Clone());
   // Dictionary of public and private values.
-  base::Value full_dict(base::Value::Type::DICTIONARY);
-  full_dict.SetKey(key_public, init_value.Clone());
-  full_dict.SetKey(key_private, init_value.Clone());
+  base::Value::Dict full_dict;
+  full_dict.Set(key_public, init_value.Clone());
+  full_dict.Set(key_private, init_value.Clone());
 
   // We will not create a validator for the public capability; instead we will
   // set the capability directly. It will be registered as a public capability.
