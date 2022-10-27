@@ -180,9 +180,10 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
   // Don't report this upload as cancelled if the user didn't bypass the
   // warning.
   if (!warning) {
-    RecordDeepScanMetrics(access_point_,
-                          base::TimeTicks::Now() - upload_start_time_, 0,
-                          "CancelledByUser", false);
+    RecordDeepScanMetrics(
+        data_.settings.cloud_or_local_settings.is_cloud_analysis(),
+        access_point_, base::TimeTicks::Now() - upload_start_time_, 0,
+        "CancelledByUser", false);
   }
 
   // Ask the binary upload service to cancel requests if it can.
@@ -363,9 +364,10 @@ void ContentAnalysisDelegate::StringRequestCallback(
   int64_t content_size = 0;
   for (const std::string& entry : data_.text)
     content_size += entry.size();
-  RecordDeepScanMetrics(access_point_,
-                        base::TimeTicks::Now() - upload_start_time_,
-                        content_size, result, response);
+  RecordDeepScanMetrics(
+      data_.settings.cloud_or_local_settings.is_cloud_analysis(), access_point_,
+      base::TimeTicks::Now() - upload_start_time_, content_size, result,
+      response);
 
   text_request_complete_ = true;
 
@@ -444,9 +446,10 @@ void ContentAnalysisDelegate::PageRequestCallback(
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
     final_actions_[response.request_token()] = GetAckFinalAction(response);
 
-  RecordDeepScanMetrics(access_point_,
-                        base::TimeTicks::Now() - upload_start_time_,
-                        page_size_bytes_, result, response);
+  RecordDeepScanMetrics(
+      data_.settings.cloud_or_local_settings.is_cloud_analysis(), access_point_,
+      base::TimeTicks::Now() - upload_start_time_, page_size_bytes_, result,
+      response);
 
   page_request_complete_ = true;
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
@@ -172,6 +173,7 @@ LocalBinaryUploadService::RequestInfo::RequestInfo(
     std::unique_ptr<LocalBinaryUploadService::Request> request,
     base::OnceClosure closure)
     : request(std::move(request)) {
+  started_at = base::TimeTicks::Now();
   timer = std::make_unique<base::OneShotTimer>();
   timer->Start(FROM_HERE, kScanningTimeout, std::move(closure));
 }
@@ -393,6 +395,7 @@ void LocalBinaryUploadService::FinishRequest(RequestKey key,
   auto it = active_requests_.find(key);
   if (it != active_requests_.end()) {
     const auto& info = it->second;
+    RecordRequestMetrics(info, result, response);
     info.request->FinishRequest(result, std::move(response));
     active_requests_.erase(key);
   } else {
@@ -412,6 +415,8 @@ void LocalBinaryUploadService::OnTimeout(RequestKey key) {
 
   if (active_requests_.count(key) > 0) {
     const auto& info = active_requests_.at(key);
+    RecordRequestMetrics(info, Result::TIMEOUT, ContentAnalysisResponse());
+
     std::unique_ptr<Ack> ack =
         std::make_unique<Ack>(info.request->cloud_or_local_settings());
     ack->set_request_token(info.request->request_token());
@@ -461,6 +466,27 @@ void LocalBinaryUploadService::OnConnectionRetry() {
   while (active_requests_.size() < LocalBinaryUploadService::kMaxActiveCount &&
          !pending_requests_.empty()) {
     ProcessNextPendingRequest();
+  }
+}
+
+void LocalBinaryUploadService::RecordRequestMetrics(
+    const RequestInfo& info,
+    Result result,
+    const enterprise_connectors::ContentAnalysisResponse& response) {
+  base::UmaHistogramEnumeration("SafeBrowsing.LocalBinaryUploadRequest.Result",
+                                result);
+  base::UmaHistogramCustomTimes(
+      "SafeBrowsing.LocalBinaryUploadRequest.Duration",
+      base::TimeTicks::Now() - info.started_at, base::Milliseconds(1),
+      base::Minutes(6), 50);
+
+  for (const auto& response_result : response.results()) {
+    if (response_result.tag() == "dlp") {
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.LocalBinaryUploadRequest.DlpResult",
+          response_result.status() !=
+              enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+    }
   }
 }
 

@@ -254,6 +254,7 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
 }
 
 void RecordDeepScanMetrics(
+    bool is_cloud,
     DeepScanAccessPoint access_point,
     base::TimeDelta duration,
     int64_t total_bytes,
@@ -283,11 +284,12 @@ void RecordDeepScanMetrics(
   // Update |success| so non-SUCCESS results don't log the bytes/sec metric.
   success &= (result == BinaryUploadService::Result::SUCCESS);
 
-  RecordDeepScanMetrics(access_point, duration, total_bytes, result_value,
-                        success);
+  RecordDeepScanMetrics(is_cloud, access_point, duration, total_bytes,
+                        result_value, success);
 }
 
-void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
+void RecordDeepScanMetrics(bool is_cloud,
+                           DeepScanAccessPoint access_point,
                            base::TimeDelta duration,
                            int64_t total_bytes,
                            const std::string& result,
@@ -296,10 +298,13 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
   if (duration.InMilliseconds() == 0)
     return;
 
+  const char* prefix =
+      is_cloud ? "SafeBrowsing.DeepScan." : "SafeBrowsing.LocalDeepScan.";
+
   std::string access_point_string = DeepScanAccessPointToString(access_point);
   if (success) {
     base::UmaHistogramCustomCounts(
-        "SafeBrowsing.DeepScan." + access_point_string + ".BytesPerSeconds",
+        prefix + access_point_string + ".BytesPerSeconds",
         (1000 * total_bytes) / duration.InMilliseconds(),
         /*min=*/kMinBytesPerSecond,
         /*max=*/kMaxBytesPerSecond,
@@ -307,14 +312,14 @@ void RecordDeepScanMetrics(DeepScanAccessPoint access_point,
   }
 
   // The scanning timeout is 5 minutes, so the bucket maximum time is 30 minutes
-  // in order to be lenient and avoid having lots of data in the overlow bucket.
-  base::UmaHistogramCustomTimes("SafeBrowsing.DeepScan." + access_point_string +
-                                    "." + result + ".Duration",
+  // in order to be lenient and avoid having lots of data in the overflow
+  // bucket.
+  base::UmaHistogramCustomTimes(
+      prefix + access_point_string + "." + result + ".Duration", duration,
+      base::Milliseconds(1), base::Minutes(30), 50);
+  base::UmaHistogramCustomTimes(prefix + access_point_string + ".Duration",
                                 duration, base::Milliseconds(1),
                                 base::Minutes(30), 50);
-  base::UmaHistogramCustomTimes(
-      "SafeBrowsing.DeepScan." + access_point_string + ".Duration", duration,
-      base::Milliseconds(1), base::Minutes(30), 50);
 }
 
 enterprise_connectors::ContentAnalysisResponse

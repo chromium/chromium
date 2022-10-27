@@ -59,6 +59,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     RequestInfo& operator=(RequestInfo&& other) noexcept;
     ~RequestInfo() noexcept;
 
+    base::TimeTicks started_at;
     std::unique_ptr<Request> request;
     std::unique_ptr<base::OneShotTimer> timer;
   };
@@ -134,6 +135,11 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // requests to the agent.  This method is called by the timer set in
   // RetryRequest().
   void OnConnectionRetry();
+
+  void RecordRequestMetrics(
+      const RequestInfo& info,
+      Result result,
+      const enterprise_connectors::ContentAnalysisResponse& response);
 
   // Keeps track of outstanding requests sent to the agent.
   std::map<RequestKey, RequestInfo> active_requests_;

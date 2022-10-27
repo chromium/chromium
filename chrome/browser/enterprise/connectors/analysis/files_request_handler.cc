@@ -275,9 +275,10 @@ void FilesRequestHandler::FileRequestCallback(
   DCHECK_LT(index, paths_.size());
   const base::FilePath& path = paths_[index];
 
-  RecordDeepScanMetrics(access_point_,
-                        base::TimeTicks::Now() - upload_start_time_,
-                        file_info_[index].size, upload_result, response);
+  RecordDeepScanMetrics(
+      analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
+      access_point_, base::TimeTicks::Now() - upload_start_time_,
+      file_info_[index].size, upload_result, response);
 
   RequestHandlerResult request_handler_result = CalculateRequestHandlerResult(
       analysis_settings_, upload_result, response);

@@ -555,6 +555,7 @@ void DeepScanningRequest::OnScanComplete(
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
   RecordDeepScanMetrics(
+      analysis_settings_.cloud_or_local_settings.is_cloud_analysis(),
       /*access_point=*/DeepScanAccessPoint::DOWNLOAD,
       /*duration=*/base::TimeTicks::Now() - upload_start_times_[current_path],
       /*total_size=*/item_->GetTotalBytes(), /*result=*/result,

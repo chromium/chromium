@@ -140,12 +140,16 @@ void CheckClientDownloadRequest::OnDownloadUpdated(
           download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING &&
       (download->GetState() == download::DownloadItem::COMPLETE ||
        download->GetState() == download::DownloadItem::CANCELLED)) {
-    RecordDeepScanMetrics(
-        /*access_point=*/DeepScanAccessPoint::DOWNLOAD,
-        /*duration=*/base::TimeTicks::Now() - upload_start_time_,
-        /*total_size=*/item_->GetTotalBytes(),
-        /*result=*/"BypassedByUser",
-        /*failure=*/true);
+    auto settings = DeepScanningRequest::ShouldUploadBinary(item_);
+    if (settings.has_value()) {
+      RecordDeepScanMetrics(
+          settings->cloud_or_local_settings.is_cloud_analysis(),
+          /*access_point=*/DeepScanAccessPoint::DOWNLOAD,
+          /*duration=*/base::TimeTicks::Now() - upload_start_time_,
+          /*total_size=*/item_->GetTotalBytes(),
+          /*result=*/"BypassedByUser",
+          /*failure=*/true);
+    }
   }
 }
 
