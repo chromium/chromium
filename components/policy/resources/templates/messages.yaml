@@ -218,8 +218,7 @@ mac_chrome_preferences:
 removed_policy_desc:
   desc: Description shared by all removed policies, in Microsoft Windows' Group Policy
     Editor.
-  text: This policy is removed. It is not compatible with this version of <ph name="PRODUCT_NAME">$1<ex>Google
-    Chrome</ex></ph>. Read more at https://support.google.com/chrome/a/answer/7643500
+  text: This policy is removed. It is not compatible with this version of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. Read more at https://support.google.com/chrome/a/answer/7643500
 removed_policy_group_caption:
   desc: Localized name for the removed policies folder, for Microsoft's Group Policy
     Editor.

@@ -2,11 +2,13 @@ caption: Determines whether the Chrome Root Store and built-in certificate verif
   will be used to verify server certificates
 default: null
 desc: |-
-  When this policy is set to enabled, <ph name="PRODUCT_NAME">$1<ex>Google
-  Chrome</ex></ph> will perform verification of server certificates using the built-in
+  When this policy is set to enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+  will perform verification of server certificates using the built-in
   certificate verifier with the Chrome Root Store as the source of public trust.
-  When this policy is set to disabled, <ph name="PRODUCT_NAME">$1<ex>Google
-  Chrome</ex></ph> will use the system certificate verifier and system root certificates.
+  
+  When this policy is set to disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
+  will use the system certificate verifier and system root certificates.
+  
   When this policy is not set, the Chrome Root Store or system provided roots
   may be used.
 

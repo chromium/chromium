@@ -1,5 +1,13 @@
+When writing multiline descriptions, single line returns may be used to keep
+the line lengths reasonably short (~80 characters). Those single line returns
+will be ignored in the generated [documentation](https://chromeenterprise.google/intl/en_ca/policies).
+
+If you want an explicit line return in the generated [documentation](https://chromeenterprise.google/intl/en_ca/policies),
+use double line returns.
+
 To ensure consistency in policy descriptions, the following is a mapping of
-how various product names and the like should be referenced.
+how various product names and the like should be referenced. All placeholders
+tags must be opened and closed on the same line to avoid validation errors.
 
 * Chrome: `<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>`
 * ChromeOS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>`
