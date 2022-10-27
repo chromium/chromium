@@ -404,7 +404,6 @@ public class PopupWindowTest {
         @Override
         public void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
                 JsReplyProxy replyProxy, MessagePort[] ports) {
-            // TODO(crbug.com/1374142: Add array buffer test.
             mQueue.add(new Data(payload.getAsString(), isMainFrame, replyProxy));
         }
 

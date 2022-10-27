@@ -11,7 +11,6 @@
 #include "content/public/browser/android/message_payload_type.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "url/origin.h"
 
 namespace content::android {
 
