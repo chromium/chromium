@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -17,6 +18,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 class Label;
@@ -28,7 +30,8 @@ class PictureInPictureBrowserFrameView
       public LocationIconView::Delegate,
       public IconLabelBubbleView::Delegate,
       public ContentSettingImageView::Delegate,
-      public device::GeolocationManager::PermissionObserver {
+      public device::GeolocationManager::PermissionObserver,
+      public views::WidgetObserver {
  public:
   METADATA_HEADER(PictureInPictureBrowserFrameView);
 
@@ -58,6 +61,7 @@ class PictureInPictureBrowserFrameView
   gfx::Size GetMinimumSize() const override;
   void OnThemeChanged() override;
   void Layout() override;
+  void AddedToWidget() override;
 
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
@@ -89,6 +93,14 @@ class PictureInPictureBrowserFrameView
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
 
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
+
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+
   // Convert the bounds of a child view of |controls_container_view_| to use
   // the system's coordinate system.
   gfx::Rect ConvertControlViewBounds(views::View* control_view) const;
@@ -103,6 +115,15 @@ class PictureInPictureBrowserFrameView
 
   // Updates the state of the images showing the content settings status.
   void UpdateContentSettingsIcons();
+
+  // Updates the top bar title and icons according to whether user wants to
+  // interact with the window. The top bar should be highlighted in all these
+  // cases:
+  // - PiP window is hovered with mouse
+  // - PiP window is in focus with keyboard navigation
+  // - PiP window is in focus with any other format of activation
+  // - Dialogs are opened in the PiP window
+  void UpdateTopBarView(bool render_active);
 
  private:
   // A model required to use LocationIconView.
@@ -123,6 +144,10 @@ class PictureInPictureBrowserFrameView
 
   raw_ptr<CloseImageButton> close_image_button_ = nullptr;
   raw_ptr<views::View> back_to_tab_button_ = nullptr;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+  bool mouse_inside_window_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_

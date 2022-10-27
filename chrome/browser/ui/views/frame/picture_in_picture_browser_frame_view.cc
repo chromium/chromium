@@ -26,6 +26,11 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/window_shape.h"
 
+#if !BUILDFLAG(IS_MAC)
+// Mac does not use Aura
+#include "ui/aura/window.h"
+#endif
+
 namespace {
 
 // TODO(https://crbug.com/1346734): Check whether any of the below should be
@@ -228,6 +233,8 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
   controls_container_view_->SetBackground(views::CreateSolidBackground(
       SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
                   SK_AlphaOPAQUE)));
+  window_title_->SetEnabledColor(
+      color_provider->GetColor(kColorPipWindowForeground));
   for (ContentSettingImageView* view : content_setting_views_)
     view->SetIconColor(color_provider->GetColor(kColorOmniboxResultsIcon));
 }
@@ -237,6 +244,19 @@ void PictureInPictureBrowserFrameView::Layout() {
       gfx::Rect(0, 0, width(), kTopControlsHeight));
 
   BrowserNonClientFrameView::Layout();
+}
+
+void PictureInPictureBrowserFrameView::AddedToWidget() {
+  widget_observation_.Observe(GetWidget());
+
+#if !BUILDFLAG(IS_MAC)
+  // For non-Mac platforms that use Aura, add a pre target handler to receive
+  // events before the Widget so that we can override event handlers to update
+  // the top bar view.
+  GetWidget()->GetNativeWindow()->AddPreTargetHandler(this);
+#endif
+
+  BrowserNonClientFrameView::AddedToWidget();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -354,6 +374,60 @@ void PictureInPictureBrowserFrameView::OnSystemPermissionUpdated(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// views::WidgetObserver implementations:
+void PictureInPictureBrowserFrameView::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  // The window may become inactive when a popup modal shows, so we need to
+  // check if the mouse is still inside the window.
+  if (!active && mouse_inside_window_)
+    active = true;
+  UpdateTopBarView(active);
+}
+
+void PictureInPictureBrowserFrameView::OnWidgetDestroying(
+    views::Widget* widget) {
+#if !BUILDFLAG(IS_MAC)
+  widget->GetNativeWindow()->RemovePreTargetHandler(this);
+#endif
+
+  widget_observation_.Reset();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ui::EventHandler implementations:
+void PictureInPictureBrowserFrameView::OnKeyEvent(ui::KeyEvent* event) {
+  // Highlight when a user uses a keyboard to interact on the window.
+  UpdateTopBarView(true);
+}
+
+void PictureInPictureBrowserFrameView::OnMouseEvent(ui::MouseEvent* event) {
+  // TODO(https://crbug.com/1346734): This does not work on Mac since Mac does
+  // not use Aura, so we need to find another way for Mac.
+  switch (event->type()) {
+    case ui::ET_MOUSE_MOVED:
+      if (!mouse_inside_window_) {
+        mouse_inside_window_ = true;
+        UpdateTopBarView(true);
+      }
+      break;
+
+    case ui::ET_MOUSE_EXITED: {
+      // This can be triggered even when the mouse is still over the window such
+      // as on the content settings popup modal, so we need to check the bounds.
+      if (!GetLocalBounds().Contains(event->location())) {
+        mouse_inside_window_ = false;
+        UpdateTopBarView(false);
+      }
+      break;
+    }
+
+    default:
+      break;
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // PictureInPictureBrowserFrameView implementations:
 gfx::Rect PictureInPictureBrowserFrameView::ConvertControlViewBounds(
     views::View* control_view) const {
@@ -391,6 +465,21 @@ void PictureInPictureBrowserFrameView::UpdateContentSettingsIcons() {
   for (auto* view : content_setting_views_) {
     view->Update();
   }
+}
+
+void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
+  back_to_tab_button_->SetVisible(render_active);
+  close_image_button_->SetVisible(render_active);
+
+  SkColor color;
+  if (render_active) {
+    color = GetColorProvider()->GetColor(kColorPipWindowForeground);
+  } else {
+    color = GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
+  }
+  window_title_->SetEnabledColor(color);
+  for (ContentSettingImageView* view : content_setting_views_)
+    view->SetIconColor(color);
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
