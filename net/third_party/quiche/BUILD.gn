@@ -72,7 +72,6 @@ component("quiche") {
     "src/quiche/common/platform/api/quiche_client_stats.h",
     "src/quiche/common/platform/api/quiche_containers.h",
     "src/quiche/common/platform/api/quiche_export.h",
-    "src/quiche/common/platform/api/quiche_export.h",
     "src/quiche/common/platform/api/quiche_flag_utils.h",
     "src/quiche/common/platform/api/quiche_flags.h",
     "src/quiche/common/platform/api/quiche_header_policy.h",
@@ -1278,10 +1277,14 @@ if (!is_ios) {
   }
   source_set("quic_server_core") {
     sources = [
+      "src/quiche/common/masque/connect_udp_datagram_payload.cc",
+      "src/quiche/common/masque/connect_udp_datagram_payload.h",
       "src/quiche/quic/tools/connect_server_backend.cc",
       "src/quiche/quic/tools/connect_server_backend.h",
       "src/quiche/quic/tools/connect_tunnel.cc",
       "src/quiche/quic/tools/connect_tunnel.h",
+      "src/quiche/quic/tools/connect_udp_tunnel.cc",
+      "src/quiche/quic/tools/connect_udp_tunnel.h",
       "src/quiche/quic/tools/quic_name_lookup.cc",
       "src/quiche/quic/tools/quic_name_lookup.h",
       "src/quiche/quic/tools/quic_toy_server.cc",

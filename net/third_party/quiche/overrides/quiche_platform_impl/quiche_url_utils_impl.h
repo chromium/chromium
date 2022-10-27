@@ -20,7 +20,7 @@ namespace quiche {
 // |vars_found|. Supports templates up to level 3 as specified in RFC 6570,
 // though without checking for disallowed characters in variable names. Returns
 // true if the template was parseable, false if it was malformed.
-QUICHE_EXPORT_PRIVATE bool ExpandURITemplateImpl(
+QUICHE_EXPORT bool ExpandURITemplateImpl(
     const std::string& uri_template,
     const absl::flat_hash_map<std::string, std::string>& parameters,
     std::string* target,
@@ -28,7 +28,7 @@ QUICHE_EXPORT_PRIVATE bool ExpandURITemplateImpl(
 
 // Decodes a URL-encoded string and converts it to ASCII. If the decoded input
 // contains non-ASCII characters, decoding fails and absl::nullopt is returned.
-QUICHE_EXPORT_PRIVATE absl::optional<std::string> AsciiUrlDecodeImpl(
+QUICHE_EXPORT absl::optional<std::string> AsciiUrlDecodeImpl(
     absl::string_view input);
 
 }  // namespace quiche

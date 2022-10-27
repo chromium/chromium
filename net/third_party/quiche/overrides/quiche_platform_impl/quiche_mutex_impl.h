@@ -59,7 +59,7 @@
 namespace quiche {
 
 // A class wrapping a non-reentrant mutex.
-class QUICHE_LOCKABLE_IMPL QUICHE_EXPORT_PRIVATE QuicheLockImpl {
+class QUICHE_LOCKABLE_IMPL QUICHE_EXPORT QuicheLockImpl {
  public:
   QuicheLockImpl() = default;
 
@@ -87,7 +87,7 @@ class QUICHE_LOCKABLE_IMPL QUICHE_EXPORT_PRIVATE QuicheLockImpl {
 
 // A Notification allows threads to receive notification of a single occurrence
 // of a single event.
-class QUICHE_EXPORT_PRIVATE QuicheNotificationImpl {
+class QUICHE_EXPORT QuicheNotificationImpl {
  public:
   QuicheNotificationImpl()
       : event_(base::WaitableEvent::ResetPolicy::MANUAL,

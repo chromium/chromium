@@ -12,13 +12,13 @@
 
 namespace quiche {
 
-QUICHE_EXPORT_PRIVATE absl::optional<int64_t>
-QuicheUtcDateTimeToUnixSecondsImpl(int year,
-                                   int month,
-                                   int day,
-                                   int hour,
-                                   int minute,
-                                   int second);
+QUICHE_EXPORT absl::optional<int64_t> QuicheUtcDateTimeToUnixSecondsImpl(
+    int year,
+    int month,
+    int day,
+    int hour,
+    int minute,
+    int second);
 
 }  // namespace quiche
 

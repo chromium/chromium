@@ -95,8 +95,8 @@
 
 namespace quic {
 template <typename T>
-QUICHE_EXPORT_PRIVATE inline std::ostream& operator<<(std::ostream& out,
-                                                      const std::vector<T>& v) {
+QUICHE_EXPORT inline std::ostream& operator<<(std::ostream& out,
+                                              const std::vector<T>& v) {
   out << "[";
   const char* sep = "";
   for (size_t i = 0; i < v.size(); ++i) {
