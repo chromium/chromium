@@ -74,17 +74,7 @@ class Throbber : public views::View {
 
 namespace ash::full_restore {
 
-ArcGhostWindowView::ArcGhostWindowView(arc::GhostWindowType type,
-                                       uint32_t theme_color) {
-  // TODO(sstan): Show different content for different type.
-  InitLayout(type, theme_color);
-}
-
-ArcGhostWindowView::~ArcGhostWindowView() = default;
-
-void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
-                                    uint32_t theme_color) {
-  SetBackground(views::CreateSolidBackground(theme_color));
+ArcGhostWindowView::ArcGhostWindowView() {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical));
@@ -94,17 +84,54 @@ void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
   layout->set_between_child_spacing(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+}
 
-  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+ArcGhostWindowView::~ArcGhostWindowView() = default;
+
+void ArcGhostWindowView::SetThemeColor(uint32_t theme_color) {
+  theme_color_ = theme_color;
+}
+
+void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
+  ghost_window_type_ = type;
+  RemoveAllChildViews();
+  message_label_ = nullptr;
+
+  SetBackground(views::CreateSolidBackground(theme_color_));
+
+  AddChildView(views::Builder<views::ImageView>()
+                   .SetImage(icon_raw_data_)
+                   .SetAccessibleName(l10n_util::GetStringUTF16(
+                       IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON))
+                   .Build());
 
   auto* throbber = AddChildView(std::make_unique<Throbber>(
-      color_utils::GetColorWithMaxContrast(theme_color)));
+      color_utils::GetColorWithMaxContrast(theme_color_)));
   throbber->SetPreferredSize(gfx::Size(kThrobberDiameterOriginalStyle,
                                        kThrobberDiameterOriginalStyle));
   throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
-
-  SetType(type);
   // TODO(sstan): Set window title and accessible name from saved data.
+
+  // Currently the only difference of App Fixup and other type of ghost
+  // is that App Fixup ghost window has a message label.
+  if (type == arc::GhostWindowType::kFixup) {
+    // TODO(sstan): Set font size or height, according to future UI update.
+    message_label_ =
+        AddChildView(views::Builder<views::Label>()
+                         .SetText(l10n_util::GetStringUTF16(
+                             IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE))
+                         .SetMultiLine(true)
+                         .Build());
+
+    base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
+                                  GhostWindowType::kIconSpinningWithFixupText);
+
+  } else {
+    base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
+                                  GhostWindowType::kIconSpinning);
+  }
+
+  Layout();
 }
 
 void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
@@ -125,42 +152,12 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
           : std::move(icon_loaded_cb_for_testing_));
 }
 
-void ArcGhostWindowView::SetType(arc::GhostWindowType type) {
-  // Currently the only difference of App Fixup and other type of ghost window
-  // is that App Fixup ghost window has a message label.
-  if (type == arc::GhostWindowType::kFixup) {
-    if (!message_label_) {
-      auto label = std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
-      // TODO(sstan): Set font size or height, according to future UI update.
-      label->SetMultiLine(true);
-      message_label_ = label.get();
-      AddChildView(std::move(label));
-      Layout();
-
-      base::UmaHistogramEnumeration(
-          kGhostWindowTypeHistogram,
-          GhostWindowType::kIconSpinningWithFixupText);
-    }
-  } else {
-    if (message_label_) {
-      RemoveChildView(message_label_);
-      message_label_ = nullptr;
-      Layout();
-
-      base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
-                                    GhostWindowType::kIconSpinning);
-    }
-  }
-}
-
 void ArcGhostWindowView::OnIconLoaded(apps::IconValuePtr icon_value) {
   if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
-  icon_view_->SetImage(icon_value->uncompressed);
-  icon_view_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON));
+  icon_raw_data_ = icon_value->uncompressed;
+  SetGhostWindowViewType(ghost_window_type_);
 }
 
 BEGIN_METADATA(ArcGhostWindowView, views::View)

@@ -87,7 +87,9 @@ class ArcGhostWindowViewTest : public testing::Test {
   }
 
   void CreateView(arc::GhostWindowType type, uint32_t theme_color) {
-    view_ = std::make_unique<ArcGhostWindowView>(type, theme_color);
+    view_ = std::make_unique<ArcGhostWindowView>();
+    view_->SetThemeColor(theme_color);
+    view_->SetGhostWindowViewType(type);
   }
 
   ArcGhostWindowView* view() { return view_.get(); }

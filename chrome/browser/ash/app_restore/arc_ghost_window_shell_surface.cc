@@ -45,13 +45,11 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
     std::unique_ptr<exo::Surface> surface,
     int container,
     double scale_factor,
-    const std::string& application_id,
-    arc::GhostWindowType type)
+    const std::string& application_id)
     : ClientControlledShellSurface(surface.get(),
                                    /*can_minimize=*/true,
                                    container,
-                                   /*default_scale_cancellation=*/true),
-      type_(type) {
+                                   /*default_scale_cancellation=*/true) {
   controller_surface_ = std::move(surface);
   buffer_ = std::make_unique<exo::Buffer>(
       aura::Env::GetInstance()
@@ -114,9 +112,9 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
 
   auto surface = std::make_unique<exo::Surface>();
   std::unique_ptr<ArcGhostWindowShellSurface> shell_surface(
-      new ArcGhostWindowShellSurface(
-          std::move(surface), container, scale_factor.value(),
-          WrapSessionAppIdFromWindowId(window_id), type));
+      new ArcGhostWindowShellSurface(std::move(surface), container,
+                                     scale_factor.value(),
+                                     WrapSessionAppIdFromWindowId(window_id)));
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
@@ -147,7 +145,8 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
   shell_surface->controller_surface()->Commit();
-  shell_surface->InitContentOverlay(app_id, theme_color);
+
+  shell_surface->InitContentOverlay(app_id, theme_color, type);
 
   // Relayout overlay.
   shell_surface->GetWidget()->LayoutRootViewIfNecessary();
@@ -182,10 +181,14 @@ exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
 }
 
 void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
-                                                    uint32_t theme_color) {
-  auto view = std::make_unique<ArcGhostWindowView>(type_, theme_color);
+                                                    uint32_t theme_color,
+                                                    arc::GhostWindowType type) {
+  auto view = std::make_unique<ArcGhostWindowView>();
   view_observer_ = view.get();
   view->LoadIcon(app_id);
+  view->SetThemeColor(theme_color);
+  view->SetGhostWindowViewType(type);
+
   exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(view));
   overlay_params.translucent = true;
   overlay_params.overlaps_frame = false;
@@ -212,7 +215,7 @@ void ArcGhostWindowShellSurface::SetShellAppId(
 void ArcGhostWindowShellSurface::SetWindowType(
     arc::GhostWindowType window_type) {
   DCHECK(view_observer_);
-  view_observer_->SetType(window_type);
+  view_observer_->SetGhostWindowViewType(window_type);
 }
 
 }  // namespace ash::full_restore

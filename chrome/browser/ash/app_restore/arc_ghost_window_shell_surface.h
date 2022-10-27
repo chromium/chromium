@@ -52,16 +52,16 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   ArcGhostWindowShellSurface(std::unique_ptr<exo::Surface> surface,
                              int container,
                              double scale_factor,
-                             const std::string& application_id,
-                             arc::GhostWindowType type);
+                             const std::string& application_id);
 
-  void InitContentOverlay(const std::string& app_id, uint32_t theme_color);
+  void InitContentOverlay(const std::string& app_id,
+                          uint32_t theme_color,
+                          arc::GhostWindowType type);
   void SetAppId(const absl::optional<std::string>& id);
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 
   ArcGhostWindowView* view_observer_ = nullptr;
-  arc::GhostWindowType type_;
   absl::optional<std::string> app_id_;
 
   std::unique_ptr<exo::Surface> controller_surface_;

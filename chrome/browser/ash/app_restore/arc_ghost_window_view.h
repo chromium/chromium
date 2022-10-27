@@ -12,7 +12,6 @@
 #include "ui/views/view.h"
 
 namespace views {
-class ImageView;
 class Label;
 }  // namespace views
 
@@ -29,23 +28,32 @@ class ArcGhostWindowView : public views::View {
  public:
   METADATA_HEADER(ArcGhostWindowView);
 
-  ArcGhostWindowView(arc::GhostWindowType type, uint32_t theme_color);
+  ArcGhostWindowView();
   ArcGhostWindowView(const ArcGhostWindowView&) = delete;
   ArcGhostWindowView operator=(const ArcGhostWindowView&) = delete;
   ~ArcGhostWindowView() override;
 
-  void LoadIcon(const std::string& app_id);
+  // The original style of ghost window requires the theme color.
+  void SetThemeColor(uint32_t theme_color);
 
-  void SetType(arc::GhostWindowType type);
+  // Initialize or replace content of ghost window. If use the original style,
+  // the theme color should be set before call this function.
+  void SetGhostWindowViewType(arc::GhostWindowType type);
+
+  // Load icon from App service by app id.
+  void LoadIcon(const std::string& app_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, FixupMessageTest);
 
-  void InitLayout(arc::GhostWindowType type, uint32_t theme_color);
+  // Callback function for loading icon from App service.
   void OnIconLoaded(apps::IconValuePtr icon_value);
 
-  views::ImageView* icon_view_ = nullptr;
+  uint32_t theme_color_;
+  gfx::ImageSkia icon_raw_data_;
+  arc::GhostWindowType ghost_window_type_;
+
   views::Label* message_label_ = nullptr;
   base::OnceCallback<void(apps::IconValuePtr icon_value)>
       icon_loaded_cb_for_testing_;
