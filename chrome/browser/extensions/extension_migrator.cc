@@ -35,7 +35,7 @@ void ExtensionMigrator::StartLoading() {
     prefs.Set(new_id_, std::move(entry));
   }
 
-  LoadFinishedWithDict(std::move(prefs));
+  LoadFinished(std::move(prefs));
 }
 
 bool ExtensionMigrator::IsAppPresent(const std::string& app_id) {

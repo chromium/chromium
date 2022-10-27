@@ -50,11 +50,9 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  protected:
   virtual ~ExternalLoader();
 
-  // Helper function until the migration (https://crbug.com/1366865) is done.
-  virtual void LoadFinishedWithDict(base::Value::Dict prefs);
+  virtual void LoadFinished(base::Value::Dict prefs);
 
-  // Helper function until the migration (https://crbug.com/1366865) is done.
-  void OnUpdatedWithDict(base::Value::Dict updated_prefs);
+  void OnUpdated(base::Value::Dict updated_prefs);
 
   // Returns true if this loader has an owner.
   // This is useful to know if calling LoadFinished/OnUpdated will propagate

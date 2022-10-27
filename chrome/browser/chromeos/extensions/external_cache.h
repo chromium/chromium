@@ -55,10 +55,7 @@ class ExternalCache {
 
   // Replace the list of extensions to cache with |prefs| and perform update
   // checks for these.
-  // Helper function until the migration to base::Value::Dict
-  // (https://crbug.com/1366865) is done.
-  void UpdateExtensionsList(std::unique_ptr<base::DictionaryValue> prefs);
-  virtual void UpdateExtensionsListWithDict(base::Value::Dict prefs) = 0;
+  virtual void UpdateExtensionsList(base::Value::Dict prefs) = 0;
 
   // If a user of one of the ExternalCache's extensions detects that
   // the extension is damaged then this method can be used to remove it from

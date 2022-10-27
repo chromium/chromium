@@ -35,11 +35,6 @@ GURL ExternalCache::GetExtensionUpdateUrl(
   return GURL();
 }
 
-void ExternalCache::UpdateExtensionsList(
-    std::unique_ptr<base::DictionaryValue> prefs) {
-  UpdateExtensionsListWithDict(std::move(*prefs).TakeDict());
-}
-
 // static
 base::Value::Dict ExternalCache::GetExtensionValueToCache(
     const base::Value::Dict& extension,

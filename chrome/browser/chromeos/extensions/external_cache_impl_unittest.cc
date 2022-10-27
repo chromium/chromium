@@ -160,7 +160,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   CreateExtensionFile(cache_dir, kTestExtensionId3, "3");
   prefs.Set(kTestExtensionId4, CreateEntryWithUpdateUrl(false));
 
-  external_cache.UpdateExtensionsListWithDict(std::move(prefs));
+  external_cache.UpdateExtensionsList(std::move(prefs));
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(provided_prefs());
@@ -292,7 +292,7 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
   prefs.Set(kTestExtensionId1, CreateEntryWithExternalCrx());
   prefs.Set(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
 
-  external_cache.UpdateExtensionsListWithDict(std::move(prefs));
+  external_cache.UpdateExtensionsList(std::move(prefs));
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(provided_prefs());

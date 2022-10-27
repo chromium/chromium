@@ -80,11 +80,11 @@ void SigninScreenExtensionsExternalLoader::StartLoading() {
 void SigninScreenExtensionsExternalLoader::OnExtensionListsUpdated(
     const base::Value::Dict& prefs) {
   if (initial_load_finished_) {
-    OnUpdatedWithDict(prefs.Clone());
+    OnUpdated(prefs.Clone());
     return;
   }
   initial_load_finished_ = true;
-  LoadFinishedWithDict(prefs.Clone());
+  LoadFinished(prefs.Clone());
 }
 
 SigninScreenExtensionsExternalLoader::~SigninScreenExtensionsExternalLoader() =
@@ -109,8 +109,7 @@ void SigninScreenExtensionsExternalLoader::SubscribeAndInitializeFromPrefs() {
 void SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
   auto force_installed_extensions =
       GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs());
-  external_cache_.UpdateExtensionsListWithDict(
-      std::move(force_installed_extensions));
+  external_cache_.UpdateExtensionsList(std::move(force_installed_extensions));
 }
 
 }  // namespace chromeos

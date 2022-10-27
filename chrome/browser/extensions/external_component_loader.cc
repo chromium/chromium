@@ -44,7 +44,7 @@ void ExternalComponentLoader::StartLoading() {
   }
 #endif
 
-  LoadFinishedWithDict(std::move(prefs));
+  LoadFinished(std::move(prefs));
 }
 
 void ExternalComponentLoader::AddExternalExtension(

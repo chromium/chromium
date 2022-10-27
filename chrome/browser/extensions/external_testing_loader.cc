@@ -28,7 +28,7 @@ const base::FilePath ExternalTestingLoader::GetBaseCrxFilePath() {
 
 void ExternalTestingLoader::StartLoading() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  LoadFinishedWithDict(testing_prefs_.Clone());
+  LoadFinished(testing_prefs_.Clone());
 }
 
 ExternalTestingLoader::~ExternalTestingLoader() = default;

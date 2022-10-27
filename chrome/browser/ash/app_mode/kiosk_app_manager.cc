@@ -807,7 +807,7 @@ void KioskAppManager::UpdateExternalCachePrefs() {
 
     prefs.SetByDottedPath(app->app_id(), std::move(entry));
   }
-  external_cache_->UpdateExtensionsListWithDict(std::move(prefs));
+  external_cache_->UpdateExtensionsList(std::move(prefs));
 }
 
 void KioskAppManager::OnExtensionLoadedInCache(

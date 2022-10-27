@@ -241,7 +241,7 @@ class ServicesCustomizationExternalLoader
 
     VLOG(1) << "ServicesCustomization extension loader publishing "
             << apps_.size() << " apps.";
-    LoadFinishedWithDict(apps_.Clone());
+    LoadFinished(apps_.Clone());
   }
 
  protected:

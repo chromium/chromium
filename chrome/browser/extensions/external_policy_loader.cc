@@ -55,7 +55,7 @@ void ExternalPolicyLoader::StartLoading() {
       prefs = settings_->GetRecommendedInstallList();
       break;
   }
-  LoadFinishedWithDict(std::move(prefs));
+  LoadFinished(std::move(prefs));
 }
 
 }  // namespace extensions

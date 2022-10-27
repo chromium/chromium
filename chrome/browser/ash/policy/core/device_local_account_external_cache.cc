@@ -47,7 +47,7 @@ void DeviceLocalAccountExternalCache::StartCache(
 void DeviceLocalAccountExternalCache::UpdateExtensionsList(
     base::Value::Dict dict) {
   if (external_cache_) {
-    external_cache_->UpdateExtensionsListWithDict(std::move(dict));
+    external_cache_->UpdateExtensionsList(std::move(dict));
   }
 }
 

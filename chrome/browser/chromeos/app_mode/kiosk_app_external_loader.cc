@@ -49,9 +49,9 @@ void KioskAppExternalLoader::SendPrefs(base::Value::Dict prefs) {
   state_ = State::kLoaded;
 
   if (initial_load) {
-    LoadFinishedWithDict(std::move(prefs));
+    LoadFinished(std::move(prefs));
   } else {
-    OnUpdatedWithDict(std::move(prefs));
+    OnUpdated(std::move(prefs));
   }
 }
 

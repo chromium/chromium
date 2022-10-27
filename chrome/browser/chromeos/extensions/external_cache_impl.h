@@ -71,7 +71,7 @@ class ExternalCacheImpl : public ExternalCache,
   // Implementation of ExternalCache:
   const base::Value::Dict& GetCachedExtensions() override;
   void Shutdown(base::OnceClosure callback) override;
-  void UpdateExtensionsListWithDict(base::Value::Dict prefs) override;
+  void UpdateExtensionsList(base::Value::Dict prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
   void RemoveExtensions(
       const std::vector<extensions::ExtensionId>& ids) override;

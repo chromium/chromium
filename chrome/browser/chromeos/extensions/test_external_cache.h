@@ -34,7 +34,7 @@ class TestExternalCache : public ExternalCache {
   // ExternalCache:
   const base::Value::Dict& GetCachedExtensions() override;
   void Shutdown(base::OnceClosure callback) override;
-  void UpdateExtensionsListWithDict(base::Value::Dict prefs) override;
+  void UpdateExtensionsList(base::Value::Dict prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
   void RemoveExtensions(const std::vector<std::string>& ids) override;
   bool GetExtension(const std::string& id,

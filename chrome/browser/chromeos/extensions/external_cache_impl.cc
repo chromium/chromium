@@ -84,7 +84,7 @@ void ExternalCacheImpl::Shutdown(base::OnceClosure callback) {
   local_cache_.Shutdown(std::move(callback));
 }
 
-void ExternalCacheImpl::UpdateExtensionsListWithDict(base::Value::Dict prefs) {
+void ExternalCacheImpl::UpdateExtensionsList(base::Value::Dict prefs) {
   extensions_ = std::move(prefs);
 
   if (extensions_.empty()) {

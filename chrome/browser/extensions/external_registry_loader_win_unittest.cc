@@ -42,7 +42,7 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
   base::Value::Dict LoadPrefsOnBlockingThread() override {
     return DictionaryBuilder().Set(kDummyRegistryKey, id_++).BuildDict();
   }
-  void LoadFinishedWithDict(base::Value::Dict prefs) override {
+  void LoadFinished(base::Value::Dict prefs) override {
     ++load_finished_count_;
     ASSERT_LE(load_finished_count_, 2);
 
@@ -50,7 +50,7 @@ class TestExternalRegistryLoader : public ExternalRegistryLoader {
     ASSERT_TRUE(prefs_test_id.has_value());
     prefs_test_ids_.push_back(*prefs_test_id);
 
-    ExternalRegistryLoader::LoadFinishedWithDict(std::move(prefs));
+    ExternalRegistryLoader::LoadFinished(std::move(prefs));
 
     if (load_finished_count_ == 2)
       run_loop_.Quit();

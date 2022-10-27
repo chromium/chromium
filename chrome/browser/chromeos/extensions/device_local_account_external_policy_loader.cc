@@ -22,7 +22,7 @@ void DeviceLocalAccountExternalPolicyLoader::StartLoading() {
   // not consumed because we didn't have an owner then. Pass |prefs_| in that
   // case.
   if (prefs_) {
-    LoadFinishedWithDict(std::move(prefs_).value());
+    LoadFinished(std::move(prefs_).value());
     prefs_.reset();
   }
 }
@@ -30,7 +30,7 @@ void DeviceLocalAccountExternalPolicyLoader::StartLoading() {
 void DeviceLocalAccountExternalPolicyLoader::OnExtensionListsUpdated(
     const base::Value::Dict& prefs) {
   if (has_owner()) {
-    LoadFinishedWithDict(prefs.Clone());
+    LoadFinished(prefs.Clone());
     prefs_.reset();
     return;
   }

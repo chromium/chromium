@@ -210,7 +210,7 @@ void ExternalRegistryLoader::LoadOnBlockingThread() {
 void ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry(
     base::Value::Dict prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LoadFinishedWithDict(std::move(prefs));
+  LoadFinished(std::move(prefs));
 
   // Attempt to watch registry if we haven't already.
   if (attempted_watching_registry_)
@@ -276,8 +276,8 @@ void ExternalRegistryLoader::UpatePrefsOnBlockingThread() {
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWinUpdate",
                         base::TimeTicks::Now() - start_time);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ExternalRegistryLoader::OnUpdatedWithDict,
-                                this, std::move(prefs)));
+      FROM_HERE, base::BindOnce(&ExternalRegistryLoader::OnUpdated, this,
+                                std::move(prefs)));
 }
 
 }  // namespace extensions

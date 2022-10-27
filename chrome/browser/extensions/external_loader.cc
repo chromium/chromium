@@ -35,13 +35,13 @@ void ExternalLoader::OwnerShutdown() {
 
 ExternalLoader::~ExternalLoader() = default;
 
-void ExternalLoader::LoadFinishedWithDict(base::Value::Dict prefs) {
+void ExternalLoader::LoadFinished(base::Value::Dict prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (owner_)
     owner_->SetPrefs(std::move(prefs));
 }
 
-void ExternalLoader::OnUpdatedWithDict(base::Value::Dict updated_prefs) {
+void ExternalLoader::OnUpdated(base::Value::Dict updated_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (owner_)
     owner_->UpdatePrefs(std::move(updated_prefs));

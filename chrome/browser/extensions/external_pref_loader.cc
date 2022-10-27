@@ -308,7 +308,7 @@ void ExternalPrefLoader::LoadOnFileThread() {
     CHECK(!base_path_.empty());
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadFinishedWithDict, this,
+      FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadFinished, this,
                                 std::move(prefs)));
 }
 

@@ -101,7 +101,7 @@ void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
   // prefs from the Offline Demo Resources, so we don't call LoadApp() if the
   // enrollment is offline. Instead, we should merge these prefs or treat the
   // cache as a separate provider.
-  external_cache_->UpdateExtensionsListWithDict(std::move(prefs));
+  external_cache_->UpdateExtensionsList(std::move(prefs));
 }
 
 void DemoExtensionsExternalLoader::StartLoading() {
@@ -115,7 +115,7 @@ void DemoExtensionsExternalLoader::OnExtensionListsUpdated(
   DCHECK(external_cache_);
   // Notifies the provider that the extensions have either been downloaded or
   // found in cache, and are ready to be installed.
-  LoadFinishedWithDict(prefs.Clone());
+  LoadFinished(prefs.Clone());
 }
 
 void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
@@ -125,7 +125,7 @@ void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
   base::FilePath demo_extension_list =
       demo_session->resources()->GetExternalExtensionsPrefsPath();
   if (demo_extension_list.empty()) {
-    LoadFinishedWithDict(base::Value::Dict());
+    LoadFinished(base::Value::Dict());
     return;
   }
 
@@ -142,7 +142,7 @@ void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
 void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
     absl::optional<base::Value::Dict> prefs) {
   if (!prefs.has_value()) {
-    LoadFinishedWithDict(base::Value::Dict());
+    LoadFinished(base::Value::Dict());
     return;
   }
   DemoSession* demo_session = DemoSession::Get();
@@ -173,7 +173,7 @@ void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
         demo_session->resources()->GetAbsolutePath(relative_path).value());
   }
 
-  LoadFinishedWithDict(std::move(prefs).value());
+  LoadFinished(std::move(prefs).value());
 }
 
 }  // namespace ash

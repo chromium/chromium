@@ -28,7 +28,7 @@ void TestExternalCache::Shutdown(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void TestExternalCache::UpdateExtensionsListWithDict(base::Value::Dict prefs) {
+void TestExternalCache::UpdateExtensionsList(base::Value::Dict prefs) {
   configured_extensions_ = std::move(prefs);
   cached_extensions_.clear();
 
