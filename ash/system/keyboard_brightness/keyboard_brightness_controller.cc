@@ -11,10 +11,6 @@ namespace ash {
 
 KeyboardBrightnessController::KeyboardBrightnessController() {
   chromeos::PowerManagerClient::Get()->AddObserver(this);
-  chromeos::PowerManagerClient::Get()->GetKeyboardBacklightToggledOff(
-      base::BindOnce(
-          &KeyboardBrightnessController::KeyboardBacklightToggledOffReceived,
-          weak_ptr_factory_.GetWeakPtr()));
 }
 
 KeyboardBrightnessController::~KeyboardBrightnessController() {
@@ -36,6 +32,15 @@ void KeyboardBrightnessController::KeyboardBrightnessChanged(
   keyboard_backlight_toggled_off_ =
       change.cause() ==
       power_manager::BacklightBrightnessChange_Cause_USER_TOGGLED_OFF;
+}
+
+void KeyboardBrightnessController::PowerManagerBecameAvailable(bool available) {
+  if (available) {
+    chromeos::PowerManagerClient::Get()->GetKeyboardBacklightToggledOff(
+        base::BindOnce(
+            &KeyboardBrightnessController::KeyboardBacklightToggledOffReceived,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void KeyboardBrightnessController::KeyboardBacklightToggledOffReceived(

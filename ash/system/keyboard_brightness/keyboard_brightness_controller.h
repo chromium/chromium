@@ -29,6 +29,7 @@ class ASH_EXPORT KeyboardBrightnessController
   // chromeos::PowerManagerClient
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
+  void PowerManagerBecameAvailable(bool available) final;
 
  private:
   // Overridden from KeyboardBrightnessControlDelegate:
