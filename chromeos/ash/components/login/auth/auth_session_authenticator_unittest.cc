@@ -871,6 +871,91 @@ TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
   EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
 }
 
+// Test the `AuthenticateToUnlock()` method in the successful scenario for
+// ephemeral user with the configured password.
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockEphemeral) {
+  // Arrange.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/true);
+  auto user_context = std::make_unique<UserContext>(
+      user_manager::USER_TYPE_REGULAR, kAccountId);
+  user_context->SetKey(Key(kPassword));
+  EXPECT_CALL(
+      userdataauth(),
+      StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_EPHEMERAL_USER,
+                                             AUTH_INTENT_VERIFY_ONLY),
+                       _))
+      .WillOnce(ReplyWith(BuildStartReply(
+          kFirstAuthSessionId,
+          /*user_exists=*/true,
+          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
+          /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
+  if (features::IsUseAuthFactorsEnabled()) {
+    EXPECT_CALL(userdataauth(),
+                AuthenticateAuthFactor(
+                    AllOf(WithFirstAuthSessionId(),
+                          WithPasswordFactorAuth(kCryptohomeGaiaKeyLabel)),
+                    _))
+        .WillOnce(ReplyWith(BuildAuthenticateFactorSuccessReply()));
+  } else {
+    EXPECT_CALL(
+        userdataauth(),
+        AuthenticateAuthSession(AllOf(WithFirstAuthSessionId(),
+                                      WithPasswordKey(kCryptohomeGaiaKeyLabel)),
+                                _))
+        .WillOnce(ReplyWith(BuildAuthenticateSuccessReply()));
+  }
+
+  // Act.
+  authenticator().AuthenticateToUnlock(std::move(user_context));
+  const UserContext got_user_context = on_auth_success_future().Get();
+
+  // Assert.
+  EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
+  EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
+}
+
+// Test the `AuthenticateToUnlock()` method in the successful scenario for
+// Managed Guest Session with the configured password (e.g., Imprivata).
+TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockMgs) {
+  // Arrange.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  auto user_context = std::make_unique<UserContext>(
+      user_manager::USER_TYPE_PUBLIC_ACCOUNT, kAccountId);
+  EXPECT_CALL(
+      userdataauth(),
+      StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_EPHEMERAL_USER,
+                                             AUTH_INTENT_VERIFY_ONLY),
+                       _))
+      .WillOnce(ReplyWith(BuildStartReply(
+          kFirstAuthSessionId,
+          /*user_exists=*/true,
+          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}},
+          /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
+  if (features::IsUseAuthFactorsEnabled()) {
+    EXPECT_CALL(userdataauth(),
+                AuthenticateAuthFactor(
+                    AllOf(WithFirstAuthSessionId(),
+                          WithPasswordFactorAuth(kCryptohomeGaiaKeyLabel)),
+                    _))
+        .WillOnce(ReplyWith(BuildAuthenticateFactorSuccessReply()));
+  } else {
+    EXPECT_CALL(
+        userdataauth(),
+        AuthenticateAuthSession(AllOf(WithFirstAuthSessionId(),
+                                      WithPasswordKey(kCryptohomeGaiaKeyLabel)),
+                                _))
+        .WillOnce(ReplyWith(BuildAuthenticateSuccessReply()));
+  }
+
+  // Act.
+  authenticator().AuthenticateToUnlock(std::move(user_context));
+  const UserContext got_user_context = on_auth_success_future().Get();
+
+  // Assert.
+  EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
+  EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
+}
+
 // Test the `AuthenticateToUnlock()` method in the authentication failure
 // scenario.
 TEST_P(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
