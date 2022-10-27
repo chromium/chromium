@@ -3492,7 +3492,7 @@ New Search
         Chrome for Mobile
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC" desc="The description displayed along with the app store link to Chrome, when sharing the chrome app" meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Chrome is faster, safer, yours. Download it here.
+        Download Chrome here.
       </message>
       <message name="IDS_IOS_TOOLS_MENU_RELOAD" desc="The title of the button in the menu allowing the user to reload the page.">
         Reload
