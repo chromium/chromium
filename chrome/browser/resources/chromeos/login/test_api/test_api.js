@@ -788,6 +788,11 @@ class SmartPrivacyProtectionScreenTester extends ScreenElementApi {
     this.noThanks = new PolymerElementApi(this, '#noThanksButton');
   }
 
+  /** @override */
+  shouldSkip() {
+    return !loadTimeData.getBoolean('testapi_isHPSEnabled');
+  }
+
   /** @return {boolean} */
   isReadyForTesting() {
     return this.isVisible() && this.noThanks.isVisible();

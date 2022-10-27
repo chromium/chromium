@@ -103,6 +103,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !features::IsOobeConsolidatedConsentEnabled() ||
                 !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  dict->Set("testapi_isHPSEnabled", ash::features::IsQuickDimEnabled());
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
