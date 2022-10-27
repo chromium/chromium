@@ -77,9 +77,6 @@ class PrintJobWorkerOop : public PrintJobWorker {
                    SettingsCallback callback) override;
   void OnFailure() override;
 
-  // Show the print error dialog, virtual to support testing.
-  virtual void ShowErrorDialog();
-
  private:
   // Support to unregister this worker as a printing client.  Applicable any
   // time a print job finishes, is canceled, or needs to be restarted.

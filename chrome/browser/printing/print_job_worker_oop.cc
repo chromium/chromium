@@ -358,10 +358,6 @@ void PrintJobWorkerOop::OnFailure() {
   PrintJobWorker::OnFailure();
 }
 
-void PrintJobWorkerOop::ShowErrorDialog() {
-  ShowPrintErrorDialog();
-}
-
 void PrintJobWorkerOop::UnregisterServiceManagerClient() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (service_manager_client_id_.has_value()) {
@@ -413,7 +409,7 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
     uma_result = PrintOopResult::kCanceled;
   }
   base::UmaHistogramEnumeration(kPrintOopPrintResultHistogramName, uma_result);
-  ShowErrorDialog();
+  ShowPrintErrorDialog();
 
   // Initiate rest of regular failure handling.
   task_runner()->PostTask(FROM_HERE,
