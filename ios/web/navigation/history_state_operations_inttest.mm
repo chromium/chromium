@@ -80,9 +80,8 @@ class HistoryStateOperationsTest : public web::WebIntTest {
   // Reloads the page and waits for the load to finish.
   [[nodiscard]] bool Reload() {
     return ExecuteBlockAndWaitForLoad(GetLastCommittedItem()->GetURL(), ^{
-      // TODO(crbug.com/677364): Use NavigationManager::Reload() once it no
-      // longer requires a web delegate.
-      web_state()->ExecuteJavaScript(u"window.location.reload()");
+      web_state()->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
+                                                  /*check_for_repost=*/false);
     });
   }
 
