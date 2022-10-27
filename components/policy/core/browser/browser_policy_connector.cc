@@ -15,20 +15,17 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_statistics_collector.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/icu/source/i18n/unicode/regex.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
 namespace policy {
 
@@ -45,56 +42,6 @@ const char kDefaultEncryptedReportingServerUrl[] =
 const char kDefaultRealtimeReportingServerUrl[] =
     "https://chromereporting-pa.googleapis.com/v1/events";
 
-// Regexes that match many of the larger public email providers as we know
-// these users are not from hosted enterprise domains.
-const wchar_t* const kNonManagedDomainPatterns[] = {
-  L"aol\\.com",
-  L"comcast\\.net",
-  L"googlemail\\.com",
-  L"gmail\\.com",
-  L"gmx\\.de",
-  L"hotmail(\\.co|\\.com|)\\.[^.]+",  // hotmail.com, hotmail.it, hotmail.co.uk
-  L"live\\.com",
-  L"mail\\.ru",
-  L"msn\\.com",
-  L"naver\\.com",
-  L"orange\\.fr",
-  L"outlook\\.com",
-  L"qq\\.com",
-  L"yahoo(\\.co|\\.com|)\\.[^.]+",  // yahoo.com, yahoo.co.uk, yahoo.com.tw
-  L"yandex\\.ru",
-  L"web\\.de",
-  L"wp\\.pl",
-  L"consumer\\.example\\.com",
-};
-
-const char* non_managed_domain_for_testing = nullptr;
-
-// Returns true if |domain| matches the regex |pattern|.
-bool MatchDomain(const std::u16string& domain,
-                 const std::u16string& pattern,
-                 size_t index) {
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::UnicodeString icu_pattern(pattern.data(), pattern.length());
-  icu::RegexMatcher matcher(icu_pattern, UREGEX_CASE_INSENSITIVE, status);
-  if (!U_SUCCESS(status)) {
-    // http://crbug.com/365351 - if for some reason the matcher creation fails
-    // just return that the pattern doesn't match the domain. This is safe
-    // because the calling method (IsNonEnterpriseUser()) is just used to enable
-    // an optimization for non-enterprise users - better to skip the
-    // optimization than crash.
-    DLOG(ERROR) << "Possible invalid domain pattern: " << pattern
-                << " - Error: " << status;
-    return false;
-  }
-  icu::UnicodeString icu_input(domain.data(), domain.length());
-  matcher.reset(icu_input);
-  status = U_ZERO_ERROR;
-  UBool match = matcher.matches(status);
-  DCHECK(U_SUCCESS(status));
-  return !!match;  // !! == convert from UBool to bool.
-}
-
 }  // namespace
 
 BrowserPolicyConnector::BrowserPolicyConnector(
@@ -102,8 +49,7 @@ BrowserPolicyConnector::BrowserPolicyConnector(
     : BrowserPolicyConnectorBase(handler_list_factory) {
 }
 
-BrowserPolicyConnector::~BrowserPolicyConnector() {
-}
+BrowserPolicyConnector::~BrowserPolicyConnector() = default;
 
 void BrowserPolicyConnector::InitInternal(
     PrefService* local_state,
@@ -174,31 +120,13 @@ std::string BrowserPolicyConnector::GetUrlOverride(
 // static
 bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
   TRACE_EVENT0("browser", "BrowserPolicyConnector::IsNonEnterpriseUser");
-  if (username.empty() || username.find('@') == std::string::npos) {
-    // An empty username means incognito user in case of ChromiumOS and
-    // no logged-in user in case of Chromium (SigninService). Many tests use
-    // nonsense email addresses (e.g. 'test') so treat those as non-enterprise
-    // users.
-    return true;
-  }
-  const std::u16string domain = base::UTF8ToUTF16(
-      gaia::ExtractDomainName(gaia::CanonicalizeEmail(username)));
-  for (size_t i = 0; i < std::size(kNonManagedDomainPatterns); i++) {
-    std::u16string pattern = base::WideToUTF16(kNonManagedDomainPatterns[i]);
-    if (MatchDomain(domain, pattern, i))
-      return true;
-  }
-  if (non_managed_domain_for_testing &&
-      domain == base::UTF8ToUTF16(non_managed_domain_for_testing)) {
-    return true;
-  }
-  return false;
+  return signin::AccountManagedStatusFinder::IsNonEnterpriseUser(username);
 }
 
 // static
 void BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
     const char* domain) {
-  non_managed_domain_for_testing = domain;
+  signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(domain);
 }
 
 // static

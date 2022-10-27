@@ -69,12 +69,16 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
 
   // Check whether a user is known to be non-enterprise. Domains such as
   // gmail.com and googlemail.com are known to not be managed. Also returns
-  // false if the username is empty.
+  // true if the username is empty or not a valid email address.
+  // TODO(crbug.com/1378553): Migrate callers to
+  // signin::AccountManagedStatusFinder::IsNonEnterpriseUser().
   static bool IsNonEnterpriseUser(const std::string& username);
 
   // Allows to register domain for tests that is recognized as non-enterprise.
   // Note that |domain| basically needs to live until this method is invoked
   // with a nullptr.
+  // TODO(crbug.com/1378553): Migrate callers to
+  // signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting().
   static void SetNonEnterpriseDomainForTesting(const char* domain);
 
   // Registers refresh rate prefs.
