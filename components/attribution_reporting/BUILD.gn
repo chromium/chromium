@@ -34,6 +34,16 @@ source_set("unit_tests") {
   ]
 }
 
+fuzzer_test("os_source_parse_fuzzer") {
+  sources = [ "os_source_parse_fuzzer.cc" ]
+  deps = [
+    ":attribution_reporting",
+    "//base",
+  ]
+
+  seed_corpus = "//components/attribution_reporting/os_source_fuzzer_corpus/"
+}
+
 fuzzer_test("os_trigger_parse_fuzzer") {
   sources = [ "os_trigger_parse_fuzzer.cc" ]
   deps = [

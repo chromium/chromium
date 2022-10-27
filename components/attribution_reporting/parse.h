@@ -32,8 +32,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsTrigger {
   // Example:
   //
   // "https://x.test/abc"
-  //
-  // TODO(apaseltiner): Add a fuzzer for this.
   static absl::optional<OsTrigger> Parse(base::StringPiece);
 
   static absl::optional<OsTrigger> Create(GURL url);
@@ -74,8 +72,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsSource {
   //
   // "https://x.test/abc"; os-destination="foo";
   // web-destination="https://y.test"
-  //
-  // TODO(apaseltiner): Add a fuzzer for this.
   static absl::optional<OsSource> Parse(base::StringPiece);
 
   static absl::optional<OsSource> Create(GURL url,
