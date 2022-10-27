@@ -739,6 +739,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion102AddAutofillBirthdatesTable();
   bool MigrateToVersion104AddProductDescriptionColumn();
   bool MigrateToVersion105AddAutofillIBANTable();
+  bool MigrateToVersion106RecreateAutofillIBANTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

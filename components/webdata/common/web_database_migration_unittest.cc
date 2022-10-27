@@ -141,7 +141,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 104;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 106;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -195,6 +195,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateEmptyToCurrent) {
     EXPECT_FALSE(connection.DoesTableExist("autofill_dates"));
     EXPECT_TRUE(connection.DoesTableExist("autofill_profiles"));
     EXPECT_TRUE(connection.DoesTableExist("credit_cards"));
+    EXPECT_TRUE(connection.DoesTableExist("ibans"));
     EXPECT_TRUE(connection.DoesTableExist("keywords"));
     EXPECT_TRUE(connection.DoesTableExist("meta"));
     EXPECT_TRUE(connection.DoesTableExist("token_service"));
@@ -901,5 +902,48 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion104ToCurrent) {
 
     // The ibans table should exist.
     EXPECT_TRUE(connection.DoesTableExist("ibans"));
+  }
+}
+
+// Tests addition of new table 'ibans' with guid as PRIMARY KEY.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion105ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_105.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(105, VersionFromConnection(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 105, 100));
+
+    // The ibans table should exist, but should not have been created with guid
+    // as PRIMARY KEY.
+    ASSERT_TRUE(connection.DoesTableExist("ibans"));
+    ASSERT_EQ(connection.GetSchema().find(
+                  "CREATE TABLE ibans (guid VARCHAR PRIMARY KEY"),
+              std::string::npos);
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    // The ibans table should exist with guid as primary key.
+    EXPECT_TRUE(connection.DoesTableExist("ibans"));
+    ASSERT_NE(connection.GetSchema().find(
+                  "CREATE TABLE ibans (guid VARCHAR PRIMARY KEY"),
+              std::string::npos);
   }
 }

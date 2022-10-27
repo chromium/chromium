@@ -1087,6 +1087,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 105:
       *update_compatible_version = false;
       return MigrateToVersion105AddAutofillIBANTable();
+    case 106:
+      *update_compatible_version = true;
+      return MigrateToVersion106RecreateAutofillIBANTable();
   }
   return true;
 }
@@ -3061,6 +3064,18 @@ bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
   return transaction.Begin() &&
          CreateTable(db_, kIBANsTable,
                      {{kGuid, "VARCHAR"},
+                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
+                      {kValue, "VARCHAR"},
+                      {kNickname, "VARCHAR"}}) &&
+         transaction.Commit();
+}
+
+bool AutofillTable::MigrateToVersion106RecreateAutofillIBANTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() && DropTable(db_, kIBANsTable) &&
+         CreateTable(db_, kIBANsTable,
+                     {{kGuid, "VARCHAR PRIMARY KEY"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
                       {kValue, "VARCHAR"},
