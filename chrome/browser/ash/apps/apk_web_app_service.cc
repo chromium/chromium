@@ -259,9 +259,11 @@ absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
 
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const GURL& url) {
-  web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetDeprecated(profile_)->registrar();
-  absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(url);
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  if (!web_app_provider)
+    return absl::nullopt;
+  absl::optional<web_app::AppId> app_id =
+      web_app_provider->registrar().FindAppWithUrlInScope(url);
   if (!app_id)
     return absl::nullopt;
 
