@@ -14,7 +14,7 @@
   }
 
   :host([modules-fre-shown]) #freAndModulesContainer {
-    background-color: var(--color-new-tab-page-background-override);
+    background-color: var(--color-new-tab-page-first-run-background);
     border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     padding: 20px;
@@ -54,14 +54,19 @@
   }
 
   #customizeChromeLink {
-    color: var(--color-new-tab-page-chip-background);
+    color: var(--color-new-tab-page-button-foreground);
     cursor: pointer;
     font-weight: 700;
   }
 
   .action-button {
+    background-color: var(--color-new-tab-page-action-button-background);
     margin-inline-end: 8px;
     margin-top: 18px;
+  }
+
+  .cancel-button {
+    --text-color: var(--color-new-tab-page-button-foreground);
   }
 
   ntp-module-wrapper {
