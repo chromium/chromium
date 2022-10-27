@@ -346,6 +346,13 @@ following members:
  *   `cohortname`: A human-readable string identifying the semantics behind the
      current cohort. For example, this might be displayed to the user and
      indicate the channel or experimental status. Default: "".
+ *   `release_channel`: The target channel that the app switches to. For
+      example an app can have stable, beta, dev, and canary channels. Note
+      switching to an older channel may have no effect until the older channel
+      catches up with the install. Ex: a machine on today's beta (107.0.5304.62)
+      that is switched to stable will stay on that version until 107 ships to
+      stable. Downgrade can be forced by the use of the `rollback_allowed` in
+      the `updatecheck` node.
  *   `data`: A list of `data` objects.
  *   `disabled`: A list of `disabled` objects.
  *   `enabled`: Indicates whether the application is enabled on the client. As
