@@ -304,7 +304,7 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
     content::NavigationUIData* navigation_ui_data,
     int frame_tree_node_id) {
   if (frame_tree_node_id == content::RenderFrameHost::kNoFrameTreeNodeId) {
-    // TODO(crbug.com/976975): Add support for service workers.
+    // TODO(crbug.com/1378791): Add support for workers.
     return {};
   }
 

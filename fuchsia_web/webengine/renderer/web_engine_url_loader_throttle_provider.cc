@@ -22,7 +22,7 @@ WebEngineURLLoaderThrottleProvider::~WebEngineURLLoaderThrottleProvider() {
 
 std::unique_ptr<blink::URLLoaderThrottleProvider>
 WebEngineURLLoaderThrottleProvider::Clone() {
-  // This should only happen for service workers, which we do not support here.
+  // This should only happen for workers, which we do not support here.
   NOTREACHED();
   return nullptr;
 }
