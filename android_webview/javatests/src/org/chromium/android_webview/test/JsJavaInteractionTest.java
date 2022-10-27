@@ -61,6 +61,8 @@ public class JsJavaInteractionTest {
             RESOURCE_PATH + "/post_message_array_buffer_reply.html";
     private static final String POST_MESSAGE_ARRAYBUFFER_TITLE_HTML =
             RESOURCE_PATH + "/post_message_array_buffer_title.html";
+    private static final String POST_MESSAGE_ARRAYBUFFER_TRANSFER_HTML =
+            RESOURCE_PATH + "/post_message_array_buffer_transfer.html";
     private static final String FILE_URI = "file:///android_asset/asset_file.html";
     private static final String HELLO_WORLD_HTML = RESOURCE_PATH + "/hello_world.html";
 
@@ -745,6 +747,26 @@ public class JsJavaInteractionTest {
         final byte[] content = new byte[500 * 1000]; // 500 Kib
         new Random(42).nextBytes(content);
         verifyPostArrayBufferWorks(content);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testReceiveTransferArrayBuffer() throws Exception {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        final byte[] content = new byte[500 * 1000]; // 500 Kib
+        new Random(42).nextBytes(content);
+        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_TRANSFER_HTML);
+
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        data.mReplyProxy.postMessage(new MessagePayload(content));
+        data = mListener.waitForOnPostMessage();
+        Assert.assertArrayEquals(content, data.getAsArrayBuffer());
+
+        // ArrayBuffer transferred, new length should be zero.
+        data = mListener.waitForOnPostMessage();
+        Assert.assertEquals("0", data.getAsString());
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     @Test

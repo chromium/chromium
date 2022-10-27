@@ -27,6 +27,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_message_port_converter.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
 #include "v8-local-handle.h"
 #include "v8-primitive.h"
 #include "v8-value.h"
@@ -210,15 +211,35 @@ void JsBinding::PostMessage(gin::Arguments* args) {
   }
 
   for (auto& obj : objs) {
-    absl::optional<blink::MessagePortChannel> port =
-        blink::WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
-            args->isolate(), obj);
-    // If the port is null we should throw an exception.
-    if (!port.has_value()) {
+    if (blink::V8MessagePort::HasInstance(obj, args->isolate())) {
+      absl::optional<blink::MessagePortChannel> port =
+          blink::WebMessagePortConverter::
+              DisentangleAndExtractMessagePortChannel(args->isolate(), obj);
+      // If the port is null we should throw an exception.
+      if (!port.has_value()) {
+        args->ThrowError();
+        return;
+      }
+      ports.emplace_back(port.value());
+    } else if (obj->IsArrayBuffer()) {
+      // Simulate to transfer an ArrayBuffer.
+      if (obj != payload) {
+        // Only when the array buffer to be transfered is message payload.
+        args->ThrowError();
+        return;
+      }
+      v8::Local<v8::ArrayBuffer> array_buffer =
+          v8::Local<v8::ArrayBuffer>::Cast(obj);
+      if (!array_buffer->IsDetachable()) {
+        // Only when the array buffer is detachable.
+        args->ThrowError();
+        return;
+      }
+      array_buffer->Detach();
+    } else {
       args->ThrowError();
       return;
     }
-    ports.emplace_back(port.value());
   }
 
   mojom::JsToBrowserMessaging* js_to_java_messaging =
