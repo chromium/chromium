@@ -9,6 +9,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -359,16 +360,16 @@ FastPairGattServiceClientImpl::CreateRequest(
 
   std::array<uint8_t, 6> provider_address_bytes;
   device::ParseBluetoothAddress(provider_address, provider_address_bytes);
-  std::copy(provider_address_bytes.begin(), provider_address_bytes.end(),
-            std::begin(data_to_write) + kProviderAddressStartIndex);
+  base::ranges::copy(provider_address_bytes,
+                     std::begin(data_to_write) + kProviderAddressStartIndex);
 
   // Seekers address can be empty, in which we would just have the bytes be
   // the salt.
   if (!seekers_address.empty()) {
     std::array<uint8_t, 6> seeker_address_bytes;
     device::ParseBluetoothAddress(seekers_address, seeker_address_bytes);
-    std::copy(seeker_address_bytes.begin(), seeker_address_bytes.end(),
-              std::begin(data_to_write) + kSeekerAddressStartIndex);
+    base::ranges::copy(seeker_address_bytes,
+                       std::begin(data_to_write) + kSeekerAddressStartIndex);
   }
 
   return data_to_write;

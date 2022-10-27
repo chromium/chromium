@@ -12,6 +12,7 @@
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/message_center/unified_message_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
@@ -443,8 +444,8 @@ void NotificationGroupingController::OnNotificationRemoved(
     auto grouped_notifications =
         grouped_notification_list_->GetGroupedNotificationsForParent(
             notification_id);
-    std::copy(grouped_notifications.begin(), grouped_notifications.end(),
-              std::back_inserter(to_be_deleted));
+    base::ranges::copy(grouped_notifications,
+                       std::back_inserter(to_be_deleted));
     grouped_notification_list_->ClearGroupedNotification(notification_id);
 
     for (const auto& id : to_be_deleted)

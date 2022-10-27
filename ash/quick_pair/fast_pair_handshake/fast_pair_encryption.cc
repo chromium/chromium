@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
+
 #include <algorithm>
 #include <array>
-
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -30,8 +31,7 @@ bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
     const std::string& decoded_public_anti_spoofing) {
   std::array<uint8_t, kPublicKeyByteSize + 1> buffer;
   buffer[0] = POINT_CONVERSION_UNCOMPRESSED;
-  std::copy(decoded_public_anti_spoofing.begin(),
-            decoded_public_anti_spoofing.end(), buffer.begin() + 1);
+  base::ranges::copy(decoded_public_anti_spoofing, buffer.begin() + 1);
 
   bssl::UniquePtr<EC_POINT> new_ec_point(EC_POINT_new(ec_group.get()));
 

@@ -4,8 +4,6 @@
 
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 
-#include <algorithm>
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -22,6 +20,7 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "base/check.h"
 #include "base/i18n/rtl.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/canvas.h"
@@ -218,8 +217,7 @@ class VersionButton : public views::LabelButton {
     SetFlipCanvasOnPaintForRTLUI(true);
     const auto& content_corners =
         GetVersionButtonContentCorners(allow_user_feedback);
-    std::copy(content_corners, content_corners + kNumVersionButtonCornerRadii,
-              content_corners_);
+    base::ranges::copy(content_corners, content_corners_);
     if (features::IsQsRevampEnabled()) {
       SetHorizontalAlignment(gfx::ALIGN_CENTER);
       SetMinSize(gfx::Size(0, kVersionButtonRevampHeight));
@@ -325,8 +323,7 @@ class SubmitFeedbackButton : public IconButton {
                    IDS_ASH_STATUS_TRAY_REPORT_FEEDBACK),
         channel_(channel) {
     SetID(VIEW_ID_QS_FEEDBACK_BUTTON);
-    std::copy(content_corners, content_corners + kNumVersionButtonCornerRadii,
-              content_corners_);
+    base::ranges::copy(content_corners, content_corners_);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         kSubmitFeedbackButtonMarginTop, kSubmitFeedbackButtonMarginLeft,
         kSubmitFeedbackButtonMarginBottom, kSubmitFeedbackButtonMarginRight)));
