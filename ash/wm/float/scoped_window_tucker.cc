@@ -18,6 +18,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -108,10 +109,16 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
   tuck_handle_widget_->Init(std::move(params));
 
   tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(
-      base::BindRepeating(&ScopedWindowTucker::OnButtonPressed,
+      base::BindRepeating(&ScopedWindowTucker::UntuckWindow,
                           base::Unretained(this)),
       left));
   tuck_handle_widget_->Show();
+
+  Shell::Get()->activation_client()->AddObserver(this);
+}
+
+ScopedWindowTucker::~ScopedWindowTucker() {
+  Shell::Get()->activation_client()->RemoveObserver(this);
 }
 
 void ScopedWindowTucker::AnimateTuck(bool left) {
@@ -167,9 +174,15 @@ void ScopedWindowTucker::AnimateTuck(bool left) {
                     gfx::Tween::ACCEL_20_DECEL_100);
 }
 
-void ScopedWindowTucker::OnButtonPressed() {
-  // Untuck the window, which sets the window bounds back onscreen.
-  // Destroys `this`.
+void ScopedWindowTucker::OnWindowActivated(ActivationReason reason,
+                                           aura::Window* gained_active,
+                                           aura::Window* lost_active) {
+  // Note that `UntuckWindow()` destroys `this`.
+  if (gained_active == window_)
+    UntuckWindow();
+}
+
+void ScopedWindowTucker::UntuckWindow() {
   Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(window_);
 }
 

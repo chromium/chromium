@@ -7,28 +7,36 @@
 
 #include "ash/ash_export.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {
 
 // Scoped class which makes modifications while a window is tucked. It owns a
 // tuck handle widget that will bring the hidden window back onscreen.
-class ScopedWindowTucker {
+class ScopedWindowTucker : public wm::ActivationChangeObserver {
  public:
   // Creates an instance for `window` where `left` is the side of the screen
   // that the tuck handle is on.
   ScopedWindowTucker(aura::Window* window, bool left);
   ScopedWindowTucker(const ScopedWindowTucker&) = delete;
   ScopedWindowTucker& operator=(const ScopedWindowTucker&) = delete;
-  ~ScopedWindowTucker() = default;
+  ~ScopedWindowTucker() override;
 
   views::Widget* tuck_handle_widget() { return tuck_handle_widget_.get(); }
 
   void AnimateTuck(bool left);
 
-  void OnButtonPressed();
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
 
  private:
   class TuckHandle;
+
+  // Destroys `this_`, which will untuck `window_` and set the window bounds
+  // back onscreen.
+  void UntuckWindow();
 
   // The window that is being tucked. Will be tucked and untucked by the tuck
   // handle.

@@ -976,9 +976,29 @@ TEST_F(TabletWindowFloatTest, UntuckWindowOnExitTabletMode) {
   // Tests that after we exit tablet mode, the window is untucked and fully
   // visible, but is still floated.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
   EXPECT_TRUE(screen_util::GetDisplayBoundsInParent(window.get())
                   .Contains(window->bounds()));
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+}
+
+TEST_F(TabletWindowFloatTest, UntuckWindowOnActivation) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Fling to tuck the window in the bottom right.
+  auto* float_controller = Shell::Get()->float_controller();
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+
+  // Tests that after we activate the window, ihe window is untucked and fully
+  // visible, but is still floated.
+  wm::ActivateWindow(window.get());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  EXPECT_TRUE(screen_util::GetDisplayBoundsInParent(window.get())
+                  .Contains(window->bounds()));
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
 
 // Tests the functionality of tucking a window in tablet mode.
