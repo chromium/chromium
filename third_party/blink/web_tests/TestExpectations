@@ -825,10 +825,20 @@ crbug.com/1242416 [ Linux ] external/wpt/css/CSS2/backgrounds/background-positio
 crbug.com/1242416 [ Mac10.14 ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Failure Pass ]
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-004.xht [ Failure ]
 crbug.com/492187 external/wpt/css/CSS2/backgrounds/background-intrinsic-006.xht [ Failure ]
+crbug.com/767352 external/wpt/css/css-backgrounds/border-image-space-001.html [ Failure ]
+crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-005.xht [ Failure ]
+crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-006.xht [ Failure ]
+crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-007.xht [ Failure ]
 crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ Failure ]
+crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
 crbug.com/1268426 external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
 crbug.com/1268426 virtual/threaded/external/wpt/css/css-backgrounds/border-image-width-should-extend-to-padding.html [ Failure ]
-crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-009.html [ Failure ]
+
+# Percentage resolution issue (33.3333% slices); probably also needs fuzzy adjustment after that.
+crbug.com/1379008 external/wpt/css/css-backgrounds/border-image-slice-percentage.html [ Failure ]
+
+# Minor bleed on left/top side of the edge pieces (computed spacing is 16px / 3).
+crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Failure ]
 
 # No emoji flag symbols available in the Windows system emoji font.
 crbug.com/1272436 [ Win10.20h2 ] external/wpt/css/CSS2/text/bidi-flag-emoji-02.html [ Failure ]
@@ -1006,11 +1016,6 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 crbug.com/935057 external/wpt/css/css-backgrounds/background-size-043.html [ Failure ]
 crbug.com/935057 external/wpt/css/css-backgrounds/background-size-044.html [ Failure ]
-
-# Not obviously incorrect (minor pixel differences, likely due to filtering).
-crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-space-10.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-round-1.html [ Failure ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/border-image-repeat-round-2.html [ Failure ]
 
 # Passes with the WPT runner but not the internal one. (???)
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1a.html [ Failure ]
