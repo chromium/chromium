@@ -200,18 +200,6 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       DEPRECATED_ExtensionSignCallback callback,
       std::vector<uint8_t> signature,
       absl::optional<mojom::KeystoreError> error);
-  static void DEPRECATED_DidGetKeyStores(
-      DEPRECATED_GetKeyStoresCallback callback,
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
-          platform_keys_token_ids,
-      chromeos::platform_keys::Status status);
-  static void DEPRECATED_DidGetCertificates(
-      DEPRECATED_GetCertificatesCallback callback,
-      std::unique_ptr<net::CertificateList> certs,
-      chromeos::platform_keys::Status status);
-  static void DEPRECATED_DidImportCertificate(
-      DEPRECATED_AddCertificateCallback callback,
-      chromeos::platform_keys::Status status);
   static void DEPRECATED_DidRemoveCertificate(
       DEPRECATED_RemoveCertificateCallback callback,
       chromeos::platform_keys::Status status);

@@ -57,8 +57,7 @@ class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
   ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
   ResponseAction Run() override;
 
-  void OnGetCertificates(
-      crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result);
+  void OnGetCertificates(crosapi::mojom::GetCertificatesResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
                              ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
 };
@@ -69,7 +68,8 @@ class EnterprisePlatformKeysImportCertificateFunction
   ~EnterprisePlatformKeysImportCertificateFunction() override = default;
   ResponseAction Run() override;
 
-  void OnAddCertificate(const std::string& error);
+  void OnAddCertificate(bool is_error,
+                        crosapi::mojom::KeystoreError error_code);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.importCertificate",
                              ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE)
 };
@@ -91,7 +91,7 @@ class EnterprisePlatformKeysInternalGetTokensFunction
   ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
   ResponseAction Run() override;
 
-  void OnGetKeyStores(crosapi::mojom::DEPRECATED_GetKeyStoresResultPtr result);
+  void OnGetKeyStores(crosapi::mojom::GetKeyStoresResultPtr result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
                              ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
 };
