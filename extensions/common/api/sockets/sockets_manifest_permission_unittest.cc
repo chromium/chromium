@@ -9,6 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,10 +105,8 @@ static testing::AssertionResult CheckFormat(
         CheckFormatEntry(it->pattern().type, it->GetHostPatternAsString()));
   }
 
-  if (!std::equal(
-          permissions.begin(), permissions.end(), parsed_permissions.begin())) {
+  if (!base::ranges::equal(permissions, parsed_permissions))
     return testing::AssertionFailure() << "Incorrect socket operations.";
-  }
   return testing::AssertionSuccess();
 }
 

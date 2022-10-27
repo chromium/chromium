@@ -5,11 +5,13 @@
 #include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
 
 #include <stdint.h>
+
 #include <map>
 #include <string>
 
 #include "base/format_macros.h"
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -348,9 +350,8 @@ void VerifyExtensionMetadata(
         [](const ::flatbuffers::Vector<
                ::flatbuffers::Offset<flat::ModifyHeaderInfo>>* metadata_headers,
            const std::vector<dnr_api::ModifyHeaderInfo>& indexed_headers) {
-          return std::equal(indexed_headers.begin(), indexed_headers.end(),
-                            ToVector(metadata_headers).begin(),
-                            EqualsForTesting);
+          return base::ranges::equal(
+              indexed_headers, ToVector(metadata_headers), EqualsForTesting);
         };
 
     EXPECT_TRUE(are_header_modifications_equal(

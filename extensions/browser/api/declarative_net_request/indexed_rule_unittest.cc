@@ -11,6 +11,7 @@
 #include "base/format_macros.h"
 #include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -944,12 +945,12 @@ TEST_F(IndexedRuleTest, ModifyHeadersParsing) {
     EXPECT_EQ(dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS,
               indexed_rule.action_type);
 
-    EXPECT_TRUE(std::equal(
-        expected_request_headers.begin(), expected_request_headers.end(),
-        indexed_rule.request_headers.begin(), EqualsForTesting));
-    EXPECT_TRUE(std::equal(
-        expected_response_headers.begin(), expected_response_headers.end(),
-        indexed_rule.response_headers.begin(), EqualsForTesting));
+    EXPECT_TRUE(base::ranges::equal(expected_request_headers,
+                                    indexed_rule.request_headers,
+                                    EqualsForTesting));
+    EXPECT_TRUE(base::ranges::equal(expected_response_headers,
+                                    indexed_rule.response_headers,
+                                    EqualsForTesting));
   }
 }
 
