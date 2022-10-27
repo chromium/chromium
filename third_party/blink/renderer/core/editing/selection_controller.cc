@@ -153,6 +153,11 @@ void MarkSelectionEndpointsForRepaint(const SelectionInFlatTree& selection) {
   }
 }
 
+bool IsNonSelectable(const Node* node) {
+  LayoutObject* layout_object = node ? node->GetLayoutObject() : nullptr;
+  return !layout_object || !layout_object->IsSelectable();
+}
+
 }  // namespace
 
 SelectionInFlatTree AdjustSelectionWithTrailingWhitespace(
@@ -176,6 +181,61 @@ SelectionInFlatTree AdjustSelectionWithTrailingWhitespace(
   }
   return SelectionInFlatTree::Builder(selection)
       .SetBaseAndExtent(new_end, selection.Extent())
+      .Build();
+}
+
+SelectionInFlatTree AdjustSelectionByUserSelect(
+    Node* anchor_node,
+    const SelectionInFlatTree& selection) {
+  DCHECK(anchor_node);
+
+  if (selection.IsNone())
+    return SelectionInFlatTree();
+
+  SelectionInFlatTree expanded_selection =
+      ExpandSelectionToRespectUserSelectAll(anchor_node, selection);
+
+  PositionInFlatTree base = expanded_selection.Base();
+  PositionInFlatTree new_start_pos =
+      PositionInFlatTree::FirstPositionInNode(*anchor_node);
+  for (PositionIteratorInFlatTree iter =
+           PositionIteratorInFlatTree(new_start_pos);
+       !iter.AtStart(); iter.Decrement()) {
+    PositionInFlatTree current_pos = iter.ComputePosition();
+    if (current_pos <= base) {
+      new_start_pos = base;
+      break;
+    }
+
+    if (IsNonSelectable(iter.GetNode())) {
+      new_start_pos = current_pos;
+      break;
+    }
+  }
+
+  PositionInFlatTree extent = expanded_selection.Extent();
+  PositionInFlatTree new_end_pos =
+      PositionInFlatTree::LastPositionInNode(*anchor_node);
+  for (PositionIteratorInFlatTree iter =
+           PositionIteratorInFlatTree(new_end_pos);
+       !iter.AtEnd(); iter.Increment()) {
+    PositionInFlatTree current_pos = iter.ComputePosition();
+    if (current_pos >= extent) {
+      new_end_pos = extent;
+      break;
+    }
+
+    if (IsNonSelectable(iter.GetNode())) {
+      new_end_pos = current_pos;
+      break;
+    }
+  }
+
+  return SelectionInFlatTree::Builder()
+      .Collapse(
+          MostBackwardCaretPosition(new_start_pos, kCannotCrossEditingBoundary))
+      .Extend(
+          MostForwardCaretPosition(new_end_pos, kCannotCrossEditingBoundary))
       .Build();
 }
 
@@ -969,14 +1029,14 @@ bool SelectionController::HandleTripleClick(
                 SelectionInFlatTree::Builder().Collapse(pos).Build(),
                 TextGranularity::kParagraph)
           : SelectionInFlatTree();
+  const SelectionInFlatTree adjusted_selection =
+      AdjustSelectionByUserSelect(inner_node, new_selection);
 
   const bool is_handle_visible =
       event.Event().FromTouch() && new_selection.IsRange();
 
   const bool did_select = UpdateSelectionForMouseDownDispatchingSelectStart(
-      inner_node,
-      ExpandSelectionToRespectUserSelectAll(inner_node, new_selection),
-
+      inner_node, adjusted_selection,
       SetSelectionOptions::Builder()
           .SetGranularity(TextGranularity::kParagraph)
           .SetShouldShowHandle(is_handle_visible)
