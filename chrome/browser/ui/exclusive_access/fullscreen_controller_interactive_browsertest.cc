@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 // Tests mouse lock then fullscreen.
 // TODO(crbug.com/1318638): Re-enable this test
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MouseLockThenFullscreen DISABLED_MouseLockThenFullscreen
 #else
 #define MAYBE_MouseLockThenFullscreen MouseLockThenFullscreen
