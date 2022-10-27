@@ -622,7 +622,7 @@ class TestPrintViewManager : public PrintViewManager {
     print_now_result_ = PrintViewManager::PrintNow(rfh);
     return *print_now_result_;
   }
-  void ShowInvalidPrinterSettingsError() override {}
+  void ShowInvalidPrinterSettingsError() override { ShowPrintErrorDialog(); }
   bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     if (!PrintViewManager::CreateNewPrintJob(std::move(query)))
       return false;
@@ -3558,9 +3558,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
 }
 
-// https://crbug.com/1320681 flaky.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
-                       DISABLED_StartBasicPrintUseDefaultFails) {
+                       StartBasicPrintUseDefaultFails) {
   PrimeForFailInUseDefaultSettings();
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -3572,10 +3571,11 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
-  // The test will fail getting the default settings, aborting the rest of
-  // printing.  Wait for the one print job to be destroyed to ensure printing
-  // finished cleanly before completing the test.  This results in a total of
-  // 2 calls.
+  // The test sequence for this is:
+  // - Get the default settings, which fails.
+  // - The print error dialog is shown.
+  // No print job is created from such an early failure.
+  // This results in a total of 2 calls.
   SetNumExpectedMessages(/*num=*/2);
 
   StartBasicPrint(web_contents);
@@ -3584,7 +3584,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(error_dialog_shown_count(), 1u);
-  EXPECT_EQ(print_job_construction_count(), 1);
+  EXPECT_EQ(print_job_construction_count(), 0);
 }
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
