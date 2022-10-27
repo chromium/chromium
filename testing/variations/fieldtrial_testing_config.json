@@ -9320,9 +9320,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_29_7_20220919",
+                    "name": "Enabled_29_8_20221021",
                     "params": {
-                        "reporter_omaha_tag": "29.7"
+                        "reporter_omaha_tag": "29.8"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
