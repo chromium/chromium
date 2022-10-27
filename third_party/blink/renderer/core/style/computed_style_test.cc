@@ -1595,4 +1595,35 @@ TEST_F(ComputedStyleTest, BasicBuilder) {
   EXPECT_EQ(right, style->ScrollPaddingRight());
 }
 
+TEST_F(ComputedStyleTest, MoveBuilder) {
+  Length one = Length::Fixed(1.0f);
+
+  ComputedStyleBuilder builder1(*CreateComputedStyle());
+  builder1.SetScrollPaddingLeft(one);
+
+  ComputedStyleBuilder builder2(std::move(builder1));
+
+  EXPECT_FALSE(builder1.TakeStyle());
+
+  scoped_refptr<ComputedStyle> style2 = builder2.TakeStyle();
+  ASSERT_TRUE(style2);
+  EXPECT_EQ(one, style2->ScrollPaddingLeft());
+}
+
+TEST_F(ComputedStyleTest, MoveAssignBuilder) {
+  Length one = Length::Fixed(1.0f);
+
+  ComputedStyleBuilder builder1(*CreateComputedStyle());
+  builder1.SetScrollPaddingLeft(one);
+
+  ComputedStyleBuilder builder2(*CreateComputedStyle());
+  builder2 = std::move(builder1);
+
+  EXPECT_FALSE(builder1.TakeStyle());
+
+  scoped_refptr<ComputedStyle> style2 = builder2.TakeStyle();
+  ASSERT_TRUE(style2);
+  EXPECT_EQ(one, style2->ScrollPaddingLeft());
+}
+
 }  // namespace blink

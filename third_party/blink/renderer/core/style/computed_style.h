@@ -3006,6 +3006,10 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   explicit ComputedStyleBuilder(const ComputedStyle& style) {
     SetStyle(ComputedStyle::Clone(style));
   }
+  ComputedStyleBuilder(const ComputedStyleBuilder& builder) = delete;
+  ComputedStyleBuilder(ComputedStyleBuilder&&) = default;
+  ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
+  ComputedStyleBuilder& operator=(ComputedStyleBuilder&&) = default;
 
   // TODO(crbug.com/1377295): Eventually remove these functions.
   ComputedStyle* MutableInternalStyle() const { return style_.get(); }
