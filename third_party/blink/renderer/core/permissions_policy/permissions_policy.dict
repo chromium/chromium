@@ -6,6 +6,7 @@
 "ambient-light-sensor"
 "autoplay"
 "camera"
+"compute-pressure"
 "document-domain"
 "document-write"
 "encrypted-media"

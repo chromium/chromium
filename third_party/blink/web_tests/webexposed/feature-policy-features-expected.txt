@@ -29,6 +29,7 @@ ch-viewport-width
 ch-width
 clipboard-read
 clipboard-write
+compute-pressure
 cross-origin-isolated
 direct-sockets
 display-capture

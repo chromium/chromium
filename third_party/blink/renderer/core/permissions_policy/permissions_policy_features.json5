@@ -201,6 +201,11 @@
       permissions_policy_name: "clipboard-write",
     },
     {
+      name: "ComputePressure",
+      permissions_policy_name: "compute-pressure",
+      depends_on: ["ComputePressure"],
+    },
+    {
       name: "CrossOriginIsolated",
       permissions_policy_name: "cross-origin-isolated",
     },

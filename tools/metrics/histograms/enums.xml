@@ -42273,6 +42273,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="103" label="SharedStorage"/>
   <int value="104" label="Unload"/>
   <int value="105" label="ClientHintPrefersReducedMotion"/>
+  <int value="106" label="ComputePressure"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
