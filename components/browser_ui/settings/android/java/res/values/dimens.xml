@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <dimen name="pref_spinner_padding_end">8dp</dimen>
     <dimen name="long_summary_text_message_preference_padding_bottom">16sp</dimen>
+    <dimen name="managed_by_icon_size">24dp</dimen>
+    <dimen name="pref_spinner_padding_end">8dp</dimen>
 </resources>

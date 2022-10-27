@@ -17,6 +17,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
 
@@ -124,13 +125,8 @@ public class ManagedPreferencesUtils {
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         if (delegate == null) return;
 
-        if (!(preference instanceof ChromeImageViewPreference)) {
-            if (SettingsFeatureList.isEnabled(
-                        SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID)) {
-                preference.setIcon(null);
-            } else {
-                preference.setIcon(getManagedIconDrawable(delegate, preference));
-            }
+        if (shouldApplyManagedIcon(delegate, preference)) {
+            preference.setIcon(getManagedIconDrawable(delegate, preference));
         }
 
         if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
@@ -196,15 +192,19 @@ public class ManagedPreferencesUtils {
         TextView summaryView = view.findViewById(android.R.id.summary);
         CharSequence descriptionText =
                 summaryView.getVisibility() == View.VISIBLE ? summaryView.getText() : null;
-        CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
         // Fallback to the old UI if the managed disclaimer view doesn't exist, which may happen if
         // a {@link ChromeBasePreference} defines its own layout.
-        // TODO(crbug.com/1356748): Remove this fallback once all custom layouts for {@link
-        // ChromeBasePreference} and subclasses include the managed disclaimer view.
-        if (view.findViewById(R.id.managed_disclaimer_text) != null) {
-            setSummaryWithHighlightedManagedInfo(
-                    preference.getContext(), descriptionText, managedDisclaimerText, view);
+        // Highlighted managed disclaimers only apply to preferences managed by policy. For
+        // preferences managed by a custodian, fallback to the legacy UI.
+        // TODO(crbug.com/1356748): Remove this fallback once all custom layouts for all affected
+        //                          preferences include the managed disclaimer view.
+        // TODO(crbug.com/1378293): Apply highlighted managed disclaimer for preferences managed
+        //                          by a custodian.
+        if (view.findViewById(R.id.managed_disclaimer_text) != null
+                && delegate.isPreferenceControlledByPolicy(preference)) {
+            setSummaryWithHighlightedManagedInfo(preference.getContext(), descriptionText, view);
         } else {
+            CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
             setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
         }
     }
@@ -297,28 +297,26 @@ public class ManagedPreferencesUtils {
                                             managedDisclaimerText),
                     view);
         }
+
+        // Explicitly hide the disclaimer view in case it was previously visible in a {@link View}
+        // recycled by a {@link RecyclerView}.
+        hideManagedDisclaimerView(view);
     }
 
     /**
      * @param context The context for a given preference.
      * @param descriptionText A description or a state for a given preference.
-     * @param managedDisclaimerText The text the indicates that a preference is managed.
      * @param view The view corresponding to a given preference.
      */
-    private static void setSummaryWithHighlightedManagedInfo(Context context,
-            @Nullable CharSequence descriptionText, @Nullable CharSequence managedDisclaimerText,
-            View view) {
+    private static void setSummaryWithHighlightedManagedInfo(
+            Context context, @Nullable CharSequence descriptionText, View view) {
         if (TextUtils.isEmpty(descriptionText)) {
             hideSummaryView(view);
         } else {
             showSummaryViewWithText(descriptionText, view);
         }
 
-        if (TextUtils.isEmpty(managedDisclaimerText)) {
-            hideManagedDisclaimerView(view);
-        } else {
-            showManagedDisclaimerView(view, managedDisclaimerText);
-        }
+        showManagedDisclaimerView(view);
     }
 
     /**
@@ -366,6 +364,7 @@ public class ManagedPreferencesUtils {
     /**
      * Sets the text to be shown in the summary view for a preference, and makes the summary view
      * visible.
+     * @param summary The text to show in the {@code summary} view.
      * @param view The view corresponding to the preference.
      */
     private static void showSummaryViewWithText(@Nullable CharSequence summary, View view) {
@@ -376,30 +375,49 @@ public class ManagedPreferencesUtils {
 
     /**
      * Removes the disclaimer view from the preference's view, if it exists.
-     * @param context The context for a given preference.
      * @param view The view corresponding to the preference.
      */
     private static void hideManagedDisclaimerView(View view) {
         View managedDisclaimerView = view.findViewById(R.id.managed_disclaimer_text);
-        assert managedDisclaimerView
-                != null : "Missing managed disclaimer view; custom layout for a new preference?";
-        managedDisclaimerView.setVisibility(View.GONE);
+        if (managedDisclaimerView != null) {
+            managedDisclaimerView.setVisibility(View.GONE);
+        }
     }
 
     /**
      * Sets the text to be shown in the managed disclaimer view for a preference.
-     * @param context The context for a given preference.
      * @param view The view corresponding to the preference.
-     * @param managedDisclaimerText The text to be shown as a disclaimer that a preference is
-     *         managed.
      */
-    private static void showManagedDisclaimerView(
-            View view, @Nullable CharSequence managedDisclaimerText) {
-        TextView managedDisclaimerView = view.findViewById(R.id.managed_disclaimer_text);
+    private static void showManagedDisclaimerView(View view) {
+        TextViewWithCompoundDrawables managedDisclaimerView =
+                view.findViewById(R.id.managed_disclaimer_text);
         assert managedDisclaimerView
                 != null : "Missing managed disclaimer view; custom layout for a new preference?";
-        managedDisclaimerView.setText(managedDisclaimerText);
         managedDisclaimerView.setVisibility(View.VISIBLE);
         managedDisclaimerView.setEnabled(true);
+    }
+
+    /**
+     * @param delegate The delegate that controls whether the preference is managed. May be null,
+     *         then this method does nothing.
+     * @param preference The Preference that is being initialized
+     * @return Whether the preference's {@code icon} view should show a special managed icon.
+     */
+    private static boolean shouldApplyManagedIcon(
+            @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
+        // Never replace the icon for {@link ChromeImageViewPreference}.
+        if (preference instanceof ChromeImageViewPreference) return false;
+
+        // Preferences managed by a custodian use the legacy UI that doesn't highlight the managed
+        // disclaimer, and thus should show the managed icon beside the title and summary.
+        // TODO(crbug.com/1378293): Apply highlighted managed disclaimer for preferences managed
+        //                          by a custodian.
+        if (delegate.isPreferenceControlledByCustodian(preference)) return true;
+
+        // For preferences controlled by policy, show the managed icon beside the title/summary
+        // only for the legacy UI. For the UI that highlights managed disclaimers, the icon will
+        // be shown next to the disclaimer text, hide it from the preference's view.
+        return !SettingsFeatureList.isEnabled(
+                SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID);
     }
 }

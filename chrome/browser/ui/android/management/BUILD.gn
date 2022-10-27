@@ -30,7 +30,6 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/enterprise_icon.xml",
     "java/res/drawable/enterprise_phone.xml",
     "java/res/drawable/enterprise_user_circle.xml",
     "java/res/layout/enterprise_management.xml",

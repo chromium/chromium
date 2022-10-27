@@ -15,6 +15,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
@@ -23,6 +25,9 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableList;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -109,9 +114,8 @@ public class ChromeBasePreferenceTest {
         getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
         if (mEnableHighlightManagedPrefDisclaimerAndroid) {
             getManagedDisclaimerView().check(
-                    matches(allOf(withText(R.string.managed_by_your_organization), isDisplayed())));
-            // TODO(crbug.com/1356748): Test is there is an icon in the managed disclaimer view when
-            // the new icon is added.
+                    matches(allOf(withText(R.string.managed_by_your_organization),
+                            hasDrawableStart(), isDisplayed())));
             getIconView().check(matches(not(isDisplayed())));
         } else {
             getSummaryView().check(
@@ -135,9 +139,8 @@ public class ChromeBasePreferenceTest {
         if (mEnableHighlightManagedPrefDisclaimerAndroid) {
             getSummaryView().check(matches(allOf(withText(SUMMARY), isDisplayed())));
             getManagedDisclaimerView().check(
-                    matches(allOf(withText(R.string.managed_by_your_organization), isDisplayed())));
-            // TODO(crbug.com/1356748): Test is there is an icon in the managed disclaimer view when
-            // the new icon is added.
+                    matches(allOf(withText(R.string.managed_by_your_organization),
+                            hasDrawableStart(), isDisplayed())));
             getIconView().check(matches(not(isDisplayed())));
         } else {
             List<String> expectedSummaryContains = ImmutableList.of(
@@ -160,18 +163,9 @@ public class ChromeBasePreferenceTest {
         Assert.assertFalse(preference.isEnabled());
 
         getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            getManagedDisclaimerView().check(
-                    matches(allOf(withText(R.string.managed_by_your_parent), isDisplayed())));
-            getSummaryView().check(matches(not(isDisplayed())));
-            // TODO(crbug.com/1356748): Test is there is an icon in the managed disclaimer view when
-            // the new icon is added.
-            getIconView().check(matches(not(isDisplayed())));
-        } else {
-            getSummaryView().check(
-                    matches(allOf(withText(R.string.managed_by_your_parent), isDisplayed())));
-            getIconView().check(matches(isDisplayed()));
-        }
+        getSummaryView().check(
+                matches(allOf(withText(R.string.managed_by_your_parent), isDisplayed())));
+        getIconView().check(matches(isDisplayed()));
     }
 
     @Test
@@ -186,18 +180,9 @@ public class ChromeBasePreferenceTest {
         Assert.assertFalse(preference.isEnabled());
 
         getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            getManagedDisclaimerView().check(
-                    matches(allOf(withText(R.string.managed_by_your_parents), isDisplayed())));
-            getSummaryView().check(matches(not(isDisplayed())));
-            // TODO(crbug.com/1356748): Test is there is an icon in the managed disclaimer view when
-            // the new icon is added.
-            getIconView().check(matches(not(isDisplayed())));
-        } else {
-            getSummaryView().check(
-                    matches(allOf(withText(R.string.managed_by_your_parents), isDisplayed())));
-            getIconView().check(matches(isDisplayed()));
-        }
+        getSummaryView().check(
+                matches(allOf(withText(R.string.managed_by_your_parents), isDisplayed())));
+        getIconView().check(matches(isDisplayed()));
     }
 
     private ViewInteraction getTitleView() {
@@ -214,6 +199,20 @@ public class ChromeBasePreferenceTest {
 
     private ViewInteraction getIconView() {
         return onView(withId(android.R.id.icon));
+    }
+
+    private static Matcher<View> hasDrawableStart() {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            protected boolean matchesSafely(View view) {
+                return ((TextView) view).getCompoundDrawablesRelative()[0] != null;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Expected TextView to define android:drawableStart");
+            }
+        };
     }
 
     @ParameterAnnotations.ClassParameter

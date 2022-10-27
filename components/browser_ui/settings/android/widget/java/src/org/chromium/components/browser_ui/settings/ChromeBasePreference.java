@@ -93,6 +93,7 @@ public class ChromeBasePreference extends Preference {
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
         Drawable icon = getIcon();
         if (icon != null && mIconTint != null) {
             icon.setColorFilter(mIconTint.getDefaultColor(), PorterDuff.Mode.SRC_IN);

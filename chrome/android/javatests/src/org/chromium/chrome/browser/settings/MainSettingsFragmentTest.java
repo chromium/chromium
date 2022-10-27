@@ -675,7 +675,9 @@ public class MainSettingsFragmentTest {
                                 new SpanInfo("<new>", "</new>"))
                         .trim();
         onViewWaiting(allOf(withText(prefTitleWithoutNewLabel),
-                not(hasSibling(withText(R.string.managed_by_your_organization))), isDisplayed()));
+                not(hasSibling(
+                        allOf(withText(R.string.managed_by_your_organization), isDisplayed()))),
+                isDisplayed()));
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 
@@ -712,7 +714,9 @@ public class MainSettingsFragmentTest {
     public void passwordsItemEnabledWhenManagedWithoutUPM() {
         launchSettingsActivity();
         onViewWaiting(allOf(withText(R.string.password_settings_title),
-                not(hasSibling(withText(R.string.managed_by_your_organization))), isDisplayed()));
+                not(hasSibling(
+                        allOf(withText(R.string.managed_by_your_organization), isDisplayed()))),
+                isDisplayed()));
         Assert.assertTrue(mMainSettings.findPreference(MainSettings.PREF_PASSWORDS).isEnabled());
     }
 
