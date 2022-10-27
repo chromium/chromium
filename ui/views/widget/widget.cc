@@ -193,11 +193,15 @@ Widget::~Widget() {
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
     delete native_widget_;
     DCHECK(native_widget_destroyed_);
-  } else {
+  } else if (ownership_ == InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
     // TODO(crbug.com/937381): Revert to DCHECK once we figure out the reason.
     CHECK(native_widget_destroyed_)
         << "Destroying a widget with a live native widget. "
         << "Widget probably should use WIDGET_OWNS_NATIVE_WIDGET ownership.";
+  } else {
+    DCHECK_EQ(ownership_, InitParams::CLIENT_OWNS_WIDGET);
+    if (native_widget_ && !native_widget_destroyed_)
+      native_widget_->Close();
   }
   // Destroy RootView after the native widget, so in case the WidgetDelegate is
   // a View in the RootView hierarchy it gets destroyed as a WidgetDelegate

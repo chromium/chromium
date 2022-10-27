@@ -954,6 +954,40 @@ TEST_F(WidgetOwnsNativeWidgetTest, IdempotentCloseNow) {
   RunPendingMessages();
 }
 
+// Test for CLIENT_OWNS_WIDGET. The client holds a unique_ptr<Widget>.
+// The NativeWidget will be destroyed when the platform window is closed.
+class ClientOwnsWidgetTest : public WidgetOwnershipTest {
+ public:
+  ClientOwnsWidgetTest() = default;
+  ~ClientOwnsWidgetTest() override = default;
+
+  void TearDown() override {
+    EXPECT_TRUE(state_.widget_deleted);
+    EXPECT_TRUE(state_.native_widget_deleted);
+
+    WidgetOwnershipTest::TearDown();
+  }
+
+  OwnershipTestState* state() { return &state_; }
+
+ private:
+  OwnershipTestState state_;
+};
+
+TEST_F(ClientOwnsWidgetTest, Ownership) {
+  auto widget = std::make_unique<OwnershipTestWidget>(state());
+  Widget::InitParams params = CreateParamsForTestWidget();
+  params.native_widget = CreatePlatformNativeWidgetImpl(
+      widget.get(), kStubCapture, &state()->native_widget_deleted);
+  params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
+  widget->Init(std::move(params));
+
+  widget->CloseNow();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(state()->native_widget_deleted);
+}
+
 // TODO(crbug.com/1374015): These tests will not work properly until we decouple
 // the lifetime of NativeWidget and Widget and fix the way we check for a
 // destroyed NativeWidget. Enable these tests for all platforms afterwards.

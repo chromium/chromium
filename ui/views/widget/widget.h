@@ -215,8 +215,14 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       // destroyed.
       NATIVE_WIDGET_OWNS_WIDGET,
       // Used when the Widget is owned by someone other than the NativeWidget,
-      // e.g. a scoped_ptr in tests.
-      WIDGET_OWNS_NATIVE_WIDGET
+      // e.g. a scoped_ptr in tests. Production use is discouraged because the
+      // Widget API might become unsafe after the platform window is closed.
+      WIDGET_OWNS_NATIVE_WIDGET,
+      // NOT READY FOR PRODUCTION USE.
+      // This is intended to be a safe replacement for
+      // WIDGET_OWNS_NATIVE_WIDGET.
+      // The NativeWidget will be closed along with the platform window.
+      CLIENT_OWNS_WIDGET
     };
 
     enum class ShadowType {
