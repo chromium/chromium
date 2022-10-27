@@ -211,11 +211,15 @@ class TestEnvironment:
 
         config.server_host = self.options.get("server_host", None)
         config.doc_root = serve_path(self.test_paths)
+        config.inject_script = self.inject_script
 
         return config
 
     def get_routes(self):
-        route_builder = serve.RoutesBuilder(inject_script=self.inject_script)
+        route_builder = serve.get_route_builder(
+            self.server_logger,
+            self.config.aliases,
+            self.config)
 
         for path, format_args, content_type, route in [
                 ("testharness_runner.html", {}, "text/html", "/testharness_runner.html"),
