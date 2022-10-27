@@ -160,15 +160,10 @@ class BASE_EXPORT RefCountedString : public RefCountedMemory {
 class BASE_EXPORT RefCountedString16 : public base::RefCountedMemory {
  public:
   RefCountedString16();
+  explicit RefCountedString16(std::u16string value);
 
   RefCountedString16(const RefCountedString16&) = delete;
   RefCountedString16& operator=(const RefCountedString16&) = delete;
-
-  // Constructs a RefCountedString16 object by performing a swap.
-  static scoped_refptr<RefCountedString16> TakeString(
-      std::u16string* to_destroy);
-
-  static scoped_refptr<RefCountedString16> TakeString(std::u16string&& str);
 
   // RefCountedMemory:
   const unsigned char* front() const override;

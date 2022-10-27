@@ -96,9 +96,8 @@ void SendArcUrls(exo::DataExchangeDelegate::SendDataCallback callback,
     lines.push_back(url.spec());
   }
   // Arc requires UTF16 for data.
-  std::u16string data =
-      base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
-  std::move(callback).Run(base::RefCountedString16::TakeString(&data));
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString16>(
+      base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator))));
 }
 
 void SendAfterShare(ui::EndpointType target,
@@ -108,10 +107,10 @@ void SendAfterShare(ui::EndpointType target,
   scoped_refptr<base::RefCountedMemory> data;
   if (target == ui::EndpointType::kArc) {
     // Arc uses utf-16 data.
-    std::u16string utf16 = base::UTF8ToUTF16(joined);
-    data = base::RefCountedString16::TakeString(&utf16);
+    data = base::MakeRefCounted<base::RefCountedString16>(
+        base::UTF8ToUTF16(joined));
   } else {
-    data = base::RefCountedString::TakeString(&joined);
+    data = base::MakeRefCounted<base::RefCountedString>(std::move(joined));
   }
 
   std::move(callback).Run(data);

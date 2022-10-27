@@ -96,19 +96,8 @@ RefCountedString16::RefCountedString16() = default;
 
 RefCountedString16::~RefCountedString16() = default;
 
-// static
-scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
-    std::u16string* to_destroy) {
-  return TakeString(std::move(*to_destroy));
-}
-
-// static
-scoped_refptr<RefCountedString16> RefCountedString16::TakeString(
-    std::u16string&& str) {
-  auto self = MakeRefCounted<RefCountedString16>();
-  str.swap(self->data_);
-  return self;
-}
+RefCountedString16::RefCountedString16(std::u16string str)
+    : data_(std::move(str)) {}
 
 const unsigned char* RefCountedString16::front() const {
   return reinterpret_cast<const unsigned char*>(data_.data());
