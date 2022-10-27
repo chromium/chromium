@@ -11,8 +11,6 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":audio_and_captions_page",
-    ":audio_and_captions_page_browser_proxy",
     ":change_dictation_locale_dialog",
     ":cursor_and_touchpad_page",
     ":cursor_and_touchpad_page_browser_proxy",
@@ -143,25 +141,6 @@ js_library("cursor_and_touchpad_page") {
 }
 
 js_library("cursor_and_touchpad_page_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("audio_and_captions_page") {
-  deps = [
-    ":audio_and_captions_page_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
-    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-  ]
-}
-
-js_library("audio_and_captions_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -300,7 +279,6 @@ html_to_js("web_components") {
     "display_and_magnification_page.js",
     "keyboard_and_text_input_page.js",
     "cursor_and_touchpad_page.js",
-    "audio_and_captions_page.js",
     "os_a11y_page.js",
     "switch_access_action_assignment_dialog.js",
     "switch_access_action_assignment_pane.js",
