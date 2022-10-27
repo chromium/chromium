@@ -136,7 +136,8 @@
             on-click="onBlockNotificationPermissionClick_"
             aria-label$="[[getBlockAriaLabelForOrigin(item.origin)]]"
             focus-row-control focus-type="show-detail"
-            on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
+            on-mouseenter="onShowTooltip_" on-focus="onShowTooltip_" actionable>
+        </cr-icon-button>
         <cr-icon-button id="actionMenuButton" class="icon-more-vert"
             on-click="onShowActionMenuClick_"
             aria-label$="[[getMoreActionsAriaLabel_(item.origin]]"
@@ -167,7 +168,8 @@
 </template>
 <cr-toast id="undoToast" duration="5000">
   <div id="undoNotification">[[toastText_]]</div>
-  <cr-button aria-label="$i18n{undoDescription}" on-click="onUndoButtonClick_">
+  <cr-button aria-label="$i18n{safetyCheckNotificationPermissionReviewUndo}" 
+      on-click="onUndoButtonClick_">
     $i18n{safetyCheckNotificationPermissionReviewUndo}
   </cr-button>
 </cr-toast>

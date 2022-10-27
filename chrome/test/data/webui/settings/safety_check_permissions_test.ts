@@ -94,13 +94,17 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
     await PluralStringProxyImpl.getInstance().getPluralString(
         'safetyCheckNotificationPermissionReviewHeaderLabel', mockData.length);
 
+    await PluralStringProxyImpl.getInstance().getPluralString(
+        'safetyCheckNotificationPermissionReviewPrimaryLabel', mockData.length);
+
     // Ensure the elements are correct.
     assertSafetyCheckChild({
       page: page,
       iconStatus: SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS,
       label: 'Review <b>2 sites</b> that recently sent a lot of notifications',
       buttonLabel: 'Review',
-      buttonAriaLabel: 'Review',
+      buttonAriaLabel:
+          'Review 2 sites that recently sent a lot of notifications',
     });
 
     // User clicks review button.
@@ -127,13 +131,17 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
     await PluralStringProxyImpl.getInstance().getPluralString(
         'safetyCheckNotificationPermissionReviewHeaderLabel', mockData.length);
 
+    await PluralStringProxyImpl.getInstance().getPluralString(
+        'safetyCheckNotificationPermissionReviewPrimaryLabel', mockData.length);
+
     // Ensure the elements are correct.
     assertSafetyCheckChild({
       page: page,
       iconStatus: SafetyCheckIconStatus.NOTIFICATION_PERMISSIONS,
       label: 'Review <b>1 site</b> that recently sent a lot of notifications',
       buttonLabel: 'Review',
-      buttonAriaLabel: 'Review',
+      buttonAriaLabel:
+          'Review 1 site that recently sent a lot of notifications',
     });
 
     // User clicks review button.
