@@ -117,6 +117,7 @@
 <translation id="1815941218935345331">קוד גישה</translation>
 <translation id="1820259098641718022">נוסף לרשימת הקריאה</translation>
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
+<translation id="1857751338515529195">מעבר לכרטיסייה הבאה</translation>
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
 <translation id="1872096359983322073">פנס</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
@@ -146,6 +147,7 @@
 <translation id="2139867232736819575">חיפוש טקסט שהעתקת</translation>
 <translation id="214201757571129614">כניסה…</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
+<translation id="2150175299852799498">‏Chrome לנייד</translation>
 <translation id="2155145621546387786">‏שיתוף Chrome</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2178545675770638239">בחירת סיסמה</translation>
@@ -225,6 +227,7 @@
 <translation id="2783054063075604403">לא ניתן ליצור את הקישור</translation>
 <translation id="2786701870377699570">חיפוש בכרטיסיות בכל המכשירים המסונכרנים</translation>
 <translation id="2800683595868705743">‏יציאה מ-Tab Switcher</translation>
+<translation id="2812727400746650635">מעבר לכרטיסייה הקודמת</translation>
 <translation id="2815198996063984598">2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל</translation>
 <translation id="2820289420301699633">‏למנהל המערכת שלך יש שליטה על Chrome וגישה לנתונים שלו</translation>
 <translation id="2830972654601096923">ניהול כתובות...</translation>
@@ -447,6 +450,7 @@
 <translation id="4630540211544979320">תרגום דפים</translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
 <translation id="4636930964841734540">מידע</translation>
+<translation id="4649294145748405669">‏Chrome מהיר יותר, בטוח יותר ומותאם אישית. אפשר להוריד אותו כאן.</translation>
 <translation id="4650125387981512669">המשך בשם <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">‏התכונה הזו מופעלת בעת הכניסה לחשבון Google.</translation>
 <translation id="4659667755519643272">‏כניסה אל Tab Switcher</translation>
@@ -614,6 +618,7 @@
 <translation id="5913600720976431809">אפשרויות לתרגום הדף</translation>
 <translation id="5938160824633642847">המכשיר שלך כמעט מלא. צריך לפנות מקום ולנסות שוב.</translation>
 <translation id="5948291296578561264">מאפשר לך לשמור תמונות בספריית התמונות.</translation>
+<translation id="5949969988218625680">הצגת ההיסטוריה</translation>
 <translation id="5951816930277761335">משתפים את הקישור</translation>
 <translation id="5955891643922670672">מוצגת גרסה לא מקוונת</translation>
 <translation id="5957613098218939406">אפשרויות נוספות</translation>
@@ -694,6 +699,7 @@
 הנתונים שלך הוצפנו ב-<ph name="TIME" /> באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="6418346271604475326">‏PDF בהכנה</translation>
 <translation id="6434591244308415567">אירעה שגיאה. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="6435817889602303010">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="6439338047467462846">‏מתן הרשאה לכל קובצי ה-cookie</translation>
 <translation id="6445051938772793705">מדינה</translation>
 <translation id="6445981559479772097">ההודעה נשלחה.</translation>
@@ -859,6 +865,7 @@
 <translation id="7720410380936703141">ניסיון חוזר</translation>
 <translation id="7726702057919861819">תפריט ← היסטוריה ← מחיקה של נתוני הגלישה</translation>
 <translation id="7741325291586284254">דף חדש של כרטיסיית מצב אנונימי</translation>
+<translation id="7743314735291715910">פתיחת המיקום…</translation>
 <translation id="7756478488453921771">תפריט ← הגדרות ← אמצעי תשלום</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>

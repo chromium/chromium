@@ -2433,6 +2433,7 @@
 <translation id="3197453258332670132">ညာဘက်ခလုတ်ကို နှိပ်လျှင် (သို့) ကြာရှည်စွာဖိထားလျှင် သင့်စာသားရွေးချယ်မှုအတွက် ဆက်စပ်သော အချက်အလက်ကို ပြနိုင်သည်</translation>
 <translation id="3199127022143353223">ဆာဗာများ</translation>
 <translation id="3200061262156232574">သင်၏ဈေးခြင်းတောင်းတွင်</translation>
+<translation id="3201237270673604992">Z မှ A</translation>
 <translation id="3201422919974259695">အသုံးပြုနိုင်သော USB စက်ပစ္စည်းများကို ဤနေရာတွင် တွေ့ရပါမည်။</translation>
 <translation id="3202131003361292969">လမ်းကြောင်း</translation>
 <translation id="3202173864863109533">ဤ တဘ်၏ အသံကို ပိတ်ထား၏။</translation>
@@ -3755,6 +3756,7 @@
 <translation id="4460014764210899310">အုပ်စု ဖွဲ့မထားပါ</translation>
 <translation id="4462159676511157176">စိတ်ကြိုက်အမည် ဆာဗာများ</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> အတွက် အချိန် <ph name="TIME" /> ကန့်သတ်ထားသည်</translation>
+<translation id="4465649939134800363">အစီအစဉ်တကျ စီရန် ရွေးစရာများ</translation>
 <translation id="4466839823729730432">သင့်အမှတ်တရများကို ဤတွင် ကြည့်ပါ</translation>
 <translation id="4469324811108161144">မှတ်ချက်များကို စာလုံးရေ <ph name="CHARACTER_LIMIT" /> လုံးအထိ သိမ်းနိုင်သည်။</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> က <ph name="FOLDERNAME" /> ထဲရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
@@ -6267,6 +6269,7 @@
 <translation id="6843264316370513305">ကွန်ရက် အမှားရှာပြင်ခြင်း</translation>
 <translation id="6843423766595476978">Ok Google သည် အဆင်သင့်ဖြစ်ပါပြီ</translation>
 <translation id="6845038076637626672">အကြီးချဲ့ ဖွင့်</translation>
+<translation id="6845231585063669905">A မှ Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" က <ph name="FILE_NAME" /> ကို <ph name="PRINTER_NAME" /> ဖြင့် ပုံနှိပ်ထုတ်ယူလိုသည်။</translation>
 <translation id="6847125920277401289">ရှေ့ဆက်ရန် နေရာလွတ်ပြုလုပ်ပါ</translation>
 <translation id="6848388270925200958">လက်ရှိတွင် ဤစက်ပစ္စည်းပေါ်၌ အသုံးပြုနိုင်သည့် ကတ်အချို့သာရှိပါသည်</translation>
@@ -7421,6 +7424,7 @@
 <translation id="7939073735115504773"><ph name="HOST" /> ကို ဖတ်ပြီးပြောင်းရန် ဤနောက်ဆက်တွဲ၏ သင်္ကေတကို နှိပ်နိုင်သည်</translation>
 <translation id="7939328347457537652">စက်အသိအမှတ်ပြုခြင်းများကို စီမံရန်</translation>
 <translation id="7939412583708276221">မည်သို့ပင်ဖြစ်စေ သိမ်းရန်</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> အလိုက်စီရန်</translation>
 <translation id="7941179291434537290">မိုဘိုင်းသုံးတွဲချိတ်မှု အသင့်ပြင်ခြင်း-</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>
 <translation id="7943368935008348579">PDF များ ဒေါင်းလုဒ်လုပ်ရန်</translation>

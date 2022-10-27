@@ -117,7 +117,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1815941218935345331">Šifra</translation>
 <translation id="1820259098641718022">Dodano u listu za čitanje</translation>
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
-<translation id="1857751338515529195">Prelazak na sljedeću karticu</translation>
+<translation id="1857751338515529195">Odlazak na sljedeću karticu</translation>
 <translation id="1870148520156231997">Otkrij lozinku</translation>
 <translation id="1872096359983322073">Svjetiljka</translation>
 <translation id="1891796056033961979">Vaše sačuvane oznake, lozinke, postavke i druge stvari su sada dostupne s ovog ekrana.</translation>
@@ -138,6 +138,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="202292859882676807">Pristup mikrofonu je dozvoljen</translation>
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
+<translation id="207803097150348092">Prikaži oznake</translation>
 <translation id="2079545284768500474">Vrati</translation>
 <translation id="2080769225927880590">Prijavite se pomoću važećeg računa</translation>
 <translation id="209018056901015185">Zatraži verziju web lokacije za računar</translation>
@@ -148,7 +149,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2139867232736819575">Pretraži kopirani tekst</translation>
 <translation id="214201757571129614">Prijava…</translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
-<translation id="2150175299852799498">Chrome za mobilne uređaje</translation>
+<translation id="2150175299852799498">Chrome za mobilni uređaj</translation>
 <translation id="2155145621546387786">Dijelite Chrome</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="2178545675770638239">Odaberite lozinku</translation>
@@ -228,7 +229,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2783054063075604403">Nije moguće kreirati link</translation>
 <translation id="2786701870377699570">Pretražite kartice na svim sinhroniziranim uređajima</translation>
 <translation id="2800683595868705743">Napuštanje prebacivača kartica</translation>
-<translation id="2812727400746650635">Prelazak na prethodnu karticu</translation>
+<translation id="2812727400746650635">Odlazak na prethodnu karticu</translation>
 <translation id="2815198996063984598">2. Dodirnite Zadana aplikacija preglednika</translation>
 <translation id="2820289420301699633">Vaš administrator ima kontrolu nad Chromeom i može pristupati njegovim podacima</translation>
 <translation id="2830972654601096923">Upravljajte adresama...</translation>
@@ -453,7 +454,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4630540211544979320">Prevedi stranice</translation>
 <translation id="4634124774493850572">Koristi lozinku</translation>
 <translation id="4636930964841734540">Informacije</translation>
-<translation id="4649294145748405669">Chrome je brži, sigurniji, prilagođen vama. Preuzmite ga ovdje.</translation>
+<translation id="4649294145748405669">Chrome je brži i sigurniji i može biti vaš. Preuzmite ga ovdje.</translation>
 <translation id="4650125387981512669">Nastavite kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Kada se prijavite na Google račun, ova funkcija se uključuje.</translation>
 <translation id="4659667755519643272">Ulazak u prebacivač kartica</translation>
@@ -622,7 +623,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5913600720976431809">Opcije za prijevod stranice</translation>
 <translation id="5938160824633642847">Vaš uređaj je skoro pun. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="5948291296578561264">Ovo vam omogućava da sačuvate fotografije u biblioteku fotografija.</translation>
-<translation id="5949969988218625680">Prikaži povijest</translation>
+<translation id="5949969988218625680">Prikazivanje historije</translation>
 <translation id="5951816930277761335">Podijelite link</translation>
 <translation id="5955891643922670672">Prikaz verzije van mreže</translation>
 <translation id="5957613098218939406">Više opcija</translation>
@@ -703,7 +704,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 Vaši podaci su šifrirani sinhroniziranim pristupnim izrazom <ph name="TIME" />. Unesite izraz da započnete sinhronizaciju.</translation>
 <translation id="6418346271604475326">Pripremanje PDF-a</translation>
 <translation id="6434591244308415567">Došlo je do greške. Pokušajte ponovo kasnije.</translation>
-<translation id="6435817889602303010">Ponovno otvori posljednju zatvorenu karticu</translation>
+<translation id="6435817889602303010">Ponovno otvaranje posljednje zatvorene kartice</translation>
 <translation id="6439338047467462846">Dozvoli sve</translation>
 <translation id="6445051938772793705">Zemlja</translation>
 <translation id="6445981559479772097">Poruka je poslana.</translation>
@@ -870,7 +871,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7720410380936703141">POKUŠAJTE PONOVO</translation>
 <translation id="7726702057919861819">Meni → Historija → Obriši podatke pregledanja</translation>
 <translation id="7741325291586284254">Nova stranica anonimne kartice</translation>
-<translation id="7743314735291715910">Otvori lokaciju...</translation>
+<translation id="7743314735291715910">Otvaranje lokacije…</translation>
 <translation id="7756478488453921771">Meni → Postavke → Načini plaćanja</translation>
 <translation id="7765158879357617694">Pomjeri</translation>
 <translation id="7772032839648071052">Potvrdite pristupni izraz</translation>

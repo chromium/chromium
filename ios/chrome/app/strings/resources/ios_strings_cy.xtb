@@ -117,6 +117,7 @@
 <translation id="1815941218935345331">Cyfrinair</translation>
 <translation id="1820259098641718022">Ychwanegwyd at y Rhestr Ddarllen</translation>
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
+<translation id="1857751338515529195">Mynd i'r Tab Nesaf</translation>
 <translation id="1870148520156231997">Datgelu'r Cyfrinair</translation>
 <translation id="1872096359983322073">Tortsh</translation>
 <translation id="1891796056033961979">Mae eich nodau tudalen, cyfrineiriau, gosodiadau a rhagor sydd wedi'u cadw ar gael o'r sgrîn hon.</translation>
@@ -147,6 +148,7 @@
 <translation id="2139867232736819575">Chwilio am Destun y Gwnaethoch ei Gopïo</translation>
 <translation id="214201757571129614">Mewngofnodi…</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
+<translation id="2150175299852799498">Chrome ar gyfer Dyfeisiau Symudol</translation>
 <translation id="2155145621546387786">Rhannu Chrome</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2178545675770638239">Dewiswch Gyfrinair</translation>
@@ -226,6 +228,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2783054063075604403">Methu â Chreu Dolen</translation>
 <translation id="2786701870377699570">Chwilio Tabiau ar draws Dyfeisiau sydd wedi'u Cysoni</translation>
 <translation id="2800683595868705743">Gadael y Newidiwr Tabiau</translation>
+<translation id="2812727400746650635">Mynd i'r Tab Blaenorol</translation>
 <translation id="2815198996063984598">2. Tapiwch Ap Pori Diofyn</translation>
 <translation id="2820289420301699633">Mae gan eich gweinyddwr reolaeth dros Chrome a gall gael mynediad at ei ddata</translation>
 <translation id="2830972654601096923">Rheoli Cyfeiriadau...</translation>
@@ -450,6 +453,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4630540211544979320">Cyfieithu Tudalennau</translation>
 <translation id="4634124774493850572">Defnyddio cyfrinair</translation>
 <translation id="4636930964841734540">Gwybodaeth</translation>
+<translation id="4649294145748405669">Mae Chrome yn gyflymach, yn fwy diogel ac yn bersonol. Lawrlwythwch ef yma.</translation>
 <translation id="4650125387981512669">Parhau fel <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Pan fyddwch yn mewngofnodi i'ch Cyfrif Google, mae'r nodwedd hon yn cael ei droi ymlaen.</translation>
 <translation id="4659667755519643272">Rhowch Newidydd Tabiau</translation>
@@ -618,6 +622,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5913600720976431809">Dewisiadau i Gyfieithu'r dudalen</translation>
 <translation id="5938160824633642847">Mae'ch dyfais bron yn llawn. Crëwch ragor o le a rhowch gynnig arall arni.</translation>
 <translation id="5948291296578561264">Mae hyn yn eich galluogi i gadw lluniau i'ch llyfrgell luniau.</translation>
+<translation id="5949969988218625680">Dangos Hanes</translation>
 <translation id="5951816930277761335">Rhannu'r Ddolen</translation>
 <translation id="5955891643922670672">Dyma'r Fersiwn All-lein</translation>
 <translation id="5957613098218939406">Rhagor o Ddewisiadau</translation>
@@ -698,6 +703,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 Amgryptiwyd eich data â'ch cyfrinair cysoni <ph name="TIME" />. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="6418346271604475326">Wrthi'n paratoi PDF</translation>
 <translation id="6434591244308415567">Bu gwall. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="6435817889602303010">Ailagor y Tab a Gaewyd Diwethaf</translation>
 <translation id="6439338047467462846">Caniatáu Pob Un</translation>
 <translation id="6445051938772793705">Gwlad</translation>
 <translation id="6445981559479772097">Anfonwyd y neges.</translation>
@@ -864,6 +870,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7720410380936703141">RHOI CYNNIG ARALL ARNI</translation>
 <translation id="7726702057919861819">Dewislen → Hanes → Clirio Data Pori</translation>
 <translation id="7741325291586284254">Tudalen Tab Anhysbys Newydd</translation>
+<translation id="7743314735291715910">Agor Lleoliad…</translation>
 <translation id="7756478488453921771">Dewislen → Gosodiadau → Dulliau Talu</translation>
 <translation id="7765158879357617694">Symud</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>

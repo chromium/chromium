@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Veličina <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Srednja ljubičasta</translation>
+<translation id="1928535370180099152">istakni prethodni znak</translation>
 <translation id="1928932365747995741">Nema prethodnog polja za unos teksta koje može da se izmeni</translation>
 <translation id="1964135212174907577">Sledeći objekat</translation>
 <translation id="1966649499058910679">Istaknite svaku reč dok se izgovovara</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Uključite ili isključite govor</translation>
 <translation id="2390264819538553347">Da biste išli unapred, pritisnite Enter. Da biste išli unazad, pritisnite taster za nazad (Backspace).</translation>
 <translation id="2398579267367951220">Unesite tekst da biste pretražili stranicu. Pritisnite Enter da biste prešli na rezultat, strelice nagore ili nadole da biste pregledali rezultate, nastavite da unosite tekst da biste promenili termin za pretragu ili pritisnite Escape da biste otkazali.</translation>
+<translation id="2407047351320112166">istakni sledeći znak</translation>
 <translation id="240709722712693803">Plavoljubičasta</translation>
 <translation id="2410298923485357543">Koristi prirodan glas kad je uređaj onlajn</translation>
 <translation id="2416512023405990736">Neoznačeno polje za potvrdu</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Prethodno polje obrasca</translation>
 <translation id="3393605254399152980">Prevucite jedan prst da biste čuli šta dodirujete</translation>
 <translation id="3406283310380167331">Prikazivanje liste obrazaca</translation>
+<translation id="3407726812456125464">Slušajte izabrani tekst</translation>
 <translation id="3414400929511680526">Beloplava</translation>
 <translation id="3418936350470374046">Nema ćelija ispod</translation>
 <translation id="3419269701801640163">nalepi</translation>

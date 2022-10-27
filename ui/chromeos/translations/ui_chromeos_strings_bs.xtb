@@ -532,7 +532,7 @@
 <translation id="5428105026674456456">Španska</translation>
 <translation id="5438282218546237410">Nema rezultata za <ph name="SEARCH_TERM" />.</translation>
 <translation id="5449551289610225147">Pogrešna lozinka</translation>
-<translation id="5459064203055649751">Datoteka s nazivom <ph name="FILENAME" /> već postoji. Želite li je zamijeniti onom koju premještate?</translation>
+<translation id="5459064203055649751">Već postoji fajl s nazivom "<ph name="FILENAME" />". Želite li ga zamijeniti fajlom koji premještate?</translation>
 <translation id="5463231940765244860">Otvori</translation>
 <translation id="5469868506864199649">italijanski</translation>
 <translation id="5473333559083690127">Ponovo unesite novi PIN</translation>

@@ -117,6 +117,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1815941218935345331">Lösenord</translation>
 <translation id="1820259098641718022">Har lagts till i läslistan</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
+<translation id="1857751338515529195">Öppna nästa flik</translation>
 <translation id="1870148520156231997">Visa lösenord</translation>
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1891796056033961979">På den här skärmen visas dina sparade bokmärken, lösenord, inställningar och annat.</translation>
@@ -147,6 +148,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2139867232736819575">Sök efter kopierad text</translation>
 <translation id="214201757571129614">Logga in …</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
+<translation id="2150175299852799498">Chrome för telefonen</translation>
 <translation id="2155145621546387786">Dela Chrome</translation>
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="2178545675770638239">Välj lösenord</translation>
@@ -226,6 +228,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2783054063075604403">Det gick inte att skapa länken</translation>
 <translation id="2786701870377699570">Sök bland flikar på synkroniserade enheter</translation>
 <translation id="2800683595868705743">Stäng funktionen för flikbyte</translation>
+<translation id="2812727400746650635">Öppna föregående flik</translation>
 <translation id="2815198996063984598">2. Tryck på Standardwebbläsarapp</translation>
 <translation id="2820289420301699633">Administratören har kontroll över Chrome och kan få åtkomst till dess data</translation>
 <translation id="2830972654601096923">Hantera adresser …</translation>
@@ -450,6 +453,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4630540211544979320">Översätt sidor</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4636930964841734540">Info</translation>
+<translation id="4649294145748405669">Chrome är snabbare, säkrare och anpassad för dig. Ladda ned den här.</translation>
 <translation id="4650125387981512669">Fortsätt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Den här funktionen är aktiverad när du loggar in på Google-kontot.</translation>
 <translation id="4659667755519643272">Öppna funktionen för flikbyte</translation>
@@ -618,6 +622,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5913600720976431809">Alternativ för att översätta sidan</translation>
 <translation id="5938160824633642847">Det finns nästan ingen plats kvar på enheten. Frigör utrymme och försök igen.</translation>
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
+<translation id="5949969988218625680">Visa historik</translation>
 <translation id="5951816930277761335">Dela länken</translation>
 <translation id="5955891643922670672">Offlineversionen visas</translation>
 <translation id="5957613098218939406">Fler alternativ</translation>
@@ -698,6 +703,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="6418346271604475326">Förbereder PDF</translation>
 <translation id="6434591244308415567">Ett fel uppstod. Försök igen senare.</translation>
+<translation id="6435817889602303010">Öppna senast stängda flik igen</translation>
 <translation id="6439338047467462846">Tillåt alla</translation>
 <translation id="6445051938772793705">Land</translation>
 <translation id="6445981559479772097">SMS skickat.</translation>
@@ -864,6 +870,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
 <translation id="7726702057919861819">Menyn → Historik → Rensa webbinformation</translation>
 <translation id="7741325291586284254">Ny fliksida i inkognitoläge</translation>
+<translation id="7743314735291715910">Öppna Plats …</translation>
 <translation id="7756478488453921771">Meny → Inställningar → Betalningsmetod</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>

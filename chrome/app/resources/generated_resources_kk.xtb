@@ -2441,6 +2441,7 @@
 <translation id="3241680850019875542">Бумаға салу үшін кеңейтімнің түпкі каталогін таңдаңыз. Кеңейтімді жаңарту үшін қайта пайдалану мақсатында жеке кілтті таңдаңыз.</translation>
 <translation id="3242289508736283383">"kiosk_only" манифест төлсипатына ие қолданба ChromeOS киоск режимінде орнатылуы тиіс.</translation>
 <translation id="3242665648857227438">Бұл профильде ChromeOS прокси параметрлері пайдаланылады.</translation>
+<translation id="3243017971870859287">ChromeOS Flex құрылғысы мен құрамдастың сериялық нөмірлерін оқу</translation>
 <translation id="3244294424315804309">Дыбысын қоспау</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – желі қатесі</translation>
 <translation id="3248902735035392926">Қауіпсіздік маңызды. Сәл уақытыңызды бөліп, <ph name="BEGIN_LINK" />кеңейтімдерді тексеріңіз<ph name="END_LINK" />.</translation>
@@ -2497,6 +2498,7 @@
 <translation id="3297105622164376095">Аккаунтқа үшінші тарап арқылы кіру хабарларының көрсетілуіне рұқсат беру</translation>
 <translation id="3297536526040732495">Google қолданбаларында сізді қорғау үшін, аккаунтқа кіріп отырғанда деректер мен аккаунтты уақытша байланыстырады.</translation>
 <translation id="329838636886466101">Жөндеу</translation>
+<translation id="3298438307450647315">ChromeOS құрылғысы туралы ақпарат пен құрылғы деректерін оқу</translation>
 <translation id="3298789223962368867">Жарамсыз URL енгізілді.</translation>
 <translation id="32991397311664836">Құрылғылар:</translation>
 <translation id="33022249435934718">GDI дескрипторлары</translation>
@@ -2603,6 +2605,7 @@
 <translation id="3402255108239926910">Аватар таңдаңыз.</translation>
 <translation id="3402585168444815892">Демо режимінде тіркелуде</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">ChromeOS Flex құрылғысы туралы ақпарат пен құрылғы деректерін оқу</translation>
 <translation id="3404065873681873169">Бұл сайт үшін ешқандай құпия сөз сақталмаған</translation>
 <translation id="3405664148539009465">Қаріптерді реттеу</translation>
 <translation id="3405763860805964263">...</translation>
@@ -4011,6 +4014,7 @@
 <translation id="4726710355753484204">Ұлғайту үшін Ctrl + Alt + жарықтықты арттыру перне тіркесімін пайдаланыңыз.
 Кішірейту үшін Ctrl + Alt + жарықтықты азайту перне тіркесімін пайдаланыңыз.</translation>
 <translation id="4726710629007580002">Бұл кеңейтімді орнату кезінде ескертулер болды:</translation>
+<translation id="472738079453283624">Өнімдер</translation>
 <translation id="4727847987444062305">Басқарылатын қонақ сеансы</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Әкімшіңіз<ph name="END_LINK" /> зиянды бағдарламалық құралдың бар-жоғын тексеруді өшіріп қойған.</translation>
@@ -4152,6 +4156,7 @@
 <translation id="486635084936119914">Белгілі бір файл түрлерін жүктеп алғаннан кейін автоматты түрде ашу</translation>
 <translation id="4868281708609571334">Google Assistant-ке <ph name="SUPERVISED_USER_NAME" /> дауысын тануды үйрету</translation>
 <translation id="4868284252360267853">Бұл диалогтік терезе әзірше ерекшеленбеген. Осы диалогтік терезені ерекшелеу үшін Command-Shift-Option A тіркесімін басыңыз.</translation>
+<translation id="4869170227080975044">ChromeOS желісі туралы ақпаратты оқу</translation>
 <translation id="4870724079713069532">Қолдау көрсетілетін файлдарды осы қолданба арқылы файл менеджерінен не басқа қолданбалар арқылы ашып, өңдей аласыз. Осы қолданбада қандай файлдардың әдепкісінше ашылатынын басқару үшін <ph name="BEGIN_LINK" />Windows параметрлеріне<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="4870758487381879312">Конфигурация туралы ақпарат алу үшін әкімші берген құпия сөзді енгізіңіз</translation>
 <translation id="4870995365819149457">Кейбір қолдау көрсету сілтемелері <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> қолданбаларында және тағы 1 қолданбада ашық болады.</translation>
@@ -4883,6 +4888,7 @@
 <translation id="5571066253365925590">Bluetooth қосылды</translation>
 <translation id="5571092938913434726">Мультимедианы басқарудың жалпы элементтері</translation>
 <translation id="5571832155627049070">Профильді реттеу</translation>
+<translation id="5572252023412311448"><ph name="SITE_GROUP" /> сайтының мәліметтерін көрсету</translation>
 <translation id="5572648434713976849">Мекенжай жолағында жақсартылған ұсыныстар аласыз.</translation>
 <translation id="5572851009514199876">Chrome браузері сіздің сайтқа кіруге рұқсатыңыз барын тексере алуы үшін Chrome жүйесін іске қосып, оған кіріңіз.</translation>
 <translation id="557506220935336383">Басқа сайттарға арналған кеңейтім рұқсаттарын көру</translation>
@@ -6063,6 +6069,7 @@
 <translation id="6703212423117969852">Кейінірек Chrome браузерінде қайталап көріңіз.</translation>
 <translation id="6703254819490889819">Сақтық көшірмені қалпына келтіру</translation>
 <translation id="6706210727756204531">Қолданыс аясы</translation>
+<translation id="6707122714992751648">ChromeOS диагностикалық сынақтарын жүргізу</translation>
 <translation id="6707389671160270963">SSL клиент сертификаты</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> және тағы 1 қойынды}other{<ph name="PAGE_TITLE" /> және тағы # қойынды}}</translation>
 <translation id="6709133671862442373">Жаңалықтар</translation>
@@ -6241,6 +6248,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="6860097299815761905">Прокси параметрлері…</translation>
 <translation id="6860427144121307915">Қойындыда ашу</translation>
+<translation id="6861179941841598556"><ph name="PROFILE_NAME" /> профилі бойынша қосымша әрекеттер</translation>
 <translation id="6863496016067551393">Барлық кеңейтімге рұқсет етілген.</translation>
 <translation id="686366188661646310">Құпия сөз жойылсын ба?</translation>
 <translation id="6865313869410766144">Нысан деректерін автотолтыру</translation>
@@ -6329,6 +6337,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Параметрлерді карта мәзірінен реттей, басқа опцияларды "Chrome браузерін реттеу" бөлімінен көре аласыз.</translation>
+<translation id="6949089178006131285">ChromeOS Flex желісінің ақпаратын оқу</translation>
 <translation id="6949434160682548041">Құпия сөз (міндетті емес)</translation>
 <translation id="6950627417367801484">Қолданбаларды қалпына келтіру</translation>
 <translation id="6952242901357037157"><ph name="BEGIN_LINK" />Google аккаунтының<ph name="END_LINK" /> құпия сөздерін осы жерде көрсетуіңізге болады.</translation>
@@ -7939,6 +7948,7 @@
 <translation id="8463001014623882202">Авторизация жасалмады</translation>
 <translation id="846374874681391779">Жүктеп алынғандар жолағы</translation>
 <translation id="8463955938112983119"><ph name="PLUGIN_NAME" /> өшірілді.</translation>
+<translation id="846399539692727039">ChromeOS Flex диагностикалық сынақтарын іске қосу</translation>
 <translation id="8464132254133862871">Бұл пайдаланушы аккаунты осы қызмет үшін жарамайды.</translation>
 <translation id="8465252176946159372">Жарамсыз</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> плагині іске қосылуы үшін рұқсатыңыз қажет</translation>
@@ -8085,6 +8095,7 @@
 <translation id="8624315169751085215">Буферге көшіру</translation>
 <translation id="8624354461147303341">Жеңілдіктер алу</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">ChromeOS құрылғысы мен құрамдастың сериялық нөмірлерін оқу</translation>
 <translation id="862542460444371744">&amp;Кеңейтімдер</translation>
 <translation id="8625663000550647058">Микрофоныңызды қолдануға рұқсаты жоқтар</translation>
 <translation id="8625916342247441948">Сайттардың HID құрылғыларына қосылуына рұқсат бермеу</translation>
