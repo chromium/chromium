@@ -52,6 +52,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementFloss
       SuccessCallback success_callback,
       device::BluetoothAdapter::AdvertisementErrorCallback error_callback);
 
+  const AdvertisingSetParameters& params() const { return params_; }
+
  protected:
   void OnStartSuccess(SuccessCallback success_callback,
                       FlossAdvertiserClient::AdvertiserId adv_id);

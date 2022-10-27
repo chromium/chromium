@@ -42,7 +42,15 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdvertiserClient
                                 SetAdvParamsSuccessCallback success_callback,
                                 ErrorCallback error_callback) override;
 
+ protected:
+  friend class BluetoothFlossTest;
+  FRIEND_TEST(BluetoothFlossTest, SetAdvertisingInterval);
+
  private:
+  uint32_t start_advertising_set_called_ = 0;
+  uint32_t stop_advertising_set_called_ = 0;
+  uint32_t set_advertising_parameters_called_ = 0;
+
   AdvertiserId adv_id_ = 0x70000000;
   base::WeakPtrFactory<FakeFlossAdvertiserClient> weak_ptr_factory_{this};
 };

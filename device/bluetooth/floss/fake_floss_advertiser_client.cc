@@ -29,6 +29,7 @@ void FakeFlossAdvertiserClient::StartAdvertisingSet(
     const int32_t max_ext_adv_events,
     StartSuccessCallback success_callback,
     ErrorCallback error_callback) {
+  start_advertising_set_called_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(success_callback), adv_id_++));
 }
@@ -37,6 +38,7 @@ void FakeFlossAdvertiserClient::StopAdvertisingSet(
     const AdvertiserId adv_id,
     StopSuccessCallback success_callback,
     ErrorCallback error_callback) {
+  stop_advertising_set_called_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                 std::move(success_callback));
 }
@@ -46,6 +48,7 @@ void FakeFlossAdvertiserClient::SetAdvertisingParameters(
     const AdvertisingSetParameters& params,
     SetAdvParamsSuccessCallback success_callback,
     ErrorCallback error_callback) {
+  set_advertising_parameters_called_++;
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                 std::move(success_callback));
 }

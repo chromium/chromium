@@ -11,6 +11,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
+#include "device/bluetooth/floss/bluetooth_advertisement_floss.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_advertiser_client.h"
@@ -566,6 +567,66 @@ TEST_F(BluetoothFlossTest, UpdatesDeviceName) {
       adapter_->GetDevice(FakeFlossAdapterClient::kClassicAddress);
   ASSERT_TRUE(device != nullptr);
   EXPECT_EQ(device->GetName(), FakeFlossAdapterClient::kClassicName);
+}
+
+TEST_F(BluetoothFlossTest, SetAdvertisingInterval) {
+  InitializeAdapter();
+
+  base::RunLoop run_loop0;
+  EXPECT_EQ(static_cast<uint32_t>(0),
+            fake_floss_advertiser_client_->start_advertising_set_called_);
+
+  auto data = std::make_unique<device::BluetoothAdvertisement::Data>(
+      device::BluetoothAdvertisement::AdvertisementType::
+          ADVERTISEMENT_TYPE_BROADCAST);
+
+  data->set_scan_response_data(
+      device::BluetoothAdvertisement::ScanResponseData());
+
+  adapter_->RegisterAdvertisement(
+      std::move(data),
+      base::BindLambdaForTesting(
+          [&run_loop0](
+              scoped_refptr<device::BluetoothAdvertisement> advertisement) {
+            EXPECT_TRUE(advertisement);
+
+            auto* advertisementfloss =
+                static_cast<BluetoothAdvertisementFloss*>(advertisement.get());
+            EXPECT_FALSE(advertisementfloss->params().connectable);
+            EXPECT_TRUE(advertisementfloss->params().scannable);
+            run_loop0.Quit();
+          }),
+      base::BindOnce([](device::BluetoothAdvertisement::ErrorCode error_code) {
+        FAIL();
+      }));
+  run_loop0.Run();
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            fake_floss_advertiser_client_->start_advertising_set_called_);
+
+  base::RunLoop run_loop1;
+  EXPECT_EQ(static_cast<uint32_t>(0),
+            fake_floss_advertiser_client_->set_advertising_parameters_called_);
+  adapter_->SetAdvertisingInterval(
+      base::TimeDelta(), base::TimeDelta(),
+      base::BindLambdaForTesting([&run_loop1]() { run_loop1.Quit(); }),
+      base::BindOnce([](device::BluetoothAdvertisement::ErrorCode error_code) {
+        FAIL();
+      }));
+  run_loop1.Run();
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            fake_floss_advertiser_client_->set_advertising_parameters_called_);
+
+  base::RunLoop run_loop2;
+  EXPECT_EQ(static_cast<uint32_t>(0),
+            fake_floss_advertiser_client_->stop_advertising_set_called_);
+  adapter_->ResetAdvertising(
+      base::BindLambdaForTesting([&run_loop2]() { run_loop2.Quit(); }),
+      base::BindOnce([](device::BluetoothAdvertisement::ErrorCode error_code) {
+        FAIL();
+      }));
+  run_loop2.Run();
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            fake_floss_advertiser_client_->stop_advertising_set_called_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
