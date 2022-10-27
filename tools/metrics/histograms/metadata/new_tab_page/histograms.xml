@@ -927,6 +927,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Lens.UploadDialog.DialogAction"
+    enum="NewTabPageLensUploadDialogActions" expires_after="2023-06-30">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>yowakita@google.com</owner>
+  <owner>bbonnet@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Actions that take place on the Lens upload dialog on the new tab page. These
+    may indicate user actions (interactions with the form) or the results of
+    user actions (e.g. successful submission or showing an error message). Only
+    logged on the 1P NTP. Note that even if the user has Google as their default
+    search engine, Incognito and Guest mode NTPs are not considered 1P and don't
+    log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Lens.UploadDialog.DialogError"
+    enum="NewTabPageLensUploadDialogErrors" expires_after="2023-06-30">
+  <owner>nguyenbryan@google.com</owner>
+  <owner>yowakita@google.com</owner>
+  <owner>bbonnet@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Errors that occur during use of the Lens upload dialog on the new tab
+    page.These may indicate user error (e.g. an unusable file or URL) or
+    external errors (e.g. a network error). Only logged on the 1P NTP. Note that
+    even if the user has Google as their default search engine, Incognito and
+    Guest mode NTPs are not considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.LoadTime" units="ms" expires_after="2023-03-19">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>

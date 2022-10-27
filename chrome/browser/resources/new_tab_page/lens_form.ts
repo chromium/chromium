@@ -52,6 +52,11 @@ export enum LensErrorType {
   LENGTH_TOO_GREAT,
 }
 
+export enum LensSubmitType {
+  FILE,
+  URL,
+}
+
 export interface LensFormElement {
   $: {
     fileForm: HTMLFormElement,
@@ -150,7 +155,7 @@ export class LensFormElement extends PolymerElement {
     action.searchParams.set('st', this.startTime_.toString());
     this.uploadFileAction_ = action.toString();
 
-    this.dispatchLoading_();
+    this.dispatchLoading_(LensSubmitType.FILE);
     this.$.fileForm.submit();
   }
 
@@ -176,12 +181,16 @@ export class LensFormElement extends PolymerElement {
 
     this.uploadUrl_ = encodedUri;
     this.startTime_ = Date.now().toString();
-    this.dispatchLoading_();
+    this.dispatchLoading_(LensSubmitType.URL);
     this.$.urlForm.submit();
   }
 
-  private dispatchLoading_() {
-    this.dispatchEvent(new Event('loading'));
+  private dispatchLoading_(submitType: LensSubmitType) {
+    this.dispatchEvent(new CustomEvent('loading', {
+      bubbles: false,
+      composed: false,
+      detail: submitType,
+    }));
   }
 
   private dispatchError_(errorType: LensErrorType) {

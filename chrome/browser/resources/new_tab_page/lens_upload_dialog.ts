@@ -9,7 +9,7 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LensErrorType, LensFormElement} from './lens_form.js';
+import {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 import {getTemplate} from './lens_upload_dialog.html.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -51,6 +51,50 @@ export interface LensUploadDialogElement {
     lensForm: LensFormElement,
     dragDropArea: HTMLDivElement,
   };
+}
+
+/**
+ * List of possible upload dialog actions. This enum must match with the
+ * numbering for NewTabPageLensUploadDialogActions in histogram/enums.xml. These
+ * values are persisted to logs. Entries should not be renumbered, removed or
+ * reused.
+ */
+export enum LensUploadDialogAction {
+  URL_SUBMITTED = 0,
+  FILE_SUBMITTED = 1,
+  IMAGE_DROPPED = 2,
+  DIALOG_OPENED = 3,
+  DIALOG_CLOSED = 4,
+  ERROR_SHOWN = 5,
+}
+
+/**
+ * List of possible upload dialog errors. This enum must match with the
+ * numbering for NewTabPageLensUploadDialogErrors in histogram/enums.xml. These
+ * values are persisted to logs. Entries should not be renumbered, removed or
+ * reused.
+ */
+export enum LensUploadDialogError {
+  FILE_SIZE = 0,
+  FILE_TYPE = 1,
+  MULTIPLE_FILES = 2,
+  MULTIPLE_URLS = 3,
+  LENGTH_TOO_GREAT = 4,
+  INVALID_SCHEME = 5,
+  INVALID_URL = 6,
+  NETWORK_ERROR = 7,
+}
+
+export function recordLensUploadDialogAction(action: LensUploadDialogAction) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.Lens.UploadDialog.DialogAction', action,
+      Object.keys(LensUploadDialogAction).length);
+}
+
+export function recordLensUploadDialogError(action: LensUploadDialogError) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.Lens.UploadDialog.DialogError', action,
+      Object.keys(LensUploadDialogError).length);
 }
 
 const LensUploadDialogElementBase = I18nMixin(PolymerElement);
@@ -155,12 +199,14 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     // also be registered in the outside click handler, causing the dialog to
     // immediately close after opening.
     afterNextRender(this, () => this.attachOutsideHandler_());
+    recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_OPENED);
   }
 
   closeDialog() {
     this.dialogState_ = DialogState.HIDDEN;
     this.detachOutsideHandler_();
     this.dispatchEvent(new Event('close-lens-search'));
+    recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_CLOSED);
   }
 
   private getErrorString_(lensErrorMessage: LensErrorMessage) {
@@ -232,15 +278,25 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     this.$.lensForm.openSystemFilePicker();
   }
 
-  private handleFormLoading_() {
+  private handleFormLoading_(event: CustomEvent<LensSubmitType>) {
     this.dialogState_ = DialogState.LOADING;
+    switch (event.detail) {
+      case LensSubmitType.FILE:
+        recordLensUploadDialogAction(LensUploadDialogAction.FILE_SUBMITTED);
+        break;
+      case LensSubmitType.URL:
+        recordLensUploadDialogAction(LensUploadDialogAction.URL_SUBMITTED);
+        break;
+    }
   }
 
-  private handleFormError_(_event: CustomEvent<LensErrorType>) {
-    switch (_event.detail) {
+  private handleFormError_(event: CustomEvent<LensErrorType>) {
+    switch (event.detail) {
       case LensErrorType.MULTIPLE_FILES:
         this.dialogState_ = DialogState.ERROR;
         this.lensErrorMessage_ = LensErrorMessage.MULTIPLE_FILES;
+        recordLensUploadDialogAction(LensUploadDialogAction.ERROR_SHOWN);
+        recordLensUploadDialogError(LensUploadDialogError.MULTIPLE_FILES);
         break;
       case LensErrorType.NO_FILE:
         this.dialogState_ = DialogState.NORMAL;
@@ -249,22 +305,32 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       case LensErrorType.FILE_TYPE:
         this.dialogState_ = DialogState.ERROR;
         this.lensErrorMessage_ = LensErrorMessage.FILE_TYPE;
+        recordLensUploadDialogAction(LensUploadDialogAction.ERROR_SHOWN);
+        recordLensUploadDialogError(LensUploadDialogError.FILE_TYPE);
         break;
       case LensErrorType.FILE_SIZE:
         this.dialogState_ = DialogState.ERROR;
         this.lensErrorMessage_ = LensErrorMessage.FILE_SIZE;
+        recordLensUploadDialogAction(LensUploadDialogAction.ERROR_SHOWN);
+        recordLensUploadDialogError(LensUploadDialogError.FILE_SIZE);
         break;
       case LensErrorType.INVALID_SCHEME:
         this.dialogState_ = DialogState.ERROR;
         this.lensErrorMessage_ = LensErrorMessage.SCHEME;
+        recordLensUploadDialogAction(LensUploadDialogAction.ERROR_SHOWN);
+        recordLensUploadDialogError(LensUploadDialogError.INVALID_SCHEME);
         break;
       case LensErrorType.INVALID_URL:
         this.dialogState_ = DialogState.ERROR;
         this.lensErrorMessage_ = LensErrorMessage.CONFORMANCE;
+        recordLensUploadDialogAction(LensUploadDialogAction.ERROR_SHOWN);
+        recordLensUploadDialogError(LensUploadDialogError.INVALID_URL);
         break;
       case LensErrorType.LENGTH_TOO_GREAT:
         this.dialogState_ = DialogState.ERROR;
         this.lensErrorMessage_ = LensErrorMessage.CONFORMANCE;
+        recordLensUploadDialogAction(LensUploadDialogAction.ERROR_SHOWN);
+        recordLensUploadDialogError(LensUploadDialogError.LENGTH_TOO_GREAT);
         break;
       default:
         this.dialogState_ = DialogState.NORMAL;
@@ -314,6 +380,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
     if (e.dataTransfer) {
       this.$.lensForm.submitFileList(e.dataTransfer.files);
+      recordLensUploadDialogAction(LensUploadDialogAction.IMAGE_DROPPED);
     }
   }
 }

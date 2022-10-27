@@ -72324,6 +72324,26 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Off the record NTP"/>
 </enum>
 
+<enum name="NewTabPageLensUploadDialogActions">
+  <int value="0" label="URL submitted"/>
+  <int value="1" label="File submitted"/>
+  <int value="2" label="Image dropped"/>
+  <int value="3" label="Dialog opened"/>
+  <int value="4" label="Dialog closed"/>
+  <int value="5" label="Error shown"/>
+</enum>
+
+<enum name="NewTabPageLensUploadDialogErrors">
+  <int value="0" label="Excessive file size"/>
+  <int value="1" label="Invalid file type"/>
+  <int value="2" label="Too many files"/>
+  <int value="3" label="Too many URLs"/>
+  <int value="4" label="Too many characters"/>
+  <int value="5" label="Invalid URI scheme"/>
+  <int value="6" label="Invalid characters"/>
+  <int value="7" label="Network error"/>
+</enum>
+
 <enum name="NewTabPageLogoClick">
   <int value="0" label="Static logo clicked"/>
   <int value="1" label="CTA image clicked"/>

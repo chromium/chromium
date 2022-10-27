@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {LensErrorType, LensFormElement} from 'chrome://new-tab-page/lazy_load.js';
+import {LensErrorType, LensFormElement, LensSubmitType} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LensFormTest', () => {
@@ -14,7 +14,7 @@ suite('LensFormTest', () => {
   let fileFormSubmitted = false;
   let urlFormSubmitted = false;
   let lastError: LensErrorType|null = null;
-  let loading = false;
+  let lastSubmit: LensSubmitType|null = null;
 
   setup(() => {
     lensForm = document.createElement('ntp-lens-form');
@@ -33,8 +33,9 @@ suite('LensFormTest', () => {
       lastError = event.detail;
     });
 
-    lensForm.addEventListener('loading', () => {
-      loading = true;
+    lensForm.addEventListener('loading', (e: Event) => {
+      const event = e as CustomEvent<LensSubmitType>;
+      lastSubmit = event.detail;
     });
   });
 
@@ -42,7 +43,7 @@ suite('LensFormTest', () => {
     fileFormSubmitted = false;
     urlFormSubmitted = false;
     lastError = null;
-    loading = false;
+    lastSubmit = null;
   });
 
   test('select png files should submit file form', async () => {
@@ -55,7 +56,7 @@ suite('LensFormTest', () => {
     // Assert.
     assertTrue(fileFormSubmitted);
     assertEquals(null, lastError);
-    assertTrue(loading);
+    assertEquals(LensSubmitType.FILE, lastSubmit);
   });
 
   test(
@@ -74,7 +75,7 @@ suite('LensFormTest', () => {
         // Assert.
         assertFalse(fileFormSubmitted);
         assertEquals(LensErrorType.MULTIPLE_FILES, lastError);
-        assertFalse(loading);
+        assertEquals(null, lastSubmit);
       });
 
   test('select no files should fail with no files error', async () => {
@@ -87,7 +88,7 @@ suite('LensFormTest', () => {
     // Assert.
     assertFalse(fileFormSubmitted);
     assertEquals(LensErrorType.NO_FILE, lastError);
-    assertFalse(loading);
+    assertEquals(null, lastSubmit);
   });
 
   test(
@@ -102,7 +103,7 @@ suite('LensFormTest', () => {
         // Assert.
         assertFalse(fileFormSubmitted);
         assertEquals(LensErrorType.FILE_TYPE, lastError);
-        assertFalse(loading);
+        assertEquals(null, lastSubmit);
       });
 
   test('submit file should set entrypoint parameter', async () => {
@@ -154,7 +155,7 @@ suite('LensFormTest', () => {
 
     // Assert.
     assertTrue(urlFormSubmitted);
-    assertTrue(loading);
+    assertEquals(LensSubmitType.URL, lastSubmit);
   });
 
   test('submit url with valid https should submit', async () => {
@@ -166,7 +167,7 @@ suite('LensFormTest', () => {
 
     // Assert.
     assertTrue(urlFormSubmitted);
-    assertTrue(loading);
+    assertEquals(LensSubmitType.URL, lastSubmit);
   });
 
   test(
@@ -181,6 +182,7 @@ suite('LensFormTest', () => {
         // Assert.
         assertFalse(urlFormSubmitted);
         assertEquals(LensErrorType.INVALID_SCHEME, lastError);
+        assertEquals(null, lastSubmit);
       });
 
   test(
@@ -195,6 +197,7 @@ suite('LensFormTest', () => {
         // Assert.
         assertFalse(urlFormSubmitted);
         assertEquals(LensErrorType.INVALID_SCHEME, lastError);
+        assertEquals(null, lastSubmit);
       });
 
   test('submit invalid url should fail with invalid url error', async () => {
@@ -207,6 +210,7 @@ suite('LensFormTest', () => {
     // Assert.
     assertFalse(urlFormSubmitted);
     assertEquals(LensErrorType.INVALID_URL, lastError);
+    assertEquals(null, lastSubmit);
   });
 
   test('submit long url should fail with length too great error', async () => {
@@ -222,6 +226,7 @@ suite('LensFormTest', () => {
     // Assert.
     assertFalse(urlFormSubmitted);
     assertEquals(LensErrorType.LENGTH_TOO_GREAT, lastError);
+    assertEquals(null, lastSubmit);
   });
 
   test('submit url should set entrypoint parameter', async () => {
