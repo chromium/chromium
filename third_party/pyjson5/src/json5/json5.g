@@ -4,7 +4,7 @@ sp             = ws*
 
 ws             = '\u0020' | eol | comment
                | '\u0009' | '\u000B' | '\u000C' | '\u00A0' | '\uFEFF'
-               | anything:x ?( is_unicat(x, 'Zs') ) -> x
+               | ~~(anything:x ?( is_unicat(x, 'Zs') )) anything:x -> x
 
 eol            = '\u000D' '\u000A' | '\u000D' | '\u000A'
                | '\u2028' | '\u2029'

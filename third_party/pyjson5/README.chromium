@@ -1,12 +1,21 @@
 Name: pyjson5
 Short Name: pyjson5
 URL: https://github.com/dpranke/pyjson5
-Version: 0.9.5
-Date: May 26 2020
-Revision: 9335da8
+Version: 0.9.10
+Date: August 8 2022
+Revision: e28f7b981aebc9b909ac561fdbc3b3ba4db8d516
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: No
 
 Description:
 A Python implementation of the JSON5 data format.
+
+src/benchmarks/chromium.linux.json and src/benchmarks/chromium.perf.json
+have both been modified by various CLs that apparently thought they
+needed to modify these files as part of some other change. This
+CL keeps the modified versions, rather than restoring the v0.9.10
+versions, to minimize confusion in this roll.
+
+TODO: Change the files in the pyjson5 repo to be other JSON files to
+eliminate this source of confusion.

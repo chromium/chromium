@@ -18,23 +18,31 @@ import math
 import os
 import sys
 import unittest
-
 from collections import OrderedDict
 from string import printable
 
 import json5
-import hypothesis.strategies as some
 
-from hypothesis import given
+try:
+    # Make the `hypothesis` library optional, so that the other tests will
+    # still run if it isn't installed.
+    import hypothesis.strategies as some
+    from hypothesis import given
 
-some_json = some.recursive(
-    some.none() |
-    some.booleans() |
-    some.floats(allow_nan=False) |
-    some.text(printable),
-    lambda children: some.lists(children, min_size=1)
-    | some.dictionaries(some.text(printable), children, min_size=1),
-)
+    some_json = some.recursive(
+        some.none() |
+        some.booleans() |
+        some.floats(allow_nan=False) |
+        some.text(printable),
+        lambda children: some.lists(children, min_size=1)
+        | some.dictionaries(some.text(printable), children, min_size=1),
+    )
+except ImportError as e:
+    def given(x):
+        def func(y):
+            pass
+        return func
+    some_json = {}
 
 class TestLoads(unittest.TestCase):
     maxDiff = None
@@ -244,6 +252,21 @@ class TestLoads(unittest.TestCase):
         self.check(u'\u2028 1', 1)
         self.check(u'\u2029 1', 1)
 
+    def test_error_reporting(self):
+        self.check_fail('[ ,]',
+            err='<string>:1 Unexpected "," at column 3')
+
+        self.check_fail(
+            '{\n'
+            '    version: "1.0",\n'
+            '    author: "John Smith",\n'
+            '    people : [\n'
+            '        "Monty",\n'
+            '        "Python"foo\n'
+            '    ]\n'
+            '}\n',
+            err='<string>:6 Unexpected "f" at column 17')
+
 
 class TestDump(unittest.TestCase):
     def test_basic(self):
@@ -308,6 +331,62 @@ class TestDumps(unittest.TestCase):
         z['y']['x'] = x
         self.assertRaises(ValueError, json5.dumps, z)
 
+    def test_custom_arrays(self):
+        class MyArray(object):
+            def __iter__(self):
+                yield 0
+                yield 1
+                yield 1
+
+            def __getitem__(self, i):
+                return 0 if i == 0 else 1
+
+            def __len__(self):
+                return 3
+
+        self.assertEqual(json5.dumps(MyArray()), '[0, 1, 1]')
+
+    def test_custom_numbers(self):
+        # See https://github.com/dpranke/pyjson5/issues/57: we
+        # need to ensure that we use the bare int.__repr__ and
+        # float.__repr__ in order to get legal JSON values when
+        # people have custom subclasses with customer __repr__ methods.
+        # (This is what JSON does and we want to match it).
+        class MyInt(int):
+            def __repr__(self):
+                return 'fail'
+
+        self.assertEqual(json5.dumps(MyInt(5)), '5')
+
+        class MyFloat(float):
+            def __repr__(self):
+                return 'fail'
+
+        self.assertEqual(json5.dumps(MyFloat(0.5)), '0.5')
+
+    def test_custom_objects(self):
+        class MyDict(object):
+            def __iter__(self):
+                yield ('a', 1)
+                yield ('b', 2)
+
+            def keys(self):
+                return ['a', 'b']
+
+            def __getitem__(self, k):
+                return {'a': 1, 'b': 2}[k]
+
+            def __len__(self):
+                return 2
+
+        self.assertEqual(json5.dumps(MyDict()), '{a: 1, b: 2}')
+
+    def test_custom_strings(self):
+        class MyStr(str):
+            pass
+
+        self.assertEqual(json5.dumps({'foo': MyStr('bar')}), '{foo: "bar"}')
+
     def test_default(self):
 
         def _custom_serializer(obj):
@@ -316,7 +395,7 @@ class TestDumps(unittest.TestCase):
 
         self.assertRaises(TypeError, json5.dumps, set())
         self.assertEqual(json5.dumps(set(), default=_custom_serializer),
-                         'something')
+                         '"something"')
 
     def test_ensure_ascii(self):
         self.check(u'\u00fc', '"\\u00fc"')
@@ -355,6 +434,10 @@ class TestDumps(unittest.TestCase):
 
         self.assertRaises(ValueError, json5.dumps,
                           float('inf'), allow_nan=False)
+        self.assertRaises(ValueError, json5.dumps,
+                          float('-inf'), allow_nan=False)
+        self.assertRaises(ValueError, json5.dumps,
+                          float('nan'), allow_nan=False)
 
     def test_null(self):
         self.check(None, 'null')

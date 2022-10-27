@@ -31,6 +31,10 @@ This is an early release. It has been reasonably well-tested, but it is
 **SLOW**. It can be 1000-6000x slower than the C-optimized JSON module,
 and is 200x slower (or more) than the pure Python JSON module.
 
+**Please Note:** This library only handles JSON5 documents, it does not
+allow you to read arbitrary JavaScript. For example, bare integers can
+be legal object keys in JavaScript, but they aren't in JSON5.
+
 ## Known issues
 
 * Did I mention that it is **SLOW**?
@@ -56,6 +60,46 @@ To run the tests, setup a venv and install the required dependencies with
 
 
 ## Version History / Release Notes
+
+* v0.9.10 (2022-08-18)
+    * [GitHub issue #58](https://github.com/dpranke/pyjson5/issues/58)
+      Updated the //README.md to be clear that parsing arbitrary JS
+      code may not work.
+    * Otherwise, no code changes.
+* v0.9.9 (2022-08-01)
+    * [GitHub issue #57](https://github.com/dpranke/pyjson5/issues/57)
+      Fixed serialization for objects that subclass `int` or `float`:
+      Previously we would use the objects __str__ implementation, but
+      that might result in an illegal JSON5 value if the object had
+      customized __str__ to return something illegal. Instead,
+      we follow the lead of the `JSON` module and call `int.__repr__`
+      or `float.__repr__` directly.
+    * While I was at it, I added tests for dumps(-inf) and dumps(nan)
+      when those were supposed to be disallowed by `allow_nan=False`.
+* v0.9.8 (2022-05-08)
+    * [GitHub issue #47](https://github.com/dpranke/pyjson5/issues/47)
+      Fixed error reporting in some cases due to how parsing was handling
+      nested rules in the grammar - previously the reported location for
+      the error could be far away from the point where it actually happened.
+
+* v0.9.7 (2022-05-06)
+    * [GitHub issue #52](https://github.com/dpranke/pyjson5/issues/52)
+      Fixed behavior of `default` fn in `dump` and `dumps`. Previously
+      we didn't require the function to return a string, and so we could
+      end up returning something that wasn't actually valid. This change
+      now matches the behavior in the `json` module. *Note: This is a
+      potentially breaking change.*
+* v0.9.6 (2021-06-21)
+    * Bump development status classifier to 5 - Production/Stable, which
+      the library feels like it is at this point. If I do end up significantly
+      reworking things to speed it up and/or to add round-trip editing,
+      that'll likely be a 2.0. If this version has no reported issues,
+      I'll likely promote it to 1.0.
+    * Also bump the tested Python versions to 2.7, 3.8 and 3.9, though
+      earlier Python3 versions will likely continue to work as well.
+    * [GitHub issue #46](https://github.com/dpranke/pyjson5/issues/36)
+      Fix incorrect serialization of custom subtypes
+    * Make it possible to run the tests if `hypothesis` isn't installed.
 
 * v0.9.5 (2020-05-26)
     * Miscellaneous non-source cleanups in the repo, including setting

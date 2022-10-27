@@ -70,11 +70,13 @@ class Parser(object):
 
     def _not(self, rule):
         p = self.pos
+        errpos = self.errpos
         rule()
         if self.failed:
             self._succeed(None, p)
         else:
             self._rewind(p)
+            self.errpos = errpos
             self._fail()
 
     def _opt(self, rule):
@@ -100,8 +102,6 @@ class Parser(object):
             rule()
             if self.failed:
                 self._rewind(p)
-                if p < self.errpos:
-                    self.errpos = p
                 break
             else:
                 vs.append(self.val)
@@ -200,11 +200,21 @@ class Parser(object):
 
     def _ws__c8_(self):
         self._push('ws__c8')
-        self._seq([lambda: self._bind(self._anything_, 'x'), self._ws__c8__s1_,
+        self._seq([self._ws__c8__s0_, lambda: self._bind(self._anything_, 'x'),
                    lambda: self._succeed(self._get('x'))])
         self._pop('ws__c8')
 
-    def _ws__c8__s1_(self):
+    def _ws__c8__s0_(self):
+        self._not(lambda: self._not(self._ws__c8__s0_n_n_))
+
+    def _ws__c8__s0_n_n_(self):
+        (lambda: self._choose([self._ws__c8__s0_n_n_g__c0_]))()
+
+    def _ws__c8__s0_n_n_g__c0_(self):
+        self._seq([lambda: self._bind(self._anything_, 'x'),
+                   self._ws__c8__s0_n_n_g__c0__s1_])
+
+    def _ws__c8__s0_n_n_g__c0__s1_(self):
         v = self._is_unicat(self._get('x'), 'Zs')
         if v:
             self._succeed(v)
