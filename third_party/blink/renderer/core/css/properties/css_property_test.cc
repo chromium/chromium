@@ -39,10 +39,10 @@ class CSSPropertyTest : public PageTestBase {
     // the computed values of border-width properties are always zero.
     //
     // https://drafts.csswg.org/css-backgrounds-3/#the-border-width
-    state.Style()->SetBorderBottomStyle(EBorderStyle::kSolid);
-    state.Style()->SetBorderLeftStyle(EBorderStyle::kSolid);
-    state.Style()->SetBorderRightStyle(EBorderStyle::kSolid);
-    state.Style()->SetBorderTopStyle(EBorderStyle::kSolid);
+    state.StyleBuilder().SetBorderBottomStyle(EBorderStyle::kSolid);
+    state.StyleBuilder().SetBorderLeftStyle(EBorderStyle::kSolid);
+    state.StyleBuilder().SetBorderRightStyle(EBorderStyle::kSolid);
+    state.StyleBuilder().SetBorderTopStyle(EBorderStyle::kSolid);
 
     StyleBuilder::ApplyProperty(property, state,
                                 ScopedCSSValue(value, &GetDocument()));

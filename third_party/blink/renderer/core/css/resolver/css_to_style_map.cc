@@ -545,27 +545,28 @@ void CSSToStyleMap::MapNinePieceImage(StyleResolverState& state,
   }
 
   if (property == CSSPropertyID::kWebkitBorderImage) {
+    ComputedStyleBuilder& builder = state.StyleBuilder();
     // We have to preserve the legacy behavior of -webkit-border-image and make
     // the border slices also set the border widths. We don't need to worry
     // about percentages, since we don't even support those on real borders yet.
     if (image.BorderSlices().Top().IsLength() &&
         image.BorderSlices().Top().length().IsFixed()) {
-      state.Style()->SetBorderTopWidth(
+      builder.SetBorderTopWidth(
           LayoutUnit(image.BorderSlices().Top().length().Pixels()));
     }
     if (image.BorderSlices().Right().IsLength() &&
         image.BorderSlices().Right().length().IsFixed()) {
-      state.Style()->SetBorderRightWidth(
+      builder.SetBorderRightWidth(
           LayoutUnit(image.BorderSlices().Right().length().Pixels()));
     }
     if (image.BorderSlices().Bottom().IsLength() &&
         image.BorderSlices().Bottom().length().IsFixed()) {
-      state.Style()->SetBorderBottomWidth(
+      builder.SetBorderBottomWidth(
           LayoutUnit(image.BorderSlices().Bottom().length().Pixels()));
     }
     if (image.BorderSlices().Left().IsLength() &&
         image.BorderSlices().Left().length().IsFixed()) {
-      state.Style()->SetBorderLeftWidth(
+      builder.SetBorderLeftWidth(
           LayoutUnit(image.BorderSlices().Left().length().Pixels()));
     }
   }

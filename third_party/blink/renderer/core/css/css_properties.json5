@@ -1756,6 +1756,7 @@
         name: "border-radius",
         resolver: "bottom-left",
       },
+      readonly: true,
     },
     {
       name: "border-bottom-right-radius",
@@ -1775,6 +1776,7 @@
         name: "border-radius",
         resolver: "bottom-right",
       },
+      readonly: true,
     },
     {
       name: "border-bottom-style",
@@ -1794,6 +1796,7 @@
         name: "border-style",
         resolver: "bottom",
       },
+      readonly: true,
     },
     {
       name: "border-bottom-width",
@@ -1816,6 +1819,7 @@
       },
       // Overlaps with -webkit-border-image.
       overlapping: true,
+      readonly: true,
     },
     {
       name: "border-collapse",
@@ -1826,6 +1830,7 @@
       keywords: ["separate", "collapse"],
       typedom_types: ["Keyword"],
       default_value: "separate",
+      readonly: true,
     },
     {
       name: "border-image-outset",
@@ -1937,6 +1942,7 @@
         name: "border-style",
         resolver: "left",
       },
+      readonly: true,
     },
     {
       name: "border-left-width",
@@ -1959,6 +1965,7 @@
       },
       // Overlaps with -webkit-border-image.
       overlapping: true,
+      readonly: true,
     },
     {
       name: "border-right-color",
@@ -2001,6 +2008,7 @@
         name: "border-style",
         resolver: "right",
       },
+      readonly: true,
     },
     {
       name: "border-right-width",
@@ -2023,6 +2031,7 @@
       },
       // Overlaps with -webkit-border-image.
       overlapping: true,
+      readonly: true,
     },
     {
       name: "border-top-color",
@@ -2065,6 +2074,7 @@
         name: "border-radius",
         resolver: "top-left",
       },
+      readonly: true,
     },
     {
       name: "border-top-right-radius",
@@ -2084,6 +2094,7 @@
         name: "border-radius",
         resolver: "top-right",
       },
+      readonly: true,
     },
     {
       name: "border-top-style",
@@ -2104,6 +2115,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "border-top-width",
@@ -2126,6 +2138,7 @@
       },
       // Overlaps with -webkit-border-image.
       overlapping: true,
+      readonly: true,
     },
     {
       name: "bottom",
@@ -5189,6 +5202,7 @@
       type_name: "short",
       converter: "ConvertComputedLength<short>",
       valid_for_first_letter: true,
+      readonly: true,
     },
     {
       name: "-webkit-border-image",
@@ -5211,6 +5225,7 @@
       type_name: "short",
       converter: "ConvertComputedLength<short>",
       valid_for_first_letter: true,
+      readonly: true,
     },
     // For valid values of box-align see
     // http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/#alignment

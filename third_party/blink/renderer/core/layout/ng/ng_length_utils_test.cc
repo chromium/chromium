@@ -469,17 +469,19 @@ TEST_F(NGLengthUtilsTest, TestMargins) {
 }
 
 TEST_F(NGLengthUtilsTest, TestBorders) {
-  style_->SetBorderTopWidth(LayoutUnit(1));
-  style_->SetBorderRightWidth(LayoutUnit(2));
-  style_->SetBorderBottomWidth(LayoutUnit(3));
-  style_->SetBorderLeftWidth(LayoutUnit(4));
-  style_->SetBorderTopStyle(EBorderStyle::kSolid);
-  style_->SetBorderRightStyle(EBorderStyle::kSolid);
-  style_->SetBorderBottomStyle(EBorderStyle::kSolid);
-  style_->SetBorderLeftStyle(EBorderStyle::kSolid);
-  style_->SetWritingMode(WritingMode::kVerticalLr);
+  ComputedStyleBuilder builder(*style_);
+  builder.SetBorderTopWidth(LayoutUnit(1));
+  builder.SetBorderRightWidth(LayoutUnit(2));
+  builder.SetBorderBottomWidth(LayoutUnit(3));
+  builder.SetBorderLeftWidth(LayoutUnit(4));
+  builder.SetBorderTopStyle(EBorderStyle::kSolid);
+  builder.SetBorderRightStyle(EBorderStyle::kSolid);
+  builder.SetBorderBottomStyle(EBorderStyle::kSolid);
+  builder.SetBorderLeftStyle(EBorderStyle::kSolid);
+  builder.SetWritingMode(WritingMode::kVerticalLr);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
 
-  NGBoxStrut borders = ComputeBordersForTest(*style_);
+  NGBoxStrut borders = ComputeBordersForTest(*style);
 
   EXPECT_EQ(LayoutUnit(4), borders.block_start);
   EXPECT_EQ(LayoutUnit(3), borders.inline_end);

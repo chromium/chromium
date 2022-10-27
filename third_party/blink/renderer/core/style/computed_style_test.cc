@@ -318,11 +318,15 @@ TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
 }
 
 TEST_F(ComputedStyleTest, BorderWidth) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetBorderBottomWidth(LayoutUnit(5));
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetBorderBottomWidth(LayoutUnit(5));
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 0);
   EXPECT_EQ(style->BorderBottom().Width(), 5);
-  style->SetBorderBottomStyle(EBorderStyle::kSolid);
+
+  builder = ComputedStyleBuilder(*style);
+  builder.SetBorderBottomStyle(EBorderStyle::kSolid);
+  style = builder.TakeStyle();
   EXPECT_EQ(style->BorderBottomWidth(), 5);
   EXPECT_EQ(style->BorderBottom().Width(), 5);
 }
@@ -346,106 +350,107 @@ TEST_F(ComputedStyleTest, CursorList) {
   EXPECT_EQ(*style, *other);
 }
 
+#define UPDATE_STYLE(style_object, setter, value)      \
+  {                                                    \
+    ComputedStyleBuilder style_builder(*style_object); \
+    style_builder.setter(value);                       \
+    style_object = style_builder.TakeStyle();          \
+  }
+
 TEST_F(ComputedStyleTest, BorderStyle) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = CreateComputedStyle();
-  style->SetBorderLeftStyle(EBorderStyle::kSolid);
-  style->SetBorderTopStyle(EBorderStyle::kSolid);
-  style->SetBorderRightStyle(EBorderStyle::kSolid);
-  style->SetBorderBottomStyle(EBorderStyle::kSolid);
-  other->SetBorderLeftStyle(EBorderStyle::kSolid);
-  other->SetBorderTopStyle(EBorderStyle::kSolid);
-  other->SetBorderRightStyle(EBorderStyle::kSolid);
-  other->SetBorderBottomStyle(EBorderStyle::kSolid);
-
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetBorderLeftStyle(EBorderStyle::kSolid);
+  builder.SetBorderTopStyle(EBorderStyle::kSolid);
+  builder.SetBorderRightStyle(EBorderStyle::kSolid);
+  builder.SetBorderBottomStyle(EBorderStyle::kSolid);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  scoped_refptr<const ComputedStyle> other = ComputedStyle::Clone(*style);
   EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderLeftWidth(LayoutUnit(1));
+
+  UPDATE_STYLE(style, SetBorderLeftWidth, LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderLeftWidth(LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderLeftWidth, LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderTopWidth(LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderTopWidth, LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderTopWidth(LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderTopWidth, LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderRightWidth(LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderRightWidth, LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderRightWidth(LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderRightWidth, LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  EXPECT_TRUE(style->BorderSizeEquals(*other));
-  style->SetBorderBottomWidth(LayoutUnit(1));
+  UPDATE_STYLE(style, SetBorderBottomWidth, LayoutUnit(1));
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  other->SetBorderBottomWidth(LayoutUnit(1));
+  UPDATE_STYLE(other, SetBorderBottomWidth, LayoutUnit(1));
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  style->SetBorderLeftStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kHidden);
   EXPECT_EQ(LayoutUnit(), style->BorderLeftWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderLeftStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kNone);
   EXPECT_EQ(LayoutUnit(), style->BorderLeftWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderLeftStyle(EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kSolid);
   EXPECT_EQ(LayoutUnit(1), style->BorderLeftWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  style->SetBorderTopStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderTopStyle, EBorderStyle::kHidden);
   EXPECT_EQ(LayoutUnit(), style->BorderTopWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderTopStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderTopStyle, EBorderStyle::kNone);
   EXPECT_EQ(LayoutUnit(), style->BorderTopWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderTopStyle(EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderTopStyle, EBorderStyle::kSolid);
   EXPECT_EQ(LayoutUnit(1), style->BorderTopWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  style->SetBorderRightStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderRightStyle, EBorderStyle::kHidden);
   EXPECT_EQ(LayoutUnit(), style->BorderRightWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderRightStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderRightStyle, EBorderStyle::kNone);
   EXPECT_EQ(LayoutUnit(), style->BorderRightWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderRightStyle(EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderRightStyle, EBorderStyle::kSolid);
   EXPECT_EQ(LayoutUnit(1), style->BorderRightWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
-  style->SetBorderBottomStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderBottomStyle, EBorderStyle::kHidden);
   EXPECT_EQ(LayoutUnit(), style->BorderBottomWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderBottomStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderBottomStyle, EBorderStyle::kNone);
   EXPECT_EQ(LayoutUnit(), style->BorderBottomWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
-  style->SetBorderBottomStyle(EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderBottomStyle, EBorderStyle::kSolid);
   EXPECT_EQ(LayoutUnit(1), style->BorderBottomWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderTopStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderTopStyle, EBorderStyle::kHidden);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderRightStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderRightStyle, EBorderStyle::kHidden);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderBottomStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderBottomStyle, EBorderStyle::kHidden);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderLeftStyle(EBorderStyle::kHidden);
+  UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kHidden);
   EXPECT_FALSE(style->HasBorder());
 
-  style->SetBorderTopStyle(EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderTopStyle, EBorderStyle::kSolid);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderRightStyle(EBorderStyle::kSolid);
-  style->SetBorderBottomStyle(EBorderStyle::kSolid);
-  style->SetBorderLeftStyle(EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderRightStyle, EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderBottomStyle, EBorderStyle::kSolid);
+  UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kSolid);
   EXPECT_TRUE(style->HasBorder());
 
-  style->SetBorderTopStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderTopStyle, EBorderStyle::kNone);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderRightStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderRightStyle, EBorderStyle::kNone);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderBottomStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderBottomStyle, EBorderStyle::kNone);
   EXPECT_TRUE(style->HasBorder());
-  style->SetBorderLeftStyle(EBorderStyle::kNone);
+  UPDATE_STYLE(style, SetBorderLeftStyle, EBorderStyle::kNone);
   EXPECT_FALSE(style->HasBorder());
 }
 

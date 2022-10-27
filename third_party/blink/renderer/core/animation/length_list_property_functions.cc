@@ -227,16 +227,16 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
       return;
 
     case CSSPropertyID::kBorderBottomLeftRadius:
-      style.SetBorderBottomLeftRadius(SizeFromVector(length_list));
+      builder.SetBorderBottomLeftRadius(SizeFromVector(length_list));
       return;
     case CSSPropertyID::kBorderBottomRightRadius:
-      style.SetBorderBottomRightRadius(SizeFromVector(length_list));
+      builder.SetBorderBottomRightRadius(SizeFromVector(length_list));
       return;
     case CSSPropertyID::kBorderTopLeftRadius:
-      style.SetBorderTopLeftRadius(SizeFromVector(length_list));
+      builder.SetBorderTopLeftRadius(SizeFromVector(length_list));
       return;
     case CSSPropertyID::kBorderTopRightRadius:
-      style.SetBorderTopRightRadius(SizeFromVector(length_list));
+      builder.SetBorderTopRightRadius(SizeFromVector(length_list));
       return;
 
     case CSSPropertyID::kTransformOrigin:

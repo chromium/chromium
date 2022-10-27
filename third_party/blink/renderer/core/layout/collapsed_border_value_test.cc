@@ -38,9 +38,10 @@ class CollapsedBorderValueTest : public testing::Test {
       EBorderStyle border_style,
       const Color& color = Color::kBlack,
       EBorderPrecedence precedence = kBorderPrecedenceCell) {
-    auto style = ComputedStyle::Clone(*initial_style_);
-    style->SetBorderLeftWidth(LayoutUnit(width));
-    style->SetBorderLeftStyle(border_style);
+    ComputedStyleBuilder builder(*initial_style_);
+    builder.SetBorderLeftWidth(LayoutUnit(width));
+    builder.SetBorderLeftStyle(border_style);
+    scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
     CollapsedBorderValue v(style->BorderLeft(), color, precedence);
     EXPECT_EQ(border_style, v.Style());
     EXPECT_EQ(color, v.GetColor());
