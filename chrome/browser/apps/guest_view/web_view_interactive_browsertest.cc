@@ -568,20 +568,14 @@ class WebViewPointerLockInteractiveTest : public WebViewInteractiveTest {};
 // with WebViewInteractiveTest (see crbug.com/582562).
 class DISABLED_WebViewPopupInteractiveTest : public WebViewInteractiveTest {};
 
-// ui_test_utils::SendMouseMoveSync doesn't seem to work on OS_MAC, and
-// likely won't work on many other platforms as well, so for now this test
-// is for Windows and Linux only. As of Sept 17th, 2013 this test is disabled
-// on Windows due to flakines, see http://crbug.com/293445.
-
-// Disabled on Linux Aura because pointer lock does not work on Linux Aura.
-// crbug.com/341876
-
 // Timeouts flakily: crbug.com/1003345
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
-                       DISABLED_PointerLock) {
+#if defined(SUPPORTS_SYNC_MOUSE_UTILS) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_PointerLock PointerLock
+#else
+#define MAYBE_PointerLock DISABLED_PointerLock
+#endif
+IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest, MAYBE_PointerLock) {
   SetupTest("web_view/pointer_lock",
             "/extensions/platform_apps/web_view/pointer_lock/guest.html");
 
@@ -604,15 +598,6 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
       gfx::Point(corner().x() + 74, corner().y() + 74)));
   MoveMouseInsideWindowWithListener(gfx::Point(75, 75), "mouse-move");
-
-#if BUILDFLAG(IS_WIN)
-  // When the mouse is unlocked on win aura, sending a test mouse click clicks
-  // where the mouse moved to while locked. I was unable to figure out why, and
-  // since the issue only occurs with the test mouse events, just fix it with
-  // a simple workaround - moving the mouse back to where it should be.
-  // TODO(mthiesse): Fix Win Aura simulated mouse events while mouse locked.
-  MoveMouseInsideWindowWithListener(gfx::Point(75, 25), "mouse-move");
-#endif
 
   ExtensionTestMessageListener unlocked_listener("unlocked");
   // Send a key press to unlock the mouse.
@@ -652,7 +637,6 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
     ASSERT_TRUE(move_listener2.WaitUntilSatisfied());
   }
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // flaky http://crbug.com/412086
 #if defined(SUPPORTS_SYNC_MOUSE_UTILS) && !BUILDFLAG(IS_CHROMEOS)
