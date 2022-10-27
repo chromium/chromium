@@ -122,6 +122,13 @@ struct Manifest {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/user-preferences-explainer.md
   ManifestUserPreferences? user_preferences;
 
+  // TODO(crbug.com/1318305): This field is non-standard and part of a Chrome
+  // experiment. See: https://github.com/w3c/manifest/issues/1045
+  bool has_dark_theme_color;
+  uint32 dark_theme_color;
+  bool has_dark_background_color;
+  uint32 dark_background_color;
+
   // TODO(crbug.com/897314): This field is non-standard and part of a Chrome
   // experiment. See:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md

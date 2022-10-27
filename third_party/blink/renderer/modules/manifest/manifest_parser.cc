@@ -23,7 +23,13 @@
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils.h"
@@ -205,6 +211,18 @@ bool ManifestParser::Parse() {
 
   if (RuntimeEnabledFeatures::WebAppDarkModeEnabled(execution_context_)) {
     manifest_->user_preferences = ParseUserPreferences(root_object.get());
+
+    absl::optional<RGBA32> dark_theme_color =
+        ParseDarkColorOverride(root_object.get(), "theme_colors");
+    manifest_->has_dark_theme_color = dark_theme_color.has_value();
+    if (manifest_->has_dark_theme_color)
+      manifest_->dark_theme_color = *dark_theme_color;
+
+    absl::optional<RGBA32> dark_background_color =
+        ParseDarkColorOverride(root_object.get(), "background_colors");
+    manifest_->has_dark_background_color = dark_background_color.has_value();
+    if (manifest_->has_dark_background_color)
+      manifest_->dark_background_color = *dark_background_color;
   }
 
   if (RuntimeEnabledFeatures::WebAppTabStripEnabled(execution_context_) &&
@@ -1863,6 +1881,56 @@ mojom::blink::ManifestUserPreferencesPtr ManifestParser::ParseUserPreferences(
   }
 
   return result;
+}
+
+absl::optional<RGBA32> ManifestParser::ParseDarkColorOverride(
+    const JSONObject* object,
+    const String& key) {
+  JSONValue* json_value = object->Get(key);
+  if (!json_value)
+    return absl::nullopt;
+
+  JSONArray* colors_list = object->GetArray(key);
+  if (!colors_list) {
+    AddErrorInfo("property '" + key + "' ignored, type array expected.");
+    return absl::nullopt;
+  }
+
+  MediaValuesCached::MediaValuesCachedData media_values_data;
+  media_values_data.preferred_color_scheme =
+      mojom::blink::PreferredColorScheme::kDark;
+
+  MediaQueryEvaluator media_query_evaluator(
+      MakeGarbageCollected<MediaValuesCached>(media_values_data));
+
+  for (wtf_size_t i = 0; i < colors_list->size(); ++i) {
+    const JSONObject* list_item = JSONObject::Cast(colors_list->at(i));
+    absl::optional<String> media_query =
+        ParseString(list_item, "media", Trim(false));
+    absl::optional<RGBA32> color = ParseColor(list_item, "color");
+    if (!media_query.has_value() || !color.has_value())
+      continue;
+
+    auto tokens = CSSTokenizer(media_query.value()).TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    while (!range.AtEnd()) {
+      if (range.Peek().GetType() == kIdentToken &&
+          (range.Peek().Value().ToString().LowerASCII() !=
+               "prefers-color-scheme" &&
+           range.Peek().Id() != CSSValueID::kDark)) {
+        // Skip the query if it contains anything other than
+        // "(prefers-color-scheme: dark)".
+        break;
+      }
+      range.Consume();
+      if (range.AtEnd() && media_query_evaluator.Eval(*MediaQuerySet::Create(
+                               media_query.value(), execution_context_))) {
+        return color.value();
+      }
+    }
+  }
+
+  return absl::nullopt;
 }
 
 mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(

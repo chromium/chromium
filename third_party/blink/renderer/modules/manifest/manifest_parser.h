@@ -487,6 +487,12 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
       const JSONObject* object);
 
+  // Parse the override fields for theme_color and background_color as defined
+  // in: https://github.com/w3c/manifest/issues/1045
+  // Returns the dark mode color if any, or a null optional otherwise.
+  absl::optional<RGBA32> ParseDarkColorOverride(const JSONObject* object,
+                                                const String& key);
+
   // Parses the 'tab_strip' field of the manifest as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
   mojom::blink::ManifestTabStripPtr ParseTabStrip(const JSONObject* object);

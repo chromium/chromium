@@ -477,20 +477,29 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
         static_cast<SkColor>(manifest.background_color), SK_AlphaOPAQUE);
   }
 
-  if (manifest.user_preferences &&
-      manifest.user_preferences->color_scheme_dark) {
-    if (manifest.user_preferences->color_scheme_dark->has_theme_color) {
-      web_app_info->dark_mode_theme_color = SkColorSetA(
-          static_cast<SkColor>(
-              manifest.user_preferences->color_scheme_dark->theme_color),
-          SK_AlphaOPAQUE);
-    }
-    if (manifest.user_preferences->color_scheme_dark->has_background_color) {
-      web_app_info->dark_mode_background_color = SkColorSetA(
-          static_cast<SkColor>(
-              manifest.user_preferences->color_scheme_dark->background_color),
-          SK_AlphaOPAQUE);
-    }
+  if (manifest.has_dark_theme_color) {
+    web_app_info->dark_mode_theme_color = SkColorSetA(
+        static_cast<SkColor>(manifest.dark_theme_color), SK_AlphaOPAQUE);
+  } else if (manifest.user_preferences &&
+             manifest.user_preferences->color_scheme_dark &&
+             manifest.user_preferences->color_scheme_dark->has_theme_color) {
+    web_app_info->dark_mode_theme_color = SkColorSetA(
+        static_cast<SkColor>(
+            manifest.user_preferences->color_scheme_dark->theme_color),
+        SK_AlphaOPAQUE);
+  }
+
+  if (manifest.has_dark_background_color) {
+    web_app_info->dark_mode_background_color = SkColorSetA(
+        static_cast<SkColor>(manifest.dark_background_color), SK_AlphaOPAQUE);
+  } else if (manifest.user_preferences &&
+             manifest.user_preferences->color_scheme_dark &&
+             manifest.user_preferences->color_scheme_dark
+                 ->has_background_color) {
+    web_app_info->dark_mode_background_color = SkColorSetA(
+        static_cast<SkColor>(
+            manifest.user_preferences->color_scheme_dark->background_color),
+        SK_AlphaOPAQUE);
   }
 
   if (manifest.display != DisplayMode::kUndefined)
