@@ -394,6 +394,7 @@ export class FeedbackFlowElement extends PolymerElement {
         this.feedbackServiceProvider_.sendReport(report).then((response) => {
           this.currentState_ = FeedbackFlowState.CONFIRMATION;
           this.sendReportStatus_ = response.status;
+          this.shadowRoot.querySelector('confirmation-page').focusPageTitle();
         });
         break;
       default:

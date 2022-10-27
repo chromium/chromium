@@ -164,6 +164,10 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
       this.feedbackServiceProvider_.recordPostSubmitAction(action);
     }
   }
+
+  focusPageTitle() {
+    this.shadowRoot.querySelector('#pageTitle').focus();
+  }
 }
 
 customElements.define(ConfirmationPageElement.is, ConfirmationPageElement);

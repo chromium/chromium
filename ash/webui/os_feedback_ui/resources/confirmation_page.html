@@ -62,10 +62,14 @@
     box-shadow: none;
     outline: 2px solid var(--cros-focus-ring-color);
   }
+
+  .page-title:focus {
+    outline: none;
+  }
 </style>
 <div id="container">
   <div id="header">
-    <h1 class="page-title">[[getTitle_(sendReportStatus)]]</h1>
+    <h1 id="pageTitle" class="page-title" tabindex="-1">[[getTitle_(sendReportStatus)]]</h1>
   </div>
   <div id="content">
     <div id="message" class="sub-label">[[getMessage_(sendReportStatus)]]</div>
