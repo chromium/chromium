@@ -4,7 +4,7 @@
   <title>reply</title>
   <script>
     myObject.onmessage = function (event) {
-      myObject.postMessage(event.data.byteLength.toString());
+      myObject.postMessage(event.data);
     };
     myObject.postMessage("Hello");
   </script>

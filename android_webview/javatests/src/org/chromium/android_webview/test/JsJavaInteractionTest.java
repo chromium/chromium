@@ -718,9 +718,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         data.mReplyProxy.postMessage(new MessagePayload(content));
         data = mListener.waitForOnPostMessage();
-        // TODO(crbug.com/1374142): Add support for ArrayBuffer message from
-        // JS to Java. Right now we only check length.
-        Assert.assertEquals(content.length, Integer.parseInt(data.getAsString()));
+        Assert.assertArrayEquals(content, data.getAsArrayBuffer());
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
