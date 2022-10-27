@@ -28,7 +28,7 @@ std::string GetAdjustedBounds(const gfx::Rect& visible,
 
 class FakeWindowState : public WindowState::State {
  public:
-  explicit FakeWindowState() = default;
+  FakeWindowState() = default;
 
   FakeWindowState(const FakeWindowState&) = delete;
   FakeWindowState& operator=(const FakeWindowState&) = delete;

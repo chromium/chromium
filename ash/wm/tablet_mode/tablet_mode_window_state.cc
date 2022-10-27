@@ -385,13 +385,15 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       if (bounds_in_parent.IsEmpty())
         return;
 
-      if (window_util::IsDraggingTabs(window_state->window()) ||
+      if (current_state_type_ == WindowStateType::kFloated ||
+          window_util::IsDraggingTabs(window_state->window()) ||
           IsTabDraggingSourceWindow(window_state->window()) ||
           TabDragDropDelegate::IsSourceWindowForDrag(window_state->window()) ||
           BoundsChangeIsFromVKAndAllowed(window_state->window())) {
-        // If the window is the current tab-dragged window or the current tab-
-        // dragged window's source window, we may need to update its bounds
-        // during dragging.
+        // Floated windows in tablet mode are freeform, so they can placed
+        // anywhere, not just centered. Also, if the window is the current
+        // tab-dragged window or the current tab- dragged window's source
+        // window, we may need to update its bounds during dragging.
         window_state->SetBoundsDirect(bounds_in_parent);
       } else if (current_state_type_ == WindowStateType::kMaximized) {
         // Having a maximized window, it could have been created with an empty

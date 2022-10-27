@@ -31,7 +31,6 @@ LockLayoutManager::~LockLayoutManager() {
 
   for (aura::Window* child : window_->children())
     child->RemoveObserver(this);
-
 }
 
 void LockLayoutManager::OnWindowResized() {

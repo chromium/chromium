@@ -10,9 +10,9 @@
 namespace ash {
 
 // A view that mirrors the client area of a single (source) window.
-// TODO(edcourtney): This currently displays nothing, but should display Android PIP windows with
-// the controls not shown.
-class ASH_EXPORT WindowMirrorViewPip : public WindowMirrorView {
+// TODO(edcourtney): This currently displays nothing, but should display Android
+// PIP windows with the controls not shown.
+class WindowMirrorViewPip : public WindowMirrorView {
  public:
   WindowMirrorViewPip(aura::Window* source, bool trilinear_filtering_on_init);
 

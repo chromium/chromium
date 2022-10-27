@@ -61,7 +61,8 @@ class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
 class MockImmersiveFullscreenControllerDelegate
     : public ImmersiveFullscreenControllerDelegate {
  public:
-  MockImmersiveFullscreenControllerDelegate(views::View* top_container_view)
+  explicit MockImmersiveFullscreenControllerDelegate(
+      views::View* top_container_view)
       : top_container_view_(top_container_view),
         enabled_(false),
         visible_fraction_(1) {}
@@ -1163,4 +1164,4 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 }
 
-}  // namespase ash
+}  // namespace ash

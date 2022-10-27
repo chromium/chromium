@@ -11,10 +11,12 @@
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/button.h"
@@ -122,24 +124,22 @@ ScopedWindowTucker::~ScopedWindowTucker() {
 }
 
 void ScopedWindowTucker::AnimateTuck(bool left) {
-  // The final window bounds will be aligned with the edge of the screen.
-  const gfx::Rect target_bounds =
-      Shell::Get()->float_controller()->GetPreferredFloatWindowTabletBounds(
-          window_);
-
   const gfx::Rect initial_bounds(window_->bounds());
 
-  // Set the final tucked bounds after the animation.
-  // TODO(sammiequon): Consider checking parent layout manager and minimum
-  // size in `TabletModeWindowState` instead of using `SetBounds` directly.
-  window_->SetBounds(target_bounds);
+  // Sets the destination tucked bounds after the animation.
+  // `TabletModeWindowState::UpdatePosition` calls
+  // `GetPreferredFloatWindowTabletBounds` which checks if a window is tucked
+  // and returns the tucked bounds accordingly.
+  TabletModeWindowState::UpdateWindowPosition(
+      WindowState::Get(window_), WindowState::BoundsChangeAnimationType::kNone);
+  const gfx::Rect final_bounds(window_->bounds());
 
   // Align the tuck handle with the window.
   aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
   const gfx::Point tuck_handle_origin =
-      left ? target_bounds.right_center() -
+      left ? final_bounds.right_center() -
                  gfx::Vector2d(0, kTuckHandleHeight / 2)
-           : target_bounds.left_center() -
+           : final_bounds.left_center() -
                  gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
   const gfx::Rect tuck_handle_bounds(
       tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight));
@@ -147,9 +147,8 @@ void ScopedWindowTucker::AnimateTuck(bool left) {
   tuck_handle->layer()->SetOpacity(1.f);
 
   // Set the window back to its initial floated bounds.
-  const gfx::Transform initial_transform =
-      gfx::Transform::MakeTranslation(initial_bounds.x() - target_bounds.x(),
-                                      initial_bounds.y() - target_bounds.y());
+  const gfx::Transform initial_transform = gfx::TransformBetweenRects(
+      gfx::RectF(final_bounds), gfx::RectF(initial_bounds));
 
   // Set the transform during the bounce.
   const gfx::Transform offset_transform = gfx::Transform::MakeTranslation(

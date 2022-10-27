@@ -5,7 +5,6 @@
 #ifndef ASH_WM_FLOAT_SCOPED_WINDOW_TUCKER_H_
 #define ASH_WM_FLOAT_SCOPED_WINDOW_TUCKER_H_
 
-#include "ash/ash_export.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/public/activation_change_observer.h"
 

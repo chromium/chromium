@@ -40,7 +40,8 @@ bool HasTransientAncestor(const aura::Window* window,
   return transient_parent ? HasTransientAncestor(transient_parent, ancestor)
                           : false;
 }
-}
+
+}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // SystemModalContainerLayoutManager, public:
