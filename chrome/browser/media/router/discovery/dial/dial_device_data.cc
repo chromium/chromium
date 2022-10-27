@@ -5,8 +5,6 @@
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 
 namespace media_router {
 
@@ -48,11 +46,7 @@ bool DialDeviceData::IsValidUrl(const GURL& url) const {
   if (host_address.IsPubliclyRoutable())
     return false;
 
-  if (base::FeatureList::IsEnabled(kDialEnforceUrlIPAddress)) {
-    return host_address == ip_address_;
-  } else {
-    return true;
-  }
+  return host_address == ip_address_;
 }
 
 bool DialDeviceData::UpdateFrom(const DialDeviceData& new_data) {

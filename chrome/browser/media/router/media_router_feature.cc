@@ -40,9 +40,6 @@ BASE_FEATURE(kAllowAllSitesToInitiateMirroring,
 BASE_FEATURE(kDialMediaRouteProvider,
              "DialMediaRouteProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kDialEnforceUrlIPAddress,
-             "DialEnforceUrlIPAddress",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMediaRemotingWithoutFullscreen,
              "MediaRemotingWithoutFullscreen",
              base::FEATURE_DISABLED_BY_DEFAULT);

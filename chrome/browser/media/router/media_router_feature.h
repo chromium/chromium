@@ -46,11 +46,6 @@ BASE_DECLARE_FEATURE(kGlobalMediaControlsCastStartStop);
 // Presentation API. If disabled, only the allowlisted sites can do so.
 BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 
-// If enabled, HTTP requests for DIAL can only be made to URLs that contain the
-// target device IP address.
-// TODO(crbug.com/1270509): Remove this base::Feature once fully launched.
-BASE_DECLARE_FEATURE(kDialEnforceUrlIPAddress);
-
 // If enabled, users can request Media Remoting without fullscreen-in-tab.
 BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
 
