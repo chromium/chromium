@@ -95,6 +95,9 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
   const raw_ptr<MediaLicenseManager> manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Media licenses are only supported from the default bucket.
+  // `bucket_locator_` corresponds to the default bucket for the StorageKey this
+  // host represents.
   const storage::BucketLocator bucket_locator_;
 
   // All file operations are run through this member.
