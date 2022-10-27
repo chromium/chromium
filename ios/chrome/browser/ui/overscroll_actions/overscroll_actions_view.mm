@@ -33,7 +33,7 @@ NSString* const kReloadActionImage = @"ptr_reload";
 NSString* const kCloseActionImage = @"ptr_close";
 
 // The size of overscroll symbol images.
-const CGFloat kOverScrollSymbolPointSize = 17.;
+const CGFloat kOverScrollSymbolPointSize = 22.;
 
 // Represents a simple min/max range.
 typedef struct {
@@ -258,36 +258,45 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     [_selectionCircleCroppingLayer addSublayer:_selectionCircleLayer];
 
     _addTabActionImageView = [[UIImageView alloc] init];
-    _addTabActionImageView.image =
-        UseSymbols()
-            ? DefaultSymbolTemplateWithPointSize(kPlusSymbol,
-                                                 kOverScrollSymbolPointSize)
-            : [[UIImage imageNamed:kNewTabActionImage]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _addTabActionImageView.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+    if (UseSymbols()) {
+      _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
+          kPlusSymbol, kOverScrollSymbolPointSize);
+      _addTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    } else {
+      _addTabActionImageView.image = [[UIImage imageNamed:kNewTabActionImage]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      _addTabActionImageView.tintColor =
+          [UIColor colorNamed:kToolbarButtonColor];
+    }
     [_addTabActionImageView sizeToFit];
     [self addSubview:_addTabActionImageView];
     _reloadActionImageView = [[UIImageView alloc] init];
-    _reloadActionImageView.image =
-        UseSymbols()
-            ? CustomSymbolTemplateWithPointSize(kArrowClockWiseSymbol,
-                                                kOverScrollSymbolPointSize)
-            : [[UIImage imageNamed:kReloadActionImage]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _reloadActionImageView.tintColor = [UIColor colorNamed:kToolbarButtonColor];
+    if (UseSymbols()) {
+      _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
+          kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
+      _reloadActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    } else {
+      _reloadActionImageView.image = [[UIImage imageNamed:kReloadActionImage]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      _reloadActionImageView.tintColor =
+          [UIColor colorNamed:kToolbarButtonColor];
+    }
     [_reloadActionImageView sizeToFit];
     if (UseRTLLayout())
       [_reloadActionImageView setTransform:CGAffineTransformMakeScale(-1, 1)];
     [self addSubview:_reloadActionImageView];
     _closeTabActionImageView = [[UIImageView alloc] init];
-    _closeTabActionImageView.image =
-        UseSymbols()
-            ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
-                                                 kOverScrollSymbolPointSize)
-            : [[UIImage imageNamed:kCloseActionImage]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    _closeTabActionImageView.tintColor =
-        [UIColor colorNamed:kToolbarButtonColor];
+    if (UseSymbols()) {
+      _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
+          kXMarkSymbol, kOverScrollSymbolPointSize);
+      _closeTabActionImageView.tintColor =
+          [UIColor colorNamed:kTextPrimaryColor];
+    } else {
+      _closeTabActionImageView.image = [[UIImage imageNamed:kCloseActionImage]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      _closeTabActionImageView.tintColor =
+          [UIColor colorNamed:kToolbarButtonColor];
+    }
     [_closeTabActionImageView sizeToFit];
     [self addSubview:_closeTabActionImageView];
 

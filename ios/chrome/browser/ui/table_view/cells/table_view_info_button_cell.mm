@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -21,6 +22,8 @@ namespace {
 // Proportion of `textLayoutGuide` and `statusTextLabel`. This guarantees both
 // of them at least occupies 20% of the cell.
 const CGFloat kCellLabelsWidthProportion = 0.2f;
+
+const CGFloat kInfoSymbolSize = 22;
 
 }  // namespace
 
@@ -106,10 +109,15 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     [self.contentView addSubview:_statusTextLabel];
 
     _trailingButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [_trailingButton
-        setImage:[[UIImage imageNamed:@"table_view_cell_info"]
-                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-        forState:UIControlStateNormal];
+    UIImage* infoImage;
+    if (UseSymbols()) {
+      infoImage = DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                                     kInfoSymbolSize);
+    } else {
+      infoImage = [[UIImage imageNamed:@"table_view_cell_info"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
+    [_trailingButton setImage:infoImage forState:UIControlStateNormal];
     _trailingButton.tintColor = [UIColor colorNamed:kBlueColor];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_trailingButton
