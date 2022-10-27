@@ -60,11 +60,17 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
   }
 
   migrator_->Migrate(
+      base::BindRepeating(&LacrosDataBackwardMigrationScreen::OnProgress,
+                          weak_factory_.GetWeakPtr()),
       base::BindOnce(&LacrosDataBackwardMigrationScreen::OnMigrated,
                      weak_factory_.GetWeakPtr()));
 
   // Show the screen.
   view_->Show();
+}
+
+void LacrosDataBackwardMigrationScreen::OnProgress(int percent) {
+  view_->SetProgressValue(percent);
 }
 
 void LacrosDataBackwardMigrationScreen::OnMigrated(
@@ -74,7 +80,7 @@ void LacrosDataBackwardMigrationScreen::OnMigrated(
       chrome::AttemptRestart();
       break;
     case BrowserDataBackMigrator::Result::kFailed:
-      // TODO
+      view_->SetFailureStatus();
       break;
   }
 }

@@ -50,15 +50,23 @@ BrowserDataBackMigrator::BrowserDataBackMigrator(
 BrowserDataBackMigrator::~BrowserDataBackMigrator() = default;
 
 void BrowserDataBackMigrator::Migrate(
+    BackMigrationProgressCallback progress_callback,
     BackMigrationFinishedCallback finished_callback) {
   LOG(WARNING) << "BrowserDataBackMigrator::Migrate() is called.";
 
+  DCHECK(!running_);
   DCHECK(IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kBeforeInit));
+
+  running_ = true;
 
   const base::FilePath lacros_profile_dir =
       ash_profile_dir_.Append(browser_data_migrator_util::kLacrosDir);
 
+  progress_callback_ = std::move(progress_callback);
+  finished_callback_ = std::move(finished_callback);
+
+  SetProgress(MigrationStep::kPreMigrationCleanUp);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -66,7 +74,15 @@ void BrowserDataBackMigrator::Migrate(
       base::BindOnce(&BrowserDataBackMigrator::PreMigrationCleanUp,
                      ash_profile_dir_, lacros_profile_dir),
       base::BindOnce(&BrowserDataBackMigrator::OnPreMigrationCleanUp,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BrowserDataBackMigrator::SetProgress(MigrationStep step) {
+  int current_step = static_cast<int>(step);
+  int total_steps = static_cast<int>(MigrationStep::kMaxValue);
+  int percent = (current_step * 100) / total_steps;
+
+  progress_callback_.Run(percent);
 }
 
 // static
@@ -119,14 +135,14 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
 }
 
 void BrowserDataBackMigrator::OnPreMigrationCleanUp(
-    BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "PreMigrationCleanup() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
+  SetProgress(MigrationStep::kMergeSplitItems);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -134,7 +150,7 @@ void BrowserDataBackMigrator::OnPreMigrationCleanUp(
       base::BindOnce(&BrowserDataBackMigrator::MergeSplitItems,
                      ash_profile_dir_),
       base::BindOnce(&BrowserDataBackMigrator::OnMergeSplitItems,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -264,14 +280,14 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
 }
 
 void BrowserDataBackMigrator::OnMergeSplitItems(
-    BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "MergeSplitItems() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
+  SetProgress(MigrationStep::kDeleteAshItems);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -279,7 +295,7 @@ void BrowserDataBackMigrator::OnMergeSplitItems(
       base::BindOnce(&BrowserDataBackMigrator::DeleteAshItems,
                      ash_profile_dir_),
       base::BindOnce(&BrowserDataBackMigrator::OnDeleteAshItems,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -298,15 +314,14 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
   return {TaskStatus::kSucceeded};
 }
 
-void BrowserDataBackMigrator::OnDeleteAshItems(
-    BackMigrationFinishedCallback finished_callback,
-    TaskResult result) {
+void BrowserDataBackMigrator::OnDeleteAshItems(TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "DeleteAshItems() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
+  SetProgress(MigrationStep::kMoveLacrosItemsBackToAsh);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -314,7 +329,7 @@ void BrowserDataBackMigrator::OnDeleteAshItems(
       base::BindOnce(&BrowserDataBackMigrator::MoveLacrosItemsBackToAsh,
                      ash_profile_dir_),
       base::BindOnce(&BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -329,14 +344,14 @@ BrowserDataBackMigrator::MoveLacrosItemsBackToAsh(
 }
 
 void BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh(
-    BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "MoveLacrosItemsBackToAsh() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
+  SetProgress(MigrationStep::kMoveMergedItemsBackToAsh);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -344,7 +359,7 @@ void BrowserDataBackMigrator::OnMoveLacrosItemsBackToAsh(
       base::BindOnce(&BrowserDataBackMigrator::MoveMergedItemsBackToAsh,
                      ash_profile_dir_),
       base::BindOnce(&BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -359,14 +374,14 @@ BrowserDataBackMigrator::MoveMergedItemsBackToAsh(
 }
 
 void BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh(
-    BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "MoveMergedItemsBackToAsh() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
+  SetProgress(MigrationStep::kDeleteLacrosDir);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -374,7 +389,7 @@ void BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh(
       base::BindOnce(&BrowserDataBackMigrator::DeleteLacrosDir,
                      ash_profile_dir_),
       base::BindOnce(&BrowserDataBackMigrator::OnDeleteLacrosDir,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -396,21 +411,21 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteLacrosDir(
 }
 
 void BrowserDataBackMigrator::OnDeleteLacrosDir(
-    BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "DeleteLacrosDir() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
+  SetProgress(MigrationStep::kDeleteTmpDir);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&BrowserDataBackMigrator::DeleteTmpDir, ash_profile_dir_),
       base::BindOnce(&BrowserDataBackMigrator::OnDeleteTmpDir,
-                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -431,16 +446,16 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteTmpDir(
 }
 
 void BrowserDataBackMigrator::OnDeleteTmpDir(
-    BackMigrationFinishedCallback finished_callback,
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "DeleteTmpDir() failed.";
-    std::move(finished_callback).Run(ToResult(result));
+    std::move(finished_callback_).Run(ToResult(result));
     return;
   }
 
   LOG(WARNING) << "Backward migration completed successfully.";
-  std::move(finished_callback).Run(ToResult(result));
+  SetProgress(MigrationStep::kDone);
+  std::move(finished_callback_).Run(ToResult(result));
 }
 
 // static

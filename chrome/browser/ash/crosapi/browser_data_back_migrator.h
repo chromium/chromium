@@ -31,13 +31,21 @@ class BrowserDataBackMigrator {
 
   using BackMigrationFinishedCallback =
       base::OnceCallback<void(BrowserDataBackMigrator::Result)>;
+  using BackMigrationProgressCallback = base::RepeatingCallback<void(int)>;
 
   explicit BrowserDataBackMigrator(const base::FilePath& ash_profile_dir);
   BrowserDataBackMigrator(const BrowserDataBackMigrator&) = delete;
   BrowserDataBackMigrator& operator=(const BrowserDataBackMigrator&) = delete;
   ~BrowserDataBackMigrator();
 
-  void Migrate(BackMigrationFinishedCallback finished_callback);
+  // Migrate performs the Lacros -> Ash migration.
+  // progress_callback is called repeatedly with the current progress.
+  // finished_callback is called when migration completes successfully or with
+  // an error.
+
+  // Migrate can only be called once.
+  void Migrate(BackMigrationProgressCallback progress_callback,
+               BackMigrationFinishedCallback finished_callback);
 
   // IsBackMigrationEnabled determines if the feature is enabled.
   // It checks the following in order:
@@ -81,12 +89,31 @@ class BrowserDataBackMigrator {
     kMaxValue = kDeleteLacrosDirDeleteFailed,
   };
 
+  enum class MigrationStep {
+    kStart = 0,
+    kPreMigrationCleanUp = 1,
+    kMergeSplitItems = 2,
+    kMoveLacrosItemsBackToAsh = 3,
+    kDeleteAshItems = 4,
+    kMoveMergedItemsBackToAsh = 5,
+    kDeleteLacrosDir = 6,
+    kDeleteTmpDir = 7,
+    kDone = 8,
+    kMaxValue = kDone,
+  };
+
   struct TaskResult {
     TaskStatus status;
 
     // Value of `errno` set after a task has failed.
     absl::optional<int> posix_errno;
   };
+
+  bool running_ = false;
+  BackMigrationProgressCallback progress_callback_;
+  BackMigrationFinishedCallback finished_callback_;
+
+  void SetProgress(MigrationStep step);
 
   // Creates `kTmpDir` and deletes its contents if it already exists. Deletes
   // ash and lacros `ItemType::kDeletable` items to free up extra space but this
@@ -96,16 +123,14 @@ class BrowserDataBackMigrator {
       const base::FilePath& lacros_profile_dir);
 
   // Called as a reply to `PreMigrationCleanUp()`.
-  void OnPreMigrationCleanUp(BackMigrationFinishedCallback finished_callback,
-                             TaskResult result);
+  void OnPreMigrationCleanUp(TaskResult result);
 
   // Merges items that were split between Ash and Lacros and puts them into
   // the temporary directory created in `PreMigrationCleanUp()`.
   static TaskResult MergeSplitItems(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `MergeSplitItems()`.
-  void OnMergeSplitItems(BackMigrationFinishedCallback finished_callback,
-                         TaskResult result);
+  void OnMergeSplitItems(TaskResult result);
 
   // Deletes Ash items that will be overwritten by either Lacros items or items
   // merged in `MergeSplitItems()`. This prevents conflicts during the calls to
@@ -113,40 +138,33 @@ class BrowserDataBackMigrator {
   static TaskResult DeleteAshItems(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteAshItems()`.
-  void OnDeleteAshItems(BackMigrationFinishedCallback finished_callback,
-                        TaskResult result);
+  void OnDeleteAshItems(TaskResult result);
 
   // Moves Lacros-only items back into the Ash profile directory.
   static TaskResult MoveLacrosItemsBackToAsh(
       const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `MoveLacrosItemsBackToAsh()`.
-  void OnMoveLacrosItemsBackToAsh(
-      BackMigrationFinishedCallback finished_callback,
-      TaskResult result);
+  void OnMoveLacrosItemsBackToAsh(TaskResult result);
 
   // Moves the temporary directory into the Ash profile directory.
   static TaskResult MoveMergedItemsBackToAsh(
       const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `MoveMergedItemsBackToAsh()`.
-  void OnMoveMergedItemsBackToAsh(
-      BackMigrationFinishedCallback finished_callback,
-      TaskResult result);
+  void OnMoveMergedItemsBackToAsh(TaskResult result);
 
   // Deletes the Lacros profile directory.
   static TaskResult DeleteLacrosDir(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteLacrosDir()`.
-  void OnDeleteLacrosDir(BackMigrationFinishedCallback finished_callback,
-                         TaskResult result);
+  void OnDeleteLacrosDir(TaskResult result);
 
   // Deletes the temporary directory and completes the backward migration.
   static TaskResult DeleteTmpDir(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteTmpDir()`.
-  void OnDeleteTmpDir(BackMigrationFinishedCallback finished_callback,
-                      TaskResult result);
+  void OnDeleteTmpDir(TaskResult result);
 
   // For `target_dir` copy subdirectories belonging to extensions that are in
   // both Chromes from `lacros_profile_dir` to `tmp_user_dir`.

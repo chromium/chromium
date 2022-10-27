@@ -30,6 +30,9 @@ class LacrosDataBackwardMigrationScreen : public BaseScreen {
   void ShowImpl() override;
   void HideImpl() override;
 
+  // Updates progress during migration.
+  void OnProgress(int percent);
+
   // Called when migration is completed.
   void OnMigrated(BrowserDataBackMigrator::Result result);
 
