@@ -16,10 +16,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
-class TrayAccessibilityTest;
-}
-
 namespace views {
 class Button;
 class Button;
@@ -62,7 +58,6 @@ class ASH_EXPORT AccessibilityDetailedView
   friend class TrayAccessibilityLoginScreenTest;
   friend class TrayAccessibilitySodaTest;
   friend class TrayAccessibilityTest;
-  friend class chromeos::TrayAccessibilityTest;
 
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;

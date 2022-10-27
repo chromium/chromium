@@ -69,39 +69,31 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // any other view between the list and the footer row at the bottom.
   void CreateScrollableList();
 
-  // Adds a targetable row to |scroll_content_| containing |icon| and |text|.
-  HoverHighlightView* AddScrollListItem(const gfx::VectorIcon& icon,
+  // Adds a targetable row to `container` containing `icon` and `text`.
+  // Pre-QsRevamp the `container` should be scroll_content().
+  // Post-QsRevamp the `container` may be a RoundedContainer.
+  HoverHighlightView* AddScrollListItem(views::View* container,
+                                        const gfx::VectorIcon& icon,
                                         const std::u16string& text);
 
-  // Add a child view to the scroll list.
-  void AddScrollListChild(std::unique_ptr<views::View> child);
-
-  // Adds a targetable row to |scroll_content_| containing |icon|, |text|, and a
-  // checkbox. |checked| determines whether the checkbox is checked or not.
-  // |enterprise_managed| determines whether or not there will be an enterprise
+  // Adds a targetable row to `container` containing `icon`, `text`, and a
+  // checkbox. `checked` determines whether the checkbox is checked or not.
+  // `enterprise_managed` determines whether or not there will be an enterprise
   // managed icon for that item.
+  // Pre-QsRevamp the `container` should be scroll_content().
+  // Post-QsRevamp the `container` may be a RoundedContainer.
   HoverHighlightView* AddScrollListCheckableItem(
+      views::View* container,
       const gfx::VectorIcon& icon,
       const std::u16string& text,
       bool checked,
       bool enterprise_managed = false);
 
-  // Adds a targetable row to |scroll_content_| containing |text| and a
-  // checkbox. |checked| determines whether the checkbox is checked or not.
-  // |enterprise_managed| determines whether or not there will be an enterprise
-  // managed icon for that item.
-  HoverHighlightView* AddScrollListCheckableItem(
-      const std::u16string& text,
-      bool checked,
-      bool enterprise_managed = false);
-
-  // Adds a sticky sub header to |scroll_content_| containing |icon| and a text
-  // represented by |text_id| resource id.
-  TriView* AddScrollListSubHeader(const gfx::VectorIcon& icon, int text_id);
-
-  // Adds a sticky sub header to |scroll_content_| containing a text represented
-  // by |text_id| resource id.
-  TriView* AddScrollListSubHeader(int text_id);
+  // Adds a sticky sub header to `container` containing `icon` and a text
+  // represented by `text_id` resource id.
+  TriView* AddScrollListSubHeader(views::View* container,
+                                  const gfx::VectorIcon& icon,
+                                  int text_id);
 
   // Removes (and destroys) all child views.
   void Reset();

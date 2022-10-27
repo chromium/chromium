@@ -118,7 +118,7 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   // receivers.
   if (CastConfigController::Get()->AccessCodeCastingEnabled()) {
     add_access_code_device_ = AddScrollListItem(
-        vector_icons::kKeyboardIcon,
+        scroll_content(), vector_icons::kKeyboardIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
   }
@@ -127,7 +127,8 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   for (auto& it : sinks_and_routes_) {
     const CastSink& sink = it.second.sink;
     views::View* container = AddScrollListItem(
-        SinkIconTypeToIcon(sink.sink_icon_type), base::UTF8ToUTF16(sink.name));
+        scroll_content(), SinkIconTypeToIcon(sink.sink_icon_type),
+        base::UTF8ToUTF16(sink.name));
     view_to_sink_map_[container] = sink.id;
   }
 

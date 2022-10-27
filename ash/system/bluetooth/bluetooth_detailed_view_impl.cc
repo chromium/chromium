@@ -86,7 +86,7 @@ BluetoothDeviceListItemView* BluetoothDetailedViewImpl::AddDeviceListItem() {
 ash::TriView* BluetoothDetailedViewImpl::AddDeviceListSubHeader(
     const gfx::VectorIcon& icon,
     int text_id) {
-  return AddScrollListSubHeader(icon, text_id);
+  return AddScrollListSubHeader(scroll_content(), icon, text_id);
 }
 
 void BluetoothDetailedViewImpl::NotifyDeviceListChanged() {

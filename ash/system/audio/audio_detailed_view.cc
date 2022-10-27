@@ -25,6 +25,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
@@ -126,7 +127,7 @@ const char* AudioDetailedView::GetClassName() const {
 
 void AudioDetailedView::AddAudioSubHeader(const gfx::VectorIcon& icon,
                                           int text_id) {
-  TriView* header = AddScrollListSubHeader(icon, text_id);
+  TriView* header = AddScrollListSubHeader(scroll_content(), icon, text_id);
   header->SetContainerVisible(TriView::Container::END, false);
 }
 
@@ -185,7 +186,7 @@ void AudioDetailedView::UpdateScrollableList() {
       Shell::Get()->accessibility_controller();
   if (controller->IsLiveCaptionSettingVisibleInTray()) {
     live_caption_view_ = AddScrollListCheckableItem(
-        vector_icons::kLiveCaptionOnIcon,
+        scroll_content(), vector_icons::kLiveCaptionOnIcon,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION),
         controller->live_caption().enabled(),
         controller->IsEnterpriseIconVisibleForLiveCaption());
@@ -202,7 +203,8 @@ void AudioDetailedView::UpdateScrollableList() {
 
   for (const auto& device : output_devices_) {
     HoverHighlightView* container =
-        AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
+        AddScrollListCheckableItem(scroll_content(), gfx::kNoneIcon,
+                                   GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
   }
 
@@ -234,19 +236,20 @@ void AudioDetailedView::UpdateScrollableList() {
 
   for (const auto& device : input_devices_) {
     HoverHighlightView* container =
-        AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
+        AddScrollListCheckableItem(scroll_content(), gfx::kNoneIcon,
+                                   GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
 
     // Add the input noise cancellation toggle.
     if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
         audio_handler->noise_cancellation_supported()) {
       if (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION) {
-        AddScrollListChild(
+        scroll_content()->AddChildView(
             AudioDetailedView::CreateNoiseCancellationToggleRow(device));
       }
     }
 
-    AddScrollListChild(mic_gain_controller_->CreateMicGainSlider(
+    scroll_content()->AddChildView(mic_gain_controller_->CreateMicGainSlider(
         device.id, device.IsInternalMic()));
   }
 

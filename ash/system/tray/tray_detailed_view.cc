@@ -447,14 +447,11 @@ void TrayDetailedView::CreateScrollableList() {
   box_layout_->SetFlexForView(scroller_, 1);
 }
 
-void TrayDetailedView::AddScrollListChild(std::unique_ptr<views::View> child) {
-  scroll_content_->AddChildView(std::move(child));
-}
-
 HoverHighlightView* TrayDetailedView::AddScrollListItem(
+    views::View* container,
     const gfx::VectorIcon& icon,
     const std::u16string& text) {
-  HoverHighlightView* item = scroll_content_->AddChildView(
+  HoverHighlightView* item = container->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   if (icon.is_empty())
     item->AddLabelRow(text);
@@ -468,11 +465,12 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
 }
 
 HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
+    views::View* container,
     const gfx::VectorIcon& icon,
     const std::u16string& text,
     bool checked,
     bool enterprise_managed) {
-  HoverHighlightView* item = AddScrollListItem(icon, text);
+  HoverHighlightView* item = AddScrollListItem(container, icon, text);
   if (enterprise_managed) {
     item->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED, text));
@@ -481,15 +479,8 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
   return item;
 }
 
-HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
-    const std::u16string& text,
-    bool checked,
-    bool enterprise_managed) {
-  return AddScrollListCheckableItem(gfx::kNoneIcon, text, checked,
-                                    enterprise_managed);
-}
-
-TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
+TriView* TrayDetailedView::AddScrollListSubHeader(views::View* container,
+                                                  const gfx::VectorIcon& icon,
                                                   int text_id) {
   TriView* header = TrayPopupUtils::CreateSubHeaderRowView(true);
   TrayPopupUtils::ConfigureAsStickyHeader(header);
@@ -510,12 +501,8 @@ TriView* TrayDetailedView::AddScrollListSubHeader(const gfx::VectorIcon& icon,
                 AshColorProvider::ContentLayerType::kIconColorPrimary)));
   header->AddView(TriView::Container::START, sub_header_image_view_);
 
-  scroll_content_->AddChildView(header);
+  container->AddChildView(header);
   return header;
-}
-
-TriView* TrayDetailedView::AddScrollListSubHeader(int text_id) {
-  return AddScrollListSubHeader(gfx::kNoneIcon, text_id);
 }
 
 void TrayDetailedView::Reset() {

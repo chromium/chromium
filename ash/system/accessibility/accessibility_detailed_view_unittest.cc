@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
@@ -26,6 +27,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -409,6 +411,56 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   AccessibilityDetailedView* detailed_menu() { return detailed_menu_.get(); }
 
+  // Accessors for list item views.
+  views::View* spoken_feedback_view() const {
+    return detailed_menu_->spoken_feedback_view_;
+  }
+  views::View* select_to_speak_view() const {
+    return detailed_menu_->select_to_speak_view_;
+  }
+  views::View* dictation_view() const {
+    return detailed_menu_->dictation_view_;
+  }
+  views::View* high_contrast_view() const {
+    return detailed_menu_->high_contrast_view_;
+  }
+  views::View* screen_magnifier_view() const {
+    return detailed_menu_->screen_magnifier_view_;
+  }
+  views::View* docked_magnifier_view() const {
+    return detailed_menu_->docked_magnifier_view_;
+  }
+  views::View* large_cursor_view() const {
+    return detailed_menu_->large_cursor_view_;
+  }
+  views::View* live_caption_view() const {
+    return detailed_menu_->live_caption_view_;
+  }
+  views::View* autoclick_view() const {
+    return detailed_menu_->autoclick_view_;
+  }
+  views::View* virtual_keyboard_view() const {
+    return detailed_menu_->virtual_keyboard_view_;
+  }
+  views::View* mono_audio_view() const {
+    return detailed_menu_->mono_audio_view_;
+  }
+  views::View* caret_highlight_view() const {
+    return detailed_menu_->caret_highlight_view_;
+  }
+  views::View* highlight_mouse_cursor_view() const {
+    return detailed_menu_->highlight_mouse_cursor_view_;
+  }
+  views::View* highlight_keyboard_focus_view() const {
+    return detailed_menu_->highlight_keyboard_focus_view_;
+  }
+  views::View* sticky_keys_view() const {
+    return detailed_menu_->sticky_keys_view_;
+  }
+  views::View* switch_access_view() const {
+    return detailed_menu_->switch_access_view_;
+  }
+
  private:
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override {
@@ -423,6 +475,32 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   std::unique_ptr<AccessibilityDetailedView> detailed_menu_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(TrayAccessibilityTest, ListItemsAreInRoundedContainer) {
+  base::test::ScopedFeatureList feature_list{features::kQsRevamp};
+
+  CreateDetailedMenu();
+  auto has_rounded_container_parent = [](views::View* view) -> bool {
+    return views::IsViewClass<RoundedContainer>(view->parent());
+  };
+  EXPECT_TRUE(has_rounded_container_parent(spoken_feedback_view()));
+  EXPECT_TRUE(has_rounded_container_parent(select_to_speak_view()));
+  EXPECT_TRUE(has_rounded_container_parent(dictation_view()));
+  EXPECT_TRUE(has_rounded_container_parent(high_contrast_view()));
+  EXPECT_TRUE(has_rounded_container_parent(screen_magnifier_view()));
+  EXPECT_TRUE(has_rounded_container_parent(docked_magnifier_view()));
+  EXPECT_TRUE(has_rounded_container_parent(large_cursor_view()));
+  EXPECT_TRUE(has_rounded_container_parent(live_caption_view()));
+  EXPECT_TRUE(has_rounded_container_parent(autoclick_view()));
+  EXPECT_TRUE(has_rounded_container_parent(virtual_keyboard_view()));
+  EXPECT_TRUE(has_rounded_container_parent(mono_audio_view()));
+  EXPECT_TRUE(has_rounded_container_parent(caret_highlight_view()));
+  EXPECT_TRUE(has_rounded_container_parent(highlight_mouse_cursor_view()));
+  EXPECT_TRUE(has_rounded_container_parent(highlight_keyboard_focus_view()));
+  EXPECT_TRUE(has_rounded_container_parent(sticky_keys_view()));
+  EXPECT_TRUE(has_rounded_container_parent(switch_access_view()));
+  CloseDetailMenu();
+}
 
 TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
   // Except help & settings, others should be kept the same
