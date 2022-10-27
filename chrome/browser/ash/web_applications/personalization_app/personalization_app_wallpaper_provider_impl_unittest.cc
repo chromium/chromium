@@ -511,6 +511,20 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsPngBytes) {
   EXPECT_TRUE(expected_png_bytes->Equals(png_bytes));
 }
 
+TEST_P(PersonalizationAppWallpaperProviderImplTest,
+       SetDailyRefreshCollectionId) {
+  const std::string collection_id = "collection_id";
+
+  // Test setting a daily refresh collection id.
+  wallpaper_provider_remote()->get()->SetDailyRefreshCollectionId(
+      collection_id, base::BindLambdaForTesting(
+                         [](mojom::SetDailyRefreshResponsePtr response) {
+                           EXPECT_TRUE(response->success);
+                           EXPECT_TRUE(response->force_refresh);
+                         }));
+  wallpaper_provider_remote()->FlushForTesting();
+}
+
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
     : public PersonalizationAppWallpaperProviderImplTest {
  protected:

@@ -72,6 +72,7 @@ export class WallpaperObserver implements WallpaperObserverInterface {
     store.dispatch(setSelectedImageAction(currentWallpaper));
     if (currentWallpaper &&
         (currentWallpaper.type == WallpaperType.kDailyGooglePhotos ||
+         currentWallpaper.type == WallpaperType.kDaily ||
          currentWallpaper.type == WallpaperType.kDefault)) {
       store.dispatch(setUpdatedDailyRefreshImageAction());
     }

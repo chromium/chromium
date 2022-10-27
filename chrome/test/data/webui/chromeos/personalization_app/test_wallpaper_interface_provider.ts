@@ -262,6 +262,10 @@ export class TestWallpaperProvider extends
 
   setDailyRefreshCollectionId(collectionId: string) {
     this.methodCalled('setDailyRefreshCollectionId', collectionId);
+    const response = new SetDailyRefreshResponse();
+    response.success = false;
+    response.forceRefresh = false;
+    return Promise.resolve({response});
   }
 
   getDailyRefreshCollectionId() {

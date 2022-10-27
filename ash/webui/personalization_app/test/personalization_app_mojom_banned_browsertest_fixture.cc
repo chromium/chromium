@@ -206,7 +206,8 @@ class MockPersonalizationAppWallpaperProvider
               (override));
   MOCK_METHOD(void,
               SetDailyRefreshCollectionId,
-              (const std::string& collection_id),
+              (const std::string& collection_id,
+               SetDailyRefreshCollectionIdCallback callback),
               (override));
   MOCK_METHOD(void,
               GetDailyRefreshCollectionId,

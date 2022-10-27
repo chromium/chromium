@@ -163,7 +163,8 @@ void FakePersonalizationAppWallpaperProvider::SetCurrentWallpaperLayout(
 }
 
 void FakePersonalizationAppWallpaperProvider::SetDailyRefreshCollectionId(
-    const std::string& collection_id) {
+    const std::string& collection_id,
+    SetDailyRefreshCollectionIdCallback callback) {
   return;
 }
 

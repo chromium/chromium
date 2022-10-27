@@ -601,7 +601,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
 
 void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     const std::string& album_id,
-    SelectGooglePhotosAlbumCallback callback) {
+    SetDailyRefreshCallback callback) {
   if (!is_google_photos_enterprise_enabled_) {
     std::move(callback).Run(mojom::SetDailyRefreshResponse::New(
         /*success=*/false, /*force_refresh=*/false));
@@ -610,12 +610,12 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
     return;
   }
 
-  if (pending_select_google_photos_album_callback_) {
-    std::move(pending_select_google_photos_album_callback_)
+  if (pending_set_daily_refresh_callback_) {
+    std::move(pending_set_daily_refresh_callback_)
         .Run(mojom::SetDailyRefreshResponse::New(/*success=*/false,
                                                  /*force_refresh=*/false));
   }
-  pending_select_google_photos_album_callback_ = std::move(callback);
+  pending_set_daily_refresh_callback_ = std::move(callback);
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
 
@@ -649,7 +649,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosAlbum(
         backend_weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  std::move(pending_select_google_photos_album_callback_)
+  std::move(pending_set_daily_refresh_callback_)
       .Run(mojom::SetDailyRefreshResponse::New(
           /*success=*/true, /*force_refresh=*/false));
 }
@@ -669,9 +669,52 @@ void PersonalizationAppWallpaperProviderImpl::SetCurrentWallpaperLayout(
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
-    const std::string& collection_id) {
-  WallpaperController::Get()->SetDailyRefreshCollectionId(
-      GetAccountId(profile_), collection_id);
+    const std::string& collection_id,
+    SetDailyRefreshCallback callback) {
+  if (pending_set_daily_refresh_callback_) {
+    std::move(pending_set_daily_refresh_callback_)
+        .Run(mojom::SetDailyRefreshResponse::New(/*success=*/false,
+                                                 /*force_refresh=*/false));
+  }
+  pending_set_daily_refresh_callback_ = std::move(callback);
+
+  auto* controller = WallpaperController::Get();
+  controller->SetDailyRefreshCollectionId(GetAccountId(profile_),
+                                          collection_id);
+
+  absl::optional<ash::WallpaperInfo> info =
+      controller->GetActiveUserWallpaperInfo();
+  DCHECK(info);
+  if (info->type != WallpaperType::kDaily) {
+    // Daily refresh is disabled.
+    std::move(pending_set_daily_refresh_callback_)
+        .Run(mojom::SetDailyRefreshResponse::New(
+            /*success=*/true, /*force_refresh=*/false));
+    return;
+  }
+
+  bool force_refresh = !info->asset_id.has_value();
+  if (info->asset_id.has_value()) {
+    const auto& it = image_asset_id_map_.find(info->asset_id.value());
+
+    // Only force refresh if the current wallpaper image does not belong to
+    // this collection.
+    force_refresh = it == image_asset_id_map_.end() ||
+                    it->second.collection_id != collection_id;
+  }
+  DVLOG(1) << __func__ << " info=" << info.value()
+           << " collection_id=" << collection_id
+           << " force_refresh=" << force_refresh;
+  if (force_refresh) {
+    controller->UpdateDailyRefreshWallpaper(base::BindOnce(
+        &PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced,
+        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  std::move(pending_set_daily_refresh_callback_)
+      .Run(mojom::SetDailyRefreshResponse::New(
+          /*success=*/true, /*force_refresh=*/false));
 }
 
 void PersonalizationAppWallpaperProviderImpl::GetDailyRefreshCollectionId(
@@ -876,8 +919,8 @@ void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperUpdated(
 
 void PersonalizationAppWallpaperProviderImpl::OnDailyRefreshWallpaperForced(
     bool success) {
-  DCHECK(pending_select_google_photos_album_callback_);
-  std::move(pending_select_google_photos_album_callback_)
+  DCHECK(pending_set_daily_refresh_callback_);
+  std::move(pending_set_daily_refresh_callback_)
       .Run(
           mojom::SetDailyRefreshResponse::New(success, /*force_refresh=*/true));
 }

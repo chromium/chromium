@@ -300,8 +300,10 @@ interface WallpaperProvider {
     // Sets the layout for current wallpaper.
     SetCurrentWallpaperLayout(WallpaperLayout layout);
 
-    // Set and enable daily refresh for the given |collection_id|.
-    SetDailyRefreshCollectionId(string collection_id);
+    // Sets and enables daily refresh for the given |collection_id|. May refresh
+    // the current wallpaper image if it is not part of the collection.
+    SetDailyRefreshCollectionId(string collection_id)
+        => (SetDailyRefreshResponse response);
 
     // Get the daily refresh collection id. It can be empty if daily refresh is
     // not enabled.

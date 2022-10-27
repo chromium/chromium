@@ -106,7 +106,9 @@ class FakePersonalizationAppWallpaperProvider
 
   void SetCurrentWallpaperLayout(ash::WallpaperLayout layout) override;
 
-  void SetDailyRefreshCollectionId(const std::string& collection_id) override;
+  void SetDailyRefreshCollectionId(
+      const std::string& collection_id,
+      SetDailyRefreshCollectionIdCallback callback) override;
 
   void GetDailyRefreshCollectionId(
       GetDailyRefreshCollectionIdCallback callback) override;

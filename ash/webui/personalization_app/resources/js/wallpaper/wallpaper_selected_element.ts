@@ -317,10 +317,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
       setDailyRefreshCollectionId(
           isDailyRefreshId ? '' : this.collectionId!, getWallpaperProvider(),
           this.getStore());
-      // Only refresh the wallpaper if daily refresh is toggled on.
-      if (!isDailyRefreshId) {
-        updateDailyRefreshWallpaper(getWallpaperProvider(), this.getStore());
-      }
     }
   }
 
