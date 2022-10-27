@@ -74,6 +74,7 @@ group("locally_built") {
     ":libxss1",
     ":libxtst6",
     ":nss",
+    ":opensc-pkcs11",
     ":pango1.0",
     ":pulseaudio",
     ":zlib1g",
@@ -782,6 +783,10 @@ instrumented_library("nss") {
     "patches/nss.2.diff",
   ]
   build_method = "custom_nss"
+}
+
+instrumented_library("opensc-pkcs11") {
+  build_method = "debian"
 }
 
 instrumented_library("pango1.0") {

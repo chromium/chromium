@@ -72,6 +72,7 @@ libxss \
 libxtst \
 nspr \
 nss \
+opensc-pkcs11 \
 p11-kit \
 pango1.0 \
 pciutils \
