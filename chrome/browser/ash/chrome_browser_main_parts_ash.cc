@@ -830,9 +830,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Now that the file thread exists we can record our stats.
   BootTimesRecorder::Get()->RecordChromeMainStats();
 
-  // Trigger prefetching of ownership status.
-  DeviceSettingsService::Get()->Load();
-
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- just before CreateProfile().
 

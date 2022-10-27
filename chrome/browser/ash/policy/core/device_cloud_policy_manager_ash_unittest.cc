@@ -366,6 +366,9 @@ class DeviceCloudPolicyManagerAshTest
 
 TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
   owner_key_util_->Clear();
+  // Normally this happens at signin screen profile creation. But
+  // TestingProfile doesn't do that.
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -377,6 +380,9 @@ TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
 
 TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDevice) {
   LockDevice();
+  // Normally this happens at signin screen profile creation. But
+  // TestingProfile doesn't do that.
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -414,6 +420,9 @@ TEST_F(DeviceCloudPolicyManagerAshTest, UnmanagedDevice) {
   session_manager_client_.set_device_policy(device_policy_->GetBlob());
 
   LockDevice();
+  // Normally this happens at signin screen profile creation. But
+  // TestingProfile doesn't do that.
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_FALSE(store_->is_managed());
@@ -452,6 +461,7 @@ TEST_F(DeviceCloudPolicyManagerAshTest, UnmanagedDevice) {
       &policy_job, net::OK, DeviceManagementService::kSuccess,
       policy_fetch_response);
   EXPECT_FALSE(policy_job.IsActive());
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
 
   // Policy state should now be active and the policy map should be populated.
@@ -460,6 +470,7 @@ TEST_F(DeviceCloudPolicyManagerAshTest, UnmanagedDevice) {
 }
 
 TEST_F(DeviceCloudPolicyManagerAshTest, ConsumerDevice) {
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_BAD_STATE, store_->status());
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -481,6 +492,7 @@ TEST_F(DeviceCloudPolicyManagerAshTest, ConsumerDevice) {
 
 TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
   LockDevice();
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
   EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -534,6 +546,7 @@ class DeviceCloudPolicyManagerAshObserverTest
 
 TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
   LockDevice();
+  device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
   EXPECT_FALSE(manager_->IsConnected());
 
@@ -613,7 +626,10 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
         ->set_auth_code("auth_code_for_test");
 
     // Initialize the manager.
+    device_settings_service_->LoadImmediately();
     FlushDeviceSettings();
+    // Since the install attributes is not locked, the store status is
+    // BAD_STATE.
     EXPECT_EQ(CloudPolicyStore::STATUS_BAD_STATE, store_->status());
     EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -908,6 +924,9 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Success) {
 
 TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, Reenrollment) {
   LockDevice();
+  // Normally this happens at signin screen profile creation. But
+  // TestingProfile doesn't do that.
+  device_settings_service_->LoadImmediately();
   RunTest();
   ExpectSuccessfulEnrollment();
   EXPECT_TRUE(GetDeviceRegisterRequest()->reregister());

@@ -102,6 +102,18 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
 
 DeviceCloudPolicyManagerAsh::~DeviceCloudPolicyManagerAsh() = default;
 
+void DeviceCloudPolicyManagerAsh::Init(SchemaRegistry* registry) {
+  ConfigurationPolicyProvider::Init(registry);
+
+  store()->AddObserver(this);
+
+  // If the underlying store is already initialized, pretend it was loaded now.
+  // Note: It is not enough to just copy OnStoreLoaded's contents here because
+  // subclasses can override it.
+  if (store()->is_initialized())
+    OnStoreLoaded(store());
+}
+
 void DeviceCloudPolicyManagerAsh::Initialize(PrefService* local_state) {
   CHECK(local_state);
 

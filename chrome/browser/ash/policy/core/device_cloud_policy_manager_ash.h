@@ -86,6 +86,9 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 
   ~DeviceCloudPolicyManagerAsh() override;
 
+  // ConfigurationPolicyProvider:
+  void Init(SchemaRegistry* registry) override;
+
   // Initializes state keys.
   void Initialize(PrefService* local_state);
 
