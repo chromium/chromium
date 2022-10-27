@@ -152,6 +152,7 @@ Vp8FrameHeader GetDefaultVp8FrameHeader(bool keyframe,
 
 constexpr uint8_t kMinSupportedVP8TemporalLayers = 2;
 constexpr uint8_t kMaxSupportedVP8TemporalLayers = 3;
+constexpr size_t kTemporalLayerCycle = 4;
 
 bool UpdateFrameHeaderForTemporalLayerEncoding(
     const size_t num_layers,
@@ -176,7 +177,6 @@ bool UpdateFrameHeaderForTemporalLayerEncoding(
     metadata.layer_sync = false;
     buffer_flags.fill(kUpdate);
   } else {
-    constexpr size_t kTemporalLayerCycle = 4;
     constexpr std::pair<Vp8Metadata,
                         std::array<BufferFlags, kNumVp8ReferenceBuffers>>
         kFrameConfigs[][kTemporalLayerCycle] = {
@@ -464,16 +464,18 @@ bool VP8VaapiVideoEncoderDelegate::UpdateRates(
                << new_num_temporal_layers;
       num_temporal_layers_ =
           base::checked_cast<uint8_t>(new_num_temporal_layers);
-      // We need to change a temporal layer structure.
-      // Reset |frame_num_| to 0 to start with keyframe.
-      frame_num_ = 0;
+      static_assert(base::bits::IsPowerOfTwo(kTemporalLayerCycle),
+                    "temporal layer cycle must be power of two");
+      // The number of temporal layers is changed. We need to start with the
+      // bottom temporal layer structure and frames in non-bottom temporal
+      // layers don't reference frames.
+      frame_num_ = base::bits::AlignUp(frame_num_, kTemporalLayerCycle);
     }
   }
 
   rate_ctrl_->UpdateRateControl(
       CreateRateControlConfig(visible_size_, current_params_,
                               bitrate_allocation, num_temporal_layers_));
-
   return true;
 }
 
