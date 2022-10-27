@@ -241,6 +241,14 @@ public class DisplayAndroid {
     }
 
     /**
+     * Return window context for display android. Implemented by @{@link PhysicalDisplayAndroid}
+     * @return window context.
+     */
+    public Context getWindowContext() {
+        return null;
+    }
+
+    /**
      * Add observer. Note repeat observers will be called only one.
      * Observers are held only weakly by Display.
      */
@@ -311,7 +319,6 @@ public class DisplayAndroid {
                 && (mDisplayModes == null ? true : mDisplayModes.equals(supportedModes));
         boolean currentModeChanged =
                 currentMode != null && !currentMode.equals(mCurrentDisplayMode);
-
         boolean changed = sizeChanged || dipScaleChanged || bitsPerPixelChanged
                 || bitsPerComponentChanged || rotationChanged || isDisplayWideColorGamutChanged
                 || isDisplayServerWideColorGamutChanged || isRefreshRateChanged

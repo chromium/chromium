@@ -6544,6 +6544,10 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kConditionalTabStripAndroid,
          kConditionalTabStripAndroidVariations,
          "ConditioanlTabStrip")},
+
+    {"enable-foldable-jank-fix", flag_descriptions::kFoldableJankFixAndroidName,
+     flag_descriptions::kFoldableJankFixAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kFoldableJankFix)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"unsafely-treat-insecure-origin-as-secure",

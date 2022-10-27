@@ -4093,13 +4093,18 @@ const char kTabStripImprovementsAndroidDescription[] =
 const char kDiscoverFeedMultiColumnAndroidName[] =
     "Multi-column Discover feed Android.";
 const char kDiscoverFeedMultiColumnAndroidDescription[] =
-    "Enabled single or multi-column Discover feed based on screen width on "
+    "Enables single or multi-column Discover feed based on screen width on "
     "Android.";
 
 const char kTabStripRedesignAndroidName[] = "Tab Strip Redesign Android.";
 const char kTabStripRedesignAndroidDescription[] =
     "Enabled Tab Strip Redesign on Android - A visual redesign of Clank Tab "
     "Strip that is consistent with GM3.";
+
+const char kFoldableJankFixAndroidName[] = "Fix for jank seen on foldables.";
+const char kFoldableJankFixAndroidDescription[] =
+    "Enables fix for jank seen during fold to unfold transition on foldables "
+    "with Android 12+";
 
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";

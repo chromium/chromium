@@ -58707,6 +58707,7 @@ from previous Chrome versions.
   <int value="-1290053302"
       label="OfflinePagesInDownloadHomeOpenInCct:disabled"/>
   <int value="-1289678848" label="SystemDownloadManager:enabled"/>
+  <int value="-1289087296" label="FoldableJankFix:enabled"/>
   <int value="-1289078823"
       label="EnableDesksTrackpadSwipeImprovements:enabled"/>
   <int value="-1288130734" label="OpenVR:disabled"/>
@@ -59558,6 +59559,7 @@ from previous Chrome versions.
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
   <int value="-797310986" label="CSSFragmentIdentifiers:disabled"/>
+  <int value="-796775379" label="FoldableJankFix:disabled"/>
   <int value="-795600188" label="disable-async-dns"/>
   <int value="-793921836" label="ShowAllDialogsWithViewsToolkit:disabled"/>
   <int value="-793383355" label="StrictOriginIsolation:enabled"/>

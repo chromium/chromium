@@ -102,6 +102,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sEarlyLibraryLoad);
                 add(ChromeFeatureList.sElasticOverscroll);
                 add(ChromeFeatureList.sFeedLoadingPlaceholder);
+                add(ChromeFeatureList.sFoldableJankFix);
                 add(ChromeFeatureList.sGridTabSwitcherForTablets);
                 add(ChromeFeatureList.sImmersiveUiMode);
                 add(ChromeFeatureList.sIncognitoReauthenticationForAndroid);

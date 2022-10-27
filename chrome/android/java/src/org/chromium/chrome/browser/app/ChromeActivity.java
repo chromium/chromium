@@ -1749,14 +1749,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             public void onCurrentModeChanged(Mode currentMode) {
                 maybeOnScreenSizeChange();
             }
-
-            private void maybeOnScreenSizeChange() {
-                if (didChangeTabletMode()) {
-                    onScreenLayoutSizeChange();
-                }
-            }
         };
         display.addObserver(mDisplayAndroidObserver);
+    }
+
+    private boolean maybeOnScreenSizeChange() {
+        if (didChangeTabletMode()) {
+            return onScreenLayoutSizeChange();
+        }
+        return false;
     }
 
     /**
@@ -2126,8 +2127,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
         if (mConfig != null) {
-            if (mTabReparentingControllerSupplier.get() != null && didChangeTabletMode()) {
-                onScreenLayoutSizeChange();
+            if (mTabReparentingControllerSupplier.get() != null && maybeOnScreenSizeChange()) {
+                return;
             }
             // For UI mode type, we only need to recreate for TELEVISION to update refresh rate.
             // Note that if UI mode night changes, with or without other changes, we will
@@ -2154,7 +2155,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         getActivityTab());
             }
         }
-
         mConfig = newConfig;
     }
 
@@ -2910,13 +2910,18 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /**
      * Switch between phone and tablet mode and do the tab re-parenting in the meantime.
+     * @return whether screen layout change lead to a recreate.
      */
-    private void onScreenLayoutSizeChange() {
+    private boolean onScreenLayoutSizeChange() {
         if (mTabReparentingControllerSupplier.get() != null && !mIsTabReparentingPrepared) {
             mTabReparentingControllerSupplier.get().prepareTabsForReparenting();
             mIsTabReparentingPrepared = true;
-            if (!isFinishing()) recreate();
+            if (!isFinishing()) {
+                recreate();
+                return true;
+            }
         }
+        return false;
     }
 
     @VisibleForTesting

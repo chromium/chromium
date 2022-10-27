@@ -91,6 +91,7 @@ BASE_DECLARE_FEATURE(kDuetTabStripIntegrationAndroid);
 BASE_DECLARE_FEATURE(kExperimentsForAgsa);
 BASE_DECLARE_FEATURE(kExploreSites);
 BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
+BASE_DECLARE_FEATURE(kFoldableJankFix);
 BASE_DECLARE_FEATURE(kGridTabSwitcherForTablets);
 BASE_DECLARE_FEATURE(kHandleMediaIntents);
 BASE_DECLARE_FEATURE(kImmersiveUiMode);

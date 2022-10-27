@@ -2324,6 +2324,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-foldable-jank-fix",
+    "owners": [ "skavuluru", "clank-app-team@google.com" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "enable-force-dark",
     "owners": [ "beverloo", "pdr" ],
     "expiry_milestone": 115

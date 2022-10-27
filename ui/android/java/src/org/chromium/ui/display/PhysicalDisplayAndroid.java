@@ -160,6 +160,11 @@ import java.util.List;
         }
     }
 
+    @Override
+    public Context getWindowContext() {
+        return mWindowContext;
+    }
+
     private void updateFromConfiguration() {
         Point size = new Point();
         WindowManager windowManager = mWindowContext.getSystemService(WindowManager.class);
