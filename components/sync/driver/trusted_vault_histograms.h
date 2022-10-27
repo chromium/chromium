@@ -76,8 +76,7 @@ void RecordTrustedVaultDeviceRegistrationState(
 void RecordTrustedVaultURLFetchResponse(
     int http_response_code,
     int net_error,
-    TrustedVaultURLFetchReasonForUMA reason =
-        TrustedVaultURLFetchReasonForUMA::kUnspecified);
+    TrustedVaultURLFetchReasonForUMA reason);
 
 // Records the outcome of trying to download keys from the server.
 // |also_log_with_v1_suffx| allows the caller to determine whether the local
