@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
@@ -240,12 +241,11 @@ std::vector<TrustToken> TrustTokenStore::RetrieveMatchingTokens(
   if (!config)
     return matching_tokens;
 
-  std::copy_if(config->tokens().begin(), config->tokens().end(),
-               std::back_inserter(matching_tokens),
-               [&key_matcher](const TrustToken& token) {
-                 return token.has_signing_key() &&
-                        key_matcher.Run(token.signing_key());
-               });
+  base::ranges::copy_if(config->tokens(), std::back_inserter(matching_tokens),
+                        [&key_matcher](const TrustToken& token) {
+                          return token.has_signing_key() &&
+                                 key_matcher.Run(token.signing_key());
+                        });
 
   return matching_tokens;
 }

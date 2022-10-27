@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
@@ -155,11 +156,11 @@ ResolveHostRequest::GetEndpointResultsWithMetadata() const {
   // addresses(non-protocol endpoints), and this information is passed as
   // another parameter at least in OnComplete method, so drop that here to avoid
   // providing redundant information.
-  std::copy_if(endpoint_results->begin(), endpoint_results->end(),
-               std::back_inserter(endpoint_results_with_metadata),
-               [](const auto& result) {
-                 return !result.metadata.supported_protocol_alpns.empty();
-               });
+  base::ranges::copy_if(
+      *endpoint_results, std::back_inserter(endpoint_results_with_metadata),
+      [](const auto& result) {
+        return !result.metadata.supported_protocol_alpns.empty();
+      });
 
   return endpoint_results_with_metadata;
 }

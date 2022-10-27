@@ -118,9 +118,8 @@ void SCTAuditingHandler::MaybeEnqueueReport(
   // a valid signature, and thus are expected to be public certificates. If
   // there are no valid SCTs, there's no need to report anything.
   net::SignedCertificateTimestampAndStatusList validated_scts;
-  std::copy_if(
-      signed_certificate_timestamps.begin(),
-      signed_certificate_timestamps.end(), std::back_inserter(validated_scts),
+  base::ranges::copy_if(
+      signed_certificate_timestamps, std::back_inserter(validated_scts),
       [](const auto& sct) { return sct.status == net::ct::SCT_STATUS_OK; });
   if (validated_scts.empty()) {
     return;
