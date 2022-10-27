@@ -15,8 +15,9 @@
 
 using JavaScriptTabModalDialogViewViewsBrowserTestMac = InProcessBrowserTest;
 
+// Test is flaky. https://crbug.com/1379104.
 IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
-                       AlertDialogAccessibleNameDescriptionAndRole) {
+                       DISABLED_AlertDialogAccessibleNameDescriptionAndRole) {
   std::u16string title = u"Title";
   std::u16string message = u"The message";
   auto* dialog_views =
