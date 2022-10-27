@@ -3537,6 +3537,9 @@ Connect your device to power.
       <message name="IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_SHOW" desc="Text to be spoken when the focus is set to the display password button (in Show state) on login screen.">
         Show password
       </message>
+      <message name="IDS_ASH_LOGIN_CAPS_LOCK_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the Caps Lock button on login screen.">
+        Caps Lock is on
+      </message>
       <message name="IDS_ASH_LOGIN_DISPLAY_PASSWORD_BUTTON_ACCESSIBLE_NAME_HIDE" desc="Text to be spoken when the focus is set to the display password button (in Hide state) on login screen.">
         Hide password
       </message>

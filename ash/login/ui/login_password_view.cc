@@ -979,6 +979,8 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
     color = ColorUtil::GetDisabledColor(color);
   capslock_icon_->SetImage(
       gfx::CreateVectorIcon(kLockScreenCapsLockIcon, kIconSizeDp, color));
+  capslock_icon_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_CAPS_LOCK_ACCESSIBLE_NAME));
 }
 
 }  // namespace ash
