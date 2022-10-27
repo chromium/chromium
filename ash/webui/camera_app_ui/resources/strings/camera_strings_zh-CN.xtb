@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1057925581724305206">全高清 (1080p)</translation>
 <translation id="1076394037877376434">删除第 <ph name="PAGE_NUMBER" /> 页</translation>
 <translation id="1113173431709655881">相机模式</translation>
 <translation id="1153190633558910465">网格已关闭</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">正常</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">高清 (720p)</translation>
 <translation id="1664224225747386870">未记录任何数据</translation>
 <translation id="1838104802459806957">向上倾斜</translation>
 <translation id="1843105061469674856">再扫描一页</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">最大分辨率</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">录制多个视频流</translation>
+<translation id="4984613436295737187">2K (1440p)</translation>
 <translation id="5034763830503483128">照片宽高比</translation>
 <translation id="5057360777601936059">您的摄像头目前不可用。
         请检查此摄像头是否连接正确。</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">文件左上角</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5320594929574852403">正在向左移动</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">请将文件的各个边置于框内。当文件的颜色与背景的颜色不同时，扫描效果最佳。</translation>
 <translation id="5662366948659129155">正在扫描第 <ph name="COUNT" /> 页</translation>
 <translation id="5671277269877808209">方形</translation>

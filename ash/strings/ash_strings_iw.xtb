@@ -432,6 +432,7 @@
 <translation id="3413817803639110246">עדיין אין מה לראות</translation>
 <translation id="3428447136709161042">התנתקות מ-<ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">יש להחליק מצד ימין כדי לחזור אחורה</translation>
+<translation id="3431517721463707585">שולחן עבודה וירטואלי מספר 14</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
 <translation id="343571671045587506">עריכת תזכורת</translation>
 <translation id="3435967511775410570">טביעת האצבע זוהתה</translation>
@@ -672,6 +673,7 @@
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (שמאל)</translation>
 <translation id="4734965478015604180">אופקי</translation>
+<translation id="4735944890391795473">שולחן עבודה וירטואלי מספר 12</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4740516757091333363">למחוק את שולחן העבודה השמור?</translation>
 <translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. צריך להסיר שולחן עבודה וירטואלי כדי לשמור אחד חדש.</translation>
@@ -692,6 +694,7 @@
 <translation id="4860284199500934869">צריך לבדוק את החיבור לרשת כדי להוריד את <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">‏יתבצע ניסיון הורדה מאוחר יותר. הדיבור יישלח אל Google לעיבוד עד שההורדה תושלם.</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
+<translation id="4864648187878336334">שולחן עבודה וירטואלי מספר 15</translation>
 <translation id="4868492592575313542">מופעלת</translation>
 <translation id="4872237917498892622">‏Alt + חיפוש או Shift</translation>
 <translation id="4881695831933465202">פתיחה</translation>
@@ -718,6 +721,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">שולחן עבודה וירטואלי מספר 16</translation>
 <translation id="5003993274120026347">המשפט הבא</translation>
 <translation id="5016558321564993266">החלפת המצב של כלי הסימון. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">נגמר הזמן</translation>
@@ -733,6 +737,7 @@
 <translation id="5098537242461068432">שולחן העבודה הווירטואלי והחלונות נפתחו מחדש</translation>
 <translation id="5104236669533825617">לא ניתן ליצור הקלטת מסך</translation>
 <translation id="5107522548814527560">אינטרנט</translation>
+<translation id="5111318697104479778"><ph name="DESC" />,‏ <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
 <translation id="5147567197700016471">הנעילה בוטלה</translation>
@@ -820,6 +825,7 @@
 <translation id="5625955975703555628">+LTE</translation>
 <translation id="5648021990716966815">שקע מיקרופון</translation>
 <translation id="5652575806481723716">האפליקציה <ph name="FOCUSED_APP_NAME" /> מבקשת את תשומת לבך.</translation>
+<translation id="5662075790140998213">שולחן עבודה וירטואלי מספר 10</translation>
 <translation id="5662709761327382534">‏הקלטת המיקרופון <ph name="CURRENT_STATE" />, יש להקיש על Enter כדי להעביר את הקלטת המיקרופון למצב <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ההפעלה מתבצעת</translation>
 <translation id="5673434351075758678">מ"<ph name="FROM_LOCALE" />" ל"<ph name="TO_LOCALE" />" אחרי סנכרון ההגדרות.</translation>
@@ -1019,6 +1025,8 @@
 <translation id="6753390234084146956">כרטיסיות</translation>
 <translation id="6757237461819837179">מדיה לא מופעלת</translation>
 <translation id="6777216307882431711">‏אספקת חשמל למכשירים המחוברים ב-USB-C</translation>
+<translation id="6781002679438061620">שולחן עבודה וירטואלי מספר 9</translation>
+<translation id="6782182743534150858">שולחן עבודה וירטואלי מספר 13</translation>
 <translation id="6786750046913594791">סגירת התיקייה</translation>
 <translation id="6787595647772650851">שחזור הסשן האחרון</translation>
 <translation id="6790428901817661496">הפעלה</translation>
@@ -1079,6 +1087,7 @@
 <translation id="7098053464892629930">‏אפשר להוריד את האפליקציה של <ph name="NAME" /> ב‑Google Play ולראות את כל התכונות הזמינות</translation>
 <translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
 <translation id="7106330611027933926">הצגת הסרגל של שולחנות העבודה הווירטואליים</translation>
+<translation id="7116969082764510092">שולחן עבודה וירטואלי מספר 11</translation>
 <translation id="7118268675952955085">צילום מסך</translation>
 <translation id="7126996685418858413">נפתח בשבוע האחרון</translation>
 <translation id="7130207228079676353">סבירות גבוהה</translation>
@@ -1179,6 +1188,7 @@
 <translation id="7662283695561029522">יש להקיש כדי להגדיר</translation>
 <translation id="7670953955701272011">‏פתיחת התאריך הזה ביומן Google</translation>
 <translation id="7671610481353807627">האפליקציות ממוינות לפי צבע</translation>
+<translation id="7672095158465655885">מחובר אל <ph name="NAME" />,‏ <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">הקלט של המצלמה מוגדר בתור <ph name="CAMERA_NAME" />.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">הוספה של רשת סלולרית חדשה</translation>
@@ -1464,5 +1474,6 @@
 <translation id="974545358917229949">מוצגות <ph name="RESULT_COUNT" /> תוצאות עבור השאילתה: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">לרוחב</translation>
 <translation id="990277280839877440">החלון <ph name="WINDOW_TITILE" /> נסגר.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />,‏ <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">קבלה של התכונות ושיפורי האבטחה האחרונים. העדכונים מתבצעים ברקע.</translation>
 </translationbundle>

@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">创建时间</translation>
 <translation id="1067661089446014701">为了提高安全性，您可以先在设备上对密码进行加密，然后再将其保存到您的 Google 帐号</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
+<translation id="1069104208554708737">这个通行密钥只会保存在此设备上</translation>
 <translation id="1069355737714877171">移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="1069814191880976658">选择一个不同的屏幕</translation>
 <translation id="1070377999570795893">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的扩展程序。
@@ -348,6 +349,7 @@
 <translation id="1324106254079708331">为所有可能会遭到定向攻击的个人 Google 帐号提供保护</translation>
 <translation id="1327272175893960498">Kerberos 票据</translation>
 <translation id="1327495825214193325">要启用 ADB 调试，您必须重启此<ph name="DEVICE_TYPE" />。要停用它，则必须将此设备恢复出厂设置。</translation>
+<translation id="1327527584824210101">使用通行密钥</translation>
 <translation id="1327794256477341646">所有需要使用您的位置信息的功能都将无法正常运行</translation>
 <translation id="1331977651797684645">是我本人。</translation>
 <translation id="1333489022424033687">请清除您设备上存储的其他网站的数据，否则 <ph name="ORIGIN" /> 上的某些功能可能无法正常运行</translation>
@@ -408,6 +410,7 @@
 <translation id="139013308650923562">可以使用您设备上安装的字体</translation>
 <translation id="1390548061267426325">在常规标签页中打开</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" />无权通过“<ph name="PRINTER_NAME" />”进行打印。请与您的管理员联系。</translation>
+<translation id="1392047138650695757">用户字典</translation>
 <translation id="1393283411312835250">太阳和云朵</translation>
 <translation id="1395730723686586365">更新程序已启动</translation>
 <translation id="1395832189806039783">突出显示键盘焦点所在的项</translation>
@@ -1512,6 +1515,7 @@
 <translation id="2356070529366658676">询问</translation>
 <translation id="2357330829548294574">移除<ph name="USER_NAME" /></translation>
 <translation id="2358561147588818967">网站可以使用 JavaScript</translation>
+<translation id="2358703245148663432">另一部设备</translation>
 <translation id="2358777858338503863">点击即可允许访问 <ph name="ORIGIN" />：</translation>
 <translation id="2359071692152028734">Linux 应用可能会变得无响应。</translation>
 <translation id="2359345697448000899">您可以通过点击“工具”菜单中的“扩展程序”，管理您的扩展程序。</translation>
@@ -1872,6 +1876,7 @@
 <translation id="271033894570825754">新建</translation>
 <translation id="2711073837061989559">试用版</translation>
 <translation id="2712173769900027643">请求批准</translation>
+<translation id="2712207122921938368">在另一部设备上创建通行密钥</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
@@ -2384,6 +2389,7 @@
 <translation id="3182749001423093222">拼写检查</translation>
 <translation id="3183139917765991655">个人资料导入应用</translation>
 <translation id="3183143381919926261">移动数据网络</translation>
+<translation id="3183613134231754987">此通行密钥只会保存在 Windows Hello 中。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{这个应用已被屏蔽}other{某些应用已被屏蔽}}</translation>
@@ -2865,6 +2871,7 @@
 <translation id="3654045516529121250">读取您的无障碍设置</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{此应用对 1 个文件拥有永久访问权限。}other{此应用对 # 个文件拥有永久访问权限。}}</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
+<translation id="3659550105763988702">将您的通行密钥用于<ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">访问代码输错次数过多。请稍后重试</translation>
 <translation id="3660234220361471169">不可信</translation>
 <translation id="3664511988987167893">扩展程序图标</translation>
@@ -3139,6 +3146,7 @@
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> 想获得以下权限：<ph name="FIRST_PERMISSION" />和<ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3900966090527141178">导出密码</translation>
+<translation id="3902789559055749153">选择您希望以何种方式为<ph name="APP_NAME" />创建通行密钥</translation>
 <translation id="3903187154317825986">内置键盘</translation>
 <translation id="3904326018476041253">位置信息服务</translation>
 <translation id="3904849010307028014">网站可以根据您与其进行的互动（例如定期登录帐号）向您的浏览器颁发信任令牌。之后，如果您访问的其他网站检查并找到有效的信任令牌，就更有可能将您视为真人而非机器人。</translation>
@@ -3467,6 +3475,7 @@
 <translation id="4218081191298393750">点击扬声器图标即可将此标签页静音</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">激活时出错。</translation>
+<translation id="4223845867739585293">创建通行密钥</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -4108,6 +4117,7 @@
 <translation id="4838907349371614303">密码已更新</translation>
 <translation id="4838958829619609362">所选内容的语言不是<ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">视频另存为(&amp;V)...</translation>
+<translation id="4839910546484524995">检查您的设备</translation>
 <translation id="4840096453115567876">仍要退出无痕模式？</translation>
 <translation id="4841741146571978176">缺少一个必需的虚拟机。请尝试设置 <ph name="VM_TYPE" /> 以继续</translation>
 <translation id="4842976633412754305">此网页正试图从未经验证的来源加载脚本。</translation>
@@ -5026,6 +5036,7 @@
 <translation id="5729712731028706266">视图(&amp;V)</translation>
 <translation id="5731247495086897348">粘贴并转到(&amp;S)</translation>
 <translation id="5732392974455271431">您的父母可为您取消屏蔽此网站</translation>
+<translation id="5733109311583381874">将您自己的字词添加到用户字典中，以便自定义候选转换字词。</translation>
 <translation id="5733866499231170760">ID 无效。您输入的格式不正确。请查看您已收到的说明，以确保使用正确的格式输入 ID。如果您无法解决此问题，请将该字段留空并继续安装。</translation>
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
@@ -5137,6 +5148,7 @@
 <translation id="583431638776747">网站出问题了</translation>
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 摄像头或麦克风正在录制/录音</translation>
+<translation id="5835625581856809102">通过您要为<ph name="APP_NAME" />创建通行密钥所在的设备，扫描此二维码</translation>
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
@@ -5377,6 +5389,7 @@
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
 <translation id="6059652578941944813">证书层次结构</translation>
 <translation id="6059925163896151826">USB 设备</translation>
+<translation id="6061408389284235459">通知已发送至<ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">创建二维码</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与<ph name="SUPERVISED_USER_NAME" />相似或拥有后者的语音录音，此人可能也能获取后者的个人信息相关结果。为了省电，您可以在<ph name="SUPERVISED_USER_NAME" />的 Google 助理设置中选择让“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
@@ -5505,6 +5518,7 @@
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6178682841350631965">您的登录数据已更新</translation>
 <translation id="6180510783007738939">直线工具</translation>
+<translation id="6180550893222597997">您要将哪个通行密钥用于<ph name="APP_NAME" />？</translation>
 <translation id="6181431612547969857">下载已被阻止</translation>
 <translation id="6184099524311454384">搜索标签页</translation>
 <translation id="6185132558746749656">设备位置</translation>
@@ -5942,6 +5956,7 @@
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">个样本的平均值</translation>
 <translation id="6597331566371766302">您的管理员已屏蔽以下扩展程序：</translation>
+<translation id="6601262427770154296">管理用户字典</translation>
 <translation id="6601612474695404578">某些网站会使用第三方 Cookie 加载网页。如果某个网站无法正常运行，您可以尝试允许使用 Cookie。</translation>
 <translation id="6602937173026466876">访问您的打印机</translation>
 <translation id="6602956230557165253">使用左右箭头键进行导航。</translation>
@@ -6307,6 +6322,7 @@
 <translation id="6943060957016121200">启用“即时网络共享”</translation>
 <translation id="6943176775188458830">取消打印</translation>
 <translation id="6943939122536910181">已断开与“<ph name="DEVICE" />”的连接</translation>
+<translation id="6944708469742828051">此通行密钥只会保存在 Windows Hello 中</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="694592694773692225">已在此网页上阻止重定向。</translation>
 <translation id="6947015141909171112">系统会根据您近期在 Google 搜索中进行过的食谱搜索活动向您显示食谱。
@@ -6559,6 +6575,7 @@
 <translation id="7193051357671784796">此应用由您所属的组织添加。请重启此应用以完成安装。</translation>
 <translation id="7193374945610105795">未保存任何用于登录 <ph name="ORIGIN" /> 的密码</translation>
 <translation id="7194873994243265344">贵组织屏蔽了此文件，因为它已加密。请让它的所有者进行解密。</translation>
+<translation id="7196272782924897510">使用另一部设备中的通行密钥？</translation>
 <translation id="7196913789568937443">备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。您的备份内容会包含应用数据、会上传到 Google 并会使用您的 Google 帐号密码进行加密。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">每次浏览时都可畅享 Google 搜索功能和 Google 智能工具</translation>
 <translation id="719791532916917144">键盘快捷键</translation>
@@ -7058,6 +7075,7 @@
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">使用系统标题栏和边框</translation>
 <translation id="767127784612208024">轻触以确认重置</translation>
+<translation id="7672504401554182757">选择用于<ph name="APP_NAME" />的通行密钥在哪部设备中</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />（在 <ph name="PAGE_TITLE" /> 中）。</translation>
 <translation id="7674416868315480713">停用 Linux 中所有正被转发的端口</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 个应用</translation>
@@ -7168,6 +7186,7 @@
 <translation id="7766807826975222231">功能导览</translation>
 <translation id="7766838926148951335">接受权限</translation>
 <translation id="7767554953520855281">当您共享屏幕时，系统会隐藏详细信息</translation>
+<translation id="7767972280546034736">为<ph name="APP_NAME" />创建通行密钥</translation>
 <translation id="7768507955883790804">网站会在您访问时自动采用此设置</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> 将能够查看“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="7768770796815395237">更改</translation>
@@ -7658,6 +7677,7 @@
 <translation id="820568752112382238">最常访问的网站</translation>
 <translation id="8206745257863499010">音符</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
+<translation id="8207404892907560325">选择一个通行密钥</translation>
 <translation id="8208216423136871611">不保存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 条新通知}}</translation>
 <translation id="821119981794423735">若要将密码导入 <ph name="USER_EMAIL" /> 的 Google 密码管理工具，请选择一个 CSV 文件</translation>
@@ -7832,6 +7852,7 @@
 <translation id="8376137163494131156">请将 Google Cast 发生的情况告诉我们。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
+<translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8379156816349755485">一旦您登录，系统便会存储一个独一无二的身份验证令牌，并会使用它保存今后所有符合条件的下载内容。</translation>
 <translation id="8379878387931047019">此设备不支持该网站要求使用的安全密钥的类型</translation>
@@ -8665,6 +8686,7 @@
       <ph name="LIST_ITEM" />运行 Chrome 连接诊断工具
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">画中画</translation>
+<translation id="9166253503936244008">通过您要用于<ph name="APP_NAME" />的通行密钥所在的设备，扫描此二维码</translation>
 <translation id="9167063903968449027">显示阅读清单</translation>
 <translation id="9167450455589251456">此个人资料不受支持</translation>
 <translation id="9168436347345867845">以后再说</translation>

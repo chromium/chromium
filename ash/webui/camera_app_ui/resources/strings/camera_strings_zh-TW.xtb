@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1057925581724305206">Full HD 高畫質 (1080p)</translation>
 <translation id="1076394037877376434">刪除第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="1113173431709655881">相機模式</translation>
 <translation id="1153190633558910465">關閉格線</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">一般</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD 高畫質 (720p)</translation>
 <translation id="1664224225747386870">未錄製任何內容</translation>
 <translation id="1838104802459806957">向上傾斜</translation>
 <translation id="1843105061469674856">掃描其他頁面</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">完整解析度</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">錄製多串流視訊</translation>
+<translation id="4984613436295737187">Quad HD 高畫質 (1440p)</translation>
 <translation id="5034763830503483128">相片顯示比例</translation>
 <translation id="5057360777601936059">目前無法使用相機。
         請檢查相機是否已正確連接。</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">文件左上角</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5320594929574852403">向左移動</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">將鏡頭對準文件，確認各邊都在方框內。如要獲得最佳的掃描效果，請將文件與背景的顏色區分開來。</translation>
 <translation id="5662366948659129155">正在掃描第 <ph name="COUNT" /> 頁</translation>
 <translation id="5671277269877808209">正方形</translation>

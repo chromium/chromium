@@ -1523,7 +1523,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2352810082280059586">Lukustuskuva märkmed salvestatakse automaatselt rakendusse <ph name="LOCK_SCREEN_APP_NAME" />. Teie kõige viimane märge jääb lukustuskuvale.</translation>
 <translation id="2353297238722298836">Kaamera ja mikrofon on lubatud</translation>
 <translation id="2355314311311231464">Ettevalmistamine ebaõnnestus, kuna teie konto üksikasju ei õnnestunud hankida. Proovige uuesti. Veakood: <ph name="ERROR_CODE" />.</translation>
-<translation id="2355477091455974894">Energia säästmise valikud</translation>
+<translation id="2355477091455974894">Energiasäästja valikud</translation>
 <translation id="2355604387869345912">Automaatse jagamise sisselülitamine</translation>
 <translation id="2356070529366658676">Küsi</translation>
 <translation id="2357330829548294574">Eemaldage <ph name="USER_NAME" /></translation>
@@ -5858,7 +5858,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6494327278868541139">Kuva täiustatud kaitse üksikasjad</translation>
 <translation id="6494445798847293442">Pole sertifitseerimisorgan</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Need andmed sisaldavad tundlikku või ohtlikku sisu}=1{See fail sisaldab tundlikku või ohtlikku sisu}other{Need failid sisaldavad tundlikku või ohtlikku sisu}}</translation>
-<translation id="6497548114956205206">Lugege lisateavet energiasäästja kohta</translation>
+<translation id="6497548114956205206">Lisateave energiasäästja kohta</translation>
 <translation id="6497784818439587832">Muutke kuvamissuurust, et ekraanil kuvatud üksused väiksemaks või suuremaks teha</translation>
 <translation id="6497789971060331894">Hiirega tagurpidi kerimine</translation>
 <translation id="6498249116389603658">&amp;Kõik teie keeled</translation>
@@ -7839,7 +7839,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8340547030807793004">Rohkem toiminguid: <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Vaadake üle <ph name="BEGIN_BOLD" />1 sait<ph name="END_BOLD" />, mis saatis hiljuti palju märguandeid}other{Vaadake üle <ph name="BEGIN_BOLD" />{NUM_SITES} saiti<ph name="END_BOLD" />, mis saatsid hiljuti palju märguandeid}}</translation>
 <translation id="8342221978608739536">Ei proovinud</translation>
-<translation id="8342399870062010251">Lugege lisateavet mälusäästja kohta</translation>
+<translation id="8342399870062010251">Lisateave mälusäästja kohta</translation>
 <translation id="8342861492835240085">Kogu valimine</translation>
 <translation id="8345848587667658367">Saate nüüd vaadata oma telefoni hiljutisi fotosid, meediat, märguandeid ja rakendusi</translation>
 <translation id="8347227221149377169">Prinditööd</translation>

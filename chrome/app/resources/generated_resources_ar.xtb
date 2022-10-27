@@ -5640,6 +5640,7 @@
 <translation id="6295855836753816081">جارٍ الحفظ...</translation>
 <translation id="629730747756840877">الحساب</translation>
 <translation id="6298962879096096191">‏استخدام Google Play لتثبيت تطبيقات Android</translation>
+<translation id="6300125580697461004">إرسال ملاحظات حول وضع "توفير الطاقة"</translation>
 <translation id="6300177430812514606">المواقع الإلكترونية التي لا يُسمح لها بإنهاء إرسال البيانات أو استلامها</translation>
 <translation id="630065524203833229">إن&amp;هاء</translation>
 <translation id="6300718114348072351">تعذّر ضبط <ph name="PRINTER_NAME" /> تلقائيًا. يُرجى تحديد التفاصيل المتقدّمة للطابعة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -5840,6 +5841,7 @@
 <translation id="6494327278868541139">عرض تفاصيل الحماية المُحسَّنة</translation>
 <translation id="6494445798847293442">ليست مرجعًا مصدقًا</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{تشتمل هذه البيانات على محتوى حسّاس أو خطير.}=1{يشتمل هذا الملف على محتوى حسّاس أو خطير.}two{يشتمل هذان الملفان على محتوى حسّاس أو خطير.}few{تشتمل هذه الملفات على محتوى حسّاس أو خطير.}many{تشتمل هذه الملفات على محتوى حسّاس أو خطير.}other{تشتمل هذه الملفات على محتوى حسّاس أو خطير.}}</translation>
+<translation id="6497548114956205206">مزيد من المعلومات حول وضع "توفير الطاقة"</translation>
 <translation id="6497784818439587832">يمكنك تغيير حجم العرض لتصغير حجم العناصر التي تظهر على الشاشة أو تكبيرها.</translation>
 <translation id="6497789971060331894">التمرير العكسي عبر الماوس</translation>
 <translation id="6498249116389603658">&amp;جميع اللغات</translation>
@@ -7403,6 +7405,7 @@
 <translation id="7955177647836564772">‏في حال تفعيل مجموعة ميزات Smart Lock وكان هاتفك غير مقفل، لن تحتاج إلى إدخال كلمة مرور أو رقم تعريف شخصي.</translation>
 <translation id="7956373551960864128">الطابعات المحفوظة</translation>
 <translation id="7957074856830851026">الاطّلاع على معلومات الجهاز، مثل الرقم التسلسلي أو رقم تعريف مادة العرض</translation>
+<translation id="7957186326898555886">إرسال ملاحظات حول وضع "توفير الذاكرة"</translation>
 <translation id="7959074893852789871">احتوى الملف على شهادات متعددة، لم يتم استيراد بعضها:</translation>
 <translation id="7959665254555683862">&amp;علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
@@ -7823,6 +7826,7 @@
 <translation id="8340547030807793004">مزيد من الإجراءات لجهاز <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{مراجعة <ph name="BEGIN_BOLD" />موقع إلكتروني واحد<ph name="END_BOLD" /> أرسل الكثير من الإشعارات مؤخرًا}zero{مراجعة <ph name="BEGIN_BOLD" />{NUM_SITES} موقع إلكتروني<ph name="END_BOLD" /> أرسلت الكثير من الإشعارات مؤخرًا}two{مراجعة <ph name="BEGIN_BOLD" />موقعَين ({NUM_SITES}) إلكترونيَّين<ph name="END_BOLD" /> أرسلا الكثير من الإشعارات مؤخرًا}few{مراجعة <ph name="BEGIN_BOLD" />{NUM_SITES} مواقع إلكترونية<ph name="END_BOLD" /> أرسلت الكثير من الإشعارات مؤخرًا}many{مراجعة <ph name="BEGIN_BOLD" />{NUM_SITES} موقعًا إلكترونيًا<ph name="END_BOLD" /> أرسلت الكثير من الإشعارات مؤخرًا}other{مراجعة <ph name="BEGIN_BOLD" />{NUM_SITES} موقع إلكتروني<ph name="END_BOLD" /> أرسلت الكثير من الإشعارات مؤخرًا}}</translation>
 <translation id="8342221978608739536">لم أحاول</translation>
+<translation id="8342399870062010251">مزيد من المعلومات حول وضع "توفير الذاكرة"</translation>
 <translation id="8342861492835240085">اختيار مجموعة</translation>
 <translation id="8345848587667658367">يمكنك الآن الاطّلاع على أحدث الصور والوسائط والإشعارات والتطبيقات المتوفّرة على هاتفك</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
@@ -8030,6 +8034,7 @@
 <translation id="8549316893834449916">‏يجب أن تستخدم حسابك على Google لتسجيل الدخول إلى جهاز Chromebook، وهو الحساب نفسه الذي تستخدمه على Gmail وDrive وYouTube وغيرها من المنتجات.</translation>
 <translation id="8551388862522347954">التراخيص</translation>
 <translation id="8551588720239073785">إعدادات التاريخ والوقت</translation>
+<translation id="8552102814346875916">الحفظ ضمن قائمة "إبقاء المواقع الإلكترونية التالية نشطة طوال الوقت"</translation>
 <translation id="8553342806078037065">إدارة الأشخاص الآخرين</translation>
 <translation id="8554899698005018844">بدون لغة</translation>
 <translation id="855604308879080518">‏يسمح هذا الإعداد لتطبيقات Android بالوصول إلى أجهزة USB على جهاز Chromebook هذا. سيتم طلب إذن الوصول إلى أجهزة USB في كل مرة توصِّل فيها جهاز USB. ستطلب تطبيقات Android كلٌ على حدة الحصول على أذونات إضافية.</translation>
