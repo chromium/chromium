@@ -1184,6 +1184,12 @@ extern const char kOmniboxRetainSuggestionsWithHeadersDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 
+extern const char kOmniboxReportAssistedQueryStatsName[];
+extern const char kOmniboxReportAssistedQueryStatsDescription[];
+
+extern const char kOmniboxReportSearchboxStatsName[];
+extern const char kOmniboxReportSearchboxStatsDescription[];
+
 extern const char kOmniboxZeroSuggestPrefetchingOnSRPName[];
 extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
 

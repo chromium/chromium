@@ -5611,6 +5611,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuzzyUrlSuggestions)},
 
+    {"omnibox-report-assisted-query-stats",
+     flag_descriptions::kOmniboxReportAssistedQueryStatsName,
+     flag_descriptions::kOmniboxReportAssistedQueryStatsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kReportAssistedQueryStats)},
+
+    {"omnibox-report-searchbox-stats",
+     flag_descriptions::kOmniboxReportSearchboxStatsName,
+     flag_descriptions::kOmniboxReportSearchboxStatsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kReportSearchboxStats)},
+
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription, kOsAll,

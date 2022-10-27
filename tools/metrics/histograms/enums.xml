@@ -61099,6 +61099,7 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:enabled"/>
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
   <int value="140257184" label="ChromeOSAmbientModeNewUrl:enabled"/>
+  <int value="140427435" label="OmniboxReportSearchboxStats:enabled"/>
   <int value="141482401" label="ConsumerAutoUpdateToggleAllowed:disabled"/>
   <int value="143725809" label="DownloadProgressInfoBar:enabled"/>
   <int value="144868136" label="DesktopPWAsNotificationIconAndTitle:enabled"/>
@@ -62003,6 +62004,7 @@ from previous Chrome versions.
       label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>
   <int value="694016981" label="query-tiles-more-trending"/>
   <int value="694165544" label="NtpComprehensiveTheming:disabled"/>
+  <int value="694376282" label="OmniboxReportAssistedQueryStats:enabled"/>
   <int value="694985670" label="OmniboxUIExperimentNarrowDropdown:disabled"/>
   <int value="695385040" label="enable-external-drive-rename"/>
   <int value="696261973" label="GaiaActionButtons:enabled"/>
@@ -63493,6 +63495,7 @@ from previous Chrome versions.
   <int value="1601012975" label="FeedStamp:disabled"/>
   <int value="1601231448" label="VirtualKeyboardMultipaste:disabled"/>
   <int value="1601582484" label="enable-crash-reporter-for-testing"/>
+  <int value="1602054107" label="OmniboxReportSearchboxStats:disabled"/>
   <int value="1602627012" label="OverrideSitePrefsForHrefTranslate:enabled"/>
   <int value="1602869271" label="ChromeShareScreenshot:disabled"/>
   <int value="1603578716" label="CaptionSettings:disabled"/>
@@ -63744,6 +63747,7 @@ from previous Chrome versions.
   <int value="1758688616" label="OmniboxModernizeVisualUpdate:disabled"/>
   <int value="1759323272" label="DefaultCalculatorWebApp:disabled"/>
   <int value="1760946944" label="MacViewsAutofillPopup:disabled"/>
+  <int value="1761576233" label="OmniboxReportAssistedQueryStats:disabled"/>
   <int value="1761920078"
       label="OverrideSimilarLanguagesForHrefTranslate:enabled"/>
   <int value="1762320532" label="AutofillKeyboardAccessory:enabled"/>
