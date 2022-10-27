@@ -459,7 +459,6 @@ group("gn_all") {
       "//ash/keyboard/ui:keyboard_unittests",
       "//ash/webui:ash_webui_unittests",
       "//chrome/browser/metrics/perf:profile_provider_unittest",
-      "//chrome/test:ash_crosapi_browsertests",
       "//chrome/test:ash_crosapi_tests",
       "//chrome/test:usage_time_limit_unittests",
       "//chromeos/ash/components/proximity_auth:proximity_auth_unittests",

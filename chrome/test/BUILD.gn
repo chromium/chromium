@@ -11182,28 +11182,6 @@ if (is_chromeos_ash) {
     ]
     data_deps = [ ":test_ash_chrome" ]
   }
-
-  # This target is for Ash-side crosapi browser testing.
-  # TODO(crbug.com/1357441): Remove this build set when all tests are migrated into
-  # "ash_crosapi_tests" above.
-  test("ash_crosapi_browsertests") {
-    use_xvfb = use_xvfb_in_this_config
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = []
-    deps = [
-      ":browser_tests_runner",
-      ":test_support_ui",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/ash",
-      "//chrome/browser/ash/crosapi",
-      "//chrome/browser/ui",
-      "//chromeos/crosapi/mojom",
-      "//components/services/app_service/public/cpp:app_types",
-    ]
-  }
 }
 
 if (is_linux || is_mac || is_win) {
