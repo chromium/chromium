@@ -29,7 +29,7 @@ bool DownloadAutoOpenPolicyHandler::CheckPolicySettings(
       !policy_value->is_list())
     return false;
 
-  base::Value::ConstListView policy_list = policy_value->GetListDeprecated();
+  const base::Value::List& policy_list = policy_value->GetList();
   for (size_t i = 0; i < policy_list.size(); ++i) {
     const std::string extension = policy_list[i].GetString();
     // If it's empty or malformed, then mark it as an error.
@@ -55,7 +55,7 @@ void DownloadAutoOpenPolicyHandler::ApplyPolicySettings(
   DCHECK(policy_value->is_list());
 
   base::ListValue pref_values;
-  for (const auto& entry : policy_value->GetListDeprecated()) {
+  for (const auto& entry : policy_value->GetList()) {
     const std::string extension = entry.GetString();
     // If it's empty or malformed, then skip the entry.
     if (extension.empty() ||
