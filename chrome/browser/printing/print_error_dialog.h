@@ -8,7 +8,6 @@
 #include "base/functional/callback_forward.h"
 
 // Shows a window-modal error that printing failed for some unknown reason.
-// TODO(vitalybuka, crbug.com/351550): Should be replaced with better UI.
 void ShowPrintErrorDialog();
 
 // Provide callback for testing purposes.  Allows test framework to be notified
