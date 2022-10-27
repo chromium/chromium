@@ -114,7 +114,7 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_ad_related_(false),
       is_lcp_element_(false),
       is_changed_shortly_after_mouseover_(false),
-      has_sizes_attribute_(false),
+      has_sizes_attribute_in_img_or_sibling_(false),
       is_lazy_loaded_(false),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault) {
   SetHasCustomStyleCallbacks();
@@ -296,7 +296,6 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
       listener_ = MakeGarbageCollected<ViewportChangeListener>(this);
 
     GetDocument().GetMediaQueryMatcher().AddViewportListener(listener_);
-    // If we have a listener, that means a viewport dependent image
   } else if (listener_) {
     GetDocument().GetMediaQueryMatcher().RemoveViewportListener(listener_);
   }
@@ -377,11 +376,6 @@ void HTMLImageElement::ParseAttribute(
     }
   } else {
     HTMLElement::ParseAttribute(params);
-  }
-  if (has_sizes_attribute_ && is_lazy_loaded_ && listener_) {
-    UseCounter::Count(
-        GetDocument(),
-        WebFeature::kViewportDependentLazyLoadedImageWithSizesAttribute);
   }
 }
 
@@ -803,7 +797,8 @@ FetchParameters::ResourceWidth HTMLImageElement::GetResourceWidth() const {
 float HTMLImageElement::SourceSize(Element& element) {
   float value;
   // We only care if the sizes attribute exist here for use counter purposes..
-  has_sizes_attribute_ = SourceSizeValue(&element, GetDocument(), value);
+  has_sizes_attribute_in_img_or_sibling_ =
+      SourceSizeValue(&element, GetDocument(), value);
   return value;
 }
 
@@ -889,6 +884,17 @@ void HTMLImageElement::EnsurePrimaryContent() {
 
 bool HTMLImageElement::IsCollapsed() const {
   return layout_disposition_ == LayoutDisposition::kCollapsed;
+}
+
+void HTMLImageElement::SetAutoSizesUsecounter() {
+  if (is_lazy_loaded_ && listener_) {
+    UseCounter::Count(
+        GetDocument(),
+        has_sizes_attribute_in_img_or_sibling_
+            ? WebFeature::kViewportDependentLazyLoadedImageWithSizesAttribute
+            : WebFeature::
+                  kViewportDependentLazyLoadedImageWithoutSizesAttribute);
+  }
 }
 
 void HTMLImageElement::SetLayoutDisposition(

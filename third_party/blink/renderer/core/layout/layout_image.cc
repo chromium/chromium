@@ -468,6 +468,7 @@ void LayoutImage::UpdateAfterLayout() {
   if (auto* image_element = DynamicTo<HTMLImageElement>(node)) {
     media_element_parser_helpers::CheckUnsizedMediaViolation(
         this, image_element->IsDefaultIntrinsicSize());
+    image_element->SetAutoSizesUsecounter();
 
     // Scope to the outermost frame to avoid counting image ads that are
     // (likely) already in ad iframes. Exclude image ads that are invisible or
