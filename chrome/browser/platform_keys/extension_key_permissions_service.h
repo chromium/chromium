@@ -119,7 +119,7 @@ class ExtensionKeyPermissionsService {
   // used for signing by the extension with id |extension_id_|.
   // |key_locations| must describe locations available to the user the private
   // key is stored on.
-  void CanUseKeyForSigning(const std::string& public_key_spki_der,
+  void CanUseKeyForSigning(const std::vector<uint8_t>& public_key_spki_der,
                            CanUseKeyForSigningCallback callback);
 
   // Must be called when the extension with id |extension_id| used the private
@@ -128,7 +128,7 @@ class ExtensionKeyPermissionsService {
   // Updates the permissions accordingly.  E.g. if this extension generated
   // the key and no other permission was granted then the permission to sign
   // with this key is removed.
-  void SetKeyUsedForSigning(const std::string& public_key_spki_der,
+  void SetKeyUsedForSigning(const std::vector<uint8_t>& public_key_spki_der,
                             SetKeyUsedForSigningCallback callback);
 
   // Registers the private key matching |public_key_spki_der| as being generated

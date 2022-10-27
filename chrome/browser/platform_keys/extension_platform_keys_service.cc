@@ -415,7 +415,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   // error status is passed to |callback|.
   SignTask(absl::optional<platform_keys::TokenId> token_id,
            const std::string& data,
-           const std::string& public_key_spki_der,
+           std::vector<uint8_t> public_key_spki_der,
            platform_keys::KeyType key_type,
            platform_keys::HashAlgorithm hash_algorithm,
            const std::string& extension_id,
@@ -423,7 +423,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
            ExtensionPlatformKeysService* service)
       : token_id_(token_id),
         data_(StrToBlob(data)),
-        public_key_spki_der_(public_key_spki_der),
+        public_key_spki_der_(std::move(public_key_spki_der)),
         extension_id_(extension_id),
         callback_(std::move(callback)),
         service_(service) {
@@ -548,9 +548,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
     }
 
     service_->keystore_service_->Sign(
-        is_keystore_provided, keystore, StrToBlob(public_key_spki_der_),
-        signing_scheme_, data_,
-        base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
+        is_keystore_provided, keystore, public_key_spki_der_, signing_scheme_,
+        data_, base::BindOnce(&SignTask::DidSign, weak_factory_.GetWeakPtr()));
   }
 
   void DidSign(KeystoreBinaryResultPtr result) {
@@ -573,7 +572,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   absl::optional<platform_keys::TokenId> token_id_;
   const std::vector<uint8_t> data_;
-  const std::string public_key_spki_der_;
+  const std::vector<uint8_t> public_key_spki_der_;
 
   KeystoreSigningScheme signing_scheme_;
   const std::string extension_id_;
@@ -756,8 +755,8 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     scoped_refptr<net::X509Certificate> certificate =
         std::move(matches_pending_permissions_check_.front());
     matches_pending_permissions_check_.pop_front();
-    const std::string public_key_spki_der(
-        platform_keys::GetSubjectPublicKeyInfo(certificate));
+    std::vector<uint8_t> public_key_spki_der =
+        platform_keys::GetSubjectPublicKeyInfoBlob(certificate);
 
     extension_key_permissions_service_->CanUseKeyForSigning(
         public_key_spki_der,
@@ -767,7 +766,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   }
 
   void OnKeySigningPermissionKnown(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       const scoped_refptr<net::X509Certificate>& certificate,
       bool allowed) {
     if (allowed) {
@@ -775,7 +774,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       DoStep();
     } else if (interactive_) {
       service_->keystore_service_->CanUserGrantPermissionForKey(
-          StrToBlob(public_key_spki_der),
+          std::move(public_key_spki_der),
           base::BindOnce(&SelectTask::OnAbilityToGrantPermissionKnown,
                          weak_factory_.GetWeakPtr(), std::move(certificate)));
     } else {
@@ -975,7 +974,7 @@ bool ExtensionPlatformKeysService::IsUsingSigninProfile() {
 void ExtensionPlatformKeysService::SignDigest(
     absl::optional<platform_keys::TokenId> token_id,
     const std::string& data,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     platform_keys::KeyType key_type,
     platform_keys::HashAlgorithm hash_algorithm,
     const std::string& extension_id,
@@ -989,14 +988,14 @@ void ExtensionPlatformKeysService::SignDigest(
   }
 
   StartOrQueueTask(std::make_unique<SignTask>(
-      token_id, data, public_key_spki_der, key_type, hash_algorithm,
+      token_id, data, std::move(public_key_spki_der), key_type, hash_algorithm,
       extension_id, std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
     absl::optional<platform_keys::TokenId> token_id,
     const std::string& data,
-    const std::string& public_key_spki_der,
+    std::vector<uint8_t> public_key_spki_der,
     const std::string& extension_id,
     SignCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1008,7 +1007,7 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
   }
 
   StartOrQueueTask(std::make_unique<SignTask>(
-      token_id, data, public_key_spki_der,
+      token_id, data, std::move(public_key_spki_der),
       /*key_type=*/platform_keys::KeyType::kRsassaPkcs1V15,
       platform_keys::HASH_ALGORITHM_NONE, extension_id, std::move(callback),
       this));

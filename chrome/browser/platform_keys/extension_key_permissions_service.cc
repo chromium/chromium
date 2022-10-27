@@ -179,12 +179,10 @@ ExtensionKeyPermissionsService::GetStateStoreEntry(
 }
 
 void ExtensionKeyPermissionsService::CanUseKeyForSigning(
-    const std::string& public_key_spki_der,
+    const std::vector<uint8_t>& public_key_spki_der,
     CanUseKeyForSigningCallback callback) {
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
-  KeyEntry* matching_entry = GetStateStoreEntry(public_key_spki_der_b64);
+  KeyEntry* matching_entry =
+      GetStateStoreEntry(base::Base64Encode(public_key_spki_der));
 
   // In any case, we allow the generating extension to use the generated key a
   // single time for signing arbitrary data. The reason is, that the extension
@@ -202,8 +200,7 @@ void ExtensionKeyPermissionsService::CanUseKeyForSigning(
       &ExtensionKeyPermissionsService::CanUseKeyForSigningWithFlags,
       weak_factory_.GetWeakPtr(), std::move(callback),
       matching_entry->sign_unlimited);
-  keystore_service_->GetKeyTags(StrToBlob(public_key_spki_der),
-                                std::move(bound_callback));
+  keystore_service_->GetKeyTags(public_key_spki_der, std::move(bound_callback));
 }
 
 void ExtensionKeyPermissionsService::CanUseKeyForSigningWithFlags(
@@ -230,12 +227,10 @@ void ExtensionKeyPermissionsService::CanUseKeyForSigningWithFlags(
 }
 
 void ExtensionKeyPermissionsService::SetKeyUsedForSigning(
-    const std::string& public_key_spki_der,
+    const std::vector<uint8_t>& public_key_spki_der,
     SetKeyUsedForSigningCallback callback) {
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
-  KeyEntry* matching_entry = GetStateStoreEntry(public_key_spki_der_b64);
+  KeyEntry* matching_entry =
+      GetStateStoreEntry(base::Base64Encode(public_key_spki_der));
   matching_entry->sign_once = false;
   WriteToStateStore();
 

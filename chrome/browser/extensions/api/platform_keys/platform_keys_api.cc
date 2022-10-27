@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 
 #include <string>
+#include <utility>
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
@@ -424,8 +425,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     service->SignRSAPKCS1Raw(
         platform_keys_token_id,
         std::string(params->data.begin(), params->data.end()),
-        std::string(params->public_key.begin(), params->public_key.end()),
-        extension_id(),
+        std::move(params->public_key), extension_id(),
         base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   } else {
     chromeos::platform_keys::HashAlgorithm hash_algorithm;
@@ -455,8 +455,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     service->SignDigest(
         platform_keys_token_id,
         std::string(params->data.begin(), params->data.end()),
-        std::string(params->public_key.begin(), params->public_key.end()),
-        key_type, hash_algorithm, extension_id(),
+        std::move(params->public_key), key_type, hash_algorithm, extension_id(),
         base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   }
 

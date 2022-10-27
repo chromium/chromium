@@ -132,7 +132,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // empty. Will only call back during the lifetime of this object.
   void SignDigest(absl::optional<platform_keys::TokenId> token_id,
                   const std::string& data,
-                  const std::string& public_key_spki_der,
+                  std::vector<uint8_t> public_key_spki_der,
                   platform_keys::KeyType key_type,
                   platform_keys::HashAlgorithm hash_algorithm,
                   const std::string& extension_id,
@@ -152,7 +152,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // empty. Will only call back during the lifetime of this object.
   void SignRSAPKCS1Raw(absl::optional<platform_keys::TokenId> token_id,
                        const std::string& data,
-                       const std::string& public_key_spki_der,
+                       std::vector<uint8_t> public_key_spki_der,
                        const std::string& extension_id,
                        SignCallback callback);
 
