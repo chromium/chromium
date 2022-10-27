@@ -617,9 +617,6 @@ ci.builder(
     # Keep in sync with mac-official in try/chromium.star.
     execution_timeout = 8 * time.hour,
     os = os.MAC_ANY,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_jobs = None,
-    reclient_instance = None,
 )
 
 ci.builder(

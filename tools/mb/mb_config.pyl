@@ -69,7 +69,7 @@
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac-arm64-archive-dbg': 'debug_bot_arm64_reclient',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
-      'mac-official': 'official_optimize_goma',
+      'mac-official': 'official_optimize_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
       'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
       'win-official': 'official_optimize_minimal_symbols_goma',
@@ -3344,10 +3344,6 @@
 
     'official_goma_x86_pgo': [
       'official', 'goma', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
-    'official_optimize_goma': [
-      'official_optimize_goma',
     ],
 
     'official_optimize_goma_trybot': [

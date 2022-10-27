@@ -148,7 +148,7 @@
   "mac-official": {
     "gn_args": {
       "is_official_build": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-archive-dbg": {
