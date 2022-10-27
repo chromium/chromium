@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 
+#include <stdint.h>
+
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -864,13 +868,13 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionGenerateKey(
 // static
 void KeystoreServiceAsh::DEPRECATED_DidExtensionGenerateKey(
     DEPRECATED_ExtensionGenerateKeyCallback callback,
-    const std::string& public_key,
+    std::vector<uint8_t> public_key,
     absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result_ptr;
   if (!error) {
     result_ptr = mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewBlob(
-        std::vector<uint8_t>(public_key.begin(), public_key.end()));
+        std::move(public_key));
   } else {
     result_ptr =
         mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(

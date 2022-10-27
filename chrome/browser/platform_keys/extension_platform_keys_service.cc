@@ -5,8 +5,11 @@
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -180,9 +183,10 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
 
 class ExtensionPlatformKeysService::Task {
  public:
-  Task() {}
+  Task() = default;
+  Task(const Task&) = delete;
   auto operator=(const Task&) = delete;
-  virtual ~Task() {}
+  virtual ~Task() = default;
   virtual void Start() = 0;
   virtual bool IsDone() = 0;
 };
@@ -221,7 +225,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   virtual void GenerateKey(KeystoreService::GenerateKeyCallback callback) = 0;
 
   platform_keys::TokenId token_id_;
-  std::string public_key_spki_der_;
+  std::vector<uint8_t> public_key_spki_der_;
   const std::string extension_id_;
   GenerateKeyCallback callback_;
   std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
@@ -258,11 +262,11 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     switch (result->which()) {
       case Tag::kError:
         next_step_ = Step::DONE;
-        std::move(callback_).Run(std::string() /* no public key */,
+        std::move(callback_).Run(std::vector<uint8_t>() /* no public key */,
                                  result->get_error());
         break;
       case Tag::kBlob:
-        public_key_spki_der_ = BlobToStr(result->get_blob());
+        public_key_spki_der_ = std::move(result->get_blob());
         break;
     }
     DoStep();
@@ -277,10 +281,26 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
             service_->browser_context_, extension_id_);
   }
 
+  void GotPermissions(
+      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
+          extension_key_permissions_service) {
+    extension_key_permissions_service_ =
+        std::move(extension_key_permissions_service);
+    DoStep();
+  }
+
+  void UpdatePermissionsAndCallBack() {
+    extension_key_permissions_service_->RegisterKeyForCorporateUsage(
+        public_key_spki_der_,
+        base::BindOnce(&GenerateKeyTask::OnKeyRegisteredForCorporateUsage,
+                       weak_factory_.GetWeakPtr()));
+  }
+
   void OnKeyRegisteredForCorporateUsage(bool is_error,
                                         crosapi::mojom::KeystoreError error) {
     if (!is_error) {
-      std::move(callback_).Run(public_key_spki_der_, /*error=*/absl::nullopt);
+      std::move(callback_).Run(std::move(public_key_spki_der_),
+                               /*error=*/absl::nullopt);
       DoStep();
       return;
     }
@@ -289,7 +309,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
                << platform_keys::KeystoreErrorToString(error);
 
     service_->keystore_service_->RemoveKey(
-        KeystoreTypeFromTokenId(token_id_), StrToBlob(public_key_spki_der_),
+        KeystoreTypeFromTokenId(token_id_), std::move(public_key_spki_der_),
         base::BindOnce(&GenerateKeyTask::RemoveKeyCallback,
                        weak_factory_.GetWeakPtr(),
                        /*corporate_key_registration_error_status=*/error));
@@ -309,23 +329,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     }
 
     next_step_ = Step::DONE;
-    std::move(callback_).Run(std::string() /* no public key */,
+    std::move(callback_).Run(std::vector<uint8_t>() /* no public key */,
                              corporate_key_registration_error);
-    DoStep();
-  }
-
-  void UpdatePermissionsAndCallBack() {
-    extension_key_permissions_service_->RegisterKeyForCorporateUsage(
-        public_key_spki_der_,
-        base::BindOnce(&GenerateKeyTask::OnKeyRegisteredForCorporateUsage,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  void GotPermissions(
-      std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
-          extension_key_permissions_service) {
-    extension_key_permissions_service_ =
-        std::move(extension_key_permissions_service);
     DoStep();
   }
 
@@ -912,7 +917,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!keystore_service_) {
-    std::move(callback).Run(/*public_key_spki_der=*/std::string(),
+    std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
   }
@@ -927,7 +932,7 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
         (chromeos::LacrosService::Get()->GetInterfaceVersion(
              KeystoreService::Uuid_) < kSoftwareBackedRsaMinVersion)) {
       std::move(callback).Run(
-          /*public_key_spki_der=*/std::string(),
+          /*public_key_spki_der=*/std::vector<uint8_t>(),
           crosapi::mojom::KeystoreError::kUnsupportedKeyType);
       return;
     }
@@ -947,7 +952,7 @@ void ExtensionPlatformKeysService::GenerateECKey(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!keystore_service_) {
-    std::move(callback).Run(/*public_key_spki_der=*/std::string(),
+    std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
   }

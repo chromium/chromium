@@ -4,6 +4,12 @@
 
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 
+#include <stdint.h>
+
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/values.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 #include "chrome/browser/platform_keys/extension_platform_keys_service.h"
@@ -194,12 +200,12 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
 }
 
 void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
-    const std::string& public_key_der,
+    std::vector<uint8_t> public_key_der,
     absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!error) {
-    Respond(ArgumentList(api_epki::GenerateKey::Results::Create(
-        std::vector<uint8_t>(public_key_der.begin(), public_key_der.end()))));
+    Respond(ArgumentList(
+        api_epki::GenerateKey::Results::Create(std::move(public_key_der))));
   } else {
     Respond(
         Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));

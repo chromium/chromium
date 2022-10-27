@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_KEYSTORE_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_KEYSTORE_SERVICE_ASH_H_
 
+#include <stdint.h>
+
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -191,7 +194,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // Parts of deprecated methods.
   static void DEPRECATED_DidExtensionGenerateKey(
       DEPRECATED_ExtensionGenerateKeyCallback callback,
-      const std::string& public_key,
+      std::vector<uint8_t> public_key,
       absl::optional<crosapi::mojom::KeystoreError> error);
   static void DEPRECATED_DidExtensionSign(
       DEPRECATED_ExtensionSignCallback callback,

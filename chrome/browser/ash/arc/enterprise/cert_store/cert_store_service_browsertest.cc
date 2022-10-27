@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -284,12 +287,13 @@ void RegisterCorporateKeyWithService(
     base::OnceClosure done_callback,
     std::unique_ptr<chromeos::platform_keys::ExtensionKeyPermissionsService>
         service) {
-  std::string client_cert_spki(
+  std::vector<uint8_t> client_cert_spki(
       cert->derPublicKey.data,
       cert->derPublicKey.data + cert->derPublicKey.len);
   service->RegisterKeyForCorporateUsage(
-      client_cert_spki, base::BindOnce(&OnKeyRegisteredForCorporateUsage,
-                                       std::move(done_callback)));
+      std::move(client_cert_spki),
+      base::BindOnce(&OnKeyRegisteredForCorporateUsage,
+                     std::move(done_callback)));
 }
 
 }  // namespace

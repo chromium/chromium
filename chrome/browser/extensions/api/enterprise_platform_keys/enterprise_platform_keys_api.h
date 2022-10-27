@@ -9,7 +9,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
 
+#include <stdint.h>
+
 #include <string>
+#include <vector>
 
 #include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
@@ -42,7 +45,7 @@ class EnterprisePlatformKeysInternalGenerateKeyFunction
 
   // Called when the key was generated. If an error occurred, |public_key_der|
   // will be empty.
-  void OnGeneratedKey(const std::string& public_key_der,
+  void OnGeneratedKey(std::vector<uint8_t> public_key_der,
                       absl::optional<crosapi::mojom::KeystoreError> error);
 
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",

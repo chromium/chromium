@@ -4,8 +4,11 @@
 
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -34,8 +37,7 @@
 #include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace chromeos {
-namespace platform_keys {
+namespace chromeos::platform_keys {
 
 namespace {
 const char kStateStoreSPKI[] = "SPKI";
@@ -243,12 +245,10 @@ void ExtensionKeyPermissionsService::SetKeyUsedForSigning(
 }
 
 void ExtensionKeyPermissionsService::RegisterKeyForCorporateUsage(
-    const std::string& public_key_spki_der,
+    const std::vector<uint8_t>& public_key_spki_der,
     RegisterKeyForCorporateUsageCallback callback) {
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
-  KeyEntry* matching_entry = GetStateStoreEntry(public_key_spki_der_b64);
+  KeyEntry* matching_entry =
+      GetStateStoreEntry(base::Base64Encode(public_key_spki_der));
 
   if (matching_entry->sign_once) {
     VLOG(1) << "Key is already allowed for signing, skipping.";
@@ -262,7 +262,7 @@ void ExtensionKeyPermissionsService::RegisterKeyForCorporateUsage(
   WriteToStateStore();
 
   keystore_service_->AddKeyTags(
-      StrToBlob(public_key_spki_der),
+      public_key_spki_der,
       static_cast<uint64_t>(crosapi::mojom::KeyTag::kCorporate),
       std::move(callback));
 }
@@ -395,5 +395,4 @@ ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAppIds(
   return permissions;
 }
 
-}  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace chromeos::platform_keys

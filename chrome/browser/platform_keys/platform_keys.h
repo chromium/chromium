@@ -17,8 +17,7 @@
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace platform_keys {
+namespace chromeos::platform_keys {
 
 // Supported key types.
 enum class KeyType { kRsassaPkcs1V15, kEcdsa };
@@ -86,6 +85,8 @@ std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error);
 // Returns the DER encoding of the X.509 Subject Public Key Info of the public
 // key in |certificate|.
 std::string GetSubjectPublicKeyInfo(
+    const scoped_refptr<net::X509Certificate>& certificate);
+std::vector<uint8_t> GetSubjectPublicKeyInfoBlob(
     const scoped_refptr<net::X509Certificate>& certificate);
 
 // Intersects the two certificate lists |certs1| and |certs2| and passes the
@@ -197,7 +198,6 @@ struct ClientCertificateRequest {
   std::vector<std::vector<uint8_t>> certificate_authorities;
 };
 
-}  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace chromeos::platform_keys
 
 #endif  // CHROME_BROWSER_PLATFORM_KEYS_PLATFORM_KEYS_H_

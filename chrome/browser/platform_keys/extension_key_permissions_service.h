@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
 #define CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -29,8 +31,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
-namespace platform_keys {
+namespace chromeos::platform_keys {
 
 // PlatformKeys is a field stored in each extension's state store. It saves
 // signing permissions of keys in the context of a (Profile, Extension) pair.
@@ -135,7 +136,7 @@ class ExtensionKeyPermissionsService {
   // |key_locations| must describe locations available to the user the private
   // key is stored on.
   void RegisterKeyForCorporateUsage(
-      const std::string& public_key_spki_der,
+      const std::vector<uint8_t>& public_key_spki_der,
       RegisterKeyForCorporateUsageCallback callback);
 
   // Sets the user granted permission that the extension with id
@@ -216,7 +217,6 @@ class ExtensionKeyPermissionsService {
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 
-}  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace chromeos::platform_keys
 
 #endif  // CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_KEY_PERMISSIONS_SERVICE_H_

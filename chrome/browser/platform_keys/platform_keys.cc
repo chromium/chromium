@@ -4,9 +4,13 @@
 
 #include "chrome/browser/platform_keys/platform_keys.h"
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/check_op.h"
@@ -60,8 +64,7 @@ void IntersectOnWorkerThread(const net::CertificateList& certs1,
 
 }  // namespace
 
-namespace chromeos {
-namespace platform_keys {
+namespace chromeos::platform_keys {
 
 std::string StatusToString(Status status) {
   switch (status) {
@@ -222,6 +225,16 @@ std::string GetSubjectPublicKeyInfo(
           &spki_bytes))
     return {};
   return std::string(spki_bytes);
+}
+
+std::vector<uint8_t> GetSubjectPublicKeyInfoBlob(
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  base::StringPiece spki_bytes;
+  if (!net::asn1::ExtractSPKIFromDERCert(
+          net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
+          &spki_bytes))
+    return {};
+  return std::vector<uint8_t>(spki_bytes.begin(), spki_bytes.end());
 }
 
 // Extracts the public exponent out of an EVP_PKEY and verifies if it is equal
@@ -512,5 +525,4 @@ ClientCertificateRequest::ClientCertificateRequest(
 
 ClientCertificateRequest::~ClientCertificateRequest() = default;
 
-}  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace chromeos::platform_keys

@@ -6,6 +6,7 @@
 #include <pk11pub.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -199,10 +200,8 @@ class PlatformKeysTest : public PlatformKeysTestBase {
           extension_key_permissions_service) {
     auto* extension_key_permissions_service_unowned =
         extension_key_permissions_service.get();
-    std::string client_cert1_spki =
-        chromeos::platform_keys::GetSubjectPublicKeyInfo(client_cert1_);
     extension_key_permissions_service_unowned->RegisterKeyForCorporateUsage(
-        client_cert1_spki,
+        chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(client_cert1_),
         base::BindOnce(&PlatformKeysTest::OnKeyRegisteredForCorporateUsage,
                        base::Unretained(this),
                        std::move(extension_key_permissions_service),

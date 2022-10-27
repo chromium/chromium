@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
 #define CHROME_BROWSER_PLATFORM_KEYS_EXTENSION_PLATFORM_KEYS_SERVICE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -78,7 +80,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   // DER encoding of the SubjectPublicKeyInfo of the generated key. If it
   // failed, |public_key_spki_der| will be empty.
   using GenerateKeyCallback = base::OnceCallback<void(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       absl::optional<crosapi::mojom::KeystoreError> error)>;
 
   // Generates an RSA key pair with |modulus_length_bits| and registers the key
