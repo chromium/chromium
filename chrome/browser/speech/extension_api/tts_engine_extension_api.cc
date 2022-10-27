@@ -76,7 +76,7 @@ void WarnIfMissingPauseOrResumeListener(Profile* profile,
 
 std::unique_ptr<std::vector<extensions::TtsVoice>>
 ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
-                                   base::Value::ConstListView voices_data,
+                                   const base::Value::List& voices_data,
                                    bool return_after_first_error,
                                    const char** error) {
   auto tts_voices = std::make_unique<std::vector<extensions::TtsVoice>>();
@@ -153,7 +153,7 @@ std::unique_ptr<std::vector<extensions::TtsVoice>> GetVoicesInternal(
                                       &voices_data)) {
     const char* error = nullptr;
     return ValidateAndConvertToTtsVoiceVector(
-        extension, voices_data->GetListDeprecated(),
+        extension, voices_data->GetList(),
         /* return_after_first_error = */ false, &error);
   }
 
@@ -383,7 +383,7 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
   // Validate the voices and return an error if there's a problem.
   const char* error = nullptr;
   auto tts_voices = ValidateAndConvertToTtsVoiceVector(
-      extension(), voices_data.GetListDeprecated(),
+      extension(), voices_data.GetList(),
       /* return_after_first_error = */ true, &error);
   if (error)
     return RespondNow(Error(error));
