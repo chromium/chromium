@@ -119,6 +119,9 @@ class ApplicationContext {
   // Gets the locale used by the application.
   virtual const std::string& GetApplicationLocale() = 0;
 
+  // Gets the country locale used by the application
+  virtual const std::string& GetApplicationCountry() = 0;
+
   // Gets the ChromeBrowserStateManager used by this application.
   virtual ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
 

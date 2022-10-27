@@ -50,6 +50,7 @@ class TestingApplicationContext : public ApplicationContext {
       override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
+  const std::string& GetApplicationCountry() override;
   ios::ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
@@ -77,6 +78,7 @@ class TestingApplicationContext : public ApplicationContext {
  private:
   base::ThreadChecker thread_checker_;
   std::string application_locale_;
+  std::string application_country_;
   PrefService* local_state_;
 
   // Must be destroyed after `local_state_`. BrowserStatePolicyConnector isn't a

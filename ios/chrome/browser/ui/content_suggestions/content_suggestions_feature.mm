@@ -21,7 +21,7 @@ const char kTrialPrefName[] = "trending_queries.trial_version";
 // Otherwise, the existing groups should simply be marked (not renamed) as
 // postperiod, their params updated to default values, and new groups be created
 // for any followup experimentation.
-const int kCurrentTrialVersion = 2;
+const int kCurrentTrialVersion = 3;
 
 // Feature disabled by default to keep showing old Zine feed.
 BASE_FEATURE(kDiscoverFeedInNtp,

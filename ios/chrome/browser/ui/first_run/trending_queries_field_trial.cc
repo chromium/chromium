@@ -23,15 +23,15 @@ const int kPlaceholderTrialVersion = -1;
 
 // Group names for the Trending Queries feature.
 const char kTrendingQueriesEnabledModuleEnabledGroup[] =
-    "TrendingQueriesEnabledModuleEnabled-V2";
+    "TrendingQueriesEnabledModuleEnabled-V3";
 const char kTrendingQueriesEnabledMinimalSpacingModuleEnabledGroup[] =
-    "TrendingQueriesEnabledMinimalSpacingModuleEnabled-V2";
+    "TrendingQueriesEnabledMinimalSpacingModuleEnabled-V3";
 const char
     kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledGroup[] =
-        "TrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabled-V2";
+        "TrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabled-V3";
 const char kTrendingQueriesKeepShortcutsEnabledModuleEnabledGroup[] =
-    "TrendingQueriesKeepShortcutsEnabledModuleEnabled-V2";
-const char kTrendingQueriesControlGroup[] = "Control-V2";
+    "TrendingQueriesKeepShortcutsEnabledModuleEnabled-V3";
+const char kTrendingQueriesControlGroup[] = "Control-V3";
 
 const char kTrendingQueriesDefaultGroup[] = "Default";
 

@@ -486,10 +486,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that the trending queries module header is visible and all four
 // trending queries are interactable.
 - (void)testTrendingQueries {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1364725): Re-enable test after fixing failure.
-  EARL_GREY_TEST_DISABLED(@"Failing on simulator.");
-#endif  // TARGET_IPHONE_SIMULATOR
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID([NSString

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -41,6 +42,8 @@ StartSuggestServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<StartSuggestService>(
       template_url_service, url_loader_factory,
       std::make_unique<AutocompleteSchemeClassifierImpl>(),
+      GetApplicationContext()->GetApplicationCountry(),
+      GetApplicationContext()->GetApplicationLocale(),
       GURL(kChromeUINewTabURL));
 }
 
