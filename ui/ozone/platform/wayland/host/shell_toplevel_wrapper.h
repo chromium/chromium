@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 
@@ -143,18 +142,6 @@ class ShellToplevelWrapper {
   virtual bool SupportsActivation() = 0;
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
-
-  DecorationMode decoration_mode() const { return decoration_mode_; }
-
- protected:
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest, CanSetDecorationInsets);
-
-  void set_decoration_mode(DecorationMode mode) { decoration_mode_ = mode; }
-
- private:
-  // On client side, it keeps track of the decoration mode currently in
-  // use if xdg-decoration protocol extension is available.
-  DecorationMode decoration_mode_ = DecorationMode::kNone;
 };
 
 // Look for |value| in |wl_array| in C++ style.

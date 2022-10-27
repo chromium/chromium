@@ -87,7 +87,8 @@ XDGToplevelWrapperImpl::XDGToplevelWrapperImpl(
     WaylandConnection* connection)
     : xdg_surface_wrapper_(std::move(surface)),
       wayland_window_(wayland_window),
-      connection_(connection) {}
+      connection_(connection),
+      decoration_mode_(DecorationMode::kNone) {}
 
 XDGToplevelWrapperImpl::~XDGToplevelWrapperImpl() = default;
 
@@ -344,7 +345,7 @@ void XDGToplevelWrapperImpl::WmCapabilities(void* data,
 
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
-  if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode())
+  if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
     return;
 
   zxdg_toplevel_decoration_v1_set_mode(zxdg_toplevel_decoration_.get(),
@@ -358,7 +359,7 @@ void XDGToplevelWrapperImpl::ConfigureDecoration(
     uint32_t mode) {
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(surface);
-  surface->set_decoration_mode(ToDecorationMode(mode));
+  surface->decoration_mode_ = ToDecorationMode(mode);
 }
 
 void XDGToplevelWrapperImpl::InitializeXdgDecoration() {

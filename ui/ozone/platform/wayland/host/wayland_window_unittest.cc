@@ -46,7 +46,6 @@
 #include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
-#include "ui/ozone/platform/wayland/host/shell_toplevel_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -3865,30 +3864,6 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
     }
   }
   VerifyAndClearExpectations();
-}
-
-// Make sure CanSetDecorationInsets() returns proper values as the underlying
-// xdg-toplevel decoration mode gets updated. The Wayland compositor may, for
-// example, enforce serve-side mode even when the client requests client-side to
-// be used, e.g: SwayWM.
-//
-// Regression test for https://crbug.com/????
-TEST_P(WaylandWindowTest, CanSetDecorationInsets) {
-  ASSERT_TRUE(connection_->SupportsSetWindowGeometry());
-  WaylandToplevelWindow::AllowSettingDecorationInsetsForTest(true);
-
-  auto* xdg_toplevel =
-      static_cast<WaylandToplevelWindow*>(window_.get())->shell_toplevel();
-
-  // Checks that, with default decoration-mode, which may happen at early
-  // startup, CanSetDecorationInsets() returns true.
-  xdg_toplevel->set_decoration_mode(
-      ShellToplevelWrapper::DecorationMode::kClientSide);
-  EXPECT_TRUE(window_->CanSetDecorationInsets());
-
-  xdg_toplevel->set_decoration_mode(
-      ShellToplevelWrapper::DecorationMode::kServerSide);
-  EXPECT_FALSE(window_->CanSetDecorationInsets());
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

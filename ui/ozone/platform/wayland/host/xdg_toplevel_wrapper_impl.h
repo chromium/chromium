@@ -122,6 +122,10 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   wl::Object<zaura_toplevel> aura_toplevel_;
 
   wl::Object<zxdg_toplevel_decoration_v1> zxdg_toplevel_decoration_;
+
+  // On client side, it keeps track of the decoration mode currently in
+  // use if xdg-decoration protocol extension is available.
+  DecorationMode decoration_mode_;
 };
 
 }  // namespace ui

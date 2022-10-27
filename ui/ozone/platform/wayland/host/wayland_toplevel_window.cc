@@ -329,10 +329,7 @@ bool WaylandToplevelWindow::CanSetDecorationInsets() const {
   return decorations_allowed_for_test_ &&
          const_cast<WaylandToplevelWindow*>(this)
              ->connection()
-             ->SupportsSetWindowGeometry() &&
-         (!shell_toplevel_ ||
-          shell_toplevel_->decoration_mode() !=
-              ShellToplevelWrapper::DecorationMode::kServerSide);
+             ->SupportsSetWindowGeometry();
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(
