@@ -1025,6 +1025,7 @@ policies:
   1024: VirtualKeyboardResizesLayoutByDefault
   1025: HindiInscriptLayoutEnabled
   1026: DeviceKeyboardBacklightColor
+  1027: LensDesktopNTPSearchEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

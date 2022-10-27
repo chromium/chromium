@@ -3573,6 +3573,10 @@ const char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
 // A boolean indicating whether the Lens Region search feature should be enabled
 // if supported.
 const char kLensRegionSearchEnabled[] = "policy.lens_region_search_enabled";
+// A boolean indicating whether the Lens NTP searchbox feature should be enabled
+// if supported.
+const char kLensDesktopNTPSearchEnabled[] =
+    "policy.lens_desktop_ntp_search_enabled";
 #endif
 
 // A boolean indicating whether the Privacy guide feature has been viewed. This

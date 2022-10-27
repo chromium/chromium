@@ -1568,6 +1568,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
+  registry->RegisterBooleanPref(prefs::kLensDesktopNTPSearchEnabled, true);
 
   // When in RTL mode, the side panel should default to the left of the screen.
   // Otherwise, the side panel should default to the right side of the screen.

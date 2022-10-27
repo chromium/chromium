@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -286,7 +287,8 @@ realbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
 }  // namespace
 
 // static
-void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
+void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
+                                          Profile* profile) {
   static constexpr webui::ResourcePath kImages[] = {
       {kSearchIconResourceName, IDR_WEBUI_IMAGES_ICON_SEARCH_SVG}};
   source->AddResourcePaths(kImages);
@@ -319,7 +321,8 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source) {
                                        IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD));
   source->AddBoolean(
       "realboxLensSearch",
-      base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch));
+      base::FeatureList::IsEnabled(ntp_features::kNtpRealboxLensSearch) &&
+          profile->GetPrefs()->GetBoolean(prefs::kLensDesktopNTPSearchEnabled));
 }
 
 // static

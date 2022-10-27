@@ -45,7 +45,8 @@ class RealboxHandler : public realbox::mojom::PageHandler,
     kFocusedButtonRemoveSuggestion,
   };
 
-  static void SetupWebUIDataSource(content::WebUIDataSource* source);
+  static void SetupWebUIDataSource(content::WebUIDataSource* source,
+                                   Profile* profile);
   static std::string AutocompleteMatchVectorIconToResourceName(
       const gfx::VectorIcon& icon);
   static std::string PedalVectorIconToResourceName(const gfx::VectorIcon& icon);

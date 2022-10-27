@@ -513,7 +513,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("removeScrim", base::FeatureList::IsEnabled(
                                         ntp_features::kNtpRemoveScrim));
 
-  RealboxHandler::SetupWebUIDataSource(source);
+  RealboxHandler::SetupWebUIDataSource(source, profile);
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
