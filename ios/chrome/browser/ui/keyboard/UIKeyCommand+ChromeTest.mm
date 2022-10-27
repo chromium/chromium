@@ -108,6 +108,12 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_reportAnIssue, @"⇧⌘I", @"keyCommand_reportAnIssue",
          IDS_IOS_KEYBOARD_REPORT_AN_ISSUE);
   Verify(UIKeyCommand.cr_reportAnIssue_2, @"⌥⇧⌘I", @"keyCommand_reportAnIssue");
+  Verify(UIKeyCommand.cr_addToReadingList, @"⇧⌘D",
+         @"keyCommand_addToReadingList", IDS_IOS_KEYBOARD_ADD_TO_READING_LIST);
+  Verify(UIKeyCommand.cr_goToTabGrid, @"⇧⌘\\", @"keyCommand_goToTabGrid",
+         IDS_IOS_KEYBOARD_GO_TO_TAB_GRID);
+  Verify(UIKeyCommand.cr_clearBrowsingData, @"⇧⌘⌫",
+         @"keyCommand_clearBrowsingData", IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA);
 
   // Prior to iOS 15, RTL needs to be handled manually. Check it for key
   // commands that need to adapt.

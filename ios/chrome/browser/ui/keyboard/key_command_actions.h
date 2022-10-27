@@ -14,6 +14,7 @@
 - (void)keyCommand_openNewTab;
 - (void)keyCommand_openNewRegularTab;
 - (void)keyCommand_openNewIncognitoTab;
+- (void)keyCommand_openNewWindow;
 - (void)keyCommand_reopenLastClosedTab;
 - (void)keyCommand_openFindInPage;
 - (void)keyCommand_findNextStringInPage;
@@ -44,6 +45,9 @@
 - (void)keyCommand_showTab7;
 - (void)keyCommand_showLastTab;
 - (void)keyCommand_reportAnIssue;
+- (void)keyCommand_addToReadingList;
+- (void)keyCommand_goToTabGrid;
+- (void)keyCommand_clearBrowsingData;
 
 @end
 

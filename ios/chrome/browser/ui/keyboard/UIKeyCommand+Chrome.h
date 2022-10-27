@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewRegularTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openNewIncognitoTab;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_openNewWindow;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reopenLastClosedTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_openFindInPage;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_findNextStringInPage;
@@ -62,6 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_showLastTab;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reportAnIssue;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reportAnIssue_2;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_addToReadingList;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_goToTabGrid;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_clearBrowsingData;
 
 // Returns a symbolic description of the key command. For example: ⇧⌘T.
 @property(nonatomic, readonly) NSString* cr_symbolicDescription;

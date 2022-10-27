@@ -14,6 +14,8 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
 UIKeyModifierFlags None = 0;
 UIKeyModifierFlags Command = UIKeyModifierCommand;
 UIKeyModifierFlags Control = UIKeyModifierControl;
@@ -22,6 +24,16 @@ UIKeyModifierFlags ShiftCommand = UIKeyModifierShift | UIKeyModifierCommand;
 UIKeyModifierFlags AltShiftCommand =
     UIKeyModifierAlternate | UIKeyModifierShift | UIKeyModifierCommand;
 UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
+
+// Backport UIKeyInputDelete to iOS 14 and below.
+NSString* Delete(void) {
+  if (@available(iOS 15.0, *))
+    return UIKeyInputDelete;
+  else
+    return @"\b";
+}
+
+}  // namespace
 
 @implementation UIKeyCommand (Chrome)
 
@@ -45,6 +57,13 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_openNewIncognitoTab)
                            titleID:IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB];
+}
+
++ (UIKeyCommand*)cr_openNewWindow {
+  return [self cr_commandWithInput:@"n"
+                     modifierFlags:AltCommand
+                            action:@selector(keyCommand_openNewWindow)
+                           titleID:IDS_IOS_KEYBOARD_NEW_WINDOW];
 }
 
 + (UIKeyCommand*)cr_reopenLastClosedTab {
@@ -397,6 +416,27 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                             action:@selector(keyCommand_reportAnIssue)];
 }
 
++ (UIKeyCommand*)cr_addToReadingList {
+  return [self cr_commandWithInput:@"d"
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_addToReadingList)
+                           titleID:IDS_IOS_KEYBOARD_ADD_TO_READING_LIST];
+}
+
++ (UIKeyCommand*)cr_goToTabGrid {
+  return [self cr_commandWithInput:@"\\"
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_goToTabGrid)
+                           titleID:IDS_IOS_KEYBOARD_GO_TO_TAB_GRID];
+}
+
++ (UIKeyCommand*)cr_clearBrowsingData {
+  return [self cr_commandWithInput:Delete()
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_clearBrowsingData)
+                           titleID:IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA];
+}
+
 #pragma mark - Symbolic Description
 
 - (NSString*)cr_symbolicDescription {
@@ -415,7 +455,7 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
   if (self.modifierFlags & UIKeyModifierCommand)
     [description appendString:@"⌘"];
 
-  if ([self.input isEqualToString:@"\b"])
+  if ([self.input isEqualToString:Delete()])
     [description appendString:@"⌫"];
   else if ([self.input isEqualToString:@"\r"])
     [description appendString:@"↵"];

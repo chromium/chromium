@@ -222,6 +222,10 @@
   [self openNewIncognitoTab];
 }
 
+- (void)keyCommand_openNewWindow {
+  // TODO(crbug.com/1378943): Implement this action.
+}
+
 - (void)keyCommand_reopenLastClosedTab {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   sessions::TabRestoreService* const tabRestoreService =
@@ -398,6 +402,18 @@
   [_dispatcher
       showReportAnIssueFromViewController:_viewController
                                    sender:UserFeedbackSender::KeyCommand];
+}
+
+- (void)keyCommand_addToReadingList {
+  // TODO(crbug.com/1378944): Implement this action.
+}
+
+- (void)keyCommand_goToTabGrid {
+  // TODO(crbug.com/1378942): Implement this action.
+}
+
+- (void)keyCommand_clearBrowsingData {
+  // TODO(crbug.com/1378945): Implement this action.
 }
 
 #pragma mark - Private
