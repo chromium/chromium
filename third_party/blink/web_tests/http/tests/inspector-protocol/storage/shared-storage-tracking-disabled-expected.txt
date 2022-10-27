@@ -1,0 +1,2 @@
+Tests disabling of shared storage event tracking.
+

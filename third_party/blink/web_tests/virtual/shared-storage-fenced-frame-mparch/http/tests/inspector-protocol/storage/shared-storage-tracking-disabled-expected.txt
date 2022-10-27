@@ -1,0 +1,19 @@
+Tests disabling of shared storage event tracking.
+Metadata: {
+    creationTime : <number>
+    length : 2
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : key0-set-from-document
+        value : value0
+    }
+    [1] : {
+        key : key1-set-from-document
+        value : value1value1
+    }
+]
+Events: [
+]
+

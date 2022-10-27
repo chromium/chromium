@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -269,6 +270,47 @@ class StorageHandler::IndexedDBObserver
   mojo::Receiver<storage::mojom::IndexedDBObserver> receiver_;
 };
 
+// Observer that listens on the UI thread for shared storage notifications and
+// informs the StorageHandler on the UI thread for origins of interest.
+// Created and used exclusively on the UI thread.
+class StorageHandler::SharedStorageObserver
+    : content::SharedStorageWorkletHostManager::SharedStorageObserverInterface {
+ public:
+  explicit SharedStorageObserver(StorageHandler* owner_storage_handler)
+      : owner_(owner_storage_handler) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    auto* manager = owner_->GetSharedStorageWorkletHostManager();
+    DCHECK(manager);
+    scoped_observation_.Observe(manager);
+  }
+
+  SharedStorageObserver(const SharedStorageObserver&) = delete;
+  SharedStorageObserver& operator=(const SharedStorageObserver&) = delete;
+
+  ~SharedStorageObserver() override { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
+
+  // content::SharedStorageObserverInterface
+  void OnSharedStorageAccessed(
+      const base::Time& access_time,
+      AccessType type,
+      const std::string& main_frame_id,
+      const std::string& owner_origin,
+      const SharedStorageEventParams& params) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    owner_->NotifySharedStorageAccessed(access_time, type, main_frame_id,
+                                        owner_origin, params);
+  }
+
+ private:
+  raw_ptr<StorageHandler> const owner_;
+  base::ScopedObservation<
+      content::SharedStorageWorkletHostManager,
+      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface,
+      &content::SharedStorageWorkletHostManager::AddSharedStorageObserver,
+      &content::SharedStorageWorkletHostManager::RemoveSharedStorageObserver>
+      scoped_observation_{this};
+};
+
 StorageHandler::StorageHandler(bool client_is_trusted)
     : DevToolsDomainHandler(Storage::Metainfo::domainName),
       client_is_trusted_(client_is_trusted) {}
@@ -295,6 +337,7 @@ Response StorageHandler::Disable() {
   indexed_db_observer_.reset();
   quota_override_handle_.reset();
   SetInterestGroupTracking(false);
+  shared_storage_observer_.reset();
   return Response::Success();
 }
 
@@ -622,6 +665,13 @@ StorageHandler::IndexedDBObserver* StorageHandler::GetIndexedDBObserver() {
         std::make_unique<IndexedDBObserver>(weak_ptr_factory_.GetWeakPtr());
   }
   return indexed_db_observer_.get();
+}
+
+SharedStorageWorkletHostManager*
+StorageHandler::GetSharedStorageWorkletHostManager() {
+  DCHECK(storage_partition_);
+  return static_cast<StoragePartitionImpl*>(storage_partition_)
+      ->GetSharedStorageWorkletHostManager();
 }
 
 absl::variant<protocol::Response, storage::SharedStorageManager*>
@@ -1020,6 +1070,127 @@ void StorageHandler::GetSharedStorageEntries(
   manager->GetEntriesForDevTools(
       owner_origin,
       base::BindOnce(&RetrieveSharedStorageEntries, std::move(callback)));
+}
+
+Response StorageHandler::SetSharedStorageTracking(bool enable) {
+  if (enable) {
+    if (!GetSharedStorageWorkletHostManager())
+      return Response::ServerError("Shared storage is disabled.");
+    shared_storage_observer_ = std::make_unique<SharedStorageObserver>(this);
+  } else {
+    shared_storage_observer_.reset();
+  }
+  return Response::Success();
+}
+
+void StorageHandler::NotifySharedStorageAccessed(
+    const base::Time& access_time,
+    SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType
+        type,
+    const std::string& main_frame_id,
+    const std::string& owner_origin,
+    const SharedStorageEventParams& params) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using AccessType = SharedStorageWorkletHostManager::
+      SharedStorageObserverInterface::AccessType;
+  std::string type_enum;
+  switch (type) {
+    case AccessType::kDocumentAddModule:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentAddModule;
+      break;
+    case AccessType::kDocumentSelectURL:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentSelectURL;
+      break;
+    case AccessType::kDocumentRun:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentRun;
+      break;
+    case AccessType::kDocumentSet:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentSet;
+      break;
+    case AccessType::kDocumentAppend:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentAppend;
+      break;
+    case AccessType::kDocumentDelete:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentDelete;
+      break;
+    case AccessType::kDocumentClear:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentClear;
+      break;
+    case AccessType::kWorkletSet:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletSet;
+      break;
+    case AccessType::kWorkletAppend:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletAppend;
+      break;
+    case AccessType::kWorkletDelete:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletDelete;
+      break;
+    case AccessType::kWorkletClear:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletClear;
+      break;
+    case AccessType::kWorkletGet:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletGet;
+      break;
+    case AccessType::kWorkletKeys:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletKeys;
+      break;
+    case AccessType::kWorkletEntries:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletEntries;
+      break;
+    case AccessType::kWorkletLength:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletLength;
+      break;
+    case AccessType::kWorkletRemainingBudget:
+      type_enum = Storage::SharedStorageAccessTypeEnum::WorkletRemainingBudget;
+      break;
+  };
+
+  auto protocol_params =
+      protocol::Storage::SharedStorageAccessParams::Create().Build();
+
+  if (params.script_source_url)
+    protocol_params->SetScriptSourceUrl(*params.script_source_url);
+  if (params.operation_name)
+    protocol_params->SetOperationName(*params.operation_name);
+  if (params.serialized_data)
+    protocol_params->SetSerializedData(*params.serialized_data);
+  if (params.key)
+    protocol_params->SetKey(*params.key);
+  if (params.value)
+    protocol_params->SetValue(*params.value);
+
+  if (params.urls_with_metadata) {
+    auto protocol_urls = std::make_unique<
+        protocol::Array<protocol::Storage::SharedStorageUrlWithMetadata>>();
+
+    for (const auto& url_with_metadata : *params.urls_with_metadata) {
+      auto reporting_metadata = std::make_unique<
+          protocol::Array<protocol::Storage::SharedStorageReportingMetadata>>();
+
+      for (const auto& metadata_pair : url_with_metadata.reporting_metadata) {
+        auto reporting_pair =
+            protocol::Storage::SharedStorageReportingMetadata::Create()
+                .SetEventType(metadata_pair.first)
+                .SetReportingUrl(metadata_pair.second)
+                .Build();
+        reporting_metadata->push_back(std::move(reporting_pair));
+      }
+
+      auto protocol_url =
+          protocol::Storage::SharedStorageUrlWithMetadata::Create()
+              .SetUrl(url_with_metadata.url)
+              .SetReportingMetadata(std::move(reporting_metadata))
+              .Build();
+      protocol_urls->push_back(std::move(protocol_url));
+    }
+
+    protocol_params->SetUrlsWithMetadata(std::move(protocol_urls));
+  }
+
+  frontend_->SharedStorageAccessed(access_time.ToDoubleT(), type_enum,
+                                   main_frame_id, owner_origin,
+                                   std::move(protocol_params));
 }
 
 }  // namespace protocol

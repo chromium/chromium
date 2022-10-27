@@ -9070,6 +9070,26 @@ experimental domain Storage
       array of InterestGroupAd ads
       array of InterestGroupAd adComponents
 
+  # Enum of shared storage access types.
+  type SharedStorageAccessType extends string
+    enum
+      documentAddModule
+      documentSelectURL
+      documentRun
+      documentSet
+      documentAppend
+      documentDelete
+      documentClear
+      workletSet
+      workletAppend
+      workletDelete
+      workletClear
+      workletGet
+      workletKeys
+      workletEntries
+      workletLength
+      workletRemainingBudget
+
   # Struct for a single key-value pair in an origin's shared storage.
   type SharedStorageEntry extends object
     properties
@@ -9082,6 +9102,58 @@ experimental domain Storage
       Network.TimeSinceEpoch creationTime
       integer length
       number remainingBudget
+
+  # Pair of reporting metadata details for a candidate URL for `selectURL()`.
+  type SharedStorageReportingMetadata extends object
+    properties
+      string eventType
+      string reportingUrl
+
+  # Bundles a candidate URL with its reporting metadata.
+  type SharedStorageUrlWithMetadata extends object
+    properties
+      # Spec of candidate URL.
+      string url
+      # Any associated reporting metadata.
+      array of SharedStorageReportingMetadata reportingMetadata
+
+  # Bundles the parameters for shared storage access events whose
+  # presence/absence can vary according to SharedStorageAccessType.
+  type SharedStorageAccessParams extends object
+    properties
+      # Spec of the module script URL.
+      # Present only for SharedStorageAccessType.documentAddModule.
+      optional string scriptSourceUrl
+      # Name of the registered operation to be run.
+      # Present only for SharedStorageAccessType.documentRun and
+      # SharedStorageAccessType.documentSelectURL.
+      optional string operationName
+      # The operation's serialized data in bytes (converted to a string).
+      # Present only for SharedStorageAccessType.documentRun and
+      # SharedStorageAccessType.documentSelectURL.
+      optional string serializedData
+      # Array of candidate URLs' specs, along with any associated metadata.
+      # Present only for SharedStorageAccessType.documentSelectURL.
+      optional array of SharedStorageUrlWithMetadata urlsWithMetadata
+      # Key for a specific entry in an origin's shared storage.
+      # Present only for SharedStorageAccessType.documentSet,
+      # SharedStorageAccessType.documentAppend,
+      # SharedStorageAccessType.documentDelete,
+      # SharedStorageAccessType.workletSet,
+      # SharedStorageAccessType.workletAppend,
+      # SharedStorageAccessType.workletDelete, and
+      # SharedStorageAccessType.workletGet.
+      optional string key
+      # Value for a specific entry in an origin's shared storage.
+      # Present only for SharedStorageAccessType.documentSet,
+      # SharedStorageAccessType.documentAppend,
+      # SharedStorageAccessType.workletSet, and
+      # SharedStorageAccessType.workletAppend.
+      optional string value
+      # Whether or not to set an entry for a key if that key is already present.
+      # Present only for SharedStorageAccessType.documentSet and
+      # SharedStorageAccessType.workletSet.
+      optional boolean ignoreIfPresent
 
   # Returns a storage key given a frame id.
   command getStorageKeyForFrame
@@ -9236,6 +9308,11 @@ experimental domain Storage
     returns
       array of SharedStorageEntry entries
 
+  # Enables/disables issuing of sharedStorageAccessed events.
+  experimental command setSharedStorageTracking
+    parameters
+      boolean enable
+
   # A cache's contents have been modified.
   event cacheStorageContentUpdated
     parameters
@@ -9277,6 +9354,22 @@ experimental domain Storage
       InterestGroupAccessType type
       string ownerOrigin
       string name
+
+  # Shared storage was accessed by the associated page.
+  # The following parameters are included in all events.
+  event sharedStorageAccessed
+    parameters
+      # Time of the access.
+      Network.TimeSinceEpoch accessTime
+      # Enum value indicating the Shared Storage API method invoked.
+      SharedStorageAccessType type
+      # DevTools Frame Token for the primary frame tree's root.
+      Page.FrameId mainFrameId
+      # Serialized origin for the context that invoked the Shared Storage API.
+      string ownerOrigin
+      # The sub-parameters warapped by `params` are all optional and their
+      # presence/absence depends on `type`.
+      SharedStorageAccessParams params
 
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
