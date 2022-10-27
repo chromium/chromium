@@ -3,48 +3,11 @@
 // found in the LICENSE file.
 
 /**
- * Namespace for async utility functions.
- */
-const AsyncUtil = {};
-
-/**
- * Asynchronous version of Array.forEach.
- * This executes a provided function callback once per array element, then
- * run completionCallback to notify the completion.
- * The callback can be an asynchronous function, but the execution is
- * sequentially done.
- *
- * @param {Array<T>} array The array to be iterated.
- * @param {function(function(), T, number, Array<T>)} callback The iteration
- *     callback. The first argument is a callback to notify the completion of
- *     the iteration.
- * @param {function()} completionCallback Called when all iterations are
- *     completed.
- * @param {Object=} opt_thisObject Bound to callback if given.
- * @template T
- */
-AsyncUtil.forEach = (array, callback, completionCallback, opt_thisObject) => {
-  if (opt_thisObject) {
-    callback = callback.bind(opt_thisObject);
-  }
-
-  const queue = new AsyncUtil.Queue();
-  for (let i = 0; i < array.length; i++) {
-    queue.run(((element, index, iterationCompletionCallback) => {
-                callback(iterationCompletionCallback, element, index, array);
-              }).bind(null, array[i], i));
-  }
-  queue.run(iterationCompletionCallback => {
-    completionCallback();  // Don't pass iteration completion callback.
-  });
-};
-
-/**
  * Creates a class for executing several asynchronous closures in a fifo queue.
  * Added tasks will be started in order they were added. Tasks are run
  * concurrently. At most, |limit| jobs will be run at the same time.
  */
-AsyncUtil.ConcurrentQueue = class {
+export class ConcurrentQueue {
   /**
    * @param {number} limit The number of tasks to run at the same time.
    */
@@ -170,23 +133,23 @@ AsyncUtil.ConcurrentQueue = class {
   }
 
   /**
-   * Returns string representation of current AsyncUtil.ConcurrentQueue
+   * Returns string representation of current ConcurrentQueue
    * instance.
    * @return {string} String representation of the instance.
    */
   toString() {
-    return 'AsyncUtil.ConcurrentQueue\n' +
+    return 'ConcurrentQueue\n' +
         '- WaitingTasksCount: ' + this.getWaitingTasksCount() + '\n' +
         '- RunningTasksCount: ' + this.getRunningTasksCount() + '\n' +
         '- isCancelled: ' + this.isCancelled();
   }
-};
+}
 
 /**
  * Creates a class for executing several asynchronous closures in a fifo queue.
  * Added tasks will be executed sequentially in order they were added.
  */
-AsyncUtil.Queue = class Queue extends AsyncUtil.ConcurrentQueue {
+export class AsyncQueue extends ConcurrentQueue {
   constructor() {
     super(1);
   }
@@ -208,12 +171,12 @@ AsyncUtil.Queue = class Queue extends AsyncUtil.ConcurrentQueue {
   async lock() {
     return new Promise(resolve => this.run(unlock => resolve(unlock)));
   }
-};
+}
 
 /**
- * A task which is executed by AsyncUtil.Group.
+ * A task which is executed by Group.
  */
-AsyncUtil.GroupTask = class {
+export class GroupTask {
   /**
    * @param {!function(function())} closure Closure with a completion callback
    *     to be executed.
@@ -227,21 +190,21 @@ AsyncUtil.GroupTask = class {
   }
 
   /**
-   * Returns string representation of AsyncUtil.GroupTask instance.
+   * Returns string representation of GroupTask instance.
    * @return {string} String representation of the instance.
    */
   toString() {
-    return 'AsyncUtil.GroupTask\n' +
+    return 'GroupTask\n' +
         '- name: ' + this.name + '\n' +
         '- dependencies: ' + this.dependencies.join();
   }
-};
+}
 
 /**
  * Creates a class for executing several asynchronous closures in a group in
  * a dependency order.
  */
-AsyncUtil.Group = class {
+export class Group {
   constructor() {
     this.addedTasks_ = {};
     this.pendingTasks_ = {};
@@ -250,7 +213,7 @@ AsyncUtil.Group = class {
   }
 
   /**
-   * @return {!Object<AsyncUtil.GroupTask>} Pending tasks
+   * @return {!Object<GroupTask>} Pending tasks
    */
   get pendingTasks() {
     return this.pendingTasks_;
@@ -269,7 +232,7 @@ AsyncUtil.Group = class {
     const length = Object.keys(this.addedTasks_).length;
     const name = opt_name || ('(unnamed#' + (length + 1) + ')');
 
-    const task = new AsyncUtil.GroupTask(closure, opt_dependencies || [], name);
+    const task = new GroupTask(closure, opt_dependencies || [], name);
 
     this.addedTasks_[name] = task;
     this.pendingTasks_[name] = task;
@@ -331,7 +294,7 @@ AsyncUtil.Group = class {
     this.finishedTasks_[task.name] = task;
     this.continue_();
   }
-};
+}
 
 /**
  * Aggregates consecutive calls and executes the closure only once instead of
@@ -339,7 +302,7 @@ AsyncUtil.Group = class {
  * consecutive ones are aggregated and the closure is called only once once
  * |delay| amount of time passes after the last call to run().
  */
-AsyncUtil.Aggregator = class {
+export class Aggregator {
   /**
    * @param {function()} closure Closure to be aggregated.
    * @param {number=} opt_delay Minimum aggregation time in milliseconds.
@@ -409,14 +372,14 @@ AsyncUtil.Aggregator = class {
       this.scheduledRunsTimer_ = null;
     }
   }
-};
+}
 
 /**
  * Samples calls so that they are not called too frequently.
  * The first call is always called immediately, and the following calls may
  * be skipped or delayed to keep each interval no less than |minInterval_|.
  */
-AsyncUtil.RateLimiter = class {
+export class RateLimiter {
   /**
    * @param {function()} closure Closure to be called.
    * @param {number=} opt_minInterval Minimum interval between each call in
@@ -492,6 +455,4 @@ AsyncUtil.RateLimiter = class {
       this.scheduledRunsTimer_ = 0;
     }
   }
-};
-
-export {AsyncUtil};
+}

@@ -4,14 +4,14 @@
 
 import {assertArrayEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {AsyncUtil} from './async_util.js';
+import {AsyncQueue} from './async_util.js';
 import {waitUntil} from './test_error_reporting.js';
 
 /**
  * Checks that the order of the tasks is preserved.
  */
 export async function testAsyncQueueOrder(done) {
-  const queue = new AsyncUtil.Queue();
+  const queue = new AsyncQueue();
   const taskTrace = [];
 
   const secondTask = (callback) => {
@@ -37,7 +37,7 @@ export async function testAsyncQueueOrder(done) {
  * Checks that tasks with errors do not interrupt the queue's operations.
  */
 export async function testAsyncQueueFailingTask(done) {
-  const queue = new AsyncUtil.Queue();
+  const queue = new AsyncQueue();
   const taskTrace = [];
 
   const followingTask = (callback) => {
@@ -62,7 +62,7 @@ export async function testAsyncQueueFailingTask(done) {
  * that task that is run first finishes before the task ran after it.
  */
 export async function testAsyncQueueStartEndOrder(done) {
-  const queue = new AsyncUtil.Queue();
+  const queue = new AsyncQueue();
   let runCount = 0;
   const task = [];
   const taskTrace = [];

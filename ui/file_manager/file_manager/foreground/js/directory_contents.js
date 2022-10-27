@@ -7,7 +7,7 @@ import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {mountGuest} from '../../common/js/api.js';
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {metrics} from '../../common/js/metrics.js';
 import {createTrashReaders} from '../../common/js/trash.js';
@@ -728,7 +728,7 @@ export class DirectoryContents extends EventTarget {
 
     this.scannerFactory_ = scannerFactory;
     this.scanner_ = null;
-    this.processNewEntriesQueue_ = new AsyncUtil.Queue();
+    this.processNewEntriesQueue_ = new AsyncQueue();
     this.scanCancelled_ = false;
 
     /**
@@ -1068,7 +1068,7 @@ export class DirectoryContents extends EventTarget {
       // entries into smaller chunks to reduce UI latency.
       // TODO(hidehiko,mtomasz): This should be handled in MetadataCache.
       const MAX_CHUNK_SIZE = 25;
-      const prefetchMetadataQueue = new AsyncUtil.ConcurrentQueue(4);
+      const prefetchMetadataQueue = new ConcurrentQueue(4);
       for (let i = 0; i < entries.length; i += MAX_CHUNK_SIZE) {
         if (prefetchMetadataQueue.isCancelled()) {
           break;

@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue, RateLimiter} from '../../common/js/async_util.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
@@ -102,11 +102,11 @@ export class DriveSyncHandlerImpl extends EventTarget {
 
     /**
      * Async queue.
-     * @type {AsyncUtil.Queue}
+     * @type {AsyncQueue}
      * @const
      * @private
      */
-    this.queue_ = new AsyncUtil.Queue();
+    this.queue_ = new AsyncQueue();
 
     /**
      * The length average window in calculating moving average speed of task.
@@ -145,9 +145,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
     /**
      * Rate limiter which is used to avoid sending update request for progress
      * bar too frequently.
-     * @private {AsyncUtil.RateLimiter}
+     * @private {RateLimiter}
      */
-    this.progressRateLimiter_ = new AsyncUtil.RateLimiter(() => {
+    this.progressRateLimiter_ = new RateLimiter(() => {
       this.progressCenter_.updateItem(this.syncItem_);
       this.progressCenter_.updateItem(this.pinItem_);
     }, 2000);

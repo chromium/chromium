@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue} from '../../common/js/async_util.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
@@ -96,9 +96,9 @@ export class FileTasks {
 
     /**
      * Mutex used to serialize password dialogs.
-     * @private @const {!AsyncUtil.Queue}
+     * @private @const {!AsyncQueue}
      */
-    this.mutex_ = new AsyncUtil.Queue();
+    this.mutex_ = new AsyncQueue();
   }
 
   /**

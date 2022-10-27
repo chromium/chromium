@@ -5,7 +5,7 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {getPreferences} from '../../common/js/api.js';
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue, Group} from '../../common/js/async_util.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
@@ -40,7 +40,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     this.lastDriveRootURL_ = null;
 
     // Queue to serialize resolving entries.
-    this.queue_ = new AsyncUtil.Queue();
+    this.queue_ = new AsyncQueue();
     this.queue_.run(
         this.volumeManager_.ensureInitialized.bind(this.volumeManager_));
 
@@ -146,7 +146,7 @@ export class FolderShortcutsDataModel extends EventTarget {
       };
 
       // Resolve the items all at once, in parallel.
-      const group = new AsyncUtil.Group();
+      const group = new Group();
       list.forEach(function(path) {
         group.add(((path, callback) => {
                     const url = this.lastDriveRootURL_ &&

@@ -6,7 +6,7 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 
-import {AsyncUtil} from '../../../common/js/async_util.js';
+import {RateLimiter} from '../../../common/js/async_util.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {util} from '../../../common/js/util.js';
@@ -74,7 +74,7 @@ export class FileGrid extends Grid {
     /** @private {?VolumeManager} */
     this.volumeManager_ = null;
 
-    /** @private {?AsyncUtil.RateLimiter} */
+    /** @private {?RateLimiter} */
     this.relayoutRateLimiter_ = null;
 
     /** @private {?function(!Event)} */
@@ -153,7 +153,7 @@ export class FileGrid extends Grid {
     };
 
     self.relayoutRateLimiter_ =
-        new AsyncUtil.RateLimiter(self.relayoutImmediately_.bind(self));
+        new RateLimiter(self.relayoutImmediately_.bind(self));
 
     const style = window.getComputedStyle(self);
     self.paddingStart_ =

@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
@@ -73,7 +73,7 @@ export class DirectoryModel extends EventTarget {
      */
     this.ignoreCurrentDirectoryDeletion_ = false;
 
-    this.directoryChangeQueue_ = new AsyncUtil.Queue();
+    this.directoryChangeQueue_ = new AsyncQueue();
 
     /**
      * Number of running directory change trackers.
@@ -82,7 +82,7 @@ export class DirectoryModel extends EventTarget {
     this.numChangeTrackerRunning_ = 0;
 
     this.rescanAggregator_ =
-        new AsyncUtil.Aggregator(this.rescanSoon.bind(this, true), 500);
+        new Aggregator(this.rescanSoon.bind(this, true), 500);
 
     this.fileFilter_ = fileFilter;
     this.fileFilter_.addEventListener(

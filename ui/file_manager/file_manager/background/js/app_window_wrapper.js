@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {openWindow} from '../../common/js/api.js';
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue} from '../../common/js/async_util.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 
 /** Coordinates the creation of new windows for Files app.  */
@@ -17,8 +17,8 @@ export class AppWindowWrapper {
     this.appState_ = null;
     this.openingOrOpened_ = false;
 
-    /** @protected {AsyncUtil.Queue} */
-    this.queue_ = new AsyncUtil.Queue();
+    /** @protected {!AsyncQueue} */
+    this.queue_ = new AsyncQueue();
   }
 
   /**

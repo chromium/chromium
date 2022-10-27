@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue} from '../../common/js/async_util.js';
 import {util} from '../../common/js/util.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -14,7 +14,7 @@ export class FileWatcher extends EventTarget {
   constructor() {
     super();
 
-    this.queue_ = new AsyncUtil.Queue();
+    this.queue_ = new AsyncQueue();
     this.watchedDirectoryEntry_ = null;
 
     this.onDirectoryChangedBound_ = this.onDirectoryChanged_.bind(this);

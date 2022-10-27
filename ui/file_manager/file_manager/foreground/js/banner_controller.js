@@ -5,7 +5,7 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {RateLimiter} from '../../common/js/async_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -254,9 +254,9 @@ export class BannerController extends EventTarget {
     /**
      * Debounced version of updateVolumeSizeStats_ to stop overly aggressive
      * calls coming from onDirectoryChanged_.
-     * @private {AsyncUtil.RateLimiter}
+     * @private {RateLimiter}
      */
-    this.updateVolumeSizeStatsDebounced_ = new AsyncUtil.RateLimiter(
+    this.updateVolumeSizeStatsDebounced_ = new RateLimiter(
         async () => this.updateVolumeSizeStats_(),
         MIN_INTERVAL_BETWEEN_DIRECTORY_SIZE_CHANGED_EVENTS);
 

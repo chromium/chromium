@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncUtil} from '../../common/js/async_util.js';
+import {AsyncQueue} from '../../common/js/async_util.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL} from '../../common/js/url_constants.js';
 import {str} from '../../common/js/util.js';
@@ -225,9 +225,9 @@ ProgressCenterImpl.Notifications_ = class {
 
     /**
      * Async queue.
-     * @private @const {AsyncUtil.Queue}
+     * @private @const {AsyncQueue}
      */
-    this.queue_ = new AsyncUtil.Queue();
+    this.queue_ = new AsyncQueue();
 
     /**
      * Callback to notify the progress center of cancel operation.
