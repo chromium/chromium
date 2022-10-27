@@ -75,7 +75,7 @@ const char* CardNetworkFromWalletCardType(
   }
 }
 
-// Creates an AutofillProfile from the specified |card| specifics.
+// Creates a CreditCard from the specified `card` specifics.
 CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   CreditCard result(CreditCard::MASKED_SERVER_CARD, card.id());
   result.SetNumber(base::UTF8ToUTF16(card.last_four()));
@@ -93,6 +93,9 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
       break;
     case sync_pb::CardIssuer::GOOGLE:
       issuer = CreditCard::GOOGLE;
+      break;
+    case sync_pb::CardIssuer::EXTERNAL_ISSUER:
+      issuer = CreditCard::EXTERNAL_ISSUER;
       break;
   }
   result.set_card_issuer(issuer);
@@ -271,6 +274,9 @@ void SetAutofillWalletSpecificsFromServerCard(
       break;
     case CreditCard::GOOGLE:
       issuer = sync_pb::CardIssuer::GOOGLE;
+      break;
+    case CreditCard::EXTERNAL_ISSUER:
+      issuer = sync_pb::CardIssuer::EXTERNAL_ISSUER;
       break;
   }
   wallet_card->mutable_card_issuer()->set_issuer(issuer);

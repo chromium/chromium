@@ -205,8 +205,15 @@ message CardIssuer {
     ISSUER_UNKNOWN = 0;
     // Card where the issuer is Google.
     GOOGLE = 1;
+    // Card where the issuer is external.
+    EXTERNAL_ISSUER = 2;
   }
   optional Issuer issuer = 1;
+
+  // Uniquely identifies the issuer of the card. This field is required when
+  // Issuer is EXTERNAL_ISSUER.
+  // Example: capitalone, amex.
+  optional string issuer_id = 2;
 }
 
 message WalletMaskedCreditCard {

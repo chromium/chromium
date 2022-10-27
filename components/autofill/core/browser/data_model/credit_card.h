@@ -63,6 +63,7 @@ class CreditCard : public AutofillDataModel {
   enum Issuer {
     ISSUER_UNKNOWN = 0,
     GOOGLE = 1,
+    EXTERNAL_ISSUER = 2,
   };
 
   // Whether the card has been enrolled in the virtual card feature. This must

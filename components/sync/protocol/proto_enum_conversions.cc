@@ -597,9 +597,12 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer) {
+  ASSERT_ENUM_BOUNDS(sync_pb::CardIssuer, Issuer, ISSUER_UNKNOWN,
+                     EXTERNAL_ISSUER);
   switch (issuer) {
     ENUM_CASE(sync_pb::CardIssuer, ISSUER_UNKNOWN);
     ENUM_CASE(sync_pb::CardIssuer, GOOGLE);
+    ENUM_CASE(sync_pb::CardIssuer, EXTERNAL_ISSUER);
   }
   NOTREACHED();
   return "";

@@ -1323,6 +1323,7 @@ VISIT_PROTO_FIELDS(const sync_pb::CloudTokenData& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::CardIssuer& proto) {
   VISIT_ENUM(issuer);
+  VISIT(issuer_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WalletMaskedCreditCard& proto) {
