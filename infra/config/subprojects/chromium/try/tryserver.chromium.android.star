@@ -271,7 +271,7 @@ try_.orchestrator_builder(
     check_for_flakiness = True,
     compilator = "android-nougat-x86-rel-compilator",
     tryjob = try_.job(
-        experiment_percentage = 15,
+        experiment_percentage = 100,
     ),
     experiments = {
         "remove_src_checkout_experiment": 100,
