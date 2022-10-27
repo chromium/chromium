@@ -7749,3 +7749,5 @@ crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-appear
 crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-contrast-appearance.html [ Failure ]
 
 crbug.com/1378359 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure ]
+
+crbug.com/1379131 [ Win ] http/tests/inspector-protocol/terminate-execution-with-fetch-callbacks.js [ Crash Failure Pass ]
