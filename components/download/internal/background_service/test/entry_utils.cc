@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
+#include "components/download/internal/background_service/test/entry_utils.h"
 #include "base/guid.h"
 #include "base/memory/values_equivalent.h"
-#include "components/download/internal/background_service/test/entry_utils.h"
+#include "base/ranges/algorithm.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace download {
@@ -18,13 +17,12 @@ bool CompareEntry(const Entry* const& expected, const Entry* const& actual) {
 
 bool CompareEntryList(const std::vector<Entry*>& expected,
                       const std::vector<Entry*>& actual) {
-  return std::is_permutation(actual.cbegin(), actual.cend(), expected.cbegin(),
-                             CompareEntry);
+  return base::ranges::is_permutation(actual, expected, CompareEntry);
 }
 
 bool CompareEntryList(const std::vector<Entry>& list1,
                       const std::vector<Entry>& list2) {
-  return std::is_permutation(list1.begin(), list1.end(), list2.begin());
+  return base::ranges::is_permutation(list1, list2);
 }
 
 bool CompareEntryUsingGuidOnly(const Entry* const& expected,
@@ -37,8 +35,8 @@ bool CompareEntryUsingGuidOnly(const Entry* const& expected,
 
 bool CompareEntryListUsingGuidOnly(const std::vector<Entry*>& expected,
                                    const std::vector<Entry*>& actual) {
-  return std::is_permutation(actual.cbegin(), actual.cend(), expected.cbegin(),
-                             CompareEntryUsingGuidOnly);
+  return base::ranges::is_permutation(actual, expected,
+                                      CompareEntryUsingGuidOnly);
 }
 
 Entry BuildBasicEntry() {
