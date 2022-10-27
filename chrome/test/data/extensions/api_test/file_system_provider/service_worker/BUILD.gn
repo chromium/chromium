@@ -63,6 +63,8 @@ js_library("service_worker") {
     "truncate/test.js",
     "unmount/sw.js",
     "unmount/test.js",
+    "unresponsive_extension/provider/sw.js",
+    "unresponsive_extension/test.js",
     "write_file/sw.js",
     "write_file/test.js",
   ]

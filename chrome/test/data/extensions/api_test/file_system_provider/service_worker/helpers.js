@@ -113,14 +113,11 @@ export async function getVolumeInfo(fileSystemId) {
   const volumeList = await new Promise(
       resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
   for (const volume of volumeList) {
-    // For extension backed providers, the provider id is equal to extension
-    // id.
-    if (volume.providerId === chrome.runtime.id &&
-        volume.fileSystemId === fileSystemId) {
+    if (volume.fileSystemId === fileSystemId) {
       return volume;
     }
   }
-  return null;
+  throw new Error(`volume not found: ${fileSystemId}`);
 };
 
 /**
@@ -352,6 +349,27 @@ export class ProviderProxy {
    */
   async triggerNotify(entryPath, recursive, tag) {
     return this.callProvider('triggerNotify', entryPath, recursive, tag);
+  }
+
+  /**
+   * @param {string} url
+   * @returns {!Promise<number>}
+   */
+  async openTab(url) {
+    return this.callProvider('openTab', url);
+  }
+
+  /** @param {number} tabId */
+  async closeTab(tabId) {
+    return this.callProvider('closeTab', tabId);
+  }
+
+  /**
+   * @param {string} url
+   * @returns {!Promise<number>}
+   */
+  async openWindow(url) {
+    return this.callProvider('openWindow', url);
   }
 
   /**

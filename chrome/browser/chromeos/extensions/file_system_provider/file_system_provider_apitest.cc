@@ -505,6 +505,17 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Unmount) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest,
+                       Unresponsive_Extension) {
+  AbortOnUnresponsivePerformer performer(browser()->profile());
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
+      "file_system_provider/service_worker/unresponsive_extension/provider")));
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/unresponsive_extension",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, WriteFile) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/write_file",
                                {.extension_url = "test.html"},

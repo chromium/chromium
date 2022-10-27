@@ -343,6 +343,36 @@ export class TestFileSystemProvider {
   }
 
   /**
+   * Opens a tab from the extension hosting this provider.
+   *
+   * @param {string} url
+   * @returns {!Promise<number>}
+   */
+  async openTab(url) {
+    const tab = await promisifyWithLastError(chrome.tabs.create, {url});
+    return tab.id;
+  }
+
+  /**
+   * Closes a tab previously opened with |openTab|.
+   *
+   * @param {number} tabId
+   */
+  async closeTab(tabId) {
+    await chrome.tabs.remove(tabId);
+  }
+
+  /**
+   * Opens a window from the extension hosting this provider.
+   *
+   * @param {string} url
+   * @returns {!Promise<number>}
+   */
+  async openWindow(url) {
+    return await promisifyWithLastError(chrome.windows.create, {url});
+  }
+
+  /**
    * Called by the test. Gets the least recent event recorded for a given event
    * name. Will block until there is at least one in the queue.
    *
@@ -534,6 +564,12 @@ export class TestFileSystemProvider {
    */
   onConfigureRequested(options, onSuccess, onError) {
     this.recordEvent('onConfigureRequested', options);
+    const delay = this.testConfig['onConfigureRequestedDelayMs'];
+    if (delay) {
+      // Simulates a delayed configuration success.
+      setTimeout(onSuccess, delay);
+      return;
+    }
     const error = this.testConfig['onConfigureRequestedError'];
     if (error) {
       onError(error);
