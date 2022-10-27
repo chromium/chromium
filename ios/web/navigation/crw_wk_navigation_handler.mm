@@ -688,11 +688,8 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
 
   // Invariant: Every `navigation` should have a `context`. Note that violation
   // of this invariant is currently observed in production, but the cause is not
-  // well understood. This DCHECK is meant to catch such cases in testing if
-  // they arise.
-  // TODO(crbug.com/864769): Remove nullptr checks on `context` in this method
-  // once the root cause of the invariant violation is found.
-  DCHECK(context);
+  // well understood. Based on the current frequency with which this invariant
+  // fails to hold, removing null-checks on `context` would lead to a top-crash.
   UMA_HISTOGRAM_BOOLEAN("IOS.CommittedNavigationHasContext", context);
 
   GURL webViewURL = net::GURLWithNSURL(webView.URL);
