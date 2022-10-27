@@ -36,7 +36,7 @@ class CredentialProviderSigninInfoFetcher
   // is finished successfully or with an error.
   // The single argument should always be a dictionary value and will be empty
   // if there was an error during the fetch.
-  using FetchCompletionCallback = base::OnceCallback<void(base::Value)>;
+  using FetchCompletionCallback = base::OnceCallback<void(base::Value::Dict)>;
 
   CredentialProviderSigninInfoFetcher(
       const std::string& refresh_token,

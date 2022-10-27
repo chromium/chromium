@@ -47,7 +47,7 @@ bool g_enable_gcpw_signin_during_tests = false;
 // sendLSTFetchResults.
 constexpr char kLSTFetchResultsMessage[] = "lstFetchResults";
 
-void WriteResultToHandle(const base::Value& result) {
+void WriteResultToHandle(const base::Value::Dict& result) {
   std::string json_result;
   if (base::JSONWriter::Write(result, &json_result) && !json_result.empty()) {
     // The caller of this Chrome process must provide a stdout handle  to
@@ -68,7 +68,7 @@ void WriteResultToHandle(const base::Value& result) {
 
 void WriteResultToHandleWithKeepAlive(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
-    base::Value signin_result) {
+    base::Value::Dict signin_result) {
   WriteResultToHandle(signin_result);
 
   // Release the keep_alive implicitly and allow the dialog to die.
@@ -77,13 +77,11 @@ void WriteResultToHandleWithKeepAlive(
 void HandleAllGcpwInfoFetched(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<CredentialProviderSigninInfoFetcher> fetcher,
-    base::Value signin_result,
-    base::Value fetch_result) {
-  DCHECK(signin_result.is_dict());
-  DCHECK(fetch_result.is_dict());
-  if (!signin_result.DictEmpty() && !fetch_result.DictEmpty()) {
-    signin_result.MergeDictionary(&fetch_result);
-    WriteResultToHandle(signin_result);
+    base::Value::Dict signin_result,
+    base::Value::Dict fetch_result) {
+  if (!signin_result.empty() && !fetch_result.empty()) {
+    signin_result.Merge(std::move(fetch_result));
+    WriteResultToHandle(std::move(signin_result));
   }
 
   // Release the fetcher and mark it for eventual delete. It is not immediately
@@ -96,15 +94,11 @@ void HandleAllGcpwInfoFetched(
 
 void HandleSigninCompleteForGcpwLogin(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
-    base::Value signin_result,
+    base::Value::Dict signin_result,
     const std::string& additional_mdm_oauth_scopes,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK(signin_result.is_dict());
-  DCHECK(!signin_result.DictEmpty());
-  int exit_code = signin_result
-                      .FindKeyOfType(credential_provider::kKeyExitCode,
-                                     base::Value::Type::INTEGER)
-                      ->GetInt();
+  DCHECK(!signin_result.empty());
+  int exit_code = *signin_result.FindInt(credential_provider::kKeyExitCode);
 
   // If there is an error code, write out the signin results directly.
   // Otherwise fetch more info required for the signin.  In either case,
@@ -115,17 +109,11 @@ void HandleSigninCompleteForGcpwLogin(
         FROM_HERE,
         base::BindOnce(&WriteResultToHandleWithKeepAlive, std::move(keep_alive),
                        std::move(signin_result)));
-  } else if (signin_result.DictSize() > 1) {
+  } else if (signin_result.size() > 1) {
     std::string access_token =
-        signin_result
-            .FindKeyOfType(credential_provider::kKeyAccessToken,
-                           base::Value::Type::STRING)
-            ->GetString();
+        *signin_result.FindString(credential_provider::kKeyAccessToken);
     std::string refresh_token =
-        signin_result
-            .FindKeyOfType(credential_provider::kKeyRefreshToken,
-                           base::Value::Type::STRING)
-            ->GetString();
+        *signin_result.FindString(credential_provider::kKeyRefreshToken);
     DCHECK(!access_token.empty() && !refresh_token.empty());
 
     // Create the fetcher and pass it to the callback so that it can be
@@ -191,47 +179,47 @@ class CredentialProviderWebUIMessageHandler
   }
 
  private:
-  base::Value ParseArgs(const base::Value::List& args, int* out_exit_code) {
+  base::Value::Dict ParseArgs(const base::Value::List& args,
+                              int* out_exit_code) {
     DCHECK(out_exit_code);
 
     if (args.empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
-      return base::Value(base::Value::Type::DICTIONARY);
+      return base::Value::Dict();
     }
-    const base::Value& dict_result = args[0];
-    if (!dict_result.is_dict()) {
+    const base::Value::Dict* dict_result = args[0].GetIfDict();
+    if (!dict_result) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
-      return base::Value(base::Value::Type::DICTIONARY);
+      return base::Value::Dict();
     }
-    const base::Value* exit_code = dict_result.FindKeyOfType(
-        credential_provider::kKeyExitCode, base::Value::Type::INTEGER);
+    absl::optional<int> exit_code =
+        dict_result->FindInt(credential_provider::kKeyExitCode);
 
-    if (exit_code && exit_code->GetInt() != credential_provider::kUiecSuccess) {
-      *out_exit_code = exit_code->GetInt();
-      return base::Value(base::Value::Type::DICTIONARY);
+    if (exit_code && *exit_code != credential_provider::kUiecSuccess) {
+      *out_exit_code = *exit_code;
+      return base::Value::Dict();
     }
 
-    const base::Value* email = dict_result.FindKeyOfType(
-        credential_provider::kKeyEmail, base::Value::Type::STRING);
-    const base::Value* password = dict_result.FindKeyOfType(
-        credential_provider::kKeyPassword, base::Value::Type::STRING);
-    const base::Value* id = dict_result.FindKeyOfType(
-        credential_provider::kKeyId, base::Value::Type::STRING);
-    const base::Value* access_token = dict_result.FindKeyOfType(
-        credential_provider::kKeyAccessToken, base::Value::Type::STRING);
-    const base::Value* refresh_token = dict_result.FindKeyOfType(
-        credential_provider::kKeyRefreshToken, base::Value::Type::STRING);
+    const std::string* email =
+        dict_result->FindString(credential_provider::kKeyEmail);
+    const std::string* password =
+        dict_result->FindString(credential_provider::kKeyPassword);
+    const std::string* id =
+        dict_result->FindString(credential_provider::kKeyId);
+    const std::string* access_token =
+        dict_result->FindString(credential_provider::kKeyAccessToken);
+    const std::string* refresh_token =
+        dict_result->FindString(credential_provider::kKeyRefreshToken);
 
-    if (!email || email->GetString().empty() || !password ||
-        password->GetString().empty() || !id || id->GetString().empty() ||
-        !access_token || access_token->GetString().empty() || !refresh_token ||
-        refresh_token->GetString().empty()) {
+    if (!email || email->empty() || !password || password->empty() || !id ||
+        id->empty() || !access_token || access_token->empty() ||
+        !refresh_token || refresh_token->empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
-      return base::Value(base::Value::Type::DICTIONARY);
+      return base::Value::Dict();
     }
 
     *out_exit_code = credential_provider::kUiecSuccess;
-    return dict_result.Clone();
+    return dict_result->Clone();
   }
 
   void OnSigninComplete(const base::Value::List& args) {
@@ -243,10 +231,9 @@ class CredentialProviderWebUIMessageHandler
       return;
 
     int exit_code;
-    base::Value signin_result = ParseArgs(args, &exit_code);
+    base::Value::Dict signin_result = ParseArgs(args, &exit_code);
 
-    signin_result.SetKey(credential_provider::kKeyExitCode,
-                         base::Value(exit_code));
+    signin_result.Set(credential_provider::kKeyExitCode, exit_code);
 
     content::WebContents* contents = web_ui()->GetWebContents();
     content::StoragePartition* partition =
@@ -449,11 +436,11 @@ bool StartGCPWSignin(const base::CommandLine& command_line,
   // If we are prevented from showing gcpw signin, return false and write our
   // result so that the launch fails and the process can exit gracefully.
   if (!CanStartGCPWSignin()) {
-    base::Value failure_result(base::Value::Type::DICTIONARY);
-    failure_result.SetKey(credential_provider::kKeyExitCode,
-                          base::Value(static_cast<int>(
-                              credential_provider::kUiecMissingSigninData)));
-    WriteResultToHandle(failure_result);
+    base::Value::Dict failure_result;
+    failure_result.Set(
+        credential_provider::kKeyExitCode,
+        static_cast<int>(credential_provider::kUiecMissingSigninData));
+    WriteResultToHandle(std::move(failure_result));
     return false;
   }
 

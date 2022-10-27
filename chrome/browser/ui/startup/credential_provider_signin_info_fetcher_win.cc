@@ -140,20 +140,16 @@ void CredentialProviderSigninInfoFetcher::WriteResultsIfFinished(
     return;
   }
 
-  base::Value fetch_result(base::Value::Type::DICTIONARY);
+  base::Value::Dict fetch_result;
   if (!has_error) {
-    fetch_result.SetKey(credential_provider::kKeyMdmAccessToken,
-                        base::Value(mdm_access_token_));
-    fetch_result.SetKey(credential_provider::kKeyMdmIdToken,
-                        base::Value(mdm_id_token_));
-    fetch_result.SetKey(credential_provider::kKeyFullname,
-                        base::Value(full_name_));
+    fetch_result.Set(credential_provider::kKeyMdmAccessToken,
+                     mdm_access_token_);
+    fetch_result.Set(credential_provider::kKeyMdmIdToken, mdm_id_token_);
+    fetch_result.Set(credential_provider::kKeyFullname, full_name_);
     if (!picture_url_.empty()) {
-      fetch_result.SetKey(credential_provider::kKeyPicture,
-                          base::Value(picture_url_));
+      fetch_result.Set(credential_provider::kKeyPicture, picture_url_);
     }
-    fetch_result.SetKey(credential_provider::kKeyTokenHandle,
-                        base::Value(token_handle_));
+    fetch_result.Set(credential_provider::kKeyTokenHandle, token_handle_);
   }
 
   std::move(completion_callback_).Run(std::move(fetch_result));
