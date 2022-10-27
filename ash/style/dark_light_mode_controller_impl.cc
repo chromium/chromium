@@ -75,9 +75,6 @@ DarkLightModeControllerImpl::DarkLightModeControllerImpl()
     shell->login_screen_controller()->data_dispatcher()->AddObserver(this);
     shell->wallpaper_controller()->AddObserver(this);
   }
-
-  cros_styles::SetDebugColorsEnabled(base::FeatureList::IsEnabled(
-      ash::features::kSemanticColorsDebugOverride));
 }
 
 DarkLightModeControllerImpl::~DarkLightModeControllerImpl() {
