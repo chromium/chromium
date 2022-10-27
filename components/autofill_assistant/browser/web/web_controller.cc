@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -778,6 +780,19 @@ void WebController::ClickOrTapElement(
     std::move(callback).Run(status);
     return;
   }
+
+  // If the WebContents are not currently visible, we increment the capturer
+  // count while we execute the click. This causes the page to be painted as if
+  // it were visible and allows for the click to be executed properly on
+  // non-visible tabs.
+  base::ScopedClosureRunner capture_handle;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAssistantPaintInvisibleTabForClick) &&
+      web_contents_->GetVisibility() != content::Visibility::VISIBLE) {
+    capture_handle = web_contents_->IncrementCapturerCount(
+        gfx::Size(), /* stay_hidden =*/true, /* stay_awake =*/false);
+  }
+
   std::unique_ptr<ClickOrTapWorker> worker =
       std::make_unique<ClickOrTapWorker>(devtools_client_.get());
   auto* ptr = worker.get();
@@ -786,7 +801,7 @@ void WebController::ClickOrTapElement(
       element, click_type,
       base::BindOnce(
           &WebController::OnClickOrTapElement, weak_ptr_factory_.GetWeakPtr(),
-          ptr,
+          ptr, std::move(capture_handle),
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::CLICK_OR_TAP_ELEMENT,
                          std::move(callback))));
@@ -794,11 +809,18 @@ void WebController::ClickOrTapElement(
 
 void WebController::OnClickOrTapElement(
     ClickOrTapWorker* getter_to_release,
+    base::ScopedClosureRunner capture_handler,
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status) {
   base::EraseIf(pending_workers_, [getter_to_release](const auto& worker) {
     return worker.get() == getter_to_release;
   });
+
+  // We reset the state of the WebContents capturer count.
+  if (capture_handler) {
+    capture_handler.RunAndReset();
+  }
+
   std::move(callback).Run(status);
 }
 

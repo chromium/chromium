@@ -448,6 +448,7 @@ class WebController {
       const ClientStatus& status);
   void OnClickOrTapElement(
       ClickOrTapWorker* getter_to_release,
+      base::ScopedClosureRunner capture_handler,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status);
   void OnWaitForWindowHeightChange(

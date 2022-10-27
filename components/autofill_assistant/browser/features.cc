@@ -117,6 +117,12 @@ BASE_FEATURE(kAutofillAssistantLoadDFMForTriggerScripts,
              "AutofillAssistantLoadDFMForTriggerScripts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether we should force the painting of an invisible tab before attempting
+// to perform a click.
+BASE_FEATURE(kAutofillAssistantPaintInvisibleTabForClick,
+             "AutofillAssistantPaintInvisibleTabForClick",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAutofillAssistantProactiveHelp,
              "AutofillAssistantProactiveHelp",
              base::FEATURE_ENABLED_BY_DEFAULT);
