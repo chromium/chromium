@@ -49,11 +49,21 @@ public class PasswordManagerErrorMessageHelperBridge {
      */
     @CalledByNative
     static boolean shouldShowErrorUi() {
+        Profile profile = Profile.getLastUsedRegularProfile();
+        final CoreAccountInfo primaryAccountInfo =
+                IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
+                        ConsentLevel.SIGNIN);
+        // It is possible that the account is removed from Chrome between the password manager
+        // calling the Google Play Services backend and Chrome receiving the reply. In that
+        // case, the error is no longer relevant/fixable.
+        if (primaryAccountInfo == null) return false;
+
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES,
                     "ignore_auth_error_message_timeouts", false)) {
             return true;
         }
+
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         long lastShownTimestamp =
                 Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));
@@ -85,8 +95,9 @@ public class PasswordManagerErrorMessageHelperBridge {
         final CoreAccountInfo primaryAccountInfo =
                 IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
                         ConsentLevel.SIGNIN);
-        // It's not possible to call updateCredentials without an account.
-        assert primaryAccountInfo != null;
+        // If the account has been removed before calling this method, there are no credentials to
+        // update.
+        if (primaryAccountInfo == null) return;
         final Activity activity = windowAndroid.getActivity().get();
         AccountManagerFacadeProvider.getInstance().updateCredentials(
                 CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, (success) -> {
