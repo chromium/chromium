@@ -375,7 +375,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1890171020361705182">Dino oʻyini. Pikselli dinozavr kaktuslar va pterodaktillarga chap berib, choʻl orqali oʻtadi. Ovozli koʻrsatmani eshitganingizda, toʻsiqdan oʻtish uchun ekranga tegining.</translation>
 <translation id="1898423065542865115">Filtrlar</translation>
 <translation id="1901443836186977402">{1,plural, =1{Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning xavfsizlik sertifikati bir kun oldin eskirgan. Bu muammo server sozlamalari xato moslangan yoki kimdir sizning shaxsiy maʼlumotlaringizni oʻgʻirlashga harakat qilayotganda chiqishi mumkin. Unutmangki, kompyuteringizdagi vaqt: <ph name="CURRENT_DATE" />. Agar vaqt xato boʻlsa, uni oʻzgartiring va sahifani yangilang.}other{Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning xavfsizlik sertifikati # kun oldin eskirgan. Bu muammo server sozlamalari xato moslangan yoki kimdir sizning shaxsiy maʼlumotlaringizni oʻgʻirlashga harakat qilayotganda chiqishi mumkin. Unutmangki, kompyuteringizdagi vaqt: <ph name="CURRENT_DATE" />. Agar vaqt xato boʻlsa, uni oʻzgartiring va sahifani yangilang.}}</translation>
-<translation id="1902576642799138955">Amal qilish muddati</translation>
+<translation id="1902576642799138955">Muddati</translation>
 <translation id="1906155288650175567">Qayd yaratish tugmasi, Google Keep yangi qaydini tez ochish uchun Enter tugmasini bosing</translation>
 <translation id="1908217026282415406">Kameradan foydalanish va siljitish</translation>
 <translation id="191374271204266022">JSON sifatida nusxa olish</translation>
@@ -1042,7 +1042,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3781428340399460090">Och pushti</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth qurilmalar</translation>
-<translation id="3787705759683870569">Amal qilish muddati: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
+<translation id="3787705759683870569">Muddati: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="3789155188480882154">Hajmi: 16</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>
@@ -1145,7 +1145,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4116663294526079822">Bu saytda har doim ruxsat berilsin</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4117700440116928470">Qoidalar qo‘llanilish doirasi qo‘llab-quvvatlanmaydi.</translation>
-<translation id="4121428309786185360">Amal qilish muddati</translation>
+<translation id="4121428309786185360">Muddati</translation>
 <translation id="4123572138124678573">Quyidan 3 ta teshik ochish</translation>
 <translation id="4127575959421463246">ChromeOS bayroqlarini qidiryapsizmi? Bu yerga tashrif buyuring</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{yana 1 ta}other{yana # ta}}</translation>
