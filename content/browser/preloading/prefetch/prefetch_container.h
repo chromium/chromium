@@ -89,6 +89,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Whether or not the prefetch was determined to be eligibile
   void OnEligibilityCheckComplete(bool is_eligible);
+  bool IsEligible() const { return is_eligible_; }
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
@@ -218,6 +219,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // Looks up the proxy settings in the default network context for |url_|. If
   // there is an existing proxy for |url_| then it is not eligible.
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client_;
+
+  // Whethere or not this prefetch was determined to be eligible to be
+  // prefetched.
+  bool is_eligible_ = false;
 
   // Whether this prefetch is a decoy or not. If the prefetch is a decoy then
   // any prefetched resources will not be served.

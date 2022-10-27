@@ -124,6 +124,11 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
   return prefetch_document_manager_.get();
 }
 
+void PrefetchContainer::OnEligibilityCheckComplete(bool is_eligible) {
+  is_eligible_ = is_eligible;
+  prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
+}
+
 void PrefetchContainer::RegisterCookieListener(
     network::mojom::CookieManager* cookie_manager) {
   cookie_listener_ =
