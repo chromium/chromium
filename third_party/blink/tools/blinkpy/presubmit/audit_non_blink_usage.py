@@ -1408,6 +1408,7 @@ _CONFIG = [
         ],
         'allowed': [
             'base::ClampMul',
+            'base::DoNothingWithBoundArgs',
             'base::PlatformThreadRef',
             'base::WrapRefCounted',
             'cc::kNumYUVPlanes',
