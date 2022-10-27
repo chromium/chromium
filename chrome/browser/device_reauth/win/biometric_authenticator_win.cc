@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
@@ -66,11 +67,11 @@ void BiometricAuthenticatorWin::AuthenticateWithMessage(
     return;
   }
 
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     RecordAuthenticationResult(
-                         authenticator_->AuthenticateUser(message))));
+  authenticator_->AuthenticateUser(
+      message,
+      base::BindOnce(&BiometricAuthenticatorWin::RecordAuthenticationResult,
+                     base::Unretained(this))
+          .Then(std::move(callback)));
 }
 
 void BiometricAuthenticatorWin::Cancel(

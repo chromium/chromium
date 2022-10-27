@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/functional/callback_forward.h"
 
 // Enum specifying possible states of biometric authentication availability on
 // Windows. These values are persisted to logs. Entries should not be renumbered
@@ -30,7 +31,8 @@ class AuthenticatorWinInterface {
       base::OnceCallback<void(BiometricAuthenticationStatusWin)>;
 
   virtual ~AuthenticatorWinInterface() = default;
-  virtual bool AuthenticateUser(const std::u16string& message) = 0;
+  virtual void AuthenticateUser(const std::u16string& message,
+                                base::OnceCallback<void(bool)> callback) = 0;
   virtual void CheckIfBiometricsAvailable(AvailabilityCallback callback) = 0;
 };
 
@@ -43,7 +45,9 @@ class AuthenticatorWin : public AuthenticatorWinInterface {
   AuthenticatorWin(const AuthenticatorWin&) = delete;
   AuthenticatorWin& operator=(const AuthenticatorWin&) = delete;
 
-  bool AuthenticateUser(const std::u16string& message) override;
+  void AuthenticateUser(
+      const std::u16string& message,
+      base::OnceCallback<void(bool)> result_callback) override;
 
   // Runs `callback` with a biometrics availability as a parameter. Check
   // happens on the background thread as it is expensive.

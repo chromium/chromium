@@ -128,13 +128,24 @@ AuthenticatorWin::AuthenticatorWin() = default;
 
 AuthenticatorWin::~AuthenticatorWin() = default;
 
-bool AuthenticatorWin::AuthenticateUser(const std::u16string& message) {
+void AuthenticatorWin::AuthenticateUser(
+    const std::u16string& message,
+    base::OnceCallback<void(bool)> result_callback) {
   Browser* browser = chrome::FindLastActive();
-  if (!browser)
-    return false;
+  if (!browser) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(result_callback), /*success=*/false));
+    return;
+  }
 
   gfx::NativeWindow window = browser->window()->GetNativeWindow();
-  return password_manager_util_win::AuthenticateUser(window, message);
+
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&password_manager_util_win::AuthenticateUser, window,
+                     message),
+      std::move(result_callback));
 }
 
 void AuthenticatorWin::CheckIfBiometricsAvailable(
