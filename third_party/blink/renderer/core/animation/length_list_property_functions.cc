@@ -217,10 +217,10 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
       style.SetObjectPosition(PointFromVector(length_list));
       return;
     case CSSPropertyID::kOffsetAnchor:
-      style.SetOffsetAnchor(PointFromVector(length_list));
+      builder.SetOffsetAnchor(PointFromVector(length_list));
       return;
     case CSSPropertyID::kOffsetPosition:
-      style.SetOffsetPosition(PointFromVector(length_list));
+      builder.SetOffsetPosition(PointFromVector(length_list));
       return;
     case CSSPropertyID::kPerspectiveOrigin:
       builder.SetPerspectiveOrigin(PointFromVector(length_list));

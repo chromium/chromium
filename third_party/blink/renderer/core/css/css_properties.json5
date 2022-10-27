@@ -3411,6 +3411,7 @@
       converter: "ConvertPositionOrAuto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Position"],
+      readonly: true,
     },
     {
       name: "offset-distance",
@@ -3421,6 +3422,7 @@
       default_value: "Length::Fixed(0)",
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
+      readonly: true,
     },
     {
       name: "offset-path",
@@ -3435,6 +3437,7 @@
       converter: "ConvertOffsetPath",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "offset-position",
@@ -3449,6 +3452,7 @@
       converter: "ConvertPositionOrAuto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Position"],
+      readonly: true,
     },
     {
       name: "offset-rotate",
@@ -3462,6 +3466,7 @@
       converter: "ConvertOffsetRotate",
       keywords: ["auto", "reverse"],
       typedom_types: ["Keyword", "Angle"],
+      readonly: true,
     },
     {
       name: "opacity",

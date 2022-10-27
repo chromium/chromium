@@ -372,7 +372,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetMinWidth(value);
       return true;
     case CSSPropertyID::kOffsetDistance:
-      style.SetOffsetDistance(value);
+      builder.SetOffsetDistance(value);
       return true;
     case CSSPropertyID::kPaddingBottom:
       style.SetPaddingBottom(value);
