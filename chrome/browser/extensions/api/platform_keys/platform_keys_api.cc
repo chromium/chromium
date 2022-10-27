@@ -426,8 +426,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     }
 
     service->SignRSAPKCS1Raw(
-        platform_keys_token_id,
-        std::string(params->data.begin(), params->data.end()),
+        platform_keys_token_id, std::move(params->data),
         std::move(params->public_key), extension_id(),
         base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   } else {
@@ -456,8 +455,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
     }
 
     service->SignDigest(
-        platform_keys_token_id,
-        std::string(params->data.begin(), params->data.end()),
+        platform_keys_token_id, std::move(params->data),
         std::move(params->public_key), key_type, hash_algorithm, extension_id(),
         base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   }

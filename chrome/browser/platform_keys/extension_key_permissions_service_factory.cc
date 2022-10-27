@@ -14,8 +14,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/common/extension_id.h"
 
-namespace chromeos {
-namespace platform_keys {
+namespace chromeos::platform_keys {
 
 namespace {
 
@@ -69,5 +68,4 @@ ExtensionKeyPermissionsServiceFactory::ExtensionKeyPermissionsServiceFactory() =
 ExtensionKeyPermissionsServiceFactory::
     ~ExtensionKeyPermissionsServiceFactory() = default;
 
-}  // namespace platform_keys
-}  // namespace chromeos
+}  // namespace chromeos::platform_keys

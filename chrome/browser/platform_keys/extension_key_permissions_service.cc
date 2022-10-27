@@ -169,7 +169,7 @@ ExtensionKeyPermissionsService::GetStateStoreEntry(
       return &entry;
   }
 
-  state_store_entries_.push_back(KeyEntry(public_key_spki_der_b64));
+  state_store_entries_.emplace_back(public_key_spki_der_b64);
   return &state_store_entries_.back();
 }
 

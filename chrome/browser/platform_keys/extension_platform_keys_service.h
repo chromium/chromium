@@ -39,8 +39,8 @@ class ExtensionPlatformKeysService : public KeyedService {
   // can happen by exposing UI to let the user select.
   class SelectDelegate {
    public:
-    using CertificateSelectedCallback = base::OnceCallback<void(
-        const scoped_refptr<net::X509Certificate>& selection)>;
+    using CertificateSelectedCallback =
+        base::OnceCallback<void(scoped_refptr<net::X509Certificate> selection)>;
 
     SelectDelegate();
     SelectDelegate(const SelectDelegate&) = delete;
@@ -93,7 +93,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   void GenerateRSAKey(platform_keys::TokenId token_id,
                       unsigned int modulus_length_bits,
                       bool sw_backed,
-                      const std::string& extension_id,
+                      std::string extension_id,
                       GenerateKeyCallback callback);
 
   // Generates an EC key pair with |named_curve| and registers the key to allow
@@ -103,8 +103,8 @@ class ExtensionPlatformKeysService : public KeyedService {
   // resulting public key will be empty. Will only call back during the lifetime
   // of this object.
   void GenerateECKey(platform_keys::TokenId token_id,
-                     const std::string& named_curve,
-                     const std::string& extension_id,
+                     std::string named_curve,
+                     std::string extension_id,
                      GenerateKeyCallback callback);
 
   // Gets the current profile using the BrowserContext object and returns
@@ -131,11 +131,11 @@ class ExtensionPlatformKeysService : public KeyedService {
   // invoked with the signature. If it failed, the resulting signature will be
   // empty. Will only call back during the lifetime of this object.
   void SignDigest(absl::optional<platform_keys::TokenId> token_id,
-                  const std::string& data,
+                  std::vector<uint8_t> data,
                   std::vector<uint8_t> public_key_spki_der,
                   platform_keys::KeyType key_type,
                   platform_keys::HashAlgorithm hash_algorithm,
-                  const std::string& extension_id,
+                  std::string extension_id,
                   SignCallback callback);
 
   // Applies PKCS1 padding and afterwards signs the data with the private key
@@ -151,9 +151,9 @@ class ExtensionPlatformKeysService : public KeyedService {
   // invoked with the signature. If it failed, the resulting signature will be
   // empty. Will only call back during the lifetime of this object.
   void SignRSAPKCS1Raw(absl::optional<platform_keys::TokenId> token_id,
-                       const std::string& data,
+                       std::vector<uint8_t> data,
                        std::vector<uint8_t> public_key_spki_der,
-                       const std::string& extension_id,
+                       std::string extension_id,
                        SignCallback callback);
 
   // If the certificate request could be processed successfully, |matches| will
@@ -181,7 +181,7 @@ class ExtensionPlatformKeysService : public KeyedService {
       const platform_keys::ClientCertificateRequest& request,
       std::unique_ptr<net::CertificateList> client_certificates,
       bool interactive,
-      const std::string& extension_id,
+      std::string extension_id,
       SelectCertificatesCallback callback,
       content::WebContents* web_contents);
 

@@ -912,8 +912,7 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionSign(
       return;
     case SigningScheme::kRsassaPkcs1V15None:
       service->SignRSAPKCS1Raw(
-          token_id, std::string(data.begin(), data.end()), public_key,
-          extension_id,
+          token_id, data, public_key, extension_id,
           base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidExtensionSign,
                          std::move(callback)));
       return;
@@ -952,8 +951,7 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionSign(
   }
 
   service->SignDigest(
-      token_id, std::string(data.begin(), data.end()), public_key, key_type,
-      hash_algorithm, extension_id,
+      token_id, data, public_key, key_type, hash_algorithm, extension_id,
       base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidExtensionSign,
                      std::move(callback)));
 }
