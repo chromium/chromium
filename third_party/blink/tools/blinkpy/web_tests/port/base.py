@@ -202,10 +202,7 @@ class Port(object):
     WEBDRIVER_SUBTEST_PYTEST_SEPARATOR = '::'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to update configurations in:
-    #     //third_party/blink/web_tests/external/wpt/config.json
-    #     //third_party/blink/web_tests/wptrunner.blink.ini
-    #
+    # remember to add an alias rule to //third_party/wpt_tools/wpt.config.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
     WPT_DIRS = collections.OrderedDict([
