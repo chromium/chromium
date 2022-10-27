@@ -363,7 +363,9 @@ class ASH_EXPORT LockContentsView
   void SwapActiveAuthBetweenPrimaryAndSecondary(bool is_primary);
 
   // Called when an authentication check is complete.
-  void OnAuthenticate(bool auth_success, bool display_error_messages);
+  void OnAuthenticate(bool auth_success,
+                      bool display_error_messages,
+                      bool authenticated_by_pin);
 
   // Tries to lookup the stored state for |user|. Returns an unowned pointer
   // that is invalidated whenver |users_| changes.
@@ -550,6 +552,7 @@ class ASH_EXPORT LockContentsView
 
   // Tracks the unlock attempt of each user before a successful sign-in.
   base::flat_map<AccountId, int> unlock_attempt_by_user_;
+  base::flat_map<AccountId, int> pin_unlock_attempt_by_user_;
 
   // Whether a lock screen app is currently active (i.e. lock screen note action
   // state is reported as kActive by the data dispatcher).

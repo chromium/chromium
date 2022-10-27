@@ -2038,7 +2038,8 @@ void LockContentsView::SwapActiveAuthBetweenPrimaryAndSecondary(
 }
 
 void LockContentsView::OnAuthenticate(bool auth_success,
-                                      bool display_error_messages) {
+                                      bool display_error_messages,
+                                      bool authenticated_by_pin) {
   AccountId account_id =
       CurrentBigUserView()->GetCurrentUser().basic_user_info.account_id;
   if (auth_success) {
@@ -2063,6 +2064,8 @@ void LockContentsView::OnAuthenticate(bool auth_success,
         true /*success*/, &unlock_attempt_by_user_[account_id]);
   } else {
     ++unlock_attempt_by_user_[account_id];
+    if (authenticated_by_pin)
+      ++pin_unlock_attempt_by_user_[account_id];
     if (display_error_messages)
       ShowAuthErrorMessage();
   }
@@ -2136,6 +2139,11 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         }
       }
       view->auth_user()->SetAuthMethods(to_update_auth, auth_metadata);
+      if (auth_error_bubble_->GetVisible()) {
+        // Update the anchor position in case the active input view changed.
+        auth_error_bubble_->SetAnchorView(
+            view->auth_user()->GetActiveInputView());
+      }
     } else if (view->public_account()) {
       view->public_account()->SetAuthEnabled(true /*enabled*/, animate);
     }
@@ -2269,14 +2277,20 @@ void LockContentsView::ShowAuthErrorMessage() {
   if (!big_view->auth_user())
     return;
 
-  int unlock_attempt = unlock_attempt_by_user_[big_view->GetCurrentUser()
-                                                   .basic_user_info.account_id];
+  const AccountId account_id =
+      big_view->GetCurrentUser().basic_user_info.account_id;
+  int unlock_attempt = unlock_attempt_by_user_[account_id];
+
   // Show gaia signin if this is login and the user has failed too many times.
   // Do not show on secondary login screen – even though it has type kLogin – as
   // there is no OOBE there.
   if (!ash::features::IsCryptohomeRecoveryFlowUIEnabled()) {
+    // Pin login attempt does not trigger Gaia dialog. Pin auth method will be
+    // disabled after 5 failed attempts.
+    int pin_unlock_attempt = pin_unlock_attempt_by_user_[account_id];
     if (screen_type_ == LockScreen::ScreenType::kLogin &&
-        unlock_attempt >= kLoginAttemptsBeforeGaiaDialog &&
+        (unlock_attempt - pin_unlock_attempt) >=
+            kLoginAttemptsBeforeGaiaDialog &&
         Shell::Get()->session_controller()->GetSessionState() !=
             session_manager::SessionState::LOGIN_SECONDARY) {
       Shell::Get()->login_screen_controller()->ShowGaiaSignin(

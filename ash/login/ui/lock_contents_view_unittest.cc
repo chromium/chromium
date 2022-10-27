@@ -1229,6 +1229,42 @@ TEST_F(LockContentsViewUnitTest, ShowGaiaAuthAfterManyFailedLoginAttempts) {
   Mock::VerifyAndClearExpectations(client.get());
 }
 
+// Gaia screen is not shown for failed login attempt using pin.
+TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFailedPinAuth) {
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+
+  // Add user who can use pin authentication.
+  const std::string email = "user@domain.com";
+  AddUserByEmail(email);
+  contents->OnPinEnabledForUserChanged(AccountId::FromUserEmail(email), true);
+
+  auto client = std::make_unique<MockLoginScreenClient>();
+  client->set_authenticate_user_callback_result(false);
+
+  LoginBigUserView* big_view =
+      LockContentsView::TestApi(contents).primary_big_view();
+  LoginPinView* pin_view =
+      LoginAuthUserView::TestApi(big_view->auth_user()).pin_view();
+  LoginPinView::TestApi pin_pad_api{pin_view};
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  auto submit_pin = [&]() {
+    pin_pad_api.ClickOnDigit(1);
+    generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
+  };
+
+  EXPECT_TRUE(pin_view->GetVisible());
+
+  // ShowGaiaSignin is never triggered.
+  EXPECT_CALL(*client, ShowGaiaSignin(_)).Times(0);
+  for (int i = 0; i < LockContentsView::kLoginAttemptsBeforeGaiaDialog + 1; ++i)
+    submit_pin();
+
+  Mock::VerifyAndClearExpectations(client.get());
+}
+
 TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
   auto fake_detachable_base_model =
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher());

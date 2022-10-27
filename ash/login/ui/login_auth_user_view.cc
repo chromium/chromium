@@ -42,6 +42,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -1722,14 +1723,21 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
   password_view_->SetReadOnly(true);
   pin_input_view_->SetReadOnly(true);
 
+  // Checking if the password is only formed of numbers with base::StringToInt
+  // will easily fail due to numeric limits. ContainsOnlyChars is used instead.
+  const bool authenticated_by_pin =
+      ShouldAuthenticateWithPin() &&
+      base::ContainsOnlyChars(base::UTF16ToUTF8(password), "0123456789");
+
   Shell::Get()->login_screen_controller()->AuthenticateUserWithPasswordOrPin(
       current_user().basic_user_info.account_id, base::UTF16ToUTF8(password),
-      ShouldAuthenticateWithPin(),
+      authenticated_by_pin,
       base::BindOnce(&LoginAuthUserView::OnAuthComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), authenticated_by_pin));
 }
 
-void LoginAuthUserView::OnAuthComplete(absl::optional<bool> auth_success) {
+void LoginAuthUserView::OnAuthComplete(bool authenticated_by_pin,
+                                       absl::optional<bool> auth_success) {
   bool failed = !auth_success.value_or(false);
   LOG(WARNING) << "crbug.com/1339004 : OnAuthComplete " << failed;
 
@@ -1744,7 +1752,8 @@ void LoginAuthUserView::OnAuthComplete(absl::optional<bool> auth_success) {
     pin_input_view_->SetReadOnly(false);
   }
 
-  on_auth_.Run(auth_success.value(), /*display_error_messages=*/true);
+  on_auth_.Run(auth_success.value(), /*display_error_messages=*/true,
+               authenticated_by_pin);
 }
 
 void LoginAuthUserView::OnChallengeResponseAuthComplete(
@@ -1767,7 +1776,8 @@ void LoginAuthUserView::OnChallengeResponseAuthComplete(
   }
 
   on_auth_.Run(auth_success.value_or(false),
-               /*display_error_messages=*/false);
+               /*display_error_messages=*/false,
+               /*authenticated_by_pin*/ false);
 }
 
 void LoginAuthUserView::OnSmartLockArrowButtonTapped() {
