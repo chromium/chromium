@@ -647,6 +647,9 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
                 package_info->last_backup_android_id);
       EXPECT_EQ(package->last_backup_time, package_info->last_backup_time);
       EXPECT_EQ(package->sync, package_info->should_sync);
+      EXPECT_EQ(package->system, package_info->system);
+      EXPECT_EQ(package->vpn_provider, package_info->vpn_provider);
+      EXPECT_EQ(package->preinstalled, package_info->preinstalled);
       EXPECT_EQ(package->permission_states, package_info->permissions);
       EXPECT_EQ(package->web_app_info.is_null(),
                 package_info->web_app_info.is_null());
@@ -1430,6 +1433,7 @@ TEST_P(ArcAppModelBuilderTest, ArcPackagePref) {
       CreatePackageWithVersion(kTestPackageName, 2 /* package_version */);
   package->last_backup_android_id = 2;
   package->last_backup_time = 2;
+  package->preinstalled = true;
   AddPackage(package);
   ValidateHavePackages(fake_packages());
 

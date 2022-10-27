@@ -202,7 +202,7 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       1 /* last_backup_android_id */, 1 /* last_backup_time */,
       false /* sync */, false /* system */, false /* vpn_provider */,
       nullptr /* web_app_info */, absl::nullopt, std::move(permissions1),
-      absl::nullopt /* version_name */));
+      absl::nullopt /* version_name */, false /* preinstalled */));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions2;
@@ -216,8 +216,8 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       kPackageName2 /* package_name */, 2 /* package_version */,
       2 /* last_backup_android_id */, 2 /* last_backup_time */, true /* sync */,
       false /* system */, false /* vpn_provider */, nullptr /* web_app_info */,
-      absl::nullopt, std::move(permissions2),
-      absl::nullopt /* version_name */));
+      absl::nullopt, std::move(permissions2), absl::nullopt /* version_name */,
+      false /* preinstalled */));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions3;
@@ -235,7 +235,7 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       3 /* last_backup_android_id */, 3 /* last_backup_time */,
       false /* sync */, false /* system */, false /* vpn_provider */,
       nullptr /* web_app_info */, absl::nullopt, std::move(permissions3),
-      absl::nullopt /* version_name */));
+      absl::nullopt /* version_name */, false /* preinstalled */));
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions4;
@@ -254,7 +254,8 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
                                   kWebAppInfoCertificateFingerprint4),
       /*deprecated_permissions=*/absl::nullopt,
       /*permission_states=*/std::move(permissions4),
-      /*version_name=*/absl::nullopt));
+      /*version_name=*/absl::nullopt,
+      /*preinstalled=*/false));
 
   for (int i = 0; i < 3; ++i) {
     arc::mojom::ShortcutInfo shortcut_info;

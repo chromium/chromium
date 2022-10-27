@@ -79,6 +79,7 @@ constexpr char kPackageName[] = "package_name";
 constexpr char kPackageVersion[] = "package_version";
 constexpr char kPinIndex[] = "pin_index";
 constexpr char kPermissionStates[] = "permission_states";
+constexpr char kPreinstalled[] = "preinstalled";
 constexpr char kSticky[] = "sticky";
 constexpr char kShortcut[] = "shortcut";
 constexpr char kShouldSync[] = "should_sync";
@@ -800,7 +801,8 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       last_backup_android_id, last_backup_time,
       package->FindBool(kShouldSync).value_or(false),
       package->FindBool(kSystem).value_or(false),
-      package->FindBool(kVPNProvider).value_or(false), std::move(permissions),
+      package->FindBool(kVPNProvider).value_or(false),
+      package->FindBool(kPreinstalled).value_or(false), std::move(permissions),
       std::move(web_app_info));
 }
 
@@ -1656,6 +1658,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
   package_dict.Set(kSystem, package.system);
   package_dict.Set(kUninstalled, false);
   package_dict.Set(kVPNProvider, package.vpn_provider);
+  package_dict.Set(kPreinstalled, package.preinstalled);
   if (package.version_name)
     package_dict.Set(kVersionName, package.version_name.value());
   else
@@ -2407,6 +2410,7 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
     bool should_sync,
     bool system,
     bool vpn_provider,
+    bool preinstalled,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions,
     arc::mojom::WebAppInfoPtr web_app_info)
@@ -2417,6 +2421,7 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
       should_sync(should_sync),
       system(system),
       vpn_provider(vpn_provider),
+      preinstalled(preinstalled),
       permissions(std::move(permissions)),
       web_app_info(std::move(web_app_info)) {}
 
