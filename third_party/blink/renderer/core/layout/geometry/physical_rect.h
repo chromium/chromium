@@ -215,6 +215,11 @@ struct CORE_EXPORT PhysicalRect {
   explicit PhysicalRect(const gfx::Rect& r)
       : offset(r.origin()), size(r.size()) {}
 
+  // Returns a big enough rect that can contain all reasonable rendered results.
+  // The rect can be used as a "non-clipping" clip rect. The rect can be
+  // modified to clip at one or more sides, e.g.
+  //   gfx::Rect r = LayoutRect::InfiniteRect();
+  //   r.set_width(clip_right - r.x());
   static constexpr gfx::Rect InfiniteIntRect() {
     return LayoutRect::InfiniteIntRect();
   }
