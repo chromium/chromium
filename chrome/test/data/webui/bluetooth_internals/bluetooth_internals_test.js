@@ -59,7 +59,7 @@ suite('bluetooth_internals', function() {
   });
 
   setup(function() {
-    adapterFieldSet = document.querySelector('#adapter fieldset');
+    adapterFieldSet = document.querySelector('#adapter object-field-set');
     deviceTable = document.querySelector('#devices table');
     sidebarNode = document.querySelector('#sidebar');
     devices.resetForTest();
@@ -440,8 +440,8 @@ suite('bluetooth_internals', function() {
   /* AdapterPage Tests */
   function checkAdapterFieldSet(adapterInfo) {
     for (const propName in adapterInfo) {
-      const valueCell =
-          adapterFieldSet.querySelector('[data-field="' + propName + '"]');
+      const valueCell = adapterFieldSet.shadowRoot.querySelector(
+          `fieldset [data-field="${propName}"]`);
       const value = adapterInfo[propName];
 
       if (typeof (value) === 'boolean') {
@@ -502,7 +502,8 @@ suite('bluetooth_internals', function() {
      'manufacturerDataMap',
     ].forEach(function(propName) {
       const valueCell =
-          detailsPage.querySelector('fieldset [data-field="' + propName + '"]');
+          detailsPage.querySelector('object-field-set')
+              .shadowRoot.querySelector(`fieldset [data-field="${propName}"]`);
 
       const parts = propName.split('.');
       let value = deviceInfo;

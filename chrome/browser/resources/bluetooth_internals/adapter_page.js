@@ -6,10 +6,11 @@
  * Javascript for AdapterPage, served from chrome://bluetooth-internals/.
  */
 
+import './object_fieldset.js';
+
 import {$} from 'chrome://resources/js/util.js';
 
 import {AdapterInfo} from './adapter.mojom-webui.js';
-import {ObjectFieldSet} from './object_fieldset.js';
 import {Page} from './page.js';
 
 const PROPERTY_NAMES = {
@@ -31,8 +32,9 @@ export class AdapterPage extends Page {
   constructor() {
     super('adapter', 'Adapter', 'adapter');
 
-    this.adapterFieldSet = new ObjectFieldSet();
-    this.adapterFieldSet.setPropertyDisplayNames(PROPERTY_NAMES);
+    this.adapterFieldSet = document.createElement('object-field-set');
+    this.adapterFieldSet.toggleAttribute('show-all', true);
+    this.adapterFieldSet.dataset.nameMap = JSON.stringify(PROPERTY_NAMES);
     this.pageDiv.appendChild(this.adapterFieldSet);
 
     this.refreshBtn_ = $('adapter-refresh-btn');
@@ -53,15 +55,7 @@ export class AdapterPage extends Page {
       delete info.systemName;
     }
 
-    this.adapterFieldSet.setObject(info);
-    this.refreshBtn_.disabled = false;
-  }
-
-  /**
-   * Redraws the fieldset displaying the adapter info.
-   */
-  redraw() {
-    this.adapterFieldSet.redraw();
+    this.adapterFieldSet.dataset.value = JSON.stringify(info);
     this.refreshBtn_.disabled = false;
   }
 }

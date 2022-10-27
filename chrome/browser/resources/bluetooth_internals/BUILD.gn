@@ -39,6 +39,7 @@ html_files = [
   "descriptor_list_item.html",
   "expandable_list.html",
   "expandable_list_item.html",
+  "object_fieldset.html",
   "service_list_item.html",
   "snackbar.html",
 ]

@@ -169,9 +169,10 @@ function updateStoppedDiscoverySession() {
 
 function setupAdapterSystem(response) {
   adapterBroker.addEventListener('adapterchanged', function(event) {
-    adapterPage.adapterFieldSet.value[event.detail.property] =
-        event.detail.value;
-    adapterPage.redraw();
+    const oldValue = adapterPage.adapterFieldSet.value;
+    const newValue = Object.assign({}, oldValue);
+    newValue[event.detail.property] = event.detail.value;
+    adapterPage.setAdapterInfo(newValue);
 
     if (event.detail.property === AdapterProperty.POWERED) {
       devicesPage.updatedScanButtonVisibility(event.detail.value);

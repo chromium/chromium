@@ -4,12 +4,12 @@
 
 import './descriptor_list.js';
 import './expandable_list_item.js';
+import './object_fieldset.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './characteristic_list_item.html.js';
 import {CharacteristicInfo, Property} from './device.mojom-webui.js';
-import {ObjectFieldSet} from './object_fieldset.js';
 import {ValueControl} from './value_control.js';
 
 /** Property names for the CharacteristicInfo fieldset */
@@ -56,10 +56,6 @@ export class CharacteristicListItemElement extends CustomElement {
     this.deviceAddress_ = '';
     /** @private {string} */
     this.serviceId_ = '';
-    /** @private {!ObjectFieldSet} */
-    this.characteristicFieldSet_ = new ObjectFieldSet();
-    /** @private {!ObjectFieldSet} */
-    this.propertiesFieldSet_ = new ObjectFieldSet();
     /** @private {!ValueControl} */
     this.valueControl_ = new ValueControl();
   }
@@ -73,11 +69,13 @@ export class CharacteristicListItemElement extends CustomElement {
         });
 
     const propertiesBtn = this.shadowRoot.querySelector('.show-all-properties');
+    const propertiesFieldSet =
+        this.shadowRoot.querySelector('object-field-set.properties');
     propertiesBtn.addEventListener('click', () => {
-      this.propertiesFieldSet_.showAll = !this.propertiesFieldSet_.showAll;
+      propertiesFieldSet.toggleAttribute(
+          'show-all', !propertiesFieldSet.showAll);
       propertiesBtn.textContent =
-          this.propertiesFieldSet_.showAll ? 'Hide' : 'Show all';
-      this.propertiesFieldSet_.redraw();
+          propertiesFieldSet.showAll ? 'Hide' : 'Show all';
     });
   }
 
@@ -94,15 +92,22 @@ export class CharacteristicListItemElement extends CustomElement {
     this.shadowRoot.querySelector('.header-value').textContent =
         this.info.uuid.uuid;
 
-    this.characteristicFieldSet_.setPropertyDisplayNames(INFO_PROPERTY_NAMES);
-    this.characteristicFieldSet_.setObject({
+    // Create content for display in expanded content container.
+    const characteristicFieldSet =
+        this.shadowRoot.querySelector('object-field-set.characteristics');
+    characteristicFieldSet.dataset.nameMap =
+        JSON.stringify(INFO_PROPERTY_NAMES);
+    characteristicFieldSet.dataset.value = JSON.stringify({
       id: this.info.id,
       'uuid.uuid': this.info.uuid.uuid,
     });
+    characteristicFieldSet.hidden = false;
 
-    this.propertiesFieldSet_.setPropertyDisplayNames(PROPERTIES_PROPERTY_NAMES);
-    this.propertiesFieldSet_.showAll = false;
-    this.propertiesFieldSet_.setObject({
+    const propertiesFieldSet =
+        this.shadowRoot.querySelector('object-field-set.properties');
+    propertiesFieldSet.dataset.nameMap =
+        JSON.stringify(PROPERTIES_PROPERTY_NAMES);
+    propertiesFieldSet.dataset.value = JSON.stringify({
       broadcast: (this.info.properties & Property.BROADCAST) > 0,
       read: (this.info.properties & Property.READ) > 0,
       write_without_response:
@@ -124,6 +129,7 @@ export class CharacteristicListItemElement extends CustomElement {
       write_encrypted_authenticated:
           (this.info.properties & Property.WRITE_ENCRYPTED_AUTHENTICATED) > 0,
     });
+    propertiesFieldSet.hidden = false;
 
     this.valueControl_.load({
       deviceAddress: this.deviceAddress_,
@@ -132,14 +138,6 @@ export class CharacteristicListItemElement extends CustomElement {
       properties: this.info.properties,
     });
     this.valueControl_.setValue(this.info.lastKnownValue);
-
-    // Create content for display in expanded content container.
-    const characteristicDiv =
-        this.shadowRoot.querySelector('.characteristic-div');
-    characteristicDiv.appendChild(this.characteristicFieldSet_);
-
-    const propertiesDiv = this.shadowRoot.querySelector('.properties-div');
-    propertiesDiv.appendChild(this.propertiesFieldSet_);
 
     const infoDiv = this.shadowRoot.querySelector('.info-container');
     infoDiv.insertBefore(
