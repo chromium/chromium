@@ -385,6 +385,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/inline-block
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/multicol.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/multiple-row-groups.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/repeated-header-border-spacing.tentative.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/tall-monolithic-after-repeated-header.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/specified-block-size-007.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/table-border-005.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/table-border-006.html [ Failure ]
