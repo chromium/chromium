@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
@@ -48,6 +49,24 @@ void SetupPendingExtensionManagerForTest(
 // lifetime. This class should only be used from the UI thread.
 class PendingExtensionManager {
  public:
+  // Observer of changes in the PendingExtensionManager state
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when an extension is added to the pending list.
+    //
+    // This means the extension with the given `id` is currently being
+    // installed or updated.
+    virtual void OnExtensionAdded(const std::string& id) {}
+
+    // Called when an extension is removed from the pending list.
+    //
+    // This means the extension with the given `id` is no longer being installed
+    // or updated. Note that this doesn't mean the operation actually succeeded.
+    // It just means the operation on this extenison is no longer taking place
+    // (ie, pending completion).
+    virtual void OnExtensionRemoved(const std::string& id) {}
+  };
+
   explicit PendingExtensionManager(content::BrowserContext* context);
 
   PendingExtensionManager(const PendingExtensionManager&) = delete;
@@ -123,6 +142,12 @@ class PendingExtensionManager {
   // included in the set.
   std::list<std::string> GetPendingIdsForUpdateCheck() const;
 
+  // Adds an observer to the observer list.
+  void AddObserver(Observer* observer);
+
+  // Removes an observer from the observer list.
+  void RemoveObserver(Observer* observer);
+
  private:
   // Assumes an extension with id |id| is not already installed.
   // Return true if the extension was added.
@@ -147,6 +172,11 @@ class PendingExtensionManager {
   // method.
   void AddForTesting(PendingExtensionInfo pending_extension_info);
 
+  // Adds the given key and value to the pending_extensions_ map.
+  // Do it only via this method to ensure observers are consistently
+  // notified.
+  void AddToMap(const std::string& id, PendingExtensionInfo info);
+
   // The BrowserContext with which the manager is associated.
   raw_ptr<content::BrowserContext> context_;
 
@@ -154,6 +184,8 @@ class PendingExtensionManager {
 
   absl::optional<base::flat_set<std::string>>
       migrating_default_chrome_app_ids_cache_;
+
+  base::ObserverList<Observer> observers_;
 
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            UpdatePendingExtensionAlreadyInstalled);
