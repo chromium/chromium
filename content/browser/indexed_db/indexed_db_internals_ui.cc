@@ -99,23 +99,27 @@ void IndexedDBInternalsUI::GetAllBucketsAcrossAllStorageKeys(
                base::RepeatingCallback<void(IdbPartitionMetadataPtr)>
                    collect_partitions,
                base::FilePath partition_path, bool incognito,
-               std::vector<storage::mojom::IdbBucketMetadataPtr> bucket_list) {
+               std::vector<storage::mojom::IdbOriginMetadataPtr> origin_list) {
               if (!handler) {
                 return;
               }
-
-              for (const storage::mojom::IdbBucketMetadataPtr& bucket :
-                   bucket_list) {
-                handler
-                    ->bucket_to_partition_path_map_[bucket->bucket_locator.id] =
-                    partition_path;
+              for (const storage::mojom::IdbOriginMetadataPtr& origin :
+                   origin_list) {
+                for (const storage::mojom::IdbStorageKeyMetadataPtr&
+                         storage_key : origin->storage_keys) {
+                  for (const storage::mojom::IdbBucketMetadataPtr& bucket :
+                       storage_key->buckets) {
+                    handler->bucket_to_partition_path_map_
+                        [bucket->bucket_locator.id] = partition_path;
+                  }
+                }
               }
 
               IdbPartitionMetadataPtr partition =
                   storage::mojom::IdbPartitionMetadata::New();
               partition->partition_path =
                   incognito ? base::FilePath() : partition_path;
-              partition->bucket_list = std::move(bucket_list);
+              partition->origin_list = std::move(origin_list);
 
               collect_partitions.Run(std::move(partition));
             },

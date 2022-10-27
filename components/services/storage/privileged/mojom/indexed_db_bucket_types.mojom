@@ -8,13 +8,27 @@ import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/origin.mojom";
 
 // These types hold IndexedDB metadata. This information is displayed in
 // chrome://indexeddb-internals for debugging.
 
+struct IdbOriginMetadata {
+  url.mojom.Origin origin;
+  array<IdbStorageKeyMetadata> storage_keys;
+};
+
+struct IdbStorageKeyMetadata {
+  network.mojom.SchemefulSite top_level_site;
+  string serialized_storage_key;
+  array<IdbBucketMetadata> buckets;
+};
+
 // IndexedDB metadata for a single Bucket.
 struct IdbBucketMetadata {
   BucketLocator bucket_locator;
+  string name;
   uint64 size;
   mojo_base.mojom.Time last_modified;
   array<mojo_base.mojom.FilePath> paths;

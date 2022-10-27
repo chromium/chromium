@@ -11,14 +11,14 @@ import "mojo/public/mojom/base/file_path.mojom";
 // IndexedDB metadata for a single partition.
 struct IdbPartitionMetadata {
   mojo_base.mojom.FilePath partition_path;
-  array<IdbBucketMetadata> bucket_list;
+  array<IdbOriginMetadata> origin_list;
 };
 
 // This interface defines "chrome://indexeddb-internals" access to the IDB
 // backend. Implemented by IndexedDBInternalsUI.
 interface IdbInternalsHandler {
   // Returns an array of 'IdbPartitionMetadata's or an error message. Each
-  // partition contains an array of 'IdbBucketMetadata's which contain a
+  // partition contains an array of 'IdbOriginMetadata's which contain a
   // representation of an IDB database.
   GetAllBucketsAcrossAllStorageKeys()
     => (string? error, array<IdbPartitionMetadata> partitions);

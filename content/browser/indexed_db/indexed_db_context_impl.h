@@ -291,6 +291,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // third-party-context IDB files are stored.
   const std::map<storage::BucketId, base::FilePath> FindIndexedDBFiles();
 
+  void OnBucketInfoReady(
+      GetAllBucketsDetailsCallback callback,
+      std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
+
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;
 

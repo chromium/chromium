@@ -84,7 +84,7 @@ interface IndexedDBControl {
 
   // Called by chrome://indexeddb-internals to populate its page details. Gets
   // all buckets across all origins.
-  GetAllBucketsDetails() => (bool incognito, array<IdbBucketMetadata> details);
+  GetAllBucketsDetails() => (bool incognito, array<IdbOriginMetadata> details);
 
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.

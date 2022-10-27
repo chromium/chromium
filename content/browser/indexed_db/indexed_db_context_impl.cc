@@ -406,20 +406,46 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   std::vector<storage::BucketLocator> bucket_locators = GetAllBuckets();
 
-  std::sort(bucket_locators.begin(), bucket_locators.end());
+  auto collect_buckets =
+      base::BarrierCallback<storage::QuotaErrorOr<storage::BucketInfo>>(
+          bucket_locators.size(),
+          base::BindOnce(&IndexedDBContextImpl::OnBucketInfoReady,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
 
-  std::vector<storage::mojom::IdbBucketMetadataPtr> list;
   for (const auto& bucket_locator : bucket_locators) {
+    quota_manager_proxy_->GetBucketById(bucket_locator.id, idb_task_runner_,
+                                        collect_buckets);
+  }
+}
+
+void IndexedDBContextImpl::OnBucketInfoReady(
+    GetAllBucketsDetailsCallback callback,
+    std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
+
+  std::map<url::Origin,
+           std::map<blink::StorageKey,
+                    std::vector<storage::mojom::IdbBucketMetadataPtr>>>
+      bucket_map;
+
+  for (const auto& quota_error_or_bucket_info : bucket_infos) {
+    if (!quota_error_or_bucket_info.ok()) {
+      continue;
+    }
+    const storage::BucketInfo& bucket_info = quota_error_or_bucket_info.value();
+    const storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+
     storage::mojom::IdbBucketMetadataPtr info =
         storage::mojom::IdbBucketMetadata::New();
     info->bucket_locator = bucket_locator;
+    info->name = bucket_info.name;
     info->size = static_cast<double>(GetBucketDiskUsage(bucket_locator));
     info->last_modified = GetBucketLastModified(bucket_locator);
 
     if (!is_incognito()) {
       info->paths = GetStoragePaths(bucket_locator);
     }
-    info->connection_count = GetConnectionCountSync(bucket_locator.id);
+    info->connection_count = GetConnectionCountSync(bucket_info.id);
 
     // This ends up being O(NlogN), where N = number of open databases. We
     // iterate over all open databases to extract just those in the
@@ -427,7 +453,8 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
     // loop.
 
     if (!indexeddb_factory_.get()) {
-      list.push_back(std::move(info));
+      bucket_map[bucket_info.storage_key.origin()][bucket_info.storage_key]
+          .push_back(std::move(info));
       continue;
     }
     std::vector<IndexedDBDatabase*> databases =
@@ -508,10 +535,45 @@ void IndexedDBContextImpl::GetAllBucketsDetails(
       database_list.push_back(std::move(db_info));
     }
     info->databases = std::move(database_list);
-    list.push_back(std::move(info));
+    bucket_map[bucket_info.storage_key.origin()][bucket_info.storage_key]
+        .push_back(std::move(info));
   }
 
-  std::move(callback).Run(is_incognito(), std::move(list));
+  std::vector<storage::mojom::IdbOriginMetadataPtr> origins;
+  for (auto& [origin_url, top_level_site_map] : bucket_map) {
+    storage::mojom::IdbOriginMetadataPtr origin_metadata =
+        storage::mojom::IdbOriginMetadata::New();
+
+    origin_metadata->origin = std::move(origin_url);
+
+    for (auto& [storage_key, buckets] : top_level_site_map) {
+      storage::mojom::IdbStorageKeyMetadataPtr storage_key_metadata =
+          storage::mojom::IdbStorageKeyMetadata::New();
+
+      // Sort by name alphabetically but with the default bucket always first.
+      std::sort(buckets.begin(), buckets.end(),
+                [](const storage::mojom::IdbBucketMetadataPtr& b1,
+                   const storage::mojom::IdbBucketMetadataPtr& b2) {
+                  return (b1->bucket_locator.is_default) ||
+                         (!b2->bucket_locator.is_default && b1->name < b2->name);
+                });
+
+      storage_key_metadata->top_level_site = storage_key.top_level_site();
+      storage_key_metadata->serialized_storage_key = storage_key.Serialize();
+      storage_key_metadata->buckets = std::move(buckets);
+
+      origin_metadata->storage_keys.push_back(std::move(storage_key_metadata));
+    }
+
+    std::sort(origin_metadata->storage_keys.begin(),
+              origin_metadata->storage_keys.end());
+
+    origins.push_back(std::move(origin_metadata));
+  }
+
+  std::sort(origins.begin(), origins.end());
+
+  std::move(callback).Run(is_incognito(), std::move(origins));
 }
 
 void IndexedDBContextImpl::SetForceKeepSessionState() {
