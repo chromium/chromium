@@ -92,6 +92,7 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Content) {
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Cancel) {
   CreateController();
 
+  EXPECT_CALL(*delegate(), OnBiometricAuthBeforeFillingDeclined);
   controller()->OnCanceled();
   EXPECT_FALSE(test_pref_service()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));

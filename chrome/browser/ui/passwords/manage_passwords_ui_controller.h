@@ -110,6 +110,7 @@ class ManagePasswordsUIController
       override;
   void OnBiometricAuthenticationForFilling(PrefService* prefs) override;
   void ShowBiometricActivationConfirmation() override;
+  void OnBiometricAuthBeforeFillingDeclined() override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);

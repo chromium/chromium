@@ -1924,4 +1924,17 @@ TEST_F(ManagePasswordsUIControllerTest, AuthenticationCancledOnPageChange) {
       ->PrimaryPageChanged(controller()->GetWebContents()->GetPrimaryPage());
 }
 
+TEST_F(ManagePasswordsUIControllerTest, OnBiometricAuthBeforeFillingDeclined) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+
+  ASSERT_EQ(password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE,
+            controller()->GetState());
+
+  controller()->OnBiometricAuthBeforeFillingDeclined();
+  ASSERT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+}
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

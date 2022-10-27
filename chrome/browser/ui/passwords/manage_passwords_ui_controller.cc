@@ -353,6 +353,11 @@ void ManagePasswordsUIController::ShowBiometricActivationConfirmation() {
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::OnBiometricAuthBeforeFillingDeclined() {
+  passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
     std::vector<password_manager::PasswordForm> unsynced_credentials) {
   passwords_data_.ProcessUnsyncedCredentialsWillBeDeleted(

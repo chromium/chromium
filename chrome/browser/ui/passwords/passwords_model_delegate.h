@@ -196,6 +196,10 @@ class PasswordsModelDelegate {
   // enabled.
   virtual void ShowBiometricActivationConfirmation() = 0;
 
+  // Called when user clicked "No thanks" button on Biometric Authentication
+  // before filling promo dialog.
+  virtual void OnBiometricAuthBeforeFillingDeclined() = 0;
+
  protected:
   virtual ~PasswordsModelDelegate() = default;
 };
