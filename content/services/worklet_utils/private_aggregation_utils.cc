@@ -47,19 +47,13 @@ v8::MaybeLocal<v8::String> CreateUtf8String(v8::Isolate* isolate,
 
 // If returns `absl::nullopt`, will output an error to `error_out`.
 absl::optional<absl::uint128> ConvertBigIntToUint128(
-    v8::MaybeLocal<v8::BigInt> maybe_bigint,
+    v8::Local<v8::BigInt> bigint,
     std::string* error_out) {
-  if (maybe_bigint.IsEmpty()) {
+  if (bigint.IsEmpty()) {
     *error_out = "Failed to interpret as BigInt";
     return absl::nullopt;
   }
-
-  v8::Local<v8::BigInt> local_bigint = maybe_bigint.ToLocalChecked();
-  if (local_bigint.IsEmpty()) {
-    *error_out = "Failed to interpret as BigInt";
-    return absl::nullopt;
-  }
-  if (local_bigint->WordCount() > 2) {
+  if (bigint->WordCount() > 2) {
     *error_out = "BigInt is too large";
     return absl::nullopt;
   }
@@ -67,17 +61,11 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
   // elements actually used is then written here by the function.
   int word_count = 2;
   int sign_bit = 0;
-  uint64_t words[2];  // Least significant to most significant.
-  local_bigint->ToWordsArray(&sign_bit, &word_count, words);
+  uint64_t words[2] = {0, 0};  // Least significant to most significant.
+  bigint->ToWordsArray(&sign_bit, &word_count, words);
   if (sign_bit) {
     *error_out = "BigInt must be non-negative";
     return absl::nullopt;
-  }
-  if (word_count == 0) {
-    words[0] = 0;
-  }
-  if (word_count <= 1) {
-    words[1] = 0;
   }
 
   return absl::MakeUint128(words[1], words[0]);
@@ -85,19 +73,16 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 
 // In case of failure, will return `absl::nullopt` and output an error to
 // `error_out`.
-absl::optional<uint64_t> ParseDebugKey(gin::Dictionary dict,
+absl::optional<uint64_t> ParseDebugKey(v8::Local<v8::Value> js_debug_key,
                                        v8::Local<v8::Context>& context,
                                        std::string* error_out) {
-  v8::Local<v8::Value> js_debug_key;
-
-  if (!dict.Get("debug_key", &js_debug_key) || js_debug_key.IsEmpty() ||
-      js_debug_key->IsNullOrUndefined()) {
+  if (js_debug_key.IsEmpty() || js_debug_key->IsNullOrUndefined()) {
     return absl::nullopt;
   }
 
   if (js_debug_key->IsBigInt()) {
     absl::optional<absl::uint128> maybe_debug_key =
-        ConvertBigIntToUint128(js_debug_key->ToBigInt(context), error_out);
+        ConvertBigIntToUint128(js_debug_key.As<v8::BigInt>(), error_out);
     if (!maybe_debug_key.has_value()) {
       return absl::nullopt;
     }
@@ -117,8 +102,6 @@ absl::optional<uint64_t> ParseDebugKey(gin::Dictionary dict,
 content::mojom::AggregatableReportHistogramContributionPtr
 ParseSendHistogramReportArguments(const gin::Arguments& args) {
   v8::Isolate* isolate = args.isolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-
   std::vector<v8::Local<v8::Value>> argument_list = args.GetAll();
 
   // Any additional arguments are ignored.
@@ -131,24 +114,27 @@ ParseSendHistogramReportArguments(const gin::Arguments& args) {
 
   gin::Dictionary dict(isolate);
 
-  if (!gin::ConvertFromV8(isolate, argument_list[0], &dict)) {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "Invalid argument in sendHistogramReport")));
-    return nullptr;
-  }
+  bool success = gin::ConvertFromV8(isolate, argument_list[0], &dict);
+  DCHECK(success);
 
   v8::Local<v8::Value> js_bucket;
   v8::Local<v8::Value> js_value;
 
-  if (!dict.Get("bucket", &js_bucket) || js_bucket.IsEmpty() ||
-      js_bucket->IsNullOrUndefined()) {
+  if (!dict.Get("bucket", &js_bucket)) {
+    // Propagate any exception
+    return nullptr;
+  }
+  if (js_bucket.IsEmpty() || js_bucket->IsNullOrUndefined()) {
     isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
         isolate, "Invalid or missing bucket in sendHistogramReport argument")));
     return nullptr;
   }
 
-  if (!dict.Get("value", &js_value) || js_value.IsEmpty() ||
-      js_value->IsNullOrUndefined()) {
+  if (!dict.Get("value", &js_value)) {
+    // Propagate any exception
+    return nullptr;
+  }
+  if (js_value.IsEmpty() || js_value->IsNullOrUndefined()) {
     isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
         isolate, "Invalid or missing value in sendHistogramReport argument")));
     return nullptr;
@@ -160,7 +146,7 @@ ParseSendHistogramReportArguments(const gin::Arguments& args) {
   if (js_bucket->IsBigInt()) {
     std::string error;
     absl::optional<absl::uint128> maybe_bucket =
-        ConvertBigIntToUint128(js_bucket->ToBigInt(context), &error);
+        ConvertBigIntToUint128(js_bucket.As<v8::BigInt>(), &error);
     if (!maybe_bucket.has_value()) {
       DCHECK(base::IsStringUTF8(error));
       isolate->ThrowException(v8::Exception::TypeError(
@@ -175,13 +161,7 @@ ParseSendHistogramReportArguments(const gin::Arguments& args) {
   }
 
   if (js_value->IsInt32()) {
-    v8::Maybe<int32_t> maybe_value = js_value->Int32Value(context);
-    if (maybe_value.IsNothing()) {
-      isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-          isolate, "Failed to interpret value as integer")));
-      return nullptr;
-    }
-    value = maybe_value.ToChecked();
+    value = js_value.As<v8::Int32>()->Value();
   } else if (js_value->IsBigInt()) {
     isolate->ThrowException(v8::Exception::TypeError(
         CreateStringFromLiteral(isolate, "Value cannot be a BigInt")));
@@ -226,9 +206,15 @@ void ParseAndApplyEnableDebugModeArguments(
       return;
     }
 
+    v8::Local<v8::Value> js_debug_key;
+    if (!dict.Get("debug_key", &js_debug_key)) {
+      // Propagate any exception
+      return;
+    }
+
     std::string error;
     absl::optional<uint64_t> maybe_debug_key =
-        ParseDebugKey(dict, context, &error);
+        ParseDebugKey(js_debug_key, context, &error);
     if (!maybe_debug_key.has_value()) {
       DCHECK(base::IsStringUTF8(error));
       isolate->ThrowException(v8::Exception::TypeError(
