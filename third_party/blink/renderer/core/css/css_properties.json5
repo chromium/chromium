@@ -1442,6 +1442,7 @@
                  "after-edge", "text-after-edge", "hanging"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "align-self",
@@ -2228,6 +2229,7 @@
       field_template: "keyword",
       keywords: ["auto", "dynamic", "static"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "caption-side",
@@ -2309,6 +2311,7 @@
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "color-interpolation",
@@ -2568,6 +2571,7 @@
                  "use-script", "no-change", "reset-size", "text-after-edge", "text-before-edge"],
       default_value: "auto",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "empty-cells",
@@ -2625,6 +2629,7 @@
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "filter",
@@ -3260,6 +3265,7 @@
       name_for_methods: "MaskerResource",
       converter: "ConvertElementReference",
       computable: false,
+      readonly: true,
     },
     {
       name: "mask-type",
@@ -3269,6 +3275,7 @@
       keywords: ["luminance", "alpha"],
       typedom_types: ["Keyword"],
       default_value: "luminance",
+      readonly: true,
     },
     {
       name: "math-shift",
@@ -3857,6 +3864,7 @@
       converter: "ConvertPaintOrder",
       keywords: ["normal", "fill", "stroke", "markers"],
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "perspective",
@@ -4401,6 +4409,7 @@
       keywords: ["auto", "optimizespeed", "crispedges", "geometricprecision"],
       default_value: "auto",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "size",
@@ -4633,6 +4642,7 @@
       keywords: ["start", "middle", "end"],
       default_value: "start",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "text-combine-upright",
@@ -5075,6 +5085,7 @@
       keywords: ["none", "non-scaling-stroke"],
       typedom_types: ["Keyword"],
       default_value: "none",
+      readonly: true,
     },
     {
       name: "vertical-align",
