@@ -118,10 +118,6 @@ void DismissAppListNow() {
       base::TimeTicks::Now());
 }
 
-aura::Window* GetAppListViewNativeWindow() {
-  return GetAppListView()->GetWidget()->GetNativeView();
-}
-
 void EnableTabletMode() {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 }
@@ -320,47 +316,6 @@ TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
   EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
 }
 
-// Verifies that in tablet mode, the AppListView has correct bounds when the
-// virtual keyboard is dismissed (see https://crbug.com/944133).
-TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenDismissVKeyboard) {
-  // This isn't relevant with ProductivityLauncher, which uses separate widgets
-  // in clamshell versus tablet mode. See bug above. Also, the clamshell
-  // launcher closes when transitioning into tablet mode. This test can be
-  // deleted when ProductivityLauncher is the default.
-  if (features::IsProductivityLauncherEnabled())
-    return;
-
-  Shell::Get()->keyboard_controller()->SetEnableFlag(
-      keyboard::KeyboardEnableFlag::kShelfEnabled);
-
-  // Show the AppListView and click on the search box with mouse so the
-  // VirtualKeyboard is shown. Wait until the virtual keyboard shows.
-  ShowAppListNow(AppListViewState::kFullscreenAllApps);
-  GetSearchBoxView()->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetVirtualKeyboardWindow()->IsVisible());
-
-  // Turn on the tablet mode. The virtual keyboard should still show.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_TRUE(IsTabletMode());
-  EXPECT_TRUE(GetVirtualKeyboardWindow()->IsVisible());
-
-  // Close the virtual keyboard. Wait until it is hidden.
-  Shell::Get()->keyboard_controller()->HideKeyboard(HideReason::kUser);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(nullptr, GetVirtualKeyboardWindow());
-
-  // Check the following things:
-  // (1) AppListView's state is FULLSCREEN_SEARCH
-  // (2) AppListView's bounds are the same as the preferred bounds for
-  // the FULLSCREEN_SEARCH state.
-  EXPECT_EQ(AppListViewState::kFullscreenSearch,
-            GetAppListView()->app_list_state());
-  EXPECT_EQ(GetAppListView()->GetPreferredWidgetBoundsForState(
-                AppListViewState::kFullscreenSearch),
-            GetAppListViewNativeWindow()->bounds());
-}
-
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_CloseNotificationWithAppListShown \
   DISABLED_CloseNotificationWithAppListShown
@@ -478,14 +433,9 @@ TEST_F(AppListControllerImplTest,
 // closed.
 TEST_F(AppListControllerImplTest,
        CloseAppListShownFromOverviewAfterTabletExit) {
-  // This test is not relevant for ProductivityLauncher because it uses separate
-  // widgets in clamshell and tablet mode. This test can be deleted when
-  // ProductivityLauncher is the default.
-  if (features::IsProductivityLauncherEnabled())
-    return;
-
   auto* shell = Shell::Get();
   auto* tablet_mode_controller = shell->tablet_mode_controller();
+  auto* controller = Shell::Get()->app_list_controller();
   // Move to tablet mode and back.
   tablet_mode_controller->SetEnabledForTest(true);
   tablet_mode_controller->SetEnabledForTest(false);
@@ -498,19 +448,14 @@ TEST_F(AppListControllerImplTest,
   PressHomeButton();
 
   EXPECT_FALSE(shell->overview_controller()->InOverviewSession());
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
-  GetAppListTestHelper()->CheckVisibility(true);
-  ASSERT_TRUE(GetAppListView()->GetWidget());
-  EXPECT_TRUE(GetAppListView()->GetWidget()->GetNativeWindow()->IsVisible());
+  EXPECT_TRUE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_TRUE(controller->IsVisible());
 
   // Pressing home button again should close the app list.
   PressHomeButton();
 
-  EXPECT_EQ(AppListViewState::kClosed, GetAppListView()->app_list_state());
-  GetAppListTestHelper()->CheckVisibility(false);
-  ASSERT_TRUE(GetAppListView()->GetWidget());
-  EXPECT_FALSE(GetAppListView()->GetWidget()->GetNativeWindow()->IsVisible());
+  EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+  EXPECT_FALSE(controller->IsVisible());
 }
 
 // Tests that swapping out an AppListModel (simulating a profile swap with

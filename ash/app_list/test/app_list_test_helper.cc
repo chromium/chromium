@@ -46,11 +46,8 @@ constexpr gfx::Size kIconImageSize(56, 56);
 // An app list should be either a bubble app list or a fullscreen app list.
 // Returns true if a bubble app list should be used under the current mode.
 bool ShouldUseBubbleAppList() {
-  // A bubble app list should be used only when:
-  // (1) It is in clamshell mode; and
-  // (2) The productivity launcher flag is enabled.
-  return !Shell::Get()->IsInTabletMode() &&
-         features::IsProductivityLauncherEnabled();
+  // A bubble app list should be used only when ot is in clamshell mode.
+  return !Shell::Get()->IsInTabletMode();
 }
 
 }  // namespace
@@ -81,8 +78,7 @@ void AppListTestHelper::WaitUntilIdle() {
 
 void AppListTestHelper::WaitForFolderAnimation() {
   AppListFolderView* folder_view = nullptr;
-  if (!Shell::Get()->IsInTabletMode() &&
-      features::IsProductivityLauncherEnabled()) {
+  if (ShouldUseBubbleAppList()) {
     folder_view = GetBubbleFolderView();
   } else {
     folder_view = GetFullscreenFolderView();
