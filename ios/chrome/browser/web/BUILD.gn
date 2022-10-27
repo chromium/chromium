@@ -13,8 +13,6 @@ source_set("web") {
     "blocked_popup_tab_helper.mm",
     "certificate_policy_app_agent.h",
     "certificate_policy_app_agent.mm",
-    "dom_altering_lock.h",
-    "dom_altering_lock.mm",
     "error_page_controller_bridge.h",
     "error_page_controller_bridge.mm",
     "error_page_util.h",
