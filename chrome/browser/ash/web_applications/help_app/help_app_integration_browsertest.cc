@@ -114,27 +114,6 @@ content::WebContents* GetActiveWebContents() {
   return chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
 }
 
-// Waits for and expects that the correct url is opened.
-void WaitForAppToOpen(const GURL& expected_url) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-    EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
-    return;
-  }
-
-  // Start with a number of browsers (may include an incognito browser).
-  size_t num_browsers = chrome::GetTotalBrowserCount();
-  content::TestNavigationObserver navigation_observer(expected_url);
-  navigation_observer.StartWatchingNewWebContents();
-  // If no navigation happens, then this test will time out due to the wait.
-  navigation_observer.Wait();
-
-  // There should be another browser window for the newly opened app.
-  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
-  // Help app should have opened at the expected page.
-  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
-}
-
 }  // namespace
 
 // Test that the Help App installs and launches correctly. Runs some spot
@@ -251,10 +230,16 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeDisabledTest,
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
   WaitForTestSystemAppInstall();
 
+  GURL expected_url = GURL("chrome://help-app/");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
   chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/")));
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  // Help app should have opened at the expected page.
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 #else
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(GURL(chrome::kChromeHelpViaKeyboardURL),
@@ -330,6 +315,10 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
       NotificationHandler::Type::TRANSIENT);
   ASSERT_EQ(1u, notifications.size());
   ASSERT_EQ("show_release_notes_notification", notifications[0].id());
+
+  GURL expected_url = GURL("chrome://help-app/updates");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
   // Then click.
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  "show_release_notes_notification",
@@ -340,7 +329,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ReleaseNotes.LaunchedNotification"));
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/updates")));
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  // Help app should have opened at the expected page.
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #else
@@ -401,11 +392,15 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   ASSERT_EQ(kShowHelpAppDiscoverTabNotificationId, notifications[0].id());
 
   // Click on the notification.
+  GURL expected_url = GURL("chrome://help-app/discover");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  kShowHelpAppDiscoverTabNotificationId,
                                  absl::nullopt, absl::nullopt);
 
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
 // Test that the background page can trigger the release notes notification.
@@ -458,12 +453,16 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   ASSERT_EQ("show_release_notes_notification", notifications[0].id());
 
   // Click on the notification.
+  GURL expected_url = GURL("chrome://help-app/updates");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
   display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                  "show_release_notes_notification",
                                  absl::nullopt, absl::nullopt);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/updates")));
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 #else
   // We just have the original browser. No new app opens.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -762,10 +761,13 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
+  GURL expected_url = GURL("chrome://help-app/help/sub/3399710/id/9739838");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
   SystemTrayClientImpl::Get()->ShowGestureEducationHelp();
 
-  EXPECT_NO_FATAL_FAILURE(
-      WaitForAppToOpen(GURL("chrome://help-app/help/sub/3399710/id/9739838")));
+  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 
   // The HELP app is 18, see DefaultAppName in
   // src/chrome/browser/apps/app_service/app_service_metrics.cc
