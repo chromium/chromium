@@ -14,9 +14,6 @@ namespace ash {
 // searchbox, #000 at 87% opacity.
 constexpr SkColor kDefaultSearchboxColor = gfx::kGoogleGrey200;
 
-constexpr SkColor kDefaultSearchboxPlaceholderTextColor =
-    SkColorSetARGB(0xDE, 0x00, 0x00, 0x00);
-
 // The horizontal padding of the box layout of the search box.
 constexpr int kSearchBoxPadding = 12;
 

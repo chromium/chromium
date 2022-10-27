@@ -20,25 +20,21 @@ SkColor TestAppListColorProvider::GetSearchBoxCardBackgroundColor(
 }
 
 SkColor TestAppListColorProvider::GetSearchBoxTextColor(
-    SkColor default_color,
     const views::Widget* widget) const {
   return gfx::kGoogleGrey200;
 }
 
 SkColor TestAppListColorProvider::GetSearchBoxSecondaryTextColor(
-    SkColor default_color,
     const views::Widget* widget) const {
   return gfx::kGoogleGrey500;
 }
 
 SkColor TestAppListColorProvider::GetSearchBoxSuggestionTextColor(
-    SkColor default_color,
     const views::Widget* widget) const {
   return gfx::kGoogleGrey600;
 }
 
 SkColor TestAppListColorProvider::GetAppListItemTextColor(
-    bool is_in_folder,
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey200;
 }
@@ -49,13 +45,11 @@ SkColor TestAppListColorProvider::GetFolderBackgroundColor(
 }
 
 SkColor TestAppListColorProvider::GetPageSwitcherButtonColor(
-    bool is_root_app_grid_page_switcher,
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey700;
 }
 
 SkColor TestAppListColorProvider::GetSearchBoxIconColor(
-    SkColor default_color,
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleGrey200;
 }

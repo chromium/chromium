@@ -48,17 +48,6 @@ class AppListItemViewTest : public AshTestBase {
   std::unique_ptr<SearchModel> search_model_;
 };
 
-// Tests with ProductivityLauncher disabled.
-class AppListItemViewPeekingLauncherTest : public AppListItemViewTest {
- public:
-  AppListItemViewPeekingLauncherTest() {
-    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
-  }
-  ~AppListItemViewPeekingLauncherTest() override = default;
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests with ProductivityLauncher enabled.
 class AppListItemViewProductivityLauncherTest : public AppListItemViewTest {
  public:
@@ -69,21 +58,6 @@ class AppListItemViewProductivityLauncherTest : public AppListItemViewTest {
 
   base::test::ScopedFeatureList feature_list_;
 };
-
-// Regression test for https://crbug.com/1298801
-TEST_F(AppListItemViewPeekingLauncherTest,
-       NewInstallDotIsNotShownForPeekingLauncher) {
-  AppListItem* item = CreateAppListItem("Google Buzz");
-  item->SetIsNewInstall(true);
-
-  auto* helper = GetAppListTestHelper();
-  helper->ShowAppList();
-
-  // The item does not have a new install dot or a new install tooltip.
-  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
-  AppListItemView* item_view = apps_grid_view->GetItemViewAt(0);
-  EXPECT_FALSE(GetNewInstallDot(item_view));
-}
 
 TEST_F(AppListItemViewProductivityLauncherTest, NewInstallDot) {
   AppListItem* item = CreateAppListItem("Google Buzz");

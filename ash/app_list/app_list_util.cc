@@ -27,8 +27,7 @@ namespace ash {
 namespace {
 
 // The cardified apps grid and app icons should scale down by this factor.
-constexpr float kAppsGridCardifiedScale = 0.84f;
-constexpr float kAppsGridCardifiedScaleProdLauncher = 0.9f;
+constexpr float kAppsGridCardifiedScale = 0.9f;
 
 }  // namespace
 
@@ -180,9 +179,7 @@ void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
 }
 
 float GetAppsGridCardifiedScale() {
-  return ash::features::IsProductivityLauncherEnabled()
-             ? kAppsGridCardifiedScaleProdLauncher
-             : kAppsGridCardifiedScale;
+  return kAppsGridCardifiedScale;
 }
 
 }  // namespace ash

@@ -15,8 +15,7 @@ class ContinueSectionView;
 class RecentAppsView;
 
 // Provides access to various views. Provides an abstraction around the
-// clamshell bubble launcher vs. the fullscreen tablet launcher. Some
-// methods may return null if feature ProductivityLauncher is disabled.
+// clamshell bubble launcher vs. the fullscreen tablet launcher.
 class ASH_EXPORT AppListViewProvider {
  public:
   // Returns the continue section view or null.

@@ -482,8 +482,7 @@ int SearchResultListView::GetHeightForWidth(int w) const {
 void SearchResultListView::OnThemeChanged() {
   SearchResultContainerView::OnThemeChanged();
   title_label_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor, GetWidget()));
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(GetWidget()));
 }
 
 void SearchResultListView::SearchResultActivated(SearchResultView* view,

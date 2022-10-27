@@ -13,7 +13,6 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -182,7 +181,6 @@ void AppListBubblePresenter::Shutdown() {
 
 void AppListBubblePresenter::Show(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
-  DCHECK(features::IsProductivityLauncherEnabled());
   if (is_target_visibility_show_)
     return;
 
@@ -282,7 +280,6 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
-  DCHECK(features::IsProductivityLauncherEnabled());
   if (is_target_visibility_show_) {
     Dismiss();
     return SHELF_ACTION_APP_LIST_DISMISSED;
@@ -293,7 +290,6 @@ ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
 
 void AppListBubblePresenter::Dismiss() {
   DVLOG(1) << __PRETTY_FUNCTION__;
-  DCHECK(features::IsProductivityLauncherEnabled());
   if (!is_target_visibility_show_)
     return;
 

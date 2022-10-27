@@ -1193,18 +1193,18 @@ void SearchResultView::OnThemeChanged() {
   const auto* app_list_widget = GetWidget();
   result_text_separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
+          app_list_widget));
 
   rating_separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
+          app_list_widget));
   rating_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor, app_list_widget));
+          app_list_widget));
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor, app_list_widget)));
+          app_list_widget)));
   views::View::OnThemeChanged();
 }
 

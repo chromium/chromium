@@ -49,15 +49,13 @@ constexpr int kHorizontalButtonPadding = 0;
 class PageSwitcherButton : public IconButton {
  public:
   PageSwitcherButton(PressedCallback callback,
-                     const std::u16string& accesible_name,
-                     bool is_root_app_grid_page_switcher)
+                     const std::u16string& accesible_name)
       : IconButton(std::move(callback),
                    IconButton::Type::kSmallFloating,
                    /*icon=*/nullptr,
                    accesible_name,
                    /*is_togglable=*/false,
-                   /*has_border=*/false),
-        is_root_app_grid_page_switcher_(is_root_app_grid_page_switcher) {
+                   /*has_border=*/false) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
@@ -93,8 +91,8 @@ class PageSwitcherButton : public IconButton {
   // Returns the information of how to paint selected/normal button.
   PaintButtonInfo BuildPaintButtonInfo() {
     PaintButtonInfo info;
-    info.color = AppListColorProvider::Get()->GetPageSwitcherButtonColor(
-        is_root_app_grid_page_switcher_, GetWidget());
+    info.color =
+        AppListColorProvider::Get()->GetPageSwitcherButtonColor(GetWidget());
     if (selected_) {
       info.style = cc::PaintFlags::kFill_Style;
       info.radius = SkIntToScalar(kSelectedButtonRadius);
@@ -123,9 +121,6 @@ class PageSwitcherButton : public IconButton {
 
   // If this button is selected, set to true. By default, set to false;
   bool selected_ = false;
-
-  // True if the page switcher root is the app grid.
-  const bool is_root_app_grid_page_switcher_;
 };
 
 // Gets PageSwitcherButton at |index| in |buttons|.
@@ -232,8 +227,7 @@ void PageSwitcher::TotalPagesChanged(int previous_page_count,
                                 base::Unretained(this)),
             l10n_util::GetStringFUTF16(
                 IDS_APP_LIST_PAGE_SWITCHER, base::FormatNumber(i + 1),
-                base::FormatNumber(model_->total_pages())),
-            is_root_app_grid_page_switcher_));
+                base::FormatNumber(model_->total_pages()))));
     button->SetSelected(i == model_->selected_page() ? true : false);
   }
   buttons_->SetVisible(model_->total_pages() > 1);

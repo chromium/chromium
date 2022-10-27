@@ -426,9 +426,8 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
   search_box()->set_placeholder_text_color(
       is_search_box_active()
           ? AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                kZeroQuerySearchboxColor, GetWidget())
-          : AppListColorProvider::Get()->GetSearchBoxTextColor(
-                kDefaultSearchboxPlaceholderTextColor, GetWidget()));
+                GetWidget())
+          : AppListColorProvider::Get()->GetSearchBoxTextColor(GetWidget()));
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {
@@ -477,14 +476,14 @@ void SearchBoxView::OnThemeChanged() {
   const auto* app_list_widget = GetWidget();
   close_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
-                            AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                gfx::kGoogleGrey700, app_list_widget)));
+      gfx::CreateVectorIcon(
+          views::kIcCloseIcon, GetSearchBoxIconSize(),
+          AppListColorProvider::Get()->GetSearchBoxIconColor(app_list_widget)));
   assistant_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
-                            AppListColorProvider::Get()->GetSearchBoxIconColor(
-                                gfx::kGoogleGrey700, app_list_widget)));
+      gfx::CreateVectorIcon(
+          chromeos::kAssistantIcon, GetSearchBoxIconSize(),
+          AppListColorProvider::Get()->GetSearchBoxIconColor(app_list_widget)));
   OnWallpaperColorsChanged();
 }
 
@@ -867,8 +866,7 @@ void SearchBoxView::UpdateSearchIcon() {
       search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
   SetSearchIconImage(gfx::CreateVectorIcon(
       icon, GetSearchBoxIconSize(),
-      AppListColorProvider::Get()->GetSearchBoxIconColor(
-          SkColorSetARGB(0xDE, 0x00, 0x00, 0x00), GetWidget())));
+      AppListColorProvider::Get()->GetSearchBoxIconColor(GetWidget())));
 }
 
 bool SearchBoxView::IsValidAutocompleteText(

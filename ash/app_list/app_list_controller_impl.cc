@@ -394,8 +394,7 @@ void AppListControllerImpl::DismissAppList() {
 
   // Don't check tablet mode here. This function can be called during tablet
   // mode transitions and we always want to close anyway.
-  if (features::IsProductivityLauncherEnabled())
-    bubble_presenter_->Dismiss();
+  bubble_presenter_->Dismiss();
 
   fullscreen_presenter_->Dismiss(base::TimeTicks());
 }
@@ -423,8 +422,7 @@ void AppListControllerImpl::ShowAppList() {
     bubble_presenter_->Show(GetDisplayIdToShowAppListOn());
     return;
   }
-  DCHECK(!features::IsProductivityLauncherEnabled() ||
-         !bubble_presenter_->IsShowing());
+  DCHECK(!bubble_presenter_->IsShowing());
   fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps,
                               GetDisplayIdToShowAppListOn(), base::TimeTicks(),
                               /*show_source=*/absl::nullopt);
@@ -531,7 +529,6 @@ void AppListControllerImpl::Show(int64_t display_id,
     LogAppListShowSource(show_source.value(), show_app_list_bubble);
 
   if (show_app_list_bubble) {
-    // Clamshell ProductivityLauncher does not support app list drags.
     if (show_source.has_value())
       DCHECK_NE(show_source.value(), AppListShowSource::kSwipeFromShelf);
     bubble_presenter_->Show(display_id);
@@ -545,7 +542,6 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
-  DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(features::IsLauncherAppSortEnabled());
 
   if (new_order) {
@@ -604,19 +600,9 @@ ShelfAction AppListControllerImpl::ToggleAppList(
     return SHELF_ACTION_APP_LIST_SHOWN;
   }
 
-  if (features::IsProductivityLauncherEnabled()) {
-    ShelfAction action = bubble_presenter_->Toggle(display_id);
-    if (action == SHELF_ACTION_APP_LIST_SHOWN)
-      LogAppListShowSource(show_source, /*app_list_bubble=*/true);
-    return action;
-  }
-
-  base::AutoReset<bool> auto_reset(&should_dismiss_immediately_,
-                                   display_id != last_visible_display_id_);
-  ShelfAction action = fullscreen_presenter_->ToggleAppList(
-      display_id, show_source, event_time_stamp);
+  ShelfAction action = bubble_presenter_->Toggle(display_id);
   if (action == SHELF_ACTION_APP_LIST_SHOWN)
-    LogAppListShowSource(show_source, /*app_list_bubble=*/false);
+    LogAppListShowSource(show_source, /*app_list_bubble=*/true);
   return action;
 }
 
@@ -863,16 +849,7 @@ void AppListControllerImpl::OnTabletModeStarted() {
   // clamshell mode.
   SetKeyboardTraversalMode(false);
 
-  const AppListView* app_list_view = fullscreen_presenter_->GetView();
-  // In tablet mode shelf orientation is always "bottom". Dismiss app list if
-  // switching to tablet mode from side shelf app list, to ensure the app list
-  // is re-shown and laid out with correct "side shelf" value.
-  if (app_list_view && app_list_view->is_side_shelf())
-    DismissAppList();
-
-  // The bubble launcher is only used in clamshell mode.
-  if (features::IsProductivityLauncherEnabled())
-    DismissAppList();
+  bubble_presenter_->Dismiss();
 
   fullscreen_presenter_->OnTabletModeChanged(true);
 
@@ -918,7 +895,7 @@ void AppListControllerImpl::OnTabletModeEnded() {
 }
 
 void AppListControllerImpl::OnWallpaperColorsChanged() {
-  // Clamshell ProductivityLauncher doesn't use wallpaper prominent color.
+  // Clamshell doesn't use wallpaper prominent color.
   if (IsVisible(last_visible_display_id_) && !ShouldShowAppListBubble()) {
     AppListView* app_list_view = fullscreen_presenter_->GetView();
     DCHECK(app_list_view);
@@ -1123,10 +1100,8 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   AssistantUiController::Get()->SetKeyboardTraversalMode(engaged);
 
   // No need to schedule paint for bubble presenter.
-  if (features::IsProductivityLauncherEnabled() &&
-      bubble_presenter_->IsShowing()) {
+  if (bubble_presenter_->IsShowing())
     return;
-  }
 
   AppListView* app_list_view = fullscreen_presenter_->GetView();
   // May be null in tests of bubble presenter.
@@ -1160,11 +1135,8 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
 }
 
 bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
-  if (features::IsProductivityLauncherEnabled() &&
-      bubble_presenter_->IsShowingEmbeddedAssistantUI()) {
-    return true;
-  }
-  return fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
+  return bubble_presenter_->IsShowingEmbeddedAssistantUI() ||
+         fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
 }
 
 void AppListControllerImpl::SetStateTransitionAnimationCallbackForTesting(
@@ -1397,26 +1369,7 @@ bool AppListControllerImpl::CanProcessEventsOnApplistViews() {
 }
 
 bool AppListControllerImpl::ShouldDismissImmediately() {
-  if (should_dismiss_immediately_)
-    return true;
-
-  if (features::IsProductivityLauncherEnabled())
-    return false;
-
-  // Dismiss immediately if the peeking launcher is below the shelf's top edge.
-  DCHECK(Shell::HasInstance());
-  const int ideal_shelf_y =
-      Shelf::ForWindow(
-          fullscreen_presenter_->GetView()->GetWidget()->GetNativeView())
-          ->GetIdealBounds()
-          .y();
-
-  const int current_y = fullscreen_presenter_->GetView()
-                            ->GetWidget()
-                            ->GetNativeWindow()
-                            ->bounds()
-                            .y();
-  return current_y > ideal_shelf_y;
+  return should_dismiss_immediately_;
 }
 
 int AppListControllerImpl::GetTargetYForAppListHide(aura::Window* root_window) {
@@ -1868,7 +1821,7 @@ bool AppListControllerImpl::ShouldShowHomeScreen() const {
 }
 
 bool AppListControllerImpl::ShouldShowAppListBubble() const {
-  return !IsTabletMode() && features::IsProductivityLauncherEnabled();
+  return !IsTabletMode();
 }
 
 void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
@@ -1967,9 +1920,7 @@ void AppListControllerImpl::Shutdown() {
   // shutting down).
   IgnoreResult(close_assistant_ui_runner_.Release());
 
-  // Always shutdown the bubble presenter, even if ProductivityLauncher is
-  // disabled, because tests might have temporarily enabled the feature and
-  // the widget needs to be closed.
+  // Always shutdown the bubble presenter.
   bubble_presenter_->Shutdown();
 
   Shell* shell = Shell::Get();
@@ -2051,9 +2002,6 @@ void AppListControllerImpl::OnGoHomeWindowAnimationsEnded(int64_t display_id) {
 }
 
 void AppListControllerImpl::OnReporterActivated() {
-  if (!features::IsProductivityLauncherEnabled())
-    return;
-
   FeatureDiscoveryDurationReporter::GetInstance()->MaybeActivateObservation(
       feature_discovery::TrackableFeature::
           kAppListReorderAfterSessionActivation);

@@ -36,10 +36,7 @@ bool IsDarkModeEnabled() {
 }  // namespace
 
 AppListColorProviderImpl::AppListColorProviderImpl()
-    : is_dark_light_mode_enabled_(features::IsDarkLightModeEnabled()),
-      is_productivity_launcher_enabled_(
-          features::IsProductivityLauncherEnabled()),
-      is_background_blur_enabled_(features::IsBackgroundBlurEnabled()) {}
+    : is_background_blur_enabled_(features::IsBackgroundBlurEnabled()) {}
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
@@ -48,135 +45,93 @@ SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor(
   DCHECK(app_list_widget);
 
   const ui::ColorProvider* color_provider = app_list_widget->GetColorProvider();
-  if (ShouldUseDarkLightColors()) {
-    if (IsTabletModeEnabled()) {
-      return color_provider->GetColor(is_background_blur_enabled_
-                                          ? kColorAshShieldAndBase80
-                                          : kColorAshShieldAndBase95);
-    } else {
-      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
-    }
+  if (IsTabletModeEnabled()) {
+    return color_provider->GetColor(is_background_blur_enabled_
+                                        ? kColorAshShieldAndBase80
+                                        : kColorAshShieldAndBase95);
   }
-  return SK_ColorWHITE;  // default_color
+  return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        is_background_blur_enabled_ ? kColorAshShieldAndBase80
-                                    : kColorAshShieldAndBase95);
-  }
-  return SK_ColorWHITE;  // default_color
+  return app_list_widget->GetColorProvider()->GetColor(
+      is_background_blur_enabled_ ? kColorAshShieldAndBase80
+                                  : kColorAshShieldAndBase95);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxTextColor(
-    SkColor default_color,
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        cros_tokens::kTextColorPrimary);
-  }
-  return default_color;
+  return app_list_widget->GetColorProvider()->GetColor(
+      cros_tokens::kTextColorPrimary);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor(
-    SkColor default_color,
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        cros_tokens::kTextColorSecondary);
-  }
-  return default_color;
+  return app_list_widget->GetColorProvider()->GetColor(
+      cros_tokens::kTextColorSecondary);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxSuggestionTextColor(
-    SkColor default_color,
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshTextColorSuggestion);
-  }
-  return default_color;
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshTextColorSuggestion);
 }
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
-    bool is_in_folder,
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        cros_tokens::kTextColorPrimary);
-  }
-  return is_in_folder ? SK_ColorBLACK : SK_ColorWHITE;
+  return app_list_widget->GetColorProvider()->GetColor(
+      cros_tokens::kTextColorPrimary);
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
-    bool is_root_app_grid_page_switcher,
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshButtonIconColor);
-  }
-  // default_color
-  return is_root_app_grid_page_switcher ? SkColorSetARGB(255, 232, 234, 237)
-                                        : SkColorSetA(SK_ColorBLACK, 138);
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshButtonIconColor);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
-    SkColor default_color,
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshButtonIconColor);
-  }
-  return default_color;
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshButtonIconColor);
 }
 
 SkColor AppListColorProviderImpl::GetFolderBackgroundColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshShieldAndBase80);
-  }
-  return SK_ColorWHITE;
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshShieldAndBase80);
 }
 
 SkColor AppListColorProviderImpl::GetFolderTitleTextColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        cros_tokens::kTextColorPrimary);
-  }
-  return gfx::kGoogleGrey700;
+  return app_list_widget->GetColorProvider()->GetColor(
+      cros_tokens::kTextColorPrimary);
 }
 
 SkColor AppListColorProviderImpl::GetFolderHintTextColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        cros_tokens::kTextColorSecondary);
-  }
-  return gfx::kGoogleGrey600;
+  return app_list_widget->GetColorProvider()->GetColor(
+      cros_tokens::kTextColorSecondary);
 }
 
 SkColor AppListColorProviderImpl::GetFolderNameBorderColor(
@@ -209,11 +164,8 @@ SkColor AppListColorProviderImpl::GetContentsBackgroundColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshControlBackgroundColorInactive);
-  }
-  return SkColorSetRGB(0xF2, 0xF2, 0xF2);  // default_color
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshControlBackgroundColorInactive);
 }
 
 SkColor AppListColorProviderImpl::GetGridBackgroundCardActiveColor(
@@ -249,11 +201,7 @@ SkColor AppListColorProviderImpl::GetFocusRingColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        ui::kColorAshFocusRing);
-  }
-  return gfx::kGoogleBlue600;  // default_color
+  return app_list_widget->GetColorProvider()->GetColor(ui::kColorAshFocusRing);
 }
 
 SkColor AppListColorProviderImpl::GetInkDropBaseColor(
@@ -285,33 +233,14 @@ SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
 
-  // Use highlight colors when Dark Light mode is enabled.
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        kColorAshHighlightColorHover);
-  }
-  // Use inkdrop colors by default.
-  return SkColorSetA(
-      GetInkDropBaseColor(app_list_widget,
-                          GetSearchBoxBackgroundColor(app_list_widget)),
-      GetInkDropOpacity(app_list_widget,
-                        GetSearchBoxBackgroundColor(app_list_widget)) *
-          255);
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshHighlightColorHover);
 }
 
 SkColor AppListColorProviderImpl::GetTextColorURL(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);
-
-  // Use highlight colors when Dark Light mode is enabled.
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(kColorAshTextColorURL);
-  }
-  return gfx::kGoogleBlue600;
-}
-
-bool AppListColorProviderImpl::ShouldUseDarkLightColors() const {
-  return is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_;
+  return app_list_widget->GetColorProvider()->GetColor(kColorAshTextColorURL);
 }
 
 }  // namespace ash

@@ -19,7 +19,7 @@ class AppListPresenterImpl;
 class AppListView;
 
 // Listens for mouse clicks and taps outside the app list to close the UI when
-// necessary. Used by the peeking/fullscreen launcher.
+// necessary. Used by the fullscreen launcher
 class ASH_EXPORT AppListPresenterEventFilter : public ui::EventHandler {
  public:
   AppListPresenterEventFilter(AppListControllerImpl* controller,

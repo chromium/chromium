@@ -611,7 +611,7 @@ void SearchBoxViewBase::OnThemeChanged() {
   if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
     auto ghost_text_color =
         AppListColorProvider::Get()->GetSearchBoxSuggestionTextColor(
-            kDeprecatedSearchBoxTextDefaultColor, app_list_widget);
+            app_list_widget);
     autocomplete_ghost_text_->SetEnabledColor(ghost_text_color);
     separator_label_->SetEnabledColor(ghost_text_color);
     category_ghost_text_->SetEnabledColor(ghost_text_color);

@@ -1029,8 +1029,8 @@ void AppListItemView::OnThemeChanged() {
     notification_indicator_->SetColor(
         item_weak_->GetNotificationBadgeColor(this));
   }
-  title_->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
-      grid_delegate_->IsInFolder(), GetWidget()));
+  title_->SetEnabledColor(
+      AppListColorProvider::Get()->GetAppListItemTextColor(GetWidget()));
   SchedulePaint();
 }
 

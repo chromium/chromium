@@ -379,7 +379,7 @@ class ASH_EXPORT AppListControllerImpl
   bool ShouldShowHomeScreen() const;
 
   // Returns true if the bubble app list should be shown (instead of the
-  // fullscreen app list), based on tablet mode state and the feature flag.
+  // fullscreen app list), based on tablet mode state.
   bool ShouldShowAppListBubble() const;
 
   // Updates home launcher scale and opacity when the overview mode state
@@ -429,14 +429,12 @@ class ASH_EXPORT AppListControllerImpl
   // |presenter_| and UI.
   AppListColorProviderImpl color_provider_;
 
-  // Manages the fullscreen/peeking launcher and the tablet mode home launcher.
+  // Manages the tablet mode home launcher.
   // |fullscreen_presenter_| should be put below |client_| and |model_| to
   // prevent a crash in destruction.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
-  // Manages the clamshell launcher bubble. Always exists, even when feature
-  // ProductivityLauncher is disabled, to allow unit tests to turn the feature
-  // on and off within the test body.
+  // Manages the clamshell launcher bubble.
   std::unique_ptr<AppListBubblePresenter> bubble_presenter_;
 
   // Tracks the current page shown in the app list view (tracked for the

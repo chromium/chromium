@@ -13,12 +13,6 @@
 
 namespace ash {
 
-constexpr SkColor kDeprecatedSearchBoxTextDefaultColor =
-    SkColorSetRGB(0x33, 0x33, 0x33);
-
-constexpr SkColor kDeprecatedSearchBoxPlaceholderTextColor =
-    SkColorSetARGB(0xDE, 0x00, 0x00, 0x00);
-
 class ASH_PUBLIC_EXPORT AppListColorProvider {
  public:
   // Returns the singleton instance.
@@ -27,22 +21,16 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetSearchBoxBackgroundColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetSearchBoxTextColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetSearchBoxSecondaryTextColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetSearchBoxSuggestionTextColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetAppListItemTextColor(
-      bool is_in_folder,
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetPageSwitcherButtonColor(
-      bool is_root_app_grid_page_switcher,
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetSearchBoxIconColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const = 0;

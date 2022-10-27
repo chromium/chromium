@@ -106,8 +106,7 @@ void SearchResultImageListView::GetAccessibleNodeData(
 void SearchResultImageListView::OnThemeChanged() {
   SearchResultContainerView::OnThemeChanged();
   title_label_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          kDeprecatedSearchBoxTextDefaultColor, GetWidget()));
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(GetWidget()));
 }
 
 void SearchResultImageListView::OnSelectedResultChanged() {

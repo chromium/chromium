@@ -55,8 +55,7 @@ void SearchResultImageView::OnThemeChanged() {
   // TODO(crbug.com/1352636) remove placeholder image.
   result_image_->SetImage(gfx::CreateVectorIcon(
       vector_icons::kGoogleColorIcon, kIconSize,
-      AppListColorProvider::Get()->GetSearchBoxIconColor(
-          SkColorSetARGB(0xDE, 0x00, 0x00, 0x00), GetWidget())));
+      AppListColorProvider::Get()->GetSearchBoxIconColor(GetWidget())));
 }
 
 void SearchResultImageView::OnGestureEvent(ui::GestureEvent* event) {

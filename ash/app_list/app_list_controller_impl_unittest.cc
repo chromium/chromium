@@ -692,34 +692,6 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   EXPECT_EQ(1.0f, shelf_icon_view->layer()->opacity());
 }
 
-// Verifies that apps grid and hotseat bounds do not overlap when switching from
-// side shelf app list to tablet mode.
-TEST_F(AppListControllerImplTest, NoOverlapWithHotseatOnSwitchFromSideShelf) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
-  Shelf* const shelf = GetPrimaryShelf();
-  shelf->SetAlignment(ShelfAlignment::kRight);
-  ShowAppListNow(AppListViewState::kFullscreenAllApps);
-  ASSERT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
-
-  gfx::Rect apps_grid_view_bounds = GetAppsGridView()->GetBoundsInScreen();
-  EXPECT_FALSE(apps_grid_view_bounds.Intersects(
-      shelf->shelf_widget()->GetWindowBoundsInScreen()));
-  EXPECT_FALSE(apps_grid_view_bounds.Intersects(
-      shelf->hotseat_widget()->GetWindowBoundsInScreen()));
-
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
-
-  apps_grid_view_bounds = GetAppsGridView()->GetBoundsInScreen();
-  EXPECT_FALSE(apps_grid_view_bounds.Intersects(
-      shelf->shelf_widget()->GetWindowBoundsInScreen()));
-  EXPECT_FALSE(apps_grid_view_bounds.Intersects(
-      shelf->hotseat_widget()->GetWindowBoundsInScreen()));
-}
-
 TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
   std::unique_ptr<aura::Window> w2(CreateTestWindow(

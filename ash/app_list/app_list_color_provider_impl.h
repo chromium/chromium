@@ -17,22 +17,16 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchBoxBackgroundColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetSearchBoxSecondaryTextColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const override;
   SkColor GetSearchBoxSuggestionTextColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const override;
   SkColor GetSearchBoxTextColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const override;
   SkColor GetAppListItemTextColor(
-      bool is_in_folder,
       const views::Widget* app_list_widget) const override;
   SkColor GetPageSwitcherButtonColor(
-      bool is_root_app_grid_page_switcher,
       const views::Widget* app_list_widget) const override;
   SkColor GetSearchBoxIconColor(
-      SkColor default_color,
       const views::Widget* app_list_widget) const override;
   SkColor GetSearchBoxCardBackgroundColor(
       const views::Widget* app_list_widget) const override;
@@ -68,11 +62,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetTextColorURL(const views::Widget* app_list_widget) const override;
 
  private:
-  bool ShouldUseDarkLightColors() const;
-  // Whether feature DarkLightMode is enabled. Cached for efficiency.
-  const bool is_dark_light_mode_enabled_;
-  // Whether feature ProductivityLauncher is enabled. Cached for efficiency.
-  const bool is_productivity_launcher_enabled_;
   // Whether feature BackgroundBlur is enabled. Cached for efficiency.
   const bool is_background_blur_enabled_;
 };
