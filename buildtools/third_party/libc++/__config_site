@@ -33,10 +33,6 @@
 /* #undef _LIBCPP_HAS_NO_LOCALIZATION */
 /* #undef _LIBCPP_HAS_NO_WIDE_CHARACTERS */
 
-// Enable libc++ assertions for hardening and safety
-// (https://crbug.com/1335422).
-#define _LIBCPP_ENABLE_ASSERTIONS_DEFAULT 1
-
 // Settings below aren't part of __config_site upstream.
 // We set them here since we want them to take effect everywhere,
 // unconditionally.

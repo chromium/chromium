@@ -1552,7 +1552,7 @@ mixed_component("base") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  if (use_custom_libcxx && !is_debug) {
+  if (use_custom_libcxx && enable_safe_libcxx && !is_debug) {
     public_deps += [ ":nodebug_assertion" ]
   }
 
@@ -2715,7 +2715,7 @@ static_library("base_static") {
   }
 }
 
-if (use_custom_libcxx && !is_debug) {
+if (use_custom_libcxx && enable_safe_libcxx && !is_debug) {
   # nodebug_assertion.cc has to be in its own source_set instead of being
   # included as a source in //base as otherwise its symbols won't be linked in
   # if they end up in an archive.
@@ -3456,7 +3456,7 @@ test("base_unittests") {
     "vlog_unittest.cc",
   ]
 
-  if (use_custom_libcxx) {
+  if (use_custom_libcxx && enable_safe_libcxx) {
     sources += [ "libcpp_hardening_test.cc" ]
   }
 

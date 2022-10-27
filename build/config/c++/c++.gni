@@ -55,6 +55,14 @@ declare_args() {
   libcxx_is_shared = use_custom_libcxx && is_component_build
 }
 
+# Enables assertions on safety checks in libc++.
+#
+# Typically, this should be set to true whenever we're using our custom libc++
+# in order to guard against undefined behavior. However, the asserts added by
+# hardening libc++ may introduce some performance overhead, so for now, we
+# pull this out into a separate variable to make it easier to run tests.
+enable_safe_libcxx = use_custom_libcxx
+
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.
 export_libcxxabi_from_executables =

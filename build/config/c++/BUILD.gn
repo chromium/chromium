@@ -94,4 +94,19 @@ config("runtime_library") {
       ]
     }
   }
+  if (enable_safe_libcxx) {
+    defines += [
+      "_LIBCPP_ENABLE_ASSERTIONS_DEFAULT=1",
+
+      # The following macro is a kind of a misnomer in that it only controls the
+      # default verbose abort handler in the header <__verbose_abort> and not
+      # the default libc++ verbose abort handler in verbose_abort.cpp. We
+      # define this macro so that the <__verbose_abort> header only includes
+      # the declaration for the handler function and not the definition as we
+      # rely on the handler in //base:nodebug_assertion for nondebug executables
+      # that include base and the default handler in verbose_abort.cpp
+      # elsewhere.
+      "_LIBCPP_AVAILABILITY_CUSTOM_VERBOSE_ABORT_PROVIDED=1",
+    ]
+  }
 }
