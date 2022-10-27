@@ -156,7 +156,8 @@ class WindowPerformanceTest : public testing::Test {
 
     LocalDOMWindow* window = LocalDOMWindow::From(GetScriptState());
     performance_ = DOMWindowPerformance::performance(*window);
-    performance_->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
+    performance_->SetClocksForTesting(test_task_runner_->GetMockClock(),
+                                      test_task_runner_->GetMockTickClock());
     performance_->time_origin_ = GetTimeOrigin();
     // Stop UKM sampling for testing.
     performance_->GetResponsivenessMetrics().StopUkmSamplingForTesting();
@@ -1589,47 +1590,6 @@ TEST_F(InteractionIdTest, ClickIncorrectPointerId) {
   // Flush UKM logging mojo request.
   RunPendingTasks();
   CheckUKMValues({{40, 60, UserInteractionType::kTapOrClick}});
-}
-
-struct DummyWindowPerformance {
-  std::unique_ptr<DummyPageHolder> page_holder_;
-  Persistent<WindowPerformance> performance_;
-
-  explicit DummyWindowPerformance(const KURL& url) {
-    page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
-    ScriptState* script_state =
-        ToScriptStateForMainWorld(page_holder_->GetDocument().GetFrame());
-    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
-    performance_ = DOMWindowPerformance::performance(*window);
-  }
-};
-
-namespace {
-
-base::Time fake_time;
-base::Time FakeTimeNow() {
-  return fake_time;
-}
-}  // namespace
-
-class TimeOriginSyncTest : public testing::Test {};
-
-// Test is flaky on all platforms: https://crbug.com/1346004
-TEST_F(TimeOriginSyncTest, DISABLED_TimeOriginStableWhenSystemClockChanges) {
-  base::subtle::ScopedTimeClockOverrides clock_overrides(&FakeTimeNow, nullptr,
-                                                         nullptr);
-  base::TimeTicks before = base::TimeTicks::Now();
-  base::TimeDelta delta = base::Minutes(3);
-  ASSERT_TRUE(base::Time::FromString("10 Jul 2022 10:00 GMT", &fake_time));
-  DummyWindowPerformance perf1(KURL("https://a.com"));
-  perf1.performance_->ResetTimeOriginForTesting(before);
-  ASSERT_TRUE(base::Time::FromString("11 Jul 2023 11:30 GMT", &fake_time));
-  DummyWindowPerformance perf2(KURL("https://b.com"));
-  perf2.performance_->ResetTimeOriginForTesting(before + delta);
-  DOMHighResTimeStamp time_origin_1 = perf1.performance_->timeOrigin();
-  DOMHighResTimeStamp time_origin_2 = perf2.performance_->timeOrigin();
-  EXPECT_EQ(floor(time_origin_1 + delta.InMillisecondsF()),
-            floor(time_origin_2));
 }
 
 }  // namespace blink

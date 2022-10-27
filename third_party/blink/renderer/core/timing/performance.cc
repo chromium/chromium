@@ -35,9 +35,8 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
-#include "base/time/tick_clock.h"
-#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
@@ -109,6 +108,13 @@ const SecurityOrigin* GetSecurityOrigin(ExecutionContext* context) {
 bool IsMeasureOptionsEmpty(const PerformanceMeasureOptions& options) {
   return !options.hasDetail() && !options.hasEnd() && !options.hasStart() &&
          !options.hasDuration();
+}
+
+base::TimeDelta GetUnixAtZeroMonotonic(const base::Clock* clock,
+                                       const base::TickClock* tick_clock) {
+  base::TimeDelta unix_time_now = clock->Now() - base::Time::UnixEpoch();
+  base::TimeDelta time_since_origin = tick_clock->NowTicks().since_origin();
+  return unix_time_now - time_since_origin;
 }
 
 void RecordLongTaskUkm(ExecutionContext* execution_context,
@@ -187,6 +193,8 @@ Performance::Performance(
           task_runner_,
           this,
           &Performance::FireResourceTimingBufferFull) {
+  unix_at_zero_monotonic_ =
+      GetUnixAtZeroMonotonic(base::DefaultClock::GetInstance(), tick_clock_);
   // |context| may be null in tests.
   if (context) {
     background_tracing_helper_ =
@@ -230,8 +238,11 @@ ScriptPromise Performance::measureUserAgentSpecificMemory(
 
 DOMHighResTimeStamp Performance::timeOrigin() const {
   DCHECK(!time_origin_.is_null());
-  return ClampTimeResolution(time_origin_ - base::TimeTicks::UnixEpoch(),
-                             cross_origin_isolated_capability_);
+  base::TimeDelta time_origin_from_zero_monotonic =
+      time_origin_ - base::TimeTicks();
+  return ClampTimeResolution(
+      unix_at_zero_monotonic_ + time_origin_from_zero_monotonic,
+      cross_origin_isolated_capability_);
 }
 
 PerformanceEntryVector Performance::getEntries() {
@@ -1144,8 +1155,11 @@ void Performance::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
 }
 
-void Performance::SetTickClockForTesting(const base::TickClock* tick_clock) {
+void Performance::SetClocksForTesting(const base::Clock* clock,
+                                      const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
+  // Recompute |unix_at_zero_monotonic_|.
+  unix_at_zero_monotonic_ = GetUnixAtZeroMonotonic(clock, tick_clock_);
 }
 
 void Performance::ResetTimeOriginForTesting(base::TimeTicks time_origin) {
