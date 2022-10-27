@@ -71,6 +71,8 @@ void ReadAnythingModel::Init(std::string& font_name,
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_ = initial_colors.foreground;
   background_color_ = initial_colors.background;
+  SetIconColorIds(initial_colors.foreground_color_id);
+
   line_spacing = line_spacing_model_->GetLineSpacingAt(
       line_spacing_model_->GetStartingStateIndex());
   letter_spacing_ = letter_spacing_model_->GetLetterSpacingAt(
@@ -103,8 +105,15 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   auto& new_colors = colors_model_->GetColorsAt(new_index);
   foreground_color_ = new_colors.foreground;
   background_color_ = new_colors.background;
+  SetIconColorIds(new_colors.foreground_color_id);
 
   NotifyThemeChanged();
+}
+
+void ReadAnythingModel::SetIconColorIds(ui::ColorId color_id) {
+  colors_model_->SetIconColorId(color_id);
+  line_spacing_model_->SetIconColorId(color_id);
+  letter_spacing_model_->SetIconColorId(color_id);
 }
 
 ui::ColorId ReadAnythingModel::GetForegroundColorId() {
@@ -302,10 +311,13 @@ size_t ReadAnythingColorsModel::GetItemCount() const {
   return colors_choices_.size();
 }
 
+void ReadAnythingColorsModel::SetIconColorId(ui::ColorId color_id) {
+  icon_color_id_ = color_id;
+}
+
 ui::ImageModel ReadAnythingColorsModel::GetIconAt(size_t index) const {
-  // The dropdown should always show the color palette icon.
-  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-      kPaletteIcon, kColorsIconSize, colors_choices_[index].foreground));
+  return ui::ImageModel::FromVectorIcon(kPaletteIcon, icon_color_id_,
+                                        kColorsIconSize);
 }
 
 ui::ImageModel ReadAnythingColorsModel::GetDropDownIconAt(size_t index) const {
@@ -367,10 +379,13 @@ size_t ReadAnythingLineSpacingModel::GetItemCount() const {
   return lines_choices_.size();
 }
 
+void ReadAnythingLineSpacingModel::SetIconColorId(ui::ColorId color_id) {
+  icon_color_id_ = color_id;
+}
+
 ui::ImageModel ReadAnythingLineSpacingModel::GetIconAt(size_t index) const {
-  // The dropdown should always show the line spacing icon.
-  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-      kLineSpacingIcon, kColorsIconSize, gfx::kPlaceholderColor));
+  return ui::ImageModel::FromVectorIcon(kLineSpacingIcon, icon_color_id_,
+                                        kColorsIconSize);
 }
 
 ui::ImageModel ReadAnythingLineSpacingModel::GetDropDownIconAt(
@@ -469,9 +484,13 @@ std::u16string ReadAnythingLetterSpacingModel::GetItemAt(size_t index) const {
   return std::u16string();
 }
 
+void ReadAnythingLetterSpacingModel::SetIconColorId(ui::ColorId color_id) {
+  icon_color_id_ = color_id;
+}
+
 ui::ImageModel ReadAnythingLetterSpacingModel::GetIconAt(size_t index) const {
-  return ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-      kLetterSpacingIcon, kColorsIconSize, gfx::kPlaceholderColor));
+  return ui::ImageModel::FromVectorIcon(kLetterSpacingIcon, icon_color_id_,
+                                        kColorsIconSize);
 }
 
 ui::ImageModel ReadAnythingLetterSpacingModel::GetDropDownIconAt(
