@@ -161,7 +161,7 @@
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
-      'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
+      'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',

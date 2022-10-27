@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -71,7 +71,6 @@ ci.builder(
             ],
         },
     },
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.builder(

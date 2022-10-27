@@ -179,7 +179,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-cfm-rel": {
