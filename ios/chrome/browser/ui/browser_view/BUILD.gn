@@ -219,6 +219,7 @@ source_set("browser_view") {
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/webkit",

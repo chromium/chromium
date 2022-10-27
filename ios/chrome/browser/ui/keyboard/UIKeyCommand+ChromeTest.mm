@@ -105,6 +105,9 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_showTab6, @"⌘7", @"keyCommand_showTab6");
   Verify(UIKeyCommand.cr_showTab7, @"⌘8", @"keyCommand_showTab7");
   Verify(UIKeyCommand.cr_showLastTab, @"⌘9", @"keyCommand_showLastTab");
+  Verify(UIKeyCommand.cr_reportAnIssue, @"⇧⌘I", @"keyCommand_reportAnIssue",
+         IDS_IOS_KEYBOARD_REPORT_AN_ISSUE);
+  Verify(UIKeyCommand.cr_reportAnIssue_2, @"⌥⇧⌘I", @"keyCommand_reportAnIssue");
 
   // Prior to iOS 15, RTL needs to be handled manually. Check it for key
   // commands that need to adapt.

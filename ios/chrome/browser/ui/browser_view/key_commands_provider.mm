@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -105,6 +106,7 @@
       UIKeyCommand.cr_showTab5,
       UIKeyCommand.cr_showTab6,
       UIKeyCommand.cr_showTab7,
+      UIKeyCommand.cr_reportAnIssue_2,
     ];
   } else {
     return [self noKeyboardShortcutsMenuKeyCommands];
@@ -390,6 +392,12 @@
 
 - (void)keyCommand_showLastTab {
   [self showTabAtIndex:self.tabsCount - 1];
+}
+
+- (void)keyCommand_reportAnIssue {
+  [_dispatcher
+      showReportAnIssueFromViewController:_viewController
+                                   sender:UserFeedbackSender::KeyCommand];
 }
 
 #pragma mark - Private

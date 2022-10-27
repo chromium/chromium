@@ -43,6 +43,7 @@
 - (void)keyCommand_showTab6;
 - (void)keyCommand_showTab7;
 - (void)keyCommand_showLastTab;
+- (void)keyCommand_reportAnIssue;
 
 @end
 

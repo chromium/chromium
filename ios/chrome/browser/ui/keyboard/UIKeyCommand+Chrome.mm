@@ -19,8 +19,8 @@ UIKeyModifierFlags Command = UIKeyModifierCommand;
 UIKeyModifierFlags Control = UIKeyModifierControl;
 UIKeyModifierFlags AltCommand = UIKeyModifierAlternate | UIKeyModifierCommand;
 UIKeyModifierFlags ShiftCommand = UIKeyModifierShift | UIKeyModifierCommand;
-UIKeyModifierFlags ShiftAltCommand =
-    UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierCommand;
+UIKeyModifierFlags AltShiftCommand =
+    UIKeyModifierAlternate | UIKeyModifierShift | UIKeyModifierCommand;
 UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
 
 @implementation UIKeyCommand (Chrome)
@@ -384,6 +384,19 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
                             action:@selector(keyCommand_showLastTab)];
 }
 
++ (UIKeyCommand*)cr_reportAnIssue {
+  return [self cr_commandWithInput:@"i"
+                     modifierFlags:ShiftCommand
+                            action:@selector(keyCommand_reportAnIssue)
+                           titleID:IDS_IOS_KEYBOARD_REPORT_AN_ISSUE];
+}
+
++ (UIKeyCommand*)cr_reportAnIssue_2 {
+  return [self keyCommandWithInput:@"i"
+                     modifierFlags:AltShiftCommand
+                            action:@selector(keyCommand_reportAnIssue)];
+}
+
 #pragma mark - Symbolic Description
 
 - (NSString*)cr_symbolicDescription {
@@ -393,12 +406,12 @@ UIKeyModifierFlags ControlShift = UIKeyModifierControl | UIKeyModifierShift;
     [description appendString:@"Num lock "];
   if (self.modifierFlags & UIKeyModifierControl)
     [description appendString:@"⌃"];
+  if (self.modifierFlags & UIKeyModifierAlternate)
+    [description appendString:@"⌥"];
   if (self.modifierFlags & UIKeyModifierShift)
     [description appendString:@"⇧"];
   if (self.modifierFlags & UIKeyModifierAlphaShift)
     [description appendString:@"⇪"];
-  if (self.modifierFlags & UIKeyModifierAlternate)
-    [description appendString:@"⌥"];
   if (self.modifierFlags & UIKeyModifierCommand)
     [description appendString:@"⌘"];
 
