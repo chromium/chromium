@@ -47,6 +47,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace payments {
@@ -70,6 +72,28 @@ bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
          rfh->IsFeatureEnabled(
              blink::mojom::PermissionsPolicyFeature::kPayment);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+absl::optional<web_app::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return absl::nullopt;
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!web_app::AppBrowserController::IsWebApp(browser))
+    return absl::nullopt;
+
+  web_app::AppId app_id = browser->app_controller()->app_id();
+  auto* web_app_provider =
+      web_app::WebAppProvider::GetForWebApps(browser->profile());
+  if (!web_app_provider || !web_app_provider->registrar().IsUrlInAppScope(
+                               web_contents->GetLastCommittedURL(), app_id)) {
+    return absl::nullopt;
+  }
+
+  return app_id;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -296,12 +320,8 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
   if (!FrameSupportsPayments(rfh))
     return "";
 
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
-    return "";
-
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!web_app::AppBrowserController::IsWebApp(browser))
+  absl::optional<web_app::AppId> app_id = GetWebAppId(rfh);
+  if (!app_id.has_value())
     return "";
 
   auto* apk_web_app_service = ash::ApkWebAppService::Get(
@@ -310,8 +330,7 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
     return "";
 
   absl::optional<std::string> twa_package_name =
-      apk_web_app_service->GetPackageNameForWebApp(
-          web_contents->GetLastCommittedURL());
+      apk_web_app_service->GetPackageNameForWebApp(*app_id);
 
   return twa_package_name.has_value() ? twa_package_name.value() : "";
 #else
