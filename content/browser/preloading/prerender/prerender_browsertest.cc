@@ -24,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
@@ -4560,6 +4561,94 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
         << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
                                                              expected_entries);
   }
+}
+
+// TODO(crbug.com/1356907): Remove this and merge it to PrerenderBrowserTest
+// once kPrerender2InBackground is enabled by default.
+class PrerenderHostRegistryInBackgroundTest : public PrerenderBrowserTest {
+ public:
+  PrerenderHostRegistryInBackgroundTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2,
+         // Enable to run prerenderings in the background.
+         blink::features::kPrerender2InBackground},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+
+  ~PrerenderHostRegistryInBackgroundTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that a PrerenderHost is canceled when it's timeout in the background.
+IN_PROC_BROWSER_TEST_F(PrerenderHostRegistryInBackgroundTest,
+                       CancelPrerenderWhenTimeout) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderUrl = GetUrl("/empty.html?prerender");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  AddPrerender(kPrerenderUrl);
+
+  PrerenderHostRegistry* registry =
+      web_contents_impl()->GetPrerenderHostRegistry();
+
+  // The timer should not start yet when the prerendered page is in the
+  // foreground.
+  ASSERT_FALSE(registry->GetTimerForTesting()->IsRunning());
+
+  // Inject mock time task runner.
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  registry->SetTaskRunnerForTesting(task_runner);
+
+  // Changing the visibility state to HIDDEN will not stop prerendering.
+  web_contents()->WasHidden();
+  ASSERT_TRUE(registry->GetTimerForTesting()->IsRunning());
+
+  task_runner->FastForwardBy(PrerenderHostRegistry::kTimeToLiveInBackground);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kTimeoutBackgrounded, 1);
+}
+
+// Test that the timer for PrerenderHost timeout is reset when the tab gets
+// visible.
+IN_PROC_BROWSER_TEST_F(PrerenderHostRegistryInBackgroundTest,
+                       TimerResetWhenHiddenPageGoBackToForeground) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderUrl = GetUrl("/empty.html?prerender");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  AddPrerender(kPrerenderUrl);
+
+  PrerenderHostRegistry* registry =
+      web_contents_impl()->GetPrerenderHostRegistry();
+
+  // The timer should not start yet when the prerendered page is in the
+  // foreground.
+  ASSERT_FALSE(registry->GetTimerForTesting()->IsRunning());
+
+  // Changing the visibility state to HIDDEN will not stop prerendering.
+  web_contents()->WasHidden();
+  ASSERT_TRUE(registry->GetTimerForTesting()->IsRunning());
+
+  // The timer should be reset when the hidden page goes back to the foreground.
+  web_contents()->WasShown();
+  ASSERT_FALSE(registry->GetTimerForTesting()->IsRunning());
+
+  // Activate the prerendered page.
+  test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                 GetHostForUrl(kPrerenderUrl));
+  NavigatePrimaryPage(kPrerenderUrl);
+  prerender_observer.WaitForActivation();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderUrl);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kActivated, 1);
 }
 
 // TODO(crbug.com/1356907): Remove this and merge it to

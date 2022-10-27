@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -619,8 +620,27 @@ void PrerenderHostRegistry::DidFinishNavigation(
 
 void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
   if (base::FeatureList::IsEnabled(blink::features::kPrerender2InBackground)) {
-    for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-      iter.second->UpdateTimeoutTimer(visibility);
+    // Update the timer for prerendering timeout in the background.
+    switch (visibility) {
+      case Visibility::HIDDEN:
+        // Keep a prerendered page alive in the background when its visibility
+        // state changes to HIDDEN if the feature is enabled.
+        DCHECK(!timeout_timer_.IsRunning());
+
+        timeout_timer_.SetTaskRunner(GetTimerTaskRunner());
+        // Cancel PrerenderHost in the background when it exceeds a certain
+        // amount of time defined in `kTimeToLiveInBackground`.
+        timeout_timer_.Start(
+            FROM_HERE, kTimeToLiveInBackground,
+            base::BindOnce(&PrerenderHostRegistry::CancelAllHosts,
+                           base::Unretained(this),
+                           PrerenderFinalStatus::kTimeoutBackgrounded));
+        break;
+      case Visibility::OCCLUDED:
+      case Visibility::VISIBLE:
+        // Stop the timer when a prerendered page gets visible to users.
+        timeout_timer_.Stop();
+        break;
     }
 
     if (!base::FeatureList::IsEnabled(
@@ -854,6 +874,17 @@ void PrerenderHostRegistry::DidReceiveMemoryDump(
           base::SysInfo::AmountOfPhysicalMemory()) {
     CancelHost(frame_tree_node_id, PrerenderFinalStatus::kMemoryLimitExceeded);
   }
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+PrerenderHostRegistry::GetTimerTaskRunner() {
+  return timer_task_runner_for_testing_ ? timer_task_runner_for_testing_
+                                        : base::ThreadTaskRunnerHandle::Get();
+}
+
+void PrerenderHostRegistry::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  timer_task_runner_for_testing_ = std::move(task_runner);
 }
 
 }  // namespace content

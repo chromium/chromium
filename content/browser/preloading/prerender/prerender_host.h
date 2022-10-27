@@ -23,7 +23,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/visibility.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -58,12 +57,6 @@ class RenderFrameHostImpl;
 class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
                                      public NavigationControllerDelegate {
  public:
-  // The time to allow prerendering kept alive in the background. PrerenderHost
-  // will be terminated with kTimeoutBackgrounded when the timer exceeds this.
-  // The value was determined to align with the default value of BFCache's
-  // eviction timer.
-  static constexpr base::TimeDelta kTimeToLiveInBackground = base::Seconds(180);
-
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. This enum corresponds to
   // PrerenderActivationNavigationParamsMatch in
@@ -167,11 +160,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // be ready for activation.
   void DidFinishNavigation(NavigationHandle* navigation_handle);
 
-  // Called from PrerenderHostRegistry::OnVisibilityChanged(). Updates the timer
-  // for prerendering timeout in the background. When the page gets hidden then
-  // the timer starts, and when the page gets visible then the timer stops.
-  void UpdateTimeoutTimer(Visibility visibility);
-
   // Activates the prerendered page and returns StoredPage containing the page.
   // This must be called after this host gets ready for activation.
   std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request);
@@ -233,11 +221,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const url::Origin& origin,
       blink::EnabledClientHints* client_hints) const;
 
-  // Only used for tests.
-  base::OneShotTimer* GetTimerForTesting() { return &timeout_timer_; }
-  void SetTaskRunnerForTesting(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
   // Returns absl::nullopt iff prerendering is initiated by the browser (not by
   // a renderer using Speculation Rules API).
   absl::optional<url::Origin> initiator_origin() const {
@@ -296,8 +279,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);
 
-  scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
-
   const PrerenderAttributes attributes_;
 
   // Indicates if this PrerenderHost is ready for activation.
@@ -327,15 +308,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // Stores the client hints type that applies to this page.
   base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>
       client_hints_type_;
-
-  // Starts running the timer when prerendering gets hidden.
-  // TODO(crbug.com/1375979): Move this timer from PrerenderHost to
-  // PrerenderHostRegistry as all the PrerenderHosts in a tab have the same
-  // timeout restriction.
-  base::OneShotTimer timeout_timer_;
-  // Only used for tests. This task runner is used for precise injection in
-  // tests and for timing control.
-  scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner_for_testing_;
 
   // Holds the navigation ID for the main frame initial navigation.
   absl::optional<int64_t> initial_navigation_id_;
