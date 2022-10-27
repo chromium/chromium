@@ -245,7 +245,6 @@ class UserImageManagerImpl::Job {
   int image_index_;
   GURL image_url_;
   base::FilePath image_path_;
-  bool image_cache_updated_ = false;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
 };
@@ -268,14 +267,15 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
   if (default_user_image::IsValidIndex(image_index_)) {
     // Load one of the default images. This happens synchronously.
     if (ash::features::IsAvatarsCloudMigrationEnabled()) {
+      bool image_cache_updated = false;
       if (const base::Value::Dict* image_properties =
               parent_->GetImageProperties()) {
-        image_cache_updated_ =
+        image_cache_updated =
             image_properties->FindBool(kImageCacheUpdated).value_or(false);
       }
       // Load default image from local cached version if available,
       // otherwise download from gstatic resources if possible.
-      if (image_cache_updated_ && !image_path_.empty() &&
+      if (!image_path_.empty() && image_cache_updated &&
           base::PathExists(image_path_) &&
           !base::DirectoryExists(image_path_)) {
         // Will refactor to remove this redundant call after the feature flag
@@ -297,8 +297,9 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
           user_manager::UserImage::CreateAndEncode(
               default_image, user_manager::UserImage::ChooseImageFormat(
                                  *default_image.bitmap())));
-      UpdateUser(std::move(user_image));
-      NotifyJobDone();
+      // Cache the in-use default image as part of the migration of avatar
+      // images to cloud.
+      UpdateUserAndSaveImage(std::move(user_image));
     }
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
@@ -340,9 +341,10 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
             default_image, user_manager::UserImage::ChooseImageFormat(
                                *default_image.bitmap())));
 
-    UpdateUser(std::move(user_image));
-    UpdateLocalState();
-    NotifyJobDone();
+    // Now that default images are served from the cloud, the current in-use
+    // user avatar image needs to be saved and cached in local state for
+    // offline usage.
+    UpdateUserAndSaveImage(std::move(user_image));
   }
 }
 
@@ -496,7 +498,6 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
 }
 
 void UserImageManagerImpl::Job::OnSaveImageDone(bool success) {
-  image_cache_updated_ = success;
   if (success || image_index_ == user_manager::User::USER_IMAGE_PROFILE)
     UpdateLocalState();
   NotifyJobDone();
@@ -513,7 +514,9 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   base::Value::Dict entry;
   entry.Set(kImagePathNodeName, image_path_.value());
   entry.Set(kImageIndexNodeName, image_index_);
-  entry.Set(kImageCacheUpdated, image_cache_updated_);
+  // TODO: set to true after we can cache animated avatars.
+  // See b/250810109 for more context.
+  entry.Set(kImageCacheUpdated, false);
   if (!image_url_.is_empty())
     entry.Set(kImageURLNodeName, image_url_.spec());
 
