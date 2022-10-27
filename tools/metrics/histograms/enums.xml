@@ -79363,7 +79363,7 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PermissionType">
   <int value="0" label="PERMISSION_UNKNOWN"/>
   <int value="1" label="PERMISSION_MIDI_SYSEX"/>
-  <int value="2" label="PERMISSION_PUSH_MESSAGING"/>
+  <int value="2" label="PERMISSION_PUSH_MESSAGING__REMOVED"/>
   <int value="3" label="PERMISSION_NOTIFICATIONS"/>
   <int value="4" label="PERMISSION_GEOLOCATION"/>
   <int value="5" label="PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
@@ -79372,7 +79372,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="8" label="PERMISSION_AUDIO_CAPTURE"/>
   <int value="9" label="PERMISSION_VIDEO_CAPTURE"/>
   <int value="10" label="PERMISSION_BACKGROUND_SYNC"/>
-  <int value="11" label="PERMISSION_FLASH"/>
+  <int value="11" label="PERMISSION_FLASH__REMOVED"/>
   <int value="12" label="PERMISSION_SENSORS"/>
   <int value="13" label="PERMISSION_ACCESSIBILITY_EVENTS"/>
   <int value="14" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
@@ -79388,6 +79388,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="24" label="PERMISSION_CLIPBOARD_SANITIZED_WRITE"/>
   <int value="25" label="PERMISSION_VR"/>
   <int value="26" label="PERMISSION_AR"/>
+  <int value="27" label="PERMISSION_STORAGE_ACCESS_GRANT"/>
+  <int value="28" label="PERMISSION_CAMERA_PAN_TILT_ZOOM"/>
+  <int value="29" label="PERMISSION_WINDOW_MANAGEMENT"/>
+  <int value="30" label="PERMISSION_LOCAL_FONTS"/>
+  <int value="31" label="PERMISSION_DISPLAY_CAPTURE"/>
+  <int value="32" label="PERMISSION_FILE_HANDLING__REMOVED_IN_M98"/>
 </enum>
 
 <enum name="PersistedLogsLogReadStatus">
