@@ -158,7 +158,7 @@ void AccountChecker::HandleFetchWaaResponse(
               }
             }
           },
-          pref_service));
+          base::UnsafeDanglingUntriaged(pref_service)));
 }
 
 void AccountChecker::FetchPriceEmailPref() {
