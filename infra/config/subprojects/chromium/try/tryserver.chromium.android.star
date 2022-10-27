@@ -464,14 +464,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-webview-marshmallow-arm64-dbg",
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/Android WebView M (dbg)",
-    ],
-)
-
-try_.builder(
     name = "android-webview-nougat-arm64-dbg",
     mirrors = [
         "ci/Android arm64 Builder (dbg)",

@@ -1012,7 +1012,6 @@
       'android-weblayer-pie-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
       'android-webview-10-x86-rel-tests': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
-      'android-webview-marshmallow-arm64-dbg': 'android_release_trybot_arm64_webview_google',
       'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
@@ -1702,11 +1701,6 @@
     'android_release_trybot_arm64_fastbuild_webview_trichrome': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_trichrome',
-    ],
-
-    'android_release_trybot_arm64_webview_google': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'webview_google',
     ],
 
     'android_release_trybot_arm64_webview_monochrome': [
