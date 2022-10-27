@@ -444,6 +444,12 @@ void PipelineImpl::RendererWrapper::Resume(
   }
   DCHECK(!pending_callbacks_.get());
 
+  if (!default_renderer) {
+    OnPipelineError({PIPELINE_ERROR_INITIALIZATION_FAILED,
+                     "Media Renderer creation failed during resume!"});
+    return;
+  }
+
   SetState(kResuming);
 
   {
@@ -1084,7 +1090,8 @@ void PipelineImpl::RendererWrapper::OnRendererCreated(
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (!renderer) {
-    std::move(done_cb).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
+    std::move(done_cb).Run({PIPELINE_ERROR_INITIALIZATION_FAILED,
+                            "Media Renderer creation failed!"});
     return;
   }
 
@@ -1370,7 +1377,8 @@ void PipelineImpl::Resume(base::TimeDelta time,
   last_media_time_ = base::TimeDelta();
   external_video_frame_request_signaled_ = false;
 
-  // Always create a default renderer for Resume().
+  // Always create a default renderer for Resume(). Creation error is handled in
+  // `RendererWrapper::Resume()`.
   auto default_renderer = create_renderer_cb_.Run(absl::nullopt);
 
   media_task_runner_->PostTask(
