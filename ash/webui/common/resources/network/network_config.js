@@ -480,6 +480,15 @@ Polymer({
   /** @private {?CrosNetworkConfigRemote} */
   networkConfig_: null,
 
+  /*
+   * This value is used to avoid an edge case when configuring a network. We
+   * default to |true| since this is the more privacy-preserving option. This
+   * value is overridden with dialog arguments in specific situations where it
+   * ought be |false|. For more information see b/253247084.
+   * @private {boolean}
+   */
+  isLoggedIn_: true,
+
   /** @override */
   created() {
     this.networkConfig_ =
@@ -503,6 +512,16 @@ Polymer({
     this.cachedUserCerts_ = undefined;
     this.selectedServerCaHash_ = undefined;
     this.selectedUserCertHash_ = undefined;
+
+    if (this.getHiddenNetworkMigrationEnabled()) {
+      const dialogArgs = chrome.getVariableValue('dialogArguments');
+      if (dialogArgs) {
+        const args = JSON.parse(dialogArgs);
+        if ('loggedIn' in args) {
+          this.isLoggedIn_ = args.loggedIn;
+        }
+      }
+    }
 
     this.networkConfig_.getSupportedVpnTypes().then(response => {
       this.updateVpnTypeItems_(response.vpnTypes);
@@ -594,7 +613,7 @@ Polymer({
     }
     const propertiesToSet = this.getPropertiesToSet_();
     if (this.managedProperties_.source === OncSource.kNone) {
-      if (this.getHiddenNetworkMigrationEnabled()) {
+      if (this.getHiddenNetworkMigrationEnabled() && this.isLoggedIn_) {
         // Note: Set hidden SSID mode of new WiFi networks to disabled to avoid
         // unintentionally marking networks as hidden if not in range or
         // misspelled, etc.
