@@ -112,7 +112,7 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
-    for (const auto& url_value : urls_value->GetListDeprecated()) {
+    for (const auto& url_value : urls_value->GetList()) {
       GURL url(url_value.GetString());
       if (!url.is_valid()) {
         continue;
@@ -127,7 +127,7 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
 
     const base::Value* devices_value = item.FindKey(kPrefDevicesKey);
     DCHECK(devices_value);
-    for (const auto& port_value : devices_value->GetListDeprecated()) {
+    for (const auto& port_value : devices_value->GetList()) {
       const base::Value* vendor_id_value = port_value.FindKey(kPrefVendorIdKey);
       DCHECK(vendor_id_value);
 
