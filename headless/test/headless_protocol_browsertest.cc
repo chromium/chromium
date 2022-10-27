@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/test/headless_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 
@@ -84,21 +85,13 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
   }
 
   // Expose DevTools protocol to the target.
-  {
-    base::Value::Dict params;
-    params.Set("targetId", agent_host->GetId());
-    browser_devtools_client_.SendCommand("Target.exposeDevToolsProtocol",
-                                         std::move(params));
-  }
+  browser_devtools_client_.SendCommand("Target.exposeDevToolsProtocol",
+                                       Param("targetId", agent_host->GetId()));
 
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
       "harness.test", "/protocol/inspector-protocol-test.html");
-  {
-    base::Value::Dict params;
-    params.Set("url", page_url.spec());
-    devtools_client_.SendCommand("Page.navigate", std::move(params));
-  }
+  devtools_client_.SendCommand("Page.navigate", Param("url", page_url.spec()));
 }
 
 void HeadlessProtocolBrowserTest::OnLoadEventFired(

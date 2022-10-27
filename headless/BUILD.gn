@@ -783,6 +783,8 @@ test("headless_browsertests") {
     "test/headless_browser_context_browsertest.cc",
     "test/headless_browser_test.cc",
     "test/headless_browser_test.h",
+    "test/headless_browser_test_utils.cc",
+    "test/headless_browser_test_utils.h",
     "test/headless_client_browsertest.cc",
     "test/headless_devtooled_browsertest.cc",
     "test/headless_devtooled_browsertest.h",

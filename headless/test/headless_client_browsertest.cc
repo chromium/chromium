@@ -5,60 +5,56 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "build/build_config.h"
 #include "content/public/test/browser_test.h"
-#include "headless/public/devtools/domains/runtime.h"
-#include "headless/public/devtools/domains/target.h"
-#include "headless/public/headless_devtools_client.h"
 #include "headless/test/headless_browser_test.h"
+#include "headless/test/headless_browser_test_utils.h"
+#include "headless/test/headless_devtooled_browsertest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
 namespace headless {
 
-class HeadlessClientBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
-                                  public target::ExperimentalObserver {
+class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
  public:
   HeadlessClientBrowserTest() = default;
 
  private:
-  // HeadlessWebContentsObserver implementation.
   void RunDevTooledTest() override {
-    browser_devtools_client_->GetTarget()->GetExperimental()->AddObserver(this);
-    browser_devtools_client_->GetTarget()->CreateTarget(
-        target::CreateTargetParams::Builder().SetUrl("about:blank").Build(),
+    browser_devtools_client_.SendCommand(
+        "Target.createTarget", Param("url", "about:blank"),
         base::BindOnce(&HeadlessClientBrowserTest::AttachToTarget,
                        base::Unretained(this)));
   }
 
-  void AttachToTarget(std::unique_ptr<target::CreateTargetResult> result) {
-    browser_devtools_client_->GetTarget()->AttachToTarget(
-        target::AttachToTargetParams::Builder()
-            .SetTargetId(result->GetTargetId())
-            .SetFlatten(true)
-            .Build(),
+  void AttachToTarget(base::Value::Dict result) {
+    base::Value::Dict params;
+    params.Set("targetId", ResultString(result, "targetId"));
+    params.Set("flatten", true);
+    browser_devtools_client_.SendCommand(
+        "Target.attachToTarget", std::move(params),
         base::BindOnce(&HeadlessClientBrowserTest::CreateSession,
                        base::Unretained(this)));
   }
 
-  void CreateSession(std::unique_ptr<target::AttachToTargetResult> result) {
-    session_client_ =
-        browser_devtools_client_->CreateSession(result->GetSessionId());
-    session_client_->GetRuntime()->Evaluate(
-        "window.location.href",
+  void CreateSession(base::Value::Dict result) {
+    session_client_ = browser_devtools_client_.CreateSession(
+        ResultString(result, "sessionId"));
+
+    session_client_->SendCommand(
+        "Runtime.evaluate", Param("expression", "window.location.href"),
         base::BindOnce(&HeadlessClientBrowserTest::FinishTest,
                        base::Unretained(this)));
   }
 
-  void FinishTest(std::unique_ptr<runtime::EvaluateResult> result) {
-    const base::Value* value = result->GetResult()->GetValue();
-    EXPECT_TRUE(value->is_string());
-    EXPECT_EQ("about:blank", value->GetString());
+  void FinishTest(base::Value::Dict result) {
+    EXPECT_EQ("about:blank", ResultString(result, "result.value"));
     session_client_.reset();
     FinishAsynchronousTest();
   }
 
  private:
-  std::unique_ptr<HeadlessDevToolsClient> session_client_;
+  std::unique_ptr<SimpleDevToolsProtocolClient> session_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessClientBrowserTest, FlatProtocolAccess) {

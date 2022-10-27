@@ -33,7 +33,9 @@ void HeadlessDevTooledBrowserTest::RunTest() {
   web_contents_ = web_contents_builder.Build();
   web_contents_->AddObserver(this);
 
+  PreRunAsynchronousTest();
   RunAsynchronousTest();
+  PostRunAsynchronousTest();
 
   devtools_client_.DetachClient();
   web_contents_->RemoveObserver(this);

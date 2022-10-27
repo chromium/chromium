@@ -6,6 +6,7 @@
 #define HEADLESS_TEST_HEADLESS_DEVTOOLED_BROWSERTEST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "content/public/test/browser_test_base.h"
 #include "headless/public/headless_browser.h"
@@ -34,6 +35,10 @@ class HeadlessDevTooledBrowserTest : public HeadlessBrowserTest,
   // are processed (e.g. in a callback).
   virtual void RunDevTooledTest() = 0;
 
+  // These are called just before and right after calling RunAsynchronousTest()
+  virtual void PreRunAsynchronousTest() {}
+  virtual void PostRunAsynchronousTest() {}
+
   // Whether to enable BeginFrameControl when creating |web_contents_|.
   virtual bool GetEnableBeginFrameControl();
 
@@ -54,6 +59,26 @@ class HeadlessDevTooledBrowserTest : public HeadlessBrowserTest,
   simple_devtools_protocol_client::SimpleDevToolsProtocolClient
       browser_devtools_client_;
 };
+
+#define HEADLESS_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)                     \
+  IN_PROC_BROWSER_TEST_F(TEST_FIXTURE_NAME, RunAsyncTest) { RunTest(); } \
+  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+
+#define HEADLESS_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)                     \
+  IN_PROC_BROWSER_TEST_P(TEST_FIXTURE_NAME, RunAsyncTest) { RunTest(); } \
+  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+
+#define DISABLED_HEADLESS_DEVTOOLED_TEST_F(TEST_FIXTURE_NAME)        \
+  IN_PROC_BROWSER_TEST_F(TEST_FIXTURE_NAME, DISABLED_RunAsyncTest) { \
+    RunTest();                                                       \
+  }                                                                  \
+  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
+
+#define DISABLED_HEADLESS_DEVTOOLED_TEST_P(TEST_FIXTURE_NAME)        \
+  IN_PROC_BROWSER_TEST_P(TEST_FIXTURE_NAME, DISABLED_RunAsyncTest) { \
+    RunTest();                                                       \
+  }                                                                  \
+  class HeadlessDevTooledBrowserTestNeedsSemicolon##TEST_FIXTURE_NAME {}
 
 }  // namespace headless
 
