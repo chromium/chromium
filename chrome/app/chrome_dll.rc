@@ -39,7 +39,7 @@ BEGIN
     VK_LEFT,        IDC_BACK,                   VIRTKEY, ALT
 #if BUILDFLAG(ENABLE_PRINTING)
     "P",            IDC_BASIC_PRINT,            VIRTKEY, CONTROL, SHIFT
-#endif  // ENABLE_PRINTING_FOR_RC
+#endif
     "D",            IDC_BOOKMARK_ALL_TABS,      VIRTKEY, CONTROL, SHIFT
     "D",            IDC_BOOKMARK_THIS_TAB,      VIRTKEY, CONTROL
     VK_F7,          IDC_CARET_BROWSING_TOGGLE,  VIRTKEY
