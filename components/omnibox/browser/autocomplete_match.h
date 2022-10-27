@@ -190,6 +190,49 @@ struct AutocompleteMatch {
     kMaxValue = kShortcutTextPrefix,
   };
 
+  // Signals for ML scoring.
+  struct ScoringSignals {
+    ScoringSignals();
+
+    // Number of times the suggestion was typed in the Omnibox.
+    int typed_count;
+    // Number of times the suggestion was visited in general.
+    int visit_count;
+    // Number of times the suggestion was visited with the current input or
+    // prefix of it.
+    int shortcut_visit_count;
+
+    // Elapsed time since last visit.
+    base::TimeDelta elapsed_time_last_visit;
+
+    // URL only contains the host name, i.e., no query, path, or reference.
+    bool is_host_only;
+
+    // Number of bookmarks with this URL.
+    int num_bookmarks;
+    // Position of the first matched bookmark title term.
+    // E.g. 4 for input 'x' and title '0123x56'.
+    int first_bookmark_title_match_position;
+    // Total length of matched strings in the bookmark title.
+    // E.g. 2 for input 'xy' and title 'ab xyz'.
+    int total_bookmark_title_match_length;
+
+    // Position of the first matched URL substring.
+    int first_url_match_position;
+    int total_url_match_length;
+
+    // Host match is at the word boundary.
+    bool host_match_at_word_boundary;
+    // Total length of the matched host substrings.
+    int total_host_match_length;
+
+    // Total lengths of the matched substrings in the path, query_or_ref, and
+    // page title at word boundary.
+    int total_path_match_length;
+    int total_query_or_ref_match_length;
+    int total_title_match_length;
+  };
+
   static const char* const kDocumentTypeStrings[];
 
   // Return a string version of the core type values. Only used for

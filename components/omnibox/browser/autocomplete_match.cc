@@ -1641,3 +1641,5 @@ void AutocompleteMatch::ValidateClassifications(
     last_offset = i->offset;
   }
 }
+
+AutocompleteMatch::ScoringSignals::ScoringSignals() = default;
