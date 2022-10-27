@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 }
 
 // TODO(crbug.com/1342625): Test is flaky.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CheckDoesFindIconUrlChangeForDefaultApps \
   DISABLED_CheckDoesFindIconUrlChangeForDefaultApps
 #else
