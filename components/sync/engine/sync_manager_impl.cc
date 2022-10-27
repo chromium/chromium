@@ -23,6 +23,7 @@
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/loopback_server/loopback_connection_manager.h"
 #include "components/sync/engine/model_type_connector_proxy.h"
+#include "components/sync/engine/model_type_worker.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/sync_server_connection_manager.h"
 #include "components/sync/engine/net/url_translator.h"
@@ -441,9 +442,10 @@ void SyncManagerImpl::OnIncomingInvalidation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdateHandler* handler = model_type_registry_->GetMutableUpdateHandler(type);
   if (handler) {
-    // TODO(crbug/1365290): Report lost invalidations at this level (as a new
-    // bucket in Sync.PendingInvalidationStatus).
     handler->RecordRemoteInvalidation(std::move(invalidation));
+  } else {
+    ModelTypeWorker::LogPendingInvalidationStatus(
+        PendingInvalidationStatus::kDataTypeNotConnected);
   }
   sync_status_tracker_->IncrementNotificationsReceived();
 }

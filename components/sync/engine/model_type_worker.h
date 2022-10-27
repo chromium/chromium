@@ -70,7 +70,8 @@ enum class PendingInvalidationStatus {
   // Invalidation list already has another invalidation with the same version.
   kSameKnownVersion = 4,
   kSameUnknownVersion = 5,
-  kMaxValue = kSameUnknownVersion,
+  kDataTypeNotConnected = 6,
+  kMaxValue = kDataTypeNotConnected,
 };
 
 // A smart cache for sync types to communicate with the sync thread.
@@ -135,6 +136,8 @@ class ModelTypeWorker : public UpdateHandler,
       ModelType model_type,
       const sync_pb::SyncEntity& update_entity,
       UpdateResponseData* response_data);
+
+  static void LogPendingInvalidationStatus(PendingInvalidationStatus status);
 
   // Initializes the two relevant communication channels: ModelTypeWorker ->
   // ModelTypeProcessor (GetUpdates) and ModelTypeProcessor -> ModelTypeWorker

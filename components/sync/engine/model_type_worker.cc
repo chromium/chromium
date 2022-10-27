@@ -64,10 +64,6 @@ void LogPasswordNotesState(PasswordNotesStateForUMA state) {
   base::UmaHistogramEnumeration(kPasswordNotesStateHistogramName, state);
 }
 
-void LogPendingInvalidationStatus(PendingInvalidationStatus status) {
-  base::UmaHistogramEnumeration("Sync.PendingInvalidationStatus", status);
-}
-
 // A proxy which can be called from any sequence and delegates the work to the
 // commit queue injected on construction.
 class CommitQueueProxy : public CommitQueue {
@@ -265,6 +261,11 @@ ModelTypeWorker::~ModelTypeWorker() {
   for (size_t i = 0; i < pending_invalidations_.size(); ++i) {
     LogPendingInvalidationStatus(PendingInvalidationStatus::kLost);
   }
+}
+
+void ModelTypeWorker::LogPendingInvalidationStatus(
+    PendingInvalidationStatus status) {
+  base::UmaHistogramEnumeration("Sync.PendingInvalidationStatus", status);
 }
 
 void ModelTypeWorker::ConnectSync(

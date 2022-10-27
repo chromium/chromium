@@ -78984,6 +78984,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Same version (Deprecated)"/>
   <int value="4" label="Same known version"/>
   <int value="5" label="Same unknown version"/>
+  <int value="6" label="ModelType is not connected"/>
 </enum>
 
 <enum name="PepperBrokerAction">
