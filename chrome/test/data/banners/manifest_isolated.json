@@ -13,6 +13,7 @@
   "orientation": "landscape",
   "isolated_storage": true,
   "permissions_policy": {
-    "usb": [ "*" ]
+    "usb": [ "*" ],
+    "direct-sockets": [ "*" ]
   }
 }
