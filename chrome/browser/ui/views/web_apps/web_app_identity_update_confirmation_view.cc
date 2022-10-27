@@ -233,7 +233,8 @@ void ShowWebAppIdentityUpdateDialog(
   }
 }
 
-void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept) {
+void SetAutoAcceptAppIdentityUpdateForTesting(  // IN-TEST
+    absl::optional<bool> auto_accept) {
   g_auto_resolve_app_identity_update_dialog_for_testing = auto_accept;
 }
 

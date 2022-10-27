@@ -19,12 +19,14 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -88,7 +90,8 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
 void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
-    CheckInstallabilityCallback callback) {
+    CheckInstallabilityCallback callback,
+    absl::optional<webapps::InstallableParams> params) {
   DCHECK(!web_contents->IsBeingDestroyed());
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents);
@@ -101,17 +104,21 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
   check_installability_callback_ = std::move(callback);
 
   // TODO(crbug.com/829232) Unify with other calls to GetData.
-  webapps::InstallableParams params;
-  params.check_eligibility = true;
-  params.valid_primary_icon = true;
-  params.valid_manifest = true;
-  params.check_webapp_manifest_display = false;
-  // Do not wait for a service worker if it doesn't exist.
-  params.has_worker = !bypass_service_worker_check;
+  if (!params.has_value()) {
+    webapps::InstallableParams data_params;
+    data_params.check_eligibility = true;
+    data_params.valid_primary_icon = true;
+    data_params.valid_manifest = true;
+    data_params.check_webapp_manifest_display = false;
+    // Do not wait for a service worker if it doesn't exist.
+    data_params.has_worker = !bypass_service_worker_check;
+    params = data_params;
+  }
   // Do not wait_for_worker. OnDidPerformInstallableCheck is always invoked.
   installable_manager->GetData(
-      params, base::BindOnce(&WebAppDataRetriever::OnDidPerformInstallableCheck,
-                             weak_ptr_factory_.GetWeakPtr()));
+      params.value(),
+      base::BindOnce(&WebAppDataRetriever::OnDidPerformInstallableCheck,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,

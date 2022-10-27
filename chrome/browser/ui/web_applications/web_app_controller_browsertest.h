@@ -90,6 +90,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUp() override;
+  void TearDown() override;
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;

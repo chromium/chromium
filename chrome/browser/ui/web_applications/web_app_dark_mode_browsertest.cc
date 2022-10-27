@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/manifest_update_task.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -191,7 +191,7 @@ constexpr char kOriginTrialToken[] =
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
-  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
+  ManifestUpdateManager::BypassWindowCloseWaitingForTesting() = true;
 
   bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -37,95 +38,11 @@ class OsIntegrationManager;
 enum class AppIdentityUpdate;
 enum class IconsDownloadedResult;
 
-struct IconDiff;
-
-enum IconDiffResult : uint32_t {
-  NO_CHANGE_DETECTED = 0,
-
-  // A mismatch was detected between what was downloaded and what is on disk.
-  // This might mean that a size has been removed or added, and it could mean
-  // both.
-  MISMATCHED_IMAGE_SIZES = 1 << 1,
-
-  // At least one icon was found to have changed. Note: Used only if the diff
-  // process stops when it encounters the first mismatch. If, instead, it is
-  // allowed to continue, a more detailed results will be returned (see flags
-  // below).
-  ONE_OR_MORE_ICONS_CHANGED = 1 << 2,
-
-  // The launcher icon is changing. Note: that the launcher icon size is
-  // platform-specific and that this flag is only set if the diff process is
-  // allowed to continue to the end (doesn't stop as soon as it finds a
-  // change).
-  LAUNCHER_ICON_CHANGED = 1 << 3,
-
-  // The launcher icon is changing. Note: that the install icon size is
-  // platform-specific and that this flag is only set if the diff process is
-  // allowed to continue to the end (doesn't stop as soon as it finds a
-  // change).
-  INSTALL_ICON_CHANGED = 1 << 4,
-
-  // An icon, other than the launcher/install icon changed. Note: that this flag
-  // is only set if the diff process is allowed to continue to the end (doesn't
-  // stop as soon as it finds a change).
-  UNIMPORTANT_ICON_CHANGED = 1 << 5,
-};
-
-// A structure to keep track of the differences found while comparing icons
-// on disk to what has been downloaded.
-struct IconDiff {
- public:
-  IconDiff() = default;
-  explicit IconDiff(uint32_t results) { diff_results = results; }
-  IconDiff(const SkBitmap& before_icon,
-           const SkBitmap& after_icon,
-           uint32_t results) {
-    before = before_icon;
-    after = after_icon;
-    diff_results = results;
-  }
-
-  // Returns true iff an icon change was detected (not matter how
-  // insignificant).
-  bool mismatch() const { return diff_results != NO_CHANGE_DETECTED; }
-
-  // Returns true iff the mismatch should result in app identity dlg being
-  // shown.
-  bool requires_app_identity_check() const {
-    return ((diff_results & LAUNCHER_ICON_CHANGED) != 0) ||
-           ((diff_results & INSTALL_ICON_CHANGED) != 0);
-  }
-
-  // Keeps track of all the differences discovered in the icon set.
-  uint32_t diff_results = NO_CHANGE_DETECTED;
-
-  // The original image. Only valid if a single icon is changing.
-  SkBitmap before;
-
-  // The changed image. Only valid if a single icon is changing.
-  SkBitmap after;
-};
-
-// Returns whether any differences were found in the images on disk and what has
-// been downloaded. The |disk_icon_bitmaps| and |disk_icon_info| parameters
-// represent the bits on disk and the associated size info (respectively). Same
-// with |downloaded_icon_bitmaps| and |downloaded_icon_info|, which covers the
-// downloaded icon set. If |end_when_mismatch_detected| is true, the diff
-// process will stop when it encounters the first mismatch. Otherwise, it the
-// IconDiff returned will cover all the differences found.
-IconDiff HaveIconBitmapsChanged(
-    const IconBitmaps& disk_icon_bitmaps,
-    const IconBitmaps& downloaded_icon_bitmaps,
-    const std::vector<apps::IconInfo>& disk_icon_info,
-    const std::vector<apps::IconInfo>& downloaded_icon_info,
-    bool end_when_mismatch_detected);
-
-// Checks whether the installed web app associated with a given WebContents has
-// out of date manifest data and triggers an update if so.
+// Checks whether the installed web app associated with a given WebContents
+// has out of date manifest data and triggers an update if so.
 // Owned and managed by |ManifestUpdateManager|.
 //
 // High level check procedure:
-//  - Wait for page to load.
 //  - Load the page's manifest. Abort if none found.
 //  - Check a hard coded set of manifest fields for differences to what's stored
 //    locally. Abort if no differences.
@@ -139,9 +56,10 @@ class ManifestUpdateTask final
   using UpdatePendingCallback = base::OnceCallback<void(const GURL& url)>;
   using StoppedCallback = base::OnceCallback<void(const ManifestUpdateTask&,
                                                   ManifestUpdateResult result)>;
-  // Sets a |callback| for testing code to get notified when a manifest update
-  // is needed and there is a PWA window preventing the update from proceeding.
-  // Only called once, iff the update process determines that waiting is needed.
+  // Sets a |callback| for testing code to get notified when a manifest
+  // update is needed and there is a PWA window preventing the update from
+  // proceeding. Only called once, iff the update process determines that
+  // waiting is needed.
   static void SetUpdatePendingCallbackForTesting(
       UpdatePendingCallback callback);
 
@@ -159,13 +77,10 @@ class ManifestUpdateTask final
                      WebAppSyncBridge* sync_bridge);
 
   ~ManifestUpdateTask();
-
-  const GURL& url() const { return url_; }
-  const AppId& app_id() const { return app_id_; }
   void Start();
 
  private:
-  // We perform this check for the following Stages:
+  // We perform this check for the following ManifestUpdateStage values:
   // kPendingInstallableData
   // kPendingIconDownload
   // kPendingIconReadFromDisk

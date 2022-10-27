@@ -660,7 +660,7 @@ FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
   }
 
   // TODO(https://crbug.com/1197013): Consider trying to re-use the comparison
-  // results from the ManifestUpdateTask.
+  // results from the ManifestUpdateDataFetchCommand.
   const apps::FileHandlers* old_handlers =
       GetWebAppRegistrar().GetAppFileHandlers(app_id);
   DCHECK(old_handlers);

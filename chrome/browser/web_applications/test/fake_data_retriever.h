@@ -13,6 +13,8 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/webapps/browser/installable/installable_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -33,7 +35,8 @@ class FakeDataRetriever : public WebAppDataRetriever {
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
       bool bypass_service_worker_check,
-      CheckInstallabilityCallback callback) override;
+      CheckInstallabilityCallback callback,
+      absl::optional<webapps::InstallableParams> params) override;
   void GetIcons(content::WebContents* web_contents,
                 base::flat_set<GURL> icon_urls,
                 bool skip_page_favicons,

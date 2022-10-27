@@ -23,7 +23,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, UninstallFromList) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateScope) {
   helper_.InstallOmniboxIcon(InstallableSite::kStandaloneNestedA);
-  helper_.ClosePwa();
   helper_.ManifestUpdateScopeTo(Site::kStandaloneNestedA, Site::kStandalone);
   helper_.AwaitManifestUpdate(Site::kStandaloneNestedA);
   helper_.NavigateBrowser(Site::kStandalone);
@@ -33,8 +32,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateScope) {
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateIcon) {
   helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckAppIcon(Site::kStandalone, Color::kGreen);
-  helper_.ManifestUpdateIcon(Site::kStandalone);
-  helper_.AcceptAppIdUpdateDialog();
+  helper_.ManifestUpdateIcon(Site::kStandalone,
+                             UpdateDialogResponse::kAcceptUpdate);
   helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromLaunchIcon(Site::kStandalone);
   helper_.CheckAppIcon(Site::kStandalone, Color::kRed);
@@ -43,8 +42,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateIcon) {
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateTitle) {
   helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneOriginal);
-  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated);
-  helper_.AcceptAppIdUpdateDialog();
+  helper_.ManifestUpdateTitle(Site::kStandalone, Title::kStandaloneUpdated,
+                              UpdateDialogResponse::kAcceptUpdate);
   helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromLaunchIcon(Site::kStandalone);
   helper_.CheckAppTitle(Site::kStandalone, Title::kStandaloneUpdated);
@@ -67,7 +66,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateDisplayBrowser) {
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
-  helper_.ClosePwa();
   helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
   helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromChromeApps(Site::kStandalone);
@@ -82,7 +80,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowCreated();
   helper_.CheckWindowControlsOverlayToggle(Site::kStandalone,
                                            IsShown::kNotShown);
-  helper_.ClosePwa();
   helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kWco);
   helper_.AwaitManifestUpdate(Site::kStandalone);
   helper_.LaunchFromChromeApps(Site::kStandalone);

@@ -360,7 +360,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 
   EXPECT_CALL(*fake_data_retriever,
               CheckInstallabilityAndRetrieveManifest(
-                  _, /*bypass_service_worker_check=*/IsTrue(), _))
+                  _, /*bypass_service_worker_check=*/IsTrue(), _, _))
       .WillOnce(ReturnManifest(
           // IsolatedWebAppUrlLoaderFactory is responsible for resolving
           // isolated-app:// schema requests.

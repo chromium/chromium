@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
@@ -24,6 +26,11 @@ class WebAppProvider;
 // * Operations have the necessary dependencies from the WebAppProvider system.
 class WebAppCommandScheduler {
  public:
+  using ManifestFetchCallback =
+      ManifestUpdateDataFetchCommand::ManifestFetchCallback;
+  using ManifestWriteCallback =
+      ManifestUpdateFinalizeCommand::ManifestWriteCallback;
+
   explicit WebAppCommandScheduler(WebAppProvider* provider);
   ~WebAppCommandScheduler();
 
@@ -44,6 +51,25 @@ class WebAppCommandScheduler {
 
   void UpdateFileHandlerOsIntegration(const AppId& app_id,
                                       base::OnceClosure callback);
+
+  // Schedule a command that performs fetching data from the manifest
+  // for a manifest update.
+  void ScheduleManifestUpdateDataFetch(
+      const GURL& url,
+      const AppId& app_id,
+      base::WeakPtr<content::WebContents> contents,
+      ManifestFetchCallback callback);
+
+  // Schedules a command that performs the data writes into the DB for
+  // completion of the manifest update.
+  void ScheduleManifestUpdateFinalize(
+      const GURL& url,
+      const AppId& app_id,
+      WebAppInstallInfo install_info,
+      bool app_identity_update_allowed,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      ManifestWriteCallback callback);
 
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.

@@ -1,4 +1,3 @@
-
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -84,10 +83,10 @@ std::ostream& operator<<(std::ostream& os, ManifestUpdateStage stage) {
       return os << "kPendingMaybeReadExistingIcons";
     case ManifestUpdateStage::kPendingAssociationsUpdate:
       return os << "kPendingAssociationsUpdate";
-    case ManifestUpdateStage::kPendingWindowsClosed:
-      return os << "kPendingWindowsClosed";
-    case ManifestUpdateStage::kPendingInstallation:
-      return os << "kPendingInstallation";
+    case ManifestUpdateStage::kAppWindowsClosed:
+      return os << "kAppWindowsClosed";
+    case ManifestUpdateStage::kPendingFinalizerUpdate:
+      return os << "kPendingFinalizerUpdate";
   }
 }
 
@@ -115,6 +114,7 @@ bool NeedsAppIdentityUpdateDialog(bool title_changing,
           webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
     return false;
   }
+
   if (title_changing && !AllowUnpromptedNameUpdate(app_id, registrar))
     return true;
   if (icons_changing && !AllowUnpromptedIconUpdate(app_id, registrar))

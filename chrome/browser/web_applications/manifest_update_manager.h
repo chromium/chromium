@@ -10,17 +10,21 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
-#include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -33,6 +37,7 @@ class WebAppUiManager;
 class WebAppInstallFinalizer;
 class OsIntegrationManager;
 class WebAppSyncBridge;
+class WebAppCommandScheduler;
 
 // Checks for updates to a web app's manifest and triggers a reinstall if the
 // current installation is out of date.
@@ -40,13 +45,22 @@ class WebAppSyncBridge;
 // Update checks are throttled per app (see MaybeConsumeUpdateCheck()) to avoid
 // excessive updating on pathological sites.
 //
-// Each update check is performed by a |ManifestUpdateTask|, see that class for
-// details about what happens during a check.
+// Each update check is performed by a |ManifestUpdateCommand|, see that class
+// for details about what happens during a check.
 //
 // TODO(crbug.com/926083): Replace MaybeUpdate() with a background check instead
 // of being triggered by page loads.
 class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
+  using UpdatePendingCallback = base::OnceCallback<void(const GURL& url)>;
+  // Sets a |callback| for testing code to get notified when a manifest update
+  // is needed and there is a PWA window preventing the update from proceeding.
+  // Only called once, iff the update process determines that waiting is needed.
+  static void SetUpdatePendingCallbackForTesting(
+      UpdatePendingCallback callback);
+
+  static bool& BypassWindowCloseWaitingForTesting();
+
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
@@ -56,7 +70,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* install_finalizer,
                      OsIntegrationManager* os_integration_manager,
-                     WebAppSyncBridge* sync_bridge);
+                     WebAppSyncBridge* sync_bridge,
+                     WebAppCommandScheduler* command_scheduler);
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 
@@ -67,7 +82,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                    const absl::optional<AppId>& app_id,
                    content::WebContents* web_contents);
   bool IsUpdateConsumed(const AppId& app_id);
-  bool IsUpdateTaskPending(const AppId& app_id);
+  bool IsUpdateCommandPending(const AppId& app_id);
 
   // WebAppInstallManagerObserver:
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
@@ -86,6 +101,16 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   }
 
   void ResetManifestThrottleForTesting(const AppId& app_id);
+  // Return whether there are pending updates waiting for the page load to
+  // finish.
+  bool HasUpdatesPendingLoadFinishForTesting();
+  void SetLoadFinishedCallbackForTesting(
+      base::OnceClosure load_finished_callback);
+  // Returns all apps that have already fetched the data for manifest updates to
+  // happen. These includes app with windows open, ready to be closed as well as
+  // apps with no windows and an already scheduled command to finalize the
+  // manifest update.
+  base::flat_set<AppId> GetAppsPendingWindowsClosingForTesting();
 
  private:
   // This class is used to either observe the url loading or web_contents
@@ -110,20 +135,41 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
     ~UpdateStage();
 
     GURL url;
+    enum Stage {
+      kWaitingForPageLoad = 0,
+      kFetchingManifestData = 1,
+      kPendingAppWindowClose = 2,
+    } stage = kWaitingForPageLoad;
     std::unique_ptr<PreUpdateWebContentsObserver> observer;
-    std::unique_ptr<ManifestUpdateTask> update_task;
   };
 
-  void StartUpdateTaskAfterPageLoad(
+  void StartManifestDataFetchAfterPageLoad(
       const AppId& app_id,
       base::WeakPtr<content::WebContents> web_contents);
+
+  void OnManifestDataFetchAwaitAppWindowClose(
+      base::WeakPtr<content::WebContents> contents,
+      const GURL& url,
+      const AppId& app_id,
+      absl::optional<ManifestUpdateResult> result,
+      absl::optional<WebAppInstallInfo> install_info,
+      bool app_identity_update_allowed);
+
+  void StartManifestWriteAfterWindowsClosed(
+      const GURL& url,
+      const AppId& app_id,
+      std::unique_ptr<ScopedKeepAlive> keep_alive,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      WebAppInstallInfo install_info,
+      bool app_identity_update_allowed);
 
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
   absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
                               const AppId& app_id,
                               base::Time time);
-  void OnUpdateStopped(const ManifestUpdateTask& task,
+  void OnUpdateStopped(const GURL& url,
+                       const AppId& app_id,
                        ManifestUpdateResult result);
   void NotifyResult(const GURL& url,
                     const absl::optional<AppId>& app_id,
@@ -139,6 +185,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
   raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
+  raw_ptr<WebAppCommandScheduler> command_scheduler_ = nullptr;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
@@ -151,6 +198,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
 
   bool started_ = false;
   bool hang_update_checks_for_testing_ = false;
+
+  base::OnceClosure load_finished_callback_;
 };
 
 }  // namespace web_app

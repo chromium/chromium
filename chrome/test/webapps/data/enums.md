@@ -38,3 +38,4 @@ The tables in this file are parsed as action templates for critical user journey
 | ShortcutOptions | WithShortcut | NoShortcut |
 | WindowOptions | Windowed | Browser |
 | InstallMode | WebApp* | WebShortcut |
+| UpdateDialogResponse | AcceptUpdate | CancelDialogAndUninstall | SkipUpdate |

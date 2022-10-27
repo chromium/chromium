@@ -13,6 +13,7 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -188,8 +189,18 @@ const char* WebAppControllerBrowserTest::GetInstallableAppName() {
 void WebAppControllerBrowserTest::SetUp() {
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   webapps::TestAppBannerManagerDesktop::SetUp();
+  // TODO(crbug.com/1378355): Fix the manifest update process
+  //  by ensuring during test installs, an app is installed from
+  //  the manifest so that the identity update dialog is not
+  //  triggered after navigation.
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
 
   InProcessBrowserTest::SetUp();
+}
+
+void WebAppControllerBrowserTest::TearDown() {
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(absl::nullopt);
+  InProcessBrowserTest::TearDown();
 }
 
 void WebAppControllerBrowserTest::SetUpInProcessBrowserTestFixture() {

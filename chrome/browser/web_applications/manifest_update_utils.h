@@ -44,8 +44,8 @@ enum ManifestUpdateStage {
   kPendingAppIdentityCheck = 3,
   kPendingMaybeReadExistingIcons = 4,
   kPendingAssociationsUpdate = 5,
-  kPendingWindowsClosed = 6,
-  kPendingInstallation = 7,
+  kAppWindowsClosed = 6,
+  kPendingFinalizerUpdate = 7,
 };
 
 std::ostream& operator<<(std::ostream& os, ManifestUpdateStage stage);

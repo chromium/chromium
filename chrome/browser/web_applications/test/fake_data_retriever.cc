@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/webapps/browser/installable/installable_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace web_app {
@@ -33,7 +35,8 @@ void FakeDataRetriever::GetWebAppInstallInfo(
 void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
-    CheckInstallabilityCallback callback) {
+    CheckInstallabilityCallback callback,
+    absl::optional<webapps::InstallableParams> params) {
   completion_callback_ =
       base::BindOnce(std::move(callback), manifest_.Clone(), manifest_url_,
                      /*valid_manifest_for_web_app=*/true, is_installable_);

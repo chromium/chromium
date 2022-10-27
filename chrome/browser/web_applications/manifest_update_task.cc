@@ -19,6 +19,8 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -67,63 +69,6 @@ ManifestUpdateTask::UpdatePendingCallback* GetUpdatePendingCallbackMutable() {
   return g_update_pending_callback.get();
 }
 
-void HaveIconContentsChanged(
-    const std::map<SquareSizePx, SkBitmap>& disk_icon_bitmaps,
-    const std::map<SquareSizePx, SkBitmap>& downloaded_icon_bitmaps,
-    IconDiff* icon_diff,
-    const std::vector<SquareSizePx>& on_disk_sizes,
-    const std::vector<SquareSizePx>& downloaded_sizes,
-    bool end_when_mismatch_detected) {
-  if (downloaded_icon_bitmaps.size() != disk_icon_bitmaps.size()) {
-    icon_diff->diff_results |= MISMATCHED_IMAGE_SIZES;
-    if (end_when_mismatch_detected)
-      return;
-  }
-
-  if (on_disk_sizes != downloaded_sizes) {
-    icon_diff->diff_results |= MISMATCHED_IMAGE_SIZES;
-    if (end_when_mismatch_detected)
-      return;
-  }
-
-  for (const std::pair<const SquareSizePx, SkBitmap>& entry :
-       downloaded_icon_bitmaps) {
-    SquareSizePx size = entry.first;
-    const SkBitmap& downloaded_bitmap = entry.second;
-
-    auto it = disk_icon_bitmaps.find(size);
-    if (it == disk_icon_bitmaps.end()) {
-      icon_diff->diff_results |= MISMATCHED_IMAGE_SIZES;
-      if (end_when_mismatch_detected)
-        return;
-      continue;
-    }
-
-    const SkBitmap& disk_bitmap = it->second;
-    if (!gfx::BitmapsAreEqual(downloaded_bitmap, disk_bitmap)) {
-      if (end_when_mismatch_detected) {
-        icon_diff->diff_results |= ONE_OR_MORE_ICONS_CHANGED;
-        return;
-      }
-
-      if (size == kInstallIconSize) {
-        icon_diff->diff_results |= INSTALL_ICON_CHANGED;
-        icon_diff->before = disk_bitmap;
-        icon_diff->after = downloaded_bitmap;
-      } else if (size == kLauncherIconSize) {
-        icon_diff->diff_results |= LAUNCHER_ICON_CHANGED;
-        if (icon_diff->before.drawsNothing() &&
-            icon_diff->after.drawsNothing()) {
-          icon_diff->before = disk_bitmap;
-          icon_diff->after = downloaded_bitmap;
-        }
-      } else {
-        icon_diff->diff_results |= UNIMPORTANT_ICON_CHANGED;
-      }
-    }
-  }
-}
-
 // Some apps, such as pre-installed apps, have been vetted and are therefore
 // considered safe and permitted to update their icon. For others, the feature
 // flag needs to be on.
@@ -137,61 +82,6 @@ bool AllowUnpromptedIconUpdate(const AppId& app_id,
 }
 
 }  // namespace
-
-IconDiff HaveIconBitmapsChanged(
-    const IconBitmaps& disk_icon_bitmaps,
-    const IconBitmaps& downloaded_icon_bitmaps,
-    const std::vector<apps::IconInfo>& disk_icon_info,
-    const std::vector<apps::IconInfo>& downloaded_icon_info,
-    bool end_when_mismatch_detected) {
-  // The manifest information associated with the icons is a flat vector of
-  // IconInfo types. This needs to be split into vectors and keyed by purpose
-  // (any, masked, monochrome) so that it can be read by the icon diff.
-  std::map<apps::IconInfo::Purpose, std::vector<SquareSizePx>> on_disk_sizes;
-  std::map<apps::IconInfo::Purpose, std::vector<SquareSizePx>> downloaded_sizes;
-  on_disk_sizes[apps::IconInfo::Purpose::kAny] = std::vector<SquareSizePx>();
-  downloaded_sizes[apps::IconInfo::Purpose::kAny] = std::vector<SquareSizePx>();
-  on_disk_sizes[apps::IconInfo::Purpose::kMaskable] =
-      std::vector<SquareSizePx>();
-  downloaded_sizes[apps::IconInfo::Purpose::kMaskable] =
-      std::vector<SquareSizePx>();
-  on_disk_sizes[apps::IconInfo::Purpose::kMonochrome] =
-      std::vector<SquareSizePx>();
-  downloaded_sizes[apps::IconInfo::Purpose::kMonochrome] =
-      std::vector<SquareSizePx>();
-  // Put each entry found into the right map (sort by purpose).
-  for (const auto& entry : disk_icon_info) {
-    on_disk_sizes[entry.purpose].push_back(entry.square_size_px.value_or(-1));
-  }
-  for (const auto& entry : downloaded_icon_info) {
-    downloaded_sizes[entry.purpose].push_back(
-        entry.square_size_px.value_or(-1));
-  }
-
-  IconDiff icon_diff;
-  HaveIconContentsChanged(disk_icon_bitmaps.any, downloaded_icon_bitmaps.any,
-                          &icon_diff,
-                          on_disk_sizes[apps::IconInfo::Purpose::kAny],
-                          downloaded_sizes[apps::IconInfo::Purpose::kAny],
-                          end_when_mismatch_detected);
-  if (icon_diff.mismatch() && end_when_mismatch_detected)
-    return icon_diff;
-
-  HaveIconContentsChanged(disk_icon_bitmaps.maskable,
-                          downloaded_icon_bitmaps.maskable, &icon_diff,
-                          on_disk_sizes[apps::IconInfo::Purpose::kMaskable],
-                          downloaded_sizes[apps::IconInfo::Purpose::kMaskable],
-                          end_when_mismatch_detected);
-  if (icon_diff.mismatch() && end_when_mismatch_detected)
-    return icon_diff;
-
-  HaveIconContentsChanged(
-      disk_icon_bitmaps.monochrome, downloaded_icon_bitmaps.monochrome,
-      &icon_diff, on_disk_sizes[apps::IconInfo::Purpose::kMonochrome],
-      downloaded_sizes[apps::IconInfo::Purpose::kMonochrome],
-      end_when_mismatch_detected);
-  return icon_diff;
-}
 
 // static
 void ManifestUpdateTask::SetUpdatePendingCallbackForTesting(
@@ -410,7 +300,7 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
   }
   DCHECK(stage_ == ManifestUpdateStage::kPendingInstallableData ||
          stage_ == ManifestUpdateStage::kPendingAppIdentityCheck);
-  stage_ = ManifestUpdateStage::kPendingWindowsClosed;
+  stage_ = ManifestUpdateStage::kAppWindowsClosed;
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_.get()->GetBrowserContext());
@@ -752,7 +642,7 @@ void ManifestUpdateTask::OnWebAppOriginAssociationsUpdated(bool success) {
 }
 
 void ManifestUpdateTask::OnAllAppWindowsClosed() {
-  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingWindowsClosed);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kAppWindowsClosed);
 
   DCHECK(install_info_.has_value());
 
@@ -767,7 +657,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
   // Preserve the user's choice of form factor to open the app with.
   install_info_->user_display_mode = registrar_.GetAppUserDisplayMode(app_id_);
 
-  stage_ = ManifestUpdateStage::kPendingInstallation;
+  stage_ = ManifestUpdateStage::kPendingFinalizerUpdate;
 
   install_finalizer_.FinalizeUpdate(
       *install_info_,
@@ -777,7 +667,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
 void ManifestUpdateTask::OnInstallationComplete(const AppId& app_id,
                                                 webapps::InstallResultCode code,
                                                 OsHooksErrors os_hooks_errors) {
-  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingInstallation);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingFinalizerUpdate);
 
   if (!IsSuccess(code)) {
     DestroySelf(ManifestUpdateResult::kAppUpdateFailed);

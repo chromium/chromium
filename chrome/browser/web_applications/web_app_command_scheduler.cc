@@ -6,7 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
+#include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
+#include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -88,6 +91,62 @@ void WebAppCommandScheduler::UpdateFileHandlerOsIntegration(
       UpdateFileHandlerCommand::CreateForUpdate(
           app_id, std::move(callback), &provider_->registrar(),
           &provider_->sync_bridge(), &provider_->os_integration_manager()));
+}
+
+void WebAppCommandScheduler::ScheduleManifestUpdateDataFetch(
+    const GURL& url,
+    const AppId& app_id,
+    base::WeakPtr<content::WebContents> contents,
+    ManifestFetchCallback callback) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppCommandScheduler::ScheduleManifestUpdateDataFetch,
+                       weak_ptr_factory_.GetWeakPtr(), url, app_id, contents,
+                       std::move(callback)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<ManifestUpdateDataFetchCommand>(
+          url, app_id, contents, std::move(callback), &provider_->registrar(),
+          &provider_->icon_manager(), &provider_->ui_manager(),
+          &provider_->os_integration_manager(),
+          std::make_unique<WebAppDataRetriever>()));
+}
+
+void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
+    const GURL& url,
+    const AppId& app_id,
+    WebAppInstallInfo install_info,
+    bool app_identity_update_allowed,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    ManifestWriteCallback callback) {
+  if (is_in_shutdown_)
+    return;
+
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&WebAppCommandScheduler::ScheduleManifestUpdateFinalize,
+                       weak_ptr_factory_.GetWeakPtr(), url, app_id,
+                       install_info, app_identity_update_allowed,
+                       std::move(keep_alive), std::move(profile_keep_alive),
+                       std::move(callback)));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<ManifestUpdateFinalizeCommand>(
+          url, app_id, install_info, app_identity_update_allowed,
+          std::move(callback), std::move(keep_alive),
+          std::move(profile_keep_alive), &provider_->registrar(),
+          &provider_->install_finalizer(), &provider_->os_integration_manager(),
+          &provider_->sync_bridge()));
 }
 
 void WebAppCommandScheduler::Shutdown() {

@@ -180,7 +180,7 @@ void ShowWebAppIdentityUpdateDialog(
 
 // Sets whether |ShowWebAppIdentityUpdateDialog| should accept immediately
 // without any user interaction.
-void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
+void SetAutoAcceptAppIdentityUpdateForTesting(absl::optional<bool> auto_accept);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a

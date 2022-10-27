@@ -7,7 +7,9 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "components/webapps/browser/installable/installable_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -32,7 +34,8 @@ class MockDataRetriever : public WebAppDataRetriever {
               CheckInstallabilityAndRetrieveManifest,
               (content::WebContents * web_contents,
                bool bypass_service_worker_check,
-               CheckInstallabilityCallback callback),
+               CheckInstallabilityCallback callback,
+               absl::optional<webapps::InstallableParams> params),
               (override));
   MOCK_METHOD(void,
               GetIcons,

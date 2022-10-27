@@ -106,6 +106,12 @@ enum class FilesOptions {
   kAllTextAndPngFiles
 };
 
+enum class UpdateDialogResponse {
+  kAcceptUpdate,
+  kCancelDialogAndUninstall,
+  kSkipUpdate
+};
+
 // These structs are used to store the current state of the world before & after
 // each state-change action.
 
@@ -218,7 +224,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // Actions are defined in chrome/test/webapps/data/actions.md
 
   // State change actions:
-  void AcceptAppIdUpdateDialog();
+  void HandleAppIdentityUpdateDialogResponse(UpdateDialogResponse response);
   void AwaitManifestUpdate(Site site_mode);
   void CloseCustomToolbar();
   void ClosePwa();
@@ -257,8 +263,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void NavigateBrowser(Site site);
   void NavigatePwa(Site app, Site to);
   void NavigateNotfoundUrl();
-  void ManifestUpdateIcon(Site site);
-  void ManifestUpdateTitle(Site site, Title title);
+  void ManifestUpdateIcon(Site site, UpdateDialogResponse response);
+  void ManifestUpdateTitle(Site site,
+                           Title title,
+                           UpdateDialogResponse response);
   void ManifestUpdateDisplay(Site site, Display display);
   void ManifestUpdateScopeTo(Site app, Site scope);
   void OpenInChrome();
@@ -331,6 +339,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   bool BeforeStateCheckAction(const char* function);
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
+
+  void AwaitManifestSystemIdle();
 
   AppId GetAppIdBySiteMode(Site site);
   GURL GetUrlForSite(Site site);
@@ -424,6 +434,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
       nullptr;
 
   bool in_tear_down_ = false;
+  bool is_performing_manifest_update_ = false;
 
   std::unique_ptr<views::NamedWidgetShownWaiter> app_id_update_dialog_waiter_;
   base::ScopedObservation<web_app::WebAppInstallManager,

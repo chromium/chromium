@@ -80,6 +80,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -894,15 +895,25 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   }
 }
 
-void WebAppIntegrationTestDriver::AcceptAppIdUpdateDialog() {
-  if (!BeforeStateChangeAction(__FUNCTION__))
-    return;
-
+// TODO(crbug.com/1378267): Figure out a way to handle the kUninstall logic and
+// close both the manifest update dialog as well as the uninstall dialog to
+// prevent the app_id_update_dialog_waiter_ from hanging.
+void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
+    UpdateDialogResponse response) {
   views::Widget* widget = app_id_update_dialog_waiter_->WaitIfNeededAndGet();
   ASSERT_TRUE(widget != nullptr);
-  views::test::AcceptDialog(widget);
-
-  AfterStateChangeAction();
+  switch (response) {
+    case UpdateDialogResponse::kAcceptUpdate:
+      views::test::AcceptDialog(widget);
+      break;
+    case UpdateDialogResponse::kCancelDialogAndUninstall:
+      views::test::CancelDialog(widget);
+      break;
+    // The app identity update dialog cannot be used to skip an update.
+    case UpdateDialogResponse::kSkipUpdate:
+      NOTREACHED() << "Cannot skip an update from the app identity dialog";
+      break;
+  }
 }
 
 void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
@@ -1596,7 +1607,9 @@ void WebAppIntegrationTestDriver::NavigateNotfoundUrl() {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site) {
+void WebAppIntegrationTestDriver::ManifestUpdateIcon(
+    Site site,
+    UpdateDialogResponse response) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
   ASSERT_EQ(Site::kStandalone, site)
@@ -1619,10 +1632,14 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site) {
                                        kLauncherIconSize)}));
 
   ForceUpdateManifestContents(site, url);
+  HandleAppIdentityUpdateDialogResponse(response);
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::ManifestUpdateTitle(Site site, Title title) {
+void WebAppIntegrationTestDriver::ManifestUpdateTitle(
+    Site site,
+    Title title,
+    UpdateDialogResponse response) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
   ASSERT_EQ(Site::kStandalone, site)
@@ -1639,6 +1656,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(Site site, Title title) {
   GURL url = GetTestServerForSiteMode(site).GetURL(
       base::StrCat({relative_url_path, "?manifest=manifest_title.json"}));
   ForceUpdateManifestContents(site, url);
+  HandleAppIdentityUpdateDialogResponse(response);
   AfterStateChangeAction();
 }
 
@@ -2653,7 +2671,6 @@ bool WebAppIntegrationTestDriver::BeforeStateChangeAction(
 void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   DCHECK(executing_action_level_ > 0);
   --executing_action_level_;
-  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 #if BUILDFLAG(IS_MAC)
   for (auto* profile : GetAllProfiles()) {
     std::vector<AppId> app_ids = provider()->registrar().GetAppIds();
@@ -2671,6 +2688,8 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   if (delegate_->IsSyncTest())
     delegate_->AwaitWebAppQuiescence();
   FlushShortcutTasks();
+  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+  AwaitManifestSystemIdle();
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
@@ -2691,6 +2710,42 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
   if (!after_state_change_action_state_)
     return;
   DCHECK_EQ(*after_state_change_action_state_, *ConstructStateSnapshot());
+}
+
+void WebAppIntegrationTestDriver::AwaitManifestSystemIdle() {
+  if (!is_performing_manifest_update_)
+    return;
+
+  // Wait till pending manifest update processes have finished loading the page
+  // to start the manifest update.
+  ManifestUpdateManager& manifest_update_manager =
+      provider()->manifest_update_manager();
+  WebAppCommandManager& command_manager = provider()->command_manager();
+  // TODO(crbug.com/1376155): Figure out a better way of streamlining
+  //  the waiting instead of doing it separately for manifest updates
+  //  and commands. This fails WebAppIntegrationTestDriver::CloseCustomToolbar()
+  //  because DidFinishLoad() is not triggered for a backwards navigation, thus
+  //  a manifest update is triggered but is stuck.
+  while (manifest_update_manager.HasUpdatesPendingLoadFinishForTesting()) {
+    base::RunLoop loop_for_load_finish;
+    manifest_update_manager.SetLoadFinishedCallbackForTesting(
+        loop_for_load_finish.QuitClosure());
+    loop_for_load_finish.Run();
+  }
+  // Wait till all manifest update data fetch commands have completed.
+  command_manager.AwaitAllCommandsCompleteForTesting();
+
+  // If there are any apps that have no app windows, then wait for the
+  // ui_manager to post the task and schedule the manifest update finalize
+  // command.
+  for (const AppId& app_id :
+       manifest_update_manager.GetAppsPendingWindowsClosingForTesting()) {
+    if (provider()->ui_manager().GetNumWindowsForApp(app_id) == 0) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+  // Wait till all manifest update finalize commands have completed (if any).
+  command_manager.AwaitAllCommandsCompleteForTesting();
 }
 
 AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
@@ -2963,9 +3018,10 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   // installed, otherwise the throttle is tripped.
   ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
   ASSERT_FALSE(
-      provider()->manifest_update_manager().IsUpdateTaskPending(app_id));
+      provider()->manifest_update_manager().IsUpdateCommandPending(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param,
                               NavigationMode::kCurrentTab);
+  is_performing_manifest_update_ = true;
 }
 
 void WebAppIntegrationTestDriver::MaybeNavigateTabbedBrowserInScope(Site site) {

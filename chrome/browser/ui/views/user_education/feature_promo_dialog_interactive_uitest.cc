@@ -15,6 +15,7 @@
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
@@ -82,6 +83,9 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   }
   void SetUp() override {
     webapps::TestAppBannerManagerDesktop::SetUp();
+    // Skip app identity updating if the dialog is shown on navigation,
+    // otherwise tests are blocked waiting for a dialog response.
+    chrome::SetAutoAcceptAppIdentityUpdateForTesting(false);
     DialogBrowserTest::SetUp();
   }
   void SetUpOnMainThread() override {

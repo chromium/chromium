@@ -253,9 +253,9 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
               GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
 
-  EXPECT_CALL(*data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  testing::_, true, base::test::IsNotNullCallback()))
+  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
+                                   testing::_, true,
+                                   base::test::IsNotNullCallback(), testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(CreateManifest(true),
                                                kWebAppManifestUrl, true, true));
 
@@ -294,9 +294,9 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
               GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
 
-  EXPECT_CALL(*data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  testing::_, true, base::test::IsNotNullCallback()))
+  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
+                                   testing::_, true,
+                                   base::test::IsNotNullCallback(), testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(nullptr, kWebAppManifestUrl,
                                                true, true));
 
@@ -335,9 +335,9 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
               GetWebAppInstallInfo(testing::_, base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<1>(CreateSiteInstallInfo()));
 
-  EXPECT_CALL(*data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  testing::_, true, base::test::IsNotNullCallback()))
+  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
+                                   testing::_, true,
+                                   base::test::IsNotNullCallback(), testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(CreateManifest(/*icons=*/false),
                                                kWebAppManifestUrl, true, true));
 
@@ -449,9 +449,9 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
   auto manifest = CreateManifest(true);
   manifest->id = u"other_path/index.html";
 
-  EXPECT_CALL(*data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  testing::_, true, base::test::IsNotNullCallback()))
+  EXPECT_CALL(*data_retriever, CheckInstallabilityAndRetrieveManifest(
+                                   testing::_, true,
+                                   base::test::IsNotNullCallback(), testing::_))
       .WillOnce(base::test::RunOnceCallback<2>(std::move(manifest),
                                                kWebAppManifestUrl, true, true));
 
@@ -501,9 +501,10 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
         .WillOnce(
             base::test::RunOnceCallback<1>(CreateSiteInstallInfo(kWebAppUrl)));
 
-    EXPECT_CALL(*data_retriever1,
-                CheckInstallabilityAndRetrieveManifest(
-                    testing::_, true, base::test::IsNotNullCallback()))
+    EXPECT_CALL(
+        *data_retriever1,
+        CheckInstallabilityAndRetrieveManifest(
+            testing::_, true, base::test::IsNotNullCallback(), testing::_))
         .WillOnce(base::test::RunOnceCallback<2>(
             CreateManifest(true, kWebAppUrl), kWebAppManifestUrl, true, true));
 
@@ -519,9 +520,10 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
         .WillOnce(base::test::RunOnceCallback<1>(
             CreateSiteInstallInfo(kOtherWebAppUrl)));
 
-    EXPECT_CALL(*data_retriever2,
-                CheckInstallabilityAndRetrieveManifest(
-                    testing::_, true, base::test::IsNotNullCallback()))
+    EXPECT_CALL(
+        *data_retriever2,
+        CheckInstallabilityAndRetrieveManifest(
+            testing::_, true, base::test::IsNotNullCallback(), testing::_))
         .WillOnce(base::test::RunOnceCallback<2>(
             CreateManifest(true, kOtherWebAppUrl), kWebAppManifestUrl, true,
             true));
