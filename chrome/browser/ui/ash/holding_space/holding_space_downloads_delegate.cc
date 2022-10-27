@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
@@ -72,10 +71,7 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
               color_name,
               /*is_dark_mode=*/
               dark_background.value_or(
-                  DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()),
-              /*use_debug_colors=*/
-              base::FeatureList::IsEnabled(
-                  features::kSemanticColorsDebugOverride))));
+                  DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()))));
 }
 
 // Returns the singleton `crosapi::DownloadControllerAsh` if it exists.
