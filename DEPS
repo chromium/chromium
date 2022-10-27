@@ -1928,7 +1928,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/ambient',
-        'version': 'version:feel_the_breeze_tree_shadow_improvement',
+        'version': 'version:resync_feel_the_breeze',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
