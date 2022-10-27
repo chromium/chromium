@@ -125,7 +125,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   function getEntries() {
     return testElement.shadowRoot!.querySelectorAll(
-        '.notification-permissions-list .cr-row');
+        '.notification-permissions-list .site-entry');
   }
 
   test('Notification Permission strings', async function() {
@@ -269,7 +269,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     // Click block button
     testElement.shadowRoot!.querySelector<HTMLElement>(
-                               '.cr-row #block')!.click();
+                               '.site-entry #block')!.click();
     assertAnimation([true, false]);
     await browserProxy.whenCalled('blockNotificationPermissionForOrigins');
 
