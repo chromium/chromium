@@ -1516,6 +1516,7 @@
       keywords: ["visible", "hidden"],
       typedom_types: ["Keyword"],
       default_value: "visible",
+      readonly: true,
     },
     {
       name: "background-attachment",
@@ -3850,6 +3851,7 @@
       converter: "ConvertPerspective",
       keywords: ["none"],
       typedom_types: ["Keyword", "Length"],
+      readonly: true,
     },
     {
       name: "perspective-origin",
@@ -3865,6 +3867,7 @@
       typedom_types: ["Position"],
       // Overlaps with -webkit-perspective-origin-[x,y].
       overlapping: true,
+      readonly: true,
     },
     {
       name: "pointer-events",
@@ -4940,6 +4943,7 @@
       type_name: "TransformOperations",
       converter: "ConvertTransformOperations",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "transform-box",
@@ -4950,6 +4954,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "transform-origin",
@@ -4966,6 +4971,7 @@
       supports_incremental_style: true,
       // Overlaps with -webkit-transform-origin-[x,y,z].
       overlapping: true,
+      readonly: true,
     },
     {
       name: "transform-style",
@@ -4977,6 +4983,7 @@
       typedom_types: ["Keyword"],
       name_for_methods: "TransformStyle3D",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "translate",
@@ -4993,6 +5000,7 @@
       type_name: "TranslateTransformOperation",
       converter: "ConvertTranslate",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "rotate",
@@ -5008,6 +5016,7 @@
       type_name: "RotateTransformOperation",
       converter: "ConvertRotate",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "scale",
@@ -5023,6 +5032,7 @@
       type_name: "ScaleTransformOperation",
       converter: "ConvertScale",
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "unicode-bidi",
@@ -5559,22 +5569,26 @@
     {
       name: "-webkit-perspective-origin-x",
       property_methods: ["ParseSingleValue"],
+      style_builder_custom_functions: ["inherit"],
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
       // Overlaps with perspective-origin.
       legacy_overlapping: true,
+      readonly: true,
     },
     {
       name: "-webkit-perspective-origin-y",
       property_methods: ["ParseSingleValue"],
+      style_builder_custom_functions: ["inherit"],
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
       // Overlaps with perspective-origin.
       legacy_overlapping: true,
+      readonly: true,
     },
     {
       name: "-webkit-print-color-adjust",
@@ -5729,32 +5743,38 @@
     {
       name: "-webkit-transform-origin-x",
       property_methods: ["ParseSingleValue"],
+      style_builder_custom_functions: ["inherit"],
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
       // Overlaps with transform-origin.
       legacy_overlapping: true,
+      readonly: true,
     },
     {
       name: "-webkit-transform-origin-y",
       property_methods: ["ParseSingleValue"],
+      style_builder_custom_functions: ["inherit"],
       interpolable: true,
       converter: "ConvertLength",
       computable: false,
       affected_by_all: false,
       // Overlaps with transform-origin.
       legacy_overlapping: true,
+      readonly: true,
     },
     {
       name: "-webkit-transform-origin-z",
       property_methods: ["ParseSingleValue"],
+      style_builder_custom_functions: ["inherit"],
       interpolable: true,
       converter: "ConvertComputedLength<float>",
       computable: false,
       affected_by_all: false,
       // Overlaps with transform-origin.
       legacy_overlapping: true,
+      readonly: true,
     },
     {
       name: "-webkit-user-drag",

@@ -178,8 +178,8 @@ void CSSLengthListInterpolationType::ApplyStandardPropertyValue(
         To<InterpolableLength>(*interpolable_list.Get(i))
             .CreateLength(state.CssToLengthConversionData(), value_range_);
   }
-  LengthListPropertyFunctions::SetLengthList(CssProperty(), *state.Style(),
-                                             std::move(result));
+  LengthListPropertyFunctions::SetLengthList(
+      CssProperty(), *state.Style(), state.StyleBuilder(), std::move(result));
 }
 
 }  // namespace blink

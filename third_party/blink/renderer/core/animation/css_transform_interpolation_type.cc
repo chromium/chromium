@@ -181,7 +181,7 @@ void CSSTransformInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* untyped_non_interpolable_value,
     StyleResolverState& state) const {
-  state.Style()->SetTransform(
+  state.StyleBuilder().SetTransform(
       To<InterpolableTransformList>(interpolable_value).operations());
 }
 

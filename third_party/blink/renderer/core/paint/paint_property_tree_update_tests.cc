@@ -1643,12 +1643,12 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   )HTML");
 
   auto* target = GetLayoutObjectByElementId("target");
-  auto style = ComputedStyle::Clone(target->StyleRef());
+  ComputedStyleBuilder builder(target->StyleRef());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   // Simulates starting a composite animation.
-  style->SetHasCurrentTransformAnimation(true);
-  style->SetIsRunningTransformAnimationOnCompositor(true);
-  target->SetStyle(std::move(style));
+  builder.SetHasCurrentTransformAnimation(true);
+  builder.SetIsRunningTransformAnimationOnCompositor(true);
+  target->SetStyle(builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   UpdateAllLifecyclePhasesExceptPaint();
@@ -1668,14 +1668,14 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 
   // Simulates changing transform and transform-origin during an animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  style = ComputedStyle::Clone(target->StyleRef());
+  builder = ComputedStyleBuilder(target->StyleRef());
   TransformOperations transform;
   transform.Operations().push_back(
       RotateTransformOperation::Create(10, TransformOperation::kRotate));
-  style->SetTransform(transform);
-  style->SetTransformOrigin(TransformOrigin(Length(70, Length::kFixed),
-                                            Length(30, Length::kFixed), 0));
-  target->SetStyle(std::move(style));
+  builder.SetTransform(transform);
+  builder.SetTransformOrigin(
+      TransformOrigin(Length::Fixed(70), Length::Fixed(30), 0));
+  target->SetStyle(builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   {
@@ -1699,9 +1699,9 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
 
   // Simulates changing backface visibility during animation.
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  style = ComputedStyle::Clone(target->StyleRef());
-  style->SetBackfaceVisibility(EBackfaceVisibility::kHidden);
-  target->SetStyle(std::move(style));
+  builder = ComputedStyleBuilder(target->StyleRef());
+  builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
+  target->SetStyle(builder.TakeStyle());
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   UpdateAllLifecyclePhasesExceptPaint();

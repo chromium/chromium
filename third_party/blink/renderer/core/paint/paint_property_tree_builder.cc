@@ -984,10 +984,11 @@ static gfx::Point3F GetTransformOrigin(const LayoutBox& box,
     return gfx::Point3F();
   gfx::SizeF border_box_size(size);
   const auto& style = box.StyleRef();
-  return gfx::Point3F(
-      FloatValueForLength(style.TransformOriginX(), border_box_size.width()),
-      FloatValueForLength(style.TransformOriginY(), border_box_size.height()),
-      style.TransformOriginZ());
+  return gfx::Point3F(FloatValueForLength(style.GetTransformOrigin().X(),
+                                          border_box_size.width()),
+                      FloatValueForLength(style.GetTransformOrigin().Y(),
+                                          border_box_size.height()),
+                      style.GetTransformOrigin().Z());
 }
 
 static bool NeedsIndividualTransform(

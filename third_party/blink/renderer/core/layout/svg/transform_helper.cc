@@ -20,8 +20,8 @@ static inline bool TransformOriginIsFixed(const ComputedStyle& style) {
   // then is does not depend on the reference box. For fill-box, the origin
   // will always move with the bounding box.
   return style.TransformBox() == ETransformBox::kViewBox &&
-         style.TransformOriginX().IsFixed() &&
-         style.TransformOriginY().IsFixed();
+         style.GetTransformOrigin().X().IsFixed() &&
+         style.GetTransformOrigin().Y().IsFixed();
 }
 
 bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
@@ -97,11 +97,12 @@ gfx::PointF TransformHelper::ComputeTransformOrigin(
     const LayoutObject& layout_object) {
   const auto& style = layout_object.StyleRef();
   gfx::RectF reference_box = ComputeReferenceBox(layout_object);
-  gfx::PointF origin(
-      FloatValueForLength(style.TransformOriginX(), reference_box.width()) +
-          reference_box.x(),
-      FloatValueForLength(style.TransformOriginY(), reference_box.height()) +
-          reference_box.y());
+  gfx::PointF origin(FloatValueForLength(style.GetTransformOrigin().X(),
+                                         reference_box.width()) +
+                         reference_box.x(),
+                     FloatValueForLength(style.GetTransformOrigin().Y(),
+                                         reference_box.height()) +
+                         reference_box.y());
   // See the comment in ComputeTransform() for the reason of scaling by 1/zoom.
   return gfx::ScalePoint(origin, style.EffectiveZoom());
 }

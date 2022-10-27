@@ -335,8 +335,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPerspective:
       return a.Perspective() == b.Perspective();
     case CSSPropertyID::kPerspectiveOrigin:
-      return a.PerspectiveOriginX() == b.PerspectiveOriginX() &&
-             a.PerspectiveOriginY() == b.PerspectiveOriginY();
+      return a.PerspectiveOrigin() == b.PerspectiveOrigin();
     case CSSPropertyID::kWebkitTextStrokeColor:
       return a.TextStrokeColor() == b.TextStrokeColor() &&
              a.InternalVisitedTextStrokeColor() ==
@@ -351,19 +350,17 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScale:
       return base::ValuesEquivalent<TransformOperation>(a.Scale(), b.Scale());
     case CSSPropertyID::kTransformOrigin:
-      return a.TransformOriginX() == b.TransformOriginX() &&
-             a.TransformOriginY() == b.TransformOriginY() &&
-             a.TransformOriginZ() == b.TransformOriginZ();
+      return a.GetTransformOrigin() == b.GetTransformOrigin();
     case CSSPropertyID::kWebkitPerspectiveOriginX:
-      return a.PerspectiveOriginX() == b.PerspectiveOriginX();
+      return a.PerspectiveOrigin().X() == b.PerspectiveOrigin().X();
     case CSSPropertyID::kWebkitPerspectiveOriginY:
-      return a.PerspectiveOriginY() == b.PerspectiveOriginY();
+      return a.PerspectiveOrigin().Y() == b.PerspectiveOrigin().Y();
     case CSSPropertyID::kWebkitTransformOriginX:
-      return a.TransformOriginX() == b.TransformOriginX();
+      return a.GetTransformOrigin().X() == b.GetTransformOrigin().X();
     case CSSPropertyID::kWebkitTransformOriginY:
-      return a.TransformOriginY() == b.TransformOriginY();
+      return a.GetTransformOrigin().Y() == b.GetTransformOrigin().Y();
     case CSSPropertyID::kWebkitTransformOriginZ:
-      return a.TransformOriginZ() == b.TransformOriginZ();
+      return a.GetTransformOrigin().Z() == b.GetTransformOrigin().Z();
     case CSSPropertyID::kWidows:
       return a.Widows() == b.Widows();
     case CSSPropertyID::kWidth:

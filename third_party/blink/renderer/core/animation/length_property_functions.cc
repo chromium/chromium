@@ -211,16 +211,16 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       result = style.Top();
       return true;
     case CSSPropertyID::kWebkitPerspectiveOriginX:
-      result = style.PerspectiveOriginX();
+      result = style.PerspectiveOrigin().X();
       return true;
     case CSSPropertyID::kWebkitPerspectiveOriginY:
-      result = style.PerspectiveOriginY();
+      result = style.PerspectiveOrigin().Y();
       return true;
     case CSSPropertyID::kWebkitTransformOriginX:
-      result = style.TransformOriginX();
+      result = style.GetTransformOrigin().X();
       return true;
     case CSSPropertyID::kWebkitTransformOriginY:
-      result = style.TransformOriginY();
+      result = style.GetTransformOrigin().Y();
       return true;
     case CSSPropertyID::kWidth:
       result = style.Width();
@@ -273,7 +273,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       result = Length::Fixed(style.ColumnRuleWidth());
       return true;
     case CSSPropertyID::kWebkitTransformOriginZ:
-      result = Length::Fixed(style.TransformOriginZ());
+      result = Length::Fixed(style.GetTransformOrigin().Z());
       return true;
     case CSSPropertyID::kWordSpacing:
       result = Length::Fixed(style.WordSpacing());
@@ -411,16 +411,16 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetWidth(value);
       return true;
     case CSSPropertyID::kWebkitPerspectiveOriginX:
-      style.SetPerspectiveOriginX(value);
+      builder.SetPerspectiveOriginX(value);
       return true;
     case CSSPropertyID::kWebkitPerspectiveOriginY:
-      style.SetPerspectiveOriginY(value);
+      builder.SetPerspectiveOriginY(value);
       return true;
     case CSSPropertyID::kWebkitTransformOriginX:
-      style.SetTransformOriginX(value);
+      builder.SetTransformOriginX(value);
       return true;
     case CSSPropertyID::kWebkitTransformOriginY:
-      style.SetTransformOriginY(value);
+      builder.SetTransformOriginY(value);
       return true;
     case CSSPropertyID::kX:
       builder.SetX(value);

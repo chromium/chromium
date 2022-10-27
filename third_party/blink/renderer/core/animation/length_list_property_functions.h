@@ -12,6 +12,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ComputedStyleBuilder;
 class CSSProperty;
 
 class LengthListPropertyFunctions {
@@ -27,6 +28,7 @@ class LengthListPropertyFunctions {
                             Vector<Length>& result);
   static void SetLengthList(const CSSProperty&,
                             ComputedStyle&,
+                            ComputedStyleBuilder&,
                             Vector<Length>&& length_list);
 };
 

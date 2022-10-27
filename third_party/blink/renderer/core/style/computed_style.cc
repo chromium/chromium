@@ -1443,12 +1443,13 @@ void ComputedStyle::ApplyTransform(
   if (apply_transform_origin ||
       // We need to calculate originX and originY for applying motion path.
       apply_motion_path == kIncludeMotionPath) {
-    origin_x = FloatValueForLength(TransformOriginX(), box_size.width()) +
+    origin_x = FloatValueForLength(GetTransformOrigin().X(), box_size.width()) +
                bounding_box.x();
-    origin_y = FloatValueForLength(TransformOriginY(), box_size.height()) +
-               bounding_box.y();
+    origin_y =
+        FloatValueForLength(GetTransformOrigin().Y(), box_size.height()) +
+        bounding_box.y();
     if (apply_transform_origin) {
-      origin_z = TransformOriginZ();
+      origin_z = GetTransformOrigin().Z();
       result.Translate3d(origin_x, origin_y, origin_z);
     }
   }

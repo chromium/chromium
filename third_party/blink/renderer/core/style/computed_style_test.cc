@@ -149,19 +149,20 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsTransform) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
-
   TransformOperations operations;
   // An operation is necessary since having either a non-empty transform list
   // or a transform animation will set HasTransform();
   operations.Operations().push_back(
       ScaleTransformOperation::Create(1, 1, TransformOperation::kScale));
 
-  style->SetTransform(operations);
-  other->SetTransform(operations);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetTransform(operations);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
 
-  other->SetHasCurrentTransformAnimation(true);
+  builder = ComputedStyleBuilder(*style);
+  builder.SetHasCurrentTransformAnimation(true);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_FALSE(diff.TransformChanged());
@@ -233,10 +234,11 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsBackfaceVisibility) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
-  other->SetBackfaceVisibility(EBackfaceVisibility::kHidden);
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
@@ -244,10 +246,12 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsWillChange) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
+  builder.SetWillChangeProperties({CSSPropertyID::kOpacity});
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
-  other->SetBackfaceVisibility(EBackfaceVisibility::kHidden);
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());
@@ -255,12 +259,15 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsUsedStylePreserve3D) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
+  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
 
+  builder = ComputedStyleBuilder(*style);
   // This induces a flat used transform style.
-  other->SetOpacity(0.5);
+  builder.MutableInternalStyle()->SetOpacity(0.5);
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
+
   StyleDifference diff;
   style->UpdatePropertySpecificDifferences(*other, diff);
   EXPECT_TRUE(diff.CompositingReasonsChanged());

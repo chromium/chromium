@@ -749,40 +749,6 @@ class ComputedStyle : public ComputedStyleBase,
                : NGOutlineType::kDontIncludeBlockVisualOverflow;
   }
 
-  // -webkit-perspective-origin-x
-  const Length& PerspectiveOriginX() const { return PerspectiveOrigin().X(); }
-  void SetPerspectiveOriginX(const Length& v) {
-    SetPerspectiveOrigin(LengthPoint(v, PerspectiveOriginY()));
-  }
-
-  // -webkit-perspective-origin-y
-  const Length& PerspectiveOriginY() const { return PerspectiveOrigin().Y(); }
-  void SetPerspectiveOriginY(const Length& v) {
-    SetPerspectiveOrigin(LengthPoint(PerspectiveOriginX(), v));
-  }
-
-  // Transform properties.
-  // -webkit-transform-origin-x
-  const Length& TransformOriginX() const { return GetTransformOrigin().X(); }
-  void SetTransformOriginX(const Length& v) {
-    SetTransformOrigin(
-        TransformOrigin(v, TransformOriginY(), TransformOriginZ()));
-  }
-
-  // -webkit-transform-origin-y
-  const Length& TransformOriginY() const { return GetTransformOrigin().Y(); }
-  void SetTransformOriginY(const Length& v) {
-    SetTransformOrigin(
-        TransformOrigin(TransformOriginX(), v, TransformOriginZ()));
-  }
-
-  // -webkit-transform-origin-z
-  float TransformOriginZ() const { return GetTransformOrigin().Z(); }
-  void SetTransformOriginZ(float f) {
-    SetTransformOrigin(
-        TransformOrigin(TransformOriginX(), TransformOriginY(), f));
-  }
-
   // Scroll properties.
 
   PhysicalToLogicalGetter<const Length&, ComputedStyle>
@@ -3016,6 +2982,28 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   const ComputedStyle* InternalStyle() const { return style_.get(); }
 
   scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }
+
+  // perspective-origin
+  void SetPerspectiveOriginX(const Length& v) {
+    SetPerspectiveOrigin(LengthPoint(v, PerspectiveOrigin().Y()));
+  }
+  void SetPerspectiveOriginY(const Length& v) {
+    SetPerspectiveOrigin(LengthPoint(PerspectiveOrigin().X(), v));
+  }
+
+  // transform-origin
+  void SetTransformOriginX(const Length& v) {
+    SetTransformOrigin(
+        TransformOrigin(v, GetTransformOrigin().Y(), GetTransformOrigin().Z()));
+  }
+  void SetTransformOriginY(const Length& v) {
+    SetTransformOrigin(
+        TransformOrigin(GetTransformOrigin().X(), v, GetTransformOrigin().Z()));
+  }
+  void SetTransformOriginZ(float f) {
+    SetTransformOrigin(
+        TransformOrigin(GetTransformOrigin().X(), GetTransformOrigin().Y(), f));
+  }
 
   // -webkit-box-ordinal-group
   void SetBoxOrdinalGroup(unsigned ordinal_group) {

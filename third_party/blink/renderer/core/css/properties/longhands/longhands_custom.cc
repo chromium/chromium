@@ -5921,18 +5921,18 @@ const CSSValue* PerspectiveOrigin::CSSValueFromComputedStyleInternal(
 
     return MakeGarbageCollected<CSSValuePair>(
         ZoomAdjustedPixelValue(
-            MinimumValueForLength(style.PerspectiveOriginX(), box.Width()),
+            MinimumValueForLength(style.PerspectiveOrigin().X(), box.Width()),
             style),
         ZoomAdjustedPixelValue(
-            MinimumValueForLength(style.PerspectiveOriginY(), box.Height()),
+            MinimumValueForLength(style.PerspectiveOrigin().Y(), box.Height()),
             style),
         CSSValuePair::kKeepIdenticalValues);
   } else {
     return MakeGarbageCollected<CSSValuePair>(
         ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-            style.PerspectiveOriginX(), style),
+            style.PerspectiveOrigin().X(), style),
         ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-            style.PerspectiveOriginY(), style),
+            style.PerspectiveOrigin().Y(), style),
         CSSValuePair::kKeepIdenticalValues);
   }
 }
@@ -7605,18 +7605,22 @@ const CSSValue* TransformOrigin::CSSValueFromComputedStyleInternal(
     gfx::RectF reference_box = ComputedStyleUtils::ReferenceBoxForTransform(
         *layout_object, ComputedStyleUtils::kDontUsePixelSnappedBox);
     gfx::PointF resolved_origin(
-        FloatValueForLength(style.TransformOriginX(), reference_box.width()),
-        FloatValueForLength(style.TransformOriginY(), reference_box.height()));
+        FloatValueForLength(style.GetTransformOrigin().X(),
+                            reference_box.width()),
+        FloatValueForLength(style.GetTransformOrigin().Y(),
+                            reference_box.height()));
     list->Append(*ZoomAdjustedPixelValue(resolved_origin.x(), style));
     list->Append(*ZoomAdjustedPixelValue(resolved_origin.y(), style));
   } else {
     list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-        style.TransformOriginX(), style));
+        style.GetTransformOrigin().X(), style));
     list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-        style.TransformOriginY(), style));
+        style.GetTransformOrigin().Y(), style));
   }
-  if (style.TransformOriginZ() != 0)
-    list->Append(*ZoomAdjustedPixelValue(style.TransformOriginZ(), style));
+  if (style.GetTransformOrigin().Z() != 0) {
+    list->Append(
+        *ZoomAdjustedPixelValue(style.GetTransformOrigin().Z(), style));
+  }
   return list;
 }
 
@@ -8522,6 +8526,11 @@ const CSSValue* WebkitPerspectiveOriginX::ParseSingleValue(
       range, context);
 }
 
+void WebkitPerspectiveOriginX::ApplyInherit(StyleResolverState& state) const {
+  state.StyleBuilder().SetPerspectiveOriginX(
+      state.ParentStyle()->PerspectiveOrigin().X());
+}
+
 const CSSValue* WebkitPerspectiveOriginY::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -8529,6 +8538,11 @@ const CSSValue* WebkitPerspectiveOriginY::ParseSingleValue(
   return css_parsing_utils::ConsumePositionLonghand<CSSValueID::kTop,
                                                     CSSValueID::kBottom>(
       range, context);
+}
+
+void WebkitPerspectiveOriginY::ApplyInherit(StyleResolverState& state) const {
+  state.StyleBuilder().SetPerspectiveOriginY(
+      state.ParentStyle()->PerspectiveOrigin().Y());
 }
 
 const CSSValue* WebkitPrintColorAdjust::CSSValueFromComputedStyleInternal(
@@ -9128,6 +9142,11 @@ const CSSValue* WebkitTransformOriginX::ParseSingleValue(
       range, context);
 }
 
+void WebkitTransformOriginX::ApplyInherit(StyleResolverState& state) const {
+  state.StyleBuilder().SetTransformOriginX(
+      state.ParentStyle()->GetTransformOrigin().X());
+}
+
 const CSSValue* ToggleVisibility::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -9171,12 +9190,22 @@ const CSSValue* WebkitTransformOriginY::ParseSingleValue(
       range, context);
 }
 
+void WebkitTransformOriginY::ApplyInherit(StyleResolverState& state) const {
+  state.StyleBuilder().SetTransformOriginY(
+      state.ParentStyle()->GetTransformOrigin().Y());
+}
+
 const CSSValue* WebkitTransformOriginZ::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeLength(range, context,
                                           CSSPrimitiveValue::ValueRange::kAll);
+}
+
+void WebkitTransformOriginZ::ApplyInherit(StyleResolverState& state) const {
+  state.StyleBuilder().SetTransformOriginZ(
+      state.ParentStyle()->GetTransformOrigin().Z());
 }
 
 const CSSValue* WebkitUserDrag::CSSValueFromComputedStyleInternal(
