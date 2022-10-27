@@ -984,11 +984,6 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 // Tests that the sign-in prompt is shown on the other window when the window
 // presenting the forced sign-in screen is closed.
 - (void)testSigninScreenTransferToOtherWindow {
-#if TARGET_OS_SIMULATOR
-  // TODO(crbug.com/1370470): Re-enable the test.
-  EARL_GREY_TEST_DISABLED(@"Test failing on simulator.");
-#endif
-
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
