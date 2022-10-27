@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/tween.h"
@@ -83,6 +84,10 @@ CameraPreviewSnapPosition GetCameraNextVerticalSnapPosition(
     bool going_up);
 
 // Notification Utils //
+// The notification ID prefix used for notifications corresponding to captured
+// images and videos.
+constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+
 // Constants related to the banner view on the image capture notifications.
 constexpr int kBannerHeightDip = 36;
 constexpr int kBannerHorizontalInsetDip = 12;
@@ -174,6 +179,10 @@ void ConfigLabelView(views::Label* label_view);
 
 // Initializes the box layout for the `view` in the settings menu.
 views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view);
+
+// Gets the notification ID of a screen capture given its filepath.
+ASH_EXPORT std::string GetScreenCaptureNotificationIdForPath(
+    const base::FilePath& path);
 
 }  // namespace capture_mode_util
 
