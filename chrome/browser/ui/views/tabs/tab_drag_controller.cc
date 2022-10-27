@@ -1176,6 +1176,7 @@ TabDragController::StartSystemDragAndDropSessionIfNecessary(
       std::make_unique<ui::OSExchangeData>(std::move(data_provider)),
       point_in_screen, static_cast<int>(ui::mojom::DragOperation::kMove),
       ui::mojom::DragEventSource::kMouse);
+
   // If we're still alive and |attached_context_hidden_| is true, this means the
   // drag session ended while we were dragging all of the only window's tabs. We
   // need to end the drag session ourselves.
@@ -1843,9 +1844,7 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
   // Attach() expects |attached_context_| to be nullptr;
   attached_context_ = nullptr;
   Attach(new_context, last_point_in_screen_, std::move(me));
-  // Run MoveAttached to ensure the insertion index and group membership make
-  // sense for this mouse position.
-  MoveAttached(last_point_in_screen_, true);
+
   browser->window()->Show();
 }
 
