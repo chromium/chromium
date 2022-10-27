@@ -31,10 +31,6 @@
 
 namespace metrics {
 
-BASE_FEATURE(kCWPCollectionOnHostAndGuest,
-             "CWPCollectionOnHostAndGuest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCWPCollectsETM,
              "CWPCollectsETM",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -153,11 +149,6 @@ const char kPerfCommandDelimiter[] = " ";
 
 // Collect precise=3 (:ppp) cycle events on microarchitectures and kernels that
 // support it.
-const char kPerfCyclesPPPCmd[] = "-- record -a -e cycles:ppp -c 1000003";
-
-const char kPerfFPCallgraphPPPCmd[] =
-    "-- record -a -e cycles:ppp -g -c 4000037";
-
 const char kPerfLBRCallgraphPPPCmd[] =
     "-- record -a -e cycles:ppp -c 4000037 --call-graph lbr";
 
@@ -167,11 +158,7 @@ const char kPerfFPCallgraphPPPHGCmd[] =
     "-- record -a -e cycles:pppHG -g -c 4000037";
 
 // Collect default (imprecise) cycle events everywhere else.
-const char kPerfCyclesCmd[] = "-- record -a -e cycles -c 1000003";
-
 const char kPerfCyclesHGCmd[] = "-- record -a -e cycles:HG -c 1000003";
-
-const char kPerfFPCallgraphCmd[] = "-- record -a -e cycles -g -c 4000037";
 
 const char kPerfFPCallgraphHGCmd[] = "-- record -a -e cycles:HG -g -c 4000037";
 
@@ -232,8 +219,8 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   const char* itlb_miss_cycles_cmd = kPerfITLBMissCyclesCmdIvyBridge;
   const char* dtlb_miss_cycles_cmd = kPerfDTLBMissCyclesCmdIvyBridge;
   const char* lbr_cmd = kPerfLBRCmd;
-  const char* cycles_cmd = kPerfCyclesCmd;
-  const char* fp_callgraph_cmd = kPerfFPCallgraphCmd;
+  const char* cycles_cmd = kPerfCyclesHGCmd;
+  const char* fp_callgraph_cmd = kPerfFPCallgraphHGCmd;
   const char* lbr_callgraph_cmd = kPerfLBRCallgraphCmd;
 
   if (cpu_uarch == "Skylake" || cpu_uarch == "Kabylake" ||
@@ -254,23 +241,13 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
     lbr_cmd = kPerfLBRCmdAtom;
   }
-  if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-    cycles_cmd = kPerfCyclesHGCmd;
-    fp_callgraph_cmd = kPerfFPCallgraphHGCmd;
-  }
   if (MicroarchitectureHasCyclesPPPEvent(cpu_uarch)) {
-    fp_callgraph_cmd = kPerfFPCallgraphPPPCmd;
-    if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-      fp_callgraph_cmd = kPerfFPCallgraphPPPHGCmd;
-    }
+    fp_callgraph_cmd = kPerfFPCallgraphPPPHGCmd;
     // Enable precise events for cycles.flat and cycles.lbr only if the kernel
     // has the fix for flushing PEBS on context switch.
     if (KernelReleaseHasPEBSFlushingFix(cpuid.release)) {
-      cycles_cmd = kPerfCyclesPPPCmd;
+      cycles_cmd = kPerfCyclesPPPHGCmd;
       lbr_callgraph_cmd = kPerfLBRCallgraphPPPCmd;
-      if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-        cycles_cmd = kPerfCyclesPPPHGCmd;
-      }
     }
   }
 
@@ -362,22 +339,13 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpuModel(
   std::vector<WeightAndValue> cmds;
   if (cpuid.arch == "x86" ||     // 32-bit x86, or...
       cpuid.arch == "armv7l") {  // ARM32
-    if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-      cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesHGCmd));
-      cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
-    } else {
-      cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesCmd));
-      cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
-    }
+    cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesHGCmd));
+    cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
     return cmds;
   }
 
   // Unknown CPUs
-  if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-    cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesHGCmd));
-  } else {
-    cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesCmd));
-  }
+  cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesHGCmd));
   return cmds;
 }
 

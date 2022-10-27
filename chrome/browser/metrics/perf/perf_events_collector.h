@@ -32,8 +32,6 @@ namespace metrics {
 struct CPUIdentity;
 class WindowedIncognitoObserver;
 
-BASE_DECLARE_FEATURE(kCWPCollectionOnHostAndGuest);
-
 BASE_DECLARE_FEATURE(kCWPCollectsETM);
 
 // Enables collection of perf events profile data. perf aka "perf events" is a
