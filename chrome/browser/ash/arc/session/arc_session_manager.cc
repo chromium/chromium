@@ -44,7 +44,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -1342,9 +1342,9 @@ void ArcSessionManager::StartArc() {
   const auto* demo_session = ash::DemoSession::Get();
   params.is_demo_session = demo_session && demo_session->started();
   if (params.is_demo_session) {
-    DCHECK(demo_session->resources()->resources_component_loaded());
+    DCHECK(demo_session->components()->resources_component_loaded());
     params.demo_session_apps_path =
-        demo_session->resources()->GetDemoAndroidAppsPath();
+        demo_session->components()->GetDemoAndroidAppsPath();
   }
 
   params.management_transition = GetManagementTransition(profile_);

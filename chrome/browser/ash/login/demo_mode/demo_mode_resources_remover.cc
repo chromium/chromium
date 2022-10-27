@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/idle_detector.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -224,7 +224,7 @@ void DemoModeResourcesRemover::AttemptRemoval(RemovalReason reason,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&RemoveDirectory, DemoResources::GetPreInstalledPath()),
+      base::BindOnce(&RemoveDirectory, DemoComponents::GetPreInstalledPath()),
       base::BindOnce(&DemoModeResourcesRemover::OnRemovalDone,
                      weak_ptr_factory_.GetWeakPtr(), reason));
 }

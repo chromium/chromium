@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_RESOURCES_H_
-#define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_RESOURCES_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_COMPONENTS_H_
+#define CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_COMPONENTS_H_
 
 #include <list>
 
@@ -20,7 +20,7 @@ namespace ash {
 // - online demo mode: loads or installs the Demo Mode resources CrOS Component
 // - offline demo mode: loads the pre-installed Offline Demo Mode Resources
 //   image
-class DemoResources {
+class DemoComponents {
  public:
   // The name of the demo mode resources CrOS component.
   static const char kDemoModeResourcesComponentName[];
@@ -32,12 +32,12 @@ class DemoResources {
   // found.
   static base::FilePath GetPreInstalledPath();
 
-  explicit DemoResources(DemoSession::DemoModeConfig config);
+  explicit DemoComponents(DemoSession::DemoModeConfig config);
 
-  DemoResources(const DemoResources&) = delete;
-  DemoResources& operator=(const DemoResources&) = delete;
+  DemoComponents(const DemoComponents&) = delete;
+  DemoComponents& operator=(const DemoComponents&) = delete;
 
-  ~DemoResources();
+  ~DemoComponents();
 
   // Converts a relative path to an absolute path under the demo
   // resources mount. Returns an empty string if the demo resources are
@@ -111,9 +111,9 @@ class DemoResources {
   // List of pending callbacks passed to EnsureLoaded().
   std::list<base::OnceClosure> load_callbacks_;
 
-  base::WeakPtrFactory<DemoResources> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DemoComponents> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_RESOURCES_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_COMPONENTS_H_

@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
@@ -161,7 +161,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     // In demo session, delay starting user session until the demo
     // session resources have been loaded.
     if (demo_session && demo_session->started() &&
-        !demo_session->resources()->resources_component_loaded()) {
+        !demo_session->components()->resources_component_loaded()) {
       demo_session->EnsureResourcesLoaded(
           base::BindOnce(&StartUserSession, user_profile, login_user_id));
       LOG(WARNING) << "Delay demo user session start until demo "

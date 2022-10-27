@@ -37,7 +37,7 @@ struct CountryCodeAndFullNamePair {
   std::u16string country_name;
 };
 
-class DemoResources;
+class DemoComponents;
 
 // Tracks global demo session state, such as whether the demo session has
 // started and the state of demo mode resources.
@@ -185,7 +185,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // custom location, make sure the permissions are set to 555.
   base::FilePath GetDemoAppComponentPath();
 
-  const DemoResources* resources() const { return demo_resources_.get(); }
+  const DemoComponents* components() const { return components_.get(); }
 
  private:
   DemoSession();
@@ -242,7 +242,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // device is offline.
   std::vector<std::string> ignore_pin_policy_offline_apps_;
 
-  std::unique_ptr<DemoResources> demo_resources_;
+  std::unique_ptr<DemoComponents> components_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

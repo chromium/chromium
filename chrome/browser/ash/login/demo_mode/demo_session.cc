@@ -33,7 +33,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -407,9 +407,9 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
-  if (!demo_resources_)
-    demo_resources_ = std::make_unique<DemoResources>(GetDemoConfig());
-  demo_resources_->EnsureResourcesLoaded(std::move(load_callback));
+  if (!components_)
+    components_ = std::make_unique<DemoComponents>(GetDemoConfig());
+  components_->EnsureResourcesLoaded(std::move(load_callback));
 }
 
 // static
@@ -507,7 +507,7 @@ DemoSession::GetSortedCountryCodeAndNamePairList() {
 }
 
 void DemoSession::InstallDemoResources() {
-  DCHECK(demo_resources_->resources_component_loaded());
+  DCHECK(components_->resources_component_loaded());
 
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
@@ -515,8 +515,8 @@ void DemoSession::InstallDemoResources() {
       file_manager::util::GetDownloadsFolderForProfile(profile);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&InstallDemoMedia,
-                     demo_resources_->resources_component_path(), downloads));
+      base::BindOnce(&InstallDemoMedia, components_->resources_component_path(),
+                     downloads));
 }
 
 void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
@@ -674,11 +674,10 @@ void DemoSession::ShowSplashScreen(base::FilePath image_path) {
 
 void DemoSession::ConfigureAndStartSplashScreen() {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
-  base::FilePath localized_image_path =
-      demo_resources_->resources_component_path()
-          .Append(kSplashScreensPath)
-          .Append(current_locale + ".jpg");
-  base::FilePath fallback_path = demo_resources_->resources_component_path()
+  base::FilePath localized_image_path = components_->resources_component_path()
+                                            .Append(kSplashScreensPath)
+                                            .Append(current_locale + ".jpg");
+  base::FilePath fallback_path = components_->resources_component_path()
                                      .Append(kSplashScreensPath)
                                      .Append("en-US.jpg");
   base::ThreadPool::PostTaskAndReplyWithResult(

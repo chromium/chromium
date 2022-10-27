@@ -23,7 +23,7 @@ class EnrollmentStatus;
 }
 
 namespace ash {
-class DemoResources;
+class DemoComponents;
 
 // Controls enrollment flow for setting up Demo Mode.
 class DemoSetupController
@@ -296,7 +296,7 @@ class DemoSetupController
   std::unique_ptr<EnterpriseEnrollmentHelper> enrollment_helper_;
 
   // The Demo Mode Resources CrOS Component downloaded for online Demo Mode.
-  std::unique_ptr<DemoResources> demo_resources_;
+  std::unique_ptr<DemoComponents> demo_components_;
 
   base::WeakPtrFactory<DemoSetupController> weak_ptr_factory_{this};
 };

@@ -14,7 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -120,10 +120,10 @@ void DemoExtensionsExternalLoader::OnExtensionListsUpdated(
 
 void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {
   DemoSession* demo_session = DemoSession::Get();
-  DCHECK(demo_session->resources()->resources_component_loaded());
+  DCHECK(demo_session->components()->resources_component_loaded());
 
   base::FilePath demo_extension_list =
-      demo_session->resources()->GetExternalExtensionsPrefsPath();
+      demo_session->components()->GetExternalExtensionsPrefsPath();
   if (demo_extension_list.empty()) {
     LoadFinished(base::Value::Dict());
     return;
@@ -170,7 +170,7 @@ void DemoExtensionsExternalLoader::DemoExternalExtensionsPrefsLoaded(
 
     value_dict.Set(
         extensions::ExternalProviderImpl::kExternalCrx,
-        demo_session->resources()->GetAbsolutePath(relative_path).value());
+        demo_session->components()->GetAbsolutePath(relative_path).value());
   }
 
   LoadFinished(std::move(prefs).value());

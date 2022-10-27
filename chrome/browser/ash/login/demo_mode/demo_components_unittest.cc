@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -33,16 +33,16 @@ void SetBoolean(bool* value) {
   *value = true;
 }
 
-class DemoResourcesTest : public testing::Test {
+class DemoComponentsTest : public testing::Test {
  public:
-  DemoResourcesTest()
+  DemoComponentsTest()
       : browser_process_platform_part_test_api_(
             g_browser_process->platform_part()) {}
 
-  DemoResourcesTest(const DemoResourcesTest&) = delete;
-  DemoResourcesTest& operator=(const DemoResourcesTest&) = delete;
+  DemoComponentsTest(const DemoComponentsTest&) = delete;
+  DemoComponentsTest& operator=(const DemoComponentsTest&) = delete;
 
-  ~DemoResourcesTest() override = default;
+  ~DemoComponentsTest() override = default;
 
   void SetUp() override { InitializeCrosComponentManager(); }
 
@@ -83,60 +83,60 @@ class DemoResourcesTest : public testing::Test {
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
 };
 
-TEST_F(DemoResourcesTest, GetPaths) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
-  demo_resources.EnsureResourcesLoaded(base::DoNothing());
-  EXPECT_FALSE(demo_resources.resources_component_loaded());
+TEST_F(DemoComponentsTest, GetPaths) {
+  DemoComponents demo_components(DemoSession::DemoModeConfig::kOnline);
+  demo_components.EnsureResourcesLoaded(base::DoNothing());
+  EXPECT_FALSE(demo_components.resources_component_loaded());
 
   const base::FilePath component_mount_point =
       base::FilePath(kTestDemoModeResourcesMountPoint);
   ASSERT_TRUE(FinishComponentLoad(kResourcesComponent, component_mount_point));
 
-  EXPECT_TRUE(demo_resources.resources_component_loaded());
+  EXPECT_TRUE(demo_components.resources_component_loaded());
   EXPECT_EQ(component_mount_point.AppendASCII(kDemoAppsImageFile),
-            demo_resources.GetDemoAndroidAppsPath());
+            demo_components.GetDemoAndroidAppsPath());
   EXPECT_EQ(component_mount_point.AppendASCII(kExternalExtensionsPrefsFile),
-            demo_resources.GetExternalExtensionsPrefsPath());
+            demo_components.GetExternalExtensionsPrefsPath());
   EXPECT_EQ(component_mount_point.AppendASCII("foo.txt"),
-            demo_resources.GetAbsolutePath(base::FilePath("foo.txt")));
+            demo_components.GetAbsolutePath(base::FilePath("foo.txt")));
   EXPECT_EQ(component_mount_point.AppendASCII("foo/bar.txt"),
-            demo_resources.GetAbsolutePath(base::FilePath("foo/bar.txt")));
+            demo_components.GetAbsolutePath(base::FilePath("foo/bar.txt")));
   EXPECT_EQ(component_mount_point.AppendASCII("foo/"),
-            demo_resources.GetAbsolutePath(base::FilePath("foo/")));
+            demo_components.GetAbsolutePath(base::FilePath("foo/")));
   EXPECT_TRUE(
-      demo_resources.GetAbsolutePath(base::FilePath("../foo/")).empty());
+      demo_components.GetAbsolutePath(base::FilePath("../foo/")).empty());
   EXPECT_TRUE(
-      demo_resources.GetAbsolutePath(base::FilePath("foo/../bar")).empty());
+      demo_components.GetAbsolutePath(base::FilePath("foo/../bar")).empty());
 }
 
-TEST_F(DemoResourcesTest, LoadResourcesComponent) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
-  demo_resources.EnsureResourcesLoaded(base::DoNothing());
+TEST_F(DemoComponentsTest, LoadResourcesComponent) {
+  DemoComponents demo_components(DemoSession::DemoModeConfig::kOnline);
+  demo_components.EnsureResourcesLoaded(base::DoNothing());
 
-  EXPECT_FALSE(demo_resources.resources_component_loaded());
+  EXPECT_FALSE(demo_components.resources_component_loaded());
 
   ASSERT_TRUE(FinishComponentLoad(
       kResourcesComponent, base::FilePath(kTestDemoModeResourcesMountPoint)));
   EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
-  EXPECT_TRUE(demo_resources.resources_component_loaded());
+  EXPECT_TRUE(demo_components.resources_component_loaded());
 }
 
-TEST_F(DemoResourcesTest, EnsureResourcesLoadedRepeatedly) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
+TEST_F(DemoComponentsTest, EnsureResourcesLoadedRepeatedly) {
+  DemoComponents demo_components(DemoSession::DemoModeConfig::kOnline);
 
   bool first_callback_called = false;
-  demo_resources.EnsureResourcesLoaded(
+  demo_components.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &first_callback_called));
 
   bool second_callback_called = false;
-  demo_resources.EnsureResourcesLoaded(
+  demo_components.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &second_callback_called));
 
   bool third_callback_called = false;
-  demo_resources.EnsureResourcesLoaded(
+  demo_components.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &third_callback_called));
 
-  EXPECT_FALSE(demo_resources.resources_component_loaded());
+  EXPECT_FALSE(demo_components.resources_component_loaded());
   EXPECT_FALSE(first_callback_called);
   EXPECT_FALSE(second_callback_called);
   EXPECT_FALSE(third_callback_called);
@@ -145,22 +145,22 @@ TEST_F(DemoResourcesTest, EnsureResourcesLoadedRepeatedly) {
       kResourcesComponent, base::FilePath(kTestDemoModeResourcesMountPoint)));
   EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
 
-  EXPECT_TRUE(demo_resources.resources_component_loaded());
+  EXPECT_TRUE(demo_components.resources_component_loaded());
   EXPECT_TRUE(first_callback_called);
   EXPECT_TRUE(second_callback_called);
   EXPECT_TRUE(third_callback_called);
 
   bool fourth_callback_called = false;
-  demo_resources.EnsureResourcesLoaded(
+  demo_components.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &fourth_callback_called));
   EXPECT_TRUE(fourth_callback_called);
 
   bool fifth_callback_called = false;
-  demo_resources.EnsureResourcesLoaded(
+  demo_components.EnsureResourcesLoaded(
       base::BindOnce(&SetBoolean, &fifth_callback_called));
   EXPECT_TRUE(fifth_callback_called);
 
-  EXPECT_TRUE(demo_resources.resources_component_loaded());
+  EXPECT_TRUE(demo_components.resources_component_loaded());
 }
 
 }  // namespace

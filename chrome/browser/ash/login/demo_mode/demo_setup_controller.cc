@@ -19,7 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -506,11 +506,11 @@ void DemoSetupController::LoadDemoResourcesCrOSComponent() {
 
   download_start_time_ = base::TimeTicks::Now();
 
-  if (!demo_resources_)
-    demo_resources_ = std::make_unique<DemoResources>(demo_config_);
+  if (!demo_components_)
+    demo_components_ = std::make_unique<DemoComponents>(demo_config_);
 
   if (DBusThreadManager::Get()->IsUsingFakes()) {
-    demo_resources_->SetCrOSComponentLoadedForTesting(
+    demo_components_->SetCrOSComponentLoadedForTesting(
         base::FilePath(), component_error_for_tests_);
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -520,7 +520,7 @@ void DemoSetupController::LoadDemoResourcesCrOSComponent() {
     return;
   }
 
-  demo_resources_->EnsureResourcesLoaded(
+  demo_components_->EnsureResourcesLoaded(
       base::BindOnce(&DemoSetupController::OnDemoResourcesCrOSComponentLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -534,10 +534,10 @@ void DemoSetupController::OnDemoResourcesCrOSComponentLoaded() {
                                  download_duration);
   SetCurrentSetupStep(DemoSetupStep::kEnrollment);
 
-  if (demo_resources_->resources_component_error().value() !=
+  if (demo_components_->resources_component_error().value() !=
       component_updater::CrOSComponentManager::Error::NONE) {
     SetupFailed(DemoSetupError::CreateFromComponentError(
-        demo_resources_->resources_component_error().value()));
+        demo_components_->resources_component_error().value()));
     return;
   }
 

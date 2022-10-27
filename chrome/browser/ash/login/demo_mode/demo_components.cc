@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/demo_mode/demo_resources.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
@@ -20,7 +20,7 @@ namespace {
 
 // Path relative to the path at which demo resources are loaded that
 // contains image with demo Android apps.
-constexpr base::FilePath::CharType kDemoAppsPath[] =
+constexpr base::FilePath::CharType kDemoAndroidAppsPath[] =
     FILE_PATH_LITERAL("android_demo_apps.squash");
 
 constexpr base::FilePath::CharType kExternalExtensionsPrefsPath[] =
@@ -29,15 +29,15 @@ constexpr base::FilePath::CharType kExternalExtensionsPrefsPath[] =
 }  // namespace
 
 // static
-const char DemoResources::kDemoModeResourcesComponentName[] =
+const char DemoComponents::kDemoModeResourcesComponentName[] =
     "demo-mode-resources";
 
 // static
-const char DemoResources::kOfflineDemoModeResourcesComponentName[] =
+const char DemoComponents::kOfflineDemoModeResourcesComponentName[] =
     "offline-demo-mode-resources";
 
 // static
-base::FilePath DemoResources::GetPreInstalledPath() {
+base::FilePath DemoComponents::GetPreInstalledPath() {
   base::FilePath preinstalled_components_root;
   base::PathService::Get(DIR_PREINSTALLED_COMPONENTS,
                          &preinstalled_components_root);
@@ -45,14 +45,14 @@ base::FilePath DemoResources::GetPreInstalledPath() {
       .AppendASCII(kOfflineDemoModeResourcesComponentName);
 }
 
-DemoResources::DemoResources(DemoSession::DemoModeConfig config)
+DemoComponents::DemoComponents(DemoSession::DemoModeConfig config)
     : config_(config) {
   DCHECK_NE(config_, DemoSession::DemoModeConfig::kNone);
 }
 
-DemoResources::~DemoResources() = default;
+DemoComponents::~DemoComponents() = default;
 
-base::FilePath DemoResources::GetAbsolutePath(
+base::FilePath DemoComponents::GetAbsolutePath(
     const base::FilePath& relative_path) const {
   if (resources_component_path_.empty())
     return base::FilePath();
@@ -61,19 +61,19 @@ base::FilePath DemoResources::GetAbsolutePath(
   return resources_component_path_.Append(relative_path);
 }
 
-base::FilePath DemoResources::GetDemoAndroidAppsPath() const {
+base::FilePath DemoComponents::GetDemoAndroidAppsPath() const {
   if (resources_component_path_.empty())
     return base::FilePath();
-  return resources_component_path_.Append(kDemoAppsPath);
+  return resources_component_path_.Append(kDemoAndroidAppsPath);
 }
 
-base::FilePath DemoResources::GetExternalExtensionsPrefsPath() const {
+base::FilePath DemoComponents::GetExternalExtensionsPrefsPath() const {
   if (resources_component_path_.empty())
     return base::FilePath();
   return resources_component_path_.Append(kExternalExtensionsPrefsPath);
 }
 
-void DemoResources::EnsureResourcesLoaded(base::OnceClosure load_callback) {
+void DemoComponents::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (resources_loaded_) {
     if (load_callback)
       std::move(load_callback).Run();
@@ -97,29 +97,29 @@ void DemoResources::EnsureResourcesLoaded(base::OnceClosure load_callback) {
       kDemoModeResourcesComponentName,
       component_updater::CrOSComponentManager::MountPolicy::kMount,
       component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
-      base::BindOnce(&DemoResources::InstalledComponentLoaded,
+      base::BindOnce(&DemoComponents::InstalledComponentLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DemoResources::SetCrOSComponentLoadedForTesting(
+void DemoComponents::SetCrOSComponentLoadedForTesting(
     const base::FilePath& path,
     component_updater::CrOSComponentManager::Error error) {
   InstalledComponentLoaded(error, path);
 }
 
-void DemoResources::SetPreinstalledOfflineResourcesLoadedForTesting(
+void DemoComponents::SetPreinstalledOfflineResourcesLoadedForTesting(
     const base::FilePath& path) {
   OnDemoResourcesLoaded(path);
 }
 
-void DemoResources::InstalledComponentLoaded(
+void DemoComponents::InstalledComponentLoaded(
     component_updater::CrOSComponentManager::Error error,
     const base::FilePath& path) {
   resources_component_error_ = error;
   OnDemoResourcesLoaded(absl::make_optional(path));
 }
 
-void DemoResources::OnDemoResourcesLoaded(
+void DemoComponents::OnDemoResourcesLoaded(
     absl::optional<base::FilePath> mounted_path) {
   resources_loaded_ = true;
 
