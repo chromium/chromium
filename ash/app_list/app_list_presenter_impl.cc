@@ -810,10 +810,12 @@ void AppListPresenterImpl::OnTabletToClamshellTransitionAnimationDone(
 
   auto* window = view_->GetWidget()->GetNativeWindow();
 
-  if (target_visibility && !aborted)
-    view_->Layout();
-  else if (!window->is_destroying() && !target_visibility)
-    window->Hide();
+  if (!aborted) {
+    if (target_visibility)
+      view_->Layout();
+    else if (!target_visibility && !window->is_destroying())
+      window->Hide();
+  }
 
   controller_->OnStateTransitionAnimationCompleted(view_->app_list_state(),
                                                    aborted);

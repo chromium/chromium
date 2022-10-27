@@ -42,6 +42,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -180,6 +181,31 @@ SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
   }
   return helper->GetSearchBoxView();
 }
+
+// Test observer to verify that `AppListView` / its presenter do not call
+// `OnVisibilityChanged(false)` during **aborted** hide animation.
+class TestAppListControllerObserver : public AppListControllerObserver {
+ public:
+  TestAppListControllerObserver() = default;
+  TestAppListControllerObserver(const TestAppListControllerObserver&) = delete;
+  TestAppListControllerObserver& operator=(
+      const TestAppListControllerObserver&) = delete;
+  ~TestAppListControllerObserver() override {
+    Shell::Get()->app_list_controller()->RemoveObserver(this);
+  }
+
+  void OnAppListVisibilityChanged(bool shown, int64_t display_id) override {
+    if (!shown)
+      ++visibility_changed_to_hidden_times_;
+  }
+
+  int visibility_changed_to_hidden_times() const {
+    return visibility_changed_to_hidden_times_;
+  }
+
+ private:
+  int visibility_changed_to_hidden_times_ = 0;
+};
 
 }  // namespace
 
@@ -4317,5 +4343,41 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   EXPECT_EQ(layer->transform(), initial_transform);
   EXPECT_EQ(layer->GetTargetTransform(), no_transform);
 }
+
+class AppListPresenterAnimationMigrationTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  AppListPresenterAnimationMigrationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        app_list_features::kAnimateScaleOnTabletModeTransition, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AppListPresenterAnimationMigrationTest,
+       AbortedHideAnimationDoesNotChangeVisibility) {
+  // Configure test observer.
+  auto visibility_observer = std::make_unique<TestAppListControllerObserver>();
+  auto* const app_list_controller = Shell::Get()->app_list_controller();
+  app_list_controller->AddObserver(visibility_observer.get());
+
+  // Switch to tablet mode and set normal animation duration.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
+}
+
+// Runs tests for `kAnimateScaleOnTabletModeTransition` enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListPresenterAnimationMigrationTest,
+                         testing::Bool());
 
 }  // namespace ash
