@@ -12,7 +12,9 @@ namespace metal {
 
 void RegisterGracefulExitOnDeviceRemoval() {
   id<NSObject> deviceObserver = nil;
-  MTLCopyAllDevicesWithObserver(
+  // Immediately release the returned devices since we just care about setting
+  // the handler.
+  [MTLCopyAllDevicesWithObserver(
       &deviceObserver, ^(id<MTLDevice> device, MTLDeviceNotificationName name) {
         if (name == MTLDeviceRemovalRequestedNotification ||
             name == MTLDeviceWasRemovedNotification) {
@@ -24,7 +26,7 @@ void RegisterGracefulExitOnDeviceRemoval() {
           // exit the browser), but we don't support that on macOS anyway.
           base::Process::TerminateCurrentProcessImmediately(0);
         }
-      });
+      }) release];
 }
 
 }  // namespace metal
