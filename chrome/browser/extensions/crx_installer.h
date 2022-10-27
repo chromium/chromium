@@ -150,7 +150,8 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // (successfully or not).
   // The added callbacks will be run in the order in which they were added
   // (FIFO).
-  void AddInstallerCallback(InstallerResultCallback callback);
+  // Virtual for testing.
+  virtual void AddInstallerCallback(InstallerResultCallback callback);
 
   int creation_flags() const { return creation_flags_; }
   void set_creation_flags(int val) { creation_flags_ = val; }
@@ -258,10 +259,16 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // invalid if this isn't an update.
   const base::Version& current_version() const { return current_version_; }
 
+ protected:
+  // Run all callbacks received in AddInstallerCallback with the given error.
+  // Protected so that FakeCrxInstaller can expose it.
+  void RunInstallerCallbacks(const absl::optional<CrxInstallError>& error);
+
  private:
   friend class ::ExtensionServiceTest;
   friend class BookmarkAppInstallFinalizerTest;
   friend class ExtensionUpdaterTest;
+  friend class FakeCrxInstaller;
   friend class MockCrxInstaller;
 
   CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
@@ -361,9 +368,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
       scoped_refptr<const Extension> extension,
       SkBitmap install_icon,
       declarative_net_request::RulesetInstallPrefs ruleset_install_prefs);
-
-  // Run all callbacks received in AddInstallerCallback with the given error.
-  void RunInstallerCallbacks(const absl::optional<CrxInstallError>& error);
 
   void set_install_flag(int flag, bool val) {
     if (val)

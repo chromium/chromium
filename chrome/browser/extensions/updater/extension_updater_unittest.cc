@@ -41,6 +41,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
+#include "chrome/browser/extensions/fake_crx_installer.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_service.h"
@@ -1640,6 +1641,12 @@ class ExtensionUpdaterTest : public testing::Test {
         .WillOnce([&mock_installer](const CRXFileInfo& info) {
           return mock_installer->CrxInstaller::InstallCrxFile(info);
         });
+    // Just let the real CrxInstaller implementation have the callback.
+    EXPECT_CALL(*mock_installer, AddInstallerCallback(_))
+        .WillOnce(Invoke([&](CrxInstaller::InstallerResultCallback callback) {
+          mock_installer->CrxInstaller::AddInstallerCallback(
+              std::move(callback));
+        }));
 
     mock_installer->set_expected_id(kTestExtensionId);
     mock_installer->set_expected_hash(hash);
@@ -2047,16 +2054,16 @@ class ExtensionUpdaterTest : public testing::Test {
     ExtensionService* extension_service =
         ExtensionSystem::Get(&profile)->extension_service();
 
-    scoped_refptr<CrxInstaller> mock_crx1 =
-        base::MakeRefCounted<NiceMock<MockCrxInstaller>>(extension_service);
-    scoped_refptr<CrxInstaller> mock_crx2 =
-        base::MakeRefCounted<NiceMock<MockCrxInstaller>>(extension_service);
+    scoped_refptr<FakeCrxInstaller> fake_crx1 =
+        base::MakeRefCounted<FakeCrxInstaller>(extension_service);
+    scoped_refptr<FakeCrxInstaller> fake_crx2 =
+        base::MakeRefCounted<FakeCrxInstaller>(extension_service);
 
     if (updates_start_running) {
       // Add mock CrxInstaller to be returned by
       // service.CreateUpdateInstaller().
-      service.AddFakeCrxInstaller(id1, mock_crx1);
-      service.AddFakeCrxInstaller(id2, mock_crx2);
+      service.AddFakeCrxInstaller(id1, fake_crx1);
+      service.AddFakeCrxInstaller(id2, fake_crx2);
     } else {
       // If we don't add mock CRX installers, the mock service will just return
       // nullptr, meaning a failure.
@@ -2089,13 +2096,13 @@ class ExtensionUpdaterTest : public testing::Test {
                   testing::UnorderedElementsAre(id1, id2));
 
       // Fake install notice.  This should end the first installation.
-      mock_crx1->NotifyCrxInstallComplete(CrxInstallError(
+      fake_crx1->RunInstallerCallbacks(CrxInstallError(
           CrxInstallErrorType::OTHER, CrxInstallErrorDetail::NONE));
       content::RunAllTasksUntilIdle();
       EXPECT_THAT(GetRunningInstallIds(updater),
                   testing::UnorderedElementsAre(id2));
 
-      mock_crx2->NotifyCrxInstallComplete(CrxInstallError(
+      fake_crx2->RunInstallerCallbacks(CrxInstallError(
           CrxInstallErrorType::OTHER, CrxInstallErrorDetail::NONE));
       content::RunAllTasksUntilIdle();
     }

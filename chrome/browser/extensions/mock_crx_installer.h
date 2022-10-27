@@ -17,6 +17,11 @@ class MockCrxInstaller : public CrxInstaller {
 
   MOCK_METHOD(void, InstallCrxFile, (const CRXFileInfo& info), (override));
 
+  MOCK_METHOD(void,
+              AddInstallerCallback,
+              (InstallerResultCallback callback),
+              (override));
+
  protected:
   ~MockCrxInstaller() override;
 };

@@ -15,8 +15,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 namespace extensions {
 
@@ -24,7 +22,6 @@ namespace extensions {
 // runs big app installs one by one. This improves first-time login experience.
 // See http://crbug.com/166296
 class InstallLimiter : public KeyedService,
-                       public content::NotificationObserver,
                        public base::SupportsWeakPtr<InstallLimiter> {
  public:
   static InstallLimiter* Get(Profile* profile);
@@ -63,7 +60,6 @@ class InstallLimiter : public KeyedService,
   };
 
   using DeferredInstallList = base::queue<DeferredInstall>;
-  using CrxInstallerSet = std::set<scoped_refptr<CrxInstaller>>;
 
   // Adds install info with size. If |size| is greater than a certain threshold,
   // it stores the install info into |deferred_installs_| to run it later.
@@ -80,10 +76,8 @@ class InstallLimiter : public KeyedService,
   void RunInstall(const scoped_refptr<CrxInstaller>& installer,
                   const CRXFileInfo& file_info);
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // Called when CrxInstaller::InstallCrx() finishes.
+  void OnInstallerDone(const absl::optional<CrxInstallError>& error);
 
   // Checks that OnAllExternalProvidersReady() has been called and all file
   // sizes for added installations are determined. If this method returns true,
@@ -91,10 +85,9 @@ class InstallLimiter : public KeyedService,
   // will be no more added installations coming.
   bool AllInstallsQueuedWithFileSize() const;
 
-  content::NotificationRegistrar registrar_;
-
   DeferredInstallList deferred_installs_;
-  CrxInstallerSet running_installers_;
+  // Counts how many installs are currently running.
+  uint32_t num_running_installs_ = 0;
 
   // A timer to wait before running deferred big app install.
   base::OneShotTimer wait_timer_;

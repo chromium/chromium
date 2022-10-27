@@ -1387,6 +1387,8 @@ static_library("test_support") {
     "extension_management_test_util.h",
     "external_testing_loader.cc",
     "external_testing_loader.h",
+    "fake_crx_installer.cc",
+    "fake_crx_installer.h",
     "load_error_waiter.cc",
     "load_error_waiter.h",
     "menu_manager_test_observer.cc",

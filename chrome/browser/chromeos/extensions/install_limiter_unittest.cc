@@ -11,14 +11,12 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/common/constants.h"
@@ -27,7 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::CrxInstaller;
+using extensions::CrxInstallError;
 using extensions::InstallLimiter;
+using testing::_;
 using testing::Field;
 using testing::Invoke;
 using testing::Mock;
@@ -107,13 +108,6 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
   InstallLimiterTest& operator=(const InstallLimiterTest&) = delete;
 
   ~InstallLimiterTest() override = default;
-
-  void NotifyCrxInstallerDone() {
-    content::NotificationService::current()->Notify(
-        extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-        content::Source<extensions::MockCrxInstaller>(mock_installer_.get()),
-        content::Details<const extensions::Extension>(nullptr));
-  }
 
  protected:
   void SetUp() override {
@@ -221,20 +215,32 @@ TEST_F(InstallLimiterTest, InstallSmallBeforeLargeExtensions) {
   extensions::CRXFileInfo crx_info_small =
       CreateTestExtensionCrx(crx_path_small, kSmallExtensionSize);
 
+  CrxInstaller::InstallerResultCallback installer_callback;
+
   base::RunLoop run_loop;
 
   // When adding a large extension and then a small extension, the small
   // extension will be installed first. The mock function call will trigger a
-  // CRX_INSTALLER_DONE notification which will notify the install limiter to
+  // installer_callback which will notify the install limiter to
   // continue with any deferred installations. This will then start the
   // installation of the large extension.
   {
     testing::InSequence s;
 
+    EXPECT_CALL(*mock_installer_, AddInstallerCallback(_))
+        .WillOnce(Invoke([&](CrxInstaller::InstallerResultCallback callback) {
+          installer_callback = std::move(callback);
+        }));
     EXPECT_CALL(
         *mock_installer_,
         InstallCrxFile(Field(&extensions::CRXFileInfo::path, crx_path_small)))
-        .WillOnce(Invoke(this, &InstallLimiterTest::NotifyCrxInstallerDone));
+        .WillOnce(Invoke([&] {
+          absl::optional<CrxInstallError> error;
+          task_environment()->GetMainThreadTaskRunner()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(installer_callback), error));
+        }));
+
+    EXPECT_CALL(*mock_installer_, AddInstallerCallback(_));
     EXPECT_CALL(
         *mock_installer_,
         InstallCrxFile(Field(&extensions::CRXFileInfo::path, crx_path_large)))
