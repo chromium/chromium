@@ -7,6 +7,12 @@
 #import <Foundation/Foundation.h>
 #include <type_traits>
 
+#include "base/check.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
+#include "components/version_info/version_info.h"
+#include "mojo/core/embedder/embedder.h"
+
 namespace app_mode {
 
 const char kAppShimBootstrapNameFragment[] = "apps";
@@ -74,8 +80,39 @@ static_assert(
         offsetof(ChromeAppModeInfo, app_mode_name) == 0x30 &&
         offsetof(ChromeAppModeInfo, app_mode_url) == 0x38 &&
         offsetof(ChromeAppModeInfo, user_data_dir) == 0x40 &&
-        offsetof(ChromeAppModeInfo, profile_dir) == 0x48,
+        offsetof(ChromeAppModeInfo, profile_dir) == 0x48 &&
+        offsetof(ChromeAppModeInfo, mojo_ipcz_config) == 0x50,
     "ChromeAppModeInfo layout has changed; bump the APP_SHIM_VERSION_NUMBER "
     "in chrome/common/mac/app_mode_common.h. (And fix this static_assert.)");
+
+// static
+ChromeConnectionConfig ChromeConnectionConfig::GenerateForCurrentProcess() {
+  return {
+      .framework_version = version_info::GetVersionNumber(),
+      .is_mojo_ipcz_enabled = mojo::core::IsMojoIpczEnabled(),
+  };
+}
+
+base::FilePath ChromeConnectionConfig::EncodeAsPath() const {
+  return base::FilePath(
+      base::StrCat({framework_version, ":", is_mojo_ipcz_enabled ? "1" : "0"}));
+}
+
+// static
+ChromeConnectionConfig ChromeConnectionConfig::DecodeFromPath(
+    const base::FilePath& path) {
+  DCHECK(!path.empty());
+  const std::vector<std::string> parts = base::SplitString(
+      path.value(), ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  DCHECK(!parts.empty());
+  if (parts.size() == 1) {
+    // Assume MojoIpcz is disabled for path values which predate the
+    // introduction of the MojoIpcz bit.
+    return {.framework_version = parts[0], .is_mojo_ipcz_enabled = false};
+  }
+
+  return {.framework_version = parts[0],
+          .is_mojo_ipcz_enabled = parts[1] == "1"};
+}
 
 }  // namespace app_mode

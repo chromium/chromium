@@ -21,6 +21,7 @@
 #include "mojo/core/entrypoints.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/base_shared_memory_service.h"
+#include "mojo/core/ipcz_driver/driver.h"
 #include "mojo/core/ipcz_driver/transport.h"
 #include "mojo/core/node_controller.h"
 #include "mojo/public/c/system/thunks.h"
@@ -141,7 +142,32 @@ bool IsMojoIpczEnabled() {
 
 void InstallMojoIpczBaseSharedMemoryHooks() {
   DCHECK(IsMojoIpczEnabled());
-  mojo::core::ipcz_driver::BaseSharedMemoryService::InstallHooks();
+  ipcz_driver::BaseSharedMemoryService::InstallHooks();
+}
+
+const IpczAPI& GetIpczAPIForMojo() {
+  return GetIpczAPI();
+}
+
+const IpczDriver& GetIpczDriverForMojo() {
+  return ipcz_driver::kDriver;
+}
+
+IpczDriverHandle CreateIpczTransportFromEndpoint(
+    mojo::PlatformChannelEndpoint endpoint,
+    const TransportEndpointTypes& endpoint_types,
+    base::Process remote_process) {
+  auto transport = ipcz_driver::Transport::Create(
+      {
+          .source = endpoint_types.local_is_broker
+                        ? ipcz_driver::Transport::kBroker
+                        : ipcz_driver::Transport::kNonBroker,
+          .destination = endpoint_types.remote_is_broker
+                             ? ipcz_driver::Transport::kBroker
+                             : ipcz_driver::Transport::kNonBroker,
+      },
+      std::move(endpoint), std::move(remote_process));
+  return ipcz_driver::ObjectBase::ReleaseAsHandle(std::move(transport));
 }
 
 }  // namespace core

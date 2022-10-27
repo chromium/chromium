@@ -2642,6 +2642,8 @@ if (!is_android) {
         "//chrome/browser/renderer_host:history_swiper",
         "//components/onc",
         "//components/remote_cocoa/app_shim",
+        "//mojo/core/embedder",
+        "//third_party/ipcz/src:ipcz_chromium",
         "//third_party/ocmock",
         "//ui/accelerated_widget_mac",
       ]

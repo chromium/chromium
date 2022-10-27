@@ -12,9 +12,11 @@
 
 #include "base/allocator/early_zone_registration_mac.h"
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/bundle_locations.h"
@@ -34,6 +36,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "components/crash/core/app/crashpad.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/core/embedder/features.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -132,6 +135,27 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     io_thread_options.message_pump_type = base::MessagePumpType::IO;
     base::Thread* io_thread = new base::Thread("CrAppShimIO");
     io_thread->StartWithOptions(std::move(io_thread_options));
+
+    // It's necessary to initialize a FeatureList and call Mojo's InitFeatures()
+    // to ensure we're using the same IPC implementation as the browser.
+    auto feature_list = std::make_unique<base::FeatureList>();
+    if (info->mojo_ipcz_config ==
+        app_mode::MojoIpczConfig::kUseCommandLineFeatures) {
+      const auto& command_line = *base::CommandLine::ForCurrentProcess();
+      feature_list->InitializeFromCommandLine(
+          command_line.GetSwitchValueASCII(switches::kEnableFeatures),
+          command_line.GetSwitchValueASCII(switches::kDisableFeatures));
+
+    } else {
+      const bool mojo_ipcz_enabled =
+          info->mojo_ipcz_config == app_mode::MojoIpczConfig::kEnabled;
+      feature_list->RegisterExtraFeatureOverrides(
+          {{mojo::core::kMojoIpcz,
+            mojo_ipcz_enabled ? base::FeatureList::OVERRIDE_ENABLE_FEATURE
+                              : base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
+    }
+    base::FeatureList::SetInstance(std::move(feature_list));
+    mojo::core::InitFeatures();
 
     // We're using an isolated Mojo connection between the browser and this
     // process, so this process must act as a broker.

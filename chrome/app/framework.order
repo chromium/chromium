@@ -19,7 +19,7 @@
 ___asan_default_options
 
 # Entry point from the app mode loader.
-_ChromeAppModeStart_v6
+_ChromeAppModeStart_v7
 
 # _ChromeMain must be listed last.  That's the whole point of this file.
 _ChromeMain
