@@ -764,8 +764,6 @@ def _make_blink_api_call(code_node,
         expr = "\n".join([
             # GCC extension: a compound statement enclosed in parentheses
             "({",
-            "ThreadState::NoAllocationScope nadc_no_allocation_scope"
-            "(ThreadState::Current());",
             "v8::Isolate::DisallowJavascriptExecutionScope "
             "nadc_disallow_js_exec_scope"
             "(${isolate}, "
@@ -775,10 +773,6 @@ def _make_blink_api_call(code_node,
             _format("{};", expr),
             "})",
         ])
-        code_node.accumulate(
-            CodeGenAccumulator.require_include_headers([
-                "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
-            ]))
     return expr
 
 
@@ -2520,16 +2514,10 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
     bind_callback_local_vars(body, cg_context)
 
     body.extend([
-        T("ThreadState::NoAllocationScope "
-          "thread_no_alloc_scope(ThreadState::Current());"),
         T("blink::NoAllocDirectCallScope no_alloc_direct_call_scope("
           "${blink_receiver}, &${v8_arg_callback_options});"),
         EmptyNode(),
     ])
-    body.accumulate(
-        CodeGenAccumulator.require_include_headers([
-            "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
-        ]))
 
     blink_arguments = list(
         map(lambda arg: "${{{}}}".format(arg.blink_arg_name), arg_list))

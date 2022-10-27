@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
+
+NoAllocDirectCallHost::NoAllocDirectCallHost()
+    : heap_handle_(ThreadState::Current()->cpp_heap().GetHeapHandle()) {}
 
 void NoAllocDirectCallHost::PostDeferrableAction(DeferrableAction&& action) {
   if (IsInFastMode()) {
