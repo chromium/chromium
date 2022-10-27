@@ -428,18 +428,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
         pixel_tests_results_dict, pixel_tests_ret = self._run_pixel_tests()
         ret |= pixel_tests_ret
 
-    final_logcat_path = os.path.join(isolate_root_dir,
-                                     self.layout_test_results_subdir,
-                                     logcat_filename)
-
-    os.makedirs(os.path.dirname(final_logcat_path), exist_ok=True)
-    shutil.move(os.path.join(isolate_root_dir, logcat_filename),
-                final_logcat_path)
-
     seed_loaded_result_dict = {'num_failures_by_type': {}, 'tests': {}}
-    if check_seed_loaded:
-      # Check in the logcat if the seed was loaded
-      ret |= self._finch_seed_loaded(final_logcat_path, seed_loaded_result_dict)
 
     test_harness_results_dict = {'num_failures_by_type': {}, 'tests': {}}
     # If wpt tests are not run then the file path stored in self.wpt_output
@@ -456,6 +445,16 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                                                test_run_variation}
       with open(self.wpt_output, 'w+') as test_results_file:
         json.dump(test_harness_results_dict, test_results_file)
+
+    final_logcat_path = os.path.join(isolate_root_dir,
+                                     self.layout_test_results_subdir,
+                                     logcat_filename)
+    os.makedirs(os.path.dirname(final_logcat_path), exist_ok=True)
+    shutil.move(os.path.join(isolate_root_dir, logcat_filename),
+                final_logcat_path)
+    if check_seed_loaded:
+      # Check in the logcat if the seed was loaded
+      ret |= self._finch_seed_loaded(final_logcat_path, seed_loaded_result_dict)
 
     for test_results_dict in (test_harness_results_dict,
                               pixel_tests_results_dict,
