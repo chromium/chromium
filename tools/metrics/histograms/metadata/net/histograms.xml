@@ -3637,6 +3637,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.ReceivedSettings.EnableExtendedConnect"
+    enum="Boolean" expires_after="2023-05-11">
+  <owner>momoka@google.com</owner>
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The value of the SETTINGS_ENABLE_CONNECT_PROTOCOL parameter received on an
+    HTTP/3 connection, if the parameter is not present log false.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.ReceivedSettings.MaxHeaderListSize2"
     units="bytes" expires_after="2023-05-11">
   <owner>dschinazi@chromium.org</owner>
