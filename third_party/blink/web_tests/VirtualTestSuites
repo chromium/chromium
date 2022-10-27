@@ -285,6 +285,13 @@
     "args": ["--disable-features=SchemefulSameSite"]
   },
   {
+    "prefix": "dark-mode-classifier-transparency-and-num-colors",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["dark-mode/images"],
+    "args": ["--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
+             "--dark-mode-settings=ImageClassifierPolicy=1"]
+  },
+  {
     "prefix": "dark-mode-default",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/colors",

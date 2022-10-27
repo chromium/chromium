@@ -680,6 +680,9 @@ const FeatureEntry::FeatureParam kForceDark_SelectiveGeneralInversion[] = {
     {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
+const FeatureEntry::FeatureParam kForceDark_TransparencyAndNumColors[] = {
+    {"classifier_policy", "transparency_and_num_colors"}};
+
 const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with simple HSL-based inversion", kForceDark_SimpleHsl,
      std::size(kForceDark_SimpleHsl), nullptr},
@@ -694,7 +697,11 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      std::size(kForceDark_SelectiveElementInversion), nullptr},
     {"with selective inversion of everything",
      kForceDark_SelectiveGeneralInversion,
-     std::size(kForceDark_SelectiveGeneralInversion), nullptr}};
+     std::size(kForceDark_SelectiveGeneralInversion), nullptr},
+    {"with selective image inversion based on transparency and number of "
+     "colors",
+     kForceDark_TransparencyAndNumColors,
+     std::size(kForceDark_TransparencyAndNumColors), nullptr}};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 const FeatureEntry::FeatureParam kMBIModeLegacy[] = {{"mode", "legacy"}};

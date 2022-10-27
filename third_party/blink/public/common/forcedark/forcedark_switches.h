@@ -39,6 +39,19 @@ enum class ForceDarkImageBehavior {
   kInvertSelectively
 };
 
+// Specifies the classifier used to determine which images to invert, when
+// ForceDarkImageBehavior is |kInvertSelectively|
+enum class ForceDarkImageClassifier {
+  // Same as ForceDarkInversionMethod::kUseBlinkSettings above.
+  kUseBlinkSettings,
+
+  // See DarkModeImageClassifierPolicy::kNumColorsWithMlFallback.
+  kNumColorsWithMlFallback,
+
+  // See DarkModeImageClassifierPolicy::kTransparencyAndNumColors.
+  kTransparencyAndNumColors
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FORCEDARK_FORCEDARK_SWITCHES_H_

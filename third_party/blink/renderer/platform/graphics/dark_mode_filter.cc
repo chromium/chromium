@@ -130,7 +130,8 @@ DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
       DarkModeColorClassifier::MakeForegroundColorClassifier(settings);
   background_classifier =
       DarkModeColorClassifier::MakeBackgroundColorClassifier(settings);
-  image_classifier = std::make_unique<DarkModeImageClassifier>();
+  image_classifier = std::make_unique<DarkModeImageClassifier>(
+      settings.image_classifier_policy);
 }
 
 DarkModeImagePolicy DarkModeFilter::GetDarkModeImagePolicy() const {

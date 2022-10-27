@@ -8,6 +8,7 @@
 
 #include "base/memory/singleton.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -36,7 +37,9 @@ const float kMinOpaquePixelPercentageForForeground = 0.2;
 
 }  // namespace
 
-DarkModeImageClassifier::DarkModeImageClassifier() = default;
+DarkModeImageClassifier::DarkModeImageClassifier(
+    DarkModeImageClassifierPolicy image_classifier_policy)
+    : image_classifier_policy_(image_classifier_policy) {}
 
 DarkModeImageClassifier::~DarkModeImageClassifier() = default;
 
@@ -229,6 +232,17 @@ float DarkModeImageClassifier::ComputeColorBucketsRatio(
 
 DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
     const Features& features) const {
+  if (image_classifier_policy_ ==
+      DarkModeImageClassifierPolicy::kTransparencyAndNumColors) {
+    return (features.transparency_ratio > 0 &&
+            features.color_buckets_ratio < static_cast<float>(0.5))
+               ? DarkModeResult::kApplyFilter
+               : DarkModeResult::kDoNotApplyFilter;
+  }
+
+  DCHECK(image_classifier_policy_ ==
+         DarkModeImageClassifierPolicy::kNumColorsWithMlFallback);
+
   DarkModeResult result = ClassifyUsingDecisionTree(features);
 
   // If decision tree cannot decide, we use a neural network to decide whether
