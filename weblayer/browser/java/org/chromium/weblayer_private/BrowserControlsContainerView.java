@@ -221,13 +221,6 @@ class BrowserControlsContainerView extends FrameLayout {
                                         0, top);
                             }
                         }
-
-                        @Override
-                        public void setCurrentDragEventOffsets(float dx, float dy) {
-                            if (mWebContents != null) {
-                                mWebContents.getEventForwarder().setDragDispatchingOffset(dx, dy);
-                            }
-                        };
                     });
         }
         return mEventOffsetHandler;
