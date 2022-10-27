@@ -840,6 +840,8 @@ void AppMenu::Init(ui::MenuModel* model) {
 
 void AppMenu::RunMenu(views::MenuButtonController* host) {
   base::RecordAction(UserMetricsAction("ShowAppMenu"));
+  UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
+                            LIMIT_MENU_ACTION);
 
   menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
                           host->button()->GetAnchorBoundsInScreen(),

@@ -108064,6 +108064,7 @@ Called by update_scheduler_enums.py.-->
   <int value="53" label="Show tips for Chrome"/>
   <int value="54" label="Show Chrome What's New"/>
   <int value="55" label="Trigger Lacros data migration"/>
+  <int value="56" label="Menu opened"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">
