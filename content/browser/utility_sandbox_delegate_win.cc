@@ -63,6 +63,18 @@ bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
                                  sandbox::USER_RESTRICTED_NON_ADMIN);
   if (result != sandbox::SBOX_ALL_OK)
     return false;
+
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kChromePipeLockdown)) {
+    // The Audio Service process uses a base::SyncSocket for transmitting audio
+    // data.
+    result = config->AddRule(sandbox::SubSystem::kNamedPipes,
+                             sandbox::Semantics::kNamedPipesAllowAny,
+                             L"\\\\.\\pipe\\chrome.sync.*");
+    if (result != sandbox::SBOX_ALL_OK)
+      return false;
+  }
+
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   return true;

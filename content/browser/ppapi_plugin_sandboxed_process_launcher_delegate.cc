@@ -11,6 +11,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -48,6 +49,11 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
   flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
   if (sandbox::SBOX_ALL_OK != config->SetDelayedProcessMitigations(flags))
     return false;
+
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kChromePipeLockdown)) {
+    return true;
+  }
 
   result = config->AddRule(sandbox::SubSystem::kNamedPipes,
                            sandbox::Semantics::kNamedPipesAllowAny,

@@ -66,9 +66,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/win/windows_version.h"
-#include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 #endif
 
@@ -886,27 +883,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(0, host_destructions_);
 }
-
-#if BUILDFLAG(IS_WIN)
-// Test class instance to run specific setup steps for renderer app container.
-class RendererAppContainerRenderProcessHostTest : public RenderProcessHostTest {
- public:
-  RendererAppContainerRenderProcessHostTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        sandbox::policy::features::kRendererAppContainer, true);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(RendererAppContainerRenderProcessHostTest, Navigate) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("foo.com", "/title1.html")));
-}
-
-#endif  // BUILDFLAG(IS_WIN)
 
 // Test class instance to run specific setup steps for capture streams.
 class CaptureStreamRenderProcessHostTest : public RenderProcessHostTest {

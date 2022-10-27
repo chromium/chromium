@@ -50,6 +50,15 @@ BASE_FEATURE(kRendererAppContainer,
 BASE_FEATURE(kSharedSandboxPolicies,
              "SharedSandboxPolicies",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Emergency "off switch" for pipe security changes, which apply more
+// restrictions to sandboxed processes from opening or creating pipes. This
+// feature can be removed around the M112 timeline. See
+// https://crbug.com/1378724.
+BASE_FEATURE(kChromePipeLockdown,
+             "ChromePipeLockdown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

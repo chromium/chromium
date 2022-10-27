@@ -324,21 +324,24 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   ResultCode result;
 
-  // Add the policy for the client side of a pipe. It is just a file
-  // in the \pipe\ namespace. We restrict it to pipes that start with
-  // "chrome." so the sandboxed process cannot connect to system services.
-  result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
-                           L"\\??\\pipe\\chrome.*");
-  if (result != SBOX_ALL_OK)
-    return result;
+  if (!base::FeatureList::IsEnabled(
+          sandbox::policy::features::kChromePipeLockdown)) {
+    // Add the policy for the client side of a pipe. It is just a file
+    // in the \pipe\ namespace. We restrict it to pipes that start with
+    // "chrome." so the sandboxed process cannot connect to system services.
+    result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
+                             L"\\??\\pipe\\chrome.*");
+    if (result != SBOX_ALL_OK)
+      return result;
 
-  // Allow the server side of sync sockets, which are pipes that have
-  // the "chrome.sync" namespace and a randomly generated suffix.
-  result =
-      config->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
-                      L"\\\\.\\pipe\\chrome.sync.*");
-  if (result != SBOX_ALL_OK)
-    return result;
+    // Allow the server side of sync sockets, which are pipes that have
+    // the "chrome.sync" namespace and a randomly generated suffix.
+    result =
+        config->AddRule(SubSystem::kNamedPipes, Semantics::kNamedPipesAllowAny,
+                        L"\\\\.\\pipe\\chrome.sync.*");
+    if (result != SBOX_ALL_OK)
+      return result;
+  }
 
 // Add the policy for read-only PDB file access for stack traces.
 #if !defined(OFFICIAL_BUILD)
