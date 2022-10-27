@@ -561,7 +561,11 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
 }
 
 void OverviewController::ResetPauser() {
+  if (overview_session_)
+    overview_session_->set_ignore_activations(true);
   occlusion_tracker_pauser_.reset();
+  if (overview_session_)
+    overview_session_->set_ignore_activations(false);
 }
 
 void OverviewController::UpdateRoundedCornersAndShadow() {
