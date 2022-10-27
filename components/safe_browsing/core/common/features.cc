@@ -56,7 +56,7 @@ BASE_FEATURE(kConnectorsScanningReportOnlyUI,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCreateSafebrowsingOnStartup,
              "CreateSafebrowsingOnStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDelayedWarnings,

@@ -673,7 +673,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sConditionalTabStripAndroid =
             new CachedFlag(CONDITIONAL_TAB_STRIP_ANDROID, false);
     public static final CachedFlag sCreateSafebrowsingOnStartup =
-            new CachedFlag(CREATE_SAFEBROWSING_ON_STARTUP, false);
+            new CachedFlag(CREATE_SAFEBROWSING_ON_STARTUP, true);
     public static final CachedFlag sCriticalPersistedTabData =
             new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
     public static final CachedFlag sDiscardOccludedBitmaps =
