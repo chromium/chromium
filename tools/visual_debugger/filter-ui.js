@@ -209,8 +209,10 @@ function createFilterChip(filter) {
   });
 
   const check = chip.querySelector('input');
+  check.checked = filter.enabled;
   check.addEventListener('change', () => {
     filter.enabled = !!check.checked;
+    locallyStoreFilters();
     Player.instance.refresh();
     Filter.sendStreamFilters();
   });
@@ -222,7 +224,8 @@ function showCreateFilterPopup(anchor) {
   const filterUi = document.createElement('filter-ui');
   filterUi.addEventListener('saveFilter', (event) => {
     if (event.detail.selector && event.detail.action) {
-      const filter = new Filter(event.detail.selector, event.detail.action);
+      const filter =
+        new Filter(true, event.detail.selector, event.detail.action);
       const chip = createFilterChip(filter);
       const list = document.querySelector('#filters');
       list.appendChild(chip);
@@ -263,9 +266,7 @@ function refreshFilterSet() {
     }
   }
   locallyStoreFilters();
-
   Player.instance.refresh();
-
   Filter.sendStreamFilters();
 }
 
@@ -297,9 +298,9 @@ function moveNext(item) {
   refreshFilterSet();
 }
 
-function createFilterComplete(selector, action, index) {
+function createFilterComplete(enabled, selector, action, index) {
   var newFilter =
-    new Filter(selector, action, index);
+    new Filter(enabled, selector, action, index);
   const newChip = createFilterChip(newFilter);
   const list = document.querySelector('#filters');
   list.appendChild(newChip);
@@ -365,6 +366,7 @@ function locallyStoreFilters() {
 // Restores filter instances from local storage.
 function restoreFilters() {
   const retrievedFilterString = localStorage.getItem('filterInstances');
+  console.log(" Filter string=" + retrievedFilterString);
   // Add default filters to the instances list.
   FilterUIDefault.initialize();
 
@@ -381,7 +383,8 @@ function restoreFilters() {
   // Re-create non-default filter chips from local storage.
   // Pre-existing filters are appended behind the default ones.
   retrievedFilterInstances.forEach((instance) =>
-    createFilterComplete(instance.selector_, instance.action_));
+    createFilterComplete(instance.enabled_,
+      instance.selector_, instance.action_));
 }
 
 // Checks if one filter is a duplicate of another.
@@ -416,19 +419,38 @@ function isDuplicate(filter1, filter2) {
 const defaultFilters = [
     {
       selector_: { filename: "", func: "", anno: "frame.root.quad" },
-      action_: { skipDraw: false, color: '#000000', alpha: "10" }
+      action_: { skipDraw: false, color: '#000000', alpha: "10" },
+      enabled_: true
     },
     {
       selector_: { filename: "", func: "", anno: "frame.root.damage" },
-      action_: { skipDraw: false, color: '#FF0000', alpha: "20" }
+      action_: { skipDraw: false, color: '#FF0000', alpha: "20" },
+      enabled_: true
+    },
+    {
+      selector_: { filename: "", func: "", anno: "overlay.selected.rect" },
+      action_: { skipDraw: false, color: '#22FF22', alpha: "20" },
+      enabled_: true
+    },
+    {
+      selector_: { filename: "", func: "", anno: "overlay.outgoing.damage" },
+      action_: { skipDraw: false, color: '#AA00AA', alpha: "20" },
+      enabled_: true
+    },
+    {
+      selector_: { filename: "", func: "", anno: "frame.root.material" },
+      action_: { skipDraw: false },
+      enabled_: false
     }
 ];
+
 
 // Default filters should probably load off disk.
 const FilterUIDefault = {
   initialize() {
     defaultFilters.forEach((instance) =>
-      createFilterComplete(instance.selector_, instance.action_))
+      createFilterComplete(instance.enabled_,
+                 instance.selector_, instance.action_))
   }
 };
 

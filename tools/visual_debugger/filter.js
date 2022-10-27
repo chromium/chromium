@@ -151,15 +151,13 @@ class DrawCall {
 class Filter {
   static instances = [];
 
-  constructor(selector, action, index) {
+  constructor(enabled, selector, action, index) {
     this.selector_ = {
       filename: selector.filename,
       func: selector.func,
       anno: selector.anno,
     };
 
-    console.log(selector);
-    console.log(action);
     // XXX: If there are multiple selectors that apply to the same draw, then
     // I guess the newest filter will take effect.
     this.action_ = {
@@ -168,8 +166,7 @@ class Filter {
       alpha: action.alpha,
     };
 
-    // Enabled by default.
-    this.enabled_ = true;
+    this.enabled_ = enabled;
 
     if (index === undefined) {
       Filter.instances.push(this);
