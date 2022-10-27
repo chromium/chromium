@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/break_iterator.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -1796,18 +1797,18 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   page_node->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
                                 child_tree_id.ToString());
 
-  const auto removed_image_iter = ranges::remove_if(
-      nodes_,
-      [&image_node_id](const auto& node) { return node->id == image_node_id; });
-  DCHECK(removed_image_iter != ranges::end(nodes_));
+  int num_erased = base::EraseIf(nodes_, [&image_node_id](const auto& node) {
+    return node->id == image_node_id;
+  });
+  DCHECK_EQ(num_erased, 1);
   const auto parent_node_iter =
       ranges::find_if(nodes_, [&parent_node_id](const auto& node) {
         return node->id == parent_node_id;
       });
   DCHECK(parent_node_iter != ranges::end(nodes_));
-  const auto removed_child_iter =
-      ranges::remove((*parent_node_iter)->child_ids, image_node_id);
-  DCHECK(removed_child_iter != ranges::end((*parent_node_iter)->child_ids));
+  num_erased = base::Erase((*parent_node_iter)->child_ids, image_node_id);
+  DCHECK_EQ(num_erased, 1);
+  (*parent_node_iter)->child_ids.push_back(page_node->id);
 
   update.node_id_to_clear = image_node_id;
   update.root_id = doc_node_->id;
@@ -1816,7 +1817,7 @@ void PdfAccessibilityTree::OnOcrDataReceived(
 
   if (!tree_.Unserialize(update))
     LOG(FATAL) << tree_.error();
-  render_accessibility->OnPluginRootNodeUpdated();
+  render_accessibility->SetPluginTreeSource(this);
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
