@@ -42,7 +42,7 @@ void MetricTestInitializationHelper::SetUpDelayedInitialization() {
   device_state_->RequestDevicePolicyUpdate();
   run_loop_->Run();
   mock_task_runner_->task_runner()->FastForwardBy(
-      ::reporting::metrics::kInitDelay);
+      ::reporting::metrics::InitDelayParam::Get());
   browser_policy_manager->core()->RemoveObserver(this);
   // Destroy the mock task runner. The test can create its own
   // ScopedMockTimeMessageLoopTaskRunner if it requires further time control.
