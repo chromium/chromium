@@ -2754,9 +2754,6 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   LayoutObject* layout_object = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(layout_object);
   NGBlockNode node = NGBlockNode(To<LayoutBox>(layout_object));
-  scoped_refptr<ComputedStyle> style =
-      ComputedStyle::Clone(layout_object->StyleRef());
-  layout_object->SetStyle(style);
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
@@ -2770,23 +2767,32 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   // (which is the only thing resembling spec that we currently have); in
   // particular, if column-width is non-auto, we ignore column-count for min
   // inline-size, and also clamp it down to the specified column-width.
-  style->SetColumnCount(3);
-  style->SetColumnWidth(80);
+  ComputedStyleBuilder builder(layout_object->StyleRef());
+  builder.SetColumnCount(3);
+  builder.SetColumnWidth(80);
+  layout_object->SetStyle(builder.TakeStyle(),
+                          LayoutObject::ApplyStyleChanges::kNo);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(50), sizes->min_size);
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
   // Only column-count set.
-  style->SetHasAutoColumnWidth();
+  builder = ComputedStyleBuilder(layout_object->StyleRef());
+  builder.SetHasAutoColumnWidth();
+  layout_object->SetStyle(builder.TakeStyle(),
+                          LayoutObject::ApplyStyleChanges::kNo);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(170), sizes->min_size);
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
   // Only column-width set.
-  style->SetColumnWidth(80);
-  style->SetHasAutoColumnCount();
+  builder = ComputedStyleBuilder(layout_object->StyleRef());
+  builder.SetColumnWidth(80);
+  builder.SetHasAutoColumnCount();
+  layout_object->SetStyle(builder.TakeStyle(),
+                          LayoutObject::ApplyStyleChanges::kNo);
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(50), sizes->min_size);

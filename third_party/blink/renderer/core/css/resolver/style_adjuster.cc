@@ -802,27 +802,26 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style,
     style.ClearBackgroundImage();
 }
 
-void StyleAdjuster::AdjustForSVGTextElement(ComputedStyle& style,
-                                            ComputedStyleBuilder& builder) {
-  style.SetColumnGap(ComputedStyleInitialValues::InitialColumnGap());
-  style.SetColumnWidthInternal(
+void StyleAdjuster::AdjustForSVGTextElement(ComputedStyleBuilder& builder) {
+  builder.SetColumnGap(ComputedStyleInitialValues::InitialColumnGap());
+  builder.SetColumnWidthInternal(
       ComputedStyleInitialValues::InitialColumnWidth());
-  style.SetColumnRuleStyle(
+  builder.SetColumnRuleStyle(
       ComputedStyleInitialValues::InitialColumnRuleStyle());
-  style.SetColumnRuleWidthInternal(
+  builder.SetColumnRuleWidthInternal(
       LayoutUnit(ComputedStyleInitialValues::InitialColumnRuleWidth()));
   builder.SetColumnRuleColor(
       ComputedStyleInitialValues::InitialColumnRuleColor());
   builder.SetInternalVisitedColumnRuleColor(
       ComputedStyleInitialValues::InitialInternalVisitedColumnRuleColor());
-  style.SetColumnCountInternal(
+  builder.SetColumnCountInternal(
       ComputedStyleInitialValues::InitialColumnCount());
-  style.SetHasAutoColumnCountInternal(
+  builder.SetHasAutoColumnCountInternal(
       ComputedStyleInitialValues::InitialHasAutoColumnCount());
-  style.SetHasAutoColumnWidthInternal(
+  builder.SetHasAutoColumnWidthInternal(
       ComputedStyleInitialValues::InitialHasAutoColumnWidth());
-  style.ResetColumnFill();
-  style.ResetColumnSpan();
+  builder.ResetColumnFill();
+  builder.ResetColumnSpan();
 }
 
 void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
@@ -1000,7 +999,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     // Columns don't apply to svg text elements.
     if (IsA<SVGTextElement>(*element))
-      AdjustForSVGTextElement(style, builder);
+      AdjustForSVGTextElement(builder);
 
     // Copy DominantBaseline to CssDominantBaseline without 'no-change',
     // 'reset-size', and 'use-script'.

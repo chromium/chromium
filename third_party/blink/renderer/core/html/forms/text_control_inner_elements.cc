@@ -159,13 +159,13 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   // LayoutTextControl::StyleDidChange.
   text_block_style->SetDirection(start_style.Direction());
   text_block_style->SetUnicodeBidi(start_style.GetUnicodeBidi());
-  text_block_style->SetUserSelect(EUserSelect::kText);
+  text_block_style_builder.SetUserSelect(EUserSelect::kText);
   text_block_style->SetUserModify(
       To<HTMLFormControlElement>(host)->IsDisabledOrReadOnly()
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);
   text_block_style->SetDisplay(EDisplay::kBlock);
-  text_block_style->SetHasLineIfEmpty(true);
+  text_block_style_builder.SetHasLineIfEmpty(true);
   text_block_style->SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
 
   if (!IsA<HTMLTextAreaElement>(host)) {
@@ -197,7 +197,7 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     }
 
     if (To<HTMLInputElement>(host)->ShouldRevealPassword())
-      text_block_style->SetTextSecurity(ETextSecurity::kNone);
+      text_block_style_builder.SetTextSecurity(ETextSecurity::kNone);
 
     text_block_style_builder.SetOverflowX(EOverflow::kScroll);
     // overflow-y:visible doesn't work because overflow-x:scroll makes a layer.
@@ -212,7 +212,7 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
 
     text_block_style->SetDisplay(EDisplay::kFlowRoot);
     if (parentNode()->IsShadowRoot())
-      text_block_style->SetAlignSelfBlockCenter(true);
+      text_block_style_builder.SetAlignSelfBlockCenter(true);
   }
 
   return text_block_style_builder.TakeStyle();

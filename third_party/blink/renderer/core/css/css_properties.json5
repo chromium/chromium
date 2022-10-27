@@ -5305,6 +5305,7 @@
       default_value: "nullptr",
       type_name: "StyleReflection",
       converter: "ConvertBoxReflect",
+      readonly: true,
     },
     {
       name: "column-count",
@@ -5318,6 +5319,7 @@
       style_builder_template: "auto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
+      readonly: true,
     },
     {
       name: "column-gap",
@@ -5331,6 +5333,7 @@
       converter: "ConvertGapLength",
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      readonly: true,
     },
     {
       name: "row-gap",
@@ -5344,6 +5347,7 @@
       converter: "ConvertGapLength",
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      readonly: true,
     },
     {
       name: "column-rule-color",
@@ -5373,6 +5377,7 @@
       default_value: "none",
       type_name: "EBorderStyle",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "column-rule-width",
@@ -5387,6 +5392,7 @@
       converter: "ConvertColumnRuleWidth",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
+      readonly: true,
     },
     {
       name: "column-span",
@@ -5397,6 +5403,7 @@
       default_value: "none",
       getter: "GetColumnSpan",
       typedom_types: ["Keyword"],
+      readonly: true,
     },
     {
       name: "column-width",
@@ -5411,6 +5418,7 @@
       converter: "ConvertComputedLength<float>",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length"],
+      readonly: true,
     },
     {
       name: "-webkit-highlight",
@@ -5422,6 +5430,7 @@
       default_value: "g_null_atom",
       type_name: "AtomicString",
       converter: "ConvertString<CSSValueID::kNone>",
+      readonly: true,
     },
     {
       name: "hyphenate-character",
@@ -5434,6 +5443,7 @@
       name_for_methods: "HyphenationString",
       type_name: "AtomicString",
       converter: "ConvertString<CSSValueID::kAuto>",
+      readonly: true,
     },
     {
       name: "-webkit-line-break",
@@ -5445,6 +5455,7 @@
       default_value: "auto",
       type_name: "LineBreak",
       valid_for_formatted_text: true,
+      readonly: true,
     },
     {
       name: "line-break",
@@ -5465,6 +5476,7 @@
       field_template: "external",
       default_value: "0",
       type_name: "int",
+      readonly: true,
     },
     {
       name: "-webkit-mask-box-image-outset",
@@ -5618,6 +5630,7 @@
       field_template: "keyword",
       keywords: ["economy", "exact"],
       default_value: "economy",
+      readonly: true,
     },
     {
       name: "-webkit-rtl-ordering",
@@ -5630,6 +5643,7 @@
       name_for_methods: "RtlOrdering",
       setter: "SetRtlOrdering",
       type_name: "EOrder",
+      readonly: true,
     },
     {
       name: "-webkit-ruby-position",
@@ -5642,6 +5656,7 @@
       type_name: "RubyPosition",
       converter: "ConvertRubyPosition",
       computable: false,
+      readonly: true,
     },
     {
       name: "ruby-position",
@@ -5701,6 +5716,7 @@
       type_name: "TextEmphasisPosition",
       converter: "ConvertTextTextEmphasisPosition",
       valid_for_marker: true,
+      readonly: true,
     },
     {
       name: "text-emphasis-style",
@@ -5732,6 +5748,7 @@
       field_template: "keyword",
       keywords: ["none", "disc", "circle", "square"],
       default_value: "none",
+      readonly: true,
     },
     {
       name: "-webkit-text-stroke-color",
@@ -5759,6 +5776,7 @@
       type_name: "float",
       converter: "ConvertTextStrokeWidth",
       valid_for_highlight_legacy: true,
+      readonly: true,
     },
     {
       name: "-webkit-transform-origin-x",
@@ -5803,6 +5821,7 @@
       field_template: "keyword",
       keywords: ["auto", "none", "element"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "-webkit-user-modify",
@@ -5824,6 +5843,7 @@
       keywords: ["auto", "none", "text", "all"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      readonly: true,
     },
     {
       name: "white-space",
@@ -5850,6 +5870,7 @@
       default_value: "2",
       type_name: "short",
       typedom_types: ["Number"],
+      readonly: true,
     },
     {
       name: "width",
@@ -5914,6 +5935,7 @@
       style_builder_template: "auto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
+      readonly: true,
     },
 
     // CSS logical props
@@ -7484,6 +7506,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      readonly: true,
     },
     {
       name: "-internal-forced-border-color",
@@ -7497,6 +7520,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_first_letter: true,
+      readonly: true,
     },
     {
       name: "-internal-forced-color",
@@ -7514,6 +7538,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      readonly: true,
     },
     {
       name: "-internal-forced-outline-color",
@@ -7569,6 +7594,7 @@
       default_value: "false",
       name_for_methods: "HasLineIfEmpty",
       converter: "ConvertInternalEmptyLineHeight",
+      readonly: true,
     },
 
     // Name: -internal-align-self-block:
@@ -7587,6 +7613,7 @@
       default_value: "false",
       name_for_methods: "AlignSelfBlockCenter",
       converter: "ConvertInternalAlignSelfBlock",
+      readonly: true,
     },
 
     // Aliases; these map to the same CSSPropertyID

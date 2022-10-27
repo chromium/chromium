@@ -173,16 +173,16 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       builder.SetStrokeOpacity(value);
       return true;
     case CSSPropertyID::kColumnCount:
-      style.SetColumnCount(value);
+      builder.SetColumnCount(value);
       return true;
     case CSSPropertyID::kTextSizeAdjust:
       style.SetTextSizeAdjust(value / 100.);
       return true;
     case CSSPropertyID::kWidows:
-      style.SetWidows(value);
+      builder.SetWidows(value);
       return true;
     case CSSPropertyID::kZIndex:
-      style.SetZIndex(value);
+      builder.SetZIndex(value);
       return true;
     default:
       return false;

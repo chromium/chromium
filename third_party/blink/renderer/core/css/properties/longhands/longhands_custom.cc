@@ -4267,13 +4267,13 @@ const CSSValue* InternalForcedBorderColor::ParseSingleValue(
 }
 
 void InternalForcedColor::ApplyInitial(StyleResolverState& state) const {
-  state.Style()->SetInternalForcedColor(
+  state.StyleBuilder().SetInternalForcedColor(
       ComputedStyleInitialValues::InitialInternalForcedColor());
 }
 
 void InternalForcedColor::ApplyInherit(StyleResolverState& state) const {
-  auto color = state.ParentStyle()->InternalForcedColor();
-  state.Style()->SetInternalForcedColor(color);
+  state.StyleBuilder().SetInternalForcedColor(
+      state.ParentStyle()->InternalForcedColor());
 }
 
 void InternalForcedColor::ApplyValue(StyleResolverState& state,
@@ -4284,13 +4284,14 @@ void InternalForcedColor::ApplyValue(StyleResolverState& state,
     ApplyInherit(state);
     return;
   }
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
-    state.Style()->SetInternalForcedColor(
+    builder.SetInternalForcedColor(
         ComputedStyleInitialValues::InitialInternalForcedColor());
     return;
   }
-  state.Style()->SetInternalForcedColor(
+  builder.SetInternalForcedColor(
       StyleBuilderConverter::ConvertStyleColor(state, value));
 }
 

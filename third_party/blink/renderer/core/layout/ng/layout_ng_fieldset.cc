@@ -127,18 +127,18 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style->SetPaddingLeft(StyleRef().PaddingLeft());
 
   if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
-    child_style->SetColumnCount(StyleRef().ColumnCount());
-    child_style->SetColumnWidth(StyleRef().ColumnWidth());
+    child_style_builder.SetColumnCount(StyleRef().ColumnCount());
+    child_style_builder.SetColumnWidth(StyleRef().ColumnWidth());
   } else {
-    child_style->SetHasAutoColumnCount();
-    child_style->SetHasAutoColumnWidth();
+    child_style_builder.SetHasAutoColumnCount();
+    child_style_builder.SetHasAutoColumnWidth();
   }
   child_style_builder.SetColumnGap(StyleRef().ColumnGap());
   child_style_builder.SetColumnFill(StyleRef().GetColumnFill());
   child_style_builder.SetColumnRuleColor(StyleColor(
       LayoutObject::ResolveColor(StyleRef(), GetCSSPropertyColumnRuleColor())));
   child_style_builder.SetColumnRuleStyle(StyleRef().ColumnRuleStyle());
-  child_style->SetColumnRuleWidth(StyleRef().ColumnRuleWidth());
+  child_style_builder.SetColumnRuleWidth(StyleRef().ColumnRuleWidth());
 
   child_style_builder.SetFlexDirection(StyleRef().FlexDirection());
   child_style_builder.SetFlexWrap(StyleRef().FlexWrap());

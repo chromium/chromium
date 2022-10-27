@@ -57,7 +57,7 @@ class StyleAdjuster {
                              ComputedStyleBuilder&,
                              Element* element);
   static void AdjustForForcedColorsMode(ComputedStyle&, ComputedStyleBuilder&);
-  static void AdjustForSVGTextElement(ComputedStyle&, ComputedStyleBuilder&);
+  static void AdjustForSVGTextElement(ComputedStyleBuilder&);
 };
 
 }  // namespace blink

@@ -102,18 +102,18 @@ state.GetFontBuilder().{{property.setter}}
     {% set auto_setter = property.style_builder_template_args['auto_setter'] or
                        'SetHasAuto' + property.name_for_methods %}
     {% call(property) apply_initial(property) %}
-  state.Style()->{{auto_setter}}();
+  {{style_access(property)}}{{auto_setter}}();
     {% endcall %}
     {% call(property) apply_inherit(property) %}
   if (state.ParentStyle()->{{auto_getter}}())
-    state.Style()->{{auto_setter}}();
+    {{style_access(property)}}{{auto_setter}}();
   else
     {{set_value(property)}}(state.ParentStyle()->{{property.getter}}());
     {% endcall %}
     {% call(property) apply_value(property) %}
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)
-    state.Style()->{{auto_setter}}();
+    {{style_access(property)}}{{auto_setter}}();
   else
     {{convert_and_set_value(property)}}
     {% endcall %}

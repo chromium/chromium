@@ -856,7 +856,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
 scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
   ComputedStyleBuilder builder = InitialStyleBuilderForElement();
 
-  builder.MutableInternalStyle()->SetZIndex(0);
+  builder.SetZIndex(0);
   builder.SetIsStackingContextWithoutContainment(true);
   builder.SetDisplay(EDisplay::kBlock);
   builder.SetPosition(EPosition::kAbsolute);
