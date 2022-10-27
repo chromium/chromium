@@ -74,9 +74,6 @@ declare_args() {
   enable_platform_encrypted_dolby_vision = false
 
   # Enable HLS with SAMPLE-AES decryption.
-  #
-  # TODO(crbug.com/1329657): Remove the `is_fuchsia` condition once fuchsia
-  # builds set enable_cast_receiver.
   enable_hls_sample_aes =
       proprietary_codecs && (enable_cast_receiver || use_fuzzing_engine)
 
