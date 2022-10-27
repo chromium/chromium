@@ -94,9 +94,6 @@ bool IsExtensionAllowlisted(const extensions::Extension* extension) {
 std::vector<uint8_t> StrToBlob(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
-std::string BlobToStr(const std::vector<uint8_t>& blob) {
-  return std::string(blob.begin(), blob.end());
-}
 
 KeystoreType KeystoreTypeFromTokenId(platform_keys::TokenId token_id) {
   switch (token_id) {
@@ -503,7 +500,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   void OnCanUseKeyForSigningKnown(bool allowed) {
     if (!allowed) {
-      std::move(callback_).Run(std::string() /* no signature */,
+      std::move(callback_).Run(std::vector<uint8_t>() /* no signature */,
                                KeystoreError::kKeyNotAllowedForSigning);
       next_step_ = Step::DONE;
       DoStep();
@@ -527,7 +524,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       LOG(ERROR) << "Marking a key used for signing failed: "
                  << platform_keys::KeystoreErrorToString(error);
       next_step_ = Step::DONE;
-      std::move(callback_).Run(std::string() /* no signature */, error);
+      std::move(callback_).Run(std::vector<uint8_t>() /* no signature */,
+                               error);
       DoStep();
       return;
     }
@@ -555,13 +553,12 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void DidSign(KeystoreBinaryResultPtr result) {
     switch (result->which()) {
       case KeystoreBinaryResult::Tag::kError:
-        std::move(callback_).Run(/*signature=*/std::string(),
+        std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(),
                                  result->get_error());
         break;
       case KeystoreBinaryResult::Tag::kBlob:
-        const std::vector<uint8_t>& blob = result->get_blob();
         std::move(callback_).Run(
-            /*signature=*/BlobToStr(blob),
+            /*signature=*/std::move(result->get_blob()),
             /*error=*/absl::nullopt);
         break;
     }
@@ -982,7 +979,7 @@ void ExtensionPlatformKeysService::SignDigest(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!keystore_service_) {
-    std::move(callback).Run(/*signature=*/std::string(),
+    std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
   }
@@ -1001,7 +998,7 @@ void ExtensionPlatformKeysService::SignRSAPKCS1Raw(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!keystore_service_) {
-    std::move(callback).Run(/*signature=*/std::string(),
+    std::move(callback).Run(/*signature=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
     return;
   }

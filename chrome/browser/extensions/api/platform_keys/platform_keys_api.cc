@@ -4,8 +4,11 @@
 
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_api.h"
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
@@ -463,13 +466,12 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 }
 
 void PlatformKeysInternalSignFunction::OnSigned(
-    const std::string& signature,
+    std::vector<uint8_t> signature,
     absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!error) {
-    Respond(ArgumentList(api_pki::Sign::Results::Create(
-        std::vector<uint8_t>(signature.begin(), signature.end()))));
+    Respond(ArgumentList(api_pki::Sign::Results::Create(std::move(signature))));
   } else {
     Respond(
         Error(chromeos::platform_keys::KeystoreErrorToString(error.value())));

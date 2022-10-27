@@ -961,14 +961,14 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionSign(
 // static
 void KeystoreServiceAsh::DEPRECATED_DidExtensionSign(
     DEPRECATED_ExtensionSignCallback callback,
-    const std::string& signature,
+    std::vector<uint8_t> signature,
     absl::optional<mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!error) {
     std::move(callback).Run(
         mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewBlob(
-            std::vector<uint8_t>(signature.begin(), signature.end())));
+            std::move(signature)));
   } else {
     std::move(callback).Run(
         mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(

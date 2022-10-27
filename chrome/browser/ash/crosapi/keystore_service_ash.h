@@ -198,7 +198,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       absl::optional<crosapi::mojom::KeystoreError> error);
   static void DEPRECATED_DidExtensionSign(
       DEPRECATED_ExtensionSignCallback callback,
-      const std::string& signature,
+      std::vector<uint8_t> signature,
       absl::optional<mojom::KeystoreError> error);
   static void DEPRECATED_DidGetKeyStores(
       DEPRECATED_GetKeyStoresCallback callback,
