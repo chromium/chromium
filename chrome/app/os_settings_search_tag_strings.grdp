@@ -790,6 +790,9 @@
   <message name="IDS_OS_SETTINGS_TAG_DO_NOT_DISTURB_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to app notification settings with toggle to silence notifications. Alternate phrase for: 'Turn off Do Not Disturb'">
     Unmute Notifications
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_APP_BADGING" desc="Text for search result item which, when clicked, navigates the user to app notification settings with app badging toggle.">
+    App badging
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_REMOVE_PLAY_STORE" desc="Text for search result item which, when clicked, navigates the user to Android app settings, with a button to remove the Play Store (Android app store). Alternate phrase for: 'Uninstall Google Play Store'">
     Remove Google Play Store
   </message>

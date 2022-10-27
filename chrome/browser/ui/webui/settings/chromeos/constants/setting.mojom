@@ -171,6 +171,7 @@ enum Setting {
   kTurnOnPlayStore = 702,
   kRestoreAppsAndPages = 703,
   kDoNotDisturbOnOff = 704,
+  kAppBadgingOnOff = 705,
 
   // Crostini section.
   kSetUpCrostini= 800,

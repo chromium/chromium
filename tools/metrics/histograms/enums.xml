@@ -75571,6 +75571,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="702" label="Turn On Play Store"/>
   <int value="703" label="Restore Apps And Pages On Startup"/>
   <int value="704" label="Do Not Disturb: On/Off"/>
+  <int value="705" label="App Badging: On/Off"/>
   <int value="800" label="Set Up Crostini"/>
   <int value="801" label="Uninstall Crostini"/>
   <int value="802" label="Backup Linux Apps And Files"/>

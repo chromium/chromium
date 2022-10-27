@@ -104,6 +104,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
         type: Object,
         value: () => new Set([
           Setting.kDoNotDisturbOnOff,
+          Setting.kAppBadgingOnOff,
         ]),
       },
     };

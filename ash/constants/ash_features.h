@@ -749,6 +749,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeQuickStartEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeNewRecommendAppsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeRemoveShutdownButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeThemeSelectionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsAppBadgingToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOsSettingsSearchFeedbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPcieBillboardNotificationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPciguardUiEnabled();
