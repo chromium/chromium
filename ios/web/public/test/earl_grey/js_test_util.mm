@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,7 +30,7 @@ absl::optional<base::Value> ExecuteJavaScript(
   __block bool did_complete = false;
   __block absl::optional<base::Value> result;
 
-  web_state->ExecuteJavaScript(
+  static_cast<WebStateImpl*>(web_state)->ExecuteJavaScript(
       javascript, base::BindOnce(^(const base::Value* completion_result) {
         result = completion_result->Clone();
         did_complete = true;

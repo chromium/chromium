@@ -43,13 +43,12 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
                                                const std::string& script) {
   __block std::unique_ptr<base::Value> result;
   __block bool did_finish = false;
-  web_state->ExecuteJavaScript(base::UTF8ToUTF16(script),
-                               base::BindOnce(^(const base::Value* value) {
-                                 if (value)
-                                   result = std::make_unique<base::Value>(
-                                       value->Clone());
-                                 did_finish = true;
-                               }));
+  static_cast<WebStateImpl*>(web_state)->ExecuteJavaScript(
+      base::UTF8ToUTF16(script), base::BindOnce(^(const base::Value* value) {
+        if (value)
+          result = std::make_unique<base::Value>(value->Clone());
+        did_finish = true;
+      }));
 
   bool completed = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return did_finish;
