@@ -4,7 +4,9 @@
 
 #import "ios/chrome/app/variations_app_state_agent.h"
 
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -16,6 +18,8 @@
 @interface VariationsAppStateAgent () {
   // Whether the variations seed has been fetched.
   BOOL _seedFetched;
+  // Whether the extended launch screen is shown.
+  BOOL _extendedLaunchScreenShown;
 }
 
 @end
@@ -26,6 +30,7 @@
   self = [super init];
   if (self) {
     _seedFetched = NO;
+    _extendedLaunchScreenShown = NO;
     if ([self shouldFetchVariationsSeed]) {
       // TODO(crbug.com/1372180): start seed fetch and a timeout timer.
     }
@@ -57,9 +62,11 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if ([self shouldFetchVariationsSeed]) {
     DCHECK_GE(self.appState.initStage, InitStageVariationsSeed);
-    if (level == SceneActivationLevelForegroundActive &&
-        self.appState.initStage == InitStageVariationsSeed) {
-      [self showIntermediateUI];
+    if (!_extendedLaunchScreenShown &&
+        self.appState.initStage == InitStageVariationsSeed &&
+        level > SceneActivationLevelBackground) {
+      [self showExtendedLaunchScreen:sceneState];
+      _extendedLaunchScreenShown = YES;
     }
   }
   [super sceneState:sceneState transitionedToActivationLevel:level];
@@ -84,11 +91,15 @@
   return NO;
 }
 
-// Show a view that mocks the splash screen. This should only be called when the
+// Show a view that mocks the launch screen. This should only be called when the
 // scene is active on the foreground but the seed has not been fetched to
 // initialize Chrome.
-- (void)showIntermediateUI {
-  // TODO(crbug.com/1372180): implement this method.
+- (void)showExtendedLaunchScreen:(SceneState*)sceneState {
+  DCHECK(sceneState.window);
+  // Set up view controller.
+  UIViewController* controller = [[LaunchScreenViewController alloc] init];
+  [sceneState.window setRootViewController:controller];
+  [sceneState.window makeKeyAndVisible];
 }
 
 @end

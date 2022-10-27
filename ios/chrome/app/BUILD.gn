@@ -235,6 +235,7 @@ source_set("variations_app_state_agent") {
     "variations_app_state_agent.mm",
   ]
   deps = [
+    ":launch_screen_ui",
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
@@ -257,8 +258,22 @@ source_set("enterprise_app_agent") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
+  ]
+}
+
+source_set("launch_screen_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "launch_screen_view_controller.h",
+    "launch_screen_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/first_run:constants",
+    "//ios/chrome/common/ui/colors",
   ]
 }
 
@@ -269,6 +284,7 @@ source_set("enterprise_app_agent_ui") {
     "enterprise_loading_screen_view_controller.mm",
   ]
   deps = [
+    ":launch_screen_ui",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/first_run:constants",

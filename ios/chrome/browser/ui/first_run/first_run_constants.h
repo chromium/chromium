@@ -37,6 +37,9 @@ extern NSString* const kTermsOfServiceURL;
 extern NSString* const kMetricReportingURL;
 
 // Accessibility identifier of the enterprise loading screen.
+extern NSString* const kLaunchScreenAccessibilityIdentifier;
+
+// Accessibility identifier of the enterprise loading screen.
 extern NSString* const kEnterpriseLoadingScreenAccessibilityIdentifier;
 
 }  // first_run

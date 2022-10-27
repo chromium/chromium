@@ -15,16 +15,9 @@
 #endif
 
 namespace {
-
-// All the following values are from "ios/chrome/app/resources/LaunchScreen.xib"
-// and should be in sync so that the transition between app launch screen and
-// the enterprise launch screen is invisible for the users.
-constexpr CGFloat kBottomMargin = 20;
-constexpr CGFloat kLogoMultiplier = 0.381966;
-constexpr CGFloat kBrandWidth = 107;
-
-constexpr CGFloat kStatusWidth = 195;
+// Space between the loading icon and text.
 constexpr CGFloat kSpacingHeight = 10;
+// Space between the bottom margin of the view to the bottom of the screen.
 constexpr CGFloat kPaddingHeight = 50;
 }  // namespace
 
@@ -40,38 +33,11 @@ constexpr CGFloat kPaddingHeight = 50;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.detailView = [self createStatusView];
   [super viewDidLoad];
+  // Override the accessibility ID defined in LaunchScreenViewController.
   self.view.accessibilityIdentifier =
       first_run::kEnterpriseLoadingScreenAccessibilityIdentifier;
-
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-
-  UIImageView* logo = [self createLogoView];
-  UIImageView* brand = [self createBrandView];
-  UIStackView* status = [self createStatusView];
-
-  UIStackView* mainStackView =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ logo, status, brand ]];
-  mainStackView.axis = UILayoutConstraintAxisVertical;
-  mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  mainStackView.distribution = UIStackViewDistributionEqualSpacing;
-  mainStackView.alignment = UIStackViewAlignmentCenter;
-
-  [self.view addSubview:mainStackView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [logo.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
-                                   multiplier:kLogoMultiplier],
-    [logo.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
-    [brand.bottomAnchor
-        constraintEqualToAnchor:self.view.layoutMarginsGuide.bottomAnchor
-                       constant:-kBottomMargin],
-    [brand.widthAnchor constraintEqualToConstant:kBrandWidth],
-    [status.widthAnchor constraintEqualToConstant:kStatusWidth],
-    [mainStackView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
-    [mainStackView.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-  ]];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -84,25 +50,6 @@ constexpr CGFloat kPaddingHeight = 50;
 }
 
 #pragma mark - Private
-
-// Creates and configures the logo image.
-- (UIImageView*)createLogoView {
-  UIImage* logo = [UIImage imageNamed:@"launchscreen_app_logo"];
-  UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
-  logoImageView.contentMode = UIViewContentModeScaleAspectFit;
-  logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return logoImageView;
-}
-
-// Creates and configures the brand name image.
-- (UIImageView*)createBrandView {
-  UIImage* brandNameLogo = [UIImage imageNamed:@"launchscreen_brand_name"];
-  UIImageView* brandImageView =
-      [[UIImageView alloc] initWithImage:brandNameLogo];
-  brandImageView.contentMode = UIViewContentModeScaleAspectFit;
-  brandImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  return brandImageView;
-}
 
 // Creates and configures the status view which contains the loading spinner and
 // loading text.
