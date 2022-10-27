@@ -39,18 +39,6 @@ namespace url {
 
 namespace {
 
-// Returns true if the characters starting at |begin| and going until |end|
-// (non-inclusive) are all representable in 7-bits.
-template<typename CHAR, typename UCHAR>
-bool IsAllASCII(const CHAR* spec, const Component& query) {
-  int end = query.end();
-  for (int i = query.begin; i < end; i++) {
-    if (static_cast<UCHAR>(spec[i]) >= 0x80)
-      return false;
-  }
-  return true;
-}
-
 // Appends the given string to the output, escaping characters that do not
 // match the given |type| in SharedCharTypes. This version will accept 8 or 16
 // bit characters, but assumes that they have only 7-bit values. It also assumes
@@ -93,29 +81,22 @@ void RunConverter(const char16_t* spec,
                               static_cast<size_t>(query.len), output);
 }
 
-template<typename CHAR, typename UCHAR>
+template <typename CHAR, typename UCHAR>
 void DoConvertToQueryEncoding(const CHAR* spec,
                               const Component& query,
                               CharsetConverter* converter,
                               CanonOutput* output) {
-  if (IsAllASCII<CHAR, UCHAR>(spec, query)) {
-    // Easy: the input can just appended with no character set conversions.
-    AppendRaw8BitQueryString(&spec[query.begin], query.len, output);
+  if (converter) {
+    // Run the converter to get an 8-bit string, then append it, escaping
+    // necessary values.
+    RawCanonOutput<1024> eight_bit;
+    RunConverter(spec, query, converter, &eight_bit);
+    AppendRaw8BitQueryString(eight_bit.data(), eight_bit.length(), output);
 
   } else {
-    // Harder: convert to the proper encoding first.
-    if (converter) {
-      // Run the converter to get an 8-bit string, then append it, escaping
-      // necessary values.
-      RawCanonOutput<1024> eight_bit;
-      RunConverter(spec, query, converter, &eight_bit);
-      AppendRaw8BitQueryString(eight_bit.data(), eight_bit.length(), output);
-
-    } else {
-      // No converter, do our own UTF-8 conversion.
-      AppendStringOfType(&spec[query.begin], static_cast<size_t>(query.len),
-                         CHAR_QUERY, output);
-    }
+    // No converter, do our own UTF-8 conversion.
+    AppendStringOfType(&spec[query.begin], static_cast<size_t>(query.len),
+                       CHAR_QUERY, output);
   }
 }
 
