@@ -12,22 +12,6 @@ namespace blink {
 
 CEReactionsScope* CEReactionsScope::top_of_stack_ = nullptr;
 
-CEReactionsScope::CEReactionsScope(ExecutionContext* execution_context)
-    : prev_(top_of_stack_), work_to_do_(false) {
-  top_of_stack_ = this;
-}
-
-CEReactionsScope::CEReactionsScope(Agent& agent)
-    : prev_(top_of_stack_), work_to_do_(false) {
-  top_of_stack_ = this;
-}
-
-CEReactionsScope::~CEReactionsScope() {
-  if (work_to_do_)
-    InvokeReactions();
-  top_of_stack_ = top_of_stack_->prev_;
-}
-
 void CEReactionsScope::EnqueueToCurrentQueue(Element& element,
                                              CustomElementReaction& reaction) {
   if (!work_to_do_) {

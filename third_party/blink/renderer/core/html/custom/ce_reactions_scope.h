@@ -11,10 +11,8 @@
 
 namespace blink {
 
-class Agent;
 class CustomElementReaction;
 class Element;
-class ExecutionContext;
 
 // https://html.spec.whatwg.org/C/#cereactions
 class CORE_EXPORT CEReactionsScope final {
@@ -23,12 +21,18 @@ class CORE_EXPORT CEReactionsScope final {
  public:
   static CEReactionsScope* Current() { return top_of_stack_; }
 
-  explicit CEReactionsScope(ExecutionContext* execution_context);
-  explicit CEReactionsScope(Agent& agent);
-  ~CEReactionsScope();
+  CEReactionsScope() : prev_(top_of_stack_), work_to_do_(false) {
+    top_of_stack_ = this;
+  }
 
   CEReactionsScope(const CEReactionsScope&) = delete;
   CEReactionsScope& operator=(const CEReactionsScope&) = delete;
+
+  ~CEReactionsScope() {
+    if (work_to_do_)
+      InvokeReactions();
+    top_of_stack_ = top_of_stack_->prev_;
+  }
 
   void EnqueueToCurrentQueue(Element&, CustomElementReaction&);
 

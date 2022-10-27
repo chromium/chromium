@@ -35,7 +35,7 @@ TEST_F(CustomElementDefinitionTest, upgrade_clearsReactionQueueOnFailure) {
   EXPECT_EQ(CustomElementState::kUndefined, element.GetCustomElementState())
       << "sanity check: this element should be ready to upgrade";
   {
-    CEReactionsScope reactions(element.GetDocument().GetExecutionContext());
+    CEReactionsScope reactions;
     HeapVector<Member<Command>> commands;
     commands.push_back(MakeGarbageCollected<Unreached>(
         "upgrade failure should clear the reaction queue"));

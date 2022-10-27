@@ -145,7 +145,7 @@ static inline void Insert(HTMLConstructionSiteTask& task) {
 
   // https://html.spec.whatwg.org/C/#insert-a-foreign-element
   // 3.1, (3) Push (pop) an element queue
-  CEReactionsScope reactions(task.child.Get()->GetDocument().GetAgent());
+  CEReactionsScope reactions;
   if (task.next_child)
     task.parent->ParserInsertBefore(task.child.Get(), *task.next_child);
   else
@@ -986,7 +986,7 @@ Element* HTMLConstructionSite::CreateElement(
 
     // "6.3 Push a new element queue onto the custom element
     // reactions stack."
-    CEReactionsScope reactions(document.GetExecutionContext());
+    CEReactionsScope reactions;
 
     // "7. Let element be the result of creating an element given document,
     // localName, given namespace, null, and is. If will execute script is true,
