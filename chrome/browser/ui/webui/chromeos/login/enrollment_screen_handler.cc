@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -177,6 +178,21 @@ std::string GetFlowString(EnrollmentScreenView::FlowType type) {
       return "cfm";
     case EnrollmentScreenView::FlowType::kEnterpriseLicense:
       return "enterpriseLicense";
+    case EnrollmentScreenView::FlowType::kEducationLicense:
+      return "educationLicense";
+  }
+}
+
+std::string GetLicenseString(policy::LicenseType type) {
+  switch (type) {
+    case policy::LicenseType::kNone:
+      return std::string();
+    case policy::LicenseType::kEnterprise:
+      return "enterprise";
+    case policy::LicenseType::kEducation:
+      return "education";
+    case policy::LicenseType::kTerminal:
+      return "terminal";
   }
 }
 
@@ -280,28 +296,24 @@ void EnrollmentScreenHandler::ShowSigninScreen() {
   ShowStep(kEnrollmentStepSignin);
 }
 
-void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
-                                            const std::string& email) {
+void EnrollmentScreenHandler::ShowUserError(const std::string& email) {
   // Reset the state of the GAIA so after error user would retry enrollment and
   // start from enter your account view.
   CallJS("login.OAuthEnrollmentScreen.doReload");
-  switch (error_type) {
-    case UserErrorType::kConsumerDomain: {
-      ShowErrorMessage(
-          l10n_util::GetStringFUTF8(
-              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
-              base::ASCIIToUTF16(email)),
-          true);
-      break;
-    }
-    case UserErrorType::kBusinessDomain: {
-      ShowErrorMessage(
-          l10n_util::GetStringFUTF8(
-              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
-              base::ASCIIToUTF16(email)),
-          true);
-      break;
-    }
+
+  if (features::IsEducationEnrollmentOobeFlowEnabled() &&
+      config_.license_type == policy::LicenseType::kEducation) {
+    ShowErrorMessage(
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_EDU_PACKAGED_LICENSE_ACCOUNT_CHECK,
+            base::ASCIIToUTF16(email)),
+        true);
+  } else {
+    ShowErrorMessage(
+        l10n_util::GetStringFUTF8(
+            IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
+            base::ASCIIToUTF16(email)),
+        true);
   }
 }
 
@@ -509,10 +521,19 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
           ShowError(IDS_ENTERPRISE_ENROLLMENT_DOMAIN_MISMATCH_ERROR, true);
           break;
         case policy::DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE:
-          ShowError(
-              IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
-              true);
-          break;
+          if (features::IsEducationEnrollmentOobeFlowEnabled() &&
+              config_.license_type == policy::LicenseType::kEducation) {
+            ShowError(
+                IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_EDU_PACKAGED_LICENSE,
+                true);
+            break;
+          } else {
+            ShowError(
+                IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
+                true);
+            break;
+          }
+
         case policy::
             DM_STATUS_SERVICE_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL:
           ShowError(
@@ -650,6 +671,8 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_ENTERPRISE_ENROLLMENT_SCREEN_TITLE);
   builder->Add("enrollmentAccountCheckTitle",
                IDS_ENTERPRISE_ACCOUNT_CHECK_TITLE);
+  builder->Add("oauthEducationEnrollScreenTitle",
+               IDS_EDUCATION_ENROLLMENT_SCREEN_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
@@ -671,9 +694,13 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                 ui::GetChromeOSDeviceName());
   builder->Add("oauthEnrollSuccessTitle",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_TITLE);
+  builder->Add("oauthEnrollEducationSuccessTitle",
+               IDS_EDUCATION_ENROLLMENT_SUCCESS_TITLE);
   builder->Add("oauthEnrollSuccessEnterpriseIconExplanation",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_ENTERPRISE_ICON_EXPLANATION);
   builder->Add("oauthEnrollErrorTitle", IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE);
+  builder->Add("oauthEducationEnrollErrorTitle",
+               IDS_EDUCATION_ENROLLMENT_ERROR_TITLE);
   builder->Add("oauthEnrollDeviceInformation",
                IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION);
   builder->Add("oauthEnrollExplainAttributeLink",
@@ -716,6 +743,10 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   // Skip Confirmation Dialogue strings
   builder->Add("skipConfirmationDialogTitle", IDS_SKIP_ENROLLMENT_DIALOG_TITLE);
   builder->Add("skipConfirmationDialogText", IDS_SKIP_ENROLLMENT_DIALOG_TEXT);
+  builder->Add("skipConfirmationDialogEducationTitle",
+               IDS_SKIP_ENROLLMENT_DIALOG_EDUCATION_TITLE);
+  builder->Add("skipConfirmationDialogEducationText",
+               IDS_SKIP_ENROLLMENT_DIALOG_EDUCATION_TEXT);
   builder->Add("skipConfirmationgoBackButton",
                IDS_SKIP_ENROLLMENT_DIALOG_GO_BACK_BUTTON);
   builder->Add("skipConfirmationSkipButton",
@@ -1164,6 +1195,11 @@ base::Value::Dict EnrollmentScreenHandler::ScreenDataCommon() {
   screen_data.Set("is_enrollment_enforced", config_.is_forced());
   screen_data.Set("attestationBased", config_.is_mode_attestation());
   screen_data.Set("flow", GetFlowString(flow_type_));
+
+  if (features::IsEducationEnrollmentOobeFlowEnabled() &&
+      config_.license_type != policy::LicenseType::kNone) {
+    screen_data.Set("license", GetLicenseString(config_.license_type));
+  }
 
   return screen_data;
 }

@@ -279,6 +279,13 @@ void EnrollmentScreen::UpdateFlowType() {
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
     return;
   }
+  if (features::IsEducationEnrollmentOobeFlowEnabled() &&
+      config_.license_type == policy::LicenseType::kEducation) {
+    view_->SetFlowType(EnrollmentScreenView::FlowType::kEducationLicense);
+    view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
+    return;
+  }
+
   const bool cfm = policy::EnrollmentRequisitionManager::IsRemoraRequisition();
   if (cfm) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
@@ -615,22 +622,19 @@ void EnrollmentScreen::OnAccountStatusFetched(
     policy::AccountStatusCheckFetcher::AccountStatus status) {
   if (!view_)
     return;
+
   if (status == AccountStatusCheckFetcher::AccountStatus::kDasher ||
       status == AccountStatusCheckFetcher::AccountStatus::kUnknown ||
       result == false) {
     view_->ShowSigninScreen();
     return;
   }
-  if (status ==
-      AccountStatusCheckFetcher::AccountStatus::kConsumerWithConsumerDomain) {
-    view_->ShowUserError(EnrollmentScreenView::UserErrorType::kConsumerDomain,
-                         email);
-    return;
-  }
-  if (status ==
-      AccountStatusCheckFetcher::AccountStatus::kConsumerWithBusinessDomain) {
-    view_->ShowUserError(EnrollmentScreenView::UserErrorType::kBusinessDomain,
-                         email);
+
+  if (status == AccountStatusCheckFetcher::AccountStatus::
+                    kConsumerWithConsumerDomain ||
+      status == AccountStatusCheckFetcher::AccountStatus::
+                    kConsumerWithBusinessDomain) {
+    view_->ShowUserError(email);
     return;
   }
 

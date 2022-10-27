@@ -85,8 +85,7 @@ class EnrollmentScreenHandler
   void Unbind() override;
   void ShowSigninScreen() override;
   void ShowSkipConfirmationDialog() override;
-  void ShowUserError(UserErrorType error_type,
-                     const std::string& email) override;
+  void ShowUserError(const std::string& email) override;
   void ShowEnrollmentDuringTrialNotAllowedError() override;
   void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                  const std::string& machine_name,

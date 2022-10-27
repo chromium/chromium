@@ -207,7 +207,7 @@ OobeTypes.GaiaDialogButtonsType = {
 OobeTypes.LicenseType = {
   /* NONE: 0, not used in js */
   ENTERPRISE: 1,
-  /* EDUCATION: 2, not used in js */
+  EDUCATION: 2,
   KIOSK: 3,
 };
 

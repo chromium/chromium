@@ -281,8 +281,14 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
         undefined;
     this.isAutoEnroll_ =
         'attestationBased' in data ? data.attestationBased : undefined;
-    this.hasAccountCheck_ =
-        'flow' in data ? (data.flow === 'enterpriseLicense') : false;
+    this.hasAccountCheck_ = 'flow' in data ?
+        ((data.flow === 'enterpriseLicense') ||
+         (data.flow === 'educationLicense')) :
+        false;
+
+    this.licenseType_ = ('license' in data) ?
+        this.convertLicenseType(data.license) :
+        OobeTypes.LicenseType.ENTERPRISE;
 
     if (!this.isAutoEnroll_) {
       const gaiaParams = {};
@@ -511,6 +517,10 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
       chrome.send(
           'oauthEnrollCompleteLogin',
           [detail.email, OobeTypes.LicenseType.ENTERPRISE]);
+    } else if (this.licenseType_ == OobeTypes.LicenseType.EDUCATION) {
+      chrome.send(
+          'oauthEnrollCompleteLogin',
+          [detail.email, OobeTypes.LicenseType.EDUCATION]);
     } else {
       this.email_ = detail.email;
       this.showStep(OobeTypes.EnrollmentStep.KIOSK_ENROLLMENT);
@@ -576,6 +586,18 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     }
   }
 
+
+  convertLicenseType(license) {
+    switch (license) {
+      case 'enterprise':
+        return OobeTypes.LicenseType.ENTERPRISE;
+      case 'education':
+        return OobeTypes.LicenseType.EDUCATION;
+      case 'terminal':
+        return OobeTypes.LicenseType.KIOSK;
+    }
+  }
+
   /**
    *  Provides the label for the generic cancel button (Skip / Enroll Manually)
    *
@@ -601,6 +623,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       return 'oauthEnrollScreenTitle';
     }
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+      return 'oauthEducationEnrollScreenTitle';
+    }
     return 'oauthEnrollKioskEnrollmentWorkingTitle';
   }
 
@@ -612,6 +637,9 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    */
   getIcon_(licenseType) {
     if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
+      return 'oobe-32:enterprise';
+    }
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
       return 'oobe-32:enterprise';
     }
     return 'oobe-32:kiosk';
@@ -627,7 +655,38 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     if (licenseType == OobeTypes.LicenseType.ENTERPRISE) {
       return this.i18n('oauthEnrollSuccessTitle');
     }
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+      return this.i18n('oauthEnrollEducationSuccessTitle');
+    }
     return this.i18n('oauthEnrollKioskEnrollmentSuccessTitle');
+  }
+
+
+  /**
+   * Return title for error enrollment screen.
+   * @param {string} licenseType
+   * @returns {string}
+   * @private
+   */
+  getErrorTitle_(locale, licenseType) {
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+      return this.i18n('oauthEducationEnrollErrorTitle');
+    }
+    return this.i18n('oauthEnrollErrorTitle');
+  }
+
+
+  /**
+   * Return title for error enrollment screen.
+   * @param {string} licenseType
+   * @returns {string}
+   * @private
+   */
+  getAttributePromptTitle_(locale, licenseType) {
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+      return this.i18n('oauthEnrollEducationSuccessTitle');
+    }
+    return this.i18n('oauthEnrollScreenTitle');
   }
 
   /**
@@ -676,6 +735,32 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
   }
 
   // Skip enrollment dialogue section.
+
+  /**
+   * Return title for skip enrollment dialogue.
+   * @param {string} licenseType
+   * @returns {string}
+   * @private
+   */
+  getSkipConfirmationTitle_(locale, licenseType) {
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+      return this.i18n('skipConfirmationDialogEducationTitle');
+    }
+    return this.i18n('skipConfirmationDialogTitle');
+  }
+
+  /**
+   * Return text for skip enrollment dialogue.
+   * @param {string} licenseType
+   * @returns {string}
+   * @private
+   */
+  getSkipConfirmationText_(locale, licenseType) {
+    if (licenseType == OobeTypes.LicenseType.EDUCATION) {
+      return this.i18n('skipConfirmationDialogEducationText');
+    }
+    return this.i18n('skipConfirmationDialogText');
+  }
 
   /*
    * Called when we click go back button.

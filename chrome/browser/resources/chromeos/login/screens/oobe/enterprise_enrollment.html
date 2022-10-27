@@ -131,7 +131,7 @@ found in the LICENSE file.
     <oobe-adaptive-dialog id="step-error" role="alert"
         for-step="error, attribute-prompt-error, active-directory-join-error">
       <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
-      <h1 slot="title">[[i18nDynamic(locale, 'oauthEnrollErrorTitle')]]</h1>
+      <h1 slot="title">[[getErrorTitle_(locale, licenseType_)]]</h1>
       <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
       <div slot="content"
           class="flex layout vertical center center-justified">
@@ -244,7 +244,7 @@ found in the LICENSE file.
         for-step="attribute-prompt">
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
       <h1 slot="title">
-        [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+        [[getAttributePromptTitle_(locale, licenseType_)]]
       </h1>
       <p slot="subtitle">
         [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
@@ -280,10 +280,10 @@ found in the LICENSE file.
 
     <!-- Skip Enrollment confirmation dialog for LP device -->
     <oobe-modal-dialog id="skipConfirmationDialog">
-      <div slot="title">[[i18nDynamic(locale,
-                    'skipConfirmationDialogTitle')]]</div>
-      <div slot="content">[[i18nDynamic(locale,
-                    'skipConfirmationDialogText')]]</div>
+      <div slot="title">
+        [[getSkipConfirmationTitle_(locale, licenseType_)]]</div>
+      <div slot="content">
+        [[getSkipConfirmationText_(locale, licenseType_)]]</div>
       <div slot="buttons">
         <oobe-text-button id="skipButton" border on-click="onDialogSkip_"
             text-key="skipConfirmationSkipButton"></oobe-text-button>

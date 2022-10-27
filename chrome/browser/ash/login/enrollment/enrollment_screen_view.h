@@ -52,7 +52,12 @@ class EnrollmentScreenView {
 
   virtual ~EnrollmentScreenView() {}
 
-  enum class FlowType { kEnterprise, kCFM, kEnterpriseLicense };
+  enum class FlowType {
+    kEnterprise,
+    kCFM,
+    kEnterpriseLicense,
+    kEducationLicense
+  };
   enum class GaiaButtonsType {
     kDefault,
     kEnterprisePreffered,
@@ -92,8 +97,7 @@ class EnrollmentScreenView {
   virtual void ShowSigninScreen() = 0;
 
   // Shows error related to user account eligibility.
-  virtual void ShowUserError(UserErrorType error_type,
-                             const std::string& email) = 0;
+  virtual void ShowUserError(const std::string& email) = 0;
 
   // Shows error that enrollment is not allowed during trial run.
   virtual void ShowEnrollmentDuringTrialNotAllowedError() = 0;

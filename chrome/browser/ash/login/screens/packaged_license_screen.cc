@@ -55,6 +55,12 @@ bool PackagedLicenseScreen::MaybeSkip(WizardContext& context) {
       exit_callback_.Run(Result::NOT_APPLICABLE_SKIP_TO_ENROLL);
       return true;
     }
+    // Skip to enroll since GAIA form has welcoming text for education license.
+    if (features::IsEducationEnrollmentOobeFlowEnabled() &&
+        config.license_type == policy::LicenseType::kEducation) {
+      exit_callback_.Run(Result::NOT_APPLICABLE_SKIP_TO_ENROLL);
+      return true;
+    }
     return false;
   }
   exit_callback_.Run(Result::NOT_APPLICABLE);
