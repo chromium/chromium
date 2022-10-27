@@ -264,10 +264,39 @@ class TracingSampleProfilerTest
 #endif
 };
 
+class MockUnwinder : public base::Unwinder {
+ public:
+  MOCK_CONST_METHOD1(CanUnwindFrom, bool(const base::Frame& current_frame));
+  MOCK_METHOD3(TryUnwind,
+               base::UnwindResult(base::RegisterContext* thread_context,
+                                  uintptr_t stack_top,
+                                  std::vector<base::Frame>* stack));
+};
+
+// Note that this is relevant only for Android, since TracingSamplingProfiler
+// ignores any provided unwinder factory for non-Android platforms:
+// https://source.chromium.org/chromium/chromium/src/+/main:services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.cc;l=905-908;drc=70d839a3b8bcf1ef43c42a54a4b27f14ee149750
+std::vector<std::unique_ptr<base::Unwinder>>
+MakeMockUnwinderWithExpectations() {
+  auto mock_unwinder = std::make_unique<MockUnwinder>();
+  EXPECT_CALL(*mock_unwinder, CanUnwindFrom(_))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_unwinder, TryUnwind(_, _, _))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(base::UnwindResult::kCompleted));
+
+  std::vector<std::unique_ptr<base::Unwinder>> mock_unwinders;
+  mock_unwinders.push_back(std::move(mock_unwinder));
+  return mock_unwinders;
+}
+
 }  // namespace
 
 TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
-  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return base::BindOnce(&MakeMockUnwinderWithExpectations); }));
   BeginTrace();
   base::RunLoop().RunUntilIdle();
   WaitForEvents();
@@ -278,7 +307,9 @@ TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
 
 TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
   BeginTrace();
-  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return base::BindOnce(&MakeMockUnwinderWithExpectations); }));
   base::RunLoop().RunUntilIdle();
   WaitForEvents();
   EndTracing();
@@ -287,7 +318,9 @@ TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
 }
 
 TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
-  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return base::BindOnce(&MakeMockUnwinderWithExpectations); }));
   TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
   WaitForEvents();
@@ -323,7 +356,9 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
 TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
   TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
-  auto profiler = TracingSamplerProfiler::CreateOnMainThread();
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return base::BindOnce(&MakeMockUnwinderWithExpectations); }));
   WaitForEvents();
   auto start_tracing_ts = TRACE_TIME_TICKS_NOW();
   BeginTrace();
@@ -358,61 +393,6 @@ TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
   base::Thread sampled_thread("sampling_profiler_test");
   sampled_thread.Start();
   sampled_thread.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&TracingSamplerProfiler::CreateOnChildThread));
-  BeginTrace();
-  base::RunLoop().RunUntilIdle();
-  WaitForEvents();
-  EndTracing();
-  ValidateReceivedEvents();
-  sampled_thread.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TracingSamplerProfiler::DeleteOnChildThreadForTesting));
-  base::RunLoop().RunUntilIdle();
-}
-
-namespace {
-
-class MockUnwinder : public base::Unwinder {
- public:
-  MOCK_CONST_METHOD1(CanUnwindFrom, bool(const base::Frame& current_frame));
-  MOCK_METHOD3(TryUnwind,
-               base::UnwindResult(base::RegisterContext* thread_context,
-                                  uintptr_t stack_top,
-                                  std::vector<base::Frame>* stack));
-};
-
-std::vector<std::unique_ptr<base::Unwinder>>
-MakeMockUnwinderWithExpectations() {
-  auto mock_unwinder = std::make_unique<MockUnwinder>();
-  EXPECT_CALL(*mock_unwinder, CanUnwindFrom(_))
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_unwinder, TryUnwind(_, _, _))
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(base::UnwindResult::kUnrecognizedFrame));
-
-  std::vector<std::unique_ptr<base::Unwinder>> mock_unwinders;
-  mock_unwinders.push_back(std::move(mock_unwinder));
-  return mock_unwinders;
-}
-
-}  // namespace
-
-TEST_F(TracingSampleProfilerTest, TraceMainThreadWithCustomUnwinder) {
-  BeginTrace();
-  auto profiler =
-      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
-          [] { return base::BindOnce(&MakeMockUnwinderWithExpectations); }));
-  base::RunLoop().RunUntilIdle();
-  WaitForEvents();
-  EndTracing();
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(TracingSampleProfilerTest, TraceChildThreadWithCustomUnwinder) {
-  base::Thread sampled_thread("trace_child_thread_with_custom_unwinder");
-  sampled_thread.Start();
-  sampled_thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &TracingSamplerProfiler::CreateOnChildThreadWithCustomUnwinders,
@@ -423,6 +403,7 @@ TEST_F(TracingSampleProfilerTest, TraceChildThreadWithCustomUnwinder) {
   base::RunLoop().RunUntilIdle();
   WaitForEvents();
   EndTracing();
+  ValidateReceivedEvents();
   sampled_thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&TracingSamplerProfiler::DeleteOnChildThreadForTesting));
