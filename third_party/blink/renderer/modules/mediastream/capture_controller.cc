@@ -42,6 +42,7 @@ void CaptureController::setFocusBehavior(
     V8CaptureStartFocusBehavior focus_behavior,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
+
   if (!GetExecutionContext()) {
     return;
   }
@@ -80,14 +81,16 @@ void CaptureController::SetVideoTrack(MediaStreamTrack* video_track,
   DCHECK(IsMainThread());
   DCHECK(video_track);
   DCHECK(!video_track_);
-  video_track_ = video_track;
   DCHECK(!descriptor_id.empty());
   DCHECK(descriptor_id_.empty());
+
+  video_track_ = video_track;
   descriptor_id_ = std::move(descriptor_id);
 }
 
 void CaptureController::FinalizeFocusDecision() {
   DCHECK(IsMainThread());
+
   if (focus_decision_finalized_) {
     return;
   }
