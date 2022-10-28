@@ -167,6 +167,15 @@
       },
     },
   },
+  'bf_cache_content_browsertests': {
+    'modifications': {
+      'android-bfcache-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter',
+        ],
+      }
+    }
+  },
   'blink_platform_unittests': {
     'modifications': {
       # TODO(crbug.com/1303439): Remove this filter
