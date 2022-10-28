@@ -64,7 +64,7 @@ public class ConstraintsChecker implements Callback<Integer> {
     public void onResult(Integer result) {
         if (!areControlsLocked()) {
             mConstraintsSupplier.removeObserver(this);
-            mHandler.post(() -> mViewResourceAdapter.onResourceRequested());
+            mHandler.post(mViewResourceAdapter::onResourceRequested);
         }
     }
 }

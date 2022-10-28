@@ -762,7 +762,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void updateInMotion() {
-        // TODO(skym): Track fling as well.
+        // TODO(https://crbug.com/1378716): Track fling as well.
         boolean inMotion = mInGesture || mContentViewScrolling;
         mInMotionSupplier.set(inMotion);
     }

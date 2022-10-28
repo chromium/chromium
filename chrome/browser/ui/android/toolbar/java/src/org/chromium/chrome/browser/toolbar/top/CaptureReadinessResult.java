@@ -66,7 +66,7 @@ public class CaptureReadinessResult {
         int TAB_SWITCHER_MODE = 10;
         int COMPOSITOR_IN_MOTION = 11;
         // TODO(https://crbug.com/1324678): NATIVE_PAGE.
-        int NUM_ENTRIES = 11;
+        int NUM_ENTRIES = 12;
     }
 
     public static CaptureReadinessResult readyForced() {

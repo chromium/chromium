@@ -112,8 +112,12 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      */
     public void releasePersistentShowingToken(int token) {
         if (mTokenHolder.containsOnly(token)) {
-            // Suppression relies on short duration controls locking. Don't ensure min duration.
-            // Long term this can probably be removed for all.
+            // Toolbar capture suppression logic sometimes locks the controls right as a scroll
+            // starts. This is a significantly different usage than locking controls for 3 seconds
+            // upon navigation. It feels wrong for the controls to stay locked for the min duration,
+            // there wasn't any significant change to the screen. They should unlock as soon as the
+            // capture logic thinks it's safe to do so. Long term this can probably be removed for
+            // all.
             boolean useSuppression = (FeatureList.isInitialized()
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
             if (!useSuppression) {

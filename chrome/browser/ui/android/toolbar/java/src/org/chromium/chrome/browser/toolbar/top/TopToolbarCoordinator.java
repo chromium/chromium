@@ -199,10 +199,8 @@ public class TopToolbarCoordinator implements Toolbar {
                     isIncognitoModeEnabledSupplier);
         }
         controlContainer.setPostInitializationDependencies(this, initializeWithIncognitoColors,
-                constraintsSupplier,
-                ()
-                        -> toolbarDataProvider.getTab(),
-                compositorInMotionSupplier, browserStateBrowserControlsVisibilityDelegate);
+                constraintsSupplier, toolbarDataProvider::getTab, compositorInMotionSupplier,
+                browserStateBrowserControlsVisibilityDelegate);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
                 isProgressBarVisibleSupplier, historyDelegate, partnerHomepageEnabledSupplier,
                 offlineDownloader);

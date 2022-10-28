@@ -248,9 +248,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         @Nullable
         private BrowserStateBrowserControlsVisibilityDelegate
                 mBrowserStateBrowserControlsVisibilityDelegate;
-
         @Nullable
-        private BooleanSupplier mIsVisible;
+        private BooleanSupplier mControlContainerIsVisibleSupplier;
 
         private int mControlsToken = TokenHolder.INVALID_TOKEN;
 
@@ -268,13 +267,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
          * @param compositorInMotionSupplier Whether there is an ongoing touch or gesture.
          * @param browserStateBrowserControlsVisibilityDelegate Used to keep controls locked when
          *        captures are stale and not able to be taken.
+         * @param controlContainerIsVisibleSupplier Whether the toolbar is visible.
          */
         public void setPostInitializationDependencies(Toolbar toolbar,
                 ObservableSupplier<Integer> constraintsSupplier, Supplier<Tab> tabSupplier,
                 ObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
-                BooleanSupplier isVisible) {
+                BooleanSupplier controlContainerIsVisibleSupplier) {
             assert mToolbar == null;
             mToolbar = toolbar;
             mTabStripHeightPx = mToolbar.getTabStripHeight();
@@ -290,7 +290,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             mCompositorInMotionSupplier.addObserver(mOnCompositorInMotionChange);
             mBrowserStateBrowserControlsVisibilityDelegate =
                     browserStateBrowserControlsVisibilityDelegate;
-            mIsVisible = isVisible;
+            mControlContainerIsVisibleSupplier = controlContainerIsVisibleSupplier;
         }
 
         /**
@@ -411,14 +411,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES));
             if (!useSuppression || mToolbar == null
                     || mBrowserStateBrowserControlsVisibilityDelegate == null
-                    || mIsVisible == null) {
+                    || mControlContainerIsVisibleSupplier == null) {
                 return;
             }
 
             if (!Boolean.TRUE.equals(compositorInMotion)) {
                 if (mControlsToken == TokenHolder.INVALID_TOKEN) {
                     // Only needed when the ConstraintsChecker doesn't drive the capture.
-                    // TODO(skym): Make this post a task similar to ConstraintsChecker.
+                    // TODO(https://crbug.com/1378721): Make this post a task similar to
+                    // ConstraintsChecker.
                     onResourceRequested();
                 } else {
                     mBrowserStateBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
@@ -429,7 +430,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
                 // Motion is starting, and we don't have a good capture. Lock the controls so that a
                 // new capture doesn't happen and the old capture is not shown. This can be fixed
                 // once the motion is over.
-                if (mIsVisible.getAsBoolean()) {
+                if (mControlContainerIsVisibleSupplier.getAsBoolean()) {
                     mControlsToken =
                             mBrowserStateBrowserControlsVisibilityDelegate
                                     .showControlsPersistentAndClearOldToken(mControlsToken);
