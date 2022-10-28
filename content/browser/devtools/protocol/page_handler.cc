@@ -1606,9 +1606,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingIndexedDBTransaction;
-    case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          RequestedNotificationsPermission;
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           RequestedMIDIPermission;
@@ -1875,7 +1872,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
-    case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
     case WebSchedulerTrackedFeature::kRequestedVideoCapturePermission:

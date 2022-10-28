@@ -61,7 +61,12 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // TODO(altimin): Track this more accurately depending on the data.
   // See permission.mojom for more details.
   // kRequestedGeolocationPermission = 19,   // No longer blocking.
-  kRequestedNotificationsPermission = 20,
+
+  // Requesting for the notifications permission should never have blocked
+  // back/forward cache entry.
+  // https://crbug.com/1350944
+  // kRequestedNotificationsPermission = 20,
+
   kRequestedMIDIPermission = 21,
   kRequestedAudioCapturePermission = 22,
   kRequestedVideoCapturePermission = 23,

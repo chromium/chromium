@@ -61,9 +61,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
       return {"OutstandingIndexedDBTransaction",
               "outstanding IndexedDB transaction"};
-    case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
-      return {"RequestedNotificationsPermission",
-              "requested notifications permission"};
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
       return {"RequestedMIDIPermission", "requested midi permission"};
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
@@ -198,7 +195,6 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache,
       WebSchedulerTrackedFeature::kContainsPlugins,
       WebSchedulerTrackedFeature::kDocumentLoaded,
-      WebSchedulerTrackedFeature::kRequestedNotificationsPermission,
       WebSchedulerTrackedFeature::kRequestedMIDIPermission,
       WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
       WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,

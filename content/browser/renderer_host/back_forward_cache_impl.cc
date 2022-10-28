@@ -175,7 +175,6 @@ constexpr WebSchedulerTrackedFeatures kDisallowedFeatures(
     WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
     WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission,
     WebSchedulerTrackedFeature::kRequestedMIDIPermission,
-    WebSchedulerTrackedFeature::kRequestedNotificationsPermission,
     WebSchedulerTrackedFeature::kRequestedVideoCapturePermission,
     WebSchedulerTrackedFeature::kSharedWorker,
     WebSchedulerTrackedFeature::kWebDatabase,
