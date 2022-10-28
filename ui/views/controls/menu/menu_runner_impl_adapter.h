@@ -13,6 +13,10 @@
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 #include "ui/views/views_export.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace views {
 
 class MenuModelAdapter;
@@ -33,12 +37,14 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   // MenuRunnerImplInterface:
   bool IsRunning() const override;
   void Release() override;
-  void RunMenuAt(Widget* parent,
-                 MenuButtonController* button_controller,
-                 const gfx::Rect& bounds,
-                 MenuAnchorPosition anchor,
-                 int32_t types,
-                 gfx::NativeView native_view_for_gestures) override;
+  void RunMenuAt(
+      Widget* parent,
+      MenuButtonController* button_controller,
+      const gfx::Rect& bounds,
+      MenuAnchorPosition anchor,
+      int32_t types,
+      gfx::NativeView native_view_for_gestures,
+      absl::optional<gfx::RoundedCornersF> corners = absl::nullopt) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 

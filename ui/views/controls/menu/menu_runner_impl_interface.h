@@ -10,6 +10,10 @@
 #include "base/callback_forward.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace views {
 class MenuButtonController;
 
@@ -35,12 +39,14 @@ class MenuRunnerImplInterface {
   virtual void Release() = 0;
 
   // Runs the menu. See MenuRunner::RunMenuAt for more details.
-  virtual void RunMenuAt(Widget* parent,
-                         MenuButtonController* button_controller,
-                         const gfx::Rect& bounds,
-                         MenuAnchorPosition anchor,
-                         int32_t run_types,
-                         gfx::NativeView native_view_for_gestures) = 0;
+  virtual void RunMenuAt(
+      Widget* parent,
+      MenuButtonController* button_controller,
+      const gfx::Rect& bounds,
+      MenuAnchorPosition anchor,
+      int32_t run_types,
+      gfx::NativeView native_view_for_gestures,
+      absl::optional<gfx::RoundedCornersF> corners = absl::nullopt) = 0;
 
   // Hides and cancels the menu.
   virtual void Cancel() = 0;

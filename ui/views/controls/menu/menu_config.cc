@@ -17,8 +17,11 @@ MenuConfig::MenuConfig() {
 MenuConfig::~MenuConfig() = default;
 
 int MenuConfig::CornerRadiusForMenu(const MenuController* controller) const {
-  if (controller && controller->use_ash_system_ui_layout())
-    return touchable_corner_radius;
+  if (controller && controller->use_ash_system_ui_layout()) {
+    return controller->rounded_corners().has_value() ? 0
+                                                     : touchable_corner_radius;
+  }
+
   if (controller && (controller->IsCombobox() ||
                      (!win11_style_menus && controller->IsContextMenu())))
     return auxiliary_corner_radius;

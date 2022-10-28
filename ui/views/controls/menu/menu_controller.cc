@@ -3470,4 +3470,9 @@ void MenuController::SetEnabledScrollButtons(bool enabled) {
   scroll_buttons_enabled = enabled;
 }
 
+void MenuController::SetMenuRoundedCorners(
+    absl::optional<gfx::RoundedCornersF> corners) {
+  rounded_corners_ = corners;
+}
+
 }  // namespace views

@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -167,6 +168,12 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Set the corner radius, enables Material Design.
   void SetCornerRadius(int radius);
 
+  // Set the customized rounded corners.
+  void SetRoundedCorners(int top_left,
+                         int top_right,
+                         int bottom_right,
+                         int bottom_left);
+
   // Get or set the arrow type.
   void set_arrow(Arrow arrow) { arrow_ = arrow; }
   Arrow arrow() const { return arrow_; }
@@ -302,6 +309,9 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Corner radius for the bubble border. If supplied the border will use
   // material design.
   int corner_radius_ = 0;
+
+  // The rounded corner radius for the 4 corners.
+  SkVector radii_[4]{{}, {}, {}, {}};
 
   // Whether a visible arrow should be present.
   bool visible_arrow_ = false;

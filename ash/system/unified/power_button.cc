@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/lock_state_controller.h"
+#include "base/i18n/rtl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "quick_settings_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,6 +28,23 @@
 #include "ui/views/view.h"
 
 namespace ash {
+
+namespace {
+// Rounded corner constants.
+static constexpr int kRoundedCornerRadius = 16;
+static constexpr int kNonRoundedCornerRadius = 4;
+
+constexpr gfx::RoundedCornersF kBottomRightNonRoundedCorners(
+    kRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kNonRoundedCornerRadius,
+    kRoundedCornerRadius);
+constexpr gfx::RoundedCornersF kBottomLeftNonRoundedCorners(
+    kRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kRoundedCornerRadius,
+    kNonRoundedCornerRadius);
+}  // namespace
 
 class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
                                     public views::ContextMenuController {
@@ -82,10 +100,14 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
                     views::MenuRunner::FIXED_ANCHOR;
     menu_runner_ =
         std::make_unique<views::MenuRunner>(root_menu_item_view_, run_types);
+
     menu_runner_->RunMenuAt(source->GetWidget(), /*button_controller=*/nullptr,
                             source->GetBoundsInScreen(),
                             views::MenuAnchorPosition::kBubbleTopRight,
-                            source_type);
+                            source_type, /*native_view_for_gestures=*/nullptr,
+                            /*corners=*/
+                            base::i18n::IsRTL() ? kBottomRightNonRoundedCorners
+                                                : kBottomLeftNonRoundedCorners);
   }
 
   // Builds and saves a SimpleMenuModel to `context_menu_model_`;

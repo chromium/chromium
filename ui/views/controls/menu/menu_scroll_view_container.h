@@ -10,6 +10,10 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace views {
 
 class MenuItemView;
@@ -65,6 +69,12 @@ class MenuScrollViewContainer : public View {
 
   // Returns the last item in the menu if it is of type HIGHLIGHTED.
   MenuItemView* GetFootnote() const;
+
+  // Calcultes the rounded corners of the view based on: either the
+  // `rounded_corners()` if it's set in `MenuController`, or the
+  // `CornerRadiusForMenu` in the `MenuConfig` if `rounded_corners()` is not
+  // set.
+  gfx::RoundedCornersF GetRoundedCorners() const;
 
   class MenuScrollView;
 

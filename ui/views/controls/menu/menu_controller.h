@@ -35,10 +35,15 @@
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #endif
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace ui {
 class OSExchangeData;
 struct OwnedWindowAnchor;
-}
+}  // namespace ui
+
 namespace views {
 
 class Button;
@@ -232,6 +237,11 @@ class VIEWS_EXPORT MenuController
   }
   bool use_ash_system_ui_layout() const { return use_ash_system_ui_layout_; }
 
+  // The rounded corners of the context menu.
+  absl::optional<gfx::RoundedCornersF> rounded_corners() const {
+    return rounded_corners_;
+  }
+
   // Notifies |this| that |menu_item| is being destroyed.
   void OnMenuItemDestroying(MenuItemView* menu_item);
 
@@ -251,6 +261,9 @@ class VIEWS_EXPORT MenuController
 
   // Enables/disables scrolling via scroll buttons
   void SetEnabledScrollButtons(bool enabled);
+
+  // Sets the customized rounded corners of the context menu.
+  void SetMenuRoundedCorners(absl::optional<gfx::RoundedCornersF> corners);
 
  private:
   friend class internal::MenuRunnerImpl;
@@ -813,6 +826,9 @@ class VIEWS_EXPORT MenuController
   // Whether scroll buttons are currently enabled (as they are temporarily
   // disabled when either end of the menu is reached)
   bool scroll_buttons_enabled = true;
+
+  // The rounded corners of the context menu.
+  absl::optional<gfx::RoundedCornersF> rounded_corners_ = absl::nullopt;
 };
 
 }  // namespace views

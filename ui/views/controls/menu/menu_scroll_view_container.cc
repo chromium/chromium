@@ -283,6 +283,20 @@ MenuItemView* MenuScrollViewContainer::GetFootnote() const {
              : nullptr;
 }
 
+gfx::RoundedCornersF MenuScrollViewContainer::GetRoundedCorners() const {
+  // The controller could be null during context menu being closed.
+  auto* menu_controller = content_view_->GetMenuItem()->GetMenuController();
+  if (!menu_controller)
+    return gfx::RoundedCornersF(corner_radius_);
+
+  absl::optional<gfx::RoundedCornersF> rounded_corners =
+      menu_controller->rounded_corners();
+  if (rounded_corners.has_value())
+    return rounded_corners.value();
+
+  return gfx::RoundedCornersF(corner_radius_);
+}
+
 gfx::Size MenuScrollViewContainer::CalculatePreferredSize() const {
   gfx::Size prefsize = scroll_view_->GetContents()->GetPreferredSize();
   gfx::Insets insets = GetInsets();
@@ -434,8 +448,16 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
     shadow_type = BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW;
 #endif
   auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type, id);
-  if (use_ash_system_ui_layout_ || border_radius > 0) {
-    bubble_border->SetCornerRadius(border_radius);
+  bool has_customized_corner = use_ash_system_ui_layout_ && menu_controller &&
+                               menu_controller->rounded_corners().has_value();
+  if (use_ash_system_ui_layout_ || border_radius > 0 || has_customized_corner) {
+    if (has_customized_corner) {
+      bubble_border->SetRoundedCorners(
+          GetRoundedCorners().upper_left(), GetRoundedCorners().upper_right(),
+          GetRoundedCorners().lower_right(), GetRoundedCorners().lower_left());
+    } else {
+      bubble_border->SetCornerRadius(border_radius);
+    }
 
     const bool is_top_menu = !content_view_->GetMenuItem()->GetParentMenuItem();
     bubble_border->set_md_shadow_elevation(
@@ -454,14 +476,16 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   // blurry background with highlight border. Otherwise, use default
   // BubbleBackground.
   if (use_ash_system_ui_layout_) {
-    background_view_->layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(corner_radius_));
     background_view_->SetBackground(
         CreateThemedRoundedRectBackground(id, corner_radius_));
+    background_view_->layer()->SetRoundedCornerRadius(GetRoundedCorners());
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (ash::features::IsDarkLightModeEnabled()) {
       background_view_->SetBorder(std::make_unique<HighlightBorder>(
-          corner_radius_, HighlightBorder::Type::kHighlightBorder1,
+          GetRoundedCorners(),
+          // corner_radius_,
+          HighlightBorder::Type::kHighlightBorder1,
           /*use_light_colors=*/false));
     }
 #endif

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 #include "ui/views/views_delegate.h"
@@ -34,7 +35,8 @@ void MenuRunner::RunMenuAt(Widget* parent,
                            const gfx::Rect& bounds,
                            MenuAnchorPosition anchor,
                            ui::MenuSourceType source_type,
-                           gfx::NativeView native_view_for_gestures) {
+                           gfx::NativeView native_view_for_gestures,
+                           absl::optional<gfx::RoundedCornersF> corners) {
   // Do not attempt to show the menu if the application is currently shutting
   // down. MenuDelegate::OnMenuClosed would not be called.
   if (ViewsDelegate::GetInstance() &&
@@ -80,7 +82,7 @@ void MenuRunner::RunMenuAt(Widget* parent,
   }
 
   impl_->RunMenuAt(parent, button_controller, bounds, anchor, run_types_,
-                   native_view_for_gestures);
+                   native_view_for_gestures, corners);
 }
 
 bool MenuRunner::IsRunning() const {

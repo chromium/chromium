@@ -5,12 +5,12 @@
 #ifndef UI_VIEWS_HIGHLIGHT_BORDER_H_
 #define UI_VIEWS_HIGHLIGHT_BORDER_H_
 
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/border.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
 class Rect;
-class RoundedCornersF;
 }  // namespace gfx
 
 namespace views {
@@ -91,6 +91,11 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
                   bool use_light_colors,
                   InsetsType insets_type = InsetsType::kNoInsets);
 
+  HighlightBorder(const gfx::RoundedCornersF& rounded_corners,
+                  Type type,
+                  bool use_light_colors,
+                  InsetsType insets_type = InsetsType::kNoInsets);
+
   HighlightBorder(const HighlightBorder&) = delete;
   HighlightBorder& operator=(const HighlightBorder&) = delete;
 
@@ -102,7 +107,9 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
   gfx::Size GetMinimumSize() const override;
 
  private:
-  const int corner_radius_;
+  // The rounded corners of this border.
+  const gfx::RoundedCornersF rounded_corners_;
+
   const Type type_;
 
   // True if the border should use light colors when the D/L mode feature is

@@ -34,7 +34,8 @@ void MenuRunnerImplAdapter::RunMenuAt(
     const gfx::Rect& bounds,
     MenuAnchorPosition anchor,
     int32_t types,
-    gfx::NativeView native_view_for_gestures) {
+    gfx::NativeView native_view_for_gestures,
+    absl::optional<gfx::RoundedCornersF> corners) {
   impl_->RunMenuAt(parent, button_controller, bounds, anchor, types,
                    native_view_for_gestures);
 }

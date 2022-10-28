@@ -119,7 +119,8 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
                                const gfx::Rect& bounds,
                                MenuAnchorPosition anchor,
                                int32_t run_types,
-                               gfx::NativeView native_view_for_gestures) {
+                               gfx::NativeView native_view_for_gestures,
+                               absl::optional<gfx::RoundedCornersF> corners) {
   closing_event_time_ = base::TimeTicks();
   if (running_) {
     // Ignore requests to show the menu while it's already showing. MenuItemView
@@ -129,6 +130,7 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
 
   MenuController* controller = MenuController::GetActiveInstance();
   if (controller) {
+    controller->SetMenuRoundedCorners(corners);
     if ((run_types & MenuRunner::IS_NESTED) != 0) {
       if (controller->for_drop()) {
         controller->Cancel(MenuController::ExitType::kAll);
@@ -162,6 +164,7 @@ void MenuRunnerImpl::RunMenuAt(Widget* parent,
     // No menus are showing, show one.
     controller = new MenuController(for_drop_, this);
     owns_controller_ = true;
+    controller->SetMenuRoundedCorners(corners);
   }
   DCHECK((run_types & MenuRunner::COMBOBOX) == 0 ||
          (run_types & MenuRunner::EDITABLE_COMBOBOX) == 0);

@@ -145,15 +145,23 @@ HighlightBorder::HighlightBorder(int corner_radius,
                                  Type type,
                                  bool use_light_colors,
                                  InsetsType insets_type)
-    : corner_radius_(corner_radius),
+    : HighlightBorder(gfx::RoundedCornersF(corner_radius),
+                      type,
+                      use_light_colors,
+                      insets_type) {}
+
+HighlightBorder::HighlightBorder(const gfx::RoundedCornersF& rounded_corners,
+                                 Type type,
+                                 bool use_light_colors,
+                                 InsetsType insets_type)
+    : rounded_corners_(rounded_corners),
       type_(type),
       use_light_colors_(use_light_colors),
       insets_type_(insets_type) {}
 
 void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
-  PaintBorderToCanvas(canvas, view, view.GetLocalBounds(),
-                      gfx::RoundedCornersF(corner_radius_), type_,
-                      use_light_colors_);
+  PaintBorderToCanvas(canvas, view, view.GetLocalBounds(), rounded_corners_,
+                      type_, use_light_colors_);
 }
 
 gfx::Insets HighlightBorder::GetInsets() const {

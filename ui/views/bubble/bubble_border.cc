@@ -274,6 +274,16 @@ void BubbleBorder::SetCornerRadius(int corner_radius) {
   corner_radius_ = corner_radius;
 }
 
+void BubbleBorder::SetRoundedCorners(int top_left,
+                                     int top_right,
+                                     int bottom_right,
+                                     int bottom_left) {
+  radii_[0].iset(top_left, top_left);
+  radii_[1].iset(top_right, top_right);
+  radii_[2].iset(bottom_right, bottom_right);
+  radii_[3].iset(bottom_left, bottom_left);
+}
+
 void BubbleBorder::SetColor(SkColor color) {
   requested_color_ = color;
   UpdateColor(nullptr);
@@ -650,8 +660,14 @@ void BubbleBorder::CalculateVisibleArrowRect(
 SkRRect BubbleBorder::GetClientRect(const View& view) const {
   gfx::RectF bounds(view.GetLocalBounds());
   bounds.Inset(gfx::InsetsF(GetInsets()));
-  return SkRRect::MakeRectXY(gfx::RectFToSkRect(bounds), corner_radius(),
-                             corner_radius());
+  SkRRect r_rect = SkRRect::MakeRectXY(gfx::RectFToSkRect(bounds),
+                                       corner_radius(), corner_radius());
+  if (!radii_[0].isZero() || !radii_[1].isZero() || !radii_[2].isZero() ||
+      !radii_[3].isZero()) {
+    r_rect.setRectRadii(gfx::RectFToSkRect(bounds), radii_);
+  }
+
+  return r_rect;
 }
 
 void BubbleBorder::UpdateColor(View* view) {
