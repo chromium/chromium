@@ -331,6 +331,7 @@ _CONFIG = [
             'cc::UsePaintCache',
 
             # Chromium geometry types.
+            'gfx::DecomposedTransform',
             'gfx::Insets',
             'gfx::InsetsF',
             'gfx::Outsets',

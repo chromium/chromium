@@ -15,28 +15,13 @@ namespace blink {
 
 namespace {
 
-void SetRotationDecomp(double x,
-                       double y,
-                       double z,
-                       double w,
-                       TransformationMatrix::DecomposedType& decomp) {
-  decomp.scale_x = 1;
-  decomp.scale_y = 1;
-  decomp.scale_z = 1;
-  decomp.skew_xy = 0;
-  decomp.skew_xz = 0;
-  decomp.skew_yz = 0;
-  decomp.quaternion_x = x;
-  decomp.quaternion_y = y;
-  decomp.quaternion_z = z;
-  decomp.quaternion_w = w;
-  decomp.translate_x = 0;
-  decomp.translate_y = 0;
-  decomp.translate_z = 0;
-  decomp.perspective_x = 0;
-  decomp.perspective_y = 0;
-  decomp.perspective_z = 0;
-  decomp.perspective_w = 1;
+gfx::DecomposedTransform GetRotationDecomp(double x,
+                                           double y,
+                                           double z,
+                                           double w) {
+  gfx::DecomposedTransform decomp;
+  decomp.quaternion = gfx::Quaternion(x, y, z, w);
+  return decomp;
 }
 
 }  // end namespace
@@ -141,11 +126,11 @@ TEST(TransformationMatrixTest, Is2DProportionalUpscaleAndOr2DTranslation) {
   EXPECT_FALSE(matrix.Is2DProportionalUpscaleAndOr2DTranslation());
 }
 
-TEST(TransformationMatrixTest, To2DTranslation) {
+TEST(TransformationMatrixTest, To2dTranslation) {
   TransformationMatrix matrix;
-  EXPECT_EQ(gfx::Vector2dF(), matrix.To2DTranslation());
+  EXPECT_EQ(gfx::Vector2dF(), matrix.To2dTranslation());
   matrix.Translate(30, -40);
-  EXPECT_EQ(gfx::Vector2dF(30, -40), matrix.To2DTranslation());
+  EXPECT_EQ(gfx::Vector2dF(30, -40), matrix.To2dTranslation());
 }
 
 TEST(TransformationMatrixTest, To3dTranslation) {
@@ -276,8 +261,6 @@ TEST(TransformationMatrixTest, ValidRangedMatrix) {
       EXPECT_TRUE(is_valid_quad(q)) << q.ToString();
 
       float a[16];
-      m.ToTransform().GetColMajorF(a);
-      EXPECT_TRUE(is_valid_array16(a));
       m.ToSkM44().getColMajor(a);
       EXPECT_TRUE(is_valid_array16(a));
     };
@@ -583,70 +566,6 @@ TEST(TransformationMatrixTest, Decompose2dShearTest) {
   EXPECT_TRANSFORMATION_MATRIX(transform_shear_y, recomp_shear_y);
 }
 
-double ComputeDecompRecompError(const TransformationMatrix& transform_matrix) {
-  TransformationMatrix::DecomposedType decomp;
-  EXPECT_TRUE(transform_matrix.Decompose(decomp));
-
-  TransformationMatrix composed;
-  composed.Recompose(decomp);
-
-  double sse = 0;
-  for (int i = 0; i < 16; i++) {
-    double diff =
-        transform_matrix.ColMajorData()[i] - composed.ColMajorData()[i];
-    sse += diff * diff;
-  }
-  return sse;
-}
-
-TEST(TransformationMatrixTest, DecomposeRecompose) {
-  // Result of Recompose(Decompose(identity)) should be exactly identity.
-  EXPECT_EQ(0, ComputeDecompRecompError(TransformationMatrix()));
-
-  // rotateZ(90deg)
-  EXPECT_NEAR(
-      0,
-      ComputeDecompRecompError(TransformationMatrix::Affine(0, 1, -1, 0, 0, 0)),
-      1e-6);
-
-  // rotateZ(180deg)
-  // Edge case where w = 0.
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(
-                  TransformationMatrix::Affine(-1, 0, 0, -1, 0, 0)),
-              1e-6);
-
-  // rotateX(90deg) rotateY(90deg) rotateZ(90deg)
-  // [1  0   0][ 0 0 1][0 -1 0]   [0 0 1][0 -1 0]   [0  0 1]
-  // [0  0  -1][ 0 1 0][1  0 0] = [1 0 0][1  0 0] = [0 -1 0]
-  // [0  1   0][-1 0 0][0  0 1]   [0 1 0][0  0 1]   [1  0 0]
-  // This test case leads to Gimbal lock when using Euler angles.
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix::ColMajor(
-                  0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1)),
-              1e-6);
-
-  // Quaternion matrices with 0 off-diagonal elements, and negative trace.
-  // Stress tests handling of degenerate cases in computing quaternions.
-  // Validates fix for https://crbug.com/647554.
-  EXPECT_NEAR(
-      0,
-      ComputeDecompRecompError(TransformationMatrix::Affine(1, 1, 1, 0, 0, 0)),
-      1e-6);
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix::ColMajor(
-                  -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)),
-              1e-6);
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix::ColMajor(
-                  1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)),
-              1e-6);
-  EXPECT_NEAR(0,
-              ComputeDecompRecompError(TransformationMatrix::ColMajor(
-                  1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)),
-              1e-6);
-}
-
 TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
   double cos30deg = std::cos(M_PI / 6);
   double sin30deg = 0.5;
@@ -656,39 +575,34 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
 
   TransformationMatrix m;
   m.RotateAbout(1, 0, 0, 60);
-  TransformationMatrix::DecomposedType decomp;
-  EXPECT_TRUE(m.Decompose(decomp));
-
-  EXPECT_NEAR(sin30deg, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(cos30deg, decomp.quaternion_w, 1e-6);
+  absl::optional<gfx::DecomposedTransform> decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion,
+                         gfx::Quaternion(sin30deg, 0, 0, cos30deg), 1e-6);
 
   m.MakeIdentity();
   m.RotateAbout(0, 1, 0, 60);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(sin30deg, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(cos30deg, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion,
+                         gfx::Quaternion(0, sin30deg, 0, cos30deg), 1e-6);
 
   m.MakeIdentity();
   m.RotateAbout(0, 0, 1, 60);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(sin30deg, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(cos30deg, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion,
+                         gfx::Quaternion(0, 0, sin30deg, cos30deg), 1e-6);
 
   // Test rotation around non-axis aligned vector.
 
   m.MakeIdentity();
   m.RotateAbout(1, 1, 0, 60);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(sin30deg / root2, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(sin30deg / root2, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(cos30deg, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(
+      decomp->quaternion,
+      gfx::Quaternion(sin30deg / root2, sin30deg / root2, 0, cos30deg), 1e-6);
 
   // Test edge tests.
 
@@ -698,44 +612,34 @@ TEST(TransformationMatrixTest, QuaternionFromRotationMatrixTest) {
 
   m.MakeIdentity();
   m.RotateAbout(1, 0, 0, 180);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(1, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(1, 0, 0, 0), 1e-6);
 
   m.MakeIdentity();
   m.RotateAbout(0, 1, 0, 180);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(1, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 1, 0, 0), 1e-6);
 
   m.MakeIdentity();
   m.RotateAbout(0, 0, 1, 180);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(1, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 0, 1, 0), 1e-6);
 
   // No rotation.
 
   m.MakeIdentity();
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(1, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 0, 0, 1), 1e-6);
 
   m.MakeIdentity();
   m.RotateAbout(0, 0, 1, 360);
-  EXPECT_TRUE(m.Decompose(decomp));
-  EXPECT_NEAR(0, decomp.quaternion_x, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_y, 1e-6);
-  EXPECT_NEAR(0, decomp.quaternion_z, 1e-6);
-  EXPECT_NEAR(1, decomp.quaternion_w, 1e-6);
+  decomp = m.Decompose();
+  ASSERT_TRUE(decomp);
+  EXPECT_QUATERNION_NEAR(decomp->quaternion, gfx::Quaternion(0, 0, 0, 1), 1e-6);
 }
 
 TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
@@ -746,12 +650,12 @@ TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
   double root2 = std::sqrt(2);
 
   TransformationMatrix m;
-  TransformationMatrix::DecomposedType decomp;
+  gfx::DecomposedTransform decomp;
 
   // Test rotation about each axis.
 
-  SetRotationDecomp(sin30deg, 0, 0, cos30deg, decomp);
-  m.Recompose(decomp);
+  decomp = GetRotationDecomp(sin30deg, 0, 0, cos30deg);
+  m = TransformationMatrix::Compose(decomp);
   auto rotate_x_60deg =
       TransformationMatrix::ColMajor(1, 0, 0, 0,                 // column 1
                                      0, cos60deg, sin60deg, 0,   // column 2
@@ -759,8 +663,8 @@ TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
                                      0, 0, 0, 1);                // column 4
   EXPECT_TRANSFORMATION_MATRIX(rotate_x_60deg, m);
 
-  SetRotationDecomp(0, sin30deg, 0, cos30deg, decomp);
-  m.Recompose(decomp);
+  decomp = GetRotationDecomp(0, sin30deg, 0, cos30deg);
+  m = TransformationMatrix::Compose(decomp);
   auto rotate_y_60deg =
       TransformationMatrix::ColMajor(cos60deg, 0, -sin60deg, 0,  // column 1
                                      0, 1, 0, 0,                 // column 2
@@ -768,8 +672,8 @@ TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
                                      0, 0, 0, 1);                // column 4
   EXPECT_TRANSFORMATION_MATRIX(rotate_y_60deg, m);
 
-  SetRotationDecomp(0, 0, sin30deg, cos30deg, decomp);
-  m.Recompose(decomp);
+  decomp = GetRotationDecomp(0, 0, sin30deg, cos30deg);
+  m = TransformationMatrix::Compose(decomp);
   auto rotate_z_60deg =
       TransformationMatrix::ColMajor(cos60deg, sin60deg, 0, 0,   // column 1
                                      -sin60deg, cos60deg, 0, 0,  // column 2
@@ -778,15 +682,15 @@ TEST(TransformationMatrixTest, QuaternionToRotationMatrixTest) {
   EXPECT_TRANSFORMATION_MATRIX(rotate_z_60deg, m);
 
   // Test non-axis aligned rotation
-  SetRotationDecomp(sin30deg / root2, sin30deg / root2, 0, cos30deg, decomp);
-  m.Recompose(decomp);
+  decomp = GetRotationDecomp(sin30deg / root2, sin30deg / root2, 0, cos30deg);
+  m = TransformationMatrix::Compose(decomp);
   TransformationMatrix rotate_xy_60deg;
   rotate_xy_60deg.RotateAbout(1, 1, 0, 60);
   EXPECT_TRANSFORMATION_MATRIX(rotate_xy_60deg, m);
 
   // Test 180deg rotation.
-  SetRotationDecomp(0, 0, 1, 0, decomp);
-  m.Recompose(decomp);
+  decomp = GetRotationDecomp(0, 0, 1, 0);
+  m = TransformationMatrix::Compose(decomp);
   auto rotate_z_180deg = TransformationMatrix::Affine(-1, 0, 0, -1, 0, 0);
   EXPECT_TRANSFORMATION_MATRIX(rotate_z_180deg, m);
 }
@@ -826,10 +730,9 @@ TEST(TransformationMatrixTest, QuaternionInterpolation) {
 
   from_matrix.MakeIdentity();
   from_matrix.RotateAbout(1, 0, 0, 90);
-  TransformationMatrix::DecomposedType decomp;
   to_matrix.MakeIdentity();
   to_matrix.RotateAbout(0, 0, 1, 90);
-  EXPECT_TRUE(to_matrix.Decompose(decomp));
+  EXPECT_TRUE(to_matrix.Decompose());
   to_matrix.Blend(from_matrix, 0.5);
   TransformationMatrix expected;
   expected.RotateAbout(1 / root2, 0, 1 / root2, 70.528778372);

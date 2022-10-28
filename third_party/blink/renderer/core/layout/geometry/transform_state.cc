@@ -113,7 +113,7 @@ void TransformState::ApplyTransform(
     TransformAccumulation accumulate) {
   if (transform_from_container.IsInteger2DTranslation()) {
     Move(PhysicalOffset::FromVector2dFRound(
-             transform_from_container.To2DTranslation()),
+             transform_from_container.To2dTranslation()),
          accumulate);
     return;
   }
