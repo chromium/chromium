@@ -7750,4 +7750,5 @@ crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-contra
 
 crbug.com/1378359 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure ]
 
-crbug.com/1379131 [ Win ] http/tests/inspector-protocol/terminate-execution-with-fetch-callbacks.js [ Crash Failure Pass ]
+# Sheriff 2022-10-28
+crbug.com/1379131 crbug.com/1379155 http/tests/inspector-protocol/terminate-execution-with-fetch-callbacks.js [ Crash Failure Pass ]
