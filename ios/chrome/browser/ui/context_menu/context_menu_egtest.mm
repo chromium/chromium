@@ -382,15 +382,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   TapOnContextMenuButton(OpenImageInNewTabButton());
   [ChromeEarlGrey waitForMainTabCount:2];
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-result"
-  // TODO(crbug.com/643792): Remove this wait the bug is fixed.
-  // Delay for 1 second before selecting tab.
-  [[GREYCondition conditionWithName:@"delay"
-                              block:^BOOL {
-                                return NO;
-                              }] waitWithTimeout:1];
-#pragma clang diagnostic pop
   [ChromeEarlGrey selectTabAtIndex:1];
 
   [ChromeEarlGrey waitForPageToFinishLoading];
