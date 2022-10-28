@@ -22,7 +22,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
@@ -124,12 +124,12 @@ void PageTimelineMonitor::CollectSlice() {
     ukm::builders::PerformanceManager_PageTimelineState(source_id)
         .SetSliceId(slice_id)
 #if !BUILDFLAG(IS_ANDROID)
-        .SetHighEfficiencyMode(
-            user_tuning::UserPerformanceTuningManager::GetInstance()
-                ->IsHighEfficiencyModeActive())
-        .SetBatterySaverMode(
-            user_tuning::UserPerformanceTuningManager::GetInstance()
-                ->IsBatterySaverActive())
+        .SetHighEfficiencyMode(performance_manager::policies::
+                                   HighEfficiencyModePolicy::GetInstance() &&
+                               performance_manager::policies::
+                                   HighEfficiencyModePolicy::GetInstance()
+                                       ->IsHighEfficiencyDiscardingEnabled())
+        .SetBatterySaverMode(battery_saver_enabled_)
 #endif  // !BUILDFLAG(IS_ANDROID)
         .SetIsActiveTab(is_active_tab)
         .SetTimeSinceLastSlice(ukm::GetSemanticBucketMinForDurationTiming(
@@ -156,9 +156,11 @@ void PageTimelineMonitor::CollectSlice() {
 void PageTimelineMonitor::OnPassedToGraph(Graph* graph) {
   graph_ = graph;
   graph_->AddPageNodeObserver(this);
+  graph_->RegisterObject(this);
 }
 
 void PageTimelineMonitor::OnTakenFromGraph(Graph* graph) {
+  graph_->UnregisterObject(this);
   graph_->RemovePageNodeObserver(this);
   graph_ = nullptr;
 }
@@ -249,6 +251,10 @@ void PageTimelineMonitor::OnFaviconUpdated(const PageNode* page_node) {
     page_node_info_map_[page_node]->updated_title_or_favicon_in_background =
         true;
   }
+}
+
+void PageTimelineMonitor::SetBatterySaverEnabled(bool enabled) {
+  battery_saver_enabled_ = enabled;
 }
 
 }  // namespace performance_manager::metrics

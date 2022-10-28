@@ -38,13 +38,15 @@ class HighEfficiencyModePolicy : public GraphOwned,
 
   void OnHighEfficiencyModeChanged(bool enabled);
 
+  // Returns true if High Efficiency mode is enabled, false otherwise. Useful to
+  // get the state of the mode from the Performance Manager sequence.
+  bool IsHighEfficiencyDiscardingEnabled() const;
+
  private:
   void StartDiscardTimerIfEnabled(const PageNode* page_node,
                                   base::TimeDelta time_before_discard);
   void RemoveActiveTimer(const PageNode* page_node);
   void DiscardPageTimerCallback(const PageNode* page_node);
-
-  bool IsHighEfficiencyDiscardingEnabled() const;
 
   bool high_efficiency_mode_enabled_ = false;
 
