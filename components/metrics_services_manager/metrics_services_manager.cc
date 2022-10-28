@@ -173,9 +173,7 @@ void MetricsServicesManager::UpdateUkmService() {
   bool is_incognito = client_->IsOffTheRecordSessionActive();
 
   if (consent_given_ && listeners_active && sync_enabled && !is_incognito) {
-    // TODO(skare): revise this - merged in a big change
-    ukm->EnableRecording(
-        metrics_service_client_->IsUkmAllowedWithExtensionsForAllProfiles());
+    ukm->EnableRecording();
     if (may_upload_)
       ukm->EnableReporting();
     else

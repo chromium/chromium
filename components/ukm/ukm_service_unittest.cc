@@ -235,7 +235,7 @@ TEST_F(UkmServiceTest, EnableDisableSchedule) {
   EXPECT_FALSE(task_runner_->HasPendingTask());
   service.Initialize();
   EXPECT_FALSE(task_runner_->HasPendingTask());
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
   EXPECT_TRUE(task_runner_->HasPendingTask());
   service.DisableReporting();
@@ -250,7 +250,7 @@ TEST_F(UkmServiceTest, PersistAndPurge) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -273,7 +273,7 @@ TEST_F(UkmServiceTest, Purge) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   // Record some data
@@ -440,7 +440,7 @@ TEST_F(UkmServiceTest, SourceSerialization) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   UkmSource::NavigationData navigation_data;
@@ -470,7 +470,7 @@ TEST_F(UkmServiceTest, AddEntryWithEmptyMetrics) {
   ASSERT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -498,7 +498,7 @@ TEST_F(UkmServiceTest, MetricsProviderTest) {
   EXPECT_FALSE(provider->provide_system_profile_metrics_called());
 
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   service.Flush();
@@ -527,7 +527,7 @@ TEST_F(UkmServiceTest, SystemProfileTest) {
   service.Initialize();
 
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -571,7 +571,7 @@ TEST_F(UkmServiceTest, AddUserDemograhicsWhenAvailableAndFeatureEnabled) {
   EXPECT_EQ(0, number_of_invocations);
 
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -604,7 +604,7 @@ TEST_F(UkmServiceTest,
   service.Initialize();
 
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -635,7 +635,7 @@ TEST_F(UkmServiceTest, DontAddUserDemograhicsWhenFeatureDisabled) {
   service.Initialize();
 
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -657,7 +657,7 @@ TEST_F(UkmServiceTest, LogsRotation) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   EXPECT_EQ(0, service.report_count());
@@ -698,7 +698,7 @@ TEST_F(UkmServiceTest, LogsUploadedOnlyWhenHavingSourcesOrEntries) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   EXPECT_TRUE(task_runner_->HasPendingTask());
@@ -748,7 +748,7 @@ TEST_F(UkmServiceTest, RecordRedirectedUrl) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -779,7 +779,7 @@ TEST_F(UkmServiceTest, RecordSessionId) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   auto id = GetAllowlistedSourceId(0);
@@ -801,7 +801,7 @@ TEST_F(UkmServiceTest, SourceSize) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   // Add a large number of sources, more than the hardcoded max.
@@ -825,7 +825,7 @@ TEST_F(UkmServiceTest, PurgeMidUpload) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   auto id = GetAllowlistedSourceId(0);
@@ -848,7 +848,7 @@ TEST_F(UkmServiceTest, SourceURLLength) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   auto id = GetAllowlistedSourceId(0);
@@ -877,7 +877,7 @@ TEST_F(UkmServiceTest, UnreferencedNonAllowlistedSources) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   // Record with Allowlisted ID to allowlist the URL.
@@ -971,7 +971,7 @@ TEST_F(UkmServiceTest, NonAllowlistedUrls) {
     ASSERT_EQ(GetPersistedLogCount(), 0);
     service.Initialize();
     task_runner_->RunUntilIdle();
-    service.EnableRecording(/*extensions=*/false);
+    service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
     service.EnableReporting();
 
     // Record with allowlisted ID to allowlist the URL.
@@ -1050,7 +1050,7 @@ TEST_F(UkmServiceTest, AllowlistIdType) {
     EXPECT_EQ(0, GetPersistedLogCount());
     service.Initialize();
     task_runner_->RunUntilIdle();
-    service.EnableRecording(/*extensions=*/false);
+    service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
     service.EnableReporting();
 
     SourceId id = ConvertSourceIdToAllowlistedType(
@@ -1113,7 +1113,8 @@ TEST_F(UkmServiceTest, SupportedSchemes) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/true);
+  service.UpdateRecording(
+      UkmConsentState(UkmConsentType::MSBB, UkmConsentType::EXTENSIONS));
   service.EnableReporting();
 
   int64_t id_counter = 1;
@@ -1169,7 +1170,7 @@ TEST_F(UkmServiceTest, SupportedSchemesNoExtensions) {
   EXPECT_EQ(GetPersistedLogCount(), 0);
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   int64_t id_counter = 1;
@@ -1206,7 +1207,7 @@ TEST_F(UkmServiceTest, SanitizeUrlAuthParams) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   auto id = GetAllowlistedSourceId(0);
@@ -1247,7 +1248,8 @@ TEST_F(UkmServiceTest, SanitizeChromeUrlParams) {
     EXPECT_EQ(0, GetPersistedLogCount());
     service.Initialize();
     task_runner_->RunUntilIdle();
-    service.EnableRecording(/*extensions=*/true);
+    service.UpdateRecording(
+        UkmConsentState(UkmConsentType::MSBB, UkmConsentType::EXTENSIONS));
     service.EnableReporting();
 
     auto id = GetAllowlistedSourceId(0);
@@ -1270,7 +1272,7 @@ TEST_F(UkmServiceTest, MarkSourceForDeletion) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   // Seed some dummy sources.
@@ -1320,7 +1322,7 @@ TEST_F(UkmServiceTest, PurgeNonCarriedOverSources) {
   EXPECT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   // Seed some fake sources.
@@ -1376,7 +1378,7 @@ TEST_F(UkmServiceTest, IdentifiabilityMetricsDontExplode) {
   ASSERT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -1412,7 +1414,7 @@ TEST_F(UkmServiceTest, FilterCanRemoveMetrics) {
   ASSERT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -1469,7 +1471,7 @@ TEST_F(UkmServiceTest, FilterRejectsEvent) {
   ASSERT_EQ(0, GetPersistedLogCount());
   service.Initialize();
   task_runner_->RunUntilIdle();
-  service.EnableRecording(/*extensions=*/false);
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   service.EnableReporting();
 
   SourceId id = GetAllowlistedSourceId(0);
@@ -1511,7 +1513,7 @@ TEST_F(UkmServiceTest, PruneUnseenFirst) {
     EXPECT_EQ(0, GetPersistedLogCount());
     service.Initialize();
     task_runner_->RunUntilIdle();
-    service.EnableRecording(/*extensions=*/false);
+    service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
     service.EnableReporting();
 
     // Create 5 allowlisted ids. Allowlisted ids (like APP_ID) will not be
@@ -1622,7 +1624,7 @@ TEST_F(UkmServiceTest, PruneAppIDLast) {
     EXPECT_EQ(0, GetPersistedLogCount());
     service.Initialize();
     task_runner_->RunUntilIdle();
-    service.EnableRecording(/*extensions=*/false);
+    service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
     service.EnableReporting();
 
     // Create 5 sources. We set source 0 and 4 to be APP_ID Sources, where

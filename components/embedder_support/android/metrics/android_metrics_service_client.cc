@@ -443,7 +443,7 @@ void AndroidMetricsServiceClient::UpdateUkmService() {
   bool is_incognito = IsOffTheRecordSessionActive();
 
   if (consent_or_flag && allowed && !is_incognito) {
-    ukm_service_->EnableRecording(/*extensions=*/false);
+    ukm_service_->EnableRecording();
     ukm_service_->EnableReporting();
   } else {
     ukm_service_->DisableRecording();

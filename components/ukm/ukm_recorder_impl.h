@@ -22,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "components/ukm/ukm_consent_state.h"
 #include "components/ukm/ukm_entry_filter.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -55,10 +56,13 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   UkmRecorderImpl();
   ~UkmRecorderImpl() override;
 
-  // Enables/disables recording control if data is allowed to be collected. The
-  // |extensions| flag separately controls recording of chrome-extension://
-  // URLs; this flag should reflect the "sync extensions" user setting.
-  void EnableRecording(bool extensions);
+  // Enables/disables recording control if data is allowed to be collected.
+  // |state| defines what is allowed to be collected.
+  // See components/ukm/ukm_consent_state.h for details.
+  void UpdateRecording(const ukm::UkmConsentState state);
+  // Enables recording if MSBB is consented.
+  void EnableRecording();
+  // Disables recording without updating the consent state.
   void DisableRecording();
 
   // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
@@ -107,8 +111,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // map.
   void RemoveUkmRecorderObserver(UkmRecorderObserver* observer);
 
-  // Called when UKM allow state changed.
-  void OnUkmAllowedStateChanged(bool allowed);
+  // Called when UKM consent state changed.
+  void OnUkmAllowedStateChanged(UkmConsentState state);
 
   // Sets the sampling seed for testing purposes.
   void SetSamplingSeedForTesting(uint32_t seed) {
@@ -120,6 +124,10 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   }
 
   bool recording_enabled() const { return recording_enabled_; }
+
+  bool recording_enabled(ukm::UkmConsentType type) const {
+    return recording_state_.Has(type);
+  }
 
  protected:
   // Calculates sampled in/out for a specific source/event based on internal
@@ -252,8 +260,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Whether recording new data is currently allowed.
   bool recording_enabled_ = false;
 
-  // Indicates whether recording is enabled for extensions.
-  bool extensions_enabled_ = false;
+  // Whether recording new data is enabled and what type is allowed.
+  ukm::UkmConsentState recording_state_;
 
   // Indicates whether recording continuity has been broken since last report.
   bool recording_is_continuous_ = true;

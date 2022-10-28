@@ -131,20 +131,20 @@ class TestUkmRecorderObserver : public ukm::UkmRecorderObserver {
 
   void OnPurge() override {}
 
-  void ExpectAllowedStateChanged(bool expected_allowed) {
-    expected_allowed_ = expected_allowed;
+  void ExpectAllowedStateChanged(ukm::UkmConsentState expected_state) {
+    expected_allowed_ = expected_state;
     base::RunLoop loop;
     quit_closure_ = loop.QuitClosure();
     loop.Run();
   }
 
-  void OnUkmAllowedStateChanged(bool allowed) override {
-    if (allowed == expected_allowed_)
+  void OnUkmAllowedStateChanged(ukm::UkmConsentState allowed_state) override {
+    if (allowed_state == expected_allowed_)
       std::move(quit_closure_).Run();
   }
 
  private:
-  bool expected_allowed_;
+  ukm::UkmConsentState expected_allowed_;
   base::OnceClosure quit_closure_;
   raw_ptr<ukm::UkmRecorderImpl> ukm_recorder_;
 };
@@ -1531,13 +1531,14 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, AllowedStateChanged) {
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(g_browser_process->GetMetricsServicesManager()
                    ->IsUkmAllowedForAllProfiles());
-  observer.ExpectAllowedStateChanged(false);
+  // Expect nothing to be consented to.
+  observer.ExpectAllowedStateChanged(ukm::UkmConsentState());
 
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(g_browser_process->GetMetricsServicesManager()
                   ->IsUkmAllowedForAllProfiles());
-  observer.ExpectAllowedStateChanged(true);
+  observer.ExpectAllowedStateChanged(ukm::UkmConsentState::All());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

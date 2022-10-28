@@ -47,7 +47,7 @@ class UkmObserver : public ukm::UkmRecorderObserver {
   void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override;
   void OnUpdateSourceURL(ukm::SourceId source_id,
                          const std::vector<GURL>& urls) override;
-  void OnUkmAllowedStateChanged(bool allowed) override;
+  void OnUkmAllowedStateChanged(ukm::UkmConsentState state) override;
 
   void set_ukm_data_manager(UkmDataManagerImpl* ukm_data_manager) {
     ukm_data_manager_ = ukm_data_manager;

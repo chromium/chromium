@@ -72,7 +72,7 @@ class UkmObserverTest : public testing::Test {
     SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
     LocalStateHelper::GetInstance().Initialize(&prefs_);
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    InitializeUkmObserver(true /*is_ukm_allowed*/);
+    InitializeUkmObserver(ukm::UkmConsentState(ukm::MSBB) /*consent_state*/);
   }
 
   void TearDown() override {
@@ -93,9 +93,9 @@ class UkmObserverTest : public testing::Test {
     wait_for_record.Run();
   }
 
-  void InitializeUkmObserver(bool is_ukm_allowed) {
+  void InitializeUkmObserver(ukm::UkmConsentState consent_state) {
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
-    ukm_observer_->OnUkmAllowedStateChanged(is_ukm_allowed);
+    ukm_observer_->OnUkmAllowedStateChanged(consent_state);
     auto ukm_database = std::make_unique<MockUkmDatabase>();
     ukm_database_ = ukm_database.get();
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
@@ -257,18 +257,18 @@ TEST_F(UkmObserverTest, GetUkmMostRecentAllowedTime) {
   EXPECT_LE(
       local_state_helper.GetPrefTime(kSegmentationUkmMostRecentAllowedTimeKey),
       base::Time::Now());
-  InitializeUkmObserver(false /*is_ukm_allowed*/);
+  InitializeUkmObserver(ukm::UkmConsentState() /*consent_state*/);
   EXPECT_EQ(base::Time::Max(), local_state_helper.GetPrefTime(
                                    kSegmentationUkmMostRecentAllowedTimeKey));
 
-  ukm_observer().OnUkmAllowedStateChanged(true);
+  ukm_observer().OnUkmAllowedStateChanged(ukm::UkmConsentState(ukm::MSBB));
   EXPECT_LE(
       local_state_helper.GetPrefTime(kSegmentationUkmMostRecentAllowedTimeKey),
       base::Time::Now());
 
   // Change the allowed state to false, the start time should now be set to
   // Time::Max().
-  ukm_recorder().OnUkmAllowedStateChanged(false);
+  ukm_recorder().OnUkmAllowedStateChanged(ukm::UkmConsentState());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(base::Time::Max(), local_state_helper.GetPrefTime(
                                    kSegmentationUkmMostRecentAllowedTimeKey));
@@ -276,7 +276,7 @@ TEST_F(UkmObserverTest, GetUkmMostRecentAllowedTime) {
   // Change the allowed state to true, the new start time should be close to
   // now.
   base::Time now = base::Time::Now();
-  ukm_recorder().OnUkmAllowedStateChanged(true);
+  ukm_recorder().OnUkmAllowedStateChanged(ukm::UkmConsentState(ukm::MSBB));
   base::RunLoop().RunUntilIdle();
   EXPECT_LE(now, local_state_helper.GetPrefTime(
                      kSegmentationUkmMostRecentAllowedTimeKey));

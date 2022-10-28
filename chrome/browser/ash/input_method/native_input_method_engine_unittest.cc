@@ -977,7 +977,8 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   ui::IMEBridge::Get()->SetInputContextHandler(&ime);
 
   ukm::TestAutoSetUkmRecorder test_recorder;
-  test_recorder.EnableRecording(false /* extensions */);
+  test_recorder.UpdateRecording(
+      ukm::UkmConsentState(ukm::UkmConsentType::MSBB));
   ASSERT_EQ(0u, test_recorder.entries_count());
 
   auto metric = ime::mojom::NonCompliantApiMetric::New();
@@ -1019,7 +1020,8 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   ui::IMEBridge::Get()->SetInputContextHandler(&ime);
 
   ukm::TestAutoSetUkmRecorder test_recorder;
-  test_recorder.EnableRecording(false /* extensions */);
+  test_recorder.UpdateRecording(
+      ukm::UkmConsentState(ukm::UkmConsentType::MSBB));
   ASSERT_EQ(0u, test_recorder.entries_count());
 
   // Should not record when random text is entered.

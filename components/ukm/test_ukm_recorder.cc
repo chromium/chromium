@@ -36,7 +36,8 @@ void MergeEntry(const mojom::UkmEntry* in, mojom::UkmEntry* out) {
 }  // namespace
 
 TestUkmRecorder::TestUkmRecorder() {
-  EnableRecording(/*extensions=*/true);
+  UpdateRecording(
+      UkmConsentState(UkmConsentType::MSBB, UkmConsentType::EXTENSIONS));
   InitDecodeMap();
   SetSamplingForTesting(1);  // 1-in-1 == unsampled
 }

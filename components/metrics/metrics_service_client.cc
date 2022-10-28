@@ -134,10 +134,6 @@ bool MetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return false;
 }
 
-bool MetricsServiceClient::IsUkmAllowedWithExtensionsForAllProfiles() {
-  return false;
-}
-
 bool MetricsServiceClient::AreNotificationListenersEnabledOnAllProfiles() {
   return false;
 }

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/observer_list_types.h"
+#include "components/ukm/ukm_consent_state.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "url/gurl.h"
@@ -40,11 +41,11 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderObserver
   // Called when all UKM entries should be purged.
   virtual void OnPurge();
 
-  // Called when the UKM consent state is changed. |allow| is true iff all UKM
-  // is allowed for all profile states and URL-keyed anonymized data collection
-  // is enabled for all profiles. This won't be called when extension or app
-  // consent is changed.
-  virtual void OnUkmAllowedStateChanged(bool allowed);
+  // Called when the UKM consent state is changed. |state| the state of UKM
+  // consent types. Each consent type is true iff all UKM is allowed for all
+  // profile states and URL-keyed anonymized data collection is enabled for all
+  // profiles. This won't be called when extension or app consent is changed.
+  virtual void OnUkmAllowedStateChanged(UkmConsentState state);
 };
 
 }  // namespace ukm

@@ -1153,19 +1153,24 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(bool total_purge) {
   if (!ukm_service_)
     return;
 
+  const ukm::UkmConsentState consent_state = GetUkmConsentState();
+
+  // Purge recording if the required consent has been revoked.
   if (total_purge) {
     ukm_service_->Purge();
     ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
   } else {
-    if (!IsUkmAllowedWithExtensionsForAllProfiles())
+    if (!consent_state.Has(ukm::UkmConsentType::EXTENSIONS))
       ukm_service_->PurgeExtensionsData();
-    if (!IsUkmAllowedWithAppsForAllProfiles())
+    if (!consent_state.Has(ukm::UkmConsentType::APPS))
       ukm_service_->PurgeAppsData();
   }
 
-  // Broadcast UKM consent state change. This doesn't include extension or app
-  // consent change.
-  ukm_service_->OnUkmAllowedStateChanged(IsUkmAllowedForAllProfiles());
+  // Notify the recording service of changed metrics consent.
+  ukm_service_->UpdateRecording(consent_state);
+
+  // Broadcast UKM consent state change.
+  ukm_service_->OnUkmAllowedStateChanged(consent_state);
 
   // Signal service manager to enable/disable UKM based on new states.
   UpdateRunningServices();
@@ -1257,14 +1262,6 @@ void ChromeMetricsServiceClient::SetIsProcessRunningForTesting(
 
 bool ChromeMetricsServiceClient::IsUkmAllowedForAllProfiles() {
   return UkmConsentStateObserver::IsUkmAllowedForAllProfiles();
-}
-
-bool ChromeMetricsServiceClient::IsUkmAllowedWithAppsForAllProfiles() {
-  return UkmConsentStateObserver::IsUkmAllowedWithAppsForAllProfiles();
-}
-
-bool ChromeMetricsServiceClient::IsUkmAllowedWithExtensionsForAllProfiles() {
-  return UkmConsentStateObserver::IsUkmAllowedWithExtensionsForAllProfiles();
 }
 
 bool g_observer_registration_failed = false;

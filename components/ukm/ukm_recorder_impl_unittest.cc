@@ -76,15 +76,15 @@ class TestUkmObserver : public UkmRecorderObserver {
       std::move(stop_waiting_).Run();
   }
 
-  void OnUkmAllowedStateChanged(bool allow) override {
+  void OnUkmAllowedStateChanged(ukm::UkmConsentState consent_state) override {
     if (stop_waiting_)
       std::move(stop_waiting_).Run();
 
-    EXPECT_EQ(expected_allow_, allow);
+    EXPECT_EQ(expected_state_, consent_state);
   }
 
-  void WaitOnUkmAllowedStateChanged(bool expected_allow) {
-    expected_allow_ = expected_allow;
+  void WaitOnUkmAllowedStateChanged(ukm::UkmConsentState expected_state) {
+    expected_state_ = expected_state;
     WaitCallback();
   }
 
@@ -111,7 +111,7 @@ class TestUkmObserver : public UkmRecorderObserver {
   mojom::UkmEntryPtr ukm_entry_;
   SourceId source_id_;
   std::vector<GURL> urls_;
-  bool expected_allow_ = false;
+  ukm::UkmConsentState expected_state_;
 };
 
 TEST(UkmRecorderImplTest, IsSampledIn) {
@@ -203,7 +203,7 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
   TestEvent1(id2).Record(&recorder);
 
   // All sources and events have been recorded.
-  EXPECT_TRUE(recorder.extensions_enabled_);
+  EXPECT_TRUE(recorder.recording_state_.Has(UkmConsentType::EXTENSIONS));
   EXPECT_TRUE(recorder.recording_is_continuous_);
   EXPECT_EQ(4U, recorder.sources().size());
   EXPECT_EQ(2U, recorder.entries().size());
@@ -223,9 +223,9 @@ TEST(UkmRecorderImplTest, PurgeExtensionRecordings) {
 
   // Recording is disabled for extensions, thus new extension URL will not be
   // recorded.
-  recorder.EnableRecording(/* extensions = */ false);
+  recorder.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
   recorder.UpdateSourceURL(id4, GURL("chrome-extension://abc/index.html"));
-  EXPECT_FALSE(recorder.extensions_enabled_);
+  EXPECT_FALSE(recorder.recording_state_.Has(UkmConsentType::EXTENSIONS));
   EXPECT_EQ(2U, recorder.sources().size());
 }
 
@@ -333,11 +333,11 @@ TEST(UkmRecorderImplTest, ObserverNotifiedOnUkmAllowedStateChanged) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   TestUkmObserver test_observer(&test_ukm_recorder);
 
-  test_ukm_recorder.OnUkmAllowedStateChanged(false);
-  test_observer.WaitOnUkmAllowedStateChanged(false);
+  test_ukm_recorder.OnUkmAllowedStateChanged(ukm::UkmConsentState());
+  test_observer.WaitOnUkmAllowedStateChanged(ukm::UkmConsentState());
 
-  test_ukm_recorder.OnUkmAllowedStateChanged(true);
-  test_observer.WaitOnUkmAllowedStateChanged(true);
+  test_ukm_recorder.OnUkmAllowedStateChanged(ukm::UkmConsentState::All());
+  test_observer.WaitOnUkmAllowedStateChanged(ukm::UkmConsentState::All());
 }
 
 // Tests that adding and removing observers work as expected.

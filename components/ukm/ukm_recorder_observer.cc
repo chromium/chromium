@@ -16,6 +16,6 @@ void UkmRecorderObserver::OnPurgeRecordingsWithUrlScheme(
 
 void UkmRecorderObserver::OnPurge() {}
 
-void UkmRecorderObserver::OnUkmAllowedStateChanged(bool allowed) {}
+void UkmRecorderObserver::OnUkmAllowedStateChanged(UkmConsentState state) {}
 
 }  // namespace ukm

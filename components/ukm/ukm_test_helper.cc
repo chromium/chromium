@@ -19,11 +19,11 @@ UkmTestHelper::UkmTestHelper(UkmService* ukm_service)
     : ukm_service_(ukm_service) {}
 
 bool UkmTestHelper::IsExtensionRecordingEnabled() const {
-  return ukm_service_ ? ukm_service_->extensions_enabled_ : false;
+  return ukm_service_ ? ukm_service_->recording_enabled(EXTENSIONS) : false;
 }
 
 bool UkmTestHelper::IsRecordingEnabled() const {
-  return ukm_service_ ? ukm_service_->recording_enabled_ : false;
+  return ukm_service_ ? ukm_service_->recording_enabled() : false;
 }
 
 bool UkmTestHelper::IsReportUserNoisedUserBirthYearAndGenderEnabled() {

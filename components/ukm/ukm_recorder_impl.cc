@@ -226,18 +226,21 @@ void UkmRecorderImpl::Recordings::SourceCounts::Reset() {
   *this = SourceCounts();
 }
 
-void UkmRecorderImpl::EnableRecording(bool extensions) {
-  DVLOG(1) << "UkmRecorderImpl::EnableRecording, extensions=" << extensions;
+void UkmRecorderImpl::UpdateRecording(ukm::UkmConsentState state) {
+  DVLOG(1) << "UkmRecorderImpl::UpdateRecording: " << state.ToEnumBitmask();
+  recording_state_ = state;
+  EnableRecording();
+}
+
+void UkmRecorderImpl::EnableRecording() {
   recording_enabled_ = true;
-  extensions_enabled_ = extensions;
 }
 
 void UkmRecorderImpl::DisableRecording() {
   DVLOG(1) << "UkmRecorderImpl::DisableRecording";
-  if (recording_enabled_)
+  if (recording_enabled())
     recording_is_continuous_ = false;
   recording_enabled_ = false;
-  extensions_enabled_ = false;
 }
 
 void UkmRecorderImpl::SetSamplingForTesting(int rate) {
@@ -352,8 +355,8 @@ void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
   }
 }
 
-void UkmRecorderImpl::OnUkmAllowedStateChanged(bool allowed) {
-  NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, allowed);
+void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
+  NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, state);
 }
 
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
@@ -763,7 +766,7 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
 void UkmRecorderImpl::UpdateAppURL(SourceId source_id,
                                    const GURL& url,
                                    const AppType app_type) {
-  if (app_type != AppType::kPWA && !extensions_enabled_) {
+  if (app_type != AppType::kPWA && !recording_enabled(ukm::EXTENSIONS)) {
     RecordDroppedSource(DroppedDataReason::EXTENSION_URLS_DISABLED);
     return;
   }
@@ -863,7 +866,7 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
     const GURL& sanitized_url) const {
   ShouldRecordUrlResult result = ShouldRecordUrlResult::kOk;
   bool has_recorded_reason = false;
-  if (!recording_enabled_) {
+  if (!recording_enabled()) {
     RecordDroppedSource(DroppedDataReason::RECORDING_DISABLED);
     // Don't return the result yet. Check if the we are allowed to notify
     // observers, as they may rely on the not uploaded metrics to determine
@@ -893,7 +896,7 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
   // Extension URLs need to be specifically enabled and the extension synced.
   if (sanitized_url.SchemeIs(kExtensionScheme)) {
     DCHECK_EQ(sanitized_url.GetWithEmptyPath(), sanitized_url);
-    if (!extensions_enabled_) {
+    if (!recording_enabled(ukm::EXTENSIONS)) {
       RecordDroppedSource(has_recorded_reason,
                           DroppedDataReason::EXTENSION_URLS_DISABLED);
       return ShouldRecordUrlResult::kDropped;
@@ -910,11 +913,12 @@ UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
 
 void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
   SourceId source_id = source->id();
-  // If UKM recording is disabled due to |recording_enabled_|, still notify
-  // observers as they might be interested in it.
+  // If UKM recording is disabled due to |recording_enabled|,
+  // still notify observers as they might be interested in it.
   NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
                      source->urls());
-  if (!recording_enabled_) {
+
+  if (!recording_enabled()) {
     return;
   }
 
@@ -930,7 +934,7 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
 
   NotifyObserversWithNewEntry(*entry);
 
-  if (!recording_enabled_) {
+  if (!recording_enabled()) {
     RecordDroppedEntry(entry->event_hash,
                        DroppedDataReason::RECORDING_DISABLED);
     return;

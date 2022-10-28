@@ -17,6 +17,7 @@ component("ukm_recorder") {
   sources = [
     "scheme_constants.cc",
     "scheme_constants.h",
+    "ukm_consent_state.h",
     "ukm_entry_filter.h",
     "ukm_recorder_impl.cc",
     "ukm_recorder_impl.h",
@@ -84,6 +85,7 @@ static_library("observers") {
     "observers/history_delete_observer.h",
     "observers/ukm_consent_state_observer.cc",
     "observers/ukm_consent_state_observer.h",
+    "ukm_consent_state.h",
   ]
 
   deps = [
