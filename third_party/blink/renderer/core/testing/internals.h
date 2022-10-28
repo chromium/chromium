@@ -590,10 +590,6 @@ class Internals final : public ScriptWrappable {
 
   void simulateRasterUnderInvalidations(bool enable);
 
-  // The number of calls to update the blink lifecycle (see:
-  // LocalFrameView::UpdateLifecyclePhasesInternal).
-  unsigned LifecycleUpdateCount() const;
-
   void DisableIntersectionObserverThrottleDelay() const;
   bool isSiteIsolated(HTMLIFrameElement* iframe) const;
   bool isTrackingOcclusionForIFrame(HTMLIFrameElement* iframe) const;

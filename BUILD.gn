@@ -1368,7 +1368,6 @@ if (!is_ios) {
       "//third_party/blink/web_tests/intersection-observer/",
       "//third_party/blink/web_tests/jquery/",
       "//third_party/blink/web_tests/js/",
-      "//third_party/blink/web_tests/lifecycle/",
       "//third_party/blink/web_tests/loader/",
       "//third_party/blink/web_tests/media/",
       "//third_party/blink/web_tests/media_capabilities/",

@@ -397,10 +397,6 @@
     // be reported as raster under-invalidations.
     void simulateRasterUnderInvalidations(boolean enable);
 
-    // The number of calls to update the blink lifecycle (see:
-    // LocalFrameView::UpdateLifecyclePhasesInternal).
-    unsigned long LifecycleUpdateCount();
-
     // Disable the 'delay' option for IntersectionObserver, so that observations
     // are recomputed on every frame.  This eliminates the need to add
     // setTimeout(..., delay_ms) calls to web tests to wait for notifications

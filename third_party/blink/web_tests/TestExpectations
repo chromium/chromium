@@ -4599,10 +4599,6 @@ crbug.com/736415 external/wpt/html/user-activation/navigation-state-reset-sameor
 # S13N Sheriff 2018-7-11
 crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ Failure Pass ]
 
-# Sheriff 2018-07-30
-
-crbug.com/875884 [ Win ] lifecycle/background-change-lifecycle-count.html [ Failure Pass ]
-
 # Sheriff 2018-08-20
 crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Pass Timeout ]
 

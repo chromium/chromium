@@ -710,12 +710,8 @@ void AXObjectCacheImpl::UpdateLifecycleIfNeeded(Document& document) {
   DCHECK(document.GetFrame());
   DCHECK(document.View());
 
-  // TODO(accessibility) Remove conditions and just update the lifecycle.
-  if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-      document.Lifecycle().GetState() < DocumentLifecycle::kLayoutClean) {
-    document.View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kAccessibility);
-  }
+  document.View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kAccessibility);
 }
 
 void AXObjectCacheImpl::UpdateAXForAllDocuments() {

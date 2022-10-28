@@ -199,9 +199,6 @@ class CORE_EXPORT LocalFrameView final
   bool WillDoPaintHoldingForFCP() const;
 
   unsigned LayoutCountForTesting() const { return layout_count_for_testing_; }
-  unsigned LifecycleUpdateCountForTesting() const {
-    return lifecycle_update_count_for_testing_;
-  }
 
   void CountObjectsNeedingLayout(unsigned& needs_layout_objects,
                                  unsigned& total_objects,

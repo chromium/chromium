@@ -3737,10 +3737,6 @@ void Internals::simulateRasterUnderInvalidations(bool enable) {
   RasterInvalidationTracking::SimulateRasterUnderInvalidations(enable);
 }
 
-unsigned Internals::LifecycleUpdateCount() const {
-  return document_->View()->LifecycleUpdateCountForTesting();
-}
-
 void Internals::DisableIntersectionObserverThrottleDelay() const {
   // This gets reset by Internals::ResetToConsistentState
   IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
