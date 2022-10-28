@@ -298,6 +298,11 @@ AHardwareBuffer* OverlayImageRepresentation::GetAHardwareBuffer() {
   NOTREACHED();
   return nullptr;
 }
+std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+OverlayImageRepresentation::GetAHardwareBufferFenceSync() {
+  NOTREACHED();
+  return nullptr;
+}
 #elif defined(USE_OZONE)
 scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
   return backing()->GetNativePixmap();

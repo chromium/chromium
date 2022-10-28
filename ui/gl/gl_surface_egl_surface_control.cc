@@ -352,7 +352,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
 
   AHardwareBuffer* hardware_buffer = nullptr;
   base::ScopedFD fence_fd;
-  auto scoped_hardware_buffer = image->GetAHardwareBuffer();
+  auto scoped_hardware_buffer = std::move(image);
   bool is_primary_plane = false;
   if (scoped_hardware_buffer) {
     hardware_buffer = scoped_hardware_buffer->buffer();

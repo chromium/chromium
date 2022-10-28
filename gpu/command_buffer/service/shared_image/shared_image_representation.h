@@ -34,6 +34,8 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_hardware_buffer_fence_sync.h"
+
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 #endif
 
@@ -480,6 +482,13 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     AHardwareBuffer* GetAHardwareBuffer() {
       return representation()->GetAHardwareBuffer();
     }
+    // Deprecated. All code should use GetAHardwareBuffer() above, this function
+    // will be deleted when GLSurfaceEGLSurface control will be able to deliver
+    // fences via EndAccess.
+    std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+    GetAHardwareBufferFenceSync() {
+      return representation()->GetAHardwareBufferFenceSync();
+    }
 #elif defined(USE_OZONE)
     scoped_refptr<gfx::NativePixmap> GetNativePixmap() {
       return representation()->GetNativePixmap();
@@ -532,6 +541,8 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 
 #if BUILDFLAG(IS_ANDROID)
   virtual AHardwareBuffer* GetAHardwareBuffer();
+  virtual std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+  GetAHardwareBufferFenceSync();
 #elif defined(USE_OZONE)
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 #elif BUILDFLAG(IS_WIN)

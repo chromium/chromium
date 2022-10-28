@@ -56,16 +56,15 @@ void CreateAndBindEglImageFromAHB(AHardwareBuffer* buffer, GLuint service_id) {
   }
 }
 
-class VideoImage : public gl::GLImage {
+class VideoImage : public base::RefCounted<VideoImage> {
  public:
   VideoImage() = default;
 
   VideoImage(AHardwareBuffer* buffer)
       : handle_(base::android::ScopedHardwareBufferHandle::Create(buffer)) {}
 
-  // gl::GLImage:
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-  GetAHardwareBuffer() override {
+  GetAHardwareBuffer() {
     if (!handle_.is_valid())
       return nullptr;
 
@@ -76,9 +75,9 @@ class VideoImage : public gl::GLImage {
   base::ScopedFD TakeEndReadFence() { return std::move(end_read_fence_); }
 
  protected:
-  ~VideoImage() override = default;
-
  private:
+  friend class base::RefCounted<VideoImage>;
+
   class ScopedHardwareBufferFenceSyncImpl
       : public base::android::ScopedHardwareBufferFenceSync {
    public:
@@ -100,6 +99,8 @@ class VideoImage : public gl::GLImage {
    private:
     scoped_refptr<VideoImage> image_;
   };
+
+  ~VideoImage() = default;
 
   base::android::ScopedHardwareBufferHandle handle_;
 
@@ -529,13 +530,13 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
   }
 
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
-    if (gl_image_) {
+    if (video_image_) {
       DCHECK(release_fence.is_null());
       if (scoped_hardware_buffer_) {
-        scoped_hardware_buffer_->SetReadFence(gl_image_->TakeEndReadFence(),
+        scoped_hardware_buffer_->SetReadFence(video_image_->TakeEndReadFence(),
                                               true);
       }
-      gl_image_.reset();
+      video_image_.reset();
     } else {
       scoped_hardware_buffer_->SetReadFence(std::move(release_fence.owned_fd),
                                             true);
@@ -546,17 +547,8 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
   }
 
   gl::GLImage* GetGLImage() override {
-    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-    DCHECK(stream_image()->HasTextureOwner())
-        << "The backing is already in a SurfaceView!";
-    DCHECK(scoped_hardware_buffer_);
-
-    if (!gl_image_) {
-      gl_image_ =
-          base::MakeRefCounted<VideoImage>(scoped_hardware_buffer_->buffer());
-      gl_image_->SetColorSpace(color_space());
-    }
-    return gl_image_.get();
+    NOTREACHED();
+    return nullptr;
   }
 
   AHardwareBuffer* GetAHardwareBuffer() override {
@@ -564,10 +556,28 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
     return scoped_hardware_buffer_->buffer();
   }
 
+  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+  GetAHardwareBufferFenceSync() override {
+    return GetVideoImage()->GetAHardwareBuffer();
+  }
+
  private:
+  VideoImage* GetVideoImage() {
+    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    DCHECK(stream_image()->HasTextureOwner())
+        << "The backing is already in a SurfaceView!";
+    DCHECK(scoped_hardware_buffer_);
+
+    if (!video_image_) {
+      video_image_ =
+          base::MakeRefCounted<VideoImage>(scoped_hardware_buffer_->buffer());
+    }
+    return video_image_.get();
+  }
+
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
-  scoped_refptr<VideoImage> gl_image_;
+  scoped_refptr<VideoImage> video_image_;
 
   StreamTextureSharedImageInterface* stream_image() {
     auto* video_backing = static_cast<VideoImageReaderImageBacking*>(backing());

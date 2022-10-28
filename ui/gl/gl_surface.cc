@@ -482,7 +482,7 @@ bool GLSurfaceAdapter::ScheduleOverlayPlane(
     OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
-  return surface_->ScheduleOverlayPlane(image, std::move(gpu_fence),
+  return surface_->ScheduleOverlayPlane(std::move(image), std::move(gpu_fence),
                                         overlay_plane_data);
 }
 

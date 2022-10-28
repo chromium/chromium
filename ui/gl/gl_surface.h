@@ -38,6 +38,10 @@
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_hardware_buffer_fence_sync.h"
+#endif
+
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
@@ -64,6 +68,9 @@ class EGLTimestampClient;
 using OverlayImage = scoped_refptr<gfx::NativePixmap>;
 #elif BUILDFLAG(IS_MAC)
 using OverlayImage = gfx::ScopedIOSurface;
+#elif BUILDFLAG(IS_ANDROID)
+using OverlayImage =
+    std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>;
 #else
 using OverlayImage = GLImage*;
 #endif

@@ -77,7 +77,7 @@ void PresenterImageGL::BeginPresent() {
   DCHECK(!sk_surface());
   DCHECK(!scoped_overlay_read_access_);
 
-#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   const bool needs_gl_image = false;
 #else
   const bool needs_gl_image = true;
@@ -117,6 +117,8 @@ gl::OverlayImage PresenterImageGL::GetOverlayImage(
   return scoped_overlay_read_access_->GetNativePixmap();
 #elif BUILDFLAG(IS_MAC)
   return scoped_overlay_read_access_->GetIOSurface();
+#elif BUILDFLAG(IS_ANDROID)
+  return scoped_overlay_read_access_->GetAHardwareBufferFenceSync();
 #else
   return scoped_overlay_read_access_->gl_image();
 #endif
@@ -378,6 +380,9 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   // TODO(crbug.com/1366808): Add ScopedOverlayAccess::GetOverlayImage() that
   // works on all platforms.
   gl::OverlayImage overlay_image = access ? access->GetNativePixmap() : nullptr;
+#elif BUILDFLAG(IS_ANDROID)
+  gl::OverlayImage overlay_image =
+      access ? access->GetAHardwareBufferFenceSync() : nullptr;
 #else
   auto* overlay_image = access ? access->gl_image() : nullptr;
 #endif

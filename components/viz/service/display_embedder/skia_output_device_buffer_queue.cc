@@ -334,7 +334,7 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
     return nullptr;
   }
 
-#if defined(USE_OZONE) || BUILDFLAG(IS_MAC)
+#if defined(USE_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   const bool needs_gl_image = false;
 #else
   const bool needs_gl_image = true;
