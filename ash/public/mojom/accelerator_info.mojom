@@ -91,6 +91,10 @@ struct AcceleratorInfo {
   mojo_base.mojom.String16 key_display;
   AcceleratorType type;
   AcceleratorState state;
+  // True if the accelerator's activation key is available and can be pressed.
+  // False if the accelerator's activation key is not available or can not be
+  // pressed.
+  bool has_key_event;
   // True if the accelerator can not be customized by the user.
   // False if the accelerator can be customized by the user.
   bool locked;

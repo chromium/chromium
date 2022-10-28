@@ -25,6 +25,7 @@ mojom::AcceleratorInfoPtr AcceleratorInfoToMojom(
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->accelerator = accelerator.accelerator;
   info_mojom->key_display = accelerator.key_display;
+  info_mojom->has_key_event = accelerator.has_key_event;
   info_mojom->type = accelerator.type;
   info_mojom->state = accelerator.state;
   info_mojom->locked = accelerator.locked;
@@ -110,8 +111,14 @@ void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(
   for (const auto& [action_id, accelerators] : mapping) {
     for (const auto& accelerator : accelerators) {
       mojom::AcceleratorType type = GetAcceleratorType(accelerator);
+
+      // |locked| and and |has_key_event| are both default to true now.
+      // For |locked|, ash accelerators should not be locked when customization
+      // is allowed. For |has_key_event|, we need to determine its state based
+      // off of a keyboard device id.
       AcceleratorInfo info(type, accelerator,
                            KeycodeToKeyString(accelerator.key_code()),
+                           /*has_key_event=*/true,
                            /*locked=*/true);
       accelerator_infos_.push_back(info);
       id_to_accelerator_info_[action_id].push_back(info);

@@ -30,14 +30,15 @@ struct ASH_PUBLIC_EXPORT AcceleratorInfo {
   AcceleratorInfo(ash::mojom::AcceleratorType type,
                   ui::Accelerator accelerator,
                   const std::u16string& key_display,
-                  bool locked)
-      : type(type),
-        accelerator(accelerator),
-        key_display(key_display),
-        locked(locked) {}
+                  bool has_key_event,
+                  bool locked);
+  AcceleratorInfo(const AcceleratorInfo& other);
+  ~AcceleratorInfo();
+
   ash::mojom::AcceleratorType type;
   ui::Accelerator accelerator;
   std::u16string key_display;
+  bool has_key_event;
   // Whether the accelerator can be modified.
   bool locked = true;
   // Accelerators are enabled by default.
