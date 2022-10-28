@@ -5,58 +5,64 @@
 #include "chrome/browser/updater/browser_updater_client.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
+#include "base/version.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "components/version_info/version_info.h"
 
-BrowserUpdaterClient::BrowserUpdaterClient() {}
+BrowserUpdaterClient::BrowserUpdaterClient(
+    scoped_refptr<updater::UpdateService> update_service)
+    : update_service_(update_service) {}
 
 BrowserUpdaterClient::~BrowserUpdaterClient() = default;
 
 void BrowserUpdaterClient::Register() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&BrowserUpdaterClient::GetRegistrationRequest, this),
       base::BindOnce(
-          &BrowserUpdaterClient::BeginRegister, this,
-          version_info::GetVersionNumber(),
+          [](base::OnceCallback<void(int)> callback,
+             scoped_refptr<updater::UpdateService> update_service,
+             const updater::RegistrationRequest& request) {
+            update_service->RegisterApp(request, std::move(callback));
+          },
           base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&BrowserUpdaterClient::RegistrationCompleted,
-                             this))));
+                             this)),
+          update_service_));
 }
 
-void BrowserUpdaterClient::RegistrationCompleted(
-    updater::UpdateService::Result result) {
+void BrowserUpdaterClient::RegistrationCompleted(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result != updater::UpdateService::Result::kSuccess) {
+  if (result != updater::kRegistrationSuccess) {
     VLOG(1) << "Updater registration error: " << result;
   }
 }
 
 void BrowserUpdaterClient::GetUpdaterVersion(
-    base::OnceCallback<void(const std::string&)> callback) {
+    base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          &BrowserUpdaterClient::BeginGetUpdaterVersion, this,
-          base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
-              base::BindOnce(&BrowserUpdaterClient::GetUpdaterVersionCompleted,
-                             this, std::move(callback)))));
+  update_service_->GetVersion(base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&BrowserUpdaterClient::GetUpdaterVersionCompleted, this,
+                     std::move(callback))));
 }
 
 void BrowserUpdaterClient::GetUpdaterVersionCompleted(
-    base::OnceCallback<void(const std::string&)> callback,
-    const std::string& version) {
+    base::OnceCallback<void(const base::Version&)> callback,
+    const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Detected updater version: " << version;
   std::move(callback).Run(version);
@@ -70,34 +76,14 @@ void BrowserUpdaterClient::CheckForUpdate(
   update_state.state =
       updater::UpdateService::UpdateState::State::kCheckingForUpdates;
   version_updater_callback.Run(update_state);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&BrowserUpdaterClient::BeginUpdateCheck, this,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        version_updater_callback),
-                     base::BindPostTask(
-                         base::SequencedTaskRunnerHandle::Get(),
+  update_service_->Update(
+      GetAppId(), {}, updater::UpdateService::Priority::kForeground,
+      updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         version_updater_callback),
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
                          base::BindOnce(&BrowserUpdaterClient::UpdateCompleted,
-                                        this, version_updater_callback))));
-}
-
-void BrowserUpdaterClient::RunPeriodicTasks(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          &BrowserUpdaterClient::BeginRunPeriodicTasks, this,
-          base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
-              base::BindOnce(&BrowserUpdaterClient::RunPeriodicTasksCompleted,
-                             this, std::move(callback)))));
-}
-
-void BrowserUpdaterClient::RunPeriodicTasksCompleted(
-    base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run();
+                                        this, version_updater_callback)));
 }
 
 void BrowserUpdaterClient::UpdateCompleted(
@@ -116,4 +102,24 @@ void BrowserUpdaterClient::UpdateCompleted(
 
     callback.Run(update_state);
   }
+}
+
+void BrowserUpdaterClient::RunPeriodicTasks(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  update_service_->RunPeriodicTasks(base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&BrowserUpdaterClient::RunPeriodicTasksCompleted, this,
+                     std::move(callback))));
+}
+
+void BrowserUpdaterClient::RunPeriodicTasksCompleted(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run();
+}
+
+scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
+    updater::UpdaterScope scope) {
+  return base::MakeRefCounted<BrowserUpdaterClient>(
+      CreateUpdateServiceProxy(scope, base::Seconds(15)));
 }

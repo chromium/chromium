@@ -12,8 +12,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+
+namespace base {
+class Version;
+}
 
 // Cross-platform client to communicate between the browser and the Chromium
 // updater. It helps the browser register to the Chromium updater and invokes
@@ -23,6 +28,9 @@ class BrowserUpdaterClient
  public:
   static scoped_refptr<BrowserUpdaterClient> Create(
       updater::UpdaterScope scope);
+
+  explicit BrowserUpdaterClient(
+      scoped_refptr<updater::UpdateService> update_service);
 
   // Registers the browser to the Chromium updater via IPC registration API.
   // When registration is completed, it will call RegistrationCompleted().
@@ -46,48 +54,28 @@ class BrowserUpdaterClient
   // the callback is invoked. Must be called on the sequence on which the
   // BrowserUpdateClient was created. `callback` will be run on the same
   // sequence.
-  void GetUpdaterVersion(base::OnceCallback<void(const std::string&)> callback);
+  void GetUpdaterVersion(
+      base::OnceCallback<void(const base::Version&)> callback);
 
  protected:
   friend class base::RefCountedThreadSafe<BrowserUpdaterClient>;
-  BrowserUpdaterClient();
   virtual ~BrowserUpdaterClient();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Helper method for Register() to be implemented by each platform to initiate
-  // the registration. Runs in the thread pool.
-  virtual void BeginRegister(const std::string& version,
-                             updater::UpdateService::Callback callback) = 0;
+  updater::RegistrationRequest GetRegistrationRequest();
+  std::string GetAppId();
 
-  // Helper method for RunPeriodicTasks() to be implemented by each platform.
-  // Runs in the thread pool.
-  virtual void BeginRunPeriodicTasks(base::OnceClosure callback) = 0;
-
-  // Helper method for CheckForUpdate() to be implemented by each platform to
-  // initiate on-demand updates. Runs in the thread pool.
-  virtual void BeginUpdateCheck(
-      updater::UpdateService::StateChangeCallback state_change,
-      updater::UpdateService::Callback callback) = 0;
-
-  // Platform-specific helper for GetUpdaterVersion. Runs in the thread pool.
-  virtual void BeginGetUpdaterVersion(
-      base::OnceCallback<void(const std::string&)> callback) = 0;
-
-  // Handles status update from Chromium updater when registration is completed.
-  void RegistrationCompleted(updater::UpdateService::Result result);
-
-  // Handles the completion of RunPeriodicTasks.
-  void RunPeriodicTasksCompleted(base::OnceClosure callback);
-
-  // Handles status update from Chromium updater when updates are completed.
+  void RegistrationCompleted(int result);
+  void GetUpdaterVersionCompleted(
+      base::OnceCallback<void(const base::Version&)> callback,
+      const base::Version& version);
   void UpdateCompleted(updater::UpdateService::StateChangeCallback callback,
                        updater::UpdateService::Result result);
+  void RunPeriodicTasksCompleted(base::OnceClosure callback);
 
-  void GetUpdaterVersionCompleted(
-      base::OnceCallback<void(const std::string&)> callback,
-      const std::string& version);
+  scoped_refptr<updater::UpdateService> update_service_;
 };
 
 #endif  // CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_H_

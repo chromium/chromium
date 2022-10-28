@@ -16,6 +16,10 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
+namespace base {
+class Version;
+}
+
 class BrowserUpdaterHelperClientMac;
 
 @class KeystoneObserver;
@@ -60,7 +64,7 @@ class VersionUpdaterMac : public VersionUpdater {
       VersionUpdater::PromoteCallback promote_callback,
       updater::UpdaterScope scope,
       bool enable_promote_button,
-      const std::string& version);
+      const base::Version& version);
 
   // Callback used to communicate update status to the client.
   StatusCallback status_callback_;

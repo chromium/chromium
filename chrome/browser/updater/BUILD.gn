@@ -22,9 +22,17 @@ source_set("browser_updater_client") {
     "//components/version_info",
   ]
 
+  if (is_win) {
+    sources += [ "browser_updater_client_win.cc" ]
+
+    deps += [
+      "//chrome/browser/google",
+      "//chrome/install_static:install_static_util",
+    ]
+  }
+
   if (is_mac) {
     sources += [
-      "browser_updater_client_mac.h",
       "browser_updater_client_mac.mm",
       "browser_updater_client_util_mac.mm",
       "browser_updater_helper_client_mac.h",

@@ -6274,7 +6274,6 @@ test("unit_tests") {
       "../browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller_unittest.mm",
       "../browser/ui/cocoa/window_size_autosaver_unittest.mm",
       "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
-      "../browser/updater/browser_updater_client_mac_unittest.mm",
       "../browser/upgrade_detector/directory_monitor_unittest.cc",
       "../utility/importer/safari_importer_unittest.mm",
     ]
@@ -7478,9 +7477,9 @@ test("unit_tests") {
       "../browser/ui/webui/ash/add_supervision/add_supervision_handler_utils_unittest.cc",
       "../browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_handler_unittest.cc",
       "../browser/ui/webui/ash/edu_account_login_handler_unittest.cc",
-      "../browser/ui/webui/ash/sync/os_sync_handler_unittest.cc",
       "../browser/ui/webui/ash/login/fake_update_required_screen_handler.cc",
       "../browser/ui/webui/ash/login/fake_update_required_screen_handler.h",
+      "../browser/ui/webui/ash/sync/os_sync_handler_unittest.cc",
       "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
       "../browser/ui/webui/signin/ash/user_cloud_signin_restriction_policy_fetcher_unittest.cc",
       "../browser/ui/window_sizer/window_sizer_chromeos_unittest.cc",

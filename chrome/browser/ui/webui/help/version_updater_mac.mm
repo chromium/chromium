@@ -27,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/version.h"
 #include "chrome/browser/buildflags.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
@@ -417,7 +418,7 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()}, base::BindOnce(&ShouldPromoteUpdater),
         base::BindOnce(
-            [](base::OnceCallback<void(const std::string&)> promotion,
+            [](base::OnceCallback<void(const base::Version&)> promotion,
                bool should_promote) {
               if (should_promote) {
                 BrowserUpdaterClient::Create(updater::UpdaterScope::kSystem)
@@ -435,9 +436,9 @@ void VersionUpdaterMac::UpdatePromotionStatusFromChromiumUpdater(
     VersionUpdater::PromoteCallback promote_callback,
     updater::UpdaterScope scope,
     bool enable_promote_button,
-    const std::string& version) {
+    const base::Version& version) {
   promote_callback.Run(
-      !version.empty() && scope == updater::UpdaterScope::kSystem
+      version.IsValid() && scope == updater::UpdaterScope::kSystem
           ? VersionUpdater::PROMOTED  // Successfully communicated with the
                                       // system updater.
           : (enable_promote_button ? VersionUpdater::PROMOTE_ENABLED
