@@ -52,7 +52,8 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
 }
 
 void WebSocketSBHandshakeThrottle::OnCompleteCheck(bool proceed,
-                                                   bool showed_interstitial) {
+                                                   bool showed_interstitial,
+                                                   bool did_check_allowlist) {
   DCHECK_EQ(state_, State::kStarted);
   if (proceed) {
     state_ = State::kSafe;
@@ -72,9 +73,10 @@ void WebSocketSBHandshakeThrottle::OnCompleteCheck(bool proceed,
 void WebSocketSBHandshakeThrottle::OnCheckResult(
     mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
     bool proceed,
-    bool showed_interstitial) {
+    bool showed_interstitial,
+    bool did_check_allowlist) {
   if (!slow_check_notifier.is_valid()) {
-    OnCompleteCheck(proceed, showed_interstitial);
+    OnCompleteCheck(proceed, showed_interstitial, did_check_allowlist);
     return;
   }
 

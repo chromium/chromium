@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -135,14 +136,16 @@ const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
 }
 
 void RendererURLLoaderThrottle::OnCompleteCheck(bool proceed,
-                                                bool showed_interstitial) {
+                                                bool showed_interstitial,
+                                                bool did_check_allowlist) {
   OnCompleteCheckInternal(true /* slow_check */, proceed, showed_interstitial);
 }
 
 void RendererURLLoaderThrottle::OnCheckUrlResult(
     mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
     bool proceed,
-    bool showed_interstitial) {
+    bool showed_interstitial,
+    bool did_check_allowlist) {
   // When this is the callback of safe_browsing_->CreateCheckerAndCheck(), it is
   // possible that we get here after a check with |url_checker_| has completed
   // and blocked the request.
@@ -186,10 +189,15 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     pending_slow_checks_--;
   }
 
-  // If the resource load is currently deferred and is going to exit that state
-  // (either being cancelled or resumed), record the total delay.
-  if (deferred_ && (!proceed || pending_checks_ == 0))
-    total_delay_ = base::TimeTicks::Now() - defer_start_time_;
+  // If the resource load is going to finish (either being cancelled or
+  // resumed), record the total delay.
+  if (!proceed || pending_checks_ == 0) {
+    // If the resource load is currently deferred, there is a delay.
+    if (deferred_)
+      total_delay_ = base::TimeTicks::Now() - defer_start_time_;
+    base::UmaHistogramTimes("SafeBrowsing.RendererThrottle.TotalDelay2",
+                            total_delay_);
+  }
 
   if (proceed) {
     if (pending_slow_checks_ == 0 && slow_check)

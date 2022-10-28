@@ -24,6 +24,28 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace {
+
+constexpr char kFullURLLookup[] = "FullUrlLookup";
+
+void LogTotalDelay2Metrics(const std::string& url_check_type,
+                           bool did_check_allowlist,
+                           base::TimeDelta total_delay) {
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"SafeBrowsing.BrowserThrottle.TotalDelay2", url_check_type}),
+      total_delay);
+  if (url_check_type == base::StrCat({".Enterprise", kFullURLLookup})) {
+    base::UmaHistogramTimes(
+        base::StrCat(
+            {"SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup",
+             did_check_allowlist ? ".AllowlistChecked" : ".AllowlistBypassed"}),
+        total_delay);
+  }
+}
+
+}  // namespace
+
 namespace safe_browsing {
 
 // TODO(http://crbug.com/824843): Remove this if safe browsing is moved to the
@@ -40,6 +62,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
       bool can_rt_check_subresource_url,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
+      std::string url_lookup_service_metric_suffix,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service)
       : delegate_getter_(std::move(delegate_getter)),
         frame_tree_node_id_(frame_tree_node_id),
@@ -50,6 +73,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         can_check_db_(can_check_db),
         can_check_high_confidence_allowlist_(
             can_check_high_confidence_allowlist),
+        url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
         url_lookup_service_(url_lookup_service) {
     content::WebContents* contents = web_contents_getter_.Run();
     if (!!contents) {
@@ -89,9 +113,9 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE,
         frame_tree_node_id_, real_time_lookup_enabled_,
         can_rt_check_subresource_url_, can_check_db_,
-        can_check_high_confidence_allowlist_, last_committed_url_,
-        content::GetUIThreadTaskRunner({}), url_lookup_service_,
-        WebUIInfoSingleton::GetInstance());
+        can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
+        last_committed_url_, content::GetUIThreadTaskRunner({}),
+        url_lookup_service_, WebUIInfoSingleton::GetInstance());
 
     CheckUrl(url, method);
   }
@@ -121,9 +145,11 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   // output parameter to a callback to receive the final result.
   void OnCheckUrlResult(NativeUrlCheckNotifier* slow_check_notifier,
                         bool proceed,
-                        bool showed_interstitial) {
+                        bool showed_interstitial,
+                        bool did_check_allowlist) {
     if (!slow_check_notifier) {
-      OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial);
+      OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial,
+                      did_check_allowlist);
       return;
     }
 
@@ -142,11 +168,12 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   // (Please see comments of OnCheckUrlResult() for what slow check means).
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
-                       bool showed_interstitial) {
+                       bool showed_interstitial,
+                       bool did_check_allowlist) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck, throttle_,
-                       slow_check, proceed, showed_interstitial));
+        FROM_HERE, base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck,
+                                  throttle_, slow_check, proceed,
+                                  showed_interstitial, did_check_allowlist));
   }
 
   // The following member stays valid until |url_checker_| is created.
@@ -161,6 +188,7 @@ class BrowserURLLoaderThrottle::CheckerOnIO
   bool can_rt_check_subresource_url_ = false;
   bool can_check_db_ = true;
   bool can_check_high_confidence_allowlist_ = true;
+  std::string url_lookup_service_metric_suffix_;
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
 };
@@ -201,11 +229,19 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       url_lookup_service
           ? url_lookup_service->CanCheckSafeBrowsingHighConfidenceAllowlist()
           : true;
+
+  url_check_type_ = real_time_lookup_enabled
+                        ? base::StrCat({url_lookup_service->GetMetricSuffix(),
+                                        kFullURLLookup})
+                        : ".HashBasedCheck";
+
   io_checker_ = std::make_unique<CheckerOnIO>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
       weak_factory_.GetWeakPtr(), real_time_lookup_enabled,
       can_rt_check_subresource_url, can_check_db,
-      can_check_high_confidence_allowlist, url_lookup_service);
+      can_check_high_confidence_allowlist,
+      url_lookup_service ? url_lookup_service->GetMetricSuffix() : ".None",
+      url_lookup_service);
 }
 
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
@@ -299,7 +335,8 @@ const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
 
 void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
                                                bool proceed,
-                                               bool showed_interstitial) {
+                                               bool showed_interstitial,
+                                               bool did_check_allowlist) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!blocked_);
 
@@ -311,10 +348,14 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
     pending_slow_checks_--;
   }
 
-  // If the resource load is currently deferred and is going to exit that state
-  // (either being cancelled or resumed), record the total delay.
-  if (deferred_ && (!proceed || pending_checks_ == 0))
-    total_delay_ = base::TimeTicks::Now() - defer_start_time_;
+  // If the resource load is going to finish (either being cancelled or
+  // resumed), record the total delay.
+  if (!proceed || pending_checks_ == 0) {
+    // If the resource load is currently deferred, there is a delay.
+    if (deferred_)
+      total_delay_ = base::TimeTicks::Now() - defer_start_time_;
+    LogTotalDelay2Metrics(url_check_type_, did_check_allowlist, total_delay_);
+  }
 
   if (proceed) {
     if (pending_slow_checks_ == 0 && slow_check)

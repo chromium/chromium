@@ -86538,6 +86538,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="BLACKLISTED"/>
 </enum>
 
+<enum name="SafeBrowsingRTConsumerVersionReason">
+  <int value="0" label="Total checks"/>
+  <int value="1" label="Off the record"/>
+  <int value="2" label="No valid DM token"/>
+  <int value="3" label="Policy not set"/>
+</enum>
+
 <enum name="SafeBrowsingRTLookupResponseVerdictType">
   <int value="0" label="VERDICT_TYPE_UNSPECIFIED"/>
   <int value="1" label="SAFE"/>

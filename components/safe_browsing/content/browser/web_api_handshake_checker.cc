@@ -52,7 +52,8 @@ class WebApiHandshakeChecker::CheckerOnIO
             /*originated_from_service_worker=*/false);
     if (skip_checks) {
       OnCompleteCheck(/*slow_check=*/false, /*proceed=*/true,
-                      /*showed_interstitial=*/false);
+                      /*showed_interstitial=*/false,
+                      /*did_check_allowlist=*/false);
       return;
     }
 
@@ -65,7 +66,8 @@ class WebApiHandshakeChecker::CheckerOnIO
         /*real_time_lookup_enabled=*/false,
         /*can_rt_check_subresource_url=*/false,
         /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
-        last_committed_url_, content::GetUIThreadTaskRunner({}),
+        /*url_lookup_service_metric_suffix=*/".None", last_committed_url_,
+        content::GetUIThreadTaskRunner({}),
         /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
     url_checker_->CheckUrl(
         url, "GET",
@@ -78,10 +80,12 @@ class WebApiHandshakeChecker::CheckerOnIO
   void OnCheckUrlResult(
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
-      bool showed_interstitial) {
+      bool showed_interstitial,
+      bool did_check_allowlist) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     if (!slow_check_notifier) {
-      OnCompleteCheck(/*slow_check=*/false, proceed, showed_interstitial);
+      OnCompleteCheck(/*slow_check=*/false, proceed, showed_interstitial,
+                      did_check_allowlist);
       return;
     }
 
@@ -92,12 +96,13 @@ class WebApiHandshakeChecker::CheckerOnIO
 
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
-                       bool showed_interstitial) {
+                       bool showed_interstitial,
+                       bool did_check_allowlist) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&WebApiHandshakeChecker::OnCompleteCheck,
                                   handshake_checker_, slow_check, proceed,
-                                  showed_interstitial));
+                                  showed_interstitial, did_check_allowlist));
   }
 
   base::WeakPtr<WebApiHandshakeChecker> handshake_checker_;
@@ -135,7 +140,8 @@ void WebApiHandshakeChecker::Check(const GURL& url, CheckCallback callback) {
 
 void WebApiHandshakeChecker::OnCompleteCheck(bool slow_check,
                                              bool proceed,
-                                             bool showed_interstitial) {
+                                             bool showed_interstitial,
+                                             bool did_check_allowlist) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(check_callback_);
 

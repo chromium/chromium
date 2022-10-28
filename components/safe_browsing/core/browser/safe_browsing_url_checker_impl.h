@@ -68,7 +68,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
 
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
-                              bool /* showed_interstitial */)>;
+                              bool /* showed_interstitial */,
+                              bool /* did_check_allowlist */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
   // this output parameter with a callback to receive complete notification. In
@@ -76,7 +77,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   using NativeCheckUrlCallback =
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
-                              bool /* showed_interstitial */)>;
+                              bool /* showed_interstitial */,
+                              bool /* did_check_allowlist */)>;
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |real_time_lookup_enabled|
   // indicates whether or not the profile has enabled real time URL lookups, as
@@ -107,6 +109,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       bool can_rt_check_subresource_url,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
+      std::string url_lookup_service_metric_suffix,
       GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
@@ -159,7 +162,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     Notifier& operator=(Notifier&& other);
 
     void OnStartSlowCheck();
-    void OnCompleteCheck(bool proceed, bool showed_interstitial);
+    void OnCompleteCheck(bool proceed,
+                         bool showed_interstitial,
+                         bool did_check_allowlist);
 
    private:
     // Used in the mojo interface case.
@@ -280,7 +285,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     UrlInfo(const GURL& url,
             const std::string& method,
             Notifier notifier,
-            bool is_cached_safe_url);
+            bool is_cached_safe_url,
+            bool did_check_allowlist);
     UrlInfo(UrlInfo&& other);
 
     ~UrlInfo();
@@ -291,6 +297,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
     // If the URL is classified as safe in cache manager during real time
     // lookup.
     bool is_cached_safe_url;
+    // If the allowlist was checked for this URL.
+    bool did_check_allowlist;
   };
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -347,6 +355,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // when enterprise real time URL lookup and allowlist bypass is also
   // enabled (SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass).
   bool can_check_high_confidence_allowlist_ = true;
+
+  // URL Lookup service suffix for logging metrics.
+  std::string url_lookup_service_metric_suffix_;
 
   // The last committed URL when the checker is constructed. It is used to
   // obtain page load token when the URL being checked is not a mainframe URL.

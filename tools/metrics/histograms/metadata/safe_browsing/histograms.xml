@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="consumer or enterprise"/>
   <variant name=".Consumer" summary="consumer"/>
   <variant name=".Enterprise" summary="enterprise"/>
+  <variant name=".None" summary="neither consumer nor enterprise"/>
 </variants>
 
 <variants name="V4StoreNewFileNames">
@@ -182,6 +183,44 @@ chromium-metrics-reviews@google.com.
     deferred by Safe Browsing check and the Safe Browsing check doesn't block
     the URL.
   </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup{AllowlistCheckStatus}"
+    units="ms" expires_after="2023-01-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when the browser URL loader was deferred by Safe
+    Browsing check and when the check is completed, for enterprise real time URL
+    check request with {AllowlistCheckStatus} during the check. This metric is
+    different from SafeBrowsing.BrowserThrottle.TotalDelay as it logs for each
+    request, recording zero delay when the request is not deferred.
+  </summary>
+  <token key="AllowlistCheckStatus">
+    <variant name=".AllowlistBypassed" summary="allowlist bypassed"/>
+    <variant name=".AllowlistChecked" summary="allowlist checked"/>
+  </token>
+</histogram>
+
+<histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{UserCategory}"
+    units="ms" expires_after="2023-01-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when the browser URL loader was deferred by Safe
+    Browsing check and when the check is completed, for {UserCategory} URL check
+    request. This metric is different from
+    SafeBrowsing.BrowserThrottle.TotalDelay as it logs for each request,
+    recording zero delay when the request is not deferred.
+  </summary>
+  <token key="UserCategory">
+    <variant name=".ConsumerFullUrlLookup" summary="consumer real time"/>
+    <variant name=".EnterpriseFullUrlLookup" summary="enterprise real time"/>
+    <variant name=".HashBasedCheck" summary="hash-based"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.CheckBrowseUrl.HasLocalMatch"
@@ -1625,6 +1664,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.RendererThrottle.TotalDelay2" units="ms"
+    expires_after="2023-02-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when the renderer URL loader was deferred by Safe
+    Browsing check and when the check is completed. This metric is different
+    from SafeBrowsing.RendererThrottle.TotalDelay as it logs for each request,
+    recording zero delay when the request is not deferred.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.AllowlistSizeTooSmall"
     enum="BooleanUnavailable" expires_after="2023-03-19">
   <owner>xinghuilu@chromium.org</owner>
@@ -1687,6 +1739,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs whether Safe Browsing database can be checked in Safe Browsing URL
     checker. Logged each time a URL is checked by Safe Browsing URL checker.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.ConsumerVersionReason"
+    enum="SafeBrowsingRTConsumerVersionReason" expires_after="2023-01-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the reason why a consumer version is preferred over the enterprise
+    version for the RealTime URL Lookup service. Logged on all platforms with
+    RealTime URL Lookup service, and logged whenever a URL is checked by Safe
+    Browsing URL checker. May even be logged multiple times per URL check,
+    depending on how many times the function is called.
   </summary>
 </histogram>
 
@@ -1823,19 +1889,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.LocalMatch.Result.{IsMainframe}"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-06-10">
+<histogram name="SafeBrowsing.RT.LocalMatch.Result.{IsMainframe}{UserCategory}"
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-01-12">
   <owner>xinghuilu@chromium.org</owner>
+  <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the result of checking the {IsMainframe} URL against the local Safe
-    Browsing high confidence allowlist. Logged each time a top frame URL
-    navigation happens for users who have the real time URL lookups enabled.
+    Browsing high confidence allowlist for {UserCategory} real time URL check
+    request. Logged each time a top frame URL navigation happens for users who
+    have the real time URL lookups enabled.
   </summary>
   <token key="IsMainframe">
     <variant name="Mainframe" summary="mainframe"/>
     <variant name="NonMainframe" summary="non mainframe"/>
   </token>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Result"

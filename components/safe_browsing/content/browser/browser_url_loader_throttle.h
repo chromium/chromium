@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -79,7 +80,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
-                              bool /* showed_interstitial */)>;
+                              bool /* showed_interstitial */,
+                              bool /* did_check_allowlist */)>;
 
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
   // necessary.
@@ -93,7 +95,10 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of CheckerOnIO::OnCheckUrlResult() for what slow check
   // means).
-  void OnCompleteCheck(bool slow_check, bool proceed, bool showed_interstitial);
+  void OnCompleteCheck(bool slow_check,
+                       bool proceed,
+                       bool showed_interstitial,
+                       bool did_check_allowlist);
 
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
@@ -123,6 +128,9 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   bool skip_checks_ = false;
 
   std::unique_ptr<CheckerOnIO> io_checker_;
+
+  // Metric suffix for the URL check type.
+  std::string url_check_type_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

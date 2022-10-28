@@ -56,6 +56,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
   bool CanCheckSafeBrowsingDb() const override;
   bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override;
   bool CanSendRTSampleRequest() const override;
+  std::string GetMetricSuffix() const override;
 
  private:
   // RealTimeUrlLookupServiceBase:
@@ -72,7 +73,6 @@ class ChromeEnterpriseRealTimeUrlLookupService
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
   absl::optional<std::string> GetDMTokenString() const override;
-  std::string GetMetricSuffix() const override;
   bool ShouldIncludeCredentials() const override;
   double GetMinAllowedTimestampForReferrerChains() const override;
 

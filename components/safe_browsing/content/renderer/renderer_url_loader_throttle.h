@@ -56,12 +56,15 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   const char* NameForLoggingWillProcessResponse() override;
 
   // mojom::UrlCheckNotifier implementation.
-  void OnCompleteCheck(bool proceed, bool showed_interstitial) override;
+  void OnCompleteCheck(bool proceed,
+                       bool showed_interstitial,
+                       bool did_check_allowlist) override;
 
   void OnCheckUrlResult(
       mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
       bool proceed,
-      bool showed_interstitial);
+      bool showed_interstitial,
+      bool did_check_allowlist);
 
   // Called by the two methods above.
   // |slow_check| indicates whether it reports the result of a slow check.
