@@ -120,15 +120,15 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
       Shell::Get()->privacy_hub_controller()->camera_controller();
   SetUserPref(true);
 
-  controller.OnCameraHWPrivacySwitchStatusChanged(
-      0, cros::mojom::CameraPrivacySwitchState::OFF);
+  controller.OnCameraHWPrivacySwitchStateChanged(
+      std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
             controller.HWSwitchState());
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 
-  controller.OnCameraHWPrivacySwitchStatusChanged(
-      0, cros::mojom::CameraPrivacySwitchState::ON);
+  controller.OnCameraHWPrivacySwitchStateChanged(
+      std::string(), cros::mojom::CameraPrivacySwitchState::ON);
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::ON,
             controller.HWSwitchState());
 
@@ -151,8 +151,8 @@ TEST_F(PrivacyHubCameraControllerTests,
       Shell::Get()->privacy_hub_controller()->camera_controller();
   SetUserPref(true);
 
-  controller.OnCameraHWPrivacySwitchStatusChanged(
-      0, cros::mojom::CameraPrivacySwitchState::ON);
+  controller.OnCameraHWPrivacySwitchStateChanged(
+      "0", cros::mojom::CameraPrivacySwitchState::ON);
   const message_center::Notification* const notification =
       message_center::MessageCenter::Get()->FindNotificationById(
           kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId);
@@ -160,8 +160,8 @@ TEST_F(PrivacyHubCameraControllerTests,
   // User should be able to clear the notification manually
   EXPECT_FALSE(notification->rich_notification_data().pinned);
   // Notification should be cleared when hardware mute is disabled
-  controller.OnCameraHWPrivacySwitchStatusChanged(
-      0, cros::mojom::CameraPrivacySwitchState::OFF);
+  controller.OnCameraHWPrivacySwitchStateChanged(
+      "0", cros::mojom::CameraPrivacySwitchState::OFF);
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 }
@@ -176,7 +176,7 @@ TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
 
   // Emulate camera activity
   controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true);
+                                    true, {"0"});
   // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
@@ -201,7 +201,7 @@ TEST_F(PrivacyHubCameraControllerTests,
 
   // Emulate camera activity
   controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true);
+                                    true, {"0"});
   // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
@@ -223,7 +223,7 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
 
   // Emulate camera activity
   controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true);
+                                    true, {"0"});
   // Disable camera
   SetUserPref(false);
 

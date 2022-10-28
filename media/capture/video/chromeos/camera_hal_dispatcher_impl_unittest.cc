@@ -106,12 +106,16 @@ class MockCameraHalClient : public cros::mojom::CameraHalClient {
 
 class MockCameraActiveClientObserver : public CameraActiveClientObserver {
  public:
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override {
-    DoOnActiveClientChange(type, is_active);
+  void OnActiveClientChange(
+      cros::mojom::CameraClientType type,
+      bool is_active,
+      const base::flat_set<std::string>& device_ids) override {
+    DoOnActiveClientChange(type, is_active, device_ids);
   }
-  MOCK_METHOD2(DoOnActiveClientChange,
-               void(cros::mojom::CameraClientType, bool));
+  MOCK_METHOD3(DoOnActiveClientChange,
+               void(cros::mojom::CameraClientType,
+                    bool,
+                    const base::flat_set<std::string>&));
 };
 
 }  // namespace
@@ -129,6 +133,7 @@ class CameraHalDispatcherImplTest : public ::testing::Test {
 
   void SetUp() override {
     dispatcher_ = new CameraHalDispatcherImpl();
+    dispatcher_->AddCameraIdToDeviceIdEntry(0, "0");
     EXPECT_TRUE(dispatcher_->StartThreads());
   }
 
@@ -240,8 +245,9 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
         std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
         this->QuitRunLoop();
       });
-  EXPECT_CALL(observer, DoOnActiveClientChange(
-                            cros::mojom::CameraClientType::TESTING, true))
+  EXPECT_CALL(observer,
+              DoOnActiveClientChange(cros::mojom::CameraClientType::TESTING,
+                                     true, base::flat_set<std::string>({"0"})))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
@@ -280,8 +286,9 @@ TEST_F(CameraHalDispatcherImplTest, ServerConnectionError) {
 
   // Wait for our observer to be told the client is inactive, which means
   // the server has been cleaned up properly before registering again.
-  EXPECT_CALL(observer, DoOnActiveClientChange(
-                            cros::mojom::CameraClientType::TESTING, false))
+  EXPECT_CALL(observer,
+              DoOnActiveClientChange(cros::mojom::CameraClientType::TESTING,
+                                     false, base::flat_set<std::string>()))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
@@ -522,8 +529,9 @@ TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
   MockCameraActiveClientObserver observer;
   dispatcher_->AddActiveClientObserver(&observer);
 
-  EXPECT_CALL(observer, DoOnActiveClientChange(
-                            cros::mojom::CameraClientType::TESTING, true))
+  EXPECT_CALL(observer,
+              DoOnActiveClientChange(cros::mojom::CameraClientType::TESTING,
+                                     true, base::flat_set<std::string>({"0"})))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));
@@ -532,8 +540,9 @@ TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
 
   DoLoop(1);
 
-  EXPECT_CALL(observer, DoOnActiveClientChange(
-                            cros::mojom::CameraClientType::TESTING, false))
+  EXPECT_CALL(observer,
+              DoOnActiveClientChange(cros::mojom::CameraClientType::TESTING,
+                                     false, base::flat_set<std::string>()))
       .Times(1)
       .WillOnce(
           InvokeWithoutArgs(this, &CameraHalDispatcherImplTest::QuitRunLoop));

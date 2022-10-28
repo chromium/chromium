@@ -86,12 +86,14 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   void MaybeSubscribeToCameraService(bool should_use_cros_camera_service);
 
   // media::CameraActiveClientObserver
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override;
+  void OnActiveClientChange(
+      cros::mojom::CameraClientType type,
+      bool is_new_active_client,
+      const base::flat_set<std::string>& active_device_ids) override;
 
   // media::CameraPrivacySwitchObserver
-  void OnCameraHWPrivacySwitchStatusChanged(
-      int32_t camera_id,
+  void OnCameraHWPrivacySwitchStateChanged(
+      const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // CrasAudioHandler::AudioObserver

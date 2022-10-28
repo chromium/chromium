@@ -59,13 +59,15 @@ class ASH_EXPORT CameraPrivacySwitchController
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // media::CameraPrivacySwitchObserver
-  void OnCameraHWPrivacySwitchStatusChanged(
-      int32_t camera_id,
+  void OnCameraHWPrivacySwitchStateChanged(
+      const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // media::CameraActiveClientObserver:
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override;
+  void OnActiveClientChange(
+      cros::mojom::CameraClientType type,
+      bool is_active,
+      const base::flat_set<std::string>& device_ids) override;
 
   // Handles user toggling the camera switch on Privacy Hub UI.
   void OnPreferenceChanged(const std::string& pref_name);
@@ -99,8 +101,9 @@ class ASH_EXPORT CameraPrivacySwitchController
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
-  cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_;
-  bool is_camera_active_ = false;
+  cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
+      cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+  int active_camera_client_count_ = 0;
 };
 
 }  // namespace ash

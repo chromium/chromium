@@ -122,7 +122,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   // Internal method to update the camera info for all built-in cameras. Runs on
   // the same thread as CreateDevice, GetSupportedFormats, and
-  // GetDeviceDescriptors.
+  // GetDevicesInfo.
   bool UpdateBuiltInCameraInfo();
   void UpdateBuiltInCameraInfoOnIpcThread();
 
@@ -181,7 +181,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // |num_builtin_cameras_| stores the number of built-in camera devices
   // reported by the camera HAL, and |camera_info_| stores the camera info of
   // each camera device. They are modified only on |ipc_task_runner_|. They
-  // are also read in GetSupportedFormats and GetDeviceDescriptors, in which the
+  // are also read in GetSupportedFormats and GetDevicesInfo, in which the
   // access is protected by |camera_info_lock_| and sequenced through
   // UpdateBuiltInCameraInfo and |builtin_camera_info_updated_| to avoid race
   // conditions. For external cameras, the |camera_info_| would be read nad
@@ -193,7 +193,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
       GUARDED_BY(camera_info_lock_);
 
   // A map from |VideoCaptureDeviceDescriptor.device_id| to camera id, which is
-  // updated in GetDeviceDescriptors() and queried in
+  // updated in GetDevicesInfo() and queried in
   // GetCameraIdFromDeviceId().
   base::Lock device_id_to_camera_id_lock_;
   std::map<std::string, int> device_id_to_camera_id_

@@ -62,8 +62,10 @@ class ASH_EXPORT AutozoomControllerImpl
   void SetAutozoomSupported(bool autozoom_supported);
 
   // CameraActiveClientObserver
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override;
+  void OnActiveClientChange(
+      cros::mojom::CameraClientType type,
+      bool is_new_active_client,
+      const base::flat_set<std::string>& active_device_ids) override;
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.

@@ -9,12 +9,14 @@
 #include "ash/public/cpp/media_controller.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 namespace apps {
@@ -70,13 +72,15 @@ class MediaClientImpl : public ash::MediaClient,
   void OnVmCameraMicActiveChanged(ash::VmCameraMicManager* manager) override;
 
   // media::CameraPrivacySwitchObserver:
-  void OnCameraHWPrivacySwitchStatusChanged(
-      int32_t camera_id,
+  void OnCameraHWPrivacySwitchStateChanged(
+      const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state) override;
 
   // media::CameraActiveClientObserver:
-  void OnActiveClientChange(cros::mojom::CameraClientType type,
-                            bool is_active) override;
+  void OnActiveClientChange(
+      cros::mojom::CameraClientType type,
+      bool is_active,
+      const base::flat_set<std::string>& device_ids) override;
 
   // Enables/disables custom media key handling when |context| is the active
   // browser. Media keys will be forwarded to |delegate|.
@@ -116,7 +120,16 @@ class MediaClientImpl : public ash::MediaClient,
 
   // Shows a notification informing the user that an app is trying to use the
   // camera while the camera privacy switch is turned on.
-  void ShowCameraOffNotification();
+  void ShowCameraOffNotification(const std::string& device_name);
+
+  void OnGetSourceInfosByPrivacySwitchStateChanged(
+      const std::string& device_id,
+      cros::mojom::CameraPrivacySwitchState state,
+      const std::vector<media::VideoCaptureDeviceInfo>& devices);
+
+  void OnGetSourceInfosByActiveClientChanged(
+      const std::vector<std::string>& device_ids,
+      const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   ash::MediaController* media_controller_ = nullptr;
 
@@ -133,14 +146,19 @@ class MediaClientImpl : public ash::MediaClient,
       ash::MediaCaptureState::kNone;
 
   // The most recent observed camera privacy switch state.
-  cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
-      cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+  base::flat_map<std::string, cros::mojom::CameraPrivacySwitchState>
+      device_id_to_camera_privacy_switch_state_;
 
-  bool is_camera_active_ = false;
+  int active_camera_client_count_ = 0;
 
   // Most recent time the notification that the camera privacy switch is on was
   // shown.
   base::TimeTicks camera_switch_notification_shown_timestamp_;
+
+  mojo::Remote<video_capture::mojom::VideoSourceProvider>
+      video_source_provider_remote_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<MediaClientImpl> weak_ptr_factory_{this};
 };

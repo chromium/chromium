@@ -384,6 +384,8 @@ void CameraHalDelegate::GetDevicesInfo(
       }
       desc.set_control_support(GetControlSupport(camera_info));
       device_id_to_camera_id_[desc.device_id] = camera_id;
+      auto* dispatcher = CameraHalDispatcherImpl::GetInstance();
+      dispatcher->AddCameraIdToDeviceIdEntry(camera_id, desc.device_id);
       devices_info.emplace_back(desc);
       GetSupportedFormats(camera_info_[camera_id],
                           &devices_info.back().supported_formats);
@@ -395,6 +397,7 @@ void CameraHalDelegate::GetDevicesInfo(
             std::string(kVirtualPrefix) + base::NumberToString(camera_id);
         desc.set_display_name("Virtual Camera");
         device_id_to_camera_id_[desc.device_id] = camera_id;
+        dispatcher->AddCameraIdToDeviceIdEntry(camera_id, desc.device_id);
         devices_info.emplace_back(desc);
         GetSupportedFormats(camera_info_[camera_id],
                             &devices_info.back().supported_formats);

@@ -70,8 +70,15 @@ class CAPTURE_EXPORT CameraClientObserver {
 
 class CAPTURE_EXPORT CameraActiveClientObserver : public base::CheckedObserver {
  public:
-  virtual void OnActiveClientChange(cros::mojom::CameraClientType type,
-                                    bool is_active) = 0;
+  // |is_new_active_client| is true if the client of |type| becomes active. If
+  // it is inactive or already active, |is_new_active_client| is false.
+  // |active_device_ids| are device ids of open cameras associated with the
+  // client of |type|. If |active_device_ids.empty()|, the client of |type| is
+  // inactive. Otherwise, it is active.
+  virtual void OnActiveClientChange(
+      cros::mojom::CameraClientType type,
+      bool is_new_active_client,
+      const base::flat_set<std::string>& active_device_ids) {}
 };
 
 // A class to provide a no-op remote to CameraHalServer that failed
@@ -110,12 +117,11 @@ class CAPTURE_EXPORT CameraPrivacySwitchObserver
  public:
   ~CameraPrivacySwitchObserver() override = default;
 
-  // If |camera_id| is unknown, |camera_id| will be set -1.
-  virtual void OnCameraHWPrivacySwitchStatusChanged(
-      int32_t camera_id,
+  virtual void OnCameraHWPrivacySwitchStateChanged(
+      const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state) {}
 
-  virtual void OnCameraSWPrivacySwitchStatusChanged(
+  virtual void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) {}
 };
 
@@ -170,12 +176,15 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void RemoveClientObservers(
       std::vector<CameraClientObserver*> client_observers);
 
-  // Adds an observer to get notified when the camera privacy switch status
+  // Adds an observer to get notified when the camera privacy switch state
   // changed. Please note that for some devices, the signal will only be
   // detectable when the camera is currently on due to hardware limitations.
-  // Returns the current state of the camera HW privacy switch.
-  cros::mojom::CameraPrivacySwitchState AddCameraPrivacySwitchObserver(
-      CameraPrivacySwitchObserver* observer);
+  // Returns the map from device id to the current state of its camera HW
+  // privacy switch. Before receiving the first HW privacy switch event for a
+  // device, the map has no entry for that device. Otherwise, the map holds the
+  // latest reported state for each device.
+  base::flat_map<std::string, cros::mojom::CameraPrivacySwitchState>
+  AddCameraPrivacySwitchObserver(CameraPrivacySwitchObserver* observer);
 
   // Removes the observer. A previously-added observer must be removed before
   // being destroyed.
@@ -194,6 +203,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // pluginvm.
   void RegisterPluginVmToken(const base::UnguessableToken& token);
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
+
+  // Called by CameraHalDispatcher.
+  void AddCameraIdToDeviceIdEntry(int camera_id, const std::string& device_id);
 
   // Used when running capture unittests to avoid running sensor related path.
   void DisableSensorForTesting();
@@ -301,6 +313,10 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void GetAutoFramingSupportedOnProxyThread(
       cros::mojom::CameraHalServer::GetAutoFramingSupportedCallback callback);
 
+  std::string GetDeviceIdFromCameraId(int32_t camera_id);
+  base::flat_set<std::string> GetDeviceIdsFromCameraIds(
+      base::flat_set<int32_t> camera_ids);
+
   void StopOnProxyThread();
 
   TokenManager* GetTokenManagerForTesting();
@@ -337,12 +353,12 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   scoped_refptr<base::ObserverListThreadSafe<CameraActiveClientObserver>>
       active_client_observers_;
 
-  // |current_hw_privacy_switch_state_| can be accessed from the UI thread
+  // |device_id_to_hw_privacy_switch_state_| can be accessed from the UI thread
   // besides |proxy_thread_|.
-  base::Lock hw_privacy_switch_lock_;
-  cros::mojom::CameraPrivacySwitchState current_hw_privacy_switch_state_
-      GUARDED_BY(hw_privacy_switch_lock_) =
-          cros::mojom::CameraPrivacySwitchState::UNKNOWN;
+  base::Lock device_id_to_hw_privacy_switch_state_lock_;
+  base::flat_map<std::string, cros::mojom::CameraPrivacySwitchState>
+      device_id_to_hw_privacy_switch_state_
+          GUARDED_BY(device_id_to_hw_privacy_switch_state_lock_);
 
   cros::mojom::CameraAutoFramingState current_auto_framing_state_ =
       cros::mojom::CameraAutoFramingState::OFF;
@@ -356,6 +372,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   bool sensor_enabled_ = true;
   std::map<CameraClientObserver*, std::unique_ptr<CameraClientObserver>>
       mojo_client_observers_;
+
+  // A map from camera id to |VideoCaptureDeviceDescriptor.device_id|, which is
+  // updated in CameraHalDelegate::GetDevicesInfo() and queried in
+  // GetDeviceIdFromCameraId().
+  base::Lock camera_id_to_device_id_lock_;
+  base::flat_map<int32_t, std::string> camera_id_to_device_id_
+      GUARDED_BY(camera_id_to_device_id_lock_);
 
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };
