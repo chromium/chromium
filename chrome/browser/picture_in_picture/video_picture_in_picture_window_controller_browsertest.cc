@@ -364,10 +364,6 @@ class PictureInPicturePixelComparisonBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kDisableGpu);
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
-
-    // TODO(https://crbug.com/1201311): Refactor these pixel tests to use Skia
-    // Gold and turn this feature back on.
-    feature_list_.InitAndDisableFeature(media::kMediaSessionWebRTC);
   }
 
   base::FilePath GetFilePath(base::FilePath::StringPieceType relative_path) {
@@ -486,8 +482,6 @@ class PictureInPicturePixelComparisonBrowserTest
 
  private:
   std::unique_ptr<SkBitmap> result_bitmap_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Plays a video in PiP. Grabs a screenshot of Picture-in-Picture window and
@@ -509,57 +503,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest, VideoPlay) {
   base::FilePath expected_image_path =
       GetFilePath(FILE_PATH_LITERAL("pixel_expected_video_play.png"));
   ASSERT_TRUE(ReadImageFile(expected_image_path, &expected_image));
-  EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
-}
-
-// Plays a video in PiP. Trigger the play and pause control in PiP by using a
-// mouse move. Capture the images and verify they are expected.
-IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
-                       PlayAndPauseControls) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(FILE_PATH_LITERAL(
-                     "media/picture-in-picture/pixel_test.html")));
-  ASSERT_TRUE(GetOverlayWindow()->IsVisible());
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_EQ(true, EvalJs(active_web_contents, "play();"));
-
-  WaitForPlaybackState(active_web_contents,
-                       VideoOverlayWindowViews::PlaybackState::kPlaying);
-
-  constexpr gfx::Size kSize = {402, 268};
-  TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
-
-  base::FilePath expected_pause_image_path =
-      GetFilePath(FILE_PATH_LITERAL("pixel_expected_pause_control.png"));
-  base::FilePath expected_play_image_path =
-      GetFilePath(FILE_PATH_LITERAL("pixel_expected_play_control.png"));
-  // If the test image is cropped, usually off by 1 pixel, use another image.
-  if (GetResultBitmap().width() < kSize.width() ||
-      GetResultBitmap().height() < kSize.height()) {
-    LOG(INFO) << "Actual image is cropped and backup images are used. "
-              << "Test image dimension: "
-              << "(" << GetResultBitmap().width() << "x"
-              << GetResultBitmap().height() << "). "
-              << "Expected image dimension: "
-              << "(" << kSize.ToString() << ")";
-    expected_pause_image_path =
-        GetFilePath(FILE_PATH_LITERAL("pixel_expected_pause_control_crop.png"));
-    expected_play_image_path =
-        GetFilePath(FILE_PATH_LITERAL("pixel_expected_play_control_crop.png"));
-  }
-
-  SkBitmap expected_image;
-  ASSERT_TRUE(ReadImageFile(expected_pause_image_path, &expected_image));
-  EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
-
-  ASSERT_TRUE(ExecJs(active_web_contents, "video.pause();"));
-  WaitForPlaybackState(active_web_contents,
-                       VideoOverlayWindowViews::PlaybackState::kPaused);
-  TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
-  ASSERT_TRUE(ReadImageFile(expected_play_image_path, &expected_image));
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
