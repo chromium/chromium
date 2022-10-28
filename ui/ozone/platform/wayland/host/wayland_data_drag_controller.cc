@@ -109,6 +109,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
                                              DragEventSource source) {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!origin_window_);
+  DCHECK(!icon_surface_);
 
   WaylandWindow* origin_window =
       source == DragEventSource::kTouch
@@ -391,6 +392,8 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   data_source_.reset();
   data_offer_.reset();
   icon_buffer_.reset();
+  icon_surface_.reset();
+  icon_bitmap_ = nullptr;
   icon_frame_callback_.reset();
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
