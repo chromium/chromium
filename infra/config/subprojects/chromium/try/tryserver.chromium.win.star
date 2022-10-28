@@ -191,9 +191,6 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(),
-    experiments = {
-        "remove_src_checkout_experiment": 100,
-    },
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -221,7 +218,6 @@ try_.orchestrator_builder(
         experiment_percentage = 100,
     ),
     experiments = {
-        "remove_src_checkout_experiment": 100,
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
@@ -260,9 +256,6 @@ try_.orchestrator_builder(
     tryjob = try_.job(
         experiment_percentage = 3,
     ),
-    experiments = {
-        "remove_src_checkout_experiment": 100,
-    },
 )
 
 try_.compilator_builder(

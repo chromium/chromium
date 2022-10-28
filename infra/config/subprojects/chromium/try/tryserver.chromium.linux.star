@@ -211,7 +211,6 @@ try_.orchestrator_builder(
     tryjob = try_.job(),
     experiments = {
         "chromium_rts.inverted_rts": 100,
-        "remove_src_checkout_experiment": 100,
     },
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -257,9 +256,6 @@ try_.orchestrator_builder(
         ),
     ),
     main_list_view = "try",
-    experiments = {
-        "remove_src_checkout_experiment": 100,
-    },
     use_orchestrator_pool = True,
 )
 
@@ -360,9 +356,6 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    experiments = {
-        "remove_src_checkout_experiment": 100,
-    },
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -522,9 +515,6 @@ try_.orchestrator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(),
-    experiments = {
-        "remove_src_checkout_experiment": 100,
-    },
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -706,7 +696,6 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "remove_src_checkout_experiment": 100,
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
