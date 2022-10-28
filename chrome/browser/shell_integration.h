@@ -48,6 +48,12 @@ enum DefaultWebClientSetPermission {
 // current user.
 DefaultWebClientSetPermission GetDefaultWebClientSetPermission();
 
+// Returns requirements for making the running browser either the default
+// browser or the default client application for a specific protocols for the
+// current user, according to a specific platform.
+DefaultWebClientSetPermission
+GetPlatformSpecificDefaultWebClientSetPermission();
+
 // Returns true if the running browser can be set as the default browser,
 // whether user interaction is needed or not. Use
 // GetDefaultWebClientSetPermission() if this distinction is important.

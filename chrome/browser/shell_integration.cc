@@ -20,6 +20,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chrome_for_testing/buildflags.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -88,6 +89,14 @@ void RunCallback(DefaultWebClientWorkerCallback callback,
 }
 
 }  // namespace
+
+DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  return SET_DEFAULT_NOT_ALLOWED;
+#else
+  return GetPlatformSpecificDefaultWebClientSetPermission();
+#endif
+}
 
 bool CanSetAsDefaultBrowser() {
   return GetDefaultWebClientSetPermission() != SET_DEFAULT_NOT_ALLOWED;
