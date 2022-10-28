@@ -9,8 +9,8 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
-#include "base/task/current_thread.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 namespace remoting {
@@ -31,21 +31,22 @@ void MojoServerEndpointConnectorLinux::Connect(
   DCHECK(server_endpoint.is_valid());
   DCHECK(!pending_server_endpoint_.is_valid());
 
-  read_watcher_ =
-      std::make_unique<base::MessagePumpForIO::FdWatchController>(FROM_HERE);
   pending_server_endpoint_ = std::move(server_endpoint);
-  base::CurrentIOThread::Get()->WatchFileDescriptor(
-      pending_server_endpoint_.platform_handle().GetFD().get(), false,
-      base::MessagePumpForIO::WATCH_READ, read_watcher_.get(), this);
+  read_watcher_controller_ = base::FileDescriptorWatcher::WatchReadable(
+      pending_server_endpoint_.platform_handle().GetFD().get(),
+      base::BindRepeating(
+          &MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking,
+          weak_factory_.GetWeakPtr()));
 }
 
-void MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking(int fd) {
+void MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(pending_server_endpoint_.platform_handle().GetFD().get(), fd);
+
+  int fd = pending_server_endpoint_.platform_handle().GetFD().get();
 
   base::ScopedFD socket;
   bool success = mojo::AcceptSocketConnection(fd, &socket);
-  read_watcher_.reset();
+  read_watcher_controller_.reset();
   pending_server_endpoint_.reset();
   if (!success) {
     LOG(ERROR) << "AcceptSocketConnection failed.";
@@ -78,10 +79,6 @@ void MojoServerEndpointConnectorLinux::OnFileCanReadWithoutBlocking(int fd) {
   auto message_pipe = connection->Connect(std::move(endpoint));
   delegate_->OnServerEndpointConnected(
       std::move(connection), std::move(message_pipe), unix_peer_identity.pid);
-}
-
-void MojoServerEndpointConnectorLinux::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED();
 }
 
 // static
