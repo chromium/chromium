@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_cell.h"
 
 #import "base/check.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/omnibox/popup/carousel_item.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_carousel_control.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -150,13 +151,136 @@ UIStackView* CarouselStackView() {
     return;
   }
   control.hidden = hidden;
+  control.selected = false;
+
+  [self.delegate carouselCellDidChangeVisibleCount:self];
+}
+
+- (NSInteger)highlightedTileIndex {
+  for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
+           .arrangedSubviews) {
+    if (control.hidden) {
+      continue;
+    }
+
+    if (control.selected) {
+      return [self.suggestionsStackView.arrangedSubviews indexOfObject:control];
+    }
+  }
+
+  return NSNotFound;
+}
+
+#pragma mark - UITableViewCell
+
+- (BOOL)isHighlighted {
+  return self.highlightedTileIndex != NSNotFound;
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+  if (animated) {
+    [UIView animateWithDuration:0.2
+                     animations:^{
+                       [self setHighlighted:highlighted];
+                     }];
+  } else {
+    [self setHighlighted:highlighted];
+  }
+}
+
+- (void)setHighlighted:(BOOL)highlighted {
+  if (self.isHighlighted == highlighted) {
+    return;
+  }
+
+  if (highlighted) {
+    [self highlightFirstTile];
+  } else {
+    for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
+             .arrangedSubviews) {
+      control.selected = NO;
+    }
+  }
+}
+
+#pragma mark - OmniboxKeyboardDelegate
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  switch (keyboardAction) {
+    case OmniboxKeyboardActionUpArrow:
+      return NO;
+    case OmniboxKeyboardActionDownArrow:
+      return NO;
+    case OmniboxKeyboardActionLeftArrow:
+      return self.isHighlighted;
+    case OmniboxKeyboardActionRightArrow:
+      return self.isHighlighted;
+  }
+  return NO;
+}
+
+- (void)highlightFirstTile {
+  NSArray<OmniboxPopupCarouselControl*>* allTiles =
+      self.suggestionsStackView.arrangedSubviews;
+
+  for (OmniboxPopupCarouselControl* control in allTiles) {
+    if (control.hidden) {
+      continue;
+    }
+    control.selected = YES;
+    return;
+  }
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  // Find and unhighlight the previously highlighted suggestion.
+  NSInteger previouslyHighlightedIndex = self.highlightedTileIndex;
+
+  NSArray<OmniboxPopupCarouselControl*>* allTiles =
+      self.suggestionsStackView.arrangedSubviews;
+  if (previouslyHighlightedIndex != NSNotFound) {
+    OmniboxPopupCarouselControl* previouslyHighlightedControl =
+        allTiles[previouslyHighlightedIndex];
+    previouslyHighlightedControl.selected = NO;
+
+    OmniboxPopupCarouselControl* nextHighlightedControl =
+        previouslyHighlightedControl;
+    if (keyboardAction == OmniboxKeyboardActionRightArrow) {
+      for (NSInteger i = previouslyHighlightedIndex + 1;
+           i < static_cast<NSInteger>(allTiles.count); i++) {
+        OmniboxPopupCarouselControl* control = allTiles[i];
+        if (control.hidden) {
+          continue;
+        } else {
+          nextHighlightedControl = control;
+          break;
+        }
+      }
+    } else if (keyboardAction == OmniboxKeyboardActionLeftArrow) {
+      for (NSInteger i = previouslyHighlightedIndex - 1; i >= 0; i--) {
+        OmniboxPopupCarouselControl* control = allTiles[i];
+        if (control.hidden) {
+          continue;
+        } else {
+          nextHighlightedControl = control;
+          break;
+        }
+      }
+    } else {
+      NOTREACHED();
+    }
+
+    nextHighlightedControl.selected = YES;
+  } else {
+    [self highlightFirstTile];
+  }
 }
 
 #pragma mark - Private methods
 
 - (void)didTapCarouselControl:(OmniboxPopupCarouselControl*)control {
   DCHECK(control.carouselItem);
-  [self.delegate didTapCarouselItem:control.carouselItem];
+  [self.delegate carouselCell:self didTapCarouselItem:control.carouselItem];
 }
 
 // Returns OmniboxPopupCarouselControl containing `carouselItem`.

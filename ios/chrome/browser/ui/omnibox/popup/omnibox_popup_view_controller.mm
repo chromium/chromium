@@ -178,6 +178,19 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 #pragma mark - Getter/Setter
 
 - (void)setHighlightedIndexPath:(NSIndexPath*)highlightedIndexPath {
+  // Special case for highlight moving inside a carousel-style section.
+  if (_highlightedIndexPath &&
+      highlightedIndexPath.section == _highlightedIndexPath.section &&
+      self.currentResult[highlightedIndexPath.section].displayStyle ==
+          SuggestionGroupDisplayStyleCarousel) {
+    // The highlight moved inside the section horizontally. No need to
+    // unhighlight the previous row. Just notify the delegate.
+    _highlightedIndexPath = highlightedIndexPath;
+    [self didHighlightSelectedSuggestion];
+    return;
+  }
+
+  // General case: highlighting moved between different rows.
   if (_highlightedIndexPath) {
     [self unhighlightRowAtIndexPath:_highlightedIndexPath];
   }
@@ -345,7 +358,9 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       return YES;
     case OmniboxKeyboardActionLeftArrow:
     case OmniboxKeyboardActionRightArrow:
-      // TODO(crbug.com/1371453): Add left and right action for tile selection.
+      if (self.carouselCell.isHighlighted) {
+        return [self.carouselCell canPerformKeyboardAction:keyboardAction];
+      }
       return NO;
   }
 }
@@ -361,8 +376,20 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
       break;
     case OmniboxKeyboardActionLeftArrow:
     case OmniboxKeyboardActionRightArrow:
-      // TODO(crbug.com/1371453): Add left and right action for tile selection.
-      NOTREACHED();
+      if (self.carouselCell.isHighlighted) {
+        DCHECK(self.highlightedIndexPath.section ==
+               [self.tableView indexPathForCell:self.carouselCell].section);
+
+        [self.carouselCell performKeyboardAction:keyboardAction];
+        NSInteger highlightedTileIndex = self.carouselCell.highlightedTileIndex;
+        if (highlightedTileIndex == NSNotFound) {
+          self.highlightedIndexPath = nil;
+        } else {
+          self.highlightedIndexPath =
+              [NSIndexPath indexPathForRow:highlightedTileIndex
+                                 inSection:self.highlightedIndexPath.section];
+        }
+      }
       break;
   }
 }
@@ -391,7 +418,12 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
     return;
   }
 
-  BOOL isCurrentHighlightedRowFirstInSection = (path.row == 0);
+  id<AutocompleteSuggestionGroup> suggestionGroup =
+      self.currentResult[self.highlightedIndexPath.section];
+  BOOL isCurrentHighlightedRowFirstInSection =
+      suggestionGroup.displayStyle == SuggestionGroupDisplayStyleCarousel ||
+      (path.row == 0);
+
   if (isCurrentHighlightedRowFirstInSection) {
     NSInteger previousSection = path.section - 1;
     NSInteger previousSectionCount =
@@ -428,7 +460,10 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   }
 
   NSIndexPath* path = self.highlightedIndexPath;
+  id<AutocompleteSuggestionGroup> suggestionGroup =
+      self.currentResult[self.highlightedIndexPath.section];
   BOOL isCurrentHighlightedRowLastInSection =
+      suggestionGroup.displayStyle == SuggestionGroupDisplayStyleCarousel ||
       path.row == [self.tableView numberOfRowsInSection:path.section] - 1;
   if (isCurrentHighlightedRowLastInSection) {
     NSInteger nextSection = path.section + 1;
@@ -454,11 +489,19 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 }
 
 - (void)highlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.currentResult[indexPath.section].displayStyle ==
+      SuggestionGroupDisplayStyleCarousel) {
+    indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section];
+  }
   UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   [cell setHighlighted:YES animated:NO];
 }
 
 - (void)unhighlightRowAtIndexPath:(NSIndexPath*)indexPath {
+  if (self.currentResult[indexPath.section].displayStyle ==
+      SuggestionGroupDisplayStyleCarousel) {
+    indexPath = [NSIndexPath indexPathForRow:0 inSection:indexPath.section];
+  }
   UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
   [cell setHighlighted:NO animated:NO];
 }
@@ -718,7 +761,27 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 
 #pragma mark - OmniboxPopupCarouselCellDelegate
 
-- (void)didTapCarouselItem:(CarouselItem*)carouselItem {
+- (void)carouselCellDidChangeVisibleCount:
+    (OmniboxPopupCarouselCell*)carouselCell {
+  if (self.highlightedIndexPath.section !=
+      [self.tableView indexPathForCell:self.carouselCell].section) {
+    return;
+  }
+
+  // Defensively update highlightedIndexPath, because the highlighted tile might
+  // have been removed.
+  NSInteger highlightedTileIndex = self.carouselCell.highlightedTileIndex;
+  if (highlightedTileIndex == NSNotFound) {
+    [self resetHighlighting];
+  } else {
+    self.highlightedIndexPath =
+        [NSIndexPath indexPathForRow:highlightedTileIndex
+                           inSection:self.highlightedIndexPath.section];
+  }
+}
+
+- (void)carouselCell:(OmniboxPopupCarouselCell*)carouselCell
+    didTapCarouselItem:(CarouselItem*)carouselItem {
   id<AutocompleteSuggestion> suggestion =
       [self suggestionAtIndexPath:carouselItem.indexPath];
   DCHECK(suggestion);
@@ -729,6 +792,16 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
 }
 
 #pragma mark - Internal API methods
+
+// Reset the highlighting to the first suggestion when it's available. Reset
+// to nil otherwise.
+- (void)resetHighlighting {
+  if (self.currentResult.firstObject.suggestions.count > 0) {
+    self.highlightedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+  } else {
+    self.highlightedIndexPath = nil;
+  }
+}
 
 // Adjust the inset on the table view to prevent keyboard from overlapping the
 // text.
