@@ -523,10 +523,6 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
       mojo_options->cred_blob =
           ConvertTo<Vector<uint8_t>>(extensions->credBlob());
     }
-    if (extensions->hasGoogleLegacyAppidSupport()) {
-      mojo_options->google_legacy_app_id_support =
-          extensions->googleLegacyAppidSupport();
-    }
     if (extensions->hasPayment() && extensions->payment()->hasIsPayment() &&
         extensions->payment()->isPayment()) {
       mojo_options->is_payment_credential_creation = true;

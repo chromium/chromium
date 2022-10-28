@@ -110,7 +110,7 @@ std::string Base64UrlEncode(const base::span<const uint8_t> input) {
 
 // Returns an App ID string if a U2F credential must be made for the request
 // with |options|. This is the case for requests that either originate from
-// cryptotoken or have the googleLegacyAppidSupport extension set.
+// cryptotoken.
 absl::optional<std::string> MakeCredentialU2fAppIdOverride(
     const url::Origin& caller_origin,
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options) {
@@ -118,15 +118,7 @@ absl::optional<std::string> MakeCredentialU2fAppIdOverride(
   // WebAuthn request.
   if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin)) {
-    DCHECK(!options->google_legacy_app_id_support);
     return options->relying_party.id;
-  }
-  if (options->google_legacy_app_id_support &&
-      options->relying_party.id == "google.com") {
-    if (caller_origin.DomainIs("login.corp.google.com")) {
-      return WebAuthRequestSecurityChecker::kGstaticCorpAppId;
-    }
-    return WebAuthRequestSecurityChecker::kGstaticAppId;
   }
   return absl::nullopt;
 }

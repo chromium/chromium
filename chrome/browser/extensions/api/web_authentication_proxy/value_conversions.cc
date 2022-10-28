@@ -359,10 +359,6 @@ base::Value ToValue(
     extensions.Set("credBlob", Base64UrlEncode(*options->cred_blob));
   }
 
-  if (options->google_legacy_app_id_support) {
-    extensions.Set("googleLegacyAppidSupport", true);
-  }
-
   if (options->min_pin_length_requested) {
     extensions.Set("minPinLength", true);
   }

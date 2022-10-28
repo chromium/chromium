@@ -1155,13 +1155,6 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           return promise;
         }
       }
-      if (options->publicKey()->extensions()->hasGoogleLegacyAppidSupport()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "The 'googleLegacyAppidSupport' extension is only valid when "
-            "creating a credential"));
-        return promise;
-      }
       if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
           options->publicKey()->extensions()->hasPayment()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1578,20 +1571,6 @@ ScriptPromise CredentialsContainer::create(
             "The 'largeBlob' extension's 'write' parameter is only valid "
             "when requesting an assertion"));
         return promise;
-      }
-    }
-    if (options->publicKey()->extensions()->hasGoogleLegacyAppidSupport()) {
-      const auto& rp_id =
-          options->publicKey()->rp()->id()
-              ? options->publicKey()->rp()->id()
-              : resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
-      if (rp_id != "google.com") {
-        resolver->DomWindow()->AddConsoleMessage(
-            MakeGarbageCollected<ConsoleMessage>(
-                mojom::blink::ConsoleMessageSource::kJavaScript,
-                mojom::blink::ConsoleMessageLevel::kWarning,
-                "The 'googleLegacyAppidSupport' extension is ignored for "
-                "requests with an 'rp.id' not equal to 'google.com'"));
       }
     }
     if (options->publicKey()->extensions()->hasPayment() &&

@@ -36,9 +36,6 @@ dictionary AuthenticationExtensionsClientInputs {
   BufferSource credBlob;
   boolean getCredBlob;
 
-  // Legacy compatibility extension for U2F migration https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A.
-  boolean googleLegacyAppidSupport;
-
   // https://github.com/w3c/secure-payment-confirmation
   [RuntimeEnabled=SecurePaymentConfirmation] AuthenticationExtensionsPaymentInputs payment;
 
