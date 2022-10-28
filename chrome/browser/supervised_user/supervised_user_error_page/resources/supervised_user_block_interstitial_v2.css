@@ -166,8 +166,7 @@ p {
 
 .custodian-name {
   color: var(--custodian-name-color);
-  font-size: 15px;
-  font-weight: bold;
+  font-size: 14px;
   margin-bottom: 4px;
 }
 
@@ -175,7 +174,7 @@ p {
   color: var(--custodian-email-color);
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: 12px;
   height: 100%;
   justify-content: center;
 }
@@ -188,7 +187,8 @@ p {
   font-weight: bold;
 }
 
-#block-reason-show-details-link, #block-reason-hide-details-link {
+#block-reason-show-details-link,
+#block-reason-hide-details-link {
   display: none;
 }
 
@@ -204,21 +204,21 @@ p {
   display: flex;
   justify-content: flex-start;
   padding: 16px;
-  max-width: 276px;
+  width: max-content;
 }
 
 #block-reason-header {
-  font-weight: 500;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 24px;
+  font-weight: 400;
   margin: 0;
 }
 
 #block-reason-message {
   color: var(--callout-text-color);
-  font-weight: 400;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 20px;
+  font-weight: 400;
   margin: 0;
 }
 
@@ -233,8 +233,8 @@ p {
   background: var(--secondary-button-hover-fill-color);
 }
 
-.primary-button, .secondary-button {
-  margin: 0 12px;
+.primary-button {
+  margin-left: 8px;
 }
 
 /* Remove focus-visible outline styles, because forced focus is used for
