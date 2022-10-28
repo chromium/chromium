@@ -26,4 +26,14 @@ void MockUserDataAuthClient::RemoveObserver(Observer* observer) {
   NOTIMPLEMENTED();
 }
 
+void MockUserDataAuthClient::AddFingerprintAuthObserver(
+    FingerprintAuthObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
+void MockUserDataAuthClient::RemoveFingerprintAuthObserver(
+    FingerprintAuthObserver* observer) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace ash

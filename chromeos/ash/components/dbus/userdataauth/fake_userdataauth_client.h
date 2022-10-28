@@ -142,6 +142,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                       user_data_auth::AuthIntent::AUTH_INTENT_WEBAUTHN>;
     // List of Authorized AuthIntents.
     AuthProtoIntents authorized_auth_session_intent;
+
+    // Indication that session is set to listen for FP events.
+    bool is_listening_for_fingerprint_events = false;
   };
 
   FakeUserDataAuthClient();
@@ -158,6 +161,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // UserDataAuthClient override:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void AddFingerprintAuthObserver(FingerprintAuthObserver* observer) override;
+  void RemoveFingerprintAuthObserver(
+      FingerprintAuthObserver* observer) override;
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void IsMounted(const ::user_data_auth::IsMountedRequest& request,
@@ -249,6 +255,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
       GetAuthSessionStatusCallback callback) override;
+  void PrepareAuthFactor(
+      const ::user_data_auth::PrepareAuthFactorRequest& request,
+      PrepareAuthFactorCallback callback) override;
+  void TerminateAuthFactor(
+      const ::user_data_auth::TerminateAuthFactorRequest& request,
+      TerminateAuthFactorCallback callback) override;
 
   // Sets the CryptohomeError value to return.
   void set_cryptohome_error(::user_data_auth::CryptohomeErrorCode error) {
@@ -430,6 +442,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
+
+  // List of fingerprint event observers.
+  base::ObserverList<FingerprintAuthObserver> fingerprint_observers_;
 
   // Do we run the dircrypto migration, as in, emit signals, when
   // StartMigrateToDircrypto() is called?

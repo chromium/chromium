@@ -89,6 +89,15 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     observer_list_.RemoveObserver(observer);
   }
 
+  void AddFingerprintAuthObserver(FingerprintAuthObserver* observer) override {
+    fp_observer_list_.AddObserver(observer);
+  }
+
+  void RemoveFingerprintAuthObserver(
+      FingerprintAuthObserver* observer) override {
+    fp_observer_list_.RemoveObserver(observer);
+  }
+
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
@@ -353,6 +362,22 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void PrepareAuthFactor(
+      const ::user_data_auth::PrepareAuthFactorRequest& request,
+      PrepareAuthFactorCallback callback) override {
+    CallProtoMethod(::user_data_auth::kPrepareAuthFactor,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void TerminateAuthFactor(
+      const ::user_data_auth::TerminateAuthFactorRequest& request,
+      TerminateAuthFactorCallback callback) override {
+    CallProtoMethod(::user_data_auth::kTerminateAuthFactor,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)
@@ -437,6 +462,34 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
     }
   }
 
+  void OnAuthScanResult(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::AuthScanResult proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR)
+          << "Failed to parse AuthScanResult protobuf from UserDataAuth signal";
+      return;
+    }
+    for (auto& observer : fp_observer_list_) {
+      observer.OnFingerprintScan(proto.fingerprint_result());
+    }
+  }
+
+  void OnAuthEnrollmentProgress(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    ::user_data_auth::AuthEnrollmentProgress proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      LOG(ERROR)
+          << "Failed to parse AuthScanResult protobuf from UserDataAuth signal";
+      return;
+    }
+    for (auto& observer : fp_observer_list_) {
+      observer.OnEnrollScanDone(
+          proto.scan_result().fingerprint_result(), proto.done(),
+          proto.fingerprint_progress().percent_complete());
+    }
+  }
+
   // Connects the dbus signals.
   void ConnectToSignals() {
     proxy_->ConnectToSignal(
@@ -452,6 +505,18 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
         base::BindRepeating(&UserDataAuthClientImpl::OnLowDiskSpace,
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&OnSignalConnected));
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kAuthScanResultSignal,
+        base::BindRepeating(&UserDataAuthClientImpl::OnAuthScanResult,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
+    proxy_->ConnectToSignal(
+        ::user_data_auth::kUserDataAuthInterface,
+        ::user_data_auth::kAuthEnrollmentProgressSignal,
+        base::BindRepeating(&UserDataAuthClientImpl::OnAuthEnrollmentProgress,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
   }
 
   // D-Bus proxy for cryptohomed, not owned.
@@ -459,6 +524,9 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
 
   // List of observers for dbus signals.
   base::ObserverList<Observer> observer_list_;
+
+  // List of observers for dbus signals related to fingerprint.
+  base::ObserverList<FingerprintAuthObserver> fp_observer_list_;
 
   base::WeakPtrFactory<UserDataAuthClientImpl> weak_factory_{this};
 };

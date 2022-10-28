@@ -22,6 +22,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void AddFingerprintAuthObserver(FingerprintAuthObserver* observer) override;
+  void RemoveFingerprintAuthObserver(
+      FingerprintAuthObserver* observer) override;
 
   MOCK_METHOD(void,
               IsMounted,
@@ -194,6 +197,16 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
               GetAuthSessionStatus,
               (const ::user_data_auth::GetAuthSessionStatusRequest& request,
                GetAuthSessionStatusCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              PrepareAuthFactor,
+              (const ::user_data_auth::PrepareAuthFactorRequest& request,
+               PrepareAuthFactorCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              TerminateAuthFactor,
+              (const ::user_data_auth::TerminateAuthFactorRequest& request,
+               TerminateAuthFactorCallback callback),
               (override));
 };
 

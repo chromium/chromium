@@ -546,6 +546,16 @@ void FakeUserDataAuthClient::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+void FakeUserDataAuthClient::AddFingerprintAuthObserver(
+    FingerprintAuthObserver* observer) {
+  fingerprint_observers_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemoveFingerprintAuthObserver(
+    FingerprintAuthObserver* observer) {
+  fingerprint_observers_.RemoveObserver(observer);
+}
+
 void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {
@@ -1597,6 +1607,56 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
   }
 
   ReturnProtobufMethodCallback(reply, std::move(callback));
+}
+
+void FakeUserDataAuthClient::PrepareAuthFactor(
+    const ::user_data_auth::PrepareAuthFactorRequest& request,
+    PrepareAuthFactorCallback callback) {
+  ::user_data_auth::PrepareAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  const std::string auth_session_id = request.auth_session_id();
+  auto auth_session = auth_sessions_.find(auth_session_id);
+  // Check if the token refers to a valid AuthSession.
+  if (auth_session == auth_sessions_.end()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    return;
+  }
+
+  CHECK_EQ(request.auth_factor_type(),
+           user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT)
+      << "Only Legacy FP is supported in FakeUDAC";
+  CHECK(!fingerprint_observers_.empty())
+      << "Add relevant observer before calling PrepareAuthFactor";
+
+  CHECK(!auth_session->second.is_listening_for_fingerprint_events)
+      << "Duplicate call to PrepareAuthFactor";
+  auth_session->second.is_listening_for_fingerprint_events = true;
+}
+
+void FakeUserDataAuthClient::TerminateAuthFactor(
+    const ::user_data_auth::TerminateAuthFactorRequest& request,
+    TerminateAuthFactorCallback callback) {
+  ::user_data_auth::TerminateAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  const std::string auth_session_id = request.auth_session_id();
+  auto auth_session = auth_sessions_.find(auth_session_id);
+  // Check if the token refers to a valid AuthSession.
+  if (auth_session == auth_sessions_.end()) {
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
+    return;
+  }
+
+  CHECK_EQ(request.auth_factor_type(),
+           user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT)
+      << "Only Legacy FP is supported in FakeUDAC";
+
+  CHECK(auth_session->second.is_listening_for_fingerprint_events)
+      << "Call to TerminateAuthFactor without prior PrepareAuthFactor";
+  auth_session->second.is_listening_for_fingerprint_events = false;
 }
 
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(

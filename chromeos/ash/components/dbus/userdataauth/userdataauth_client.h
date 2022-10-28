@@ -36,6 +36,16 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
         const ::user_data_auth::DircryptoMigrationProgress& progress) {}
   };
 
+  class FingerprintAuthObserver : public base::CheckedObserver {
+   public:
+    virtual void OnFingerprintScan(
+        const ::user_data_auth::FingerprintScanResult& result) {}
+    virtual void OnEnrollScanDone(
+        const ::user_data_auth::FingerprintScanResult& result,
+        bool is_complete,
+        int percent_complete) {}
+  };
+
   using IsMountedCallback =
       chromeos::DBusMethodCallback<::user_data_auth::IsMountedReply>;
   using UnmountCallback =
@@ -76,6 +86,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
   using UpdateCredentialCallback =
       chromeos::DBusMethodCallback<::user_data_auth::UpdateCredentialReply>;
+  using PrepareAuthFactorCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::PrepareAuthFactorReply>;
+  using TerminateAuthFactorCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::TerminateAuthFactorReply>;
 
   using PrepareGuestVaultCallback =
       chromeos::DBusMethodCallback<::user_data_auth::PrepareGuestVaultReply>;
@@ -131,6 +145,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
   // Removes an observer if added.
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Removes a fingerprint auth observer if added.
+  virtual void AddFingerprintAuthObserver(
+      FingerprintAuthObserver* observer) = 0;
+
+  // Removes a fingerprint auth observer if added.
+  virtual void RemoveFingerprintAuthObserver(
+      FingerprintAuthObserver* observer) = 0;
 
   // Actual DBus Methods:
 
@@ -314,6 +336,19 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
       GetAuthSessionStatusCallback callback) = 0;
+
+  // This is called to enable asynchronous auth factors (like Fingerprint).
+  // Note that called need to add FingerprintAuthObserver before this call.
+  virtual void PrepareAuthFactor(
+      const ::user_data_auth::PrepareAuthFactorRequest& request,
+      PrepareAuthFactorCallback callback) = 0;
+
+  // Counterpart for `PrepareAuthFactor`, method is called to disable particular
+  // asynchronous auth factor (like Fingerprint).
+  // Note that called need to remove FingerprintAuthObserver after this call.
+  virtual void TerminateAuthFactor(
+      const ::user_data_auth::TerminateAuthFactorRequest& request,
+      TerminateAuthFactorCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

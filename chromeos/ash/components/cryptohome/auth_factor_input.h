@@ -51,12 +51,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
   struct Kiosk {};
 
+  struct LegacyFingerprint {};
+
   using InputVariant = absl::variant<Password,
                                      Pin,
                                      RecoveryCreation,
                                      RecoveryAuthentication,
                                      SmartCard,
-                                     Kiosk>;
+                                     Kiosk,
+                                     LegacyFingerprint>;
 
   explicit AuthFactorInput(InputVariant input);
 

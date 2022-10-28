@@ -129,6 +129,16 @@ class UserDataAuthClientTest : public testing::Test {
                                   ::user_data_auth::kLowDiskSpace, _, _))
         .WillOnce(SaveArg<2>(&low_disk_space_callback_));
 
+    EXPECT_CALL(*proxy_, DoConnectToSignal(
+                             ::user_data_auth::kUserDataAuthInterface,
+                             ::user_data_auth::kAuthScanResultSignal, _, _))
+        .WillOnce(SaveArg<2>(&auth_scan_callback_));
+    EXPECT_CALL(*proxy_,
+                DoConnectToSignal(
+                    ::user_data_auth::kUserDataAuthInterface,
+                    ::user_data_auth::kAuthEnrollmentProgressSignal, _, _))
+        .WillOnce(SaveArg<2>(&auth_enrollment_callback_));
+
     UserDataAuthClient::Initialize(bus_.get());
 
     // Execute callbacks posted by `client_->Init()`.
@@ -281,6 +291,14 @@ class UserDataAuthClientTest : public testing::Test {
   // Callback that delivers the dircrypto Migration Progress signal to the
   // client when called.
   dbus::ObjectProxy::SignalCallback dircrypto_progress_callback_;
+
+  // Callback that delivers the cryptohome AuthScanResult signal to the
+  // client when called.
+  dbus::ObjectProxy::SignalCallback auth_scan_callback_;
+
+  // Callback that delivers the cryptohome AuthEnrollmentProgress signal to the
+  // client when called.
+  dbus::ObjectProxy::SignalCallback auth_enrollment_callback_;
 };
 
 TEST_F(UserDataAuthClientTest, IsMounted) {
