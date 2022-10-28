@@ -1558,6 +1558,27 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
     return result;
   }
 
+  if (!parent_if_known &&
+      (layout_object->IsText() || layout_object->IsPseudoElement() || !node)) {
+    // If the parent is not known, it means we are creating an AXObject at an
+    // arbitrary place in the tree. Ensure its parent has it as a
+    // child. an thus is connected to the root in both directions,
+    // and is not an orphan.
+    // This is accomplished by creating  an AXObject for |layout_object|, by
+    // first asking the parent to create its children, and then returning the
+    // matching AXObject for |layout_object|.
+    // This prevents situations where we attempt to serialize a node
+    // and fail, because the parent does not reach it via its children.
+    // It is only known to be an issue with AXObjects backed by layout, where a
+    // change to layout has invalidated the inclusion of something in the tree.
+    // For now, do this only for text and pseudo content, as it is a smaller
+    // change, but consider doing it for more/all nodes in the future.
+    DCHECK(!use_axid)
+        << "Cannot enforce an AXID when creating in the middle of the tree.";
+    parent->UpdateChildrenIfNecessary();
+    return Get(layout_object);
+  }
+
   AXObject* new_obj = CreateFromRenderer(layout_object);
 
   DCHECK(new_obj) << "Could not create AXObject for " << layout_object;
@@ -2127,8 +2148,7 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
   if (obj) {
     if (obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
         obj->LastKnownIsIncludedInTreeValue()) {
-      Settings* settings = GetSettings();
-      if (settings && settings->GetInlineTextBoxAccessibilityEnabled()) {
+      if (InlineTextBoxAccessibilityEnabled()) {
         // Update inline text box children.
         ChildrenChangedWithCleanLayout(optional_node_for_relation_update, obj);
         return;
@@ -2658,7 +2678,8 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     // TODO(accessibility) That may be the only example of this, in which case
     // it could be handled in RoleChangedWithCleanLayout(), and the cached
     // parent could be used.
-    AXObject* new_object = CreateAndInit(node, nullptr, retained_axid);
+    AXObject* new_object = CreateAndInit(
+        node, AXObject::ComputeNonARIAParent(*this, node), retained_axid);
     if (new_object) {
       // Any owned objects need to reset their parent_ to point to the
       // new object.
@@ -4031,7 +4052,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     // ends up skipping it. That's probably a Blink bug if that happens, but
     // still we need to make sure we don't keep trying the same object over
     // again.
-    if (!already_serialized_ids.insert(obj->AXObjectID()).is_new_entry)
+    if (already_serialized_ids.Contains(obj->AXObjectID()))
       continue;  // No insertion, was already present.
 
     ui::AXTreeUpdate update;
@@ -4050,10 +4071,19 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     }
 
     DCHECK_GT(update.nodes.size(), 0U);
+
     for (auto& node : update.nodes) {
       DCHECK(node.id);
       already_serialized_ids.insert(node.id);
     }
+
+    DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
+        << "Did not serialize original node, so it was probably not included "
+           "in its parent's children, and should never have been created in "
+           "the first place: "
+        << obj->ToString(true)
+        << "\nParent: " << obj->ParentObjectIncludedInTree()->ToString(true)
+        << "\nIndex in parent: " << obj->IndexInParent();
 
     updates.push_back(update);
   }
