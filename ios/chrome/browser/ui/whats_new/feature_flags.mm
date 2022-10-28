@@ -15,5 +15,5 @@ const char kWhatsNewModuleBasedLayoutParam[] = "whats_new_module_based_layout";
 
 bool IsWhatsNewModuleBasedLayout() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kWhatsNewIOS, kWhatsNewModuleBasedLayoutParam, true);
+      kWhatsNewIOS, kWhatsNewModuleBasedLayoutParam, false);
 }

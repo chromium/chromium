@@ -43,6 +43,9 @@
 // the icon.
 @property(nonatomic, strong) UIImageView* iconBackgroundImageView;
 
+// Update the constraints when the image has no background.
+- (void)updateImageConstraintWhenNoBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_CELLS_WHATS_NEW_TABLE_VIEW_ITEM_H_

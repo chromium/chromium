@@ -45,7 +45,10 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   EXPECT_NSEQ(title, whats_new_cell.textLabel.text);
   EXPECT_EQ(NO,
             whats_new_cell.textLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+  UIFont* font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+  UIFontMetrics* fontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleBody];
+  EXPECT_EQ([fontMetrics scaledFontForFont:font],
             whats_new_cell.textLabel.font);
   EXPECT_EQ(YES, whats_new_cell.textLabel.adjustsFontForContentSizeCategory);
   EXPECT_EQ(1, whats_new_cell.textLabel.numberOfLines);
@@ -55,7 +58,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   EXPECT_EQ(
       NO,
       whats_new_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+  EXPECT_EQ([[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+                fontWithSize:13],
             whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
@@ -107,7 +111,10 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
 
   EXPECT_EQ(NO,
             whats_new_cell.textLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+  UIFont* font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+  UIFontMetrics* fontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleBody];
+  EXPECT_EQ([fontMetrics scaledFontForFont:font],
             whats_new_cell.textLabel.font);
   EXPECT_EQ(YES, whats_new_cell.textLabel.adjustsFontForContentSizeCategory);
   EXPECT_EQ(1, whats_new_cell.textLabel.numberOfLines);
@@ -117,7 +124,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   EXPECT_EQ(
       NO,
       whats_new_cell.detailTextLabel.translatesAutoresizingMaskIntoConstraints);
-  EXPECT_EQ([UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+  EXPECT_EQ([[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+                fontWithSize:13],
             whats_new_cell.detailTextLabel.font);
   EXPECT_EQ(YES,
             whats_new_cell.detailTextLabel.adjustsFontForContentSizeCategory);
