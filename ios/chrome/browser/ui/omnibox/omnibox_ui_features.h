@@ -21,6 +21,11 @@ extern const char kOmniboxPasteButtonParameterBlueIconCapsule[];
 // PasteButton on suggestion row, blue color with icon/text and capsule shape.
 extern const char kOmniboxPasteButtonParameterBlueFullCapsule[];
 
+// Feature flag to enable dynamic tile spacing in MVCarousel. Increases the
+// spacing between the tiles to always show half a tile, indicating a scrollable
+// list.
+BASE_DECLARE_FEATURE(kOmniboxCarouselDynamicSpacing);
+
 // Feature flag to enable paste button on the omnibox keyboard accessories.
 BASE_DECLARE_FEATURE(kOmniboxKeyboardPasteButton);
 

@@ -23,6 +23,10 @@ BASE_FEATURE(kOmniboxKeyboardPasteButton,
              "OmniboxKeyboardPasteButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmniboxCarouselDynamicSpacing,
+             "OmniboxCarouselDynamicSpacing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsOmniboxActionsEnabled() {
   return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
 }

@@ -519,6 +519,13 @@ const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
 
+const char kOmniboxCarouselDynamicSpacingName[] =
+    "Omnibox Carousel dynamic spacing";
+const char kOmniboxCarouselDynamicSpacingDescription[] =
+    "Enables dynamic spacing in omnibox carousel, this increases the spacing "
+    "between the tiles to have half of a tile visible, to indicate a "
+    "scrollable list";
+
 const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";

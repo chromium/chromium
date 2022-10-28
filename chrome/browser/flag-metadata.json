@@ -4993,6 +4993,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-carousel-dynamic-spacing",
+    "owners": ["christianxu", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "omnibox-close-popup-with-escape",
     "owners": ["manukh", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 110
