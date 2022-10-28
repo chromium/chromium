@@ -3940,25 +3940,6 @@ TEST_P(UnretainedDanglingRawPtrTest, UnretainedDanglingPtrShouldReport) {
   EXPECT_TRUE(ref_count->Release());
 }
 
-#if !defined(PA_HAS_64_BITS_POINTERS)
-TEST_P(PartitionAllocTest, BackupRefPtrGuardRegion) {
-  size_t alignment = internal::PageAllocationGranularity();
-
-  uintptr_t requested_address;
-  memset(&requested_address, internal::kQuarantinedByte,
-         sizeof(requested_address));
-  requested_address = RoundDownToPageAllocationGranularity(requested_address);
-
-  uintptr_t allocated_address = AllocPages(
-      requested_address, alignment, alignment,
-      PageAccessibilityConfiguration::kReadWrite, PageTag::kPartitionAlloc);
-  CHECK_NE(allocated_address, requested_address);
-
-  if (allocated_address) {
-    FreePages(allocated_address, alignment);
-  }
-}
-#endif  // !defined(PA_HAS_64_BITS_POINTERS)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
