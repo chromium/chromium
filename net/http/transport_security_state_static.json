@@ -264,6 +264,8 @@
     { "name": "day", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "channel", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "hotmail", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
+    { "name": "mov", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
+    { "name": "zip", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     // Domains on the public suffix list that have requested to be preloaded.
     { "name": "bmoattachments.org", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "now.sh", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
