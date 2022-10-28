@@ -17,36 +17,31 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
-import {RouteOriginBehavior, RouteOriginBehaviorImpl} from '../route_origin_behavior.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsDisplayAndMagnificationElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      RouteOriginBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+import {getTemplate} from './display_and_magnification_page.html.js';
 
-/** @polymer */
+const SettingsDisplayAndMagnificationElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          RouteOriginBehavior,
+        ],
+        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & DeepLinkingBehaviorInterface &
+          RouteOriginBehaviorInterface,
+    };
+
 class SettingsDisplayAndMagnificationElement extends
     SettingsDisplayAndMagnificationElementBase {
   static get is() {
@@ -54,7 +49,7 @@ class SettingsDisplayAndMagnificationElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -72,7 +67,6 @@ class SettingsDisplayAndMagnificationElement extends
        * 'settings.a11y.screen_magnifier_mouse_following_mode' preference. These
        * values map to AccessibilityController::MagnifierMouseFollowingMode, and
        * are written to prefs and metrics, so order should not be changed.
-       * @protected {!Object<string, number>}
        */
       screenMagnifierMouseFollowingModePrefValues_: {
         readOnly: true,
@@ -84,7 +78,6 @@ class SettingsDisplayAndMagnificationElement extends
         },
       },
 
-      /** @protected */
       screenMagnifierZoomOptions_: {
         readOnly: true,
         type: Array,
@@ -107,7 +100,6 @@ class SettingsDisplayAndMagnificationElement extends
         },
       },
 
-      /** @protected */
       experimentalColorEnhancementSettingsEnabled_: {
         type: Boolean,
         value() {
@@ -118,7 +110,6 @@ class SettingsDisplayAndMagnificationElement extends
 
       /**
        * Whether the user is in kiosk mode.
-       * @protected
        */
       isKioskModeActive_: {
         type: Boolean,
@@ -129,7 +120,6 @@ class SettingsDisplayAndMagnificationElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -143,7 +133,14 @@ class SettingsDisplayAndMagnificationElement extends
     };
   }
 
-  /** @override */
+  prefs: {[key: string]: any};
+  private isKioskModeActive_: boolean;
+  private experimentalColorEnhancementSettingsEnabled_: boolean;
+  private route_: Route;
+  private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
+  private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
+
+
   constructor() {
     super();
 
@@ -153,11 +150,8 @@ class SettingsDisplayAndMagnificationElement extends
 
   /**
    * Note: Overrides RouteOriginBehavior implementation
-   * @param {!Route} newRoute
-   * @param {!Route=} prevRoute
-   * @protected
    */
-  currentRouteChanged(newRoute, prevRoute) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
     RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -171,27 +165,29 @@ class SettingsDisplayAndMagnificationElement extends
   /**
    * Return Fullscreen magnifier description text based on whether Fullscreen
    * magnifier is enabled.
-   * @param {boolean} enabled
-   * @return {string}
-   * @private
    */
-  getScreenMagnifierDescription_(enabled) {
+  private getScreenMagnifierDescription_(enabled: boolean): string {
     return this.i18n(
         enabled ? 'screenMagnifierDescriptionOn' :
                   'screenMagnifierDescriptionOff');
   }
 
-  /** @private */
-  onDisplayTap_() {
+  private onDisplayTap_(): void {
     Router.getInstance().navigateTo(
         routes.DISPLAY,
-        /* dynamicParams */ null, /* removeSearch */ true);
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
-  /** @private */
-  onAppearanceTap_() {
+  private onAppearanceTap_(): void {
     // Open browser appearance section in a new browser tab.
     window.open('chrome://settings/appearance');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-display-and-magnification-page':
+        SettingsDisplayAndMagnificationElement;
   }
 }
 

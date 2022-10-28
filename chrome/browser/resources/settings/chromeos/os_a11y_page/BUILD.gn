@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":change_dictation_locale_dialog",
-    ":display_and_magnification_page",
     ":externs",
     ":keyboard_and_text_input_page",
     ":keyboard_and_text_input_page_browser_proxy",
@@ -90,19 +89,6 @@ js_library("text_to_speech_page") {
 js_library("text_to_speech_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("display_and_magnification_page") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
-    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-  ]
 }
 
 js_library("keyboard_and_text_input_page") {
@@ -255,7 +241,6 @@ html_to_js("web_components") {
     "change_dictation_locale_dialog.js",
     "manage_a11y_page.js",
     "text_to_speech_page.js",
-    "display_and_magnification_page.js",
     "keyboard_and_text_input_page.js",
     "os_a11y_page.js",
     "switch_access_action_assignment_dialog.js",
