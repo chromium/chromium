@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -166,9 +167,8 @@ void BrowserCloseManager::CloseBrowsers() {
   // Make a copy of the BrowserList to simplify the case where we need to
   // destroy a Browser during the loop.
   std::vector<Browser*> browser_list_copy;
-  std::copy(BrowserList::GetInstance()->begin(),
-            BrowserList::GetInstance()->end(),
-            std::back_inserter(browser_list_copy));
+  base::ranges::copy(*BrowserList::GetInstance(),
+                     std::back_inserter(browser_list_copy));
 
   bool ignore_unload_handlers = browser_shutdown::ShouldIgnoreUnloadHandlers();
 

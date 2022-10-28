@@ -60,7 +60,7 @@ std::string HashUsername(const std::string& username) {
   std::transform(lowercase.begin(), lowercase.end(), lowercase.begin(),
                  ::tolower);
   std::vector<uint8_t> data;
-  std::copy(lowercase.begin(), lowercase.end(), std::back_inserter(data));
+  base::ranges::copy(lowercase, std::back_inserter(data));
   base::SHA1HashBytes(data.data(), data.size(), binmd);
   std::string result = base::HexEncode(binmd, sizeof(binmd));
   // Stay compatible with CryptoLib::HexEncodeToBuffer()

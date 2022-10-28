@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 
@@ -19,6 +18,7 @@
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -179,14 +179,12 @@ void CreatePassport(const std::string& domain,
     return;
   }
   DCHECK(hmac_base64.size() < result.size());
-  std::copy(hmac_base64.begin(), hmac_base64.end(), result.begin());
+  base::ranges::copy(hmac_base64, result.begin());
 
   std::string tick_decimal = base::NumberToString(tick);
   DCHECK(tick_decimal.size() <= kTickStringLength);
-  std::copy(
-      tick_decimal.begin(),
-      tick_decimal.end(),
-      result.begin() + kPassportSize - tick_decimal.size());
+  base::ranges::copy(tick_decimal,
+                     result.begin() + kPassportSize - tick_decimal.size());
 
   out->swap(result);
 }

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -21,6 +20,7 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -253,9 +253,7 @@ base::Value::List GetLanguageList(
     out_display_names.push_back(divider16);
   }
 
-  std::copy(display_names.begin(),
-            display_names.end(),
-            std::back_inserter(out_display_names));
+  base::ranges::copy(display_names, std::back_inserter(out_display_names));
 
   // Build the language list from the language map.
   base::Value::List language_list;

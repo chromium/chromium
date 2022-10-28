@@ -4,13 +4,13 @@
 
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
-#include <algorithm>
 #include <sstream>
 #include <vector>
 
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -132,7 +132,7 @@ class ExternallyManagedAppManagerTest
             ExternalInstallSource::kInternalDefault);
     std::vector<GURL> urls;
     for (const auto& it : apps) {
-      std::copy(it.second.begin(), it.second.end(), std::back_inserter(urls));
+      base::ranges::copy(it.second, std::back_inserter(urls));
     }
 
     std::sort(urls.begin(), urls.end());

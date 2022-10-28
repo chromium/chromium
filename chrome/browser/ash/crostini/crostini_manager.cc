@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 
-#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -19,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -2099,9 +2099,8 @@ void CrostiniManager::LaunchContainerApplication(
     request.set_display_scaling(
         vm_tools::cicerone::LaunchContainerApplicationRequest::SCALED);
   }
-  std::copy(
-      files.begin(), files.end(),
-      google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
+  base::ranges::copy(files, google::protobuf::RepeatedFieldBackInserter(
+                                request.mutable_files()));
 
   std::vector<vm_tools::cicerone::ContainerFeature> container_features =
       GetContainerFeatures();

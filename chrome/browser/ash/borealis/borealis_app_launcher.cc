@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
@@ -49,9 +50,8 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
   request.set_vm_name(ctx.vm_name());
   request.set_container_name(ctx.container_name());
   request.set_desktop_file_id(reg->DesktopFileId());
-  std::copy(
-      args.begin(), args.end(),
-      google::protobuf::RepeatedFieldBackInserter(request.mutable_files()));
+  base::ranges::copy(args, google::protobuf::RepeatedFieldBackInserter(
+                               request.mutable_files()));
 
   ash::CiceroneClient::Get()->LaunchContainerApplication(
       std::move(request),

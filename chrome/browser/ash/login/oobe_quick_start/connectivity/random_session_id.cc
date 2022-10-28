@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/random.h"
 
@@ -16,7 +15,7 @@ RandomSessionId::RandomSessionId() {
 }
 
 RandomSessionId::RandomSessionId(base::span<const uint8_t, kLength> bytes) {
-  std::copy(bytes.begin(), bytes.end(), bytes_.begin());
+  base::ranges::copy(bytes, bytes_.begin());
 }
 
 std::string RandomSessionId::ToString() const {

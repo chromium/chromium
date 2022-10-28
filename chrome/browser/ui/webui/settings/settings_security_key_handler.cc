@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,7 +72,7 @@ bool DecodePublicKey(const std::string& value,
     return false;
   }
 
-  std::copy(bytes.begin(), bytes.end(), out->begin());
+  base::ranges::copy(bytes, out->begin());
   return true;
 }
 

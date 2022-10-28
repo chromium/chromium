@@ -4,7 +4,6 @@
 
 #include "chrome/browser/webauthn/cablev2_devices.h"
 
-#include <algorithm>
 #include <array>
 #include <string>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -47,7 +47,7 @@ bool CopyBytestring(std::array<uint8_t, N>* out, const std::string* value) {
     return false;
   }
 
-  std::copy(bytes.begin(), bytes.end(), out->begin());
+  base::ranges::copy(bytes, out->begin());
   return true;
 }
 

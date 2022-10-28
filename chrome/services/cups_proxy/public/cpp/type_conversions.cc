@@ -4,11 +4,11 @@
 
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 
 namespace ipp_converter {
@@ -18,7 +18,7 @@ std::vector<uint8_t> ConvertToByteBuffer(base::StringPiece char_buffer) {
   std::vector<uint8_t> byte_buffer;
   byte_buffer.resize(char_buffer.size());
 
-  std::copy(char_buffer.begin(), char_buffer.end(), byte_buffer.begin());
+  base::ranges::copy(char_buffer, byte_buffer.begin());
   return byte_buffer;
 }
 
@@ -27,7 +27,7 @@ std::vector<char> ConvertToCharBuffer(base::span<const uint8_t> byte_buffer) {
   std::vector<char> char_buffer;
   char_buffer.resize(byte_buffer.size());
 
-  std::copy(byte_buffer.begin(), byte_buffer.end(), char_buffer.begin());
+  base::ranges::copy(byte_buffer, char_buffer.begin());
   return char_buffer;
 }
 

@@ -151,8 +151,7 @@ absl::optional<RenderData> PrepareRenderData(
   base::span<const uint8_t> data = mapping.GetMemoryAsSpan<uint8_t>();
   if (render_data.metafile->ShouldCopySharedMemoryRegionData()) {
     render_data.data_copy = std::make_unique<uint8_t[]>(data.size());
-    std::copy(data.data(), data.data() + data.size(),
-              render_data.data_copy.get());
+    base::ranges::copy(data, render_data.data_copy.get());
     data = base::span<const uint8_t>(render_data.data_copy.get(), data.size());
   }
   if (!render_data.metafile->InitFromData(data)) {

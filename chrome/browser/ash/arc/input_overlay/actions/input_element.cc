@@ -98,7 +98,7 @@ std::unique_ptr<InputElement> InputElement::CreateActionMoveKeyElement(
     const std::vector<ui::DomCode>& keys) {
   auto element = std::make_unique<InputElement>();
   element->input_sources_ = InputSource::IS_KEYBOARD;
-  std::copy(keys.begin(), keys.end(), std::back_inserter(element->keys_));
+  base::ranges::copy(keys, std::back_inserter(element->keys_));
   // There are four and only four keys representing move up, left, down and
   // right.
   DCHECK(element->keys_.size() == kActionMoveKeysSize);
@@ -179,7 +179,7 @@ void InputElement::SetKey(size_t index, ui::DomCode code) {
 
 void InputElement::SetKeys(std::vector<ui::DomCode>& keys) {
   keys_.clear();
-  std::copy(keys.begin(), keys.end(), std::back_inserter(keys_));
+  base::ranges::copy(keys, std::back_inserter(keys_));
 }
 
 int InputElement::GetIndexOfKey(ui::DomCode key) const {

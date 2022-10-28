@@ -10,6 +10,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -172,7 +173,7 @@ class CustomizationWallpaperDownloaderBrowserTest
                                 kCustomizedDefaultWallpaperColor,
                                 &oem_wallpaper));
     jpeg_data_.resize(oem_wallpaper.size());
-    std::copy(oem_wallpaper.begin(), oem_wallpaper.end(), jpeg_data_.begin());
+    base::ranges::copy(oem_wallpaper, jpeg_data_.begin());
 
     // Set up the test server.
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
