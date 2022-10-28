@@ -451,6 +451,16 @@ public class TabPersistentStore {
                 }
             }
             mTabsToSave.clear();
+            if (isCriticalPersistedTabDataSaveOnlyEnabled()
+                    || isCriticalPersistedTabDataSaveAndRestoreEnabled()) {
+                if (currentStandardTab != null) {
+                    CriticalPersistedTabData.from(currentStandardTab).save();
+                }
+                if (currentIncognitoTab != null) {
+                    CriticalPersistedTabData.from(currentIncognitoTab).save();
+                }
+                PersistedTabData.onShutdown();
+            }
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }

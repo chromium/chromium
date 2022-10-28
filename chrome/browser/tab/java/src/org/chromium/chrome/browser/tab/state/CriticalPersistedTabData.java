@@ -543,6 +543,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
             @Override
             public void preSerialize() {
+                // preSerialize on a {@link Serializer} is only expected to be called once.
+                // There is no need to acquire a snapshot of {@link Tab} attributes more than
+                // once.
+                if (mPreSerialized) return;
                 try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.PreSerialize")) {
                     WebContentsState webContentsState = mWebContentsState == null
                             ? getWebContentsStateFromTab(mTab)

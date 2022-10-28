@@ -56,7 +56,7 @@ public enum PersistedTabDataConfiguration {
         return sFilePersistedTabDataStorage;
     }
 
-    private static EncryptedFilePersistedTabDataStorage getEncryptedFilePersistedTabDataStorage() {
+    static EncryptedFilePersistedTabDataStorage getEncryptedFilePersistedTabDataStorage() {
         if (sEncrpytedFilePersistedTabDataStorage == null) {
             sEncrpytedFilePersistedTabDataStorage = new EncryptedFilePersistedTabDataStorage();
         }
