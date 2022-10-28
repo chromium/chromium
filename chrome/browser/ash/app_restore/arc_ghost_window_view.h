@@ -11,15 +11,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-namespace views {
-class Label;
-}  // namespace views
-
 namespace arc {
 enum class GhostWindowType;
 }
 
 namespace ash::full_restore {
+
+class ArcGhostWindowShellSurface;
 
 // ID for different component view in ArcGhostWindowView.
 enum ContentID {
@@ -36,7 +34,8 @@ class ArcGhostWindowView : public views::View {
  public:
   METADATA_HEADER(ArcGhostWindowView);
 
-  ArcGhostWindowView();
+  ArcGhostWindowView(ArcGhostWindowShellSurface* shell_surface,
+                     const std::string& app_name);
   ArcGhostWindowView(const ArcGhostWindowView&) = delete;
   ArcGhostWindowView operator=(const ArcGhostWindowView&) = delete;
   ~ArcGhostWindowView() override;
@@ -61,11 +60,16 @@ class ArcGhostWindowView : public views::View {
   // Callback function for loading icon from App service.
   void OnIconLoaded(apps::IconValuePtr icon_value);
 
+  void AddCommonChildrenViews();
+  void AddChildrenViewsForFixupType();
+  void AddChildrenViewsForAppLaunchType();
+
   uint32_t theme_color_;
+  std::string app_name_;
   gfx::ImageSkia icon_raw_data_;
   arc::GhostWindowType ghost_window_type_;
 
-  views::Label* message_label_ = nullptr;
+  ArcGhostWindowShellSurface* shell_surface_ = nullptr;
   base::OnceCallback<void(apps::IconValuePtr icon_value)>
       icon_loaded_cb_for_testing_;
 

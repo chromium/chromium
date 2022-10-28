@@ -91,7 +91,7 @@ class ArcGhostWindowViewTest : public testing::Test {
   }
 
   void CreateView(arc::GhostWindowType type, uint32_t theme_color) {
-    view_ = std::make_unique<ArcGhostWindowView>();
+    view_ = std::make_unique<ArcGhostWindowView>(nullptr, "");
     view_->SetThemeColor(theme_color);
     view_->SetGhostWindowViewType(type);
   }
@@ -138,8 +138,10 @@ TEST_F(ArcGhostWindowViewTest, FixupMessageTest) {
 
   CreateView(arc::GhostWindowType::kFixup, kThemeColor);
 
-  EXPECT_NE(view()->message_label_, nullptr);
-  EXPECT_EQ(view()->message_label_->GetText(),
+  auto* message_label = static_cast<views::Label*>(
+      view()->GetViewByID(ContentID::ID_MESSAGE_LABEL));
+  EXPECT_NE(message_label, nullptr);
+  EXPECT_EQ(message_label->GetText(),
             l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
 }
 

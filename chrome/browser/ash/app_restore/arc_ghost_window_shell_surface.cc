@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -183,9 +184,19 @@ exo::Surface* ArcGhostWindowShellSurface::controller_surface() {
 void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
                                                     uint32_t theme_color,
                                                     arc::GhostWindowType type) {
-  auto view = std::make_unique<ArcGhostWindowView>();
+  std::string app_name;
+  // TODO(sstan): Move this part out of shell surface.
+  // In test env, ArcAppListPrefs or App maybe null.
+  auto* pref = ArcAppListPrefs::Get(ProfileManager::GetPrimaryUserProfile());
+  if (pref) {
+    auto app_info = pref->GetApp(app_id);
+    if (app_info)
+      app_name = app_info->name;
+  }
+  auto view = std::make_unique<ArcGhostWindowView>(this, app_name);
   view_observer_ = view.get();
   view->LoadIcon(app_id);
+
   view->SetThemeColor(theme_color);
   view->SetGhostWindowViewType(type);
 
