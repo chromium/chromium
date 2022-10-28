@@ -607,7 +607,10 @@ ios_app_bundle("chrome") {
   info_plist_target = ":info_plist"
   bundle_identifier = "$chromium_bundle_id"
 
-  bundle_deps = [ "//ios/chrome/app/resources" ]
+  bundle_deps = [
+    "//ios/chrome/app/resources",
+    "//ios/chrome/browser/resources:settings_resources",
+  ]
   if (!is_chrome_branded || ios_chrome_app_variants == []) {
     assert(ios_application_icons_target != "",
            "ios_application_icons_target must be defined.")
