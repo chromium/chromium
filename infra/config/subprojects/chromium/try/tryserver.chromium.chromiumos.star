@@ -37,9 +37,9 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/content/gpu/.+",
-            ".+/[+]/media/.+",
+        location_filters = [
+            "content/gpu/.+",
+            "media/.+",
         ],
     ),
 )
@@ -116,10 +116,10 @@ try_.builder(
     ],
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/build/chromeos/.+",
-            ".+/[+]/build/config/chromeos/.*",
-            ".+/[+]/chromeos/CHROMEOS_LKGM",
+        location_filters = [
+            "build/chromeos/.+",
+            "build/config/chromeos/.*",
+            "chromeos/CHROMEOS_LKGM",
         ],
     ),
 )
@@ -213,14 +213,14 @@ try_.builder(
 try_.builder(
     name = "linux-cfm-rel",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromeos/components/chromebox_for_meetings/.+",
-            ".+/[+]/chromeos/dbus/chromebox_for_meetings/.+",
-            ".+/[+]/chromeos/services/chromebox_for_meetings/.+",
-            ".+/[+]/chrome/browser/chromeos/chromebox_for_meetings/.+",
-            ".+/[+]/chrome/browser/resources/chromeos/chromebox_for_meetings/.+",
-            ".+/[+]/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+",
-            ".+/[+]/chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
+        location_filters = [
+            "chromeos/components/chromebox_for_meetings/.+",
+            "chromeos/dbus/chromebox_for_meetings/.+",
+            "chromeos/services/chromebox_for_meetings/.+",
+            "chrome/browser/chromeos/chromebox_for_meetings/.+",
+            "chrome/browser/resources/chromeos/chromebox_for_meetings/.+",
+            "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+",
+            "chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
         ],
     ),
 )

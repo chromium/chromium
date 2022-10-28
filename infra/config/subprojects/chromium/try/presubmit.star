@@ -83,7 +83,7 @@ presubmit_builder(
         "starlark_entry_points": ["infra/config/main.star", "infra/config/dev.star"],
     },
     tryjob = try_.job(
-        location_regexp = [r".+/[+]/infra/config/.+"],
+        location_filters = ["infra/config/.+"],
     ),
 )
 
@@ -105,7 +105,7 @@ presubmit_builder(
         ],
     },
     tryjob = try_.job(
-        location_regexp = [r".+/[+]/tools/clang/scripts/update.py"],
+        location_filters = [r"tools/clang/scripts/update.py"],
     ),
 )
 
@@ -117,7 +117,7 @@ presubmit_builder(
         "builder_config_directory": "infra/config/generated/builders",
     },
     tryjob = try_.job(
-        location_regexp = [r".+/[+]/infra/config/generated/builders/.*"],
+        location_filters = ["infra/config/generated/builders/.*"],
     ),
 )
 

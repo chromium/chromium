@@ -49,8 +49,8 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
+        location_filters = [
+            "chromecast/.+",
         ],
     ),
 )
@@ -60,8 +60,8 @@ try_.builder(
     branch_selector = branches.MAIN,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
+        location_filters = [
+            "chromecast/.+",
         ],
     ),
     os = os.LINUX_BIONIC,
@@ -98,8 +98,8 @@ try_.builder(
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
+        location_filters = [
+            "chromecast/.+",
         ],
     ),
     mirrors = [
@@ -110,10 +110,10 @@ try_.builder(
 try_.builder(
     name = "fuchsia-compile-x64-dbg",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/base/fuchsia/.+",
-            ".+/[+]/fuchsia/.+",
-            ".+/[+]/media/fuchsia/.+",
+        location_filters = [
+            "base/fuchsia/.+",
+            "fuchsia/.+",
+            "media/fuchsia/.+",
         ],
     ),
     mirrors = [
@@ -324,12 +324,12 @@ try_.builder(
     name = "linux-perfetto-rel",
     tryjob = try_.job(
         experiment_percentage = 100,
-        location_regexp = [
-            ".+/[+]/base/trace_event/.+",
-            ".+/[+]/base/tracing/.+",
-            ".+/[+]/components/tracing/.+",
-            ".+/[+]/content/browser/tracing/.+",
-            ".+/[+]/services/tracing/.+",
+        location_filters = [
+            "base/trace_event/.+",
+            "base/tracing/.+",
+            "components/tracing/.+",
+            "content/browser/tracing/.+",
+            "services/tracing/.+",
         ],
     ),
 )
@@ -530,8 +530,8 @@ try_.builder(
     ],
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/build/.*check_gn_headers.*",
+        location_filters = [
+            "build/.*check_gn_headers.*",
         ],
     ),
 )
@@ -581,14 +581,14 @@ try_.builder(
     ),
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/third_party/blink/renderer/core/editing/.+",
-            ".+/[+]/third_party/blink/renderer/core/layout/.+",
-            ".+/[+]/third_party/blink/renderer/core/paint/.+",
-            ".+/[+]/third_party/blink/renderer/core/svg/.+",
-            ".+/[+]/third_party/blink/renderer/platform/fonts/shaping/.+",
-            ".+/[+]/third_party/blink/renderer/platform/graphics/.+",
-            ".+/[+]/third_party/blink/web_tests/.+",
+        location_filters = [
+            "third_party/blink/renderer/core/editing/.+",
+            "third_party/blink/renderer/core/layout/.+",
+            "third_party/blink/renderer/core/paint/.+",
+            "third_party/blink/renderer/core/svg/.+",
+            "third_party/blink/renderer/platform/fonts/shaping/.+",
+            "third_party/blink/renderer/platform/graphics/.+",
+            "third_party/blink/web_tests/.+",
         ],
     ),
 )
@@ -615,9 +615,9 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/browser/vr/.+",
-            ".+/[+]/content/browser/xr/.+",
+        location_filters = [
+            "chrome/browser/vr/.+",
+            "content/browser/xr/.+",
         ],
     ),
 )
@@ -666,27 +666,27 @@ try_.gpu.optional_tests_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/browser/vr/.+",
-            ".+/[+]/content/browser/xr/.+",
-            ".+/[+]/content/test/gpu/.+",
-            ".+/[+]/gpu/.+",
-            ".+/[+]/media/audio/.+",
-            ".+/[+]/media/base/.+",
-            ".+/[+]/media/capture/.+",
-            ".+/[+]/media/filters/.+",
-            ".+/[+]/media/gpu/.+",
-            ".+/[+]/media/mojo/.+",
-            ".+/[+]/media/renderers/.+",
-            ".+/[+]/media/video/.+",
-            ".+/[+]/testing/buildbot/chromium.gpu.fyi.json",
-            ".+/[+]/testing/trigger_scripts/.+",
-            ".+/[+]/third_party/blink/renderer/modules/mediastream/.+",
-            ".+/[+]/third_party/blink/renderer/modules/webcodecs/.+",
-            ".+/[+]/third_party/blink/renderer/modules/webgl/.+",
-            ".+/[+]/third_party/blink/renderer/platform/graphics/gpu/.+",
-            ".+/[+]/tools/clang/scripts/update.py",
-            ".+/[+]/ui/gl/.+",
+        location_filters = [
+            "chrome/browser/vr/.+",
+            "content/browser/xr/.+",
+            "content/test/gpu/.+",
+            "gpu/.+",
+            "media/audio/.+",
+            "media/base/.+",
+            "media/capture/.+",
+            "media/filters/.+",
+            "media/gpu/.+",
+            "media/mojo/.+",
+            "media/renderers/.+",
+            "media/video/.+",
+            "testing/buildbot/chromium.gpu.fyi.json",
+            "testing/trigger_scripts/.+",
+            "third_party/blink/renderer/modules/mediastream/.+",
+            "third_party/blink/renderer/modules/webcodecs/.+",
+            "third_party/blink/renderer/modules/webgl/.+",
+            "third_party/blink/renderer/platform/graphics/gpu/.+",
+            "tools/clang/scripts/update.py",
+            "ui/gl/.+",
         ],
     ),
 )

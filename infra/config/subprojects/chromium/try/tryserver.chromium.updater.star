@@ -34,8 +34,8 @@ updater_mac_builder(
     name = "mac-updater-try-builder-dbg",
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/updater/.+",
+        location_filters = [
+            "chrome/updater/.+",
         ],
     ),
 )
@@ -44,8 +44,8 @@ updater_mac_builder(
     name = "mac-updater-try-builder-rel",
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/updater/.+",
+        location_filters = [
+            "chrome/updater/.+",
         ],
     ),
 )
@@ -54,8 +54,8 @@ updater_windows_builder(
     name = "win-updater-try-builder-dbg",
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/updater/.+",
+        location_filters = [
+            "chrome/updater/.+",
         ],
     ),
 )
@@ -64,8 +64,8 @@ updater_windows_builder(
     name = "win-updater-try-builder-rel",
     main_list_view = "try",
     tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chrome/updater/.+",
+        location_filters = [
+            "chrome/updater/.+",
         ],
     ),
 )

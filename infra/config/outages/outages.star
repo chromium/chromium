@@ -37,7 +37,6 @@ def _disable_cq_experiments(ctx):
             if project == "chromium" and bucket == "try":
                 b.includable_only = True
                 b.experiment_percentage = 0
-                b.location_regexp.clear()
-                b.location_regexp_exclude.clear()
+                b.location_filters.clear()
 
 lucicfg.generator(_disable_cq_experiments)

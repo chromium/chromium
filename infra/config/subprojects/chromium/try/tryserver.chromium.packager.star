@@ -41,10 +41,10 @@ try_.builder(
         },
     },
     tryjob = try_.job(
-        location_regexp = [
+        location_filters = [
             # Enable for CLs touching files under "3pp" directories which are
             # two level deep or more from the repo root.
-            ".+/[+]/.+/3pp/.+",
+            ".+/3pp/.+",
         ],
     ),
 )
