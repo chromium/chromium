@@ -18,6 +18,9 @@ class WhatsNewHandler : public content::WebUIMessageHandler {
  private:
   void HandleInitialize(const base::Value::List& args);
 
+  // Makes a request to show a HaTS survey.
+  void TryShowHatsSurveyWithTimeout();
+
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 };
