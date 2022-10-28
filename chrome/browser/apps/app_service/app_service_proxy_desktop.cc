@@ -45,19 +45,6 @@ void AppServiceProxy::Uninstall(const std::string& app_id,
   }
 }
 
-void AppServiceProxy::Uninstall(const std::string& app_id,
-                                apps::mojom::UninstallSource uninstall_source,
-                                gfx::NativeWindow parent_window) {
-  // On non-ChromeOS, publishers run the remove dialog.
-  auto app_type = app_registry_cache_.GetAppType(app_id);
-  if (app_type == apps::AppType::kWeb) {
-    web_app::UninstallImpl(
-        web_app::WebAppProvider::GetForWebApps(profile_), app_id,
-        ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-        parent_window);
-  }
-}
-
 void AppServiceProxy::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {

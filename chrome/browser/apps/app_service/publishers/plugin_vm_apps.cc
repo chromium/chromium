@@ -420,17 +420,6 @@ void PluginVmApps::LaunchAppWithIntent(
   std::move(callback).Run(/*success=*/false);
 }
 
-void PluginVmApps::Uninstall(const std::string& app_id,
-                             apps::mojom::UninstallSource uninstall_source,
-                             bool clear_site_data,
-                             bool report_abuse) {
-  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-      ->ClearApplicationList(guest_os::VmType::PLUGIN_VM,
-                             plugin_vm::kPluginVmName, "");
-  plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
-      ->UninstallPluginVm();
-}
-
 void PluginVmApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,

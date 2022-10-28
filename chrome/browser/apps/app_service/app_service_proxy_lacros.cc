@@ -324,15 +324,6 @@ void AppServiceProxyLacros::Uninstall(const std::string& app_id,
   }
 }
 
-void AppServiceProxyLacros::Uninstall(
-    const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source,
-    gfx::NativeWindow parent_window) {
-  Uninstall(app_id,
-            ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-            parent_window);
-}
-
 void AppServiceProxyLacros::UninstallSilently(
     const std::string& app_id,
     UninstallSource uninstall_source) {
@@ -351,13 +342,6 @@ void AppServiceProxyLacros::UninstallSilently(
 
   remote_crosapi_app_service_proxy_->UninstallSilently(app_id,
                                                        uninstall_source);
-}
-
-void AppServiceProxyLacros::UninstallSilently(
-    const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source) {
-  UninstallSilently(
-      app_id, ConvertMojomUninstallSourceToUninstallSource(uninstall_source));
 }
 
 void AppServiceProxyLacros::StopApp(const std::string& app_id) {

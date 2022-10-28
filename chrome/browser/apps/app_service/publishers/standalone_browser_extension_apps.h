@@ -136,10 +136,6 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
   void StopApp(const std::string& app_id) override;
-  void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 bool clear_site_data,
-                 bool report_abuse) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
   void OpenNativeSettings(const std::string& app_id) override;

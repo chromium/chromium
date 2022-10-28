@@ -292,15 +292,9 @@ void AppManagementPageHandler::SetResizeLocked(const std::string& app_id,
 }
 
 void AppManagementPageHandler::Uninstall(const std::string& app_id) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
-        app_id, apps::UninstallSource::kAppManagement,
-        delegate_.GetUninstallAnchorWindow());
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
-        app_id, apps::mojom::UninstallSource::kAppManagement,
-        delegate_.GetUninstallAnchorWindow());
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
+      app_id, apps::UninstallSource::kAppManagement,
+      delegate_.GetUninstallAnchorWindow());
 }
 
 void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {

@@ -349,14 +349,6 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
           std::move(callback)));
 }
 
-void CrostiniApps::Uninstall(const std::string& app_id,
-                             apps::mojom::UninstallSource uninstall_source,
-                             bool clear_site_data,
-                             bool report_abuse) {
-  crostini::CrostiniPackageService::GetForProfile(profile_)
-      ->QueueUninstallApplication(app_id);
-}
-
 void CrostiniApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,

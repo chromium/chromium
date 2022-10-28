@@ -227,20 +227,11 @@ class AppServiceProxyBase : public KeyedService,
   virtual void Uninstall(const std::string& app_id,
                          UninstallSource uninstall_source,
                          gfx::NativeWindow parent_window) = 0;
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  virtual void Uninstall(const std::string& app_id,
-                         apps::mojom::UninstallSource uninstall_source,
-                         gfx::NativeWindow parent_window) = 0;
 
   // Uninstalls an app for the given |app_id| without prompting the user to
   // confirm.
   void UninstallSilently(const std::string& app_id,
                          UninstallSource uninstall_source);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void UninstallSilently(const std::string& app_id,
-                         apps::mojom::UninstallSource uninstall_source);
 
   // Stops the current running app for the given |app_id|.
   void StopApp(const std::string& app_id);

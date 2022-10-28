@@ -119,13 +119,6 @@ void PublisherBase::LaunchAppWithIntent(const std::string& app_id,
   std::move(callback).Run(/*success=*/false);
 }
 
-void PublisherBase::Uninstall(const std::string& app_id,
-                              apps::mojom::UninstallSource uninstall_source,
-                              bool clear_site_data,
-                              bool report_abuse) {
-  LOG(ERROR) << "Uninstall failed, could not remove the app with id " << app_id;
-}
-
 void PublisherBase::PauseApp(const std::string& app_id) {
   NOTIMPLEMENTED();
 }

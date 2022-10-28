@@ -156,10 +156,6 @@ class ArcApps : public KeyedService,
                            LaunchAppWithIntentCallback callback) override;
   void SetResizeLocked(const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
-  void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 bool clear_site_data,
-                 bool report_abuse) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;

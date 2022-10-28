@@ -123,21 +123,6 @@ void AppServiceMojomImpl::LaunchAppWithIntent(
                                     launch_source, std::move(window_info),
                                     std::move(callback));
 }
-
-void AppServiceMojomImpl::Uninstall(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source,
-    bool clear_site_data,
-    bool report_abuse) {
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->Uninstall(app_id, uninstall_source, clear_site_data,
-                          report_abuse);
-}
-
 void AppServiceMojomImpl::PauseApp(apps::mojom::AppType app_type,
                                    const std::string& app_id) {
   auto iter = publishers_.find(app_type);

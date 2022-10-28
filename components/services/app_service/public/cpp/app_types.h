@@ -305,18 +305,6 @@ COMPONENT_EXPORT(APP_TYPES)
 std::vector<base::FilePath> ConvertMojomFilePathsToFilePaths(
     apps::mojom::FilePathsPtr mojom_file_paths);
 
-COMPONENT_EXPORT(APP_TYPES)
-UninstallSource ConvertMojomUninstallSourceToUninstallSource(
-    apps::mojom::UninstallSource mojom_uninstall_source);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::UninstallSource ConvertUninstallSourceToMojomUninstallSource(
-    UninstallSource uninstall_source);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::UninstallSource ConvertUninstallSourceToMojomUninstallSource(
-    UninstallSource uninstall_source);
-
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_

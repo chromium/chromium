@@ -198,10 +198,6 @@ class ExtensionAppsBase : public apps::PublisherBase,
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info,
                            LaunchAppWithIntentCallback callback) override;
-  void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 bool clear_site_data,
-                 bool report_abuse) override;
   void OpenNativeSettings(const std::string& app_id) override;
 
   // extensions::ExtensionPrefsObserver overrides.

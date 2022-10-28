@@ -170,10 +170,6 @@ class WebApps : public apps::PublisherBase,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // apps::mojom::Publisher overrides.
-  void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 bool clear_site_data,
-                 bool report_abuse) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;

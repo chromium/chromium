@@ -191,15 +191,6 @@ void AppServiceProxyAsh::Uninstall(const std::string& app_id,
   UninstallImpl(app_id, uninstall_source, parent_window, base::DoNothing());
 }
 
-void AppServiceProxyAsh::Uninstall(
-    const std::string& app_id,
-    apps::mojom::UninstallSource uninstall_source,
-    gfx::NativeWindow parent_window) {
-  UninstallImpl(app_id,
-                ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-                parent_window, base::DoNothing());
-}
-
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
@@ -451,17 +442,10 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   if (uninstall) {
     app_registry_cache_.ForOneApp(app_id, RecordAppBounce);
 
-    if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
-      auto* publisher = GetPublisher(app_type);
-      DCHECK(publisher);
-      publisher->Uninstall(app_id, uninstall_source,
-                           /*clear_site_data=*/false, /*report_abuse=*/false);
-    } else if (app_service_.is_connected()) {
-      app_service_->Uninstall(
-          ConvertAppTypeToMojomAppType(app_type), app_id,
-          ConvertUninstallSourceToMojomUninstallSource(uninstall_source),
-          clear_site_data, report_abuse);
-    }
+    auto* publisher = GetPublisher(app_type);
+    DCHECK(publisher);
+    publisher->Uninstall(app_id, uninstall_source,
+                         /*clear_site_data=*/false, /*report_abuse=*/false);
 
     PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }

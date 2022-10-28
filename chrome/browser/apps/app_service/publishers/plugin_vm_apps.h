@@ -100,10 +100,6 @@ class PluginVmApps : public apps::PublisherBase,
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info,
                            LaunchAppWithIntentCallback callback) override;
-  void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 bool clear_site_data,
-                 bool report_abuse) override;
   void GetMenuModel(const std::string& app_id,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,

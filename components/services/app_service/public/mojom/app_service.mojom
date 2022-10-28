@@ -58,18 +58,6 @@ interface AppService {
       LaunchSource launch_source,
       WindowInfo? window_info) => (bool success);
 
-  // Directly uninstalls |app_id| without prompting the user.
-  // |clear_site_data| is available for bookmark apps only. If true, any site
-  // data associated with the app will be removed..
-  // |report_abuse| is available for Chrome Apps only. If true, the app will be
-  // reported for abuse to the Web Store.
-  Uninstall(
-      AppType app_type,
-      string app_id,
-      UninstallSource uninstall_source,
-      bool clear_site_data,
-      bool report_abuse);
-
   // Pauses an app to stop the current running app, and apply the icon effect.
   PauseApp(
       AppType app_type,
@@ -161,18 +149,6 @@ interface Publisher {
     Intent intent,
     LaunchSource launch_source,
     WindowInfo? window_info) => (bool success);
-
-  // Directly uninstalls an app identified by |app_id| without prompting the
-  // user. |uninstall_source| indicates where the uninstallation came from.
-  // |clear_site_data| is available for web apps only. If true, any site
-  // data associated with the app will be removed.
-  // |report_abuse| is available for Chrome Apps only. If true, the app will be
-  // reported for abuse to the Chrome Web Store.
-  Uninstall(
-      string app_id,
-      UninstallSource uninstall_source,
-      bool clear_site_data,
-      bool report_abuse);
 
   // Requests that the app identified by |app_id| is marked as paused. Paused
   // apps cannot be launched. Implemented if the publisher supports the pausing

@@ -66,11 +66,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
                            apps::mojom::LaunchSource launch_source,
                            apps::mojom::WindowInfoPtr window_info,
                            LaunchAppWithIntentCallback callback) override;
-  void Uninstall(apps::mojom::AppType app_type,
-                 const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 bool clear_site_data,
-                 bool report_abuse) override;
   void PauseApp(apps::mojom::AppType app_type,
                 const std::string& app_id) override;
   void UnpauseApp(apps::mojom::AppType app_type,

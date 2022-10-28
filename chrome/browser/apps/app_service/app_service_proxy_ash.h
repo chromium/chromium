@@ -86,9 +86,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
-  void Uninstall(const std::string& app_id,
-                 apps::mojom::UninstallSource uninstall_source,
-                 gfx::NativeWindow parent_window) override;
   void OnApps(std::vector<AppPtr> deltas,
               AppType app_type,
               bool should_notify_initialized) override;

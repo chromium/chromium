@@ -464,15 +464,6 @@ void BorealisApps::Launch(const std::string& app_id,
       app_id, base::DoNothing());
 }
 
-void BorealisApps::Uninstall(const std::string& app_id,
-                             apps::mojom::UninstallSource uninstall_source,
-                             bool clear_site_data,
-                             bool report_abuse) {
-  borealis::BorealisService::GetForProfile(profile_)
-      ->AppUninstaller()
-      .Uninstall(app_id, base::DoNothing());
-}
-
 void BorealisApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,

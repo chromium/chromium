@@ -309,15 +309,6 @@ void WebAppsCrosapi::LaunchAppWithFiles(const std::string& app_id,
   controller_->Launch(std::move(params), base::DoNothing());
 }
 
-void WebAppsCrosapi::Uninstall(const std::string& app_id,
-                               apps::mojom::UninstallSource uninstall_source,
-                               bool clear_site_data,
-                               bool report_abuse) {
-  Uninstall(app_id,
-            ConvertMojomUninstallSourceToUninstallSource(uninstall_source),
-            clear_site_data, report_abuse);
-}
-
 void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                   apps::mojom::MenuType menu_type,
                                   int64_t display_id,

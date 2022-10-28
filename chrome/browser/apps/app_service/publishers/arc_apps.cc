@@ -1358,13 +1358,6 @@ void ArcApps::SetResizeLocked(const std::string& app_id,
                                         : arc::mojom::ArcResizeLockState::OFF);
 }
 
-void ArcApps::Uninstall(const std::string& app_id,
-                        apps::mojom::UninstallSource uninstall_source,
-                        bool clear_site_data,
-                        bool report_abuse) {
-  arc::UninstallArcApp(app_id, profile_);
-}
-
 void ArcApps::PauseApp(const std::string& app_id) {
   if (paused_apps_.MaybeAddApp(app_id)) {
     SetIconEffect(app_id);

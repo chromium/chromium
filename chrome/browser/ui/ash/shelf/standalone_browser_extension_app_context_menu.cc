@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
@@ -102,15 +101,7 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
       apps::AppServiceProxy* proxy =
           apps::AppServiceProxyFactory::GetForProfile(
               ProfileManager::GetPrimaryUserProfile());
-      if (base::FeatureList::IsEnabled(
-              apps::kAppServiceUninstallWithoutMojom)) {
-        proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
-      } else {
-        proxy->Uninstall(app_id_,
-                         apps::ConvertUninstallSourceToMojomUninstallSource(
-                             uninstall_source),
-                         /*parent_window=*/window);
-      }
+      proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
       return;
     }
     case ash::SHOW_APP_INFO: {

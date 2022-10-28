@@ -592,36 +592,4 @@ std::vector<base::FilePath> ConvertMojomFilePathsToFilePaths(
   return file_paths;
 }
 
-UninstallSource ConvertMojomUninstallSourceToUninstallSource(
-    apps::mojom::UninstallSource mojom_uninstall_source) {
-  switch (mojom_uninstall_source) {
-    case apps::mojom::UninstallSource::kUnknown:
-      return UninstallSource::kUnknown;
-    case apps::mojom::UninstallSource::kAppList:
-      return UninstallSource::kAppList;
-    case apps::mojom::UninstallSource ::kAppManagement:
-      return UninstallSource::kAppManagement;
-    case apps::mojom::UninstallSource ::kShelf:
-      return UninstallSource::kShelf;
-    case apps::mojom::UninstallSource ::kMigration:
-      return UninstallSource::kMigration;
-  }
-}
-
-apps::mojom::UninstallSource ConvertUninstallSourceToMojomUninstallSource(
-    UninstallSource uninstall_source) {
-  switch (uninstall_source) {
-    case UninstallSource::kUnknown:
-      return apps::mojom::UninstallSource::kUnknown;
-    case UninstallSource::kAppList:
-      return apps::mojom::UninstallSource::kAppList;
-    case UninstallSource ::kAppManagement:
-      return apps::mojom::UninstallSource::kAppManagement;
-    case UninstallSource ::kShelf:
-      return apps::mojom::UninstallSource::kShelf;
-    case UninstallSource ::kMigration:
-      return apps::mojom::UninstallSource::kMigration;
-  }
-}
-
 }  // namespace apps

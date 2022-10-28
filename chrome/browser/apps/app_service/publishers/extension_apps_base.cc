@@ -738,17 +738,6 @@ void ExtensionAppsBase::LaunchAppWithIntent(
       ConvertMojomWindowInfoToWindowInfo(window_info), std::move(callback));
 }
 
-void ExtensionAppsBase::Uninstall(
-    const std::string& app_id,
-    apps::mojom::UninstallSource mojom_uninstall_source,
-    bool clear_site_data,
-    bool report_abuse) {
-  Uninstall(
-      app_id,
-      ConvertMojomUninstallSourceToUninstallSource(mojom_uninstall_source),
-      clear_site_data, report_abuse);
-}
-
 void ExtensionAppsBase::OpenNativeSettings(const std::string& app_id) {
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension) {

@@ -35,7 +35,6 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -283,12 +282,7 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
     }
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
-      proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
-    } else {
-      proxy->UninstallSilently(from_app,
-                               apps::mojom::UninstallSource::kMigration);
-    }
+    proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
     uninstall_triggered = true;
   }
 
@@ -308,12 +302,7 @@ void WebAppUiManagerImpl::OnShortcutInfoReceivedSearchShortcutLocations(
   if (!shortcut_info) {
     // The shortcut info couldn't be found, simply uninstall.
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
-      proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
-    } else {
-      proxy->UninstallSilently(from_app,
-                               apps::mojom::UninstallSource::kMigration);
-    }
+    proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
     return;
   }
   auto callback =
@@ -338,12 +327,7 @@ void WebAppUiManagerImpl::OnShortcutLocationGathered(
                        weak_ptr_factory_.GetWeakPtr(), app_id, locations));
   }
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceUninstallWithoutMojom)) {
-    proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
-  } else {
-    proxy->UninstallSilently(from_app,
-                             apps::mojom::UninstallSource::kMigration);
-  }
+  proxy->UninstallSilently(from_app, apps::UninstallSource::kMigration);
 
   if (!is_extension)
     InstallOsHooksForReplacementApp(app_id, locations);
