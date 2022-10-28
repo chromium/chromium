@@ -136,6 +136,7 @@ BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaultsSynthetic);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteOptInControlSynthetic);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteOptInSynthetic);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaultsDowngrade);
+BASE_DECLARE_FEATURE(kRequestDesktopSiteZoom);
 BASE_DECLARE_FEATURE(kSearchEnginePromoExistingDevice);
 BASE_DECLARE_FEATURE(kSearchEnginePromoExistingDeviceV2);
 BASE_DECLARE_FEATURE(kSearchEnginePromoNewDevice);
