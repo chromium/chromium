@@ -147,6 +147,7 @@ source_set("headers") {
     "frame/transient_allow_fullscreen.h",
     "frame/user_activation_state.h",
     "frame/user_activation_update_source.h",
+    "frame/view_transition_state.h",
     "history/session_history_constants.h",
     "indexeddb/indexed_db_default_mojom_traits.h",
     "indexeddb/indexeddb_key.h",

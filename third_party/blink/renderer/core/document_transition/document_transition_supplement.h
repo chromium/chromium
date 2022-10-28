@@ -18,7 +18,7 @@ class V8DocumentTransitionCallback;
 class CORE_EXPORT DocumentTransitionSupplement
     : public GarbageCollected<DocumentTransitionSupplement>,
       public Supplement<Document>,
-      public DocumentTransitionDirectiveStore {
+      public DocumentTransition::Delegate {
  public:
   static const char kSupplementName[];
 
@@ -26,46 +26,51 @@ class CORE_EXPORT DocumentTransitionSupplement
   static DocumentTransitionSupplement* From(Document&);
   static DocumentTransitionSupplement* FromIfExists(const Document&);
 
+  // Creates and starts a same-document DocumentTransition initiated using the
+  // script API.
   static DocumentTransition* startViewTransition(
       ScriptState*,
       Document&,
       V8DocumentTransitionCallback* callback,
       ExceptionState&);
 
+  // Creates a DocumentTransition to cache the state of a Document before a
+  // navigation. The cached state is provided to the caller using the
+  // |ViewTransitionStateCallback|.
+  static void SnapshotDocumentForNavigation(
+      Document&,
+      DocumentTransition::ViewTransitionStateCallback);
+
+  // Creates a DocumentTransition using cached state from the previous Document
+  // of a navigation. This DocumentTransition is responsible for running
+  // animations on the new Document using the cached state.
+  static void CreateFromSnapshotForNavigation(
+      Document&,
+      ViewTransitionState transition_state);
+
   DocumentTransition* GetActiveTransition();
 
   explicit DocumentTransitionSupplement(Document&);
-  virtual ~DocumentTransitionSupplement() = default;
+  ~DocumentTransitionSupplement() override;
 
   // GC functionality.
   void Trace(Visitor* visitor) const override;
 
+  // DocumentTransition::Delegate implementation.
   void AddPendingRequest(std::unique_ptr<DocumentTransitionRequest>) override;
-
   VectorOf<std::unique_ptr<DocumentTransitionRequest>> TakePendingRequests();
+  void OnTransitionFinished(DocumentTransition* transition) override;
 
  private:
-  class FinishedResolved : public ScriptFunction::Callable {
-   public:
-    explicit FinishedResolved(DocumentTransitionSupplement* supplement,
-                              DocumentTransition* transition,
-                              Document*);
-    ~FinishedResolved() override;
-
-    ScriptValue Call(ScriptState*, ScriptValue) override;
-    void Trace(Visitor* visitor) const override;
-
-   private:
-    Member<DocumentTransitionSupplement> supplement_;
-    Member<DocumentTransition> transition_;
-    Member<Document> document_;
-  };
-
-  void ResetTransition(DocumentTransition* transition);
   DocumentTransition* StartTransition(ScriptState* script_state,
                                       Document& document,
                                       V8DocumentTransitionCallback* callback,
                                       ExceptionState& exception_state);
+  void StartTransition(
+      Document& document,
+      DocumentTransition::ViewTransitionStateCallback callback);
+  void StartTransition(Document& document,
+                       ViewTransitionState transition_state);
 
   Member<DocumentTransition> transition_;
 

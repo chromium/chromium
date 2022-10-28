@@ -39,12 +39,14 @@ class CC_EXPORT DocumentTransitionRequest {
   static std::unique_ptr<DocumentTransitionRequest> CreateCapture(
       uint32_t document_tag,
       uint32_t shared_element_count,
+      viz::NavigationID navigation_id,
       std::vector<viz::SharedElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   // Creates a Type::kAnimateRenderer type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreateAnimateRenderer(
-      uint32_t document_tag);
+      uint32_t document_tag,
+      viz::NavigationID navigation_id);
 
   // Creates a Type::kRelease type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreateRelease(
@@ -82,12 +84,14 @@ class CC_EXPORT DocumentTransitionRequest {
       Type type,
       uint32_t document_tag,
       uint32_t shared_element_count,
+      viz::NavigationID navigation_id,
       std::vector<viz::SharedElementResourceId> capture_ids,
       base::OnceClosure commit_callback);
 
   const Type type_;
   const uint32_t document_tag_;
   const uint32_t shared_element_count_;
+  const viz::NavigationID navigation_id_;
   base::OnceClosure commit_callback_;
   const uint32_t sequence_id_;
   const std::vector<viz::SharedElementResourceId> capture_resource_ids_;

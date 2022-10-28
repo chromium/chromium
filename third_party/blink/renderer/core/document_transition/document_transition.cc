@@ -101,26 +101,144 @@ void DocumentTransition::DOMChangeFinishedCallback::Trace(
   visitor->Trace(dom_updated_promise_resolver_);
 }
 
-// DocumentTransition implementation.
+DocumentTransition::ScriptBoundState::ScriptBoundState(
+    ScriptState* state,
+    V8DocumentTransitionCallback* callback)
+    : script_state(state),
+      update_dom_callback(callback),
+      dom_updated_promise_resolver(
+          MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      ready_promise_resolver(
+          MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+      finished_promise_resolver(
+          MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {}
+
+void DocumentTransition::ScriptBoundState::Trace(Visitor* visitor) const {
+  visitor->Trace(script_state);
+  visitor->Trace(update_dom_callback);
+  visitor->Trace(dom_updated_promise_resolver);
+  visitor->Trace(ready_promise_resolver);
+  visitor->Trace(finished_promise_resolver);
+}
+
+// static
+const char* DocumentTransition::StateToString(State state) {
+  switch (state) {
+    case State::kInitial:
+      return "Initial";
+    case State::kCaptureTagDiscovery:
+      return "CaptureTagDiscovery";
+    case State::kCaptureRequestPending:
+      return "CaptureRequestPending";
+    case State::kCapturing:
+      return "Capturing";
+    case State::kCaptured:
+      return "Captured";
+    case State::kWaitForRenderBlock:
+      return "WaitForRenderBlock";
+    case State::kDOMCallbackRunning:
+      return "DOMCallbackRunning";
+    case State::kDOMCallbackFinished:
+      return "DOMCallbackFinished";
+    case State::kAnimateTagDiscovery:
+      return "AnimateTagDiscovery";
+    case State::kAnimateRequestPending:
+      return "AnimateRequestPending";
+    case State::kAnimating:
+      return "Animating";
+    case State::kFinished:
+      return "Finished";
+    case State::kAborted:
+      return "Aborted";
+    case State::kTimedOut:
+      return "TimedOut";
+    case State::kTransitionStateCallbackDispatched:
+      return "TransitionStateCallbackDispatched";
+  };
+  NOTREACHED();
+  return "";
+}
+
+// static
+DocumentTransition* DocumentTransition::CreateFromScript(
+    Document* document,
+    ScriptState* script_state,
+    V8DocumentTransitionCallback* callback,
+    Delegate* delegate) {
+  return MakeGarbageCollected<DocumentTransition>(document, script_state,
+                                                  callback, delegate);
+}
+
 DocumentTransition::DocumentTransition(
     Document* document,
     ScriptState* script_state,
     V8DocumentTransitionCallback* update_dom_callback,
-    DocumentTransitionDirectiveStore* directive_store)
+    Delegate* delegate)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+      creation_type_(CreationType::kScript),
       document_(document),
+      delegate_(delegate),
       document_tag_(NextDocumentTag()),
-      script_state_(script_state),
-      update_dom_callback_(update_dom_callback),
+      script_bound_state_(
+          MakeGarbageCollected<ScriptBoundState>(script_state,
+                                                 update_dom_callback)),
+      style_tracker_(
+          MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_)) {
+  ProcessCurrentState();
+}
+
+// static
+DocumentTransition* DocumentTransition::CreateForSnapshotForNavigation(
+    Document* document,
+    ViewTransitionStateCallback callback,
+    Delegate* delegate) {
+  return MakeGarbageCollected<DocumentTransition>(document, std::move(callback),
+                                                  delegate);
+}
+
+DocumentTransition::DocumentTransition(Document* document,
+                                       ViewTransitionStateCallback callback,
+                                       Delegate* delegate)
+    : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+      creation_type_(CreationType::kForSnapshot),
+      document_(document),
+      delegate_(delegate),
+      navigation_id_(viz::NavigationID::Create()),
+      document_tag_(NextDocumentTag()),
       style_tracker_(
           MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_)),
-      dom_updated_promise_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state_)),
-      ready_promise_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state_)),
-      finished_promise_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state_)),
-      directive_store_(directive_store) {
+      transition_state_callback_(std::move(callback)) {
+  TRACE_EVENT0("blink",
+               "DocumentTransition::DocumentTransition - CreatedForSnapshot");
+  DCHECK(transition_state_callback_);
+  ProcessCurrentState();
+}
+
+// static
+DocumentTransition* DocumentTransition::CreateFromSnapshotForNavigation(
+    Document* document,
+    ViewTransitionState transition_state,
+    Delegate* delegate) {
+  return MakeGarbageCollected<DocumentTransition>(
+      document, std::move(transition_state), delegate);
+}
+
+DocumentTransition::DocumentTransition(Document* document,
+                                       ViewTransitionState transition_state,
+                                       Delegate* delegate)
+    : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+      creation_type_(CreationType::kFromSnapshot),
+      document_(document),
+      delegate_(delegate),
+      navigation_id_(transition_state.navigation_id),
+      document_tag_(NextDocumentTag()),
+      style_tracker_(MakeGarbageCollected<DocumentTransitionStyleTracker>(
+          *document_,
+          std::move(transition_state))) {
+  TRACE_EVENT0("blink",
+               "DocumentTransition::DocumentTransition - CreatingFromSnapshot");
+  bool process_next_state = AdvanceTo(State::kWaitForRenderBlock);
+  DCHECK(process_next_state);
   ProcessCurrentState();
 }
 
@@ -129,7 +247,8 @@ void DocumentTransition::skipTransition() {
     return;
 
   // If we haven't run the dom change callback yet, schedule a task to do so.
-  if (static_cast<int>(state_) < static_cast<int>(State::kDOMCallbackRunning)) {
+  if (creation_type_ == CreationType::kScript &&
+      static_cast<int>(state_) < static_cast<int>(State::kDOMCallbackRunning)) {
     document_->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(
             FROM_HERE,
@@ -141,23 +260,30 @@ void DocumentTransition::skipTransition() {
   // If the ready promise has not yet been resolved, reject it. Note that the if
   // check here is an optimization to avoid creating the kAbort error if we've
   // already resolved the promise.
-  if (static_cast<int>(state_) <
-      static_cast<int>(State::kAnimateRequestPending)) {
-    AtMicrotask(&RejectWithAbort, ready_promise_resolver_);
+  if (creation_type_ == CreationType::kScript &&
+      static_cast<int>(state_) <
+          static_cast<int>(State::kAnimateRequestPending)) {
+    AtMicrotask(&RejectWithAbort, script_bound_state_->ready_promise_resolver);
   }
 
   // If we already started processing the transition (i.e. we're beyond capture
   // tag discovery), then send a release directive.
   if (static_cast<int>(state_) >
       static_cast<int>(State::kCaptureTagDiscovery)) {
-    directive_store_->AddPendingRequest(
+    delegate_->AddPendingRequest(
         DocumentTransitionRequest::CreateRelease(document_tag_));
   }
 
   // Resume rendering, and finalize the rest of the state.
   ResumeRendering();
   style_tracker_->Abort();
-  AtMicrotask(&RejectWithAbort, finished_promise_resolver_);
+
+  if (creation_type_ == CreationType::kScript) {
+    AtMicrotask(&RejectWithAbort,
+                script_bound_state_->finished_promise_resolver);
+  }
+
+  delegate_->OnTransitionFinished(this);
 
   // This should be the last call in this function to avoid erroneously checking
   // the `state_` against the wrong state.
@@ -165,15 +291,18 @@ void DocumentTransition::skipTransition() {
 }
 
 ScriptPromise DocumentTransition::finished() const {
-  return finished_promise_resolver_->Promise();
+  DCHECK(script_bound_state_);
+  return script_bound_state_->finished_promise_resolver->Promise();
 }
 
 ScriptPromise DocumentTransition::ready() const {
-  return ready_promise_resolver_->Promise();
+  DCHECK(script_bound_state_);
+  return script_bound_state_->ready_promise_resolver->Promise();
 }
 
 ScriptPromise DocumentTransition::domUpdated() const {
-  return dom_updated_promise_resolver_->Promise();
+  DCHECK(script_bound_state_);
+  return script_bound_state_->dom_updated_promise_resolver->Promise();
 }
 
 bool DocumentTransition::AdvanceTo(State state) {
@@ -208,7 +337,8 @@ bool DocumentTransition::CanAdvanceTo(State state) const {
 
   switch (state_) {
     case State::kInitial:
-      return state == State::kCaptureTagDiscovery;
+      return state == State::kCaptureTagDiscovery ||
+             state == State::kWaitForRenderBlock;
     case State::kCaptureTagDiscovery:
       return state == State::kCaptureRequestPending || state == State::kAborted;
     case State::kCaptureRequestPending:
@@ -217,7 +347,14 @@ bool DocumentTransition::CanAdvanceTo(State state) const {
       return state == State::kCaptured || state == State::kAborted;
     case State::kCaptured:
       return state == State::kDOMCallbackRunning ||
-             state == State::kDOMCallbackFinished || state == State::kAborted;
+             state == State::kDOMCallbackFinished || state == State::kAborted ||
+             state == State::kTransitionStateCallbackDispatched;
+    case State::kTransitionStateCallbackDispatched:
+      // This transition must finish on a DocumentTransition bound to the new
+      // Document.
+      return state == State::kAborted;
+    case State::kWaitForRenderBlock:
+      return state == State::kAnimateTagDiscovery || state == State::kAborted;
     case State::kDOMCallbackRunning:
       return state == State::kDOMCallbackFinished || state == State::kAborted;
     case State::kDOMCallbackFinished:
@@ -251,6 +388,7 @@ bool DocumentTransition::StateRunsInDocumentTransitionStepsDuringMainFrame(
       return true;
     case State::kCapturing:
     case State::kCaptured:
+    case State::kWaitForRenderBlock:
     case State::kDOMCallbackRunning:
     case State::kDOMCallbackFinished:
     case State::kAnimateTagDiscovery:
@@ -261,6 +399,7 @@ bool DocumentTransition::StateRunsInDocumentTransitionStepsDuringMainFrame(
     case State::kFinished:
     case State::kAborted:
     case State::kTimedOut:
+    case State::kTransitionStateCallbackDispatched:
       return false;
   }
   NOTREACHED();
@@ -269,7 +408,9 @@ bool DocumentTransition::StateRunsInDocumentTransitionStepsDuringMainFrame(
 
 // static
 bool DocumentTransition::WaitsForNotification(State state) {
-  return state == State::kCapturing || state == State::kDOMCallbackRunning;
+  return state == State::kCapturing || state == State::kDOMCallbackRunning ||
+         state == State::kWaitForRenderBlock ||
+         state == State::kTransitionStateCallbackDispatched;
 }
 
 // static
@@ -278,11 +419,19 @@ bool DocumentTransition::IsTerminalState(State state) {
          state == State::kTimedOut;
 }
 
+void DocumentTransition::WillDetachFromView() {
+  TRACE_EVENT0("blink", "DocumentTransition::WillDetachFromView");
+
+  skipTransition();
+}
+
 void DocumentTransition::ProcessCurrentState() {
   bool process_next_state = true;
   while (process_next_state) {
     DCHECK_EQ(in_main_lifecycle_update_,
               StateRunsInDocumentTransitionStepsDuringMainFrame(state_));
+    TRACE_EVENT1("blink", "DocumentTransition::ProcessCurrentState", "state",
+                 StateToString(state_));
     process_next_state = false;
     switch (state_) {
       // Initial state: nothing to do, just advance the state
@@ -309,13 +458,12 @@ void DocumentTransition::ProcessCurrentState() {
           break;
         }
 
-        directive_store_->AddPendingRequest(
-            DocumentTransitionRequest::CreateCapture(
-                document_tag_, style_tracker_->CapturedTagCount(),
-                style_tracker_->TakeCaptureResourceIds(),
-                ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                    &DocumentTransition::NotifyCaptureFinished,
-                    WrapCrossThreadWeakPersistent(this)))));
+        delegate_->AddPendingRequest(DocumentTransitionRequest::CreateCapture(
+            document_tag_, style_tracker_->CapturedTagCount(), navigation_id_,
+            style_tracker_->TakeCaptureResourceIds(),
+            ConvertToBaseOnceCallback(
+                CrossThreadBindOnce(&DocumentTransition::NotifyCaptureFinished,
+                                    WrapCrossThreadWeakPersistent(this)))));
 
         if (document_->GetFrame()->IsLocalRoot()) {
           document_->GetPage()->GetChromeClient().StopDeferringCommits(
@@ -336,9 +484,30 @@ void DocumentTransition::ProcessCurrentState() {
       case State::kCaptured: {
         style_tracker_->CaptureResolved();
 
+        if (creation_type_ == CreationType::kForSnapshot) {
+          DCHECK(transition_state_callback_);
+          ViewTransitionState view_transition_state =
+              style_tracker_->GetViewTransitionState();
+          view_transition_state.navigation_id = navigation_id_;
+
+          process_next_state =
+              AdvanceTo(State::kTransitionStateCallbackDispatched);
+          DCHECK(process_next_state);
+
+          std::move(transition_state_callback_)
+              .Run(std::move(view_transition_state));
+          break;
+        }
+
+        // The following logic is only executed for DocumentTransition objects
+        // created by the script API.
+        DCHECK(script_bound_state_);
+
         // TODO(vmpstr): Maybe fold this into InvokeDOMChangeCallback somehow.
-        if (!update_dom_callback_) {
-          AtMicrotask(&Resolve, dom_updated_promise_resolver_);
+        if (!script_bound_state_->update_dom_callback) {
+          AtMicrotask(&Resolve,
+                      script_bound_state_->dom_updated_promise_resolver);
+
           dom_callback_succeeded_ = true;
           process_next_state = AdvanceTo(State::kDOMCallbackFinished);
           DCHECK(process_next_state);
@@ -346,7 +515,8 @@ void DocumentTransition::ProcessCurrentState() {
         }
 
         if (!InvokeDOMChangeCallback()) {
-          AtMicrotask(&RejectWithAbort, dom_updated_promise_resolver_);
+          AtMicrotask(&RejectWithAbort,
+                      script_bound_state_->dom_updated_promise_resolver);
           skipTransition();
           break;
         }
@@ -354,6 +524,10 @@ void DocumentTransition::ProcessCurrentState() {
         DCHECK(process_next_state);
         break;
       }
+
+      case State::kWaitForRenderBlock:
+        DCHECK(WaitsForNotification(state_));
+        break;
 
       case State::kDOMCallbackRunning:
         DCHECK(WaitsForNotification(state_));
@@ -386,16 +560,18 @@ void DocumentTransition::ProcessCurrentState() {
           break;
         }
 
-        directive_store_->AddPendingRequest(
-            DocumentTransitionRequest::CreateAnimateRenderer(document_tag_));
+        delegate_->AddPendingRequest(
+            DocumentTransitionRequest::CreateAnimateRenderer(document_tag_,
+                                                             navigation_id_));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
         DCHECK(!in_main_lifecycle_update_);
-        AtMicrotask(&Resolve, ready_promise_resolver_);
+        if (creation_type_ == CreationType::kScript)
+          AtMicrotask(&Resolve, script_bound_state_->ready_promise_resolver);
         break;
 
-      case State::kAnimating:
+      case State::kAnimating: {
         if (first_animating_frame_) {
           first_animating_frame_ = false;
           break;
@@ -405,19 +581,23 @@ void DocumentTransition::ProcessCurrentState() {
           break;
 
         style_tracker_->StartFinished();
-        AtMicrotask(&Resolve, finished_promise_resolver_);
+
+        if (creation_type_ == CreationType::kScript)
+          AtMicrotask(&Resolve, script_bound_state_->finished_promise_resolver);
+
+        delegate_->AddPendingRequest(
+            DocumentTransitionRequest::CreateRelease(document_tag_));
+        delegate_->OnTransitionFinished(this);
 
         style_tracker_ = nullptr;
-
-        directive_store_->AddPendingRequest(
-            DocumentTransitionRequest::CreateRelease(document_tag_));
         process_next_state = AdvanceTo(State::kFinished);
         DCHECK(!process_next_state);
         break;
-
+      }
       case State::kFinished:
       case State::kAborted:
       case State::kTimedOut:
+      case State::kTransitionStateCallbackDispatched:
         break;
     }
   }
@@ -425,12 +605,8 @@ void DocumentTransition::ProcessCurrentState() {
 
 void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
-  visitor->Trace(script_state_);
-  visitor->Trace(update_dom_callback_);
   visitor->Trace(style_tracker_);
-  visitor->Trace(dom_updated_promise_resolver_);
-  visitor->Trace(ready_promise_resolver_);
-  visitor->Trace(finished_promise_resolver_);
+  visitor->Trace(script_bound_state_);
 
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
@@ -438,31 +614,35 @@ void DocumentTransition::Trace(Visitor* visitor) const {
 }
 
 bool DocumentTransition::InvokeDOMChangeCallback() {
-  if (!update_dom_callback_)
+  DCHECK(script_bound_state_);
+
+  if (!script_bound_state_->update_dom_callback)
     return true;
 
-  v8::Maybe<ScriptPromise> result = update_dom_callback_->Invoke(nullptr);
+  v8::Maybe<ScriptPromise> result =
+      script_bound_state_->update_dom_callback->Invoke(nullptr);
   // TODO(vmpstr): Should this be a DCHECK?
   if (result.IsNothing())
     return false;
 
-  ScriptState::Scope scope(script_state_);
+  ScriptState::Scope scope(script_bound_state_->script_state);
 
   result.ToChecked().Then(
       MakeGarbageCollected<ScriptFunction>(
-          script_state_, MakeGarbageCollected<DOMChangeFinishedCallback>(
-                             this, dom_updated_promise_resolver_, true)),
+          script_bound_state_->script_state,
+          MakeGarbageCollected<DOMChangeFinishedCallback>(
+              this, script_bound_state_->dom_updated_promise_resolver, true)),
       MakeGarbageCollected<ScriptFunction>(
-          script_state_, MakeGarbageCollected<DOMChangeFinishedCallback>(
-                             this, dom_updated_promise_resolver_, false)));
+          script_bound_state_->script_state,
+          MakeGarbageCollected<DOMChangeFinishedCallback>(
+              this, script_bound_state_->dom_updated_promise_resolver, false)));
   return true;
 }
 
 void DocumentTransition::ContextDestroyed() {
-  ready_promise_resolver_->Detach();
-  finished_promise_resolver_->Detach();
-  dom_updated_promise_resolver_->Detach();
-  skipTransition();
+  TRACE_EVENT0("blink", "DocumentTransition::ContextDestroyed");
+  // TODO(khushalsagar): This needs to be called for pages entering BFCache.
+  WillDetachFromView();
 }
 
 bool DocumentTransition::HasPendingActivity() const {
@@ -659,9 +839,7 @@ void DocumentTransition::OnRenderingPausedTimeout() {
     return;
 
   ResumeRendering();
-
   skipTransition();
-
   AdvanceTo(State::kTimedOut);
 }
 
@@ -678,6 +856,16 @@ void DocumentTransition::AtMicrotask(void callback(ScriptPromiseResolver*),
                                      ScriptPromiseResolver* resolver) {
   document_->GetAgent().event_loop()->EnqueueMicrotask(
       WTF::BindOnce(callback, WrapPersistent(resolver)));
+}
+
+// TODO(khushalsagar): This needs to be called for pages exiting BFCache.
+void DocumentTransition::OnRenderBlockingFinished() {
+  if (state_ != State::kWaitForRenderBlock)
+    return;
+
+  bool process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
+  DCHECK(process_next_state);
+  ProcessCurrentState();
 }
 
 }  // namespace blink

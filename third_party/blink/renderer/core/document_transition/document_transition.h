@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -35,14 +36,6 @@ class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 
-// An interface class that allows us to store requests in some object that isn't
-// tied to the lifetime of the transition.
-class DocumentTransitionDirectiveStore {
- public:
-  virtual void AddPendingRequest(
-      std::unique_ptr<DocumentTransitionRequest>) = 0;
-};
-
 class CORE_EXPORT DocumentTransition
     : public ScriptWrappable,
       public ActiveScriptWrappable<DocumentTransition>,
@@ -51,11 +44,44 @@ class CORE_EXPORT DocumentTransition
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Creating a document transition also starts it.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    virtual void AddPendingRequest(
+        std::unique_ptr<DocumentTransitionRequest>) = 0;
+    virtual void OnTransitionFinished(DocumentTransition*) = 0;
+  };
+
+  // Creates and starts a same-document DocumentTransition initiated using the
+  // script API.
+  static DocumentTransition* CreateFromScript(Document*,
+                                              ScriptState*,
+                                              V8DocumentTransitionCallback*,
+                                              Delegate*);
+
+  // Creates a DocumentTransition to cache the state of a Document before a
+  // navigation. The cached state is provided to the caller using the
+  // |ViewTransitionStateCallback|.
+  using ViewTransitionStateCallback =
+      base::OnceCallback<void(const ViewTransitionState&)>;
+  static DocumentTransition* CreateForSnapshotForNavigation(
+      Document*,
+      ViewTransitionStateCallback,
+      Delegate*);
+
+  // Creates a DocumentTransition using cached state from the previous Document
+  // of a navigation. This DocumentTransition is responsible for running
+  // animations on the new Document using the cached state.
+  static DocumentTransition*
+  CreateFromSnapshotForNavigation(Document*, ViewTransitionState, Delegate*);
+
   DocumentTransition(Document*,
                      ScriptState*,
                      V8DocumentTransitionCallback*,
-                     DocumentTransitionDirectiveStore*);
+                     Delegate*);
+  DocumentTransition(Document*, ViewTransitionStateCallback, Delegate*);
+  DocumentTransition(Document*, ViewTransitionState, Delegate*);
 
   // IDL implementation. Refer to document_transition.idl for additional
   // comments.
@@ -139,9 +165,36 @@ class CORE_EXPORT DocumentTransition
 
   bool IsDone() const { return IsTerminalState(state_); }
 
+  // Returns true if this object was created to cache a snapshot of the current
+  // Document for a navigation.
+  bool IsForNavigationSnapshot() const {
+    return creation_type_ == CreationType::kForSnapshot;
+  }
+
+  // Notifies when all render blocking resources for a newly loaded Document
+  // have been fetched. This is called before frame updates on this Document are
+  // restarted.
+  void OnRenderBlockingFinished();
+
+  // Notifies when this Document will be detached from the associated
+  // LocalFrameView and will no longer be visible to the user.
+  void WillDetachFromView();
+
  private:
   friend class DocumentTransitionTest;
   friend class AXDocumentTransitionTest;
+
+  // Tracks how the DocumentTransition object was created.
+  enum class CreationType {
+    // Created via the document.startViewTransition() script API.
+    kScript,
+    // Created when a navigation is initiated from the Document associated with
+    // this DocumentTransition.
+    kForSnapshot,
+    // Created when a navigation is initiated to the Document associated with
+    // this DocumentTransition.
+    kFromSnapshot,
+  };
 
   // Note the states are possibly overly verbose, and several states can
   // transition in one function call, but it's useful to keep track of what is
@@ -158,6 +211,10 @@ class CORE_EXPORT DocumentTransition
     kCapturing,
     kCaptured,
 
+    // Navigation specific states.
+    kTransitionStateCallbackDispatched,
+    kWaitForRenderBlock,
+
     // Callback states.
     kDOMCallbackRunning,
     kDOMCallbackFinished,
@@ -172,6 +229,7 @@ class CORE_EXPORT DocumentTransition
     kAborted,
     kTimedOut
   };
+  static const char* StateToString(State state);
 
   // Advance to the new state. This returns true if the state should be
   // processed immediately.
@@ -232,27 +290,38 @@ class CORE_EXPORT DocumentTransition
   void AtMicrotask(void callback(ScriptPromiseResolver*),
                    ScriptPromiseResolver* resolver);
 
-  Member<Document> document_;
-
   State state_ = State::kInitial;
+  const CreationType creation_type_;
+
+  Member<Document> document_;
+  Delegate* const delegate_;
+  const viz::NavigationID navigation_id_;
 
   // The document tag identifies the document to which this transition
   // belongs. It's unique among other local documents.
   uint32_t document_tag_ = 0u;
 
-  Member<ScriptState> script_state_;
+  // State which is created only when DocumentTransition is accessed from
+  // script.
+  struct ScriptBoundState : public GarbageCollected<ScriptBoundState> {
+    ScriptBoundState(ScriptState*, V8DocumentTransitionCallback*);
 
-  Member<V8DocumentTransitionCallback> update_dom_callback_;
+    void Trace(Visitor* visitor) const;
+
+    Member<ScriptState> script_state;
+    Member<V8DocumentTransitionCallback> update_dom_callback;
+    Member<ScriptPromiseResolver> dom_updated_promise_resolver;
+    Member<ScriptPromiseResolver> ready_promise_resolver;
+    Member<ScriptPromiseResolver> finished_promise_resolver;
+  };
+
+  Member<ScriptBoundState> script_bound_state_;
 
   Member<DocumentTransitionStyleTracker> style_tracker_;
 
-  Member<ScriptPromiseResolver> dom_updated_promise_resolver_;
-  Member<ScriptPromiseResolver> ready_promise_resolver_;
-  Member<ScriptPromiseResolver> finished_promise_resolver_;
-
-  DocumentTransitionDirectiveStore* directive_store_;
-
   std::unique_ptr<cc::ScopedPauseRendering> rendering_paused_scope_;
+
+  ViewTransitionStateCallback transition_state_callback_;
 
   bool in_main_lifecycle_update_ = false;
   bool dom_callback_succeeded_ = false;

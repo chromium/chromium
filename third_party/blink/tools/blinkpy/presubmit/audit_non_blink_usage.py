@@ -510,6 +510,7 @@ _CONFIG = [
             # Document transitions
             'cc::DocumentTransitionRequest',
             'cc::DocumentTransitionContentLayer',
+            'viz::NavigationID'
             'viz::SharedElementResourceId',
 
             # base/types/strong_alias.h

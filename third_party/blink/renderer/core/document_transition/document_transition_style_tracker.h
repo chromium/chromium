@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_STYLE_TRACKER_H_
 
 #include "components/viz/common/shared_element_resource_id.h"
+#include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -62,6 +63,7 @@ class DocumentTransitionStyleTracker
   };
 
   explicit DocumentTransitionStyleTracker(Document& document);
+  DocumentTransitionStyleTracker(Document& document, ViewTransitionState);
   ~DocumentTransitionStyleTracker();
 
   void AddSharedElement(Element*, const AtomicString&);
@@ -164,6 +166,10 @@ class DocumentTransitionStyleTracker
   // painted where it appears on the screen (rather than under the UI).
   gfx::Vector2d GetRootSnapshotPaintOffset() const;
 
+  // Returns a serializable representation of the state cached by this class to
+  // recreate the same pseudo-element tree in a new Document.
+  ViewTransitionState GetViewTransitionState() const;
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -244,6 +250,7 @@ class DocumentTransitionStyleTracker
   State state_ = State::kIdle;
   int captured_tag_count_ = 0;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
+  float device_pixel_ratio_ = 1.f;
   absl::optional<RootData> old_root_data_;
   absl::optional<RootData> new_root_data_;
   scoped_refptr<EffectPaintPropertyNode> root_effect_node_;

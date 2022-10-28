@@ -188,6 +188,56 @@ DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
     Document& document)
     : document_(document) {}
 
+DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
+    Document& document,
+    ViewTransitionState transition_state)
+    : document_(document), state_(State::kCaptured) {
+  captured_tag_count_ = static_cast<int>(transition_state.elements.size());
+
+  VectorOf<AtomicString> transition_tags;
+  transition_tags.ReserveInitialCapacity(captured_tag_count_);
+  for (const auto& transition_state_element : transition_state.elements) {
+    AtomicString tag_name(transition_state_element.tag_name.c_str());
+    transition_tags.push_back(tag_name);
+
+    if (transition_state_element.is_root) {
+      DCHECK(!old_root_data_);
+
+      old_root_data_.emplace();
+      old_root_data_->snapshot_id = transition_state_element.snapshot_id;
+      old_root_data_->tags.push_back(tag_name);
+
+      // TODO(khushalsagar): We should keep track of the snapshot viewport rect
+      // size to handle changes in its bounds.
+      continue;
+    }
+
+    DCHECK(!element_data_map_.Contains(tag_name));
+    auto* element_data = MakeGarbageCollected<ElementData>();
+
+    element_data->container_properties.emplace_back(
+        LayoutSize(transition_state_element.border_box_size_in_css_space),
+        TransformationMatrix(transition_state_element.viewport_matrix));
+    element_data->cached_container_properties =
+        element_data->container_properties.back();
+    element_data->old_snapshot_id = transition_state_element.snapshot_id;
+
+    element_data->element_index = transition_state_element.paint_order;
+    set_element_sequence_id_ = std::max(set_element_sequence_id_,
+                                        transition_state_element.paint_order);
+
+    element_data->visual_overflow_rect_in_layout_space =
+        PhysicalRect::EnclosingRect(
+            transition_state_element.overflow_rect_in_layout_space);
+    element_data->cached_visual_overflow_rect_in_layout_space =
+        element_data->visual_overflow_rect_in_layout_space;
+
+    element_data_map_.insert(tag_name, std::move(element_data));
+  }
+
+  document_->GetStyleEngine().SetDocumentTransitionTags(transition_tags);
+}
+
 DocumentTransitionStyleTracker::~DocumentTransitionStyleTracker() = default;
 
 void DocumentTransitionStyleTracker::AddConsoleError(
@@ -692,6 +742,17 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
 void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
   bool needs_style_invalidation = false;
 
+  // Use the document element's effective zoom, since that's what the parent
+  // effective zoom would be.
+  float device_pixel_ratio = document_->documentElement()
+                                 ->GetLayoutObject()
+                                 ->StyleRef()
+                                 .EffectiveZoom();
+  if (device_pixel_ratio_ != device_pixel_ratio) {
+    device_pixel_ratio_ = device_pixel_ratio;
+    needs_style_invalidation = true;
+  }
+
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     if (!element_data->target_element)
@@ -715,12 +776,6 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
       continue;
     }
 
-    // Use the document element's effective zoom, since that's what the parent
-    // effective zoom would be.
-    const float device_pixel_ratio = document_->documentElement()
-                                         ->GetLayoutObject()
-                                         ->StyleRef()
-                                         .EffectiveZoom();
     TransformationMatrix snapshot_matrix =
         layout_object->LocalToAbsoluteTransform();
 
@@ -741,7 +796,7 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     snapshot_matrix.PostTranslate(snapshot_to_fixed_offset.x(),
                                   snapshot_to_fixed_offset.y());
 
-    snapshot_matrix.Zoom(1.0 / device_pixel_ratio);
+    snapshot_matrix.Zoom(1.0 / device_pixel_ratio_);
 
     // ResizeObserverEntry is created to reuse the logic for parsing object size
     // for different types of LayoutObjects.
@@ -755,9 +810,9 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
             : LayoutSize(LayoutUnit(entry_size->blockSize()),
                          LayoutUnit(entry_size->inlineSize()));
     if (float effective_zoom = layout_object->StyleRef().EffectiveZoom();
-        std::abs(effective_zoom - device_pixel_ratio) >=
+        std::abs(effective_zoom - device_pixel_ratio_) >=
         std::numeric_limits<float>::epsilon()) {
-      border_box_size_in_css_space.Scale(effective_zoom / device_pixel_ratio);
+      border_box_size_in_css_space.Scale(effective_zoom / device_pixel_ratio_);
     }
 
     PhysicalRect visual_overflow_rect_in_layout_space;
@@ -1052,6 +1107,54 @@ gfx::Vector2d DocumentTransitionStyleTracker::GetRootSnapshotPaintOffset()
   return gfx::Vector2d(left, top);
 }
 
+ViewTransitionState DocumentTransitionStyleTracker::GetViewTransitionState()
+    const {
+  DCHECK_EQ(state_, State::kCaptured);
+
+  ViewTransitionState transition_state;
+  for (const auto& entry : element_data_map_) {
+    const auto& element_data = entry.value;
+    DCHECK_EQ(element_data->container_properties.size(), 1u)
+        << "Multiple container properties are only created in the Animate "
+           "phase";
+
+    auto& element = transition_state.elements.emplace_back();
+    // TODO(khushalsagar): What about non utf8 strings?
+    element.tag_name = entry.key.Utf8();
+    element.border_box_size_in_css_space =
+        gfx::SizeF(element_data->container_properties[0]
+                       .border_box_size_in_css_space.Width(),
+                   element_data->container_properties[0]
+                       .border_box_size_in_css_space.Height());
+    element.viewport_matrix =
+        element_data->container_properties[0].snapshot_matrix.ToTransform();
+    element.overflow_rect_in_layout_space =
+        gfx::RectF(element_data->visual_overflow_rect_in_layout_space);
+    element.snapshot_id = element_data->old_snapshot_id;
+    element.paint_order = element_data->element_index;
+    element.is_root = false;
+    // TODO(khushalsagar): Also writing mode.
+
+    DCHECK_GT(element.paint_order, 0);
+  }
+
+  if (old_root_data_) {
+    auto& element = transition_state.elements.emplace_back();
+    // TODO(khushalsagar): What about non utf8 strings?
+    element.tag_name = old_root_data_->tags[0].Utf8();
+    element.border_box_size_in_css_space =
+        gfx::SizeF(GetSnapshotViewportRect().size());
+    element.snapshot_id = old_root_data_->snapshot_id;
+    element.paint_order = 0;
+    element.is_root = true;
+  }
+
+  // TODO(khushalsagar): Need to send offsets to retain positioning of
+  // ::page-transition.
+
+  return transition_state;
+}
+
 void DocumentTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_.reset();
   document_->GetStyleEngine().InvalidateUADocumentTransitionStyle();
@@ -1146,19 +1249,12 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
   // element only -- no roots involved. Everything is done in the
   // `element_data_map_` loop.
 
-  // Use the document element's effective zoom, since that's what the parent
-  // effective zoom would be.
-  float device_pixel_ratio = document_->documentElement()
-                                 ->GetLayoutObject()
-                                 ->StyleRef()
-                                 .EffectiveZoom();
-
   // Size and position the root container behind any viewport insetting widgets
   // (such as the URL bar) so that it's stable across a transition. This rect
   // is called the "snapshot viewport".  Since this is applied in style,
   // convert from physical pixels to CSS pixels.
   gfx::RectF snapshot_viewport_css_pixels = gfx::ScaleRect(
-      gfx::RectF(GetSnapshotViewportRect()), 1.f / device_pixel_ratio);
+      gfx::RectF(GetSnapshotViewportRect()), 1.f / device_pixel_ratio_);
 
   // If adjusted, the root is always translated up and left underneath any UI
   // so the direction must always be negative.
@@ -1224,7 +1320,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           element_data->visual_overflow_rect_in_layout_space,
           LayoutRect(LayoutPoint(), element_data->container_properties.back()
                                         .border_box_size_in_css_space),
-          device_pixel_ratio);
+          device_pixel_ratio_);
       if (incoming_inset) {
         builder.AddIncomingObjectViewBox(document_transition_tag,
                                          *incoming_inset);
@@ -1238,7 +1334,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
           element_data->cached_visual_overflow_rect_in_layout_space,
           LayoutRect(LayoutPoint(), element_data->cached_container_properties
                                         .border_box_size_in_css_space),
-          device_pixel_ratio);
+          device_pixel_ratio_);
       if (outgoing_inset) {
         builder.AddOutgoingObjectViewBox(document_transition_tag,
                                          *outgoing_inset);

@@ -15,31 +15,6 @@
 
 namespace blink {
 
-// FinishedResolved implementation.
-DocumentTransitionSupplement::FinishedResolved::FinishedResolved(
-    DocumentTransitionSupplement* supplement,
-    DocumentTransition* transition,
-    Document* document)
-    : supplement_(supplement), transition_(transition), document_(document) {}
-
-DocumentTransitionSupplement::FinishedResolved::~FinishedResolved() = default;
-
-ScriptValue DocumentTransitionSupplement::FinishedResolved::Call(
-    ScriptState* script_state,
-    ScriptValue value) {
-  if (supplement_)
-    supplement_->ResetTransition(transition_);
-  return ScriptValue();
-}
-
-void DocumentTransitionSupplement::FinishedResolved::Trace(
-    Visitor* visitor) const {
-  ScriptFunction::Callable::Trace(visitor);
-  visitor->Trace(supplement_);
-  visitor->Trace(transition_);
-  visitor->Trace(document_);
-}
-
 // static
 const char DocumentTransitionSupplement::kSupplementName[] =
     "DocumentTransition";
@@ -78,21 +53,60 @@ DocumentTransition* DocumentTransitionSupplement::StartTransition(
     Document& document,
     V8DocumentTransitionCallback* callback,
     ExceptionState& exception_state) {
+  // TODO(khushalsagar): Script initiates a transition request during
+  // navigation?
+  if (transition_ && transition_->IsForNavigationSnapshot())
+    return nullptr;
+
   if (transition_)
     transition_->skipTransition();
+  DCHECK(!transition_)
+      << "skipTransition() should finish existing |transition_|";
 
-  transition_ = MakeGarbageCollected<DocumentTransition>(
-      &document, script_state, callback, this);
-
-  auto* finished_callable =
-      MakeGarbageCollected<FinishedResolved>(this, transition_, &document);
-  transition_->finished().Then(
-      MakeGarbageCollected<ScriptFunction>(script_state, finished_callable),
-      MakeGarbageCollected<ScriptFunction>(script_state, finished_callable));
+  transition_ = DocumentTransition::CreateFromScript(&document, script_state,
+                                                     callback, this);
   return transition_;
 }
 
-void DocumentTransitionSupplement::ResetTransition(
+// static
+void DocumentTransitionSupplement::SnapshotDocumentForNavigation(
+    Document& document,
+    DocumentTransition::ViewTransitionStateCallback callback) {
+  auto* supplement = From(document);
+  supplement->StartTransition(document, std::move(callback));
+}
+
+void DocumentTransitionSupplement::StartTransition(
+    Document& document,
+    DocumentTransition::ViewTransitionStateCallback callback) {
+  if (transition_) {
+    DCHECK(!transition_->IsForNavigationSnapshot());
+    transition_->skipTransition();
+  }
+  DCHECK(!transition_)
+      << "skipTransition() should finish existing |transition_|";
+
+  transition_ = DocumentTransition::CreateForSnapshotForNavigation(
+      &document, std::move(callback), this);
+}
+
+// static
+void DocumentTransitionSupplement::CreateFromSnapshotForNavigation(
+    Document& document,
+    ViewTransitionState transition_state) {
+  auto* supplement = From(document);
+  supplement->StartTransition(document, std::move(transition_state));
+}
+
+void DocumentTransitionSupplement::StartTransition(
+    Document& document,
+    ViewTransitionState transition_state) {
+  DCHECK(!transition_) << "Existing transition on new Document";
+  transition_ = DocumentTransition::CreateFromSnapshotForNavigation(
+      &document, std::move(transition_state), this);
+}
+
+void DocumentTransitionSupplement::OnTransitionFinished(
     DocumentTransition* transition) {
   // TODO(vmpstr): Do we need to explicitly reset transition state?
   if (transition == transition_)
@@ -105,6 +119,8 @@ DocumentTransition* DocumentTransitionSupplement::GetActiveTransition() {
 
 DocumentTransitionSupplement::DocumentTransitionSupplement(Document& document)
     : Supplement<Document>(document) {}
+
+DocumentTransitionSupplement::~DocumentTransitionSupplement() = default;
 
 void DocumentTransitionSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(transition_);

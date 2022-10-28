@@ -11,6 +11,7 @@ include_rules = [
     "+cc/paint/element_id.h",
     "+cc/trees/browser_controls_params.h",
     "+components/viz/common/surfaces/local_surface_id.h",
+    "+components/viz/common/shared_element_resource_id.h",
     "+net",
     "+media",
     "+mojo",

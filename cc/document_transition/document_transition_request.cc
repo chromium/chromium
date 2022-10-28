@@ -42,36 +42,43 @@ std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreateCapture(
     uint32_t document_tag,
     uint32_t shared_element_count,
+    viz::NavigationID navigation_id,
     std::vector<viz::SharedElementResourceId> capture_ids,
     base::OnceClosure commit_callback) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kSave, document_tag, shared_element_count, std::move(capture_ids),
-      std::move(commit_callback)));
+      Type::kSave, document_tag, shared_element_count, navigation_id,
+      std::move(capture_ids), std::move(commit_callback)));
 }
 
 // static
 std::unique_ptr<DocumentTransitionRequest>
-DocumentTransitionRequest::CreateAnimateRenderer(uint32_t document_tag) {
-  return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kAnimateRenderer, document_tag, 0u, {}, base::OnceClosure()));
+DocumentTransitionRequest::CreateAnimateRenderer(
+    uint32_t document_tag,
+    viz::NavigationID navigation_id) {
+  return base::WrapUnique(
+      new DocumentTransitionRequest(Type::kAnimateRenderer, document_tag, 0u,
+                                    navigation_id, {}, base::OnceClosure()));
 }
 
 // static
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreateRelease(uint32_t document_tag) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      Type::kRelease, document_tag, 0u, {}, base::OnceClosure()));
+      Type::kRelease, document_tag, 0u, viz::NavigationID::Null(), {},
+      base::OnceClosure()));
 }
 
 DocumentTransitionRequest::DocumentTransitionRequest(
     Type type,
     uint32_t document_tag,
     uint32_t shared_element_count,
+    viz::NavigationID navigation_id,
     std::vector<viz::SharedElementResourceId> capture_ids,
     base::OnceClosure commit_callback)
     : type_(type),
       document_tag_(document_tag),
       shared_element_count_(shared_element_count),
+      navigation_id_(navigation_id),
       commit_callback_(std::move(commit_callback)),
       sequence_id_(s_next_sequence_id_++),
       capture_resource_ids_(std::move(capture_ids)) {
@@ -112,9 +119,8 @@ DocumentTransitionRequest::ConstructDirective(
     shared_elements.back().shared_element_resource_id = empty_resource_id;
   }
 
-  return viz::CompositorFrameTransitionDirective(viz::NavigationID::Null(),
-                                                 sequence_id_, type_,
-                                                 std::move(shared_elements));
+  return viz::CompositorFrameTransitionDirective(
+      navigation_id_, sequence_id_, type_, std::move(shared_elements));
 }
 
 std::string DocumentTransitionRequest::ToString() const {
