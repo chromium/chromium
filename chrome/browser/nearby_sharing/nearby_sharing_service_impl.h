@@ -292,7 +292,6 @@ class NearbySharingServiceImpl
                         bool success);
   void OnOpenFiles(ShareTarget share_target,
                    base::OnceCallback<void(ShareTarget, bool)> callback,
-                   bool is_fusebox_file_path,
                    std::vector<NearbyFileHandler::FileInfo> files);
   std::vector<location::nearby::connections::mojom::PayloadPtr>
   CreateTextPayloads(const std::vector<TextAttachment>& attachments);

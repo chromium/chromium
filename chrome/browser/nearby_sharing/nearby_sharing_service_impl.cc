@@ -250,6 +250,17 @@ bool IsFuseBoxFilePath(const base::FilePath& file_path) {
                           file_manager::util::kFuseBoxMediaPath);
 }
 
+// Share Cache is used to store temporary files being shared between app
+// platforms (used by ARC and WebAPK) and is owned by file manager.
+bool IsShareCacheFilePath(Profile* profile, const base::FilePath& file_path) {
+  if (!profile || file_path.empty()) {
+    return false;
+  }
+  return base::StartsWith(
+      file_path.value(),
+      file_manager::util::GetShareCacheFilePath(profile).value());
+}
+
 // Wraps a call to OnTransferUpdate() to filter any updates after receiving a
 // final status.
 class TransferUpdateDecorator : public TransferUpdateCallback {
@@ -2783,15 +2794,11 @@ void NearbySharingServiceImpl::CreatePayloads(
     file_paths.push_back(*attachment.file_path());
   }
 
-  // If the first attachment file has a fusebox path, it is expected that all
-  // file attachments from the same volume will be using fusebox (e.g. MTP).
-  const bool is_fusebox_path =
-      file_paths.size() ? IsFuseBoxFilePath(file_paths[0]) : false;
   file_handler_.OpenFiles(
       std::move(file_paths),
       base::BindOnce(&NearbySharingServiceImpl::OnOpenFiles,
                      weak_ptr_factory_.GetWeakPtr(), std::move(share_target),
-                     std::move(callback), is_fusebox_path));
+                     std::move(callback)));
 }
 
 void NearbySharingServiceImpl::OnCreatePayloads(
@@ -2833,13 +2840,30 @@ void NearbySharingServiceImpl::OnCreatePayloads(
 void NearbySharingServiceImpl::OnOpenFiles(
     ShareTarget share_target,
     base::OnceCallback<void(ShareTarget, bool)> callback,
-    bool is_fusebox_file_path,
     std::vector<NearbyFileHandler::FileInfo> files) {
   OutgoingShareTargetInfo* info = GetOutgoingShareTargetInfo(share_target);
-  bool files_open_success =
+  const bool files_open_success =
       (files.size() == share_target.file_attachments.size());
-  if (is_fusebox_file_path) {
-    base::UmaHistogramBoolean("Nearby.Share.Payload.FuseBox.Open.Success",
+
+  const absl::optional<base::FilePath>& share_path =
+      share_target.file_attachments[0].file_path();
+  if (share_path) {
+    // To determine the file path type, only first attachment file is checked as
+    // it is expected that all file attachments from the volume location will be
+    // using the same path (e.g. MTP, Downloads, Fusebox, ShareCache, etc.).
+    // Only FuseBox and ShareCache are highlighted here as they are paths for
+    // virtual file systems, but other specific path metrics can be added.
+    if (IsFuseBoxFilePath(*share_path)) {
+      base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success.FuseBox",
+                                files_open_success);
+    } else if (IsShareCacheFilePath(profile_, *share_path)) {
+      base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success.ShareCache",
+                                files_open_success);
+    } else {
+      base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success.UnknownPath",
+                                files_open_success);
+    }
+    base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success",
                               files_open_success);
   }
   if (!info || !files_open_success) {

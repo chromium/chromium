@@ -949,13 +949,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.FuseBox.Open.Success"
     enum="BooleanSuccess" expires_after="2023-04-18">
+  <obsolete>
+    Removed in 10/2022. Now using Nearby.Share.Payload.Open.Success{FilePath}.
+  </obsolete>
   <owner>alanding@google.com</owner>
   <owner>cros-sharesheet@google.com</owner>
-  <summary>
-    Records the success/failure of a Nearby Share file open where the file path
-    is created by the FuseBox service. Emitted when the open operation on
-    FuseBox moniker file(s) complete successfully or with failure.
-  </summary>
 </histogram>
 
 <histogram name="Nearby.Share.Payload.Medium" enum="NearbyShareUpgradedMedium"
@@ -1002,6 +1000,23 @@ chromium-metrics-reviews@google.com.
     <variant name=".File" summary="file"/>
     <variant name=".Text" summary="text"/>
     <variant name=".WiFiCredentials" summary="Wi-Fi credentials"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Payload.Open.Success{FilePath}"
+    enum="BooleanSuccess" expires_after="2023-04-24">
+  <owner>alanding@google.com</owner>
+  <owner>cros-sharesheet@google.com</owner>
+  <summary>
+    Records the success/failure of a Nearby Share file open where the file path
+    is created within a mount point owned by file manager. Emitted when the open
+    on file(s) from {FilePath} are completed successfully or with failure.
+  </summary>
+  <token key="FilePath">
+    <variant name="" summary="any file path"/>
+    <variant name=".FuseBox" summary="file path for FuseBox media mount point"/>
+    <variant name=".ShareCache" summary="file path for ShareCache mount point"/>
+    <variant name=".UnknownPath" summary="file path for unknown mount point"/>
   </token>
 </histogram>
 
