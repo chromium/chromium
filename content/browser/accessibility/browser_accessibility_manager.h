@@ -423,6 +423,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
 
   // AXTreeManager overrides.
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
+  void CleanUp() override;
+  void UpdateAttributesOnParent(ui::AXNode* parent) override;
 
   // AXPlatformTreeManager overrides.
   ui::AXPlatformNode* GetPlatformNodeFromTree(
@@ -555,11 +557,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   mutable int last_hover_node_id_;
   mutable gfx::Rect last_hover_bounds_;
 
-  // True if the root's parent is in another accessibility tree and that
-  // parent's child is the root. Ensures that the parent node is notified
-  // once when this subtree is first connected.
-  bool connected_to_parent_tree_node_;
-
   // The device scale factor for the view associated with this frame,
   // cached each time there's any update to the accessibility tree.
   float device_scale_factor_;
@@ -608,16 +605,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   void BuildAXTreeHitTestCacheInternal(
       const BrowserAccessibility* node,
       std::vector<const BrowserAccessibility*>* storage);
-
-  // Add parent connection if missing (!connected_to_parent_tree_node_). If the
-  // root's parent is in another accessibility tree but it wasn't previously
-  // connected, post the proper notifications on the parent.
-  void EnsureParentConnectionIfNotRootManager();
-
-  // Refreshes a parent node in a parent tree when it needs to be informed that
-  // this tree is ready or being destroyed. For example, an iframe object
-  // in a parent tree may need to link or unlink to this manager.
-  void ParentConnectionChanged(BrowserAccessibility* parent);
 
   // This overrides `AXTreeManager::GetParentManager` only to add DCHECKs that
   // validate the following assumptions:

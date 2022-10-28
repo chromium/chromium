@@ -6,6 +6,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -60,12 +61,14 @@ void AXTreeManager::SetFocusChangeCallbackForTesting(
 }
 
 AXTreeManager::AXTreeManager()
-    : ax_tree_id_(AXTreeIDUnknown()),
+    : connected_to_parent_tree_node_(false),
+      ax_tree_id_(AXTreeIDUnknown()),
       ax_tree_(nullptr),
       event_generator_(ax_tree()) {}
 
 AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
-    : ax_tree_id_(tree ? tree->data().tree_id : AXTreeIDUnknown()),
+    : connected_to_parent_tree_node_(false),
+      ax_tree_id_(tree ? tree->data().tree_id : AXTreeIDUnknown()),
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
   GetMap().AddTreeManager(ax_tree_id_, this);
@@ -75,7 +78,8 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
 
 AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
                              std::unique_ptr<AXTree> tree)
-    : ax_tree_id_(tree_id),
+    : connected_to_parent_tree_node_(false),
+      ax_tree_id_(tree_id),
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
   GetMap().AddTreeManager(ax_tree_id_, this);
@@ -193,13 +197,25 @@ AXNode* AXTreeManager::GetLastFocusedNode() {
 }
 
 AXTreeManager::~AXTreeManager() {
+  AXNode* parent = nullptr;
+  if (connected_to_parent_tree_node_)
+    parent = GetParentNodeFromParentTreeAsAXNode();
+
+  // Fire any events that need to be fired when tree nodes get deleted. For
+  // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
+  if (ax_tree_)
+    ax_tree_->Destroy();
+
+  CleanUp();
+
   // Stop observing so we don't get a callback for every node being deleted.
   event_generator_.ReleaseTree();
   if (ax_tree_)
     GetMap().RemoveTreeManager(ax_tree_id_);
-
   if (last_focused_node_tree_id_ && ax_tree_id_ == *last_focused_node_tree_id_)
     SetLastFocusedNode(nullptr);
+
+  ParentConnectionChanged(parent);
 }
 
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
@@ -219,10 +235,6 @@ void AXTreeManager::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   // notifications prior to the actual destruction of the object.
   if (node->GetRole() == ax::mojom::Role::kMenu)
     FireGeneratedEvent(AXEventGenerator::Event::MENU_POPUP_END, node);
-}
-
-void AXTreeManager::RemoveFromMap() {
-  GetMap().RemoveTreeManager(ax_tree_id_);
 }
 
 AXTreeManager* AXTreeManager::GetParentManager() const {
@@ -280,6 +292,47 @@ AXNode* AXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
          "`kChildTreeId` attribute.";
 
   return parent_node;
+}
+
+void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
+  if (!parent) {
+    connected_to_parent_tree_node_ = false;
+    return;
+  }
+  connected_to_parent_tree_node_ = true;
+
+  UpdateAttributesOnParent(parent);
+  AXTreeManager* parent_manager = parent->GetManager();
+  parent = parent_manager->RetargetForEvents(
+      parent, RetargetEventType::RetargetEventTypeGenerated);
+  DCHECK(parent) << "RetargetForEvents shouldn't return a "
+                    "null pointer when |parent| is not null.";
+  parent_manager->FireGeneratedEvent(
+      ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
+}
+
+void AXTreeManager::EnsureParentConnectionIfNotRootManager() {
+  AXNode* parent = GetParentNodeFromParentTreeAsAXNode();
+  if (parent) {
+    if (!connected_to_parent_tree_node_)
+      ParentConnectionChanged(parent);
+    SANITIZER_CHECK(!IsRoot());
+    return;
+  }
+
+  if (connected_to_parent_tree_node_) {
+    connected_to_parent_tree_node_ = false;
+    // Two possible cases:
+    // 1. This manager was previously connected to a parent manager but now
+    // became the new root manager.
+    // 2. The parent host node for this child tree was removed. Because the
+    // connection with the root has been severed, it will no longer be possible
+    // to fire events, as this AXTreeManager is no longer tied to
+    // an existing UI element. Due to race conditions, in some cases, `this` is
+    // destroyed first, and this condition is not reached; while in other cases
+    // the parent node is destroyed first (this case).
+    DCHECK(IsRoot() || !CanFireEvents());
+  }
 }
 
 }  // namespace ui

@@ -120,19 +120,34 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   explicit AXTreeManager(std::unique_ptr<AXTree> tree);
   explicit AXTreeManager(const AXTreeID& tree_id, std::unique_ptr<AXTree> tree);
 
-  // TODO(benjamin.beaudry): Remove this helper once we move the logic related
-  // to the parent connection from `BrowserAccessibilityManager` to this class.
-  // `BrowserAccessibilityManager` needs to remove the manager from the map
-  // before calling `BrowserAccessibilityManager::ParentConnectionChanged`, so
-  // the default removal of the manager in `~AXTreeManager` occurs too late.
-  void RemoveFromMap();
-
   virtual AXTreeManager* GetParentManager() const;
 
   // Return the last node that had focus, no searching.
   static AXNode* GetLastFocusedNode();
 
   static void SetLastFocusedNode(AXNode* node);
+
+  // Add parent connection if missing (!connected_to_parent_tree_node_). If the
+  // root's parent is in another accessibility tree but it wasn't previously
+  // connected, post the proper notifications on the parent.
+  void EnsureParentConnectionIfNotRootManager();
+
+  // Refreshes a parent node in a parent tree when it needs to be informed that
+  // this tree is ready or being destroyed.
+  void ParentConnectionChanged(AXNode* parent);
+
+  // Inheriting classes should override this method to update the `parent`
+  // attributes accordingly when the parent connection changes.
+  virtual void UpdateAttributesOnParent(AXNode* parent) {}
+
+  // Perform some additional clean up on the derived classes to be called in the
+  // destructor.
+  virtual void CleanUp() {}
+
+  // True if the root's parent is in another accessibility tree and that
+  // parent's child is the root. Ensures that the parent node is notified
+  // once when this subtree is first connected.
+  bool connected_to_parent_tree_node_;
 
   AXTreeID ax_tree_id_;
   std::unique_ptr<AXTree> ax_tree_;

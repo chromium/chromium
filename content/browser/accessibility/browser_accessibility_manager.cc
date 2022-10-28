@@ -187,30 +187,10 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
                               : nullptr),
       delegate_(delegate),
       user_is_navigating_away_(false),
-      connected_to_parent_tree_node_(false),
       device_scale_factor_(1.0f),
       use_custom_device_scale_factor_for_testing_(false) {}
 
-BrowserAccessibilityManager::~BrowserAccessibilityManager() {
-  // If the root's parent is in another accessibility tree but it wasn't
-  // previously connected, post the proper notifications on the parent.
-  BrowserAccessibility* parent = nullptr;
-  if (connected_to_parent_tree_node_)
-    parent = GetParentNodeFromParentTree();
-
-  // Fire any events that need to be fired when tree nodes get deleted. For
-  // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
-  ax_tree()->Destroy();
-  delegate_ = nullptr;  // Guard against reentrancy by screen reader.
-  if (last_focused_node_tree_id_ &&
-      ax_tree_id_ == *last_focused_node_tree_id_) {
-    SetLastFocusedNode(nullptr);
-  }
-
-  RemoveFromMap();
-
-  ParentConnectionChanged(parent);
-}
+BrowserAccessibilityManager::~BrowserAccessibilityManager() = default;
 
 // A flag for use in tests to ensure events aren't suppressed or delayed.
 // static
@@ -368,47 +348,16 @@ BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
   return parent_node;
 }
 
-void BrowserAccessibilityManager::ParentConnectionChanged(
-    BrowserAccessibility* parent) {
-  if (!parent) {
-    connected_to_parent_tree_node_ = false;
+void BrowserAccessibilityManager::UpdateAttributesOnParent(ui::AXNode* parent) {
+  BrowserAccessibility* parent_wrapper = GetFromAXNode(parent);
+  if (!parent_wrapper)
     return;
-  }
-  connected_to_parent_tree_node_ = true;
-  parent->OnDataChanged();
-  parent->UpdatePlatformAttributes();
-  BrowserAccessibilityManager* parent_manager = parent->manager();
-  parent = parent_manager->RetargetBrowserAccessibilityForEvents(
-      parent, RetargetEventType::RetargetEventTypeGenerated);
-  DCHECK(parent) << "RetargetBrowserAccessibilityForEvents shouldn't return a "
-                    "null pointer when |parent| is not null.";
-  parent_manager->FireGeneratedEvent(
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent->node());
+  parent_wrapper->OnDataChanged();
+  parent_wrapper->UpdatePlatformAttributes();
 }
 
-void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
-  BrowserAccessibility* parent = GetParentNodeFromParentTree();
-  if (parent) {
-    if (!connected_to_parent_tree_node_)
-      ParentConnectionChanged(parent);
-    SANITIZER_CHECK(!IsRootFrameManager());
-    return;
-  }
-
-  if (connected_to_parent_tree_node_) {
-    connected_to_parent_tree_node_ = false;
-    // Two possible cases:
-    // 1. This manager was previously connected to a parent manager but now
-    // became the new root manager. One example where this can happen is portal
-    // activation.
-    // 2. The parent host node for this child tree was removed. Because the
-    // connection with the root has been severed, it will no longer be possible
-    // to fire events, as this BrowserAccessibilityManager is no longer tied to
-    // an existing document. Due to race conditions, in some cases, |this| is
-    // destroyed first, and this condition is not reached; while in other cases
-    // the parent node is destroyed first (this case).
-    DCHECK(IsRootFrameManager() || !CanFireEvents());
-  }
+void BrowserAccessibilityManager::CleanUp() {
+  delegate_ = nullptr;
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
