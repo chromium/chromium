@@ -790,10 +790,6 @@ class FailedSourceRegistrationLog extends Log {
       case SourceRegistrationError.kDestinationUntrustworthy:
         this.failureReason = 'destination not potentially trustworthy';
         break;
-      case SourceRegistrationError.kDestinationMismatched:
-        this.failureReason =
-            'destination differs from that of previous source in redirect chain';
-        break;
       case SourceRegistrationError.kFilterDataWrongType:
         this.failureReason =
             'filter_data has wrong type (must be a dictionary)';

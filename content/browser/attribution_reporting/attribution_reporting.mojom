@@ -27,7 +27,6 @@ enum SourceRegistrationError {
   kDestinationMissing,
   kDestinationWrongType,
   kDestinationUntrustworthy,
-  kDestinationMismatched,
 
   kFilterDataWrongType,
   kFilterDataTooManyKeys,
