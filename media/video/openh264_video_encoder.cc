@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -100,7 +99,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
                                       const Options& options,
                                       OutputCB output_cb,
                                       EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (codec_) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
     return;
@@ -163,7 +162,7 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
     h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
 
   options_ = options;
-  output_cb_ = BindToCurrentLoop(std::move(output_cb));
+  output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   codec_ = std::move(codec);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
@@ -246,7 +245,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
 void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                   bool key_frame,
                                   EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
@@ -352,7 +351,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 void OpenH264VideoEncoder::ChangeOptions(const Options& options,
                                          OutputCB output_cb,
                                          EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
@@ -387,12 +386,12 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
 
   options_ = options;
   if (!output_cb.is_null())
-    output_cb_ = BindToCurrentLoop(std::move(output_cb));
+    output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
 void OpenH264VideoEncoder::Flush(EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);

@@ -347,6 +347,7 @@ class MockVideoEncoder : public VideoEncoder {
               (override));
 
   MOCK_METHOD(void, Flush, (VideoEncoder::EncoderStatusCB done_cb), (override));
+  MOCK_METHOD(void, DisablePostedCallbacks, (), (override));
 
   // A function for mocking destructor calls
   MOCK_METHOD(void, Dtor, ());

@@ -11,7 +11,6 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -238,7 +237,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
                                  const Options& options,
                                  OutputCB output_cb,
                                  EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (codec_) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
     return;
@@ -380,7 +379,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
 
   options_ = options;
   originally_configured_size_ = options.frame_size;
-  output_cb_ = BindToCurrentLoop(std::move(output_cb));
+  output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   codec_ = std::move(codec);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
@@ -388,7 +387,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
 void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                              bool key_frame,
                              EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
@@ -562,7 +561,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 void VpxVideoEncoder::ChangeOptions(const Options& options,
                                     OutputCB output_cb,
                                     EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
@@ -633,7 +632,7 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
     codec_config_ = new_config;
     options_ = options;
     if (!output_cb.is_null())
-      output_cb_ = BindToCurrentLoop(std::move(output_cb));
+      output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   } else {
     status = EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
                            "Failed to set new VPX config")
@@ -671,7 +670,7 @@ VpxVideoEncoder::~VpxVideoEncoder() {
 }
 
 void VpxVideoEncoder::Flush(EncoderStatusCB done_cb) {
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);

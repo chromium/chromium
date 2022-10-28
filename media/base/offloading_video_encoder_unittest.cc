@@ -36,6 +36,7 @@ class OffloadingVideoEncoderTest : public testing::Test {
     mock_video_encoder_ = mock_video_encoder.get();
     work_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     callback_runner_ = base::SequencedTaskRunnerHandle::Get();
+    EXPECT_CALL(*mock_video_encoder_, DisablePostedCallbacks());
     offloading_encoder_ = std::make_unique<OffloadingVideoEncoder>(
         std::move(mock_video_encoder), work_runner_, callback_runner_);
     EXPECT_CALL(*mock_video_encoder_, Dtor()).WillOnce(Invoke([this]() {

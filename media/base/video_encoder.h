@@ -145,6 +145,21 @@ class MEDIA_EXPORT VideoEncoder {
   // Requests all outputs for already encoded frames to be
   // produced via |output_cb| and calls |dene_cb| after that.
   virtual void Flush(EncoderStatusCB done_cb) = 0;
+
+  // Normally VideoEncoder implementations aren't supposed to call OutputCB and
+  // EncoderStatusCB directly from inside any of VideoEncoder's methods.
+  // This method tells VideoEncoder that all callbacks can be called directly
+  // from within its methods. It saves extra thread hops if it's known that
+  // all callbacks already point to a task runner different from
+  // the current one.
+  virtual void DisablePostedCallbacks();
+
+ protected:
+  OutputCB BindCallbackToCurrentLoopIfNeeded(OutputCB&& callback);
+  EncoderStatusCB BindCallbackToCurrentLoopIfNeeded(EncoderStatusCB&& callback);
+
+ private:
+  bool post_callbacks_ = true;
 };
 
 }  // namespace media

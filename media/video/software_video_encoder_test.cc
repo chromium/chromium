@@ -318,6 +318,25 @@ class SoftwareVideoEncoderTest
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};
 class SVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
 
+TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  bool init_called = false;
+  bool flush_called = false;
+  encoder_->DisablePostedCallbacks();
+
+  VideoEncoder::EncoderStatusCB init_cb = base::BindLambdaForTesting(
+      [&](EncoderStatus error) { init_called = true; });
+
+  VideoEncoder::EncoderStatusCB flush_cb = base::BindLambdaForTesting(
+      [&](EncoderStatus error) { flush_called = true; });
+  encoder_->Initialize(profile_, options, VideoEncoder::OutputCB(),
+                       std::move(init_cb));
+  encoder_->Flush(std::move(flush_cb));
+  EXPECT_TRUE(init_called);
+  EXPECT_TRUE(flush_called);
+}
+
 TEST_P(SoftwareVideoEncoderTest, InitializeAndFlush) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
