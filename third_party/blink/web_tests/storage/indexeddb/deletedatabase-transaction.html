@@ -14,7 +14,7 @@ function prepareDatabase()
 function startTransaction() {
     debug("");
     debug("Start a transaction against the first database:");
-    evalAndLog("trans = db.transaction('store', 'readonly')");
+    evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("trans.objectStore('store').get(0)");
 
     debug("");

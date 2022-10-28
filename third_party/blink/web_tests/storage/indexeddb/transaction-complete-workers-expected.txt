@@ -11,7 +11,7 @@ Starting worker: resources/transaction-complete-workers.js
 [Worker] db.createObjectStore('store')
 [Worker] 
 [Worker] createTransaction():
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] store = transaction.objectStore('store')
 PASS [Worker] Transaction completed
 [Worker] Expecting exception from store.get(0)
@@ -21,7 +21,7 @@ PASS [Worker] ename is 'TransactionInactiveError'
 [Worker] Exception message: Failed to execute 'get' on 'IDBObjectStore': The transaction has finished.
 [Worker] 
 [Worker] recursionTest():
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] store = transaction.objectStore('store')
 [Worker] store.get(0)
 PASS [Worker] transaction is active
@@ -54,7 +54,7 @@ PASS [Worker] ename is 'TransactionInactiveError'
 [Worker] setTimeout(timeoutTest, 0)
 [Worker] 
 [Worker] timeoutTest():
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] store = transaction.objectStore('store')
 PASS [Worker] transaction started in setTimeout() callback completed
 [Worker] Expecting exception from store.get(0)
@@ -69,7 +69,7 @@ PASS [Worker] ename is 'TransactionInactiveError'
 [Worker] 
 [Worker] errorHandler():
 [Worker] self.onerror = self.old_onerror
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] store = transaction.objectStore('store')
 Got expected error from worker, ignoring
 event.preventDefault()

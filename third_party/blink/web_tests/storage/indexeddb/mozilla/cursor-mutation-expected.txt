@@ -86,7 +86,7 @@ sawRemoved = false
 objectStoreDataNameSort = [ 1, 4, 5, 2, 3 ]
 
 
-trans = db.transaction('foo', 'readwrite')
+trans = db.transaction('foo', 'readwrite', {durability: 'relaxed'})
 objectStore = trans.objectStore('foo')
 request = objectStore.index('name').openCursor()
 trans.oncomplete = checkMutatingCursorResults

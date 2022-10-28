@@ -16,7 +16,7 @@ store.put(7,7)
 store.put(8,8)
 store.put(9,9)
 store.put(10,10)
-trans = db.transaction('store')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store')
 request = store.openCursor(IDBKeyRange.bound(-Infinity, Infinity), 'next')
 cursor = request.result

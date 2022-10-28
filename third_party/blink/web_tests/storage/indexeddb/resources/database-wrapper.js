@@ -43,7 +43,7 @@ function openSuccess(evt)
 
     // All these local references should get collected, but the database's
     // wrapper shouldn't get collected before the database itself.
-    var transaction = db.transaction('store', 'readonly');
+    var transaction = db.transaction('store', 'readonly', {durability: 'relaxed'});
     var objectStore = transaction.objectStore('store');
     var request = objectStore.get(0);
     request.onsuccess = function() {

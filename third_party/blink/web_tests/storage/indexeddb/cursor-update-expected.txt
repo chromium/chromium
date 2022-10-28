@@ -199,7 +199,7 @@ event.target.result.continue();
 keyCursor()
 PASS counter is 5
 openBasicCursor()
-trans = db.transaction('basicStore')
+trans = db.transaction('basicStore', 'readonly', {durability: 'relaxed'})
 trans.objectStore('basicStore')
 objectStore.openCursor(keyRange)
 attemptUpdate()

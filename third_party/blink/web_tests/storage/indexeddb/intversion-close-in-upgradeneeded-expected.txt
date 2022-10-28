@@ -30,7 +30,7 @@ PASS event.result is undefined
 Verify that the old connection is unchanged and was closed:
 PASS db is non-null.
 PASS db.version is 7
-Expecting exception from db.transaction('os')
+Expecting exception from db.transaction('os', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'

@@ -10,7 +10,7 @@ store = db.createObjectStore('storeName')
 store.add('value', 'key')
 
 
-trans = db.transaction('storeName')
+trans = db.transaction('storeName', 'readonly', {durability: 'relaxed'})
 
 
 IDBTransaction.error should be null if transaction is not finished:
@@ -27,7 +27,7 @@ PASS trans.error is null
 
 
 If the transaction is aborted due to a request error that is not prevented, IDBTransaction.error should match:
-trans = db.transaction('storeName', 'readwrite')
+trans = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 request = trans.objectStore('storeName').add('value2', 'key')
 PASS request.result is undefined.
 PASS request.error is non-null.
@@ -41,7 +41,7 @@ PASS trans.error is request_error
 
 
 If the transaction is aborted due to an exception thrown from event callback, IDBTransaction.error should be AbortError:
-trans = db.transaction('storeName', 'readwrite')
+trans = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 request = trans.objectStore('storeName').add('value2', 'key')
 PASS request.result is undefined.
 PASS request.error is non-null.
@@ -55,7 +55,7 @@ PASS trans.error.name is 'AbortError'
 
 
 If the transaction is aborted due to an error during commit, IDBTransaction.error should reflect that error:
-trans = db.transaction('storeName', 'readwrite')
+trans = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 request = trans.objectStore('storeName').add({id: 1}, 'record1')
 request = trans.objectStore('storeName').add({id: 1}, 'record2')
 request = indexedDB.open(dbname, 2)

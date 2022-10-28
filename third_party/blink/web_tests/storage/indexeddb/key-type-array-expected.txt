@@ -8,7 +8,7 @@ indexedDB.open(dbname)
 db.createObjectStore('store');
 
 
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store')
 
 
@@ -181,7 +181,7 @@ store.get(self_referrential_array);
 PASS getreq.result is "value27"
 
 
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store')
 
 

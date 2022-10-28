@@ -53,7 +53,7 @@ function* testSteps()
   yield undefined;
   yield undefined;
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll();
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll();
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -65,7 +65,7 @@ function* testSteps()
     is(event.target.result[i], values[i], "Same value");
   }
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(null, 5);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(null, 5);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -79,7 +79,7 @@ function* testSteps()
 
   let keyRange = IDBKeyRange.bound(1, 9);
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -91,7 +91,7 @@ function* testSteps()
     is(event.target.result[i], values[i], "Same value");
   }
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange, 0);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange, 0);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -103,7 +103,7 @@ function* testSteps()
     is(event.target.result[i], values[i], "Same value");
   }
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange, null);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange, null);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -115,7 +115,7 @@ function* testSteps()
     is(event.target.result[i], values[i], "Same value");
   }
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange, undefined);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange, undefined);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -129,7 +129,7 @@ function* testSteps()
 
   keyRange = IDBKeyRange.bound(4, 7);
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -142,7 +142,7 @@ function* testSteps()
   }
 
   // Get should take a key range also but it doesn't return an array.
-  request = db.transaction("foo").objectStore("foo").get(keyRange);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").get(keyRange);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -150,7 +150,7 @@ function* testSteps()
   is(event.target.result instanceof Array, false, "Not an array object");
   is(event.target.result, values[3], "Correct value");
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange, 2);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange, 2);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -164,7 +164,7 @@ function* testSteps()
 
   keyRange = IDBKeyRange.bound(4, 7);
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange, 50);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange, 50);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -178,7 +178,7 @@ function* testSteps()
 
   keyRange = IDBKeyRange.bound(4, 7);
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange, 0);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange, 0);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;
@@ -188,7 +188,7 @@ function* testSteps()
 
   keyRange = IDBKeyRange.bound(4, 7, true, true);
 
-  request = db.transaction("foo").objectStore("foo").mozGetAll(keyRange);
+  request = db.transaction("foo", "readonly", {durability: "relaxed"}).objectStore("foo").mozGetAll(keyRange);
   request.onerror = errorHandler;
   request.onsuccess = grabEventAndContinueHandler;
   event = yield undefined;

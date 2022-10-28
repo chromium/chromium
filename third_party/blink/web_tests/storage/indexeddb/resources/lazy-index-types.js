@@ -60,7 +60,7 @@ function onSuccess(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("trans = db.transaction('store')");
+    evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     trans.onabort = unexpectedAbortCallback;
     evalAndLog("store = trans.objectStore('store')");
 

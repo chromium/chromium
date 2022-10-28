@@ -18,7 +18,7 @@ function prepareDatabase(evt)
 function testTransaction()
 {
     preamble();
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("transaction.oncomplete = transactionOnComplete");
     evalAndLog("transaction = null");
     evalAndLog("self.gc()");
@@ -33,7 +33,7 @@ function transactionOnComplete()
 function testRequest()
 {
     preamble();
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     evalAndLog("request = store.get(0)");
     evalAndLog("request.onsuccess = requestOnSuccess");
@@ -50,7 +50,7 @@ function requestOnSuccess()
 function testCursorRequest()
 {
     preamble();
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     evalAndLog("request = store.openCursor()");
     evalAndLog("request.onsuccess = cursorRequestOnFirstSuccess");

@@ -13,7 +13,7 @@ indexeddb_test(
             store.put(i, i);
     },
     function(t, db) {
-        var transaction = db.transaction('store', 'readonly');
+        var transaction = db.transaction('store', 'readonly', {durability: 'relaxed'});
         var store = transaction.objectStore('store');
         var req = store.openCursor();
         var last_cursor;

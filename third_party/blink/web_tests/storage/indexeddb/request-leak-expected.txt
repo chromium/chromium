@@ -15,7 +15,7 @@ store.put({value: 'value'}, 'key')
 
 onOpen():
 db = event.target.result
-tx = db.transaction('store')
+tx = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = tx.objectStore('store')
 request = store.get('key')
 

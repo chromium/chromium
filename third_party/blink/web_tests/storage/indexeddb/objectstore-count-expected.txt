@@ -10,7 +10,7 @@ adding 0 ... 99
 
 
 verifying count without range
-trans = db.transaction('storeName', 'readonly')
+trans = db.transaction('storeName', 'readonly', {durability: 'relaxed'})
 PASS trans is non-null.
 store = trans.objectStore('storeName')
 PASS store is non-null.
@@ -20,7 +20,7 @@ PASS request.result is 100
 
 
 verifying count with range
-trans = db.transaction('storeName', 'readonly')
+trans = db.transaction('storeName', 'readonly', {durability: 'relaxed'})
 PASS trans is non-null.
 store = trans.objectStore('storeName')
 PASS store is non-null.
@@ -81,7 +81,7 @@ PASS request.result is 0
 
 
 verifying count with key
-trans = db.transaction('storeName', 'readonly')
+trans = db.transaction('storeName', 'readonly', {durability: 'relaxed'})
 PASS trans is non-null.
 store = trans.objectStore('storeName')
 PASS store is non-null.

@@ -232,7 +232,7 @@ function testAcrossConnections()
 
     function doFirstWrite() {
         debug("");
-        evalAndLog("trans = db.transaction('store', 'readwrite')");
+        evalAndLog("trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
         trans.onabort = unexpectedAbortCallback;
         evalAndLog("request = trans.objectStore('store').put('value1')");
         request.onerror = unexpectedErrorCallback;
@@ -254,7 +254,7 @@ function testAcrossConnections()
     }
 
     function doSecondWrite() {
-        evalAndLog("trans = db.transaction('store', 'readwrite')");
+        evalAndLog("trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
         trans.onabort = unexpectedAbortCallback;
         evalAndLog("request = trans.objectStore('store').put('value2')");
         request.onerror = unexpectedErrorCallback;

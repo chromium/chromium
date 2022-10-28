@@ -11,7 +11,7 @@ setVersion() callback
 starting work in VERSION_CHANGE transaction
 self.state = 'VERSION_CHANGE started'
 store = db.createObjectStore('test-store')
-Expecting exception from db.transaction('test-store')
+Expecting exception from db.transaction('test-store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'

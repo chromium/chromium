@@ -38,7 +38,7 @@ function onOpenSuccess(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("transaction = db.transaction('store', 'readwrite')");
+    evalAndLog("transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     evalAndLog("count = 0");
     evalAndLog("cursorRequest = store.openCursor()");

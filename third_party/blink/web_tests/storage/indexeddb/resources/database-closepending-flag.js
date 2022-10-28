@@ -17,13 +17,13 @@ function testDatabaseClosingSteps()
 {
     debug("");
     debug("First, verify that the database connection is not closed:");
-    shouldNotThrow("transaction = connection.transaction('store')");
+    shouldNotThrow("transaction = connection.transaction('store', 'readonly', {durability: 'relaxed'})");
 
     debug("");
     debug("Database closing steps");
     debug("\"1. Set the internal closePending flag of connection to true.\"");
     evalAndLog("connection.close()");
-    evalAndExpectException("connection.transaction('store')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("connection.transaction('store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     debug("\"2. Wait for all transactions created using connection to complete. Once they are complete, connection is closed.\"");
 
     evalAndLog("transaction.oncomplete = testIDBDatabaseName");
@@ -68,7 +68,7 @@ function testIDBDatabaseTransaction()
     debug("");
     debug("IDBDatabase.transaction():");
     debug("\"...if this method is called on a IDBDatabase instance where the closePending flag is set, a InvalidStateError exception must be thrown.\"");
-    evalAndExpectException("connection.transaction('store')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("connection.transaction('store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
 
     testVersionChangeTransactionSteps();
 }
@@ -87,7 +87,7 @@ function testVersionChangeTransactionSteps()
         evalAndLog("connection = request.result");
         evalAndLog("versionChangeWasFired = false");
         evalAndLog("connection.onversionchange = function () { versionChangeWasFired = true; }");
-        evalAndLog("transaction = connection.transaction('store')");
+        evalAndLog("transaction = connection.transaction('store', 'readonly', {durability: 'relaxed'})");
         evalAndLog("connection.close()");
         debug("closePending is set, but active transaction will keep connection from closing");
 
@@ -128,7 +128,7 @@ function testDatabaseDeletion()
         evalAndLog("connection = request.result");
         evalAndLog("versionChangeWasFired = false");
         evalAndLog("connection.onversionchange = function () { versionChangeWasFired = true; }");
-        evalAndLog("transaction = connection.transaction('store')");
+        evalAndLog("transaction = connection.transaction('store', 'readonly', {durability: 'relaxed'})");
         evalAndLog("connection.close()");
         debug("closePending is set, but active transaction will keep connection from closing");
 

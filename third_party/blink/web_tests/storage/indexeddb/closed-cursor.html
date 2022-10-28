@@ -18,7 +18,7 @@ function onOpen(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("tx = db.transaction('store')");
+    evalAndLog("tx = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = tx.objectStore('store')");
     evalAndLog("cursorRequest = store.openCursor()");
     cursorRequest.onsuccess = function openCursorSuccess(evt) {

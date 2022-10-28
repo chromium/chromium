@@ -41,7 +41,7 @@ function checkDatabaseType()
 function addRecord()
 {
     debug("addRecord():");
-    objectStore = evalAndLog("objectStore = db.transaction('foo', 'readwrite').objectStore('foo');");
+    objectStore = evalAndLog("objectStore = db.transaction('foo', 'readwrite', {durability: 'relaxed'}).objectStore('foo');");
     data = evalAndLog("data = { key: 5, index: 10 };");
     request = evalAndLog("request = objectStore.add(data);");
     request.onsuccess = addSuccess;
@@ -62,7 +62,7 @@ function checkAddedKey()
 {
     debug("checkAddedKey():");
     shouldBe("key", "data.key");
-    objectStore = evalAndLog("objectStore = db.transaction('foo').objectStore('foo');");
+    objectStore = evalAndLog("objectStore = db.transaction('foo', 'readonly', {durability: 'relaxed'}).objectStore('foo');");
     request = evalAndLog("request = objectStore.get(data.key);");
     request.onsuccess = getSuccess;
     request.onerror = unexpectedErrorCallback;
@@ -89,7 +89,7 @@ function checkRetrievedKey()
 function deleteRecord()
 {
     debug("deleteRecord():");
-    objectStore = evalAndLog("objectStore = db.transaction('foo', 'readwrite').objectStore('foo');");
+    objectStore = evalAndLog("objectStore = db.transaction('foo', 'readwrite', {durability: 'relaxed'}).objectStore('foo');");
     request = evalAndLog("request = objectStore.delete(data.key);");
     request.onsuccess = deleteSuccess;
     request.onerror = unexpectedErrorCallback;

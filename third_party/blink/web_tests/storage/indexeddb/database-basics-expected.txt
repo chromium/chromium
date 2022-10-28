@@ -6,7 +6,7 @@ dbname = "database-basics.html"
 indexedDB.deleteDatabase(dbname)
 indexedDB.open(dbname)
 Test that you can't open a transaction while in a versionchange transaction
-Expecting exception from db.transaction("doesntExist")
+Expecting exception from db.transaction("doesntExist", "readonly", {durability: "relaxed"})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
@@ -46,7 +46,7 @@ PASS db.objectStoreNames.contains('test456') is false
 PASS db.objectStoreNames.contains('test123') is true
 db.close()
 Now that the connection is closed, transaction creation should fail
-Expecting exception from db.transaction('test123')
+Expecting exception from db.transaction('test123', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'

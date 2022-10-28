@@ -9,13 +9,13 @@ store = connection.createObjectStore('store')
 
 
 First, verify that the database connection is not closed:
-PASS transaction = connection.transaction('store') did not throw exception.
+PASS transaction = connection.transaction('store', 'readonly', {durability: 'relaxed'}) did not throw exception.
 
 
 Database closing steps
 "1. Set the internal closePending flag of connection to true."
 connection.close()
-Expecting exception from connection.transaction('store')
+Expecting exception from connection.transaction('store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
@@ -41,7 +41,7 @@ version_change_connection.close()
 
 IDBDatabase.transaction():
 "...if this method is called on a IDBDatabase instance where the closePending flag is set, a InvalidStateError exception must be thrown."
-Expecting exception from connection.transaction('store')
+Expecting exception from connection.transaction('store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
@@ -54,7 +54,7 @@ request = indexedDB.open(dbname)
 connection = request.result
 versionChangeWasFired = false
 connection.onversionchange = function () { versionChangeWasFired = true; }
-transaction = connection.transaction('store')
+transaction = connection.transaction('store', 'readonly', {durability: 'relaxed'})
 connection.close()
 closePending is set, but active transaction will keep connection from closing
 request = indexedDB.open(dbname, 3)
@@ -70,7 +70,7 @@ request = indexedDB.open(dbname)
 connection = request.result
 versionChangeWasFired = false
 connection.onversionchange = function () { versionChangeWasFired = true; }
-transaction = connection.transaction('store')
+transaction = connection.transaction('store', 'readonly', {durability: 'relaxed'})
 connection.close()
 closePending is set, but active transaction will keep connection from closing
 request = indexedDB.deleteDatabase(dbname)

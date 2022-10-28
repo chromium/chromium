@@ -20,7 +20,7 @@ function startTransaction()
 {
     debug("starting transaction");
     evalAndLog("state = 'starting'");
-    evalAndLog("trans = dbc1.transaction('storeName', 'readwrite')");
+    evalAndLog("trans = dbc1.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
 
     debug("the transaction is kept alive with a series of puts until opens are complete");
     (function keepAlive() {

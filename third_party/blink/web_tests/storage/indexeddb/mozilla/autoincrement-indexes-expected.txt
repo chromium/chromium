@@ -14,7 +14,7 @@ request = objectStore.add(data);
 key = event.target.result;
 PASS key == null is false
 expected key is 1
-objectStore = db.transaction('autoincrement-id').objectStore('autoincrement-id');
+objectStore = db.transaction('autoincrement-id', 'readonly', {durability: 'relaxed'}).objectStore('autoincrement-id');
 first = objectStore.index('first');
 request = first.get('foo');
 PASS event.target.result.id is key

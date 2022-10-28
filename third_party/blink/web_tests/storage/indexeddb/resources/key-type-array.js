@@ -16,7 +16,7 @@ function prepareDatabase()
 
 function testValidArrayKeys()
 {
-    evalAndLog("trans = db.transaction('store', 'readwrite')");
+    evalAndLog("trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = trans.objectStore('store')");
     debug("");
 
@@ -99,7 +99,7 @@ function testValidArrayKeys()
 
 function testInvalidArrayKeys()
 {
-    evalAndLog("trans = db.transaction('store', 'readwrite')");
+    evalAndLog("trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = trans.objectStore('store')");
     debug("");
 

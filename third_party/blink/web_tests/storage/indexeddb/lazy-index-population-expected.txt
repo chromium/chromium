@@ -9,7 +9,7 @@ Deleted all object stores.
 store = connection.createObjectStore('store')
 store.createIndex('index1', 'name', {unique: true})
 Verify that uniqueness constraints are enforced with a pre-existing index:
-trans = connection.transaction('store', 'readwrite')
+trans = connection.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store')
 request1 = store.put({name: 'bob'}, 1)
 request2 = store.put({name: 'bob'}, 2)

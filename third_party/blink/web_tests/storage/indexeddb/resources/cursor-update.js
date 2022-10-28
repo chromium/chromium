@@ -189,7 +189,7 @@ function keyCursor()
 function testReadOnly()
 {
     debug("openBasicCursor()");
-    evalAndLog("trans = db.transaction('basicStore')");
+    evalAndLog("trans = db.transaction('basicStore', 'readonly', {durability: 'relaxed'})");
     trans.onabort = unexpectedAbortCallback;
     trans.oncomplete = transactionComplete;
 

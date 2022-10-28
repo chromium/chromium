@@ -14,7 +14,7 @@ store = db.createObjectStore('store')
 
 onOpen():
 db = event.target.result
-tx = db.transaction('store')
+tx = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = tx.objectStore('store')
 cursorRequest = store.openCursor()
 

@@ -46,7 +46,7 @@ function onTransactionAbort(evt)
     preamble(evt);
     evalAndLog("sawTransactionAbort = true");
     debug("creating a transaction should fail because connection is closed:");
-    evalAndExpectException("db.transaction('store')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
 }
 
 function onOpenError(evt)
@@ -54,6 +54,6 @@ function onOpenError(evt)
     preamble(evt);
     shouldBeTrue("sawTransactionAbort");
     debug("creating a transaction should fail because connection is closed:");
-    evalAndExpectException("db.transaction('store')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     finishJSTest();
 }

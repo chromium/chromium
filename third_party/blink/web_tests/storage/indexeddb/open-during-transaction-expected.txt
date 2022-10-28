@@ -11,7 +11,7 @@ database preparation complete
 
 starting transaction
 state = 'starting'
-trans = dbc1.transaction('storeName', 'readwrite')
+trans = dbc1.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 the transaction is kept alive with a series of puts until opens are complete
 
 

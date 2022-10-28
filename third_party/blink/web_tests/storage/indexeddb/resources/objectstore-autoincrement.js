@@ -131,7 +131,7 @@ function addAdamSuccess()
 function testLongKeyPath()
 {
     debug("testLongKeyPath():");
-    trans = evalAndLog("trans = db.transaction('StoreWithLongKeyPath', 'readwrite')");
+    trans = evalAndLog("trans = db.transaction('StoreWithLongKeyPath', 'readwrite', {durability: 'relaxed'})");
     trans.onabort = unexpectedAbortCallback;
     trans.oncomplete = finishJSTest;
 

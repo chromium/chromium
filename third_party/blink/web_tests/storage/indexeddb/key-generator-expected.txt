@@ -166,7 +166,7 @@ indexedDB.open(dbname)
 db.createObjectStore('store', {autoIncrement: true})
 
 
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 request = trans.objectStore('store').put('value1')
 PASS request.result is 1
 trans.objectStore('store').clear()
@@ -175,7 +175,7 @@ db.close()
 
 request = indexedDB.open(dbname)
 db = request.result
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 request = trans.objectStore('store').put('value2')
 PASS request.result is 2
 

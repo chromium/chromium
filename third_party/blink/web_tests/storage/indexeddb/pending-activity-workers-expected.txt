@@ -12,14 +12,14 @@ Starting worker: resources/pending-activity.js
 [Worker] store.put(0, 0)
 [Worker] 
 [Worker] testTransaction():
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] transaction.oncomplete = transactionOnComplete
 [Worker] transaction = null
 [Worker] self.gc()
 PASS [Worker] Transaction 'complete' event fired.
 [Worker] 
 [Worker] testRequest():
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] store = transaction.objectStore('store')
 [Worker] request = store.get(0)
 [Worker] request.onsuccess = requestOnSuccess
@@ -28,7 +28,7 @@ PASS [Worker] Transaction 'complete' event fired.
 PASS [Worker] Request 'success' event fired.
 [Worker] 
 [Worker] testCursorRequest():
-[Worker] transaction = db.transaction('store')
+[Worker] transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 [Worker] store = transaction.objectStore('store')
 [Worker] request = store.openCursor()
 [Worker] request.onsuccess = cursorRequestOnFirstSuccess

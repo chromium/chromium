@@ -12,7 +12,7 @@ PASS objectStore1 === objectStore2 is true
 index1 = objectStore1.createIndex('bar', 'key');
 index2 = objectStore2.index('bar');
 PASS index1 === index2 is true
-transaction = db.transaction('foo');
+transaction = db.transaction('foo', 'readonly', {durability: 'relaxed'});
 objectStore3 = transaction.objectStore('foo');
 objectStore3.someProperty = 'xyz'
 objectStore4 = transaction.objectStore('foo');

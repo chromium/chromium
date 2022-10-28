@@ -44,7 +44,7 @@ function didDeleteObjectStore()
 {
     preamble();
     blobBContent = "Second blob content";
-    evalAndLog("trans = db.transaction('store1', 'readwrite')");
+    evalAndLog("trans = db.transaction('store1', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store1 = trans.objectStore('store1')");
     blobB = new Blob([blobBContent], {"type" : "text/plain"});
     evalAndLog("store1.put(blobB, key)");

@@ -25,7 +25,7 @@ function onOpen(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("tx = db.transaction('store')");
+    evalAndLog("tx = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = tx.objectStore('store')");
     evalAndLog("request = store.get('key')");
     tx.oncomplete = function onTransactionComplete() {

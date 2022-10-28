@@ -29,7 +29,7 @@ PASS sawTransactionComplete is true
 db = event.target.result
 PASS db.version is 1
 Start a transaction to ensure the connection is still open.
-transaction = db.transaction('os')
+transaction = db.transaction('os', 'readonly', {durability: 'relaxed'})
 
 
 onVersionChange():

@@ -11,7 +11,7 @@ store.put({value: 0}, 0)
 
 
 verifyOverloads():
-trans = db.transaction('store')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store')
 index = store.index('index')
 store.openCursor()

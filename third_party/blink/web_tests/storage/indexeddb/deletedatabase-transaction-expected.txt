@@ -9,7 +9,7 @@ db.createObjectStore('store')
 
 
 Start a transaction against the first database:
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 trans.objectStore('store').get(0)
 
 

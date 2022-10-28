@@ -18,7 +18,7 @@ var nonConvertibleToString = {toString: function() { throw "Exception in toStrin
 function startTest()
 {
     debug("");
-    evalAndLog("trans = db.transaction('storeName')");
+    evalAndLog("trans = db.transaction('storeName', 'readonly', {durability: 'relaxed'})");
 
     debug("");
     debug("IDBTransaction.error should be null if transaction is not finished:");
@@ -42,7 +42,7 @@ function testErrorFromRequest()
 {
     debug("");
     debug("If the transaction is aborted due to a request error that is not prevented, IDBTransaction.error should match:");
-    evalAndLog("trans = db.transaction('storeName', 'readwrite')");
+    evalAndLog("trans = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("request = trans.objectStore('storeName').add('value2', 'key')");
     request.onsuccess = unexpectedSuccessCallback;
     request.onerror = function() {
@@ -66,7 +66,7 @@ function testErrorFromException()
 {
     debug("");
     debug("If the transaction is aborted due to an exception thrown from event callback, IDBTransaction.error should be AbortError:");
-    evalAndLog("trans = db.transaction('storeName', 'readwrite')");
+    evalAndLog("trans = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("request = trans.objectStore('storeName').add('value2', 'key')");
     request.onsuccess = unexpectedSuccessCallback;
     request.onerror = function() {
@@ -100,7 +100,7 @@ function testErrorFromCommit()
 {
     debug("");
     debug("If the transaction is aborted due to an error during commit, IDBTransaction.error should reflect that error:");
-    evalAndLog("trans = db.transaction('storeName', 'readwrite')");
+    evalAndLog("trans = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("request = trans.objectStore('storeName').add({id: 1}, 'record1')");
     request.onerror = unexpectedErrorCallback;
     evalAndLog("request = trans.objectStore('storeName').add({id: 1}, 'record2')");

@@ -53,7 +53,7 @@ function openError(evt)
     debug("Verify that the old connection is unchanged and was closed:");
     shouldBeNonNull("db");
     shouldBe('db.version', "7");
-    evalAndExpectException("db.transaction('os')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('os', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
 
     finishJSTest();
 }

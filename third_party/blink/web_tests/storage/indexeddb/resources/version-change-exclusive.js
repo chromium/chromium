@@ -23,7 +23,7 @@ function prepareDatabase()
     evalAndLog("self.state = 'VERSION_CHANGE started'");
 
     self.store = evalAndLog("store = db.createObjectStore('test-store')");
-    evalAndExpectException("db.transaction('test-store')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('test-store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     self.count = 0;
     do_async_puts();
 

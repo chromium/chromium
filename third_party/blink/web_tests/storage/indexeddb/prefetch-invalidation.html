@@ -39,7 +39,7 @@ function doPrefetchInvalidationTest(operation, callback)
     debug("");
     debug("-------------------------------------------");
     preamble();
-    evalAndLog("store = db.transaction('store', 'readwrite').objectStore('store')");
+    evalAndLog("store = db.transaction('store', 'readwrite', {durability: 'relaxed'}).objectStore('store')");
     debug("Populate the store with 200 records.");
     for (var i = 0; i < 200; ++i)
         store.put(i, i);

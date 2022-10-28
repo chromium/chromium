@@ -18,7 +18,7 @@ function verifyWrappers(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("tx = db.transaction('store', 'readwrite')");
+    evalAndLog("tx = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("request = tx.objectStore('store').openCursor()");
 
     request.onsuccess = function onOpenCursorSuccess(evt) {

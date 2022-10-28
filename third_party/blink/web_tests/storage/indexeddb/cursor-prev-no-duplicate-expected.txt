@@ -10,7 +10,7 @@ store.createIndex('index', 'sorted')
 
 
 populating store...
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store');
 store.put({sorted: 3, value: 111}, 1)
 store.put({sorted: 2, value: 222}, 2)

@@ -13,7 +13,7 @@ db = request.result;
 checkDatabaseType():
 PASS db instanceof IDBDatabase is true
 addRecord():
-objectStore = db.transaction('foo', 'readwrite').objectStore('foo');
+objectStore = db.transaction('foo', 'readwrite', {durability: 'relaxed'}).objectStore('foo');
 data = { key: 5, index: 10 };
 request = objectStore.add(data);
 addSuccess():
@@ -21,7 +21,7 @@ key = null;
 key = request.result;
 checkAddedKey():
 PASS key is data.key
-objectStore = db.transaction('foo').objectStore('foo');
+objectStore = db.transaction('foo', 'readonly', {durability: 'relaxed'}).objectStore('foo');
 request = objectStore.get(data.key);
 getSuccess():
 record = null;
@@ -30,7 +30,7 @@ checkRetrievedKey():
 PASS record.key is data.key
 PASS record.index is data.index
 deleteRecord():
-objectStore = db.transaction('foo', 'readwrite').objectStore('foo');
+objectStore = db.transaction('foo', 'readwrite', {durability: 'relaxed'}).objectStore('foo');
 request = objectStore.delete(data.key);
 deleteSuccess():
 PASS successfullyParsed is true

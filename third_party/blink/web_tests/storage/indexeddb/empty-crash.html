@@ -15,7 +15,7 @@ open.onupgradeneeded = function() {
 
 open.onsuccess = function() {
   db = open.result;
-  var tx = db.transaction('store');
+  var tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
   var req = tx.objectStore('store').get(0);
   req.onsuccess = function() {
     frameElement.parentNode.removeChild(frameElement);

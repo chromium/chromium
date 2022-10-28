@@ -15,10 +15,10 @@ blob = new Blob([])
 
 validateResult(blob):
 PASS blob.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(blob, 'blobkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('blobkey')
 PASS event.target.result.size == 0 is true
@@ -30,10 +30,10 @@ blob = new Blob(['', '', ''])
 
 validateResult(blob):
 PASS blob.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(blob, 'blobkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('blobkey')
 PASS event.target.result.size == 0 is true
@@ -45,10 +45,10 @@ blob = new Blob(['', new Blob([]), ''])
 
 validateResult(blob):
 PASS blob.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(blob, 'blobkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('blobkey')
 PASS event.target.result.size == 0 is true
@@ -60,10 +60,10 @@ blob = new Blob(['', new Blob(['']), ''])
 
 validateResult(blob):
 PASS blob.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(blob, 'blobkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('blobkey')
 PASS event.target.result.size == 0 is true
@@ -76,10 +76,10 @@ blob = new Blob(['', file, ''])
 
 validateResult(blob):
 PASS blob.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(blob, 'blobkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('blobkey')
 PASS event.target.result.size == 0 is true
@@ -92,10 +92,10 @@ blob = new Blob(['', new Blob([file]), ''])
 
 validateResult(blob):
 PASS blob.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(blob, 'blobkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('blobkey')
 PASS event.target.result.size == 0 is true
@@ -107,10 +107,10 @@ file = emptyFileInput.files[0]
 
 validateResult(file):
 PASS file.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(file, 'filekey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('filekey')
 PASS event.target.result.size == 0 is true
@@ -122,10 +122,10 @@ fileList = emptyFileListInput.files
 
 validateResult(fileList):
 PASS fileList.length == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(fileList, 'fileListkey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('fileListkey')
 PASS event.target.result.length == 0 is true

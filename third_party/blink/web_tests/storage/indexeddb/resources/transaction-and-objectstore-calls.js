@@ -50,7 +50,7 @@ function created()
     debug("");
 
     debug("Passing a string as the first argument is a shortcut for just one object store:");
-    trans = evalAndLog("trans = db.transaction('a')");
+    trans = evalAndLog("trans = db.transaction('a', 'readonly', {durability: 'relaxed'})");
     evalAndLog("trans.objectStore('a')");
     evalAndExpectException("trans.objectStore('b')", "DOMException.NOT_FOUND_ERR", "'NotFoundError'");
     evalAndExpectException("trans.objectStore('x')", "DOMException.NOT_FOUND_ERR", "'NotFoundError'");

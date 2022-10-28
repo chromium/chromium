@@ -59,7 +59,7 @@ PASS sawRemoved is true
 count = 0;
 sawAdded = false;
 sawRemoved = false;
-request = db.transaction('foo', 'readwrite').objectStore('foo').openCursor();
+request = db.transaction('foo', 'readwrite', {durability: 'relaxed'}).objectStore('foo').openCursor();
 iterateMutatingCursor():
 event.target.transaction.oncomplete = checkMutatingCursorResults;
 cursor = event.target.result;

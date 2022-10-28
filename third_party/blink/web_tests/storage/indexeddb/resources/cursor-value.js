@@ -16,7 +16,7 @@ function testCursor()
 {
     debug("");
     debug("testCursor():");
-    evalAndLog("transaction = db.transaction('store', 'readwrite')");
+    evalAndLog("transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     evalAndLog("store.put({a: 1, b: 10}, 'key1')");
     evalAndLog("store.put({a: 2, b: 20}, 'key2')");
@@ -92,7 +92,7 @@ function ensureModificationsNotPersisted()
 {
     debug("");
     debug("ensureModificationsNotPersisted():");
-    evalAndLog("transaction = db.transaction('store', 'readonly')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     evalAndLog("request = store.openCursor()");
     request.onerror = unexpectedErrorCallback;

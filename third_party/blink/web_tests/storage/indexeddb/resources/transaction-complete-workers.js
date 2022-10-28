@@ -18,7 +18,7 @@ function createTransaction()
 {
     debug("");
     debug("createTransaction():");
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     transaction.onerror = unexpectedErrorCallback;
     transaction.onabort = unexpectedAbortCallback;
@@ -36,7 +36,7 @@ function recursionTest()
 {
     debug("");
     debug("recursionTest():");
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     transaction.oncomplete = transactionCompleted;
     transaction.onabort = unexpectedAbortCallback;
@@ -73,7 +73,7 @@ function timeoutTest()
     debug("");
     debug("timeoutTest():");
 
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     transaction.onabort = unexpectedAbortCallback;
     transaction.oncomplete = function () {
@@ -100,7 +100,7 @@ function errorHandler(e)
     // FIXME: Should be able to stop the error here, but it isn't an Event object.
     // evalAndLog("event.preventDefault()");
     evalAndLog("self.onerror = self.old_onerror");
-    evalAndLog("transaction = db.transaction('store')");
+    evalAndLog("transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('store')");
     transaction.onerror = unexpectedErrorCallback;
     transaction.onabort = unexpectedAbortCallback;

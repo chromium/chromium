@@ -31,11 +31,11 @@ indexeddb_test(
             type: 'application/x-special-snowflake',
             lastModified: party_time
         });
-        var tx = db.transaction('store', 'readwrite');
+        var tx = db.transaction('store', 'readwrite', {durability: 'relaxed'});
         tx.objectStore('store').put(file, 'key');
 
         tx.oncomplete = t.step_func(function() {
-            var tx = db.transaction('store');
+            var tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
             tx.objectStore('store').get('key').onsuccess = t.step_func(function(e) {
                 var result = e.target.result;
 

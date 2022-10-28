@@ -20,10 +20,10 @@ function testClose()
     debug("testClose():");
 
     debug("Create transactions using connection:");
-    evalAndLog("trans1 = connection.transaction('store')");
+    evalAndLog("trans1 = connection.transaction('store', 'readonly', {durability: 'relaxed'})");
     trans1.onabort = unexpectedAbortCallback;
 
-    evalAndLog("trans2 = connection.transaction('store')");
+    evalAndLog("trans2 = connection.transaction('store', 'readonly', {durability: 'relaxed'})");
     trans2.onabort = unexpectedAbortCallback;
 
     debug("");
@@ -65,7 +65,7 @@ function testClose()
     debug("");
     debug("NOTE: Once the closePending flag has been set to true no new transactions can be created using connection. All functions that create transactions first check the closePending flag first and throw an exception if it is true.");
     debug("");
-    evalAndExpectException("trans3 = connection.transaction('store')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("trans3 = connection.transaction('store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
 
     debug("");
     debug("NOTE: Once the connection is closed, this can unblock the steps for deleting a database, which waits for connections to a given database to be closed before continuing.");

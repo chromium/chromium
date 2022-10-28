@@ -24,7 +24,7 @@ PASS sawTransactionComplete is true
 PASS event.target.result is undefined.
 PASS event.target.error is non-null.
 PASS event.target.error.name is "AbortError"
-Expecting exception from transaction = db.transaction('os', 'readwrite')
+Expecting exception from transaction = db.transaction('os', 'readwrite', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'

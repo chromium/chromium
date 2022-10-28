@@ -31,7 +31,7 @@ expectedIndexSize = 8
 
 onSuccess():
 db = event.target.result
-trans = db.transaction('store')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store')
 greedyIndex = store.index('greedy-index')
 request = greedyIndex.count()

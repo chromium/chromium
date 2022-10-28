@@ -18,7 +18,7 @@ function prepareDatabase(evt)
 
 function checkOptionalArguments(event)
 {
-    evalAndLog("tx = db.transaction('store', 'readwrite')");
+    evalAndLog("tx = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
     tx.oncomplete = finishJSTest;
 
     evalAndLog("store = tx.objectStore('store')");

@@ -10,7 +10,7 @@ function prepareDatabase()
 {
     db = event.target.result;
     debug("Test that you can't open a transaction while in a versionchange transaction");
-    evalAndExpectException('db.transaction("doesntExist")',
+    evalAndExpectException('db.transaction("doesntExist", "readonly", {durability: "relaxed"})',
                            "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
 
     shouldBe("db.version", "1");
@@ -70,7 +70,7 @@ function testClose()
 {
     evalAndLog("db.close()");
     debug("Now that the connection is closed, transaction creation should fail");
-    evalAndExpectException("db.transaction('test123')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('test123', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     debug("Call twice, make sure it's harmless");
     evalAndLog("db.close()");
     finishJSTest();

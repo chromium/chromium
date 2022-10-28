@@ -98,13 +98,13 @@ Exception message: Failed to execute 'deleteObjectStore' on 'IDBDatabase': The s
 
 IDBDatabase.transaction()
 If this method is called on IDBDatabase object for which a "versionchange" transaction is still running, a InvalidStateError exception must be thrown.
-Expecting exception from db.transaction('store')
+Expecting exception from db.transaction('store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
 Exception message: Failed to execute 'transaction' on 'IDBDatabase': A version change transaction is running.
 One of the names provided in the storeNames argument doesn't exist in this database.
-Expecting exception from db.transaction('no-such-store')
+Expecting exception from db.transaction('no-such-store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.NOT_FOUND_ERR
 PASS ename is 'NotFoundError'
@@ -144,7 +144,7 @@ Exception message: Failed to execute 'deleteObjectStore' on 'IDBDatabase': The d
 
 
 Prepare an object store and index from an inactive transaction for later use.
-finishedTransaction = inactiveTransaction = db.transaction('store')
+finishedTransaction = inactiveTransaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 storeFromInactiveTransaction = inactiveTransaction.objectStore('store')
 indexFromInactiveTransaction = storeFromInactiveTransaction.index('index')
 request = storeFromInactiveTransaction.openCursor()
@@ -152,9 +152,9 @@ cursorFromInactiveTransaction = request.result
 
 
 3.2.5 Object Store
-ro_transaction = db.transaction('store', 'readonly')
+ro_transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 storeFromReadOnlyTransaction = ro_transaction.objectStore('store')
-rw_transaction = db.transaction('store', 'readwrite')
+rw_transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = rw_transaction.objectStore('store')
 
 
@@ -391,7 +391,7 @@ Exception message: Failed to execute 'deleteIndex' on 'IDBObjectStore': The spec
 
 One more IDBObjectStore.createIndex() test:
 If this function is called from outside a "versionchange" transaction callback ... the implementation must throw a DOMException of type InvalidStateError.
-Expecting exception from db.transaction('store').objectStore('store').createIndex('fail', 'keyPath')
+Expecting exception from db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store').createIndex('fail', 'keyPath')
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
@@ -400,7 +400,7 @@ Exception message: Failed to execute 'createIndex' on 'IDBObjectStore': The data
 
 One more IDBObjectStore.deleteIndex() test:
 If this function is called from outside a "versionchange" transaction callback ... the implementation must throw a DOMException of type InvalidStateError.
-Expecting exception from db.transaction('store').objectStore('store').deleteIndex('fail', 'keyPath')
+Expecting exception from db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store').deleteIndex('fail', 'keyPath')
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
@@ -408,8 +408,8 @@ Exception message: Failed to execute 'deleteIndex' on 'IDBObjectStore': The data
 
 
 3.2.6 Index
-indexFromReadOnlyTransaction = db.transaction('store', 'readonly').objectStore('store').index('index')
-index = db.transaction('store', 'readwrite').objectStore('store').index('index')
+indexFromReadOnlyTransaction = db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store').index('index')
+index = db.transaction('store', 'readwrite', {durability: 'relaxed'}).objectStore('store').index('index')
 
 
 IDBIndex.count()
@@ -630,7 +630,7 @@ PASS Exception was thrown.
 PASS code is 0
 PASS ename is 'TransactionInactiveError'
 Exception message: Failed to execute 'update' on 'IDBCursor': The transaction has finished.
-readOnlyTransaction = db.transaction('store', 'readonly')
+readOnlyTransaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 request = readOnlyTransaction.objectStore('store').openCursor()
 cursorFromReadOnlyTransaction = request.result
 
@@ -664,7 +664,7 @@ PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
 Exception message: Failed to execute 'abort' on 'IDBTransaction': The transaction has finished.
 If the requested object store is not in this transaction's scope.
-Expecting exception from db.transaction('store').objectStore('otherStore')
+Expecting exception from db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('otherStore')
 PASS Exception was thrown.
 PASS code is DOMException.NOT_FOUND_ERR
 PASS ename is 'NotFoundError'

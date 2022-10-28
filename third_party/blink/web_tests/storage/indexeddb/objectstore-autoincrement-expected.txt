@@ -60,7 +60,7 @@ store.add({name: 'Adam'}, 1)
 addAdamSuccess():
 PASS event.target.result is 1
 testLongKeyPath():
-trans = db.transaction('StoreWithLongKeyPath', 'readwrite')
+trans = db.transaction('StoreWithLongKeyPath', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('StoreWithLongKeyPath')
 store.add({foo: 'bar'})
 store.add({foo: 'bar', a: {}})

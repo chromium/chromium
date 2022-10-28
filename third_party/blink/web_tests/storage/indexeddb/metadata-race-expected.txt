@@ -19,13 +19,13 @@ onTransactionComplete():
 In multiprocess mode, 'complete' event may be dispatched before
 the 'success' arrives with updated metadata. Ensure the new metadata
 is still used for transactions.
-store = db.transaction('store').objectStore('store')
+store = db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store')
 PASS index = store.index('index') did not throw exception.
 
 
 onOpenSuccess():
 db = event.target.result
-store = db.transaction('store').objectStore('store')
+store = db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store')
 PASS index = store.index('index') did not throw exception.
 PASS successfullyParsed is true
 

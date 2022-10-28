@@ -12,7 +12,7 @@ db = event.target.result
 store = db.createObjectStore('store', {keyPath: 'id'})
 store.createIndex('by_name', 'name', {unique: true})
 store.put({id: 1, name: 'a'})
-tx = db.transaction('store', 'readwrite')
+tx = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = tx.objectStore('store')
 index = store.index('by_name')
 PASS IDBKeyRange.lowerBound(0).lowerOpen is false

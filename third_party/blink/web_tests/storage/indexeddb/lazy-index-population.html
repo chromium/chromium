@@ -17,7 +17,7 @@ function prepareDatabase()
 function verifyPreExistingIndex()
 {
     debug("Verify that uniqueness constraints are enforced with a pre-existing index:");
-    evalAndLog("trans = connection.transaction('store', 'readwrite')");
+    evalAndLog("trans = connection.transaction('store', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = trans.objectStore('store')");
     evalAndLog("request1 = store.put({name: 'bob'}, 1)");
     evalAndLog("request2 = store.put({name: 'bob'}, 2)");

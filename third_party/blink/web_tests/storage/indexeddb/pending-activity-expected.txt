@@ -13,7 +13,7 @@ store.put(0, 0)
 
 
 testTransaction():
-transaction = db.transaction('store')
+transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 transaction.oncomplete = transactionOnComplete
 transaction = null
 self.gc()
@@ -21,7 +21,7 @@ PASS Transaction 'complete' event fired.
 
 
 testRequest():
-transaction = db.transaction('store')
+transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = transaction.objectStore('store')
 request = store.get(0)
 request.onsuccess = requestOnSuccess
@@ -31,7 +31,7 @@ PASS Request 'success' event fired.
 
 
 testCursorRequest():
-transaction = db.transaction('store')
+transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = transaction.objectStore('store')
 request = store.openCursor()
 request.onsuccess = cursorRequestOnFirstSuccess

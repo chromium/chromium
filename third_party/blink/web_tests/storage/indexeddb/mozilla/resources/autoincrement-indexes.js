@@ -36,7 +36,7 @@ function setupIndexes()
 
 function setVersionComplete()
 {
-    objectStore = evalAndLog("objectStore = db.transaction('autoincrement-id').objectStore('autoincrement-id');");
+    objectStore = evalAndLog("objectStore = db.transaction('autoincrement-id', 'readonly', {durability: 'relaxed'}).objectStore('autoincrement-id');");
     first = evalAndLog("first = objectStore.index('first');");
     request = evalAndLog("request = first.get('foo');");
     request.onsuccess = checkFirstIndexAndPrepareSecond;

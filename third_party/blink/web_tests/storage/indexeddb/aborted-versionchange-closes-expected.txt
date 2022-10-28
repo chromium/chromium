@@ -30,7 +30,7 @@ sawTransactionAbort = false
 onTransactionAbort():
 sawTransactionAbort = true
 creating a transaction should fail because connection is closed:
-Expecting exception from db.transaction('store')
+Expecting exception from db.transaction('store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'
@@ -40,7 +40,7 @@ Exception message: Failed to execute 'transaction' on 'IDBDatabase': The databas
 onOpenError():
 PASS sawTransactionAbort is true
 creating a transaction should fail because connection is closed:
-Expecting exception from db.transaction('store')
+Expecting exception from db.transaction('store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'

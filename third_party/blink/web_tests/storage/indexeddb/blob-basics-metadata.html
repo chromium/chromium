@@ -69,7 +69,7 @@ function testFileList()
 function testCursor()
 {
     preamble();
-    evalAndLog("transaction = db.transaction('storeName', 'readonly')");
+    evalAndLog("transaction = db.transaction('storeName', 'readonly', {durability: 'relaxed'})");
     transaction.onerror = unexpectedErrorCallback;
     transaction.onabort = unexpectedAbortCallback;
     evalAndLog("store = transaction.objectStore('storeName')");
@@ -114,7 +114,7 @@ function validateResult(variable, validation, onSuccess)
     debug("");
     debug("validateResult(" + variable + "):");
     shouldBeTrue(variable + validation);
-    evalAndLog("transaction = db.transaction('storeName', 'readwrite')");
+    evalAndLog("transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('storeName')");
     evalAndLog("store.put(" + variable + ", '" + keyName + "')");
     transaction.onerror = unexpectedErrorCallback;
@@ -130,7 +130,7 @@ function validateResult(variable, validation, onSuccess)
 
 function doRead(keyName, onSuccess)
 {
-    evalAndLog("transaction = db.transaction('storeName', 'readwrite')");
+    evalAndLog("transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})");
     evalAndLog("store = transaction.objectStore('storeName')");
     evalAndLog("request = store.get('" + keyName + "')");
     request.onsuccess = onSuccess;

@@ -22,7 +22,7 @@ indexeddb_test(
     },
     function(t, db) {
         Promise.resolve().then(t.step_func(function() {
-            var tx = db.transaction('store');
+            var tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
             var request = tx.objectStore('store').get(0);
             request.onerror = t.unreached_func('request should not fail');
             request.onsuccess = t.step_func(function() {
@@ -46,7 +46,7 @@ indexeddb_test(
     function(t, db) {
         var aesAlgorithmKeyGen = {name: "AES-CBC", length: 128};
         crypto.subtle.generateKey(aesAlgorithmKeyGen, false, ["encrypt"]).then(t.step_func(function() {
-            var tx = db.transaction('store');
+            var tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
             var request = tx.objectStore('store').get(0);
             request.onerror = t.unreached_func('request should not fail');
             request.onsuccess = t.step_func(function() {
@@ -70,7 +70,7 @@ indexeddb_test(
     function(t, db) {
         var tx;
         Promise.resolve().then(function() {
-            tx = db.transaction('store');
+            tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
             assert_true(isTransactionActive(tx, 'store'),
                         'Transaction should be active when created');
         }).then(t.step_func(function() {
@@ -91,7 +91,7 @@ indexeddb_test(
         db.createObjectStore('store');
     },
     function(t, db) {
-        var tx = db.transaction('store');
+        var tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
         var request = tx.objectStore('store').get(0);
         request.onerror = t.unreached_func('request should not fail');
         request.onsuccess = t.step_func(function() {

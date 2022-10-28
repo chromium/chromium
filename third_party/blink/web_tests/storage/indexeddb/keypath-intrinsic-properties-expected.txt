@@ -13,7 +13,7 @@ store.createIndex('blob type', 'blob.type')
 
 
 testKeyPaths():
-transaction = db.transaction('store', 'readwrite')
+transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('store')
 store.put({"id":"id#0","string":"","array":[],"blob":new Blob([""],{type:"type 0"})})
 store.put({"id":"id#1","string":"xx","array":["x","x","x"],"blob":new Blob(["xxxx"],{type:"type 1"})})

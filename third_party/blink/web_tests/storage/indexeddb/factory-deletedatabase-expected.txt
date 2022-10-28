@@ -9,7 +9,7 @@ store = db.createObjectStore('storeName', null)
 store.createIndex('indexName', '')
 PASS store.indexNames.contains('indexName') is true
 store.add('value', 'key')
-db.transaction('storeName', 'readwrite')
+db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.get('key')
 PASS event.target.result is "value"

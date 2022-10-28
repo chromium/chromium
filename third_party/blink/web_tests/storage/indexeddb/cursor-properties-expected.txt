@@ -16,7 +16,7 @@ store.put({id: ['indexKey']}, ['primaryKey'])
 
 onOpenSuccess():
 db = event.target.result
-trans = db.transaction('store')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store')
 index = store.index('index')
 

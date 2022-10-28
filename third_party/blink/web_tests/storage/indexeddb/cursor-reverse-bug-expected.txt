@@ -10,13 +10,13 @@ store.createIndex('index', '')
 
 
 populating store...
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store');
 store.put(1, 1)
 store.put(2, 2)
 store.put(3, 3)
 testCursor()
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store');
 index = store.index('index');
 upperBound: 7 open: false expected: 3
@@ -35,7 +35,7 @@ cursor = event.target.result
 PASS cursor.key is test.expected
 PASS cursor.primaryKey is test.expected
 testCursor()
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store');
 index = store.index('index');
 upperBound: 7 open: true expected: 3
@@ -54,7 +54,7 @@ cursor = event.target.result
 PASS cursor.key is test.expected
 PASS cursor.primaryKey is test.expected
 testCursor()
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store');
 index = store.index('index');
 upperBound: 3 open: false expected: 3
@@ -73,7 +73,7 @@ cursor = event.target.result
 PASS cursor.key is test.expected
 PASS cursor.primaryKey is test.expected
 testCursor()
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store');
 index = store.index('index');
 upperBound: 3 open: true expected: 2

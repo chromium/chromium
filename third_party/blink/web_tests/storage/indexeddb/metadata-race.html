@@ -23,7 +23,7 @@ function onTransactionComplete(evt)
     debug("In multiprocess mode, 'complete' event may be dispatched before\n" +
           "the 'success' arrives with updated metadata. Ensure the new metadata\n" +
           "is still used for transactions.");
-    evalAndLog("store = db.transaction('store').objectStore('store')");
+    evalAndLog("store = db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store')");
     shouldNotThrow("index = store.index('index')");
 }
 
@@ -31,7 +31,7 @@ function onOpenSuccess(evt)
 {
     preamble(evt);
     evalAndLog("db = event.target.result");
-    evalAndLog("store = db.transaction('store').objectStore('store')");
+    evalAndLog("store = db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store')");
     shouldNotThrow("index = store.index('index')");
     finishJSTest();
 }

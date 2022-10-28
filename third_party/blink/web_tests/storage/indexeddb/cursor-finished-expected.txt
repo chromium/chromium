@@ -22,7 +22,7 @@ store.put(2, 2)
 
 onOpenSuccess():
 db = event.target.result
-transaction = db.transaction('store', 'readwrite')
+transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('store')
 count = 0
 cursorRequest = store.openCursor()

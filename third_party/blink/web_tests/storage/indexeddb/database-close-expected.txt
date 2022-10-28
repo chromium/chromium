@@ -12,8 +12,8 @@ store.put('value2', 'key2')
 
 testClose():
 Create transactions using connection:
-trans1 = connection.transaction('store')
-trans2 = connection.transaction('store')
+trans1 = connection.transaction('store', 'readonly', {durability: 'relaxed'})
+trans2 = connection.transaction('store', 'readonly', {durability: 'relaxed'})
 
 
 Close the connection:
@@ -30,7 +30,7 @@ trans2.objectStore('store').get('key2')
 NOTE: Once the closePending flag has been set to true no new transactions can be created using connection. All functions that create transactions first check the closePending flag first and throw an exception if it is true.
 
 
-Expecting exception from trans3 = connection.transaction('store')
+Expecting exception from trans3 = connection.transaction('store', 'readonly', {durability: 'relaxed'})
 PASS Exception was thrown.
 PASS code is DOMException.INVALID_STATE_ERR
 PASS ename is 'InvalidStateError'

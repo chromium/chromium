@@ -51,7 +51,7 @@ function openSuccess1(evt)
     db = evalAndLog("db = event.target.result");
     shouldBe('db.version', "1");
     debug("Start a transaction to ensure the connection is still open.");
-    evalAndLog("transaction = db.transaction('os')");
+    evalAndLog("transaction = db.transaction('os', 'readonly', {durability: 'relaxed'})");
 }
 
 function onVersionChange(evt)

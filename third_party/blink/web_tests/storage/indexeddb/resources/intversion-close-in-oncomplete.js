@@ -48,7 +48,7 @@ function openError(evt)
     shouldBeUndefined("event.target.result");
     shouldBeNonNull("event.target.error");
     shouldBeEqualToString("event.target.error.name", "AbortError");
-    evalAndExpectException("transaction = db.transaction('os', 'readwrite')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("transaction = db.transaction('os', 'readwrite', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     finishJSTest();
 }
 

@@ -10,7 +10,7 @@ index = store.createIndex('index', 'indexKey')
 
 
 populating store...
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store');
 store.put({"indexKey":0,"count":0}, 'c')
 store.put({"indexKey":0,"count":1}, 'b')
@@ -31,7 +31,7 @@ store.put({"indexKey":0,"count":15}, -Infinity)
 
 
 iterating cursor...
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store');
 index = store.index('index');
 cursorRequest = index.openCursor()

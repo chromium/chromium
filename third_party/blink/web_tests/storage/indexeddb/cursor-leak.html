@@ -25,7 +25,7 @@ function onOpen(evt)
     // evalAndLog() is not used as that generates new DOM nodes.
 
     db = evt.target.result;
-    tx = db.transaction('store');
+    tx = db.transaction('store', 'readonly', {durability: 'relaxed'});
     store = tx.objectStore('store');
     cursorRequest = store.openCursor();
     cursorRequest.onsuccess = function() {

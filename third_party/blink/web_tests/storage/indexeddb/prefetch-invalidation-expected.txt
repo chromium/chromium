@@ -20,7 +20,7 @@ db = event.target.result
 
 
 doPrefetchInvalidationTest():
-store = db.transaction('store', 'readwrite').objectStore('store')
+store = db.transaction('store', 'readwrite', {durability: 'relaxed'}).objectStore('store')
 Populate the store with 200 records.
 cursorRequest = store.openCursor()
 
@@ -43,7 +43,7 @@ PASS cursorRequest.result is null
 
 
 doPrefetchInvalidationTest():
-store = db.transaction('store', 'readwrite').objectStore('store')
+store = db.transaction('store', 'readwrite', {durability: 'relaxed'}).objectStore('store')
 Populate the store with 200 records.
 cursorRequest = store.openCursor()
 

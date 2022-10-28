@@ -73,7 +73,7 @@ Exception message: Failed to execute 'objectStore' on 'IDBTransaction': The spec
 
 
 Passing a string as the first argument is a shortcut for just one object store:
-trans = db.transaction('a')
+trans = db.transaction('a', 'readonly', {durability: 'relaxed'})
 trans.objectStore('a')
 Expecting exception from trans.objectStore('b')
 PASS Exception was thrown.

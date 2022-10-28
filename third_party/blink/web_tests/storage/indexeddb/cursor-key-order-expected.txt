@@ -9,7 +9,7 @@ db.createObjectStore('store')
 
 
 populating store...
-trans = db.transaction('store', 'readwrite')
+trans = db.transaction('store', 'readwrite', {durability: 'relaxed'})
 store = trans.objectStore('store');
 store.put(0, -Infinity)
 store.put(1, -Number.MAX_VALUE)
@@ -64,7 +64,7 @@ store.put(49, [[[[]]]])
 
 
 iterating cursor...
-trans = db.transaction('store', 'readonly')
+trans = db.transaction('store', 'readonly', {durability: 'relaxed'})
 store = trans.objectStore('store');
 count = 0
 curreq = store.openCursor()

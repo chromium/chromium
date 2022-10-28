@@ -16,10 +16,10 @@ file = window.emptyFile
 
 validateResult(file):
 PASS file.size == 0 is true
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 store.put(file, 'filekey')
-transaction = db.transaction('storeName', 'readwrite')
+transaction = db.transaction('storeName', 'readwrite', {durability: 'relaxed'})
 store = transaction.objectStore('storeName')
 request = store.get('filekey')
 PASS event.target.result.size == 0 is true
