@@ -4840,6 +4840,7 @@ Unknown properties are collapsed to zero. -->
   <int value="269580" label="ARM Neoverse N1 *"/>
   <int value="269581" label="ARM Cortex-A77 *"/>
   <int value="269633" label="ARM Cortex-A78 *"/>
+  <int value="269638" label="ARM Cortex-A510"/>
   <int value="332305" label="Qualcomm Snapdragon 820 **"/>
   <int value="333825" label="Qualcomm Kyro 260/280 Silver *"/>
   <int value="333827" label="Qualcomm Kryo 385 Silver *"/>
