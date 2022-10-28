@@ -56,7 +56,7 @@ if 'compile_targets' not in sys.argv:
   import aw_variations_seed_pb2
 
 import devil_chromium
-import run_wpt_tests
+import wpt_common
 
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.port.android import (
@@ -104,7 +104,7 @@ def _merge_results_dicts(dict_to_merge, test_results_dict):
 
 
 # pylint: disable=super-with-arguments, abstract-method
-class FinchTestCase(run_wpt_tests.WPTAdapter):
+class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
   def __init__(self, device):
     super(FinchTestCase, self).__init__()
@@ -239,9 +239,6 @@ class FinchTestCase(run_wpt_tests.WPTAdapter):
       rest_args.extend(['--include', test])
 
     return rest_args
-
-  def add_android_arguments(self, _parser):
-    return
 
   @classmethod
   def add_common_arguments(cls, parser):
