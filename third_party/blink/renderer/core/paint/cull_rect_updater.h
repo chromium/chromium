@@ -102,6 +102,7 @@ class CORE_EXPORT OverriddenCullRectScope {
 
  private:
   Vector<FragmentCullRects> original_cull_rects_;
+  Vector<FragmentCullRects>* outer_original_cull_rects_ = nullptr;
 };
 
 }  // namespace blink

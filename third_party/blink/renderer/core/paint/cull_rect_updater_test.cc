@@ -589,6 +589,64 @@ TEST_P(CullRectUpdaterTest, PerspectiveDescendants) {
   EXPECT_TRUE(GetCullRect("target").IsInfinite());
 }
 
+TEST_P(CullRectUpdaterTest, NestedOverriddenCullRectScopes) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="div1" style="contain: paint; height: 100px"></div>
+    <div id="div2" style="contain: paint; height: 100px"></div>
+  )HTML");
+
+  auto& layer1 = *GetPaintLayerByElementId("div1");
+  auto& layer2 = *GetPaintLayerByElementId("div2");
+  CullRect cull_rect1 = GetCullRect(layer1);
+  CullRect cull_rect2 = GetCullRect(layer2);
+  CullRect special_cull_rect1(gfx::Rect(12, 34, 56, 78));
+  CullRect special_cull_rect2(gfx::Rect(87, 65, 43, 21));
+
+  {
+    OverriddenCullRectScope scope1(layer1, cull_rect1);
+    {
+      OverriddenCullRectScope scope2(layer2, cull_rect2);
+      EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+    }
+    EXPECT_EQ(cull_rect1, GetCullRect(layer1));
+  }
+  EXPECT_EQ(cull_rect1, GetCullRect(layer1));
+  EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+
+  {
+    OverriddenCullRectScope scope1(layer1, special_cull_rect1);
+    {
+      OverriddenCullRectScope scope2(layer2, cull_rect2);
+      EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+    }
+    EXPECT_EQ(special_cull_rect1, GetCullRect(layer1));
+  }
+  EXPECT_EQ(cull_rect1, GetCullRect(layer1));
+  EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+
+  {
+    OverriddenCullRectScope scope1(layer1, cull_rect1);
+    {
+      OverriddenCullRectScope scope2(layer2, special_cull_rect2);
+      EXPECT_EQ(special_cull_rect2, GetCullRect(layer2));
+    }
+    EXPECT_EQ(cull_rect1, GetCullRect(layer1));
+  }
+  EXPECT_EQ(cull_rect1, GetCullRect(layer1));
+  EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+
+  {
+    OverriddenCullRectScope scope1(layer1, special_cull_rect1);
+    {
+      OverriddenCullRectScope scope2(layer2, special_cull_rect2);
+      EXPECT_EQ(special_cull_rect2, GetCullRect(layer2));
+    }
+    EXPECT_EQ(special_cull_rect1, GetCullRect(layer1));
+  }
+  EXPECT_EQ(cull_rect1, GetCullRect(layer1));
+  EXPECT_EQ(cull_rect2, GetCullRect(layer2));
+}
+
 class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
  protected:
   void Check(const String& old_style,

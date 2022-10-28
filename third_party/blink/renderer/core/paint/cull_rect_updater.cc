@@ -561,6 +561,9 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
                                                  const CullRect& cull_rect) {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
+
+  outer_original_cull_rects_ = g_original_cull_rects;
+
   if (starting_layer.IsRootLayer() &&
       starting_layer.GetLayoutObject().GetFrame()->IsLocalRoot() &&
       !starting_layer.NeedsCullRectUpdate() &&
@@ -571,7 +574,6 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
     return;
   }
 
-  DCHECK(!g_original_cull_rects);
   g_original_cull_rects = &original_cull_rects_;
   CullRectUpdater(starting_layer).UpdateInternal(cull_rect);
 }
@@ -579,11 +581,12 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
 OverriddenCullRectScope::~OverriddenCullRectScope() {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
-  if (!g_original_cull_rects)
+
+  if (outer_original_cull_rects_ == g_original_cull_rects)
     return;
 
   DCHECK_EQ(g_original_cull_rects, &original_cull_rects_);
-  g_original_cull_rects = nullptr;
+  g_original_cull_rects = outer_original_cull_rects_;
   for (FragmentCullRects& cull_rects : original_cull_rects_) {
     cull_rects.fragment->SetCullRect(cull_rects.cull_rect);
     cull_rects.fragment->SetContentsCullRect(cull_rects.contents_cull_rect);
