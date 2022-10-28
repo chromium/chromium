@@ -153,7 +153,7 @@ AXNode* AXNode::GetParentCrossingTreeBoundary() const {
     return parent_;
   const AXTreeManager* manager = GetManager();
   if (manager)
-    return manager->GetParentNodeFromParentTreeAsAXNode();
+    return manager->GetParentNodeFromParentTree();
   return nullptr;
 }
 
@@ -171,7 +171,7 @@ AXNode* AXNode::GetUnignoredParentCrossingTreeBoundary() const {
   if (!unignored_parent) {
     const AXTreeManager* manager = GetManager();
     if (manager)
-      unignored_parent = manager->GetParentNodeFromParentTreeAsAXNode();
+      unignored_parent = manager->GetParentNodeFromParentTree();
   }
   return unignored_parent;
 }

@@ -634,7 +634,8 @@ void BrowserAccessibilityManagerAndroid::OnBoolAttributeChanged(
 
 WebContentsAccessibilityAndroid*
 BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() {
-  BrowserAccessibility* parent_node = GetParentNodeFromParentTree();
+  BrowserAccessibility* parent_node =
+      GetParentNodeFromParentTreeAsBrowserAccessibility();
   if (!parent_node)
     return web_contents_accessibility_.get();
 

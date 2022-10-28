@@ -202,7 +202,7 @@ class MockAxTreeManager : public ui::AXTreeManager {
   MOCK_CONST_METHOD0(GetTreeID, ui::AXTreeID());
   MOCK_CONST_METHOD0(GetParentTreeID, ui::AXTreeID());
   MOCK_CONST_METHOD0(GetRootAsAXNode, ui::AXNode*());
-  MOCK_CONST_METHOD0(GetParentNodeFromParentTreeAsAXNode, ui::AXNode*());
+  MOCK_CONST_METHOD0(GetParentNodeFromParentTree, ui::AXNode*());
 };
 
 class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegateBase {

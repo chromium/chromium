@@ -81,7 +81,7 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   // AXTreeManager implementation.
   ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
   ui::AXTreeID GetParentTreeID() const override;
-  ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  ui::AXNode* GetParentNodeFromParentTree() const override;
 
   // AXActionHandlerBase implementation.
   void PerformAction(const ui::AXActionData& data) override;

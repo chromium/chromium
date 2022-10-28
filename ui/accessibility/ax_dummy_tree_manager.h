@@ -44,7 +44,7 @@ class AX_EXPORT AXDummyTreeManager : public AXTreeManager {
   void SetTree(std::unique_ptr<AXTree> tree);
 
   // AXTreeManager implementation.
-  AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  AXNode* GetParentNodeFromParentTree() const override;
 };
 
 }  // namespace ui

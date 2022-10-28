@@ -71,7 +71,7 @@ ui::AXTreeID ViewsAXTreeManager::GetParentTreeID() const {
   return ui::AXTreeIDUnknown();
 }
 
-ui::AXNode* ViewsAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
+ui::AXNode* ViewsAXTreeManager::GetParentNodeFromParentTree() const {
   // TODO(nektar): Implement stiching of AXTrees, e.g. a dialog to the main
   // window.
   return nullptr;

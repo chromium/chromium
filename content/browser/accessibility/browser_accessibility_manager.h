@@ -158,7 +158,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   BrowserAccessibility* GetFromID(int32_t id) const;
 
   // If this tree has a parent tree, return the parent node in that tree.
-  BrowserAccessibility* GetParentNodeFromParentTree() const;
+  BrowserAccessibility* GetParentNodeFromParentTreeAsBrowserAccessibility()
+      const;
 
   // In general, there is only a single node with the role of kRootWebArea,
   // but if a popup is opened, a second nested "root" is created in the same

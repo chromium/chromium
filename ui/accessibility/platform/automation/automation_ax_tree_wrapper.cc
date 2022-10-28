@@ -559,7 +559,7 @@ AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {
   return parent_tree ? parent_tree->GetTreeID() : AXTreeIDUnknown();
 }
 
-AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTreeAsAXNode() const {
+AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTree() const {
   AutomationAXTreeWrapper* wrapper = const_cast<AutomationAXTreeWrapper*>(this);
   return owner_->GetParent(ax_tree_->root(), &wrapper,
                            /* should_use_app_id = */ true,

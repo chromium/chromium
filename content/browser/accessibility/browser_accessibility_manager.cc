@@ -320,14 +320,15 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromID(int32_t id) const {
   return nullptr;
 }
 
-BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
+BrowserAccessibility*
+BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
     const {
-  ui::AXNode* parent = GetParentNodeFromParentTreeAsAXNode();
+  ui::AXNode* parent = GetParentNodeFromParentTree();
   if (!parent)
     return nullptr;
 
   // TODO(accessibility) Try to remove this redundant lookup. The call to
-  // GetParentNodeFromParentTreeAsAXNode() already retrieved the parent manager.
+  // `GetParentNodeFromParentTree` already retrieved the parent manager.
   AXTreeManager* parent_manager = GetParentManager();
   DCHECK(parent_manager) << "Impossible to have null parent_manager if we "
                             "already have a parent AXNode.";

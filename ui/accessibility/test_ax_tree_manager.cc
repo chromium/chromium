@@ -165,7 +165,7 @@ AXNodePosition::AXPositionInstance TestAXTreeManager::CreateTextPosition(
   return CreateTextPosition(*anchor, text_offset, affinity);
 }
 
-AXNode* TestAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
+AXNode* TestAXTreeManager::GetParentNodeFromParentTree() const {
   AXTreeID parent_tree_id = GetParentTreeID();
   TestAXTreeManager* parent_manager =
       static_cast<TestAXTreeManager*>(AXTreeManager::FromID(parent_tree_id));

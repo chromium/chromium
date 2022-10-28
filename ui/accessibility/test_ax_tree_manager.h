@@ -114,7 +114,7 @@ class TestAXTreeManager : public AXTreeManager {
       ax::mojom::TextAffinity affinity) const;
 
   // AXTreeManager implementation.
-  AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  AXNode* GetParentNodeFromParentTree() const override;
 };
 
 }  // namespace ui

@@ -48,8 +48,8 @@ AXTreeManager* AXTreeManager::ForChildTree(const AXNode& parent_node) {
   // Some platforms do not use AXTreeManagers, so child trees don't exist in
   // the browser process.
   DCHECK(!child_tree_manager ||
-         !child_tree_manager->GetParentNodeFromParentTreeAsAXNode() ||
-         child_tree_manager->GetParentNodeFromParentTreeAsAXNode()->id() ==
+         !child_tree_manager->GetParentNodeFromParentTree() ||
+         child_tree_manager->GetParentNodeFromParentTree()->id() ==
              parent_node.id());
   return child_tree_manager;
 }
@@ -115,7 +115,7 @@ bool AXTreeManager::CanFireEvents() const {
   // Make sure that nodes can be traversed to the root.
   const AXTreeManager* ancestor_manager = this;
   while (!ancestor_manager->IsRoot()) {
-    AXNode* host_node = ancestor_manager->GetParentNodeFromParentTreeAsAXNode();
+    AXNode* host_node = ancestor_manager->GetParentNodeFromParentTree();
     if (!host_node)
       return false;  // Host node not ready yet.
     ancestor_manager = host_node->GetManager();
@@ -199,7 +199,7 @@ AXNode* AXTreeManager::GetLastFocusedNode() {
 AXTreeManager::~AXTreeManager() {
   AXNode* parent = nullptr;
   if (connected_to_parent_tree_node_)
-    parent = GetParentNodeFromParentTreeAsAXNode();
+    parent = GetParentNodeFromParentTree();
 
   // Fire any events that need to be fired when tree nodes get deleted. For
   // example, events that fire every time "OnSubtreeWillBeDeleted" is called.
@@ -267,7 +267,7 @@ AXTreeManager* AXTreeManager::GetRootManager() const {
   return parent->GetRootManager();
 }
 
-AXNode* AXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
+AXNode* AXTreeManager::GetParentNodeFromParentTree() const {
   AXTreeManager* parent_manager = GetParentManager();
   if (!parent_manager)
     return nullptr;
@@ -312,7 +312,7 @@ void AXTreeManager::ParentConnectionChanged(AXNode* parent) {
 }
 
 void AXTreeManager::EnsureParentConnectionIfNotRootManager() {
-  AXNode* parent = GetParentNodeFromParentTreeAsAXNode();
+  AXNode* parent = GetParentNodeFromParentTree();
   if (parent) {
     if (!connected_to_parent_tree_node_)
       ParentConnectionChanged(parent);

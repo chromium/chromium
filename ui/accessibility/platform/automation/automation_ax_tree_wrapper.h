@@ -114,7 +114,7 @@ class AX_EXPORT AutomationAXTreeWrapper : public AXTreeManager {
   AXNode* GetNodeFromTree(const AXTreeID& tree_id,
                           const AXNodeID node_id) const override;
   AXTreeID GetParentTreeID() const override;
-  AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  AXNode* GetParentNodeFromParentTree() const override;
 
  private:
   // AXTreeObserver overrides.
