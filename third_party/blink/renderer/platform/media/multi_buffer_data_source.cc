@@ -268,7 +268,7 @@ void MultiBufferDataSource::OnRedirected(
     redirect_cb_.Run();
 }
 
-void MultiBufferDataSource::SetPreload(Preload preload) {
+void MultiBufferDataSource::SetPreload(media::DataSource::Preload preload) {
   DVLOG(1) << __func__ << "(" << preload << ")";
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   preload_ = preload;

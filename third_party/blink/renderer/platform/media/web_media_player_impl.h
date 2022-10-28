@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
+#include "media/base/data_source.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_observer.h"
 #include "media/base/media_tracks.h"
@@ -75,7 +76,6 @@ class LearningTaskController;
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
-class DataSource;
 class Demuxer;
 class MediaLog;
 class MemoryDumpProviderProxy;
@@ -680,7 +680,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       WebMediaPlayer::kReadyStateHaveNothing;
 
   // Preload state for when |data_source_| is created after setPreload().
-  MultiBufferDataSource::Preload preload_ = MultiBufferDataSource::METADATA;
+  media::DataSource::Preload preload_ = media::DataSource::METADATA;
 
   // Poster state (for UMA reporting).
   bool has_poster_ = false;

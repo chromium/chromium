@@ -1208,16 +1208,16 @@ bool WebMediaPlayerImpl::SetSinkId(
   return true;
 }
 
-STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadNone, MultiBufferDataSource::NONE);
+STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadNone, media::DataSource::NONE);
 STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadMetaData,
-                   MultiBufferDataSource::METADATA);
-STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadAuto, MultiBufferDataSource::AUTO);
+                   media::DataSource::METADATA);
+STATIC_ASSERT_ENUM(WebMediaPlayer::kPreloadAuto, media::DataSource::AUTO);
 
 void WebMediaPlayerImpl::SetPreload(WebMediaPlayer::Preload preload) {
   DVLOG(1) << __func__ << "(" << preload << ")";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  preload_ = static_cast<MultiBufferDataSource::Preload>(preload);
+  preload_ = static_cast<media::DataSource::Preload>(preload);
   if (mb_data_source_)
     mb_data_source_->SetPreload(preload_);
 }
@@ -2769,9 +2769,9 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
   }
 
   // No point in preloading data as we'll probably just throw it away anyways.
-  if (IsStreaming() && preload_ > MultiBufferDataSource::METADATA &&
+  if (IsStreaming() && preload_ > media::DataSource::METADATA &&
       mb_data_source_) {
-    mb_data_source_->SetPreload(MultiBufferDataSource::METADATA);
+    mb_data_source_->SetPreload(media::DataSource::METADATA);
   }
 
   StartPipeline();
@@ -3003,7 +3003,7 @@ void WebMediaPlayerImpl::StartPipeline() {
 
   // If possible attempt to avoid decoder spool up until playback starts.
   auto start_type = media::Pipeline::StartType::kNormal;
-  if (!chunk_demuxer_ && preload_ == MultiBufferDataSource::METADATA &&
+  if (!chunk_demuxer_ && preload_ == media::DataSource::METADATA &&
       !client_->CouldPlayIfEnoughData() && !IsStreaming()) {
     start_type =
         (has_poster_ ||

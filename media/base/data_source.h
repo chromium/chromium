@@ -18,6 +18,19 @@ class MEDIA_EXPORT DataSource {
 
   enum { kReadError = -1, kAborted = -2 };
 
+  // Used to specify video preload states. They are "hints" to the browser about
+  // how aggressively the browser should load and buffer data.
+  // Please see the HTML5 spec for the descriptions of these values:
+  // http://www.w3.org/TR/html5/video.html#attr-media-preload
+  //
+  // Enum values must match the values in WebMediaPlayer::Preload and
+  // there will be assertions at compile time if they do not match.
+  enum Preload {
+    NONE,
+    METADATA,
+    AUTO,
+  };
+
   DataSource();
 
   DataSource(const DataSource&) = delete;

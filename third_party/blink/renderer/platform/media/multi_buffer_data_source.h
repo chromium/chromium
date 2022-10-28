@@ -43,19 +43,6 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   using DownloadingCB = base::RepeatingCallback<void(bool)>;
   using RedirectCB = base::RepeatingCallback<void()>;
 
-  // Used to specify video preload states. They are "hints" to the browser about
-  // how aggressively the browser should load and buffer data.
-  // Please see the HTML5 spec for the descriptions of these values:
-  // http://www.w3.org/TR/html5/video.html#attr-media-preload
-  //
-  // Enum values must match the values in WebMediaPlayer::Preload and
-  // there will be assertions at compile time if they do not match.
-  enum Preload {
-    NONE,
-    METADATA,
-    AUTO,
-  };
-
   // |url| and |cors_mode| are passed to the object. Buffered byte range changes
   // will be reported to |host|. |downloading_cb| will be called whenever the
   // downloading/paused state of the source changes.
@@ -76,7 +63,7 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   void Initialize(InitializeCB init_cb);
 
   // Adjusts the buffering algorithm based on the given preload value.
-  void SetPreload(Preload preload);
+  void SetPreload(media::DataSource::Preload preload);
 
   // Returns true if the media resource has a single origin, false otherwise.
   // Only valid to call after Initialize() has completed.
@@ -264,7 +251,7 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
 
   // This variable holds the value of the preload attribute for the video
   // element.
-  Preload preload_;
+  media::DataSource::Preload preload_;
 
   // Bitrate of the content, 0 if unknown.
   int bitrate_;
