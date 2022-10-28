@@ -7748,10 +7748,6 @@ crbug.com/1376495 http/tests/devtools/runtime/evaluate-timeout.js [ Failure Pass
 crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 crbug.com/1377082 [ Linux ] http/tests/lazyload/attribute.html [ Skip ]
 
-# Sheriff 2022-10-24
-crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-appearance-dark.html [ Failure ]
-crbug.com/1377751 [ Win11 ] fast/forms/accent-color/checkbox-accent-color-contrast-appearance.html [ Failure ]
-
 crbug.com/1378359 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure ]
 
 # Sheriff 2022-10-28
