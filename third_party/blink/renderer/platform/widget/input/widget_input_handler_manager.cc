@@ -1117,7 +1117,6 @@ void WidgetInputHandlerManager::UpdateBrowserControlsState(
     bool animate) {
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
   DCHECK(input_handler_proxy_);
-  DCHECK(!widget_->is_embedded());
   input_handler_proxy_->UpdateBrowserControlsState(constraints, current,
                                                    animate);
 }
