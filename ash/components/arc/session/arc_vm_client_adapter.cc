@@ -213,6 +213,8 @@ std::vector<std::string> GenerateKernelCmdline(
       base::StringPrintf("androidboot.enable_notifications_refresh=%d",
                          start_params.enable_notifications_refresh),
       base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
+      base::StringPrintf("androidboot.update_o4c_list_via_a2c2=%d",
+                         start_params.update_o4c_list_via_a2c2),
   };
 
   const ArcVmUreadaheadMode mode =

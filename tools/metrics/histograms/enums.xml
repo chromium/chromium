@@ -60457,6 +60457,7 @@ from previous Chrome versions.
   <int value="-253619457" label="ChromeSharingHubLaunchAdjacent:enabled"/>
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
   <int value="-252128826" label="ContextualSearchDelayedIntelligence:enabled"/>
+  <int value="-251167216" label="ArcUpdateO4CListViaA2C2:disabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
@@ -63038,6 +63039,7 @@ from previous Chrome versions.
       label="AutofillSuppressCreditCardSaveForAssistant:disabled"/>
   <int value="1300282719" label="OfflinePagesBackgroundLoading:enabled"/>
   <int value="1300753556" label="ManualPasswordGenerationAndroid:disabled"/>
+  <int value="1300900599" label="ArcUpdateO4CListViaA2C2:enabled"/>
   <int value="1301902557" label="AutofillCreditCardAuthentication:disabled"/>
   <int value="1302342960"
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>

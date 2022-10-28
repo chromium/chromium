@@ -4794,6 +4794,10 @@ const char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vcpu on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
+const char kArcUpdateO4CListViaA2C2Name[] = "Update the O4C list via A2C2";
+const char kArcUpdateO4CListViaA2C2Desc[] =
+    "When enabled, the O4C list is allowed to be updated via A2C2.";
+
 const char kArcUsbDeviceDefaultAttachToVmName[] =
     "Attach unclaimed USB devices to ARCVM";
 const char kArcUsbDeviceDefaultAttachToVmDescription[] =

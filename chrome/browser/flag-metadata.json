@@ -270,6 +270,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "arc-update-o4c-list-via-a2c2",
+    "owners": [ "toshikikikuchi" ],
+    "expiry_milestone": 113
+  },
+  {
     "name": "arc-usb-device-attach-to-vm-experiment",
     "owners": [ "lgcheng" ],
     // Used on ChromeOS to temperorily attach unclaimed USB device to ARCVM
