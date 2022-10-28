@@ -84,8 +84,9 @@ export class AcceleratorLookupManager {
    * Returns the uuid of an accelerator if the
    * accelerator exists. Otherwise returns `undefined`.
    */
-  getAcceleratorFromKeys(accelerator: string): string|undefined {
-    return this.reverseAcceleratorLookup_.get(accelerator);
+  getAcceleratorIdFromReverseLookup(accelerator: Accelerator): string
+      |undefined {
+    return this.reverseAcceleratorLookup_.get(JSON.stringify(accelerator));
   }
 
   setAcceleratorLookup(acceleratorConfig: AcceleratorConfig) {
@@ -276,7 +277,7 @@ export class AcceleratorLookupManager {
    * Called to either remove or disable (if locked) an accelerator.
    */
   private maybeRemoveOrDisableAccelerator_(accelerator: Accelerator) {
-    const uuid = this.getAcceleratorFromKeys(JSON.stringify(accelerator));
+    const uuid = this.getAcceleratorIdFromReverseLookup(accelerator);
     if (uuid === undefined) {
       // Not replacing a pre-existing accelerator.
       return;

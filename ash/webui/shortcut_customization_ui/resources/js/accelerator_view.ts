@@ -276,8 +276,8 @@ export class AcceleratorViewElement extends PolymerElement {
       this.acceleratorOnHold_ = '';
     }
 
-    const foundId = this.lookupManager_.getAcceleratorFromKeys(
-        JSON.stringify(pendingAccelerator));
+    const foundId = this.lookupManager_.getAcceleratorIdFromReverseLookup(
+        pendingAccelerator);
 
     // Pre-existing shortcut, update the error message.
     if (foundId !== undefined) {

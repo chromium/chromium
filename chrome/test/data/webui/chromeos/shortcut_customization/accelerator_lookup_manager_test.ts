@@ -40,17 +40,16 @@ suite('acceleratorLookupManagerTest', function() {
   function replaceAndVerify(
       source: AcceleratorSource, action: number, oldAccel: Accelerator,
       newAccel: Accelerator) {
-    const uuid = getManager().getAcceleratorFromKeys(JSON.stringify(oldAccel));
+    const uuid = getManager().getAcceleratorIdFromReverseLookup(oldAccel);
     getManager().replaceAccelerator(source, action, oldAccel, newAccel);
 
     // Verify that the old accelerator is no longer part of the reverse
     // lookup.
     assertEquals(
-        undefined,
-        getManager().getAcceleratorFromKeys(JSON.stringify(oldAccel)));
+        undefined, getManager().getAcceleratorIdFromReverseLookup(oldAccel));
     // Verify the replacement accelerator is in the reverse lookup.
     assertEquals(
-        uuid, getManager().getAcceleratorFromKeys(JSON.stringify(newAccel)));
+        uuid, getManager().getAcceleratorIdFromReverseLookup(newAccel));
   }
 
   function addAndVerify(
@@ -60,7 +59,7 @@ suite('acceleratorLookupManagerTest', function() {
     // Verify that the new accelerator is in the reverse lookup.
     assertEquals(
         `${source}-${action}`,
-        getManager().getAcceleratorFromKeys(JSON.stringify(newAccel)));
+        getManager().getAcceleratorIdFromReverseLookup(newAccel));
   }
 
   test('AcceleratorLookupDefaultFake', () => {
@@ -125,8 +124,7 @@ suite('acceleratorLookupManagerTest', function() {
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
           undefined,
-          getManager().getAcceleratorFromKeys(
-              JSON.stringify(expectedNewAccel)));
+          getManager().getAcceleratorIdFromReverseLookup(expectedNewAccel));
 
       replaceAndVerify(
           AcceleratorSource.kAsh, expectedAction, oldAccel, expectedNewAccel);
@@ -134,8 +132,8 @@ suite('acceleratorLookupManagerTest', function() {
       // Check that the accelerator got updated in the lookup.
       let lookup =
           getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
-      // Replacing a default shortcut should not remove the default. Expect a
-      // new accelerator to be added instead.
+      // Replacing a default shortcut should not remove the default. Expect
+      // a new accelerator to be added instead.
       assertEquals(2, lookup.length);
       assertEquals(
           JSON.stringify(expectedNewAccel),
@@ -151,8 +149,8 @@ suite('acceleratorLookupManagerTest', function() {
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
           undefined,
-          getManager().getAcceleratorFromKeys(
-              JSON.stringify(expectedNewDefaultAccel)));
+          getManager().getAcceleratorIdFromReverseLookup(
+              expectedNewDefaultAccel));
       replaceAndVerify(
           AcceleratorSource.kAsh, expectedAction, expectedNewAccel,
           expectedNewDefaultAccel);
@@ -229,8 +227,7 @@ suite('acceleratorLookupManagerTest', function() {
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
           undefined,
-          getManager().getAcceleratorFromKeys(
-              JSON.stringify(expectedNewAccel)));
+          getManager().getAcceleratorIdFromReverseLookup(expectedNewAccel));
 
       addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
 
@@ -309,8 +306,7 @@ suite('acceleratorLookupManagerTest', function() {
       // Removed accelerator should not appear in the reverse lookup.
       assertEquals(
           undefined,
-          getManager().getAcceleratorFromKeys(
-              JSON.stringify(removedAccelerator)));
+          getManager().getAcceleratorIdFromReverseLookup(removedAccelerator));
     });
   });
 
@@ -338,8 +334,7 @@ suite('acceleratorLookupManagerTest', function() {
       // Sanity check that new accel is not in the reverse lookup.
       assertEquals(
           undefined,
-          getManager().getAcceleratorFromKeys(
-              JSON.stringify(expectedNewAccel)));
+          getManager().getAcceleratorIdFromReverseLookup(expectedNewAccel));
 
       addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
 
@@ -360,8 +355,7 @@ suite('acceleratorLookupManagerTest', function() {
       // Removed accelerator should not appear in the reverse lookup.
       assertEquals(
           undefined,
-          getManager().getAcceleratorFromKeys(
-              JSON.stringify(removedAccelerator)));
+          getManager().getAcceleratorIdFromReverseLookup(removedAccelerator));
     });
   });
 });
