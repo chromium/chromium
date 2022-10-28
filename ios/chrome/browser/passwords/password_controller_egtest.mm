@@ -184,7 +184,6 @@ BOOL WaitForKeyboardToAppear() {
 // TODO(crbug.com/1221635) This fails on iPhone 14.5+
 - (void)DISABLED_testPasswordGeneration {
 #if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1194134): Reenable this test.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (test is flaky)");
   }

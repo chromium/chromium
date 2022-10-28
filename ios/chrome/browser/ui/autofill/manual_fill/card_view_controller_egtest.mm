@@ -566,7 +566,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that masked credit card offer CVC input.
-// TODOD(crbug.com/909748) can't test this one until https tests are possible.
+// TODO(crbug.com/909748) can't test this one until https tests are possible.
 - (void)DISABLED_testCreditCardServerNumberRequiresCVC {
   [AutofillAppInterface saveMaskedCreditCard];
 

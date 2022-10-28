@@ -69,7 +69,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the addresses view controller appears on screen.
-// TODO(crbug.com/1116274): Flaky on ios simulator.
+// TODO(crbug.com/1116043): Flaky on ios simulator.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testAddressesViewControllerIsPresented \
   DISABLED_testAddressesViewControllerIsPresented

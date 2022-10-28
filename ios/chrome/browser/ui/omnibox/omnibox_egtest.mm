@@ -450,7 +450,7 @@ void FocusFakebox() {
   }
 }
 
-// Test is flaky: crbug.com/1056700.
+// TODO(crbug.com/1056700): Test is flaky
 - (void)DISABLED_testCopyPaste {
   [self openPage1];
 
