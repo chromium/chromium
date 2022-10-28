@@ -100508,18 +100508,6 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Clear Range of History"/>
 </enum>
 
-<enum name="UsbDeviceSpeedMetric">
-  <int value="0" label="Other"/>
-  <int value="1" label="1.5 Mbps (USB 1.1)"/>
-  <int value="2" label="12 Mbps (USB 1.1)"/>
-  <int value="3" label="480 Mbps (USB 2.0)"/>
-  <int value="4"
-      label="480 Mbps fallback (USB 2.0 fallen back from SuperSpeed)"/>
-  <int value="5" label="5000 Mbps (USB 3.2 Gen 1)"/>
-  <int value="6" label="10000 Mbps (USB 3.2 Gen 2)"/>
-  <int value="7" label="20000 Mbps (USB 3.2 Gen 2x2)"/>
-</enum>
-
 <enum name="UsbPrinterSetupSource">
   <int value="0" label="Settings"/>
   <int value="1" label="Print Preview"/>
