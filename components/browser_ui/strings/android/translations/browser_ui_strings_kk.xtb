@@ -34,6 +34,7 @@
 <translation id="1785415724048343560">Тиімді пайдалану үшін ұсынылады.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> браузеріне AR режимін пайдалануға рұқсат ету үшін <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> камераны да қосыңыз.</translation>
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> дереккөзінен</translation>
+<translation id="187227595286001730">Қатысты сайттар топтағы әрекетіңізді көре алады</translation>
 <translation id="1887786770086287077">Бұл құрылғыда орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="1915307458270490472">Жабу</translation>
 <translation id="1919345977826869612">Жарнамалар</translation>
@@ -175,6 +176,7 @@
 <translation id="483914009762354899">Осы домендегі барлық сайт қамтылсын</translation>
 <translation id="4883854917563148705">Басқарылатын параметрлер бастапқы күйге қайтарылмайды.</translation>
 <translation id="4887024562049524730">Cайттарға виртуалдық шындық құрылғыңызды немесе деректерді пайдалануға рұқсат беру алдында сұрау (ұсынылады)</translation>
+<translation id="4955223779495905865">Сіз кіретін сайт басқа сайттардан алынған мазмұнды (мысалы, кескіндерді, жарнамаларды және мәтінді) ендіре алады. Пайдалану мүмкіндігіңізді жекелендіру үшін бұл сайттардың кез келгені cookie файлдары мен басқа да деректерді сақтай алады.</translation>
 <translation id="4962975101802056554">Құрылғыға арналған барлық рұқсаттардың күші жойылсын.</translation>
 <translation id="497421865427891073">Алға өту</translation>
 <translation id="4976702386844183910">Cоңғы кіру: <ph name="DATE" /></translation>
@@ -184,6 +186,7 @@
 <translation id="5048398596102334565">Сайттардың қозғалыс датчиктеріне кіруіне рұқсат ету (ұсынылады)</translation>
 <translation id="5050380848339752099">Бұл сайт инкогнито режимінен тыс қолданбамен ақпаратты бөліскелі тұр.</translation>
 <translation id="5063480226653192405">Пайдалану</translation>
+<translation id="5082281938627763039"><ph name="FPS_MEMBER" /> және <ph name="FPS_OWNER" /> сайттар тобындағы сайттарға арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5091013926750941408">Мобильдік сайт</translation>
 <translation id="509133520954049755">Компьютерлік нұсқаны сұрау</translation>
 <translation id="5100237604440890931">Жиылған – жаю үшін басыңыз.</translation>
@@ -220,6 +223,7 @@
 <translation id="5677928146339483299">Тыйым салынған</translation>
 <translation id="5689516760719285838">Локация</translation>
 <translation id="5690795753582697420">Камера Android параметрлерінде өшірілген.</translation>
+<translation id="5706552988683188916"><ph name="WEBSITE" /> арналған cookie файлдары мен басқа да сайт деректері өшіріледі.</translation>
 <translation id="5719847187258001597">Негізгі экрандағы <ph name="ORIGIN" /> сайты мен қолданбада сақталған барлық деректер мен cookie файлдары өшіріледі.</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> үшін тыйым салынған.</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
@@ -320,6 +324,7 @@
 <translation id="7882806643839505685">Белгілі бір сайтта дыбыстың шығуына рұқсат ету.</translation>
 <translation id="789180354981963912">Инкогнито режимінде үшінші тараптың cookie файлдарын бөгеу:</translation>
 <translation id="7940722705963108451">Еске салу</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{Топтағы әрекетіңізді көре алатын <ph name="FPS_OWNER" /> сайттар тобындағы <ph name="FPS_MEMBERS_COUNT" /> сайт}other{Топтағы әрекетіңізді көре алатын <ph name="FPS_OWNER" /> сайттар тобындағы <ph name="FPS_MEMBERS_COUNT" /> сайт}}</translation>
 <translation id="7986741934819883144">Контактіні таңдау</translation>
 <translation id="7999064672810608036">Cookie файлдарын қоса, барлық жергілікті деректерді өшіруді және осы веб-сайтқа арналған барлық рұқсаттарды қалпына келтіруді қалайсыз ба?</translation>
 <translation id="8007176423574883786">Осы құрылғы үшін өшірілді</translation>
@@ -358,6 +363,7 @@
 <translation id="8499083585497694743">Микрофон дыбысын қосу</translation>
 <translation id="851751545965956758">Сайттардың құрылғыға жалғануына тыйым салу</translation>
 <translation id="8525306231823319788">Толық экран</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Cookie файлдары мына сайтта рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}other{Cookie файлдары мына сайттарда рұқсат етілді: <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Рұқсат етілген (ең дұрысы)</translation>
 <translation id="8609465669617005112">Жоғары қарай жылжыту</translation>
 <translation id="8676374126336081632">Енгізілгенді өшіру</translation>
@@ -383,6 +389,8 @@
 <translation id="8986362086234534611">Ұмыту</translation>
 <translation id="9019902583201351841">Ата-аналар басқарады</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9090268041676521955">Бұл сайт әрекетіңізді көре алатын топқа кіреді. Топты <ph name="FPS_OWNER" /> белгілеген.</translation>
+<translation id="9106233582039520022">Cookie файлдарын жою керек пе?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> браузері үшін рұқсаттарды <ph name="BEGIN_LINK" />Android параметрлерінде<ph name="END_LINK" /> қосыңыз.</translation>
 <translation id="9162462602695099906">Бұл бет қауіпті.</translation>
