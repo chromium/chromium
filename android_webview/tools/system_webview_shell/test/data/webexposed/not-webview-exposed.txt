@@ -105,12 +105,6 @@ interface HTMLInputElement : HTMLElement
 # File System Access API not supported on Android, crbug.com/1011535
 interface DataTransferItem
     method getAsFileSystemHandle
-interface StorageManager : EventTarget
-    method getDirectory
-interface FileSystemHandle
-interface FileSystemDirectoryHandle : FileSystemHandle
-interface FileSystemFileHandle : FileSystemHandle
-interface FileSystemWritableFileStream : WritableStream
 
 interface MediaDevices : EventTarget
     # MediaDevices devicechange disabled on Android, crbug.com/671461

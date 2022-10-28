@@ -1300,7 +1300,7 @@
     {
       // OPFS File System Access API.
       name: "FileSystemAccessOriginPrivate",
-      status: {"Android": "experimental", "default": "stable"},
+      status: "stable",
     },
     {
       // Whether to re-enable async interface for FileSystemSyncAccessHandle
