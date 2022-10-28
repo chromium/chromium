@@ -2435,6 +2435,7 @@
 <translation id="3197453258332670132">Коли ви натискаєте вибраний текст правою кнопкою миші або втримуєте його, відображається пов’язана з ним інформація</translation>
 <translation id="3199127022143353223">Сервери</translation>
 <translation id="3200061262156232574">У вашому кошику для покупок</translation>
+<translation id="3201237270673604992">Від Я до А</translation>
 <translation id="3201422919974259695">Тут з’являться доступні пристрої USB.</translation>
 <translation id="3202131003361292969">Шлях</translation>
 <translation id="3202173864863109533">Звук на цій вкладці вимкнено.</translation>
@@ -3758,6 +3759,7 @@
 <translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
 <translation id="4465236939126352372">Для додатка <ph name="APP_NAME" /> налаштовано ліміт часу (<ph name="TIME" />)</translation>
+<translation id="4465649939134800363">Параметри сортування</translation>
 <translation id="4466839823729730432">Переглядайте свої спогади</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469762931504673593">Сайт <ph name="ORIGIN" /> може змінювати файли в папці "<ph name="FOLDERNAME" />"</translation>
@@ -6273,6 +6275,7 @@
 <translation id="6843264316370513305">Налагодження мережі</translation>
 <translation id="6843423766595476978">Команду "Ok Google" налаштовано</translation>
 <translation id="6845038076637626672">Відкрити в розгорнутому вигляді</translation>
+<translation id="6845231585063669905">Від А до Я</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" хоче роздрукувати файл "<ph name="FILE_NAME" />" на принтері <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Щоб продовжити, звільніть місце</translation>
 <translation id="6848388270925200958">Зараз у вас є кілька карток, які можна використовувати лише на цьому пристрої</translation>
@@ -7427,6 +7430,7 @@
 <translation id="7939073735115504773">Натисніть значок цього розширення, щоб воно могло переглядати й редагувати сайт <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Керувати сертифікатами на пристрої</translation>
 <translation id="7939412583708276221">Усе ж зберегти</translation>
+<translation id="7940265372707990269">Порядок сортування: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Готовність до використання телефона як модема:</translation>
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7943368935008348579">Завантажувати файли PDF</translation>

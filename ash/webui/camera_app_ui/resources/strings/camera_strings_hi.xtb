@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1057925581724305206">फ़ुल एचडी (1080 पिक्सल)</translation>
 <translation id="1076394037877376434">पेज <ph name="PAGE_NUMBER" /> मिटाएं</translation>
 <translation id="1113173431709655881">कैमरा मोड</translation>
 <translation id="1153190633558910465">'ग्रिड' बटन बंद कर दिया गया है</translation>
@@ -21,6 +22,7 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">एचडी (720 पिक्सल)</translation>
 <translation id="1664224225747386870">कुछ भी रिकॉर्ड नहीं हुआ</translation>
 <translation id="1838104802459806957">ऊपर झुकाएं</translation>
 <translation id="1843105061469674856">अतिरिक्त पेज को स्कैन करें</translation>
@@ -95,6 +97,7 @@
 <translation id="4705093842003735294">फ़ुल रिज़ॉल्यूशन</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">मल्टीस्ट्रीम वीडियो रिकॉर्डिंग</translation>
+<translation id="4984613436295737187">क्वाड एचडी (1440 पिक्सल)</translation>
 <translation id="5034763830503483128">फ़ोटो का आसपेक्ट रेशियो</translation>
 <translation id="5057360777601936059">फ़िलहाल आपका कैमरा उपलब्ध नहीं है.
         कृपया देखें कि कैमरा ठीक तरह से कनेक्ट है या नहीं.</translation>
@@ -103,6 +106,7 @@
 <translation id="5266635337630551423">दस्तावेज़ का सबसे ऊपर वाला बायां कोना</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5320594929574852403">बाईं ओर जा रहा है</translation>
+<translation id="5374917190292010970">4K (2160 पिक्सल)</translation>
 <translation id="5444515100983837161">दस्तावेज़ के सभी कोने फ़्रेम के अंदर रखें. दस्तावेज़ और बैकग्राउंड का रंग अलग-अलग होने पर स्कैन बेहतर होता है.</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> को स्कैन किया जा रहा है</translation>
 <translation id="5671277269877808209">वर्ग</translation>

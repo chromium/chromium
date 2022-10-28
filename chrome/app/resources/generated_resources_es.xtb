@@ -2418,6 +2418,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3197453258332670132">Si haces clic con el botón derecho en el texto seleccionado o lo mantienes pulsado se te mostrará información sobre él</translation>
 <translation id="3199127022143353223">Servidores</translation>
 <translation id="3200061262156232574">En tu carrito de la compra</translation>
+<translation id="3201237270673604992">De la Z a la A</translation>
 <translation id="3201422919974259695">Los dispositivos USB disponibles se mostrarán aquí.</translation>
 <translation id="3202131003361292969">Ruta</translation>
 <translation id="3202173864863109533">El audio de esta pestaña se está silenciando.</translation>
@@ -3740,6 +3741,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4460014764210899310">Sin agrupar</translation>
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
 <translation id="4465236939126352372">Se ha definido un límite de tiempo de <ph name="TIME" /> para <ph name="APP_NAME" /></translation>
+<translation id="4465649939134800363">Opciones de orden</translation>
 <translation id="4466839823729730432">Consulta tus recuerdos aquí</translation>
 <translation id="4469324811108161144">Las notas pueden guardar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> puede editar los archivos que haya en <ph name="FOLDERNAME" /></translation>
@@ -6251,6 +6253,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6843264316370513305">Depuración de red</translation>
 <translation id="6843423766595476978">Ok Google ya se ha configurado</translation>
 <translation id="6845038076637626672">Abrir de forma maximizada</translation>
+<translation id="6845231585063669905">De la A a la Z</translation>
 <translation id="6846178040388691741"><ph name="EXTENSION_NAME" /> quiere imprimir <ph name="FILE_NAME" /> en <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Libera espacio para continuar</translation>
 <translation id="6848388270925200958">Tienes algunas tarjetas que solo se pueden utilizar en este dispositivo</translation>
@@ -7405,6 +7408,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7939073735115504773">Haz clic en el icono de esta extensión para leer y modificar <ph name="HOST" /></translation>
 <translation id="7939328347457537652">Gestionar los certificados del dispositivo</translation>
 <translation id="7939412583708276221">Mantener de todos modos</translation>
+<translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación de la conexión compartida:</translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7943368935008348579">Descargar archivos PDF</translation>

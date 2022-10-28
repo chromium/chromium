@@ -5139,6 +5139,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5799508265798272974">Virtual Linux Cihazı: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Təyinat faylı sonuncu endirmədən sonra ya kəsilib, ya da silinib.</translation>
 <translation id="5800351251499368110">Yan paneldə axtarışı bağlayın. Axtarış yan paneldə açıqdır.</translation>
+<translation id="5801051031414037185">Telefonu ayarlayın</translation>
 <translation id="5801568494490449797">Seçimlər</translation>
 <translation id="5804241973901381774">İcazələr</translation>
 <translation id="5805268472388605531">Vurğu işarələrini və xüsusi simvolları görmək üçün klaviatura düymələrini basıb saxlayın</translation>
@@ -5428,6 +5429,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> tətbiqinə bu cihazda icazə verilmir. Administratorunuz ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="6073903501322152803">Əlçatımlılıq funksiyaları əlavə edin</translation>
+<translation id="6075075631258766703">Telefonu doğrulayın</translation>
 <translation id="6075731018162044558">Sistem uzunmüddətli API giriş nişanını bu cihazdan əldə edə bilmədi.</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> adlı cihaz ilə datanı mübadilə edin</translation>
 <translation id="6076175485108489240">Məkandan istifadə edin. Tətbiq və xidmətlərə cihaz məkanından istifadə etməsi üçün məkan icazəsi verin. Google məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək üçün anonim yolla məkan datasını vaxtaşırı əldə edə və ondan istifadə edə bilər. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>

@@ -72,6 +72,7 @@
 <translation id="1067048845568873861">निर्मित</translation>
 <translation id="1067661089446014701">ज़्यादा सुरक्षा के लिए, अपने Google खाते में पासवर्ड सेव करने से पहले, आपके पास उन्हें अपने डिवाइस पर एन्क्रिप्ट (सुरक्षित) करने की सुविधा भी मौजूद है</translation>
 <translation id="1067922213147265141">Google की दूसरी सेवाएंं</translation>
+<translation id="1069104208554708737">यह पासकी सिर्फ़ इस डिवाइस पर सेव की जाएगी</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> नाम की ई-सिम प्रोफ़ाइल को हटाएं</translation>
 <translation id="1069814191880976658">कोई दूसरी स्क्रीन चुनें</translation>
 <translation id="1070377999570795893">आपके कंप्‍यूटर पर किसी अन्‍य प्रोग्राम ने ऐसा एक्‍सटेंशन जोड़ा है जो Chrome के काम करने के तरीके को बदल सकता है.
@@ -351,6 +352,7 @@
 <translation id="1324106254079708331">ऐसे व्यक्तिगत Google खातों की सुरक्षा करता है जिन पर निशाना बनाकर हमला करने का जोखिम होता है</translation>
 <translation id="1327272175893960498">Kerberos के टिकट</translation>
 <translation id="1327495825214193325">ADB डीबग करने की सुविधा चालू करने के लिए, इस <ph name="DEVICE_TYPE" /> को रीस्टार्ट करना ज़रूरी है. इस सुविधा को बंद करने के लिए, डिवाइस को फ़ैक्ट्री सेटिंग पर रीसेट करना ज़रूरी है.</translation>
+<translation id="1327527584824210101">अपनी पासकी इस्तेमाल करें</translation>
 <translation id="1327794256477341646">जिन सुविधाओं के लिए जगह की जानकारी की ज़रूरत होती है वे काम नहीं करेंगी</translation>
 <translation id="1331977651797684645">यह मैं ही था/थी.</translation>
 <translation id="1333489022424033687"><ph name="ORIGIN" /> पर मौजूद कुछ सुविधाएं तब तक काम नहीं करेंगी, जब तक आप उस डेटा को नहीं मिटाते जिसे दूसरी साइटों ने आपके डिवाइस पर सेव किया हुआ है</translation>
@@ -411,6 +413,7 @@
 <translation id="139013308650923562">साइटों को आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति है</translation>
 <translation id="1390548061267426325">नियमित टैब के रूप में खोलें</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> को <ph name="PRINTER_NAME" /> प्रिंट करने की अनुमति नहीं है. कृपया अपने एडमिन से संपर्क करें.</translation>
+<translation id="1392047138650695757">उपयोगकर्ता डिक्शनरी</translation>
 <translation id="1393283411312835250">सूरज और बादल</translation>
 <translation id="1395730723686586365">अपडेटर प्रारंभ हुआ</translation>
 <translation id="1395832189806039783">कीबोर्ड फ़ोकस की मदद से, आइटम हाइलाइट करें</translation>
@@ -1538,6 +1541,7 @@
 <translation id="2356070529366658676">पूछें</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" /> हटाएं</translation>
 <translation id="2358561147588818967">साइटें JavaScript का इस्तेमाल कर सकती हैं</translation>
+<translation id="2358703245148663432">कोई और डिवाइस</translation>
 <translation id="2358777858338503863"><ph name="ORIGIN" /> पर अनुमति देने के लिए क्लिक करें:</translation>
 <translation id="2359071692152028734">हो सकता है कि Linux ऐप्लिकेशन काम न करें.</translation>
 <translation id="2359345697448000899">टूल मेन्यू में 'एक्सटेंशन' पर क्लिक करके अपने एक्सटेंशन मैनेज करें.</translation>
@@ -1899,6 +1903,7 @@
 <translation id="271033894570825754">नया</translation>
 <translation id="2711073837061989559">ट्रायल</translation>
 <translation id="2712173769900027643">अनुमति मांगें</translation>
+<translation id="2712207122921938368">किसी दूसरे डिवाइस पर पासकी सेट करें</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
@@ -2410,6 +2415,7 @@
 <translation id="3182749001423093222">वर्तनी जांच</translation>
 <translation id="3183139917765991655">प्रोफ़ाइल आयातकर्ता</translation>
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
+<translation id="3183613134231754987">यह पासकी सिर्फ़ Windows Hello में सेव की जाएगी. सभी गुप्त विंडो बंद करने के बाद, यह पासकी इस डिवाइस पर सेव रहेगी.</translation>
 <translation id="3183944777708523606">मॉनिटर की डिसप्ले सेटिंग</translation>
 <translation id="3184536091884214176">CUPS प्रिंटर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{इस ऐप्लिकेशन को ब्लॉक किया गया है}one{इस ऐप्लिकेशन को ब्लॉक किया गया है}other{कुछ ऐप्लिकेशन ब्लॉक किए गए हैं}}</translation>
@@ -2897,6 +2903,7 @@
 <translation id="3654045516529121250">अपनी सुलभता सेटिंग पढ़ें</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{उसे एक फ़ाइल की स्‍थायी एक्सेस मिली हुई है.}one{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}other{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}}</translation>
 <translation id="3658871634334445293">TrackPoint ऐक्सेलरेशन</translation>
+<translation id="3659550105763988702"><ph name="APP_NAME" /> के लिए अपनी पासकी इस्तेमाल करें</translation>
 <translation id="3659929705630080526">आपने कई बार गलत ऐक्सेस कोड डाला है. बाद में कोशिश करें</translation>
 <translation id="3660234220361471169">अविश्वसनीय</translation>
 <translation id="3664511988987167893">एक्सटेंशन आइकॉन</translation>
@@ -3171,6 +3178,7 @@
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> इनके लिए अनुमति चाहता है: <ph name="FIRST_PERMISSION" /> और <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">कीबोर्ड चुनें</translation>
 <translation id="3900966090527141178">पासवर्ड निर्यात करें</translation>
+<translation id="3902789559055749153"><ph name="APP_NAME" /> के लिए पासकी सेट करने का तरीका चुनें</translation>
 <translation id="3903187154317825986">पहले से मौजूद कीबोर्ड</translation>
 <translation id="3904326018476041253">जगह की जानकारी</translation>
 <translation id="3904849010307028014">किसी साइट के साथ हुए आपके इंटरैक्शन के आधार पर, वह साइट आपके ब्राउज़र को ट्रस्ट टोकन जारी कर सकती है. इस इंटरैक्शन में किसी खाते में नियमित रूप से साइन इन करने जैसी गतिविधियां शामिल होती हैं. इसके बाद, दूसरी साइटों पर जाने पर, अगर वे साइटें आपको जारी एक मान्य ट्रस्ट टोकन का पता लगा लेती हैं, तो इस बात की ज़्यादा उम्मीद होती है कि आपको एक व्यक्ति माना जाएगा, न कि बॉट.</translation>
@@ -3499,6 +3507,7 @@
 <translation id="4218081191298393750">इस टैब को म्यूट करने के लिए, स्पीकर के आइकॉन पर क्लिक करें</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">सेटअप पूरा करने के दौरान कुछ गड़बड़ी हुई.</translation>
+<translation id="4223845867739585293">पासकी सेट करें</translation>
 <translation id="4225397296022057997">सभी साइट पर</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}one{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}other{कुछ एक्सटेंशन के इस्तेमाल की अनुमति नहीं है}}</translation>
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -4143,6 +4152,7 @@
 <translation id="4838907349371614303">पासवर्ड अपडेट किया गया</translation>
 <translation id="4838958829619609362">अनुवाद के लिए चुनने की सुविधा, <ph name="LANGUAGE" /> में उपलब्ध नहीं है</translation>
 <translation id="4839303808932127586">इस रूप में वीडियो स&amp;हेजें...</translation>
+<translation id="4839910546484524995">अपने डिवाइस की जांच करें</translation>
 <translation id="4840096453115567876">क्या आपको फिर भी गुप्त मोड छोड़ना है?</translation>
 <translation id="4841741146571978176">ज़रूरी वर्चुअल मशीन नहीं है. जारी रखने के लिए, कृपया <ph name="VM_TYPE" /> को सेट अप करें</translation>
 <translation id="4842976633412754305">यह पृष्‍ठ अप्रमाणीकृत स्रोतों से स्‍क्रिप्‍ट लोड करने का प्रयास कर रहा है.</translation>
@@ -5066,6 +5076,7 @@
 <translation id="5729712731028706266">&amp;देखें</translation>
 <translation id="5731247495086897348">चिप&amp;काएं और जाएं</translation>
 <translation id="5732392974455271431">आपके अभिभावक इसे आपके लिए अनवरोधित कर सकते हैं</translation>
+<translation id="5733109311583381874">उपयोगकर्ता डिक्शनरी में अपने शब्द जोड़ें, ताकि उम्मीदवारों को आसानी से ग्राहकों में बदला जा सके.</translation>
 <translation id="5733866499231170760">अमान्य आईडी. आपने जिस फ़ॉर्मैट में आईडी डाला है वह गलत है. यह पक्का करने के लिए कि आपने आईडी को सही फ़ॉर्मैट में डाला है, आपको भेजे गए निर्देश देखें. अगर फिर भी यह समस्या हल नहीं होती, तो इस फ़ील्ड को खाली छोड़ें और इंस्टॉल करना जारी रखें.</translation>
 <translation id="5734362860645681824">संचार</translation>
 <translation id="5734697361979786483">फ़ाइल शेयर जोड़ें</translation>
@@ -5177,6 +5188,7 @@
 <translation id="583431638776747">साइट को ऐक्सेस नहीं किया जा सका</translation>
 <translation id="5834581999798853053">करीब <ph name="TIME" /> मिनट शेष हैं</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - कैमरा या माइक्रोफ़ोन रिकॉर्डिंग</translation>
+<translation id="5835625581856809102">उस डिवाइस पर यह क्यूआर कोड स्कैन करें जिसके लिए आपको <ph name="APP_NAME" /> की पासकी बनानी है</translation>
 <translation id="583673505367439042">साइटें आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती हैं</translation>
 <translation id="5836999627049108525">वह भाषा जिससे अनुवाद करना है</translation>
 <translation id="583756221537636748">केस</translation>
@@ -5418,6 +5430,7 @@
 <translation id="6059276912018042191">Chrome पर हाल ही में खोले गए टैब</translation>
 <translation id="6059652578941944813">प्रमाणपत्र पदानुक्रम</translation>
 <translation id="6059925163896151826">USB डिवाइस</translation>
+<translation id="6061408389284235459"><ph name="DEVICE_NAME" /> को सूचना भेजी गई</translation>
 <translation id="6063284707309177505">QR कोड बनाएं</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> किसी मिलती-जुलती आवाज़ या रिकॉर्डिंग से भी <ph name="SUPERVISED_USER_NAME" /> के निजी खोज नतीजे ऐक्सेस किए जा सकते हैं. बैटरी बचाने के लिए, आप <ph name="SUPERVISED_USER_NAME" /> की Assistant सेटिंग में "Ok Google" सिर्फ़ तब चालू रखना चुन सकते हैं, जब डिवाइस किसी पावर सोर्स से कनेक्ट हो.</translation>
 <translation id="6064217302520318294">स्क्रीन लॉक</translation>
@@ -5546,6 +5559,7 @@
 <translation id="6178664161104547336">किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6178682841350631965">आपने साइन इन करने के लिए जो डेटा डाला है, वह अपडेट हो गया</translation>
 <translation id="6180510783007738939">लाइन खींचने का टूल</translation>
+<translation id="6180550893222597997">आपको <ph name="APP_NAME" /> के लिए किस पासकी का इस्तेमाल करना है?</translation>
 <translation id="6181431612547969857">डाउनलोड करना ब्लॉक किया गया</translation>
 <translation id="6184099524311454384">टैब खोजें</translation>
 <translation id="6185132558746749656">डिवाइस स्थान</translation>
@@ -5985,6 +5999,7 @@
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6597017209724497268">नमूने</translation>
 <translation id="6597331566371766302">आपके एडमिन ने इन एक्सटेंशन को ब्लॉक किया है:</translation>
+<translation id="6601262427770154296">उपयोगकर्ता डिक्शनरी मैनेज करें</translation>
 <translation id="6601612474695404578">कुछ साइटें अपने पेज लोड करने के लिए, तीसरे पक्ष की कुकी का इस्तेमाल करती हैं. अगर कोई साइट काम नहीं कर रही है, तो आप कुकी की अनुमति दे सकते हैं.</translation>
 <translation id="6602937173026466876">अपने प्रिंटर ऐक्सेस करें</translation>
 <translation id="6602956230557165253">नेविगेट करने के लिए बाईं और दाईं 'तीर का निशान' वाली कुंजियों का इस्तेमाल करें.</translation>
@@ -6352,6 +6367,7 @@
 <translation id="6943060957016121200">इंस्टैंट टेदरिंग चालू करें</translation>
 <translation id="6943176775188458830">प्रिंट करना रोकें</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" /> से डिसकनेक्ट किया गया</translation>
+<translation id="6944708469742828051">यह पासकी सिर्फ़ Windows Hello में सेव की जाएगी</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="694592694773692225">इस पेज पर रीडायरेक्ट ब्लॉक किया गया.</translation>
 <translation id="6947015141909171112">आपको रेसिपी के सुझाव दिखाए जा रहे हैं. ये सुझाव, Search पर रेसिपी से जुड़ी आपकी हाल ही की गतिविधि के आधार पर दिखाए जाते हैं.
@@ -6605,6 +6621,7 @@
 <translation id="7193051357671784796">यह ऐप्लिकेशन आपके संगठन ने जोड़ा था. ऐप्लिकेशन का इंस्टॉलेशन पूरा करने के लिए इसे रीस्टार्ट करें.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> के लिए कोई पासवर्ड सेव नहीं किया गया है</translation>
 <translation id="7194873994243265344">आपके संगठन ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि इसे एन्क्रिप्ट (सुरक्षित) किया गया है. फ़ाइल के मालिक को इसे डिक्रिप्ट करने के लिए कहें.</translation>
+<translation id="7196272782924897510">क्या किसी अन्य डिवाइस से पासकी इस्तेमाल करनी है?</translation>
 <translation id="7196913789568937443">'Google डिस्क' में बैक अप लें. किसी भी समय अपना डेटा आसानी से बहाल करें या डिवाइस बदलें. आपके बैकअप में ऐप्लिकेशन डेटा शामिल होता है. आपके बैकअप आपके Google खाते के पासवर्ड से सुरक्षित करके Google पर अपलोड किए जाते हैं. <ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">हर बार जब भी ब्राउज़ करें, 'Google सर्च' और Google स्मार्ट पाएं</translation>
 <translation id="719791532916917144">कीबोर्ड शॉर्टकट</translation>
@@ -7105,6 +7122,7 @@
 <translation id="7670483791111801022">सबटाइटल</translation>
 <translation id="7671130400130574146">सिस्टम शीर्षक बार और बॉर्डर का उपयोग करें</translation>
 <translation id="767127784612208024">रीसेट की पुष्टि करने के लिए छुएं</translation>
+<translation id="7672504401554182757">चुनें कि <ph name="APP_NAME" /> के लिए किस डिवाइस पर पासकी मौजूद है</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> में.</translation>
 <translation id="7674416868315480713">Linux में फ़ॉरवर्ड किए जा रहे सभी पोर्ट बंद करें</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> ऐप्लिकेशन</translation>
@@ -7214,6 +7232,7 @@
 <translation id="7766807826975222231">एक झलक देखें</translation>
 <translation id="7766838926148951335">अनुमतियां स्वीकार करें</translation>
 <translation id="7767554953520855281">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट नहीं दिखता</translation>
+<translation id="7767972280546034736"><ph name="APP_NAME" /> के लिए पासकी सेट करें</translation>
 <translation id="7768507955883790804">जब आप साइटों पर जाते हैं, तो वे अपने-आप इस सेटिंग को फ़ॉलो करती हैं</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> के अंदर फ़ाइलें देख पाएंगे</translation>
 <translation id="7768770796815395237">बदलें</translation>
@@ -7702,6 +7721,7 @@
 <translation id="820568752112382238">सबसे ज़्यादा देखी गई साइटें</translation>
 <translation id="8206745257863499010">ब्‍लुसी</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
+<translation id="8207404892907560325">कोई पासकी चुनें</translation>
 <translation id="8208188204689616705">ये साइटें <ph name="FPS_OWNER" /> के तय किए गए ग्रुप में शामिल हैं. किसी ग्रुप में शामिल साइटों पर, ग्रुप में की गई आपकी गतिविधि को देखा जा सकता है.</translation>
 <translation id="8208216423136871611">न सेव करें</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
@@ -7877,6 +7897,7 @@
 <translation id="8376137163494131156">हमें बताएं कि Google Cast में क्या हो रहा है.</translation>
 <translation id="8376384591331888629">इस साइट पर मौजूद तीसरे पक्ष की कुकी शामिल करें</translation>
 <translation id="8376451933628734023">अगर यह वेब ऐप्लिकेशन आपको गुमराह करने की कोशिश कर रहा है कि यह एक अलग ऐप्लिकेशन है, तो इसे अनइंस्टॉल करें.</translation>
+<translation id="8377625247046155446">यह पासकी सिर्फ़ इस डिवाइस पर सेव की जाएगी. सभी गुप्त विंडो बंद करने के बाद, यह पासकी इस डिवाइस पर सेव रहेगी.</translation>
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>
 <translation id="8379156816349755485">साइन इन करने पर, पुष्टि करने वाला खास टोकन सेव किया जाएगा. इस टोकन का इस्तेमाल, आने वाले समय में ऐसे डाउनलोड के लिए किया जाएगा जो सभी शर्तों को पूरा करते हैं.</translation>
 <translation id="8379878387931047019">इस डिवाइस पर इस तरह की 'सुरक्षा चाबी' काम नहीं करती है जिसका इस वेबसाइट में अनुरोध किया गया है</translation>
@@ -8712,6 +8733,7 @@
       <ph name="LIST_ITEM" />Chrome कनेक्टिविटी डाइग्नोस्टिक्स टूल चलाएं
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">पिक्चर में पिक्चर</translation>
+<translation id="9166253503936244008">यह क्यूआर कोड उस डिवाइस पर स्कैन करें जिस पर <ph name="APP_NAME" /> के लिए इस्तेमाल की जाने वाली पासकी मौजूद है</translation>
 <translation id="9167063903968449027">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="9167450455589251456">इस प्रोफ़ाइल से वीएम सॉफ़्टवेयर इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="9168436347345867845">बाद में करें</translation>

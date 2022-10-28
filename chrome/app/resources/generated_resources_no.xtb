@@ -5148,6 +5148,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5799508265798272974">Virtuell Linux-maskin: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Målfilen har blitt komprimert eller fjernet siden siste nedlasting</translation>
 <translation id="5800351251499368110">Lukk søket i sidepanelet. Søket er åpent i sidepanelet.</translation>
+<translation id="5801051031414037185">Konfigurer telefonen</translation>
 <translation id="5801568494490449797">Innstillinger</translation>
 <translation id="5804241973901381774">Tillatelser</translation>
 <translation id="5805268472388605531">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn</translation>
@@ -5439,6 +5440,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> er ikke tillatt på denne enheten. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
 <translation id="6073903501322152803">Legg til tilgjengelighetsfunksjoner</translation>
+<translation id="6075075631258766703">Bekreft telefonen</translation>
 <translation id="6075731018162044558">Beklager. Systemet kunne ikke hente noe langvarig API-tilgangstoken for denne enheten.</translation>
 <translation id="6075907793831890935">utveksle data med enheten <ph name="HOSTNAME" />.</translation>
 <translation id="6076175485108489240">Bruk posisjon. Tillat at apper og tjenester med posisjonstillatelse bruker posisjonen til enheten din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene til å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester på en anonym måte. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>

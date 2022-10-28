@@ -2421,6 +2421,7 @@
 <translation id="3197453258332670132">දකුණු-ක්ලික් කිරීමකින් හෝ දිගු එබුමකින්, ඔබගේ පෙළ තේරීම සඳහා අදාළ තතු පෙන්වන්න</translation>
 <translation id="3199127022143353223">සේවාදායක</translation>
 <translation id="3200061262156232574">ඔබගේ සාප්පු කරත්තය තුළ</translation>
+<translation id="3201237270673604992">Z සිට A</translation>
 <translation id="3201422919974259695">ලද හැකි USB උපාංග මෙහි දිස් වෙති.</translation>
 <translation id="3202131003361292969">පෙත</translation>
 <translation id="3202173864863109533">මෙම ටැබයේ ශ්‍රව්‍යයන් නිහඬ කර ඇත.</translation>
@@ -3745,6 +3746,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4460014764210899310">කණ්ඩායම් නොකරන්න</translation>
 <translation id="4462159676511157176">රුචි නාම සේවාදායක</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> සඳහා සකසන ලද වේලා සීමාව <ph name="TIME" /></translation>
+<translation id="4465649939134800363">අනුපිළිවෙළට සැකසීමේ විකල්ප</translation>
 <translation id="4466839823729730432">මෙහි ඔබගේ මතක බලන්න</translation>
 <translation id="4469324811108161144">සටහන්වලට අනුලකුණු <ph name="CHARACTER_LIMIT" />ක් දක්වා සුරැකිය හැකිය.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> හට <ph name="FOLDERNAME" /> තුළ ඇති ගොනු සංස්කරණ කළ හැක</translation>
@@ -6257,6 +6259,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6843264316370513305">ජාල නිදොසීම</translation>
 <translation id="6843423766595476978">OK Google සියල්ල සකසා ඇත</translation>
 <translation id="6845038076637626672">විශාලම කර විවෘත කරන්න</translation>
+<translation id="6845231585063669905">A සිට Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" හට <ph name="FILE_NAME" /> <ph name="PRINTER_NAME" /> මඟින් මුද්‍රණ කිරීමට අවශ්‍යයි.</translation>
 <translation id="6847125920277401289">ඉදිරියට යාමට ඉඩ නිදහස් කරන්න</translation>
 <translation id="6848388270925200958">මේ දැන්, ඔබට මෙම උපාංගය මත පමණක් භාවිත කළ හැකි සමහර කාඩ්පත් තිබේ</translation>
@@ -7410,6 +7413,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7939073735115504773"><ph name="HOST" /> කියවීමට සහ වෙනස් කිරීමට මෙම දිගුවේ නිරූපකය ක්ලික් කරන්න</translation>
 <translation id="7939328347457537652">උපාංග සහතික කළමනාකරණය කරන්න</translation>
 <translation id="7939412583708276221">කෙසේ වුවත් තබා ගන්න</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> අනුව පිළිවෙලට සකසන්න</translation>
 <translation id="7941179291434537290">ටෙදරින් සූදානම:</translation>
 <translation id="7942349550061667556">රතු</translation>
 <translation id="7943368935008348579">PDF බාගන්න</translation>

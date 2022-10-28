@@ -2408,6 +2408,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3197453258332670132">Wenn du rechts klickst oder lange drückst, werden verknüpfte Informationen zum ausgewählten Text angezeigt</translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3200061262156232574">In meinem Einkaufswagen</translation>
+<translation id="3201237270673604992">Z bis A</translation>
 <translation id="3201422919974259695">Verfügbare USB-Geräte werden hier angezeigt.</translation>
 <translation id="3202131003361292969">Pfad</translation>
 <translation id="3202173864863109533">Der Ton dieses Tabs ist stummgeschaltet.</translation>
@@ -3728,6 +3729,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4460014764210899310">Gruppierung aufheben</translation>
 <translation id="4462159676511157176">Benutzerdefinierte Nameserver</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> wurde als Zeitbeschränkung für <ph name="APP_NAME" /> festgelegt</translation>
+<translation id="4465649939134800363">Sortierungsoptionen</translation>
 <translation id="4466839823729730432">Deine Erinnerungen hier ansehen</translation>
 <translation id="4469324811108161144">Die Notiz kann bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kann Dateien in "<ph name="FOLDERNAME" />" bearbeiten</translation>
@@ -6230,6 +6232,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6843264316370513305">Netzwerk-Fehlerbehebung</translation>
 <translation id="6843423766595476978">"Ok Google" ist eingerichtet</translation>
 <translation id="6845038076637626672">Maximiert öffnen</translation>
+<translation id="6845231585063669905">A bis Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" möchte die Datei "<ph name="FILE_NAME" />" mit <ph name="PRINTER_NAME" /> ausdrucken.</translation>
 <translation id="6847125920277401289">Zum Fortfahren Speicherplatz freigeben</translation>
 <translation id="6848388270925200958">Zurzeit können einige deiner Karten nur auf diesem Gerät verwendet werden</translation>
@@ -7380,6 +7383,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7939073735115504773">Klicke auf das Symbol dieser Erweiterung, um das Lesen und Ändern von <ph name="HOST" /> zu erlauben</translation>
 <translation id="7939328347457537652">Gerätezertifikate verwalten</translation>
 <translation id="7939412583708276221">Trotzdem beibehalten</translation>
+<translation id="7940265372707990269">Sortieren nach: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering-Bereitschaft:</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7943368935008348579">PDFs herunterladen</translation>

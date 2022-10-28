@@ -2415,6 +2415,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3197453258332670132">Sağ tıklama veya uzun basma ile seçiminizle ilgili bilgileri gösterin</translation>
 <translation id="3199127022143353223">Sunucular</translation>
 <translation id="3200061262156232574">Alışveriş sepetinizdekiler</translation>
+<translation id="3201237270673604992">Z'den A'ya</translation>
 <translation id="3201422919974259695">Kullanılabilir USB cihazlar burada görünür.</translation>
 <translation id="3202131003361292969">Yol</translation>
 <translation id="3202173864863109533">Bu sekmenin sesi kapatılıyor.</translation>
@@ -3667,6 +3668,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Tümünü &amp;aç}=1{Yer işaretini &amp;aç}other{Tümünü &amp;aç ({COUNT})}}</translation>
 <translation id="4397372003838952832">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasına kaydedilir.</translation>
+<translation id="4397844455100743910">Erişim istekleri hakkında daha fazla bilgi edinin.</translation>
 <translation id="439817266247065935">Cihazınız düzgün bir şekilde kapatılmadı. Linux uygulamalarını kullanmak için Linux'u yeniden başlatın.</translation>
 <translation id="4400367121200150367">Şifreleri hiçbir zaman kaydedilmeyecek siteler burada görünür</translation>
 <translation id="4400632832271803360">Üst satırdaki tuşların davranışını değiştirmek için Başlatıcı tuşunu basılı tutun</translation>
@@ -3738,6 +3740,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4460014764210899310">Grubu Çöz</translation>
 <translation id="4462159676511157176">Özel ad sunucuları</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> için <ph name="TIME" /> süreli zaman sınırı ayarla</translation>
+<translation id="4465649939134800363">Sıralama Seçenekleri</translation>
 <translation id="4466839823729730432">Anılarınızı burada görebilirsiniz</translation>
 <translation id="4469324811108161144">En fazla <ph name="CHARACTER_LIMIT" /> karakterden oluşan notlar kaydedilebilir.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> sitesi <ph name="FOLDERNAME" /> klasöründeki dosyaları düzenleyebilir</translation>
@@ -4033,6 +4036,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4733793249294335256">Konum</translation>
 <translation id="473546211690256853">Bu hesap <ph name="DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="4735506354605317060">İşaretçiyi daire içine al</translation>
+<translation id="4735793370946506039">Gelişmiş Güvenli Tarama hakkında daha fazla bilgi edinin.</translation>
 <translation id="4735803855089279419">Sistem, bu cihaz için cihaz tanıtıcılarını belirleyemedi.</translation>
 <translation id="4736292055110123391">Yer işaretleriniz, şifreleriniz, geçmişiniz ve daha fazlasını tüm cihazlarınızda senkronize edin</translation>
 <translation id="473775607612524610">Güncelle</translation>
@@ -4061,6 +4065,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4765524037138975789">{MONTHS,plural, =1{Bu cihaz 1 ay boyunca kaydedilecek olup bir dahaki sefere kod kullanmadan bağlanabilirsiniz. Bu ayar, yöneticiniz tarafından yapılmıştır.}other{Bu cihaz {MONTHS} ay boyunca kaydedilecek olup bir dahaki sefere kod kullanmadan bağlanabilirsiniz. Bu ayar, yöneticiniz tarafından yapılmıştır.}}</translation>
 <translation id="4765582662863429759">Android Mesajlar'ın telefonunuzdan Chromebook'unuza kısa mesaj aktarmasını sağlar</translation>
 <translation id="4766598565665644999">Tüm uzantılar <ph name="HOST" /> sitesini okuyup değiştirebilir</translation>
+<translation id="4767427586072640478">Devre dışı bırakılan uzantılar hakkında daha fazla bilgi edinin.</translation>
 <translation id="4768332406694066911">Sizi tanımlayan şu kuruluşlardan sertifikalarınız var</translation>
 <translation id="4770119228883592393">İzin istendi, yanıtlamak için ⌘ + Option + Aşağı ok tuşlarına basın</translation>
 <translation id="4773112038801431077">Linux'u yeni sürüme geçirin</translation>
@@ -6250,6 +6255,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6843264316370513305">Ağ Hatası Ayıklama</translation>
 <translation id="6843423766595476978">Ok Google hazır</translation>
 <translation id="6845038076637626672">Ekranı Kaplayacak Şekilde Aç</translation>
+<translation id="6845231585063669905">A'dan Z'ye</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="FILE_NAME" /> dosyasını <ph name="PRINTER_NAME" /> adlı yazıcıda yazdırmak istiyor.</translation>
 <translation id="6847125920277401289">Devam etmek için yer boşaltın</translation>
 <translation id="6848388270925200958">Şu anda, yalnızca bu cihazda kullanılabilen kartlarınız var</translation>
@@ -7404,6 +7410,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7939073735115504773"><ph name="HOST" /> sitesini okuyup değiştirmesi için bu uzantının simgesini tıklayın</translation>
 <translation id="7939328347457537652">Cihaz sertifikalarını yönet</translation>
 <translation id="7939412583708276221">Korumaya devam et</translation>
+<translation id="7940265372707990269">Sıralama ölçütü: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tethering Hazırlık Durumu:</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
 <translation id="7943368935008348579">PDF'leri indir</translation>
