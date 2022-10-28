@@ -1325,6 +1325,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 }
 
 ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
+#if DCHECK_IS_ON()
+  base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
+#endif
+
   if (IsDetached()) {
     NOTREACHED();
     return ax::mojom::blink::Role::kUnknown;

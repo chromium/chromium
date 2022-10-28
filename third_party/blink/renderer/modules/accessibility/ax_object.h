@@ -259,6 +259,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
 #if DCHECK_IS_ON()
   bool is_initializing_ = false;
+  bool is_computing_role_ = false;
   mutable bool is_updating_cached_values_ = false;
 #endif
 

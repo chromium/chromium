@@ -2328,6 +2328,30 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   if (role_ == ax::mojom::blink::Role::kSvgRoot && !UnignoredChildCount())
     return ax::mojom::blink::Role::kImage;
 
+  // DPUB ARIA 1.1 deprecated doc-biblioentry and doc-endnote, but it's still
+  // possible to create these internal roles / platform mappings with a listitem
+  // (native or ARIA) inside of a doc-bibliography or doc-endnotes section.
+  if (role_ == ax::mojom::blink::Role::kListItem) {
+    AXObject* ancestor = CachedParentObject();
+    if (ancestor && ancestor->RoleValue() == ax::mojom::blink::Role::kList) {
+      // Go up to the root, or next list, checking to see if the list item is
+      // inside an endnote or bibliography section. If it is, remap the role.
+      // The remapping does not occur for list items multiple levels deep.
+      while (true) {
+        ancestor = ancestor->CachedParentObject();
+        if (!ancestor)
+          break;
+        ax::mojom::blink::Role ancestor_role = ancestor->RoleValue();
+        if (ancestor_role == ax::mojom::blink::Role::kList)
+          break;
+        if (ancestor_role == ax::mojom::blink::Role::kDocBibliography)
+          return ax::mojom::blink::Role::kDocBiblioEntry;
+        if (ancestor_role == ax::mojom::blink::Role::kDocEndnotes)
+          return ax::mojom::blink::Role::kDocEndnote;
+      }
+    }
+  }
+
   // TODO(accessibility): Consider moving the image vs. image map role logic
   // here. Currently it is implemented in AXPlatformNode subclasses and thus
   // not available to the InspectorAccessibilityAgent.
@@ -2690,6 +2714,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   last_modification_count_ = cache.ModificationCount();
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
+  DCHECK(!is_computing_role_)
+      << "Updating cached values while computing a role is dangerous as it "
+         "can lead to code that uses the AXObject before it is ready.";
   DCHECK(!is_updating_cached_values_)
       << "Reentering UpdateCachedAttributeValuesIfNeeded() on same node: "
       << GetNode();
@@ -3362,6 +3389,9 @@ bool AXObject::LastKnownIsIncludedInTreeValue() const {
 }
 
 ax::mojom::blink::Role AXObject::DetermineAccessibilityRole() {
+#if DCHECK_IS_ON()
+  base::AutoReset<bool> reentrancy_protector(&is_computing_role_, true);
+#endif
   DCHECK(!IsDetached());
 
   return NativeRoleIgnoringAria();
@@ -4530,30 +4560,6 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
   }
 
-  // DPUB ARIA 1.1 deprecated doc-biblioentry and doc-endnote, but it's still
-  // possible to create these internal roles / platform mappings with a listitem
-  // (native or ARIA) inside of a doc-bibliography or doc-endnotes section.
-  if (role == ax::mojom::blink::Role::kListItem ||
-      NativeRoleIgnoringAria() == ax::mojom::blink::Role::kListItem) {
-    AXObject* ancestor = ParentObjectUnignored();
-    if (ancestor && ancestor->RoleValue() == ax::mojom::blink::Role::kList) {
-      // Go up to the root, or next list, checking to see if the list item is
-      // inside an endnote or bibliography section. If it is, remap the role.
-      // The remapping does not occur for list items multiple levels deep.
-      while (true) {
-        ancestor = ancestor->ParentObjectUnignored();
-        if (!ancestor)
-          break;
-        ax::mojom::blink::Role ancestor_role = ancestor->RoleValue();
-        if (ancestor_role == ax::mojom::blink::Role::kList)
-          break;
-        if (ancestor_role == ax::mojom::blink::Role::kDocBibliography)
-          return ax::mojom::blink::Role::kDocBiblioEntry;
-        if (ancestor_role == ax::mojom::blink::Role::kDocEndnotes)
-          return ax::mojom::blink::Role::kDocEndnote;
-      }
-    }
-  }
   return role;
 }
 
