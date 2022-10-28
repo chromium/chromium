@@ -30,6 +30,13 @@ following the [Rule of 2](rule-of-2.md) is generally easy. (Though take note
 that certain Android classes are just Java wrappers around native code, which
 would not be considered safe by that rule.)
 
+Inbound Intents may also pose deserialization issues via the data stored in an
+Intent's extras. These issues may result in non-exploitable crashes (e.g.
+https://crbug.com/1232099), but it is also possible to have deserialization
+vulnerabilities with security implications. Always use the
+[`IntentUtils.safe*Extra()`](https://source.chromium.org/chromium/chromium/src/+/main:base/android/java/src/org/chromium/base/IntentUtils.java;l=58;drc=7f1297bacd32fe668d4c99cb8963b56aed363acc)
+family of methods to access Intent extra fields from inbound Intents.
+
 It is **fundamentally impossible** to determine the sender of an Intent, unless
 the Activity was started with
 [`startActivityForResult`](https://developer.android.com/reference/android/app/Activity#startActivityForResult(android.content.Intent,%20int)).
