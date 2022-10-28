@@ -444,6 +444,41 @@ struct PaymentsCustomerData;
 //                      offer_id in the offer_data table.
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
+//
+// contact_info         This table contains Autofill profile data synced from a
+//                      remote source.
+//
+//   guid               A guid string to uniquely identify the profile.
+//   use_count          The number of times this profile has been used to fill a
+//                      form.
+//   use_date           The date this profile was last used to fill a form, in
+//                      time_t.
+//   date_modified      The date on which this profile was last modified, in
+//                      time_t.
+//   language_code      The BCP 47 language code used to format the address for
+//                      display. For example, a JP address with "ja" language
+//                      code starts with the postal code, but a JP address with
+//                      "ja-latn" language code starts with the recipient name.
+//   label              A user-chosen and user-visible label for the profile to
+//                      help identifying the semantics of the profile. The user
+//                      can choose an arbitrary string in principle, but the
+//                      values '$HOME$' and '$WORK$' indicate a special meaning.
+//
+// contact_info_type_tokens
+//                      Contains the values for all relevant ServerFieldTypes of
+//                      a contact_info entry. At most one entry per (guid, type)
+//                      pair exists.
+//
+//  guid                The guid of the corresponding profile in contact_info.
+//  type                The ServerFieldType, represented by its integer value in
+//                      the ServerFieldType enum.
+//  value               The string value of the type.
+//  verification_status Each token has an additional validation status that
+//                      indicates if Autofill parsed the value out of an
+//                      unstructured token, or if Autofill formatted the token
+//                      from a structured subcomponent, or if the value was
+//                      observed in a form submission, or even validated by the
+//                      user in the settings.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -740,6 +775,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion104AddProductDescriptionColumn();
   bool MigrateToVersion105AddAutofillIBANTable();
   bool MigrateToVersion106RecreateAutofillIBANTable();
+  bool MigrateToVersion107AddContactInfoTables();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -853,6 +889,8 @@ class AutofillTable : public WebDatabaseTable,
   bool InitOfferDataTable();
   bool InitOfferEligibleInstrumentTable();
   bool InitOfferMerchantDomainTable();
+  bool InitContactInfoTable();
+  bool InitContactInfoTypeTokensTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };

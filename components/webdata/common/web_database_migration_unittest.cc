@@ -141,7 +141,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 106;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 107;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -945,5 +945,40 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion105ToCurrent) {
     ASSERT_NE(connection.GetSchema().find(
                   "CREATE TABLE ibans (guid VARCHAR PRIMARY KEY"),
               std::string::npos);
+  }
+}
+
+// Tests that both contact_info tables are created.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion106ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_106.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(106, VersionFromConnection(&connection));
+
+    // The contact_info tables should not exist.
+    EXPECT_FALSE(connection.DoesTableExist("contact_info"));
+    EXPECT_FALSE(connection.DoesTableExist("contact_info_types"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    // The contact_info tables should exist.
+    EXPECT_TRUE(connection.DoesTableExist("contact_info"));
+    EXPECT_TRUE(connection.DoesTableExist("contact_info_type_tokens"));
   }
 }

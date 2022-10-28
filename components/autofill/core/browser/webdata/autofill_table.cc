@@ -279,6 +279,21 @@ constexpr base::StringPiece kOfferMerchantDomainTable = "offer_merchant_domain";
 // kOfferId = "offer_id"
 constexpr base::StringPiece kMerchantDomain = "merchant_domain";
 
+constexpr base::StringPiece kContactInfoTable = "contact_info";
+// kGuid = "guid"
+// kUseCount = "use_count"
+// kUseDate = "use_date"
+// kDateModified = "date_modified"
+// kLanguageCode = "language_code"
+// kLabel = "label"
+
+constexpr base::StringPiece kContactInfoTypeTokensTable =
+    "contact_info_type_tokens";
+// kGuid = "guid"
+constexpr base::StringPiece kType = "type";
+// kValue = "value"
+constexpr base::StringPiece kVerificationStatus = "verification_status";
+
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
 //   directly and return if it was successful.
@@ -1011,7 +1026,8 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
          InitPaymentsUPIVPATable() &&
          InitServerCreditCardCloudTokenDataTable() && InitOfferDataTable() &&
-         InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable();
+         InitOfferEligibleInstrumentTable() && InitOfferMerchantDomainTable() &&
+         InitContactInfoTable() && InitContactInfoTypeTokensTable();
 }
 
 bool AutofillTable::IsSyncable() {
@@ -1090,6 +1106,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 106:
       *update_compatible_version = true;
       return MigrateToVersion106RecreateAutofillIBANTable();
+    case 107:
+      *update_compatible_version = false;
+      return MigrateToVersion107AddContactInfoTables();
   }
   return true;
 }
@@ -3083,6 +3102,25 @@ bool AutofillTable::MigrateToVersion106RecreateAutofillIBANTable() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion107AddContactInfoTables() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         CreateTable(db_, kContactInfoTable,
+                     {{kGuid, "VARCHAR PRIMARY KEY"},
+                      {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                      {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
+                      {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
+                      {kLanguageCode, "VARCHAR"},
+                      {kLabel, "VARCHAR"}}) &&
+         CreateTable(db_, kContactInfoTypeTokensTable,
+                     {{kGuid, "VARCHAR"},
+                      {kType, "INTEGER"},
+                      {kValue, "VARCHAR"},
+                      {kVerificationStatus, "INTEGER DEFAULT 0"}},
+                     /*composite_primary_key=*/{kGuid, kType}) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3541,6 +3579,25 @@ bool AutofillTable::InitOfferMerchantDomainTable() {
   return CreateTableIfNotExists(
       db_, kOfferMerchantDomainTable,
       {{kOfferId, "UNSIGNED LONG"}, {kMerchantDomain, "VARCHAR"}});
+}
+
+bool AutofillTable::InitContactInfoTable() {
+  return CreateTableIfNotExists(db_, kContactInfoTable,
+                                {{kGuid, "VARCHAR PRIMARY KEY"},
+                                 {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+                                 {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
+                                 {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
+                                 {kLanguageCode, "VARCHAR"},
+                                 {kLabel, "VARCHAR"}});
+}
+
+bool AutofillTable::InitContactInfoTypeTokensTable() {
+  return CreateTableIfNotExists(db_, kContactInfoTypeTokensTable,
+                                {{kGuid, "VARCHAR"},
+                                 {kType, "INTEGER"},
+                                 {kValue, "VARCHAR"},
+                                 {kVerificationStatus, "INTEGER DEFAULT 0"}},
+                                /*composite_primary_key=*/{kGuid, kType});
 }
 
 }  // namespace autofill
