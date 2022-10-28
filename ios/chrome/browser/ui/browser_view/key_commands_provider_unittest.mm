@@ -68,6 +68,31 @@ class KeyCommandsProviderTest : public PlatformTest {
   KeyCommandsProvider* provider_;
 };
 
+// Checks that the nextResponder is nil by default.
+TEST_F(KeyCommandsProviderTest, NextResponderUnset) {
+  EXPECT_EQ(provider_.nextResponder, nil);
+}
+
+// Checks that the nextResponder is correctly set.
+TEST_F(KeyCommandsProviderTest, NextResponderSet) {
+  UIResponder* responder = [[UIResponder alloc] init];
+
+  [provider_ respondBetweenViewController:nil andResponder:responder];
+
+  EXPECT_EQ(provider_.nextResponder, responder);
+}
+
+// Checks that nextResponder is reset to nil.
+TEST_F(KeyCommandsProviderTest, NextResponderReset) {
+  UIResponder* responder = [[UIResponder alloc] init];
+  [provider_ respondBetweenViewController:nil andResponder:responder];
+  ASSERT_EQ(provider_.nextResponder, responder);
+
+  [provider_ respondBetweenViewController:nil andResponder:nil];
+
+  EXPECT_EQ(provider_.nextResponder, nil);
+}
+
 // Checks that KeyCommandsProvider returns key commands.
 TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands) {
   EXPECT_NE(0u, provider_.keyCommands.count);
