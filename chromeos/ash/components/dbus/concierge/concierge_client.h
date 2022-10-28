@@ -279,6 +279,11 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
           callback) = 0;
 
+  virtual void GetVmLaunchAllowed(
+      const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::GetVmLaunchAllowedResponse> callback) = 0;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 

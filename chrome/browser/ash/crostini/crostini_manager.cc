@@ -999,9 +999,10 @@ void CrostiniManager::CrostiniRestarter::LogRestarterResult(
   }
 }
 
-// Unit tests need this initialized to true. In Browser tests and real life,
-// it is updated via MaybeUpdateCrostini.
+// Unit tests need these to be initialized to sensible values. In Browser tests
+// and real life, they are updated via MaybeUpdateCrostini.
 bool CrostiniManager::is_dev_kvm_present_ = true;
+bool CrostiniManager::is_vm_launch_allowed_ = true;
 
 void CrostiniManager::UpdateVmState(std::string vm_name, VmState vm_state) {
   auto vm_info = running_vms_.find(vm_name);
@@ -1308,13 +1309,18 @@ bool CrostiniManager::IsDevKvmPresent() {
   return is_dev_kvm_present_;
 }
 
+// static
+bool CrostiniManager::IsVmLaunchAllowed() {
+  return is_vm_launch_allowed_;
+}
+
 void CrostiniManager::MaybeUpdateCrostini() {
   // This is a new user session, perhaps using an old CrostiniManager.
   container_upgrade_prompt_shown_.clear();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CrostiniManager::CheckPaths),
-      base::BindOnce(&CrostiniManager::MaybeUpdateCrostiniAfterChecks,
+      base::BindOnce(&CrostiniManager::CheckConciergeAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Probe Concierge - if it's still running after an unclean shutdown, a
@@ -1341,6 +1347,45 @@ void CrostiniManager::MaybeUpdateCrostini() {
 // static
 void CrostiniManager::CheckPaths() {
   is_dev_kvm_present_ = base::PathExists(base::FilePath("/dev/kvm"));
+}
+
+void CrostiniManager::CheckConciergeAvailable() {
+  GetConciergeClient()->WaitForServiceToBeAvailable(base::BindOnce(
+      &CrostiniManager::CheckVmLaunchAllowed, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CheckVmLaunchAllowed(bool service_is_available) {
+  if (service_is_available) {
+    vm_tools::concierge::GetVmLaunchAllowedRequest request;
+    request.set_run_as_untrusted(false);
+    request.set_is_trusted_image(true);
+    request.set_has_custom_kernel_params(false);
+    GetConciergeClient()->GetVmLaunchAllowed(
+        std::move(request),
+        base::BindOnce(&CrostiniManager::OnCheckVmLaunchAllowed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  LOG(ERROR)
+      << "Couldn't contact concierge to check if untrusted VMs are allowed";
+  MaybeUpdateCrostiniAfterChecks();
+}
+
+void CrostiniManager::OnCheckVmLaunchAllowed(
+    absl::optional<vm_tools::concierge::GetVmLaunchAllowedResponse> response) {
+  // is_vm_launch_allowed_ should be set before CrostiniFeatures is used,
+  // otherwise a (possibly incorrect) default value is read.
+  if (!response) {
+    // Didn't get a reply - assume that VM launch is allowed.
+    LOG(ERROR) << "Failed to determine if VM launch is allowed";
+  } else {
+    is_vm_launch_allowed_ = response->allowed();
+    LOG_IF(WARNING, !is_vm_launch_allowed_)
+        << "VM launch not allowed: " << response->reason();
+  }
+
+  MaybeUpdateCrostiniAfterChecks();
 }
 
 void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {

@@ -394,6 +394,15 @@ void FakeConciergeClient::ListVms(
       FROM_HERE, base::BindOnce(std::move(callback), list_vms_response_));
 }
 
+void FakeConciergeClient::GetVmLaunchAllowed(
+    const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
+    chromeos::DBusMethodCallback<
+        vm_tools::concierge::GetVmLaunchAllowedResponse> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_vm_launch_allowed_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.

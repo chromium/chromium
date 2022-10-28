@@ -148,6 +148,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       chromeos::DBusMethodCallback<vm_tools::concierge::ListVmsResponse>
           callback) override;
 
+  void GetVmLaunchAllowed(
+      const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::GetVmLaunchAllowedResponse> callback) override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -306,6 +311,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response) {
     list_vms_response_ = list_vms_response;
   }
+  void set_get_vm_launch_allowed_response(
+      absl::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
+          get_vm_launch_allowed_response) {
+    get_vm_launch_allowed_response_ = get_vm_launch_allowed_response;
+  }
 
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
     send_create_disk_image_response_delay_ = delay;
@@ -410,6 +420,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   absl::optional<vm_tools::concierge::ReclaimVmMemoryResponse>
       reclaim_vm_memory_response_;
   absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response_;
+  absl::optional<vm_tools::concierge::GetVmLaunchAllowedResponse>
+      get_vm_launch_allowed_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;

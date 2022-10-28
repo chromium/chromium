@@ -275,6 +275,14 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kListVmsMethod, request, std::move(callback));
   }
 
+  void GetVmLaunchAllowed(
+      const vm_tools::concierge::GetVmLaunchAllowedRequest& request,
+      chromeos::DBusMethodCallback<concierge::GetVmLaunchAllowedResponse>
+          callback) override {
+    CallMethod(concierge::kGetVmLaunchAllowedMethod, request,
+               std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,

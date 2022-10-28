@@ -191,6 +191,12 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
     return false;
   }
 
+  if (!crostini::CrostiniManager::IsVmLaunchAllowed()) {
+    VLOG(1) << "Concierge does not allow VM to be launched.";
+    *reason = "Virtualization is not supported on this device";
+    return false;
+  }
+
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     VLOG(1) << "Crostini UI is not allowed on non-primary profiles.";
     *reason = "Crostini is only allowed in primary user sessions";
