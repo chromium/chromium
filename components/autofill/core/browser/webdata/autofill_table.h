@@ -699,11 +699,14 @@ class AutofillTable : public WebDatabaseTable,
   bool ClearAllLocalData();
 
   // Removes rows from autofill_profiles and credit_cards if they were created
-  // on or after |delete_begin| and strictly before |delete_end|.  Returns the
-  // list of deleted profile guids in |profile_guids|.  Return value is true if
-  // all rows were successfully removed.  Returns false on database error.  In
+  // on or after `delete_begin` and strictly before `delete_end`. Returns the
+  // list of deleted profile guids in `profile_guids`. Return value is true if
+  // all rows were successfully removed. Returns false on database error. In
   // that case, the output vector state is undefined, and may be partially
   // filled.
+  // TODO(crbug.com/1135188): This function is solely used to remove browsing
+  // data. Once explicit save dialogs are fully launched, it can be removed. For
+  // this reason profiles in the `contact_info` table are not considered.
   bool RemoveAutofillDataModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,
@@ -711,11 +714,13 @@ class AutofillTable : public WebDatabaseTable,
       std::vector<std::unique_ptr<CreditCard>>* credit_cards);
 
   // Removes origin URLs from the autofill_profiles and credit_cards tables if
-  // they were written on or after |delete_begin| and strictly before
-  // |delete_end|.  Returns the list of modified profiles in |profiles|.  Return
-  // value is true if all rows were successfully updated.  Returns false on
-  // database error.  In that case, the output vector state is undefined, and
+  // they were written on or after `delete_begin` and strictly before
+  // `delete_end`. Returns the list of modified profiles in `profiles`. Return
+  // value is true if all rows were successfully updated. Returns false on
+  // database error. In that case, the output vector state is undefined, and
   // may be partially filled.
+  // Profiles from the `contact_info` table are not considered, as they don't
+  // store an origin.
   bool RemoveOriginURLsModifiedBetween(
       const base::Time& delete_begin,
       const base::Time& delete_end,
