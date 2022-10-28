@@ -36,6 +36,7 @@ class OffloadingAudioEncoderTest : public testing::Test {
     mock_audio_encoder_ = mock_audio_encoder.get();
     work_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
     callback_runner_ = base::SequencedTaskRunnerHandle::Get();
+    EXPECT_CALL(*mock_audio_encoder_, DisablePostedCallbacks());
     offloading_encoder_ = std::make_unique<OffloadingAudioEncoder>(
         std::move(mock_audio_encoder), work_runner_, callback_runner_);
     EXPECT_CALL(*mock_audio_encoder_, OnDestruct()).WillOnce(Invoke([this]() {

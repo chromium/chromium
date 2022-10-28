@@ -23,6 +23,10 @@ OffloadingAudioEncoder::OffloadingAudioEncoder(
   DCHECK(work_runner_);
   DCHECK(callback_runner_);
   DCHECK_NE(callback_runner_, work_runner_);
+
+  // Tell the inner encoder not to bother wrapping callbacks into separate
+  // runner tasks and call them directly.
+  wrapped_encoder_->DisablePostedCallbacks();
 }
 
 OffloadingAudioEncoder::OffloadingAudioEncoder(

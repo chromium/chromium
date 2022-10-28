@@ -12,7 +12,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/base/encoder_status.h"
@@ -88,7 +87,7 @@ void AudioOpusEncoder::Initialize(const Options& options,
   DCHECK(output_callback);
   DCHECK(done_cb);
 
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (opus_encoder_) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
     return;
@@ -130,7 +129,7 @@ void AudioOpusEncoder::Initialize(const Options& options,
 
   opus_encoder_ = std::move(status_or_encoder).value();
 
-  output_cb_ = BindToCurrentLoop(std::move(output_callback));
+  output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_callback));
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
@@ -187,7 +186,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(done_cb);
 
-  current_done_cb_ = BindToCurrentLoop(std::move(done_cb));
+  current_done_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!opus_encoder_) {
     std::move(current_done_cb_)
         .Run(EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
@@ -212,7 +211,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
 void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK(done_cb);
 
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!opus_encoder_) {
     std::move(done_cb).Run(
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);

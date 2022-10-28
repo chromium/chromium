@@ -29,7 +29,6 @@
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_layout.h"
 #include "media/base/encoder_status.h"
 #include "media/base/timestamp_constants.h"
@@ -391,7 +390,7 @@ void MFAudioEncoder::Initialize(const Options& options,
   DCHECK(output_cb);
   base::win::AssertComInitialized();
 
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (initialized_) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
     return;
@@ -477,7 +476,7 @@ void MFAudioEncoder::Initialize(const Options& options,
       std::make_unique<AudioTimestampHelper>(options_.sample_rate);
   output_timestamp_tracker_ =
       std::make_unique<AudioTimestampHelper>(options_.sample_rate);
-  output_cb_ = BindToCurrentLoop(std::move(output_cb));
+  output_cb_ = BindCallbackToCurrentLoopIfNeeded(std::move(output_cb));
   initialized_ = true;
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
@@ -488,7 +487,7 @@ void MFAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(done_cb);
 
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
 
   if (!initialized_) {
     std::move(done_cb).Run(
@@ -518,7 +517,7 @@ void MFAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
 void MFAudioEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(done_cb);
-  done_cb = BindToCurrentLoop(std::move(done_cb));
+  done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
 
   if (!initialized_) {
     std::move(done_cb).Run(

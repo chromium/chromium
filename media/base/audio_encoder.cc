@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/bind_to_current_loop.h"
 
 namespace media {
 
@@ -38,6 +39,22 @@ AudioEncoder::AudioEncoder() {
 
 AudioEncoder::~AudioEncoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void AudioEncoder::DisablePostedCallbacks() {
+  post_callbacks_ = false;
+}
+
+AudioEncoder::OutputCB AudioEncoder::BindCallbackToCurrentLoopIfNeeded(
+    OutputCB&& callback) {
+  return post_callbacks_ ? BindToCurrentLoop(std::move(callback))
+                         : std::move(callback);
+}
+
+AudioEncoder::EncoderStatusCB AudioEncoder::BindCallbackToCurrentLoopIfNeeded(
+    EncoderStatusCB&& callback) {
+  return post_callbacks_ ? BindToCurrentLoop(std::move(callback))
+                         : std::move(callback);
 }
 
 }  // namespace media

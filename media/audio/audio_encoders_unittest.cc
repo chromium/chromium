@@ -369,6 +369,16 @@ TEST_P(AudioEncodersTest, InitializeTwice) {
   EXPECT_TRUE(called_done);
 }
 
+TEST_P(AudioEncodersTest, StopCallbackWrapping) {
+  bool called_done = false;
+  AudioEncoder::EncoderStatusCB done_cb = base::BindLambdaForTesting(
+      [&](EncoderStatus error) { called_done = true; });
+
+  encoder_->DisablePostedCallbacks();
+  encoder_->Initialize(options_, base::DoNothing(), std::move(done_cb));
+  EXPECT_TRUE(called_done);
+}
+
 TEST_P(AudioEncodersTest, EncodeWithoutInitialize) {
   bool called_done = false;
   auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
