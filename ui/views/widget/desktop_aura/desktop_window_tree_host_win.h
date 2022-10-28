@@ -290,7 +290,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // TODO(beng): Consider providing an interface to DesktopNativeWidgetAura
   //             instead of providing this route back to Widget.
-  raw_ptr<internal::NativeWidgetDelegate> native_widget_delegate_;
+  base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
 
   raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 

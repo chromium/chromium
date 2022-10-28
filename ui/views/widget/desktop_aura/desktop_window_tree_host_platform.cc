@@ -199,7 +199,7 @@ SkPath GetWindowMask(const Widget* widget) {
 DesktopWindowTreeHostPlatform::DesktopWindowTreeHostPlatform(
     internal::NativeWidgetDelegate* native_widget_delegate,
     DesktopNativeWidgetAura* desktop_native_widget_aura)
-    : native_widget_delegate_(native_widget_delegate),
+    : native_widget_delegate_(native_widget_delegate->AsWidget()->GetWeakPtr()),
       desktop_native_widget_aura_(desktop_native_widget_aura),
       window_move_client_(this) {}
 

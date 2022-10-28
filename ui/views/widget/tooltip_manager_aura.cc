@@ -18,7 +18,8 @@ namespace views {
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipManagerAura public:
 
-TooltipManagerAura::TooltipManagerAura(Widget* widget) : widget_(widget) {
+TooltipManagerAura::TooltipManagerAura(Widget* widget)
+    : widget_(widget->AsWidget()->GetWeakPtr()) {
   wm::SetTooltipText(GetWindow(), &tooltip_text_);
 }
 

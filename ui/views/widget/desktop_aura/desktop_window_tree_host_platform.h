@@ -213,7 +213,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   // Helper method that returns the display for the |window()|.
   display::Display GetDisplayNearestRootWindow() const;
 
-  const raw_ptr<internal::NativeWidgetDelegate> native_widget_delegate_;
+  const base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   bool is_active_ = false;

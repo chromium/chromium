@@ -130,7 +130,7 @@ DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
     : message_handler_(new HWNDMessageHandler(
           this,
           native_widget_delegate->AsWidget()->GetName())),
-      native_widget_delegate_(native_widget_delegate),
+      native_widget_delegate_(native_widget_delegate->AsWidget()->GetWeakPtr()),
       desktop_native_widget_aura_(desktop_native_widget_aura),
       drag_drop_client_(nullptr),
       should_animate_window_close_(false),
@@ -180,7 +180,7 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
 
   ConfigureWindowStyles(message_handler_.get(), params,
                         GetWidget()->widget_delegate(),
-                        native_widget_delegate_);
+                        native_widget_delegate_.get());
 
   HWND parent_hwnd = nullptr;
   if (params.parent && params.parent->GetHost())
