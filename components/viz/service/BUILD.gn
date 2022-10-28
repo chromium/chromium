@@ -369,6 +369,8 @@ viz_component("service") {
       "display/overlay_processor_win.h",
       "display_embedder/output_device_backing.cc",
       "display_embedder/output_device_backing.h",
+      "display_embedder/skia_output_device_dcomp.cc",
+      "display_embedder/skia_output_device_dcomp.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
       "gl/info_collection_gpu_service_impl.cc",
