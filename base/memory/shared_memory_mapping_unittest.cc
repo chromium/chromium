@@ -12,7 +12,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/ranges/algorithm.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -164,7 +163,6 @@ TEST_F(SharedMemoryMappingTest, MAYBE_TotalMappedSizeLimit) {
   // Also exclude NaCl since pointers are 32 bits on all architectures:
   // https://bugs.chromium.org/p/nativeclient/issues/detail?id=1162
 #if defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL)
-  base::HistogramTester histogram_tester;
   auto region = WritableSharedMemoryRegion::Create(1024 * 1024 * 1024);
   ASSERT_TRUE(region.IsValid());
   // The limit is 32GB of mappings on 64-bit platforms, so the final mapping
@@ -176,9 +174,6 @@ TEST_F(SharedMemoryMappingTest, MAYBE_TotalMappedSizeLimit) {
     mapping = region.Map();
     EXPECT_EQ(&mapping != &mappings.back(), mapping.IsValid());
   }
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("SharedMemory.MapBlockedForSecurity"),
-      ::testing::ElementsAre(Bucket(0, 31), Bucket(1, 1)));
 #endif  // defined(ARCH_CPU_64_BITS)
 }
 #endif  // !BUILDFLAG(IS_IOS)

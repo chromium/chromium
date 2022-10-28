@@ -15,14 +15,6 @@
 namespace base {
 namespace subtle {
 
-namespace {
-
-void RecordMappingWasBlockedHistogram(bool blocked) {
-  UmaHistogramBoolean("SharedMemory.MapBlockedForSecurity", blocked);
-}
-
-}  // namespace
-
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::CreateWritable(
     size_t size) {
@@ -66,11 +58,8 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
   // `SysInfo::VMAllocationGranularity()`. Should this accounting be done with
   // that in mind?
   if (!SharedMemorySecurityPolicy::AcquireReservationForMapping(size)) {
-    RecordMappingWasBlockedHistogram(/*blocked=*/true);
     return absl::nullopt;
   }
-
-  RecordMappingWasBlockedHistogram(/*blocked=*/false);
 
   if (!mapper)
     mapper = SharedMemoryMapper::GetDefaultInstance();

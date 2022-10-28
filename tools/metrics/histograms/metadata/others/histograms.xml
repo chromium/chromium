@@ -12679,6 +12679,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SharedMemory.MapBlockedForSecurity" enum="BooleanBlocked"
     expires_after="M85">
+  <obsolete>
+    Expired on 10/2020.
+  </obsolete>
   <owner>dcheng@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
