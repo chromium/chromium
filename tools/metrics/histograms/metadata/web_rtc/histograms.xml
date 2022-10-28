@@ -154,14 +154,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
-    expires_after="2023-04-16">
+    expires_after="2023-12-31">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
-  <owner>minyue@chromium.org</owner>
   <summary>
     Logs the input clipping rate in AgcManagerDirect. A log call is made every
-    30 seconds during an active WebRTC call using the analog gain controller and
-    clipping detection.
+    30 seconds during an active WebRTC call using the input volume controller
+    and clipping detection.
   </summary>
 </histogram>
 
@@ -257,69 +256,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.ApmAnalogGainDecreaseAverage" units="level"
-    expires_after="2023-04-16">
+<histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Average"
+    units="level" expires_after="2023-12-31">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
-    The analog gain average decrease measured over 60 seconds in
+    The {InputVolumeType} input volume average {Metric} measured over 60 seconds
+    in AudioProcessingImpl. A log call is made every 60 seconds during an active
+    WebRTC call.
+  </summary>
+  <token key="InputVolumeType">
+    <variant name="AppliedInputVolume" summary="applied"/>
+    <variant name="RecommendedInputVolume" summary="recommended"/>
+  </token>
+  <token key="Metric">
+    <variant name="Decrease" summary="decrease"/>
+    <variant name="Increase" summary="increase"/>
+    <variant name="Update" summary="update"/>
+  </token>
+</histogram>
+
+<histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Rate"
+    units="changes/minute" expires_after="2023-12-31">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The {InputVolumeType} input volume {Metric} rate measured over 60 seconds in
     AudioProcessingImpl. A log call is made every 60 seconds during an active
     WebRTC call.
   </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.ApmAnalogGainDecreaseRate" units="changes/minute"
-    expires_after="2023-04-16">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The analog gain decrease rate measured over 60 seconds in
-    AudioProcessingImpl. A log call is made every 60 seconds during an active
-    WebRTC call.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.ApmAnalogGainIncreaseAverage" units="level"
-    expires_after="2023-04-16">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The analog gain average increase measured over 60 seconds in
-    AudioProcessingImpl. A log call is made every 60 seconds during an active
-    WebRTC call.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.ApmAnalogGainIncreaseRate" units="changes/minute"
-    expires_after="2023-02-12">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The analog gain increase rate measured over 60 seconds in
-    AudioProcessingImpl. A log call is made every 60 seconds during an active
-    WebRTC call.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.ApmAnalogGainUpdateAverage" units="level"
-    expires_after="2023-04-16">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The analog gain average update measured over 60 seconds in
-    AudioProcessingImpl. A log call is made every 60 seconds during an active
-    WebRTC call.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.ApmAnalogGainUpdateRate" units="changes/minute"
-    expires_after="2023-04-16">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    The analog gain update rate measured over 60 seconds in AudioProcessingImpl.
-    A log call is made every 60 seconds during an active WebRTC call.
-  </summary>
+  <token key="InputVolumeType">
+    <variant name="AppliedInputVolume" summary="applied"/>
+    <variant name="RecommendedInputVolume" summary="recommended"/>
+  </token>
+  <token key="Metric">
+    <variant name="Decrease" summary="decrease"/>
+    <variant name="Increase" summary="increase"/>
+    <variant name="Update" summary="update"/>
+  </token>
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
