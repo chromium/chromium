@@ -30,11 +30,8 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_features.h"
-#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
-
-#if BUILDFLAG(IS_WIN)
 #include "ui/native_theme/native_theme_fluent.h"
-#endif  // BUILDFLAG(IS_WIN)
+#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace ui {
 
@@ -57,10 +54,8 @@ const SkScalar kScrollRadius =
 #if !BUILDFLAG(IS_APPLE)
 // static
 NativeTheme* NativeTheme::GetInstanceForWeb() {
-#if BUILDFLAG(IS_WIN)
   if (IsFluentScrollbarEnabled())
     return NativeThemeFluent::web_instance();
-#endif  // BUILDFLAG(IS_WIN)
   return NativeThemeAura::web_instance();
 }
 
