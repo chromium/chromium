@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/linux/update_service_proxy.h"
+#include "chrome/updater/ipc/update_service_proxy_linux.h"
+#include "chrome/updater/service_proxy_factory.h"
 
 #include <string>
 #include <utility>

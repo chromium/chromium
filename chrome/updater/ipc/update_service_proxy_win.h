@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
-#define CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
+#ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_WIN_H_
+#define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_WIN_H_
 
 #include <string>
 #include <vector>
@@ -69,4 +69,4 @@ class UpdateServiceProxy : public UpdateService {
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_UPDATE_SERVICE_PROXY_H_
+#endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_WIN_H_

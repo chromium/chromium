@@ -36,7 +36,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/setup/ks_tickets.h"
-#include "chrome/updater/mac/update_service_proxy.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"

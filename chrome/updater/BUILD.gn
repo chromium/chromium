@@ -77,8 +77,6 @@ if (is_win || is_mac || is_linux) {
       "check_for_updates_task.h",
       "configurator.cc",
       "configurator.h",
-      "constants.cc",
-      "constants.h",
       "crash_client.cc",
       "crash_client.h",
       "crash_reporter.cc",
@@ -94,7 +92,6 @@ if (is_win || is_mac || is_linux) {
       "device_management/dm_response_validator.h",
       "device_management/dm_storage.cc",
       "device_management/dm_storage.h",
-      "enum_traits.h",
       "external_constants.cc",
       "external_constants.h",
       "external_constants_default.cc",
@@ -116,19 +113,12 @@ if (is_win || is_mac || is_linux) {
       "prefs.cc",
       "prefs.h",
       "prefs_impl.h",
-      "registration_data.cc",
-      "registration_data.h",
       "remove_uninstalled_apps_task.cc",
       "remove_uninstalled_apps_task.h",
-      "service_proxy_factory.h",
       "setup.h",
       "splash_screen.h",
-      "tag.cc",
-      "tag.h",
       "update_block_check.cc",
       "update_block_check.h",
-      "update_service.cc",
-      "update_service.h",
       "update_service_impl.cc",
       "update_service_impl.h",
       "update_service_impl_inactive.cc",
@@ -144,10 +134,6 @@ if (is_win || is_mac || is_linux) {
       "update_usage_stats_task.h",
       "updater.cc",
       "updater.h",
-      "updater_scope.cc",
-      "updater_scope.h",
-      "util.cc",
-      "util.h",
     ]
 
     deps = [
@@ -175,6 +161,8 @@ if (is_win || is_mac || is_linux) {
       "//url",
     ]
 
+    public_deps = [ ":public_sources" ]
+
     if (is_posix) {
       sources += [ "remove_uninstalled_apps_task_posix.cc" ]
     }
@@ -188,18 +176,12 @@ if (is_win || is_mac || is_linux) {
         "app/server/mac/server.mm",
         "app/server/mac/service_delegate.h",
         "app/server/mac/service_delegate.mm",
-        "app/server/mac/service_protocol.h",
-        "app/server/mac/service_protocol.mm",
-        "app/server/mac/update_service_wrappers.h",
-        "app/server/mac/update_service_wrappers.mm",
         "device_management/dm_storage_mac.mm",
         "installer_mac.cc",
         "launchd_util.cc",
         "launchd_util.h",
         "mac/install_from_archive.h",
         "mac/install_from_archive.mm",
-        "mac/mac_util.h",
-        "mac/mac_util.mm",
         "mac/net/network.h",
         "mac/net/network_fetcher.h",
         "mac/net/network_fetcher.mm",
@@ -211,10 +193,6 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/setup.mm",
         "mac/update_service_internal_proxy.h",
         "mac/update_service_internal_proxy.mm",
-        "mac/update_service_proxy.h",
-        "mac/update_service_proxy.mm",
-        "mac/xpc_service_names.h",
-        "mac/xpc_service_names.mm",
         "policy/mac/managed_preference_policy_manager.h",
         "policy/mac/managed_preference_policy_manager.mm",
         "policy/mac/managed_preference_policy_manager_impl.h",
@@ -222,7 +200,6 @@ if (is_win || is_mac || is_linux) {
         "prefs_mac.mm",
         "setup_mac.mm",
         "update_usage_stats_task_mac.mm",
-        "util_mac.mm",
       ]
 
       deps += [
@@ -255,6 +232,8 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/updater_legacy_idl.h",
         "app/server/win/wrl_classes.cc",
         "device_management/dm_storage_win.cc",
+        "ipc/update_service_proxy_win.cc",
+        "ipc/update_service_proxy_win.h",
         "policy/win/group_policy_manager.cc",
         "policy/win/group_policy_manager.h",
         "prefs_win.cc",
@@ -262,7 +241,6 @@ if (is_win || is_mac || is_linux) {
         "setup_win.cc",
         "update_block_check_win.cc",
         "update_usage_stats_task_win.cc",
-        "util_win.cc",
         "win/action_handler.cc",
         "win/app_command_runner.cc",
         "win/app_command_runner.h",
@@ -280,7 +258,6 @@ if (is_win || is_mac || is_linux) {
         "win/protocol_parser_xml.cc",
         "win/protocol_parser_xml.h",
         "win/proxy_impl_base.h",
-        "win/scoped_handle.h",
         "win/scoped_impersonation.cc",
         "win/scoped_impersonation.h",
         "win/setup/setup.cc",
@@ -314,14 +291,6 @@ if (is_win || is_mac || is_linux) {
         "win/ui/yes_no_dialog.h",
         "win/update_service_internal_proxy.cc",
         "win/update_service_internal_proxy.h",
-        "win/update_service_proxy.cc",
-        "win/update_service_proxy.h",
-        "win/user_info.cc",
-        "win/user_info.h",
-        "win/win_constants.cc",
-        "win/win_constants.h",
-        "win/win_util.cc",
-        "win/win_util.h",
         "win/wrl_module_initializer.h",
       ]
       deps += [
@@ -362,20 +331,14 @@ if (is_win || is_mac || is_linux) {
         "app/server/linux/update_service_stub.cc",
         "app/server/linux/update_service_stub.h",
         "device_management/dm_storage_linux.cc",
-        "linux/ipc_constants.cc",
-        "linux/ipc_constants.h",
         "linux/ipc_support.cc",
         "linux/ipc_support.h",
-        "linux/linux_util.cc",
-        "linux/linux_util.h",
         "linux/net/libcurl_network_fetcher.cc",
         "linux/net/libcurl_network_fetcher.h",
         "linux/net/network.cc",
         "linux/net/network.h",
         "linux/setup/setup.h",
         "linux/update_service_internal_proxy.cc",
-        "linux/update_service_proxy.cc",
-        "linux/update_service_proxy.h",
         "prefs_linux.cc",
         "setup_linux.cc",
         "update_usage_stats_task_linux.cc",
@@ -476,66 +439,12 @@ if (is_win || is_mac || is_linux) {
 
   source_set("browser_sources") {
     sources = [
-      "//chrome/updater/constants.cc",
-      "//chrome/updater/constants.h",
-      "//chrome/updater/enum_traits.h",
-      "//chrome/updater/registration_data.cc",
-      "//chrome/updater/registration_data.h",
-      "//chrome/updater/tag.cc",
-      "//chrome/updater/tag.h",
-      "//chrome/updater/update_service.cc",
-      "//chrome/updater/update_service.h",
-      "//chrome/updater/updater_scope.cc",
-      "//chrome/updater/updater_scope.h",
-      "//chrome/updater/util.cc",
-      "//chrome/updater/util.h",
+      # Ideally we would have :constants_prod as a public_dep. However, this
+      # pulls in a static initializer, which is not allowed in Chromium.
+      "constants_prod.cc",
     ]
 
-    deps = [
-      ":branding_header",
-      ":version_header",
-      "//base",
-      "//components/update_client",
-      "//url",
-    ]
-
-    if (is_win) {
-      sources += [
-        "//chrome/updater/util_win.cc",
-        "//chrome/updater/win/scoped_handle.h",
-        "//chrome/updater/win/user_info.cc",
-        "//chrome/updater/win/user_info.h",
-        "//chrome/updater/win/win_constants.cc",
-        "//chrome/updater/win/win_constants.h",
-        "//chrome/updater/win/win_util.cc",
-        "//chrome/updater/win/win_util.h",
-      ]
-    }
-
-    if (is_linux) {
-      sources += [
-        "//chrome/updater/linux/linux_util.cc",
-        "//chrome/updater/linux/linux_util.h",
-      ]
-    }
-
-    if (is_mac) {
-      sources += [
-        "//chrome/updater/app/server/mac/service_protocol.h",
-        "//chrome/updater/app/server/mac/service_protocol.mm",
-        "//chrome/updater/app/server/mac/update_service_wrappers.h",
-        "//chrome/updater/app/server/mac/update_service_wrappers.mm",
-        "//chrome/updater/constants_prod.cc",
-        "//chrome/updater/mac/mac_util.h",
-        "//chrome/updater/mac/mac_util.mm",
-        "//chrome/updater/mac/privileged_helper/service_protocol.h",
-        "//chrome/updater/mac/xpc_service_names.h",
-        "//chrome/updater/mac/xpc_service_names.mm",
-        "//chrome/updater/util_mac.mm",
-      ]
-
-      deps += [ "//chrome/common/mac:launchd" ]
-    }
+    public_deps = [ ":public_sources" ]
 
     visibility = [
       "//chrome/browser",
@@ -544,6 +453,85 @@ if (is_win || is_mac || is_linux) {
       "//chrome/test:*",
       "//chrome/test:unit_tests",
     ]
+  }
+
+  source_set("public_sources") {
+    sources = [
+      "constants.cc",
+      "constants.h",
+      "enum_traits.h",
+      "registration_data.cc",
+      "registration_data.h",
+      "service_proxy_factory.h",
+      "tag.cc",
+      "tag.h",
+      "update_service.cc",
+      "update_service.h",
+      "updater_scope.cc",
+      "updater_scope.h",
+      "util.cc",
+      "util.h",
+    ]
+
+    deps = [
+      ":branding_header",
+      ":version_header",
+      "//base",
+      "//chrome/updater/app/server/linux/mojom",
+      "//components/update_client",
+      "//url",
+    ]
+
+    if (is_win) {
+      sources += [
+        "util_win.cc",
+        "win/scoped_handle.h",
+        "win/user_info.cc",
+        "win/user_info.h",
+        "win/win_constants.cc",
+        "win/win_constants.h",
+        "win/win_util.cc",
+        "win/win_util.h",
+      ]
+
+      deps += [ "//chrome/updater/app/server/win:updater_idl_idl" ]
+
+      configs -= [ "//build/config/win:winver" ]
+      configs += [
+        "//chrome/updater/app/server/win:winver",
+        "//chrome/updater/win:wrl_strict",
+      ]
+    }
+
+    if (is_linux) {
+      sources += [
+        "ipc/update_service_proxy_linux.cc",
+        "ipc/update_service_proxy_linux.h",
+        "linux/ipc_constants.cc",
+        "linux/ipc_constants.h",
+        "linux/linux_util.cc",
+        "linux/linux_util.h",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "app/server/mac/service_protocol.h",
+        "app/server/mac/service_protocol.mm",
+        "app/server/mac/update_service_wrappers.h",
+        "app/server/mac/update_service_wrappers.mm",
+        "ipc/update_service_proxy_mac.h",
+        "ipc/update_service_proxy_mac.mm",
+        "mac/mac_util.h",
+        "mac/mac_util.mm",
+        "mac/privileged_helper/service_protocol.h",
+        "mac/xpc_service_names.h",
+        "mac/xpc_service_names.mm",
+        "util_mac.mm",
+      ]
+
+      deps += [ "//chrome/common/mac:launchd" ]
+    }
   }
 
   if (is_mac || is_win) {
@@ -738,6 +726,7 @@ if (is_win || is_mac || is_linux) {
 
     if (is_mac) {
       sources += [
+        "ipc/update_service_proxy_mac_test.mm",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/net/network_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
@@ -745,7 +734,6 @@ if (is_win || is_mac || is_linux) {
         "mac/scoped_xpc_service_mock.mm",
         "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
-        "mac/update_service_proxy_test.mm",
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
         "policy/mac/managed_preference_policy_manager_unittest.cc",
         "test/integration_tests_mac.mm",

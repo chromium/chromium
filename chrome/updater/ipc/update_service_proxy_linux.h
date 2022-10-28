@@ -1,52 +1,36 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_MAC_UPDATE_SERVICE_PROXY_H_
-#define CHROME_UPDATER_MAC_UPDATE_SERVICE_PROXY_H_
-
-#import <Foundation/Foundation.h>
-
-#include <string>
-#include <vector>
+#ifndef CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
+#define CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
 
 #include "base/callback_forward.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
+#include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
-
-@class CRUUpdateServiceProxyImpl;
-
-namespace base {
-class SequencedTaskRunner;
-class Version;
-}  // namespace base
-
-namespace update_client {
-enum class Error;
-}  // namespace update_client
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace updater {
+
+class UpdateServiceProxyImpl;
 
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
  public:
-  UpdateServiceProxy(UpdaterScope scope,
-                     const base::TimeDelta& get_version_timeout);
+  explicit UpdateServiceProxy(UpdaterScope scope,
+                              mojo::Remote<mojom::UpdateService> remote);
 
-  // Overrides for UpdateService.
+  // Overrides for updater::UpdateService
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
   void FetchPolicies(base::OnceCallback<void(int)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) override;
   void GetAppStates(
-      base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>)
-      override;
+      base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
@@ -74,18 +58,14 @@ class UpdateServiceProxy : public UpdateService {
  private:
   ~UpdateServiceProxy() override;
 
-  // Reset invalidates the existing connection, causing error callbacks to fire,
-  // and reinitializes it for further use.
-  void Reset();
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  UpdaterScope scope_;
-  base::TimeDelta get_version_timeout_;
-  base::scoped_nsobject<CRUUpdateServiceProxyImpl> client_;
-  scoped_refptr<base::SequencedTaskRunner> callback_runner_;
+  scoped_refptr<UpdateServiceProxyImpl> impl_;
 };
+
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(
+    UpdaterScope scope,
+    mojo::Remote<mojom::UpdateService> remote);
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_MAC_UPDATE_SERVICE_PROXY_H_
+#endif  // CHROME_UPDATER_IPC_UPDATE_SERVICE_PROXY_LINUX_H_
