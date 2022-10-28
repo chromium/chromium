@@ -81,7 +81,6 @@
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-crbug.com/1340081 [ linux release intel ] Maps_maps [ RetryOnFailure ]
 
 # Flaking frequently on Fuchsia and nobody has triaged why.
 crbug.com/1288217 [ fuchsia ] Maps_maps [ Failure ]
