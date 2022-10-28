@@ -56,6 +56,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -475,6 +476,7 @@ public class AutofillServerCardEditorTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT})
+    @DisabledTest(message = "https://crbug.com/1368548")
     public void
     virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_editorExited()
             throws Exception {
