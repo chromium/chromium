@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/profiler/unwinder.h"
+#include "base/time/time.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/DexFiles.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/JitDebug.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
@@ -22,7 +23,9 @@ namespace base {
 // causes some divergences from other base::Unwinder (this unwinder either fully
 // succeeds or fully fails). A good source for a compariative unwinder would be
 // traced_perf or heapprofd on android which uses the same API.
-class LibunwindstackUnwinderAndroid : public Unwinder {
+class LibunwindstackUnwinderAndroid
+    : public Unwinder,
+      public ModuleCache::AuxiliaryModuleProvider {
  public:
   LibunwindstackUnwinderAndroid();
   ~LibunwindstackUnwinderAndroid() override;
@@ -37,6 +40,10 @@ class LibunwindstackUnwinderAndroid : public Unwinder {
   UnwindResult TryUnwind(RegisterContext* thread_context,
                          uintptr_t stack_top,
                          std::vector<Frame>* stack) override;
+
+  // ModuleCache::AuxiliaryModuleProvider
+  std::unique_ptr<const ModuleCache::Module> TryCreateModuleForAddress(
+      uintptr_t address) override;
 
  private:
   unwindstack::JitDebug* GetOrCreateJitDebug(unwindstack::ArchEnum arch);

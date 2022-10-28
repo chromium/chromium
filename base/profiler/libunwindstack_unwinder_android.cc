@@ -91,9 +91,15 @@ LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
       "LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid");
 }
 
-LibunwindstackUnwinderAndroid::~LibunwindstackUnwinderAndroid() = default;
+LibunwindstackUnwinderAndroid::~LibunwindstackUnwinderAndroid() {
+  if (module_cache()) {
+    module_cache()->UnregisterAuxiliaryModuleProvider(this);
+  }
+}
 
-void LibunwindstackUnwinderAndroid::InitializeModules() {}
+void LibunwindstackUnwinderAndroid::InitializeModules() {
+  module_cache()->RegisterAuxiliaryModuleProvider(this);
+}
 
 bool LibunwindstackUnwinderAndroid::CanUnwindFrom(
     const Frame& current_frame) const {
@@ -182,15 +188,9 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
   // successful transfer from libunwindstack format into base::Unwinder format.
   if (values.error_code == unwindstack::ERROR_NONE) {
     for (const unwindstack::FrameData& frame : values.frames) {
-      const ModuleCache::Module* module =
-          module_cache()->GetExistingModuleForAddress(frame.pc);
-      if (module == nullptr && frame.map_info != nullptr) {
-        auto module_for_caching =
-            std::make_unique<NonElfModule>(frame.map_info.get());
-        module = module_for_caching.get();
-        module_cache()->AddCustomNativeModule(std::move(module_for_caching));
-      }
-      stack->emplace_back(frame.pc, module, frame.function_name);
+      stack->emplace_back(frame.pc,
+                          module_cache()->GetModuleForAddress(frame.pc),
+                          frame.function_name);
     }
     return UnwindResult::kCompleted;
   }
@@ -199,5 +199,15 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
                       "warning", values.warnings, "num_frames",
                       values.frames.size());
   return UnwindResult::kAborted;
+}
+
+std::unique_ptr<const ModuleCache::Module>
+LibunwindstackUnwinderAndroid::TryCreateModuleForAddress(uintptr_t address) {
+  unwindstack::MapInfo* map_info = memory_regions_map_->Find(address).get();
+  if (map_info == nullptr || !(map_info->flags() & PROT_EXEC) ||
+      map_info->flags() & unwindstack::MAPS_FLAGS_DEVICE_MAP) {
+    return nullptr;
+  }
+  return std::make_unique<NonElfModule>(map_info);
 }
 }  // namespace base
