@@ -416,12 +416,36 @@ def GrepForDevToolsActions(path, actions):
       logging.warning(str(e))
 
 def WalkDirectory(root_path, actions, extensions, callback):
+  """Walk directory chooses which files to process based on a set
+   of extensions, and runs the callback function on them.
+
+    It's important to know that `extensions` should be a tuple,
+    and if it's not, it will be converted into one. This is to correct
+    for Python automatically converting ('foo') to 'foo'.
+
+    Note: Files starting with a `.` will be ignored by default. See
+    comments in implementation.
+  """
+
+  # Convert `extensions` to tuple if it is not one already
+  if type(extensions) != tuple:
+    extensions = (extensions, )
+
   for path, dirs, files in os.walk(root_path):
     if '.svn' in dirs:
       dirs.remove('.svn')
     if '.git' in dirs:
       dirs.remove('.git')
     for file in files:
+      """splitext() returns an empty extension |ext| for files
+      starting with `.`, as a result, files starting with a `.` will
+      be ignored (unless the |extensions| tuple includes an empty
+      element). Beware of allowing the callback() to run on all files
+      that start with a `.`: the callback needs to be resilient to
+      different file formats (binary, ASCII, etc.) and may also end
+      up processing many files that don't need to be processed, wasting
+      time.
+      """
       filename, ext = os.path.splitext(file)
       if ext in extensions and not filename.endswith('test'):
         callback(os.path.join(path, file), actions)
