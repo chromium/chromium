@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS, isWindows} from 'chrome://resources/js/cr.m.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,7 +22,8 @@ import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 const languages_page_tests = {
   TestNames: {
     AddLanguagesDialog: 'add languages dialog',
-    LanguageMenu: 'language menu',
+    LanguageMenuWithTranslate: 'language menu with translate options',
+    LanguageMenuMoveLanguages: 'move language menu items',
   },
 };
 
@@ -33,6 +34,20 @@ suite('languages page', function() {
   let languagesPage: SettingsLanguagesPageElement;
   let actionMenu: CrActionMenuElement;
   let browserProxy: TestLanguagesBrowserProxy;
+
+  /*
+   * Finds, asserts and returns the menu item for the given i18n key.
+   * @param i18nKey Name of the i18n string for the item's text.
+   */
+  function getMenuItem<T extends HTMLElement>(i18nKey: string): T {
+    const i18nString = loadTimeData.getString(i18nKey);
+    assertTrue(!!i18nString);
+    const menuItems = actionMenu.querySelectorAll<T>('.dropdown-item');
+    const menuItem = Array.from(menuItems).find(
+        item => item.textContent!.trim() === i18nString);
+    assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
+    return menuItem;
+  }
 
   // Initial value of enabled languages pref used in tests.
   const initialLanguages = 'en-US,sw';
@@ -268,36 +283,17 @@ suite('languages page', function() {
     });
   });
 
-  suite(languages_page_tests.TestNames.LanguageMenu, function() {
+  suite(languages_page_tests.TestNames.LanguageMenuWithTranslate, function() {
     /*
-     * Finds, asserts and returns the menu item for the given i18n key.
-     * @param i18nKey Name of the i18n string for the item's text.
+     * When the detailed language settings are not shown the translate options
+     * are integrated with the language list. This suite tests the translate
+     * option in the languages submenu.
      */
-    function getMenuItem<T extends HTMLElement>(i18nKey: string): T {
-      const i18nString = loadTimeData.getString(i18nKey);
-      assertTrue(!!i18nString);
-      const menuItems = actionMenu.querySelectorAll<T>('.dropdown-item');
-      const menuItem = Array.from(menuItems).find(
-          item => item.textContent!.trim() === i18nString);
-      assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
-      return menuItem;
-    }
-
-    /*
-     * Checks the visibility of each expected menu item button.
-     * @param Dictionary from i18n keys to expected visibility of those menu
-     *     items.
-     */
-    function assertMenuItemButtonsVisible(
-        buttonVisibility: {[key: string]: boolean}) {
-      assertTrue(actionMenu.open);
-      for (const buttonKey of Object.keys(buttonVisibility)) {
-        const buttonItem = getMenuItem(buttonKey);
-        assertEquals(
-            !buttonVisibility[buttonKey], buttonItem.hidden,
-            'Menu item "' + buttonKey + '" hidden');
-      }
-    }
+    suiteSetup(function() {
+      loadTimeData.overrideValues({
+        enableDesktopDetailedLanguageSettings: false,
+      });
+    });
 
     test('structure', function() {
       const languageOptionsDropdownTrigger =
@@ -312,9 +308,9 @@ suite('languages page', function() {
 
       // Disable Translate. On platforms that can't change the UI language,
       // this hides all the checkboxes, so the separator isn't needed.
-      // Chrome OS and Windows still show a checkbox and thus the separator.
+      // Windows still shows a checkbox and thus the separator.
       languagesPage.setPrefValue('translate.enabled', false);
-      assertEquals(isChromeOS || isWindows ? 1 : 0, separator.offsetHeight);
+      assertEquals(isWindows ? 1 : 0, separator.offsetHeight);
     });
 
     test('test translate.enable toggle', function() {
@@ -434,6 +430,25 @@ suite('languages page', function() {
       assertTrue(!!translateOption);
       assertTrue(translateOption.hidden);
     });
+  });
+
+  suite(languages_page_tests.TestNames.LanguageMenuMoveLanguages, function() {
+    /*
+     * Checks the visibility of each expected menu item button.
+     * @param Dictionary from i18n keys to expected visibility of those menu
+     *     items.
+     */
+    function assertMenuItemButtonsVisible(
+        buttonVisibility: {[key: string]: boolean}) {
+      assertTrue(actionMenu.open);
+      for (const buttonKey of Object.keys(buttonVisibility)) {
+        const buttonItem = getMenuItem(buttonKey);
+        assertEquals(
+            !buttonVisibility[buttonKey], buttonItem.hidden,
+            'Menu item "' + buttonKey + '" hidden');
+      }
+    }
+
 
     test('remove language when starting with 3 languages', function() {
       // Enable a language which we can then disable.
@@ -446,8 +461,7 @@ suite('languages page', function() {
       const items =
           languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat =
-          languagesPage.shadowRoot!.querySelector('dom-repeat');
+      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -481,8 +495,7 @@ suite('languages page', function() {
       const items =
           languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat =
-          languagesPage.shadowRoot!.querySelector('dom-repeat');
+      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
@@ -503,8 +516,7 @@ suite('languages page', function() {
       const items =
           languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat =
-          languagesPage.shadowRoot!.querySelector('dom-repeat');
+      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
       const item = Array.from(items).find(function(el) {
         return domRepeat.itemForElement(el) &&
