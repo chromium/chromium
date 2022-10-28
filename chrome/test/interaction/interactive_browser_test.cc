@@ -24,10 +24,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_tracker.h"
-
-#if defined(TOOLKIT_VIEWS)
 #include "ui/views/views_delegate.h"
-#endif
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPivotElementId);
@@ -38,11 +35,9 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseGestureCompleteEvent);
 InteractiveBrowserTest::InteractiveBrowserTest() = default;
 InteractiveBrowserTest::~InteractiveBrowserTest() = default;
 
-#if defined(TOOLKIT_VIEWS)
 InteractiveBrowserTest::InteractiveBrowserTest(
     std::unique_ptr<views::ViewsDelegate> views_delegate)
     : InProcessBrowserTest(std::move(views_delegate)) {}
-#endif
 
 void InteractiveBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
@@ -117,6 +112,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameView(
                           GetFindViewCallback(std::move(spec)));
 }
 
+// static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameViewRelative(
     ElementSpecifier relative_to,
     base::StringPiece name,
@@ -151,6 +147,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameViewRelative(
   return builder;
 }
 
+// static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameChildView(
     ElementSpecifier parent,
     base::StringPiece name,
@@ -158,6 +155,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameChildView(
   return NameViewRelative(parent, name, GetFindViewCallback(std::move(spec)));
 }
 
+// static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::NameDescendantView(
     ElementSpecifier parent,
     base::StringPiece name,
@@ -255,6 +253,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::Screenshot(
   return builder;
 }
 
+// static
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTest::WaitForWebContentsReady(
     ui::ElementIdentifier webcontents_id,
@@ -278,6 +277,7 @@ InteractiveBrowserTest::WaitForWebContentsReady(
   return builder;
 }
 
+// static
 ui::InteractionSequence::StepBuilder
 InteractiveBrowserTest::WaitForWebContentsNavigation(
     ui::ElementIdentifier webcontents_id,
@@ -302,6 +302,7 @@ InteractiveBrowserTest::WaitForWebContentsNavigation(
   return builder;
 }
 
+// static
 InteractiveBrowserTest::MultiStep InteractiveBrowserTest::NavigateWebContents(
     ui::ElementIdentifier webcontents_id,
     GURL target_url) {
@@ -327,6 +328,7 @@ InteractiveBrowserTest::MultiStep InteractiveBrowserTest::NavigateWebContents(
   return steps;
 }
 
+// static
 InteractiveBrowserTest::MultiStep InteractiveBrowserTest::WaitForStateChange(
     ui::ElementIdentifier webcontents_id,
     StateChange state_change,
@@ -495,6 +497,7 @@ InteractiveBrowserTest::StepBuilder InteractiveBrowserTest::Check(
   return builder;
 }
 
+// static
 InteractiveBrowserTest::StepBuilder InteractiveBrowserTest::Do(
     base::OnceClosure action) {
   StepBuilder builder;
@@ -503,21 +506,54 @@ InteractiveBrowserTest::StepBuilder InteractiveBrowserTest::Do(
   return builder;
 }
 
+// static
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckElement(
     ElementSpecifier element,
     base::OnceCallback<bool(ui::TrackedElement* el)> check) {
+  return CheckElement(element, std::move(check), true);
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::WaitForShow(
+    ElementSpecifier element,
+    bool transition_only_on_event) {
   StepBuilder step;
   SpecifyElement(step, element);
-  step.SetStartCallback(base::BindOnce(
-      [](base::OnceCallback<bool(ui::TrackedElement * el)> check,
-         ui::InteractionSequence* seq, ui::TrackedElement* el) {
-        if (!std::move(check).Run(el))
-          seq->FailForTesting();
-      },
-      std::move(check)));
+  step.SetTransitionOnlyOnEvent(transition_only_on_event);
   return step;
 }
 
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::WaitForHide(
+    ElementSpecifier element,
+    bool transition_only_on_event) {
+  StepBuilder step;
+  SpecifyElement(step, element);
+  step.SetType(ui::InteractionSequence::StepType::kHidden);
+  step.SetTransitionOnlyOnEvent(transition_only_on_event);
+  return step;
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::WaitForActivate(
+    ElementSpecifier element) {
+  StepBuilder step;
+  SpecifyElement(step, element);
+  step.SetType(ui::InteractionSequence::StepType::kActivated);
+  return step;
+}
+
+// static
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::WaitForEvent(
+    ElementSpecifier element,
+    ui::CustomElementEventType event) {
+  StepBuilder step;
+  SpecifyElement(step, element);
+  step.SetType(ui::InteractionSequence::StepType::kCustomEvent, event);
+  return step;
+}
+
+// static
 InteractiveBrowserTest::MultiStep InteractiveBrowserTest::EnsureNotPresent(
     ui::ElementIdentifier element_to_check,
     bool in_any_context) {
@@ -563,6 +599,7 @@ InteractiveBrowserTest::MultiStep InteractiveBrowserTest::EnsureNotPresent(
   return steps;
 }
 
+// static
 InteractiveBrowserTest::MultiStep InteractiveBrowserTest::InAnyContext(
     MultiStep steps) {
   for (auto& step : steps)
@@ -615,6 +652,17 @@ void InteractiveBrowserTest::AddStep(ui::InteractionSequence::Builder& builder,
                                      MultiStep multi_step) {
   for (auto& step : multi_step)
     builder.AddStep(step);
+}
+
+// static
+void InteractiveBrowserTest::AddStep(MultiStep& dest, StepBuilder src) {
+  dest.emplace_back(std::move(src));
+}
+
+// static
+void InteractiveBrowserTest::AddStep(MultiStep& dest, MultiStep src) {
+  for (auto& step : src)
+    dest.emplace_back(std::move(step));
 }
 
 // static

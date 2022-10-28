@@ -5,6 +5,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 
 #include "base/test/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -19,6 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -26,6 +29,8 @@
 #include "url/gurl.h"
 
 namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestEventType);
 constexpr char kViewName[] = "Named View";
 constexpr char kViewName2[] = "Named View 2";
 }  // namespace
@@ -46,6 +51,61 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
   base::raw_ptr<BrowserView> browser_view_ = nullptr;
 };
 
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       WaitForShow_AlreadyShown) {
+  ui::test::TestElement element(kTestElementId,
+                                browser()->window()->GetElementContext());
+  element.Show();
+  RunTestSequence(WaitForShow(kTestElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       WaitForShow_TransitionOnEvent) {
+  ui::test::TestElement element(kTestElementId,
+                                browser()->window()->GetElementContext());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&element]() { element.Show(); }));
+  RunTestSequence(WaitForShow(kTestElementId, true));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       WaitForHide_AlreadyHidden) {
+  ui::test::TestElement element(kTestElementId,
+                                browser()->window()->GetElementContext());
+  RunTestSequence(WaitForHide(kTestElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       WaitForHide_TransitionOnEvent) {
+  ui::test::TestElement element(kTestElementId,
+                                browser()->window()->GetElementContext());
+  element.Show();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&element]() { element.Hide(); }));
+  RunTestSequence(WaitForHide(kTestElementId, true));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, WaitForActivate) {
+  ui::test::TestElement element(kTestElementId,
+                                browser()->window()->GetElementContext());
+  element.Show();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([&element]() { element.Activate(); }));
+  RunTestSequence(WaitForActivate(kTestElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, WaitForEvent) {
+  ui::test::TestElement element(kTestElementId,
+                                browser()->window()->GetElementContext());
+  element.Show();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&element]() {
+        element.SendCustomEvent(kTestEventType);
+      }));
+  RunTestSequence(WaitForEvent(kTestElementId, kTestEventType));
+}
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, SelectTab) {
   // Add at least three tabs.
   CHECK(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
@@ -61,24 +121,61 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, SelectTab) {
       })));
 }
 
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckResult) {
+  auto repeating = base::BindRepeating([]() { return 2; });
+  RunTestSequence(CheckResult(base::BindOnce([]() { return 1; }), 1),
+                  CheckResult(repeating, testing::Gt(1)),
+                  CheckResult(repeating, testing::Lt(3)));
+}
+
+// Same as previous test, but builds subsequences of steps using Steps().
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
+                       CheckResultUsingSteps) {
+  // Verify that all of the steps in the subsequences get executed.
+  int count = 0;
+  auto repeating = base::BindLambdaForTesting([&]() {
+    ++count;
+    return 2;
+  });
+  RunTestSequence(Steps(Steps(CheckResult(base::BindLambdaForTesting([&]() {
+                                            ++count;
+                                            return 1;
+                                          }),
+                                          1),
+                              CheckResult(repeating, testing::Gt(1))),
+                        CheckResult(repeating, testing::Lt(3))));
+  EXPECT_EQ(3, count);
+}
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckElement) {
-  RunTestSequence(CheckElement(
-      kAppMenuButtonElementId,
-      base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-        return el->IsA<views::TrackedElementViews>() &&
-               el->context() == browser()->window()->GetElementContext();
-      })));
+  RunTestSequence(
+      // Check version with no matcher and only boolean return value.
+      CheckElement(kAppMenuButtonElementId,
+                   base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                     return el->IsA<views::TrackedElementViews>() &&
+                            el->context() ==
+                                browser()->window()->GetElementContext();
+                   })),
+      // Check version with arbitrary return value and matcher.
+      CheckElement(kAppMenuButtonElementId,
+                   base::BindOnce([](ui::TrackedElement* el) {
+                     return AsView<BrowserAppMenuButton>(el)->size().width();
+                   }),
+                   testing::Ne(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckView) {
   RunTestSequence(
+      // Check version with no matcher and only boolean return value.
       CheckView(kAppMenuButtonElementId,
                 base::BindOnce([](BrowserAppMenuButton* button) {
                   return button->GetVisible();
                 })),
+      // Check version with arbitrary return value and matcher.
       CheckView(kTabStripElementId, base::BindOnce([](TabStrip* tab_strip) {
-                  return tab_strip->GetTabCount() == 1;
-                })));
+                  return tab_strip->GetTabCount();
+                }),
+                testing::Lt(2)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckViewProperty) {
@@ -93,6 +190,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, CheckViewProperty) {
           // Explicit creation of an inequality matcher.
           testing::Ne(l10n_util::GetStringUTF16(IDS_MORE_TOOLS_MENU))));
 }
+
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
                        NameViewAbsoluteValue) {
   auto* const view = browser_view_->toolbar();

@@ -74,6 +74,10 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   using StateChange = WebContentsInteractionTestUtil::StateChange;
   using StepBuilder = ui::InteractionSequence::StepBuilder;
 
+  // Construct a MultiStep from one or more StepBuilders and/or MultiSteps.
+  template <typename... Args>
+  static MultiStep Steps(Args&&... args);
+
   // Returns an interaction simulator for things like clicking buttons.
   // Generally, prefer to use functions like PressButton() to directly using the
   // InteractionTestUtil.
@@ -187,17 +191,18 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
       base::OnceCallback<views::View*(views::View* relative_to)>;
 
   // Methods that name views.
-  [[nodiscard]] StepBuilder NameView(base::StringPiece name,
-                                     AbsoluteViewSpecifier spec);
-  [[nodiscard]] StepBuilder NameViewRelative(ElementSpecifier relative_to,
-                                             base::StringPiece name,
-                                             FindViewCallback find_callback);
-  [[nodiscard]] StepBuilder NameChildView(ElementSpecifier parent,
-                                          base::StringPiece name,
-                                          ChildViewSpecifier spec);
-  [[nodiscard]] StepBuilder NameDescendantView(ElementSpecifier ancestor,
-                                               base::StringPiece name,
-                                               ViewMatcher matcher);
+  [[nodiscard]] static StepBuilder NameView(base::StringPiece name,
+                                            AbsoluteViewSpecifier spec);
+  [[nodiscard]] static StepBuilder NameViewRelative(
+      ElementSpecifier relative_to,
+      base::StringPiece name,
+      FindViewCallback find_callback);
+  [[nodiscard]] static StepBuilder NameChildView(ElementSpecifier parent,
+                                                 base::StringPiece name,
+                                                 ChildViewSpecifier spec);
+  [[nodiscard]] static StepBuilder NameDescendantView(ElementSpecifier ancestor,
+                                                      base::StringPiece name,
+                                                      ViewMatcher matcher);
 
   // Convenience methods for creating interaction steps of type kShown. The
   // resulting step's start callback is already set; therefore, do not try to
@@ -228,10 +233,10 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   // These convenience methods wait for page navigation/ready. If you specify
   // `expected_url`, the test will fail if that is not the loaded page. If you
   // do not, there is no step start callback and you can add your own logic.
-  [[nodiscard]] StepBuilder WaitForWebContentsReady(
+  [[nodiscard]] static StepBuilder WaitForWebContentsReady(
       ui::ElementIdentifier webcontents_id,
       absl::optional<GURL> expected_url = absl::nullopt);
-  [[nodiscard]] StepBuilder WaitForWebContentsNavigation(
+  [[nodiscard]] static StepBuilder WaitForWebContentsNavigation(
       ui::ElementIdentifier webcontents_id,
       absl::optional<GURL> expected_url = absl::nullopt);
 
@@ -239,7 +244,7 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   // `new_url`, which must be different than its current URL. The sequence will
   // not proceed until navigation completes, and will fail if the wrong URL is
   // loaded.
-  [[nodiscard]] MultiStep NavigateWebContents(
+  [[nodiscard]] static MultiStep NavigateWebContents(
       ui::ElementIdentifier webcontents_id,
       GURL new_url);
 
@@ -247,7 +252,7 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   // fail if the change times out, unless `expect_timeout` is true, in which
   // case the StateChange *must* timeout, and |state_change.timeout_event| must
   // be set.
-  [[nodiscard]] MultiStep WaitForStateChange(
+  [[nodiscard]] static MultiStep WaitForStateChange(
       ui::ElementIdentifier webcontents_id,
       StateChange state_change,
       bool expect_timeout = false);
@@ -323,11 +328,16 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   // Returns true on success, false on failure (which will fail the test).
   using CheckCallback = base::OnceCallback<bool()>;
 
-  // Performs a check.
-  [[nodiscard]] StepBuilder Check(CheckCallback check_callback);
+  // Does an action at this point in the test sequence.
+  [[nodiscard]] static StepBuilder Do(base::OnceClosure action);
 
-  // Does an action. Identical to Check() if check_callback always returns true.
-  [[nodiscard]] StepBuilder Do(base::OnceClosure action);
+  // Performs a check and fails the test if `check_callback` returns false.
+  [[nodiscard]] static StepBuilder Check(CheckCallback check_callback);
+
+  // Calls `function` and applies `matcher` to the result. If the matcher does
+  // not match, an appropriate error message is printed and the test fails.
+  template <template <typename...> class C, typename T, typename U>
+  [[nodiscard]] static StepBuilder CheckResult(C<T()> function, U&& matcher);
 
   // Checks that `check` returns true for element `element`. will fail the test
   // sequence if `check` returns false - the callback should log any specific
@@ -335,52 +345,83 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   //
   // Note that unless you add .SetMustBeVisibleAtStart(true), this test step
   // will wait for `element` to be shown before proceeding.
-  [[nodiscard]] StepBuilder CheckElement(
+  [[nodiscard]] static StepBuilder CheckElement(
       ElementSpecifier element,
       base::OnceCallback<bool(ui::TrackedElement* el)> check);
 
-  // As above, but `view` should resolve to a TrackedElementViews wrapping a
-  // view of type `V`.
-  template <class V>
-  [[nodiscard]] StepBuilder CheckView(ElementSpecifier view,
-                                      base::OnceCallback<bool(V* view)> check);
+  // As CheckElement(), but checks that the result of calling `function` on
+  // `element` matches `matcher`. If not, the mismatch is printed and the test
+  // fails.
+  template <template <typename...> class C, typename T, typename U>
+  [[nodiscard]] static StepBuilder CheckElement(
+      ElementSpecifier element,
+      C<T(ui::TrackedElement*)> function,
+      U&& matcher);
 
-  // As above, but check that `matcher` matches the value returned by fetching
-  // `property` from `view`. On failure, logs the matcher error before failing
+  // As CheckElement(), but `view` should resolve to a TrackedElementViews
+  // wrapping a view of type `V`.
+  template <class V>
+  [[nodiscard]] static StepBuilder CheckView(
+      ElementSpecifier view,
+      base::OnceCallback<bool(V* view)> check);
+
+  // As CheckView(), but checks that the result of calling `function` on `view`
+  // matches `matcher`. If not, the mismatch is printed and the test fails.
+  template <template <typename...> class C, class V, typename T, typename U>
+  [[nodiscard]] static StepBuilder CheckView(ElementSpecifier view,
+                                             C<T(V*)> function,
+                                             U&& matcher);
+
+  // As CheckView() but checks that `matcher` matches the value returned by
+  // calling `property` on `view`. On failure, logs the matcher error and fails
   // the test.
   template <class V, typename T, typename U>
-  [[nodiscard]] StepBuilder CheckViewProperty(ElementSpecifier view,
-                                              T (V::*property)() const,
-                                              U&& matcher);
+  [[nodiscard]] static StepBuilder CheckViewProperty(ElementSpecifier view,
+                                                     T (V::*property)() const,
+                                                     U&& matcher);
 
   // Shorthand methods for working with basic ElementTracker events. The element
   // will have `step_callback` called on it. You may specify additional
   // constraints such as SetMustBeVisibleAtStart(),
   // SetFindElementInAnyContext(), SetTransitionOnlyOnEvent(), etc.
   template <class T>
-  [[nodiscard]] StepBuilder AfterShow(ElementSpecifier element,
-                                      T&& step_callback);
+  [[nodiscard]] static StepBuilder AfterShow(ElementSpecifier element,
+                                             T&& step_callback);
   template <class T>
-  [[nodiscard]] StepBuilder AfterActivate(ElementSpecifier element,
-                                          T&& step_callback);
+  [[nodiscard]] static StepBuilder AfterActivate(ElementSpecifier element,
+                                                 T&& step_callback);
   template <class T>
-  [[nodiscard]] StepBuilder AfterEvent(ElementSpecifier element,
-                                       ui::CustomElementEventType event_type,
-                                       T&& step_callback);
+  [[nodiscard]] static StepBuilder AfterEvent(
+      ElementSpecifier element,
+      ui::CustomElementEventType event_type,
+      T&& step_callback);
   template <class T>
-  [[nodiscard]] StepBuilder AfterHide(ElementSpecifier element,
-                                      T&& step_callback);
+  [[nodiscard]] static StepBuilder AfterHide(ElementSpecifier element,
+                                             T&& step_callback);
+
+  // Versions of the above that have no step callback; included for clarity and
+  // brevity.
+  [[nodiscard]] static StepBuilder WaitForShow(
+      ElementSpecifier element,
+      bool transition_only_on_event = false);
+  [[nodiscard]] static StepBuilder WaitForHide(
+      ElementSpecifier element,
+      bool transition_only_on_event = false);
+  [[nodiscard]] static StepBuilder WaitForActivate(ElementSpecifier element);
+  [[nodiscard]] static StepBuilder WaitForEvent(
+      ElementSpecifier element,
+      ui::CustomElementEventType event);
 
   // Equivalent to AfterShow() but the element must already be present.
   template <class T>
-  [[nodiscard]] StepBuilder WithElement(ElementSpecifier element,
-                                        T&& step_callback);
+  [[nodiscard]] static StepBuilder WithElement(ElementSpecifier element,
+                                               T&& step_callback);
 
   // Adds steps to the sequence that ensure that `element_to_check` is not
   // present. Flushes the current message queue to ensure that if e.g. the
   // previous step was responding to elements being added, the
   // `element_to_check` may not have had its shown event called yet.
-  [[nodiscard]] MultiStep EnsureNotPresent(
+  [[nodiscard]] static MultiStep EnsureNotPresent(
       ui::ElementIdentifier element_to_check,
       bool in_any_context = false);
 
@@ -397,19 +438,29 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
   //
   // TODO(dfried): consider if we should have a version that takes variadic
   // arguments and applies "in any context" to all of them?
-  MultiStep InAnyContext(MultiStep steps);
+  [[nodiscard]] static MultiStep InAnyContext(MultiStep steps);
   template <typename T>
-  StepBuilder InAnyContext(T&& step);
+  static StepBuilder InAnyContext(T&& step);
 
  private:
-  template <class First, class... Rest>
-  struct StepAdder {};
-
   // Helper method to add a step or steps to a sequence builder.
   static void AddStep(ui::InteractionSequence::Builder& builder,
                       MultiStep steps);
   template <typename T>
   static void AddStep(ui::InteractionSequence::Builder& builder, T&& step);
+
+  static void AddStep(MultiStep& dest, StepBuilder src);
+  static void AddStep(MultiStep& dest, MultiStep src);
+
+  // Applies `matcher` to `value` and returns the result; on failure a useful
+  // error message is printed using `test_name`, `value`, and `matcher`.
+  //
+  // Steps which use this method will fail if it returns false, printing out the
+  // details of the step in the usual way.
+  template <typename T>
+  static bool MatchAndExplain(const base::StringPiece& test_name,
+                              testing::Matcher<T>& matcher,
+                              T&& value);
 
   // Converts an ElementSpecifier to an element ID or name and sets it onto
   // `builder`.
@@ -468,6 +519,15 @@ class InteractiveBrowserTest : public InProcessBrowserTest {
 // Template definitions.
 
 // static
+template <typename... Args>
+InteractiveBrowserTest::MultiStep InteractiveBrowserTest::Steps(
+    Args&&... args) {
+  MultiStep result;
+  (AddStep(result, std::forward<Args>(args)), ...);
+  return result;
+}
+
+// static
 template <class T>
 T* InteractiveBrowserTest::AsView(ui::TrackedElement* el) {
   auto* const views_el = el->AsA<views::TrackedElementViews>();
@@ -502,6 +562,22 @@ void InteractiveBrowserTest::AddStep(ui::InteractionSequence::Builder& builder,
   builder.AddStep(std::move(step));
 }
 
+// static
+template <typename T>
+bool InteractiveBrowserTest::MatchAndExplain(const base::StringPiece& test_name,
+                                             testing::Matcher<T>& matcher,
+                                             T&& value) {
+  if (matcher.Matches(value))
+    return true;
+  std::ostringstream oss;
+  oss << test_name << "failed.\nExpected: ";
+  matcher.DescribeTo(&oss);
+  oss << "\nActual: " << testing::PrintToString(value);
+  LOG(ERROR) << oss.str();
+  return false;
+}
+
+// static
 template <class T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterShow(
     ElementSpecifier element,
@@ -514,6 +590,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterShow(
   return builder;
 }
 
+// static
 template <class T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterActivate(
     ElementSpecifier element,
@@ -527,6 +604,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterActivate(
   return builder;
 }
 
+// static
 template <class T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterEvent(
     ElementSpecifier element,
@@ -541,6 +619,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterEvent(
   return builder;
 }
 
+// static
 template <class T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterHide(
     ElementSpecifier element,
@@ -554,6 +633,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::AfterHide(
   return builder;
 }
 
+// static
 template <class T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::WithElement(
     ElementSpecifier element,
@@ -567,41 +647,96 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTest::WithElement(
   return builder;
 }
 
+// static
 template <typename T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::InAnyContext(
     T&& step) {
   return std::move(step.SetFindElementInAnyContext(true));
 }
 
+// static
+template <template <typename...> typename C, typename T, typename U>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckResult(
+    C<T()> function,
+    U&& matcher) {
+  return Check(base::BindOnce(
+      [](base::OnceCallback<T()> function, testing::Matcher<T> matcher) {
+        return MatchAndExplain("CheckResult()", matcher,
+                               std::move(function).Run());
+      },
+      base::OnceCallback<T()>(std::move(function)),
+      testing::Matcher<T>(std::forward<U>(matcher))));
+}
+
+// static
+template <template <typename...> typename C, typename T, typename U>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckElement(
+    ElementSpecifier element,
+    C<T(ui::TrackedElement*)> function,
+    U&& matcher) {
+  StepBuilder builder;
+  SpecifyElement(builder, element);
+  builder.SetStartCallback(base::BindOnce(
+      [](base::OnceCallback<T(ui::TrackedElement*)> function,
+         testing::Matcher<T> matcher, ui::InteractionSequence* seq,
+         ui::TrackedElement* el) {
+        if (!MatchAndExplain("CheckElement()", matcher,
+                             std::move(function).Run(el))) {
+          seq->FailForTesting();
+        }
+      },
+      base::OnceCallback<T(ui::TrackedElement*)>(std::move(function)),
+      testing::Matcher<T>(std::forward<U>(matcher))));
+  return builder;
+}
+
+// static
 template <typename V>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckView(
     ElementSpecifier view,
     base::OnceCallback<bool(V* view)> check) {
-  return CheckElement(view, base::BindOnce(
-                                [](base::OnceCallback<bool(V * view)> check,
-                                   ui::TrackedElement* el) {
-                                  return std::move(check).Run(AsView<V>(el));
-                                },
-                                std::move(check)));
+  return CheckView(view, std::move(check), true);
 }
 
+// static
+template <template <typename...> typename C, class V, typename T, typename U>
+ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckView(
+    ElementSpecifier view,
+    C<T(V*)> function,
+    U&& matcher) {
+  StepBuilder builder;
+  SpecifyElement(builder, view);
+  builder.SetStartCallback(base::BindOnce(
+      [](base::OnceCallback<T(V*)> function, testing::Matcher<T> matcher,
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        if (!MatchAndExplain("CheckView()", matcher,
+                             std::move(function).Run(AsView<V>(el)))) {
+          seq->FailForTesting();
+        }
+      },
+      base::OnceCallback<T(V*)>(std::move(function)),
+      testing::Matcher<T>(std::forward<U>(matcher))));
+  return builder;
+}
+
+// static
 template <class V, typename T, typename U>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTest::CheckViewProperty(
     ElementSpecifier view,
     T (V::*property)() const,
     U&& matcher) {
-  return CheckElement(
-      view, base::BindOnce(
-                [](T (V::*property)() const, testing::Matcher<T> matcher,
-                   ui::TrackedElement* el) {
-                  testing::StringMatchResultListener listener;
-                  const bool result = matcher.MatchAndExplain(
-                      (AsView<V>(el)->*property)(), &listener);
-                  if (!result)
-                    LOG(ERROR) << "CheckThat() failed: " << listener.str();
-                  return result;
-                },
-                property, std::forward<U>(matcher)));
+  StepBuilder builder;
+  SpecifyElement(builder, view);
+  builder.SetStartCallback(base::BindOnce(
+      [](T (V::*property)() const, testing::Matcher<T> matcher,
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
+        if (!MatchAndExplain("CheckViewProperty()", matcher,
+                             (AsView<V>(el)->*property)())) {
+          seq->FailForTesting();
+        }
+      },
+      property, testing::Matcher<T>(std::forward<U>(matcher))));
+  return builder;
 }
 
 #endif  // CHROME_TEST_INTERACTION_INTERACTIVE_BROWSER_TEST_H_
