@@ -54,14 +54,6 @@ class AshPixelDiffer {
   }
 
  private:
-  friend class FullscreenPixelTest;
-
-  // Similar to `CompareUiComponentsOnPrimaryScreen()` but with the difference
-  // that every pixel on the screen is compared.
-  // NOTE: use this function only when necessary. Otherwise, a tiny UI change
-  // may break many pixel tests.
-  bool ComparePrimaryFullScreen(const std::string& screenshot_name);
-
   // Compares a screenshot of the primary screen with the specified benchmark
   // image. Only the pixels in `rects_in_screen` affect the comparison result.
   bool ComparePrimaryScreenshotInRects(

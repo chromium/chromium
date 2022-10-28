@@ -48,11 +48,4 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
       /*algorithm=*/nullptr, rects_in_pixel);
 }
 
-bool AshPixelDiffer::ComparePrimaryFullScreen(
-    const std::string& screenshot_name) {
-  aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
-  return pixel_diff_.CompareNativeWindowScreenshot(
-      screenshot_name, primary_root_window, primary_root_window->bounds());
-}
-
 }  // namespace ash
