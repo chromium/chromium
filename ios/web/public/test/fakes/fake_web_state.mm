@@ -221,16 +221,6 @@ void FakeWebState::LoadData(NSData* data,
   OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 }
 
-void FakeWebState::ExecuteJavaScript(const std::u16string& javascript) {
-  last_executed_javascript_ = javascript;
-}
-
-void FakeWebState::ExecuteJavaScript(const std::u16string& javascript,
-                                     JavaScriptResultCallback callback) {
-  last_executed_javascript_ = javascript;
-  std::move(callback).Run(nullptr);
-}
-
 void FakeWebState::ExecuteUserJavaScript(NSString* javaScript) {}
 
 NSString* FakeWebState::GetStableIdentifier() const {
@@ -446,10 +436,6 @@ void FakeWebState::ShouldAllowResponse(
       num_decisions_requested);
 }
 
-std::u16string FakeWebState::GetLastExecutedJavascript() const {
-  return last_executed_javascript_;
-}
-
 absl::optional<WebState::ScriptCommandCallback>
 FakeWebState::GetLastAddedCallback() const {
   return last_added_callback_;
@@ -481,10 +467,6 @@ void FakeWebState::SetVisibleURL(const GURL& url) {
 
 void FakeWebState::SetTrustLevel(URLVerificationTrustLevel trust_level) {
   trust_level_ = trust_level;
-}
-
-void FakeWebState::ClearLastExecutedJavascript() {
-  last_executed_javascript_.clear();
 }
 
 void FakeWebState::SetCanTakeSnapshot(bool can_take_snapshot) {

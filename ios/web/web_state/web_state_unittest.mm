@@ -77,30 +77,6 @@ class WebStateTest : public FakeWebClient, public WebTestWithWebState {
   base::HistogramTester histogram_tester_;
 };
 
-// Tests script execution with and without callback.
-TEST_F(WebStateTest, ScriptExecution) {
-  ASSERT_TRUE(LoadHtml("<html></html>"));
-
-  // Execute script without callback.
-  web_state()->ExecuteJavaScript(u"window.foo = 'bar'");
-
-  // Execute script with callback.
-  __block std::unique_ptr<base::Value> execution_result;
-  __block bool execution_complete = false;
-  web_state()->ExecuteJavaScript(
-      u"window.foo", base::BindOnce(^(const base::Value* value) {
-        execution_result = std::make_unique<base::Value>(value->Clone());
-        execution_complete = true;
-      }));
-  WaitForCondition(^{
-    return execution_complete;
-  });
-
-  ASSERT_TRUE(execution_result);
-  ASSERT_TRUE(execution_result->is_string());
-  EXPECT_EQ("bar", execution_result->GetString());
-}
-
 // Tests that executing user JavaScript registers user interaction.
 TEST_F(WebStateTest, UserScriptExecution) {
   web::FakeWebStateDelegate delegate;

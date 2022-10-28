@@ -312,21 +312,6 @@ class WebState : public base::SupportsUserData {
   // given `url`.
   virtual void LoadData(NSData* data, NSString* mime_type, const GURL& url) = 0;
 
-  // DISCOURAGED. Prefer using `WebFrame CallJavaScriptFunction` instead because
-  // it restricts JavaScript execution to functions within __gCrWeb and can also
-  // call those functions on any frame in the page. ExecuteJavaScript here can
-  // execute arbitrary JavaScript code, which is not as safe and is restricted
-  // to executing only on the main frame.
-  // Runs JavaScript in the main frame's context. If a callback is provided, it
-  // will be used to return the result, when the result is available or script
-  // execution has failed due to an error.
-  // NOTE: Integer values will be returned as Type::DOUBLE because of underlying
-  // library limitation.
-  typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
-  virtual void ExecuteJavaScript(const std::u16string& javascript) = 0;
-  virtual void ExecuteJavaScript(const std::u16string& javascript,
-                                 JavaScriptResultCallback callback) = 0;
-
   // Asynchronously executes `javaScript` in the main frame's context,
   // registering user interaction.
   virtual void ExecuteUserJavaScript(NSString* javaScript) = 0;

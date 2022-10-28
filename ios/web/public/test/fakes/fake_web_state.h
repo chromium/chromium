@@ -70,9 +70,6 @@ class FakeWebState : public WebState {
   CRWSessionStorage* BuildSessionStorage() override;
   CRWJSInjectionReceiver* GetJSInjectionReceiver() const override;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
-  void ExecuteJavaScript(const std::u16string& javascript) override;
-  void ExecuteJavaScript(const std::u16string& javascript,
-                         JavaScriptResultCallback callback) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   NSString* GetStableIdentifier() const override;
   const std::string& GetContentsMimeType() const override;
@@ -146,7 +143,6 @@ class FakeWebState : public WebState {
   void SetIsCrashed(bool value);
   void SetIsEvicted(bool value);
   void SetWebViewProxy(CRWWebViewProxyType web_view_proxy);
-  void ClearLastExecutedJavascript();
   void SetCanTakeSnapshot(bool can_take_snapshot);
 
   // Getters for test data.
@@ -164,7 +160,6 @@ class FakeWebState : public WebState {
       NSURLResponse* response,
       WebStatePolicyDecider::ResponseInfo response_info,
       WebStatePolicyDecider::PolicyDecisionCallback callback);
-  std::u16string GetLastExecutedJavascript() const;
   // Returns a copy of the last added callback, if one has been added.
   absl::optional<ScriptCommandCallback> GetLastAddedCallback() const;
   std::string GetLastCommandPrefix() const;
@@ -200,7 +195,6 @@ class FakeWebState : public WebState {
   FaviconStatus favicon_status_;
   GURL url_;
   std::u16string title_;
-  std::u16string last_executed_javascript_;
   URLVerificationTrustLevel trust_level_ = kAbsolute;
   bool content_is_html_ = true;
   std::string mime_type_;
