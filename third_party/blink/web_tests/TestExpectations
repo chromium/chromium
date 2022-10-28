@@ -7288,6 +7288,8 @@ crbug.com/1360944 [ Win ] virtual/attribution-reporting-debug-mode/wpt_internal/
 crbug.com/1371157 [ Debug Linux ] external/wpt/accessibility/crashtests/delayed-ignored-change.html [ Timeout ]
 crbug.com/1371125 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/1377004 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
+crbug.com/1234839 [ Debug Linux ] external/wpt/html/semantics/interactive-elements/the-details-element/toggleEvent.html [ Failure Pass ]
+crbug.com/1379180 [ Linux ] fast/events/event-hit-testing-fallback-to-iframe.html [ Failure Pass ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
