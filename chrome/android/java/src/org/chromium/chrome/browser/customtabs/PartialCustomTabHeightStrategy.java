@@ -85,7 +85,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
      * display height.
      */
     private static final float EXTRA_HEIGHT_RATIO = 0.1f;
-    private static final int SCROLL_DURATION_MS = 200;
     private static final int NAVBAR_FADE_DURATION_MS = 16;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
@@ -103,12 +102,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     ChromeFeatureList.CCT_RESIZABLE_ALWAYS_SHOW_NAVBAR_BUTTONS,
                     PARAM_LOG_IMMERSIVE_MODE_CONFIRMATIONS, true);
 
-    @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
+    @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION,
+            HeightStatus.CLOSE})
     @Retention(RetentionPolicy.SOURCE)
     @interface HeightStatus {
         int TOP = 0;
         int INITIAL_HEIGHT = 1;
         int TRANSITION = 2;
+        int CLOSE = 3;
     }
 
     private final Activity mActivity;
@@ -160,6 +161,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private Runnable mPositionUpdater;
     private Runnable mSoftKeyboardRunnable;
     private boolean mStopShowingSpinner;
+    private boolean mRestoreAfterFindPage;
 
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
     @Nullable
@@ -216,7 +218,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mFullscreenManager = fullscreenManager;
 
         mAnimator = new ValueAnimator();
-        mAnimator.setDuration(SCROLL_DURATION_MS);
         mAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -229,6 +230,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             }
         });
         mAnimator.addUpdateListener(this);
+        mAnimator.setInterpolator(new AccelerateInterpolator());
+        mAnimator.setDuration(
+                mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime));
 
         lifecycleDispatcher.register(this);
 
@@ -296,11 +300,48 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             return;
         }
         mSoftKeyboardRunnable = softKeyboardRunnable;
+        animateTabTo(HeightStatus.TOP);
+    }
 
-        int start = mActivity.getWindow().getAttributes().y;
-        int end = getFullyExpandedYWithAdjustment();
+    private void animateTabTo(int targetStatus) {
+        // Tab cannot be animated to top/initial when running in full height.
+        assert !(isFullHeight()
+                && (targetStatus == HeightStatus.TOP
+                        || targetStatus == HeightStatus.INITIAL_HEIGHT));
+
+        Window window = mActivity.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        WindowManager.LayoutParams attrs = window.getAttributes();
+
+        int start = attrs.y;
+        int end;
+        switch (targetStatus) {
+            case HeightStatus.TOP:
+                // Make the window full height if it is not already. Otherwise background app
+                // can flash briefly while expanding.
+                if (attrs.height < mDisplayHeight - mNavbarHeight) {
+                    attrs.height = mDisplayHeight - mNavbarHeight;
+                    window.setAttributes(attrs);
+                }
+                end = getFullyExpandedYWithAdjustment();
+                break;
+            case HeightStatus.INITIAL_HEIGHT:
+                end = initialY();
+                break;
+            case HeightStatus.CLOSE:
+                end = mDisplayHeight - mNavbarHeight;
+                if (isFullHeight()) {
+                    attrs.y = getFullyExpandedY();
+                    window.setAttributes(attrs);
+                }
+                break;
+            default:
+                end = 0;
+                assert false : "Target status should be either top or initial height";
+        }
+
+        mTargetStatus = targetStatus;
         mAnimator.setIntValues(start, end);
-        mTargetStatus = HeightStatus.TOP;
         mAnimator.start();
     }
 
@@ -310,6 +351,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         initializeHeight();
         updateShadowOffset();
         maybeInvokeResizeCallback();
+        mRestoreAfterFindPage = false;
     }
 
     private int initialY() {
@@ -477,12 +519,27 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int findToolbarBackground =
                 mActivity.getResources().getColor(R.color.find_in_page_background_color);
         getDragBarBackground().setColor(findToolbarBackground);
+
+        if (isFullHeight()) return;
+
+        // We get zero search results if the content view is entirely hidden by the soft keyboard,
+        // which can happen if the tab is at initial height. Expand it.
+        if (mStatus == HeightStatus.INITIAL_HEIGHT) {
+            animateTabTo(HeightStatus.TOP);
+            mRestoreAfterFindPage = true;
+        }
     }
 
     @Override
     public void onFindToolbarHidden() {
         if (mIsTablet) return;
         getDragBarBackground().setColor(mToolbarColor);
+
+        if (isFullHeight()) return;
+        if (mRestoreAfterFindPage) {
+            animateTabTo(HeightStatus.INITIAL_HEIGHT);
+            mRestoreAfterFindPage = false;
+        }
     }
 
     private void initializeHeight() {
@@ -901,21 +958,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mFinishRunnable = finishRunnable;
 
         // Tapping the close button while in transition state should be ignored.
-        // Delay it till the height settles in to either top/initial state.
+        // Delay it till the height settles in to either top/initial state, where the animation
+        // begins when it detects the presence of |mFinishRunnable|.
         if (mStatus == HeightStatus.TRANSITION) return;
 
-        Window window = mActivity.getWindow();
-        WindowManager.LayoutParams attrs = window.getAttributes();
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        if (isFullHeight()) {
-            attrs.y = getFullyExpandedY();
-            window.setAttributes(attrs);
-        }
-        mAnimator.setIntValues(attrs.y, mDisplayHeight - mNavbarHeight);
-        mAnimator.setDuration(
-                mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        mAnimator.setInterpolator(new AccelerateInterpolator());
-        mAnimator.start();
+        animateTabTo(HeightStatus.CLOSE);
     }
 
     // DragEventCallback implementation
@@ -941,31 +988,24 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int topY = getFullyExpandedYWithAdjustment();
         int initialY = initialY();
         int bottomY = mDisplayHeight - mNavbarHeight;
-        int animateEndY = -1;
 
         if (finalY < initialY) { // Move up
-            if (Math.abs(topY - finalY) < Math.abs(finalY - initialY)) {
-                mTargetStatus = HeightStatus.TOP;
-                animateEndY = topY;
-            } else {
-                mTargetStatus = HeightStatus.INITIAL_HEIGHT;
-                animateEndY = initialY;
-            }
+            animateTabTo(Math.abs(topY - finalY) < Math.abs(finalY - initialY)
+                            ? HeightStatus.TOP
+                            : HeightStatus.INITIAL_HEIGHT);
+            return true;
         } else { // Move down
             // Prevents skipping initial state when swiping from the top.
             if (mStatus == HeightStatus.TOP) finalY = Math.min(initialY, finalY);
 
             if (Math.abs(initialY - finalY) < Math.abs(finalY - bottomY)) {
-                mTargetStatus = HeightStatus.INITIAL_HEIGHT;
-                animateEndY = initialY;
+                animateTabTo(HeightStatus.INITIAL_HEIGHT);
+                return true;
             }
         }
 
-        if (animateEndY < 0) return false;
-
-        mAnimator.setIntValues(currentY, animateEndY);
-        mAnimator.start();
-        return true;
+        // Tab is being closed. Animation is initiated in |handleCloseAnimation()|.
+        return false;
     }
 
     // FullscreenManager.Observer implementation

@@ -1063,6 +1063,19 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals("There should be no top shadow at full height", 0, mLayoutParams.topMargin);
     }
 
+    @Test
+    public void expandToFullHeightOnFindInPage() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
+        doReturn(mDragBarBackground).when(mDragBar).getBackground();
+        strategy.onFindToolbarShown();
+        WindowManager.LayoutParams attrs = mAttributeResults.get(mAttributeResults.size() - 1);
+        assertTabIsFullHeight(attrs);
+
+        strategy.onFindToolbarHidden();
+        attrs = mAttributeResults.get(mAttributeResults.size() - 1);
+        assertTabIsAtInitialPos(attrs);
+    }
+
     private boolean isFullscreen() {
         WindowManager.LayoutParams attrs = mAttributeResults.get(mAttributeResults.size() - 1);
         return attrs.isFullscreen();
