@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -19,12 +20,15 @@
 #endif
 
 namespace {
+
 // Minimum gap between the label and the text field.
 const CGFloat kLabelAndFieldGap = 5;
 // Height/width of the edit icon.
 const CGFloat kEditIconLength = 18;
 // Height/width of the error icon.
 const CGFloat kErrorIconLength = 20;
+// Size of the symbols.
+const CGFloat kSymbolSize = 15;
 
 }  // namespace
 
@@ -427,14 +431,22 @@ const CGFloat kErrorIconLength = 20;
 
 // Returns the edit icon image.
 - (UIImage*)editImage {
-  return [[UIImage imageNamed:@"table_view_cell_edit_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolSize);
+  } else {
+    return [[UIImage imageNamed:@"table_view_cell_edit_icon"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
 }
 
 // Returns the error icon image.
 - (UIImage*)errorImage {
-  return [[UIImage imageNamed:@"table_view_cell_error_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+  } else {
+    return [[UIImage imageNamed:@"table_view_cell_error_icon"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
 }
 
 @end

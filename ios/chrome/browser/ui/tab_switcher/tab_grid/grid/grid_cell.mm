@@ -508,7 +508,7 @@ BASE_FEATURE(kPreviousTabViewWidthCrash,
     return DefaultSymbolTemplateWithPointSize(kCircleSymbol,
                                               kIconSymbolPointSize);
   }
-  return DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+  return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
                                             kIconSymbolPointSize);
 }
 

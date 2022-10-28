@@ -74,15 +74,14 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   switch (_distillationState) {
     case ReadingListUIDistillationStatusFailure:
       self.distillationBadgeImage =
-          UseSymbols()
-              ? DefaultSymbolTemplateWithPointSize(kFailMarkCircleFillSymbol,
-                                                   kSymbolBadgeImagePointSize)
-              : [UIImage imageNamed:@"distillation_fail_new"];
+          UseSymbols() ? DefaultSymbolTemplateWithPointSize(
+                             kErrorCircleFillSymbol, kSymbolBadgeImagePointSize)
+                       : [UIImage imageNamed:@"distillation_fail_new"];
       break;
     case ReadingListUIDistillationStatusSuccess:
       self.distillationBadgeImage =
           UseSymbols()
-              ? DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+              ? DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
                                                    kSymbolBadgeImagePointSize)
               : [UIImage imageNamed:@"table_view_cell_check_mark"];
       break;

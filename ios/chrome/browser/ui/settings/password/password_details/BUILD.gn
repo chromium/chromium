@@ -71,6 +71,7 @@ source_set("password_details_ui") {
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/resources:infobar_hide_password_icon",
     "//ios/chrome/browser/ui/infobars/resources:infobar_reveal_password_icon",
     "//ios/chrome/browser/ui/settings:settings_root",

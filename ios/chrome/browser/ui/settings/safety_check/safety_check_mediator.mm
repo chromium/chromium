@@ -1043,7 +1043,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       UIImage* safeIconImage =
           UseSymbols()
               ? DefaultSymbolTemplateWithPointSize(
-                    kCheckMarkCircleFillSymbol, kTrailingSymbolImagePointSize)
+                    kCheckmarkCircleFillSymbol, kTrailingSymbolImagePointSize)
               : [[UIImage imageNamed:@"settings_safe_state"]
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.updateCheckItem.trailingImage = safeIconImage;
@@ -1140,7 +1140,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       UIImage* safeIconImage =
           UseSymbols()
               ? DefaultSymbolTemplateWithPointSize(
-                    kCheckMarkCircleFillSymbol, kTrailingSymbolImagePointSize)
+                    kCheckmarkCircleFillSymbol, kTrailingSymbolImagePointSize)
               : [[UIImage imageNamed:@"settings_safe_state"]
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.passwordCheckItem.detailText =
@@ -1216,7 +1216,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
       UIImage* safeIconImage =
           UseSymbols()
               ? DefaultSymbolTemplateWithPointSize(
-                    kCheckMarkCircleFillSymbol, kTrailingSymbolImagePointSize)
+                    kCheckmarkCircleFillSymbol, kTrailingSymbolImagePointSize)
               : [[UIImage imageNamed:@"settings_safe_state"]
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.safeBrowsingCheckItem.trailingImage = safeIconImage;

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
@@ -79,6 +80,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   ReauthenticationReasonCopy,
   ReauthenticationReasonEdit,
 };
+
+// Size of the symbols.
+const CGFloat kSymbolSize = 15;
+const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 }  // namespace
 
@@ -385,10 +390,19 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
   // During editing password is exposed so eye icon shouldn't be shown.
   if (!self.tableView.editing) {
-    NSString* image = [self isPasswordShown] ? @"infobar_hide_password_icon"
-                                             : @"infobar_reveal_password_icon";
-    item.identifyingIcon = [[UIImage imageNamed:image]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if (UseSymbols()) {
+      UIImage* image =
+          [self isPasswordShown]
+              ? DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize)
+              : DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+      item.identifyingIcon = image;
+    } else {
+      NSString* image = [self isPasswordShown]
+                            ? @"infobar_hide_password_icon"
+                            : @"infobar_reveal_password_icon";
+      item.identifyingIcon = [[UIImage imageNamed:image]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     item.identifyingIconEnabled = YES;
     item.identifyingIconAccessibilityLabel = l10n_util::GetNSString(
         [self isPasswordShown] ? IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON
@@ -460,8 +474,13 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
         IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME,
         base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
   }
-  item.image = [[UIImage imageNamed:@"table_view_cell_error_icon"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  if (UseSymbols()) {
+    item.image =
+        DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+  } else {
+    item.image = [[UIImage imageNamed:@"table_view_cell_error_icon"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  }
   item.imageViewTintColor = [UIColor colorNamed:kRedColor];
   return item;
 }
@@ -880,6 +899,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Applies tint colour and resizes image.
 - (UIImage*)compromisedIcon {
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kWarningFillSymbol,
+                                      kCompromisedPasswordSymbolSize);
+  }
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kIOSEnablePasswordManagerBrandingUpdate)) {
@@ -947,9 +970,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ReauthenticationReasonShow:
       self.passwordShown = YES;
       self.passwordTextItem.textFieldValue = self.password.password;
-      self.passwordTextItem.identifyingIcon =
-          [[UIImage imageNamed:@"infobar_hide_password_icon"]
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      if (UseSymbols()) {
+        self.passwordTextItem.identifyingIcon =
+            DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
+      } else {
+        self.passwordTextItem.identifyingIcon =
+            [[UIImage imageNamed:@"infobar_hide_password_icon"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      }
       self.passwordTextItem.identifyingIconAccessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
       [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
@@ -1169,9 +1197,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     } else {
       self.passwordTextItem.textFieldValue = kMaskedPassword;
     }
-    self.passwordTextItem.identifyingIcon =
-        [[UIImage imageNamed:@"infobar_reveal_password_icon"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if (UseSymbols()) {
+      self.passwordTextItem.identifyingIcon =
+          DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+    } else {
+      self.passwordTextItem.identifyingIcon =
+          [[UIImage imageNamed:@"infobar_reveal_password_icon"]
+              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
     self.passwordTextItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
@@ -1179,9 +1212,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     if (self.credentialType == CredentialTypeNew) {
       self.passwordTextItem.textFieldSecureTextEntry = NO;
       self.passwordShown = YES;
-      self.passwordTextItem.identifyingIcon =
-          [[UIImage imageNamed:@"infobar_hide_password_icon"]
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      if (UseSymbols()) {
+        self.passwordTextItem.identifyingIcon =
+            DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
+      } else {
+        self.passwordTextItem.identifyingIcon =
+            [[UIImage imageNamed:@"infobar_hide_password_icon"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      }
       self.passwordTextItem.identifyingIconAccessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
       [self reconfigureCellsForItems:@[ self.passwordTextItem ]];

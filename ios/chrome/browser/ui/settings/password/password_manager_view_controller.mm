@@ -1718,7 +1718,7 @@ NSInteger kTrailingSymbolSize = 18;
       DCHECK(!self.compromisedPasswordsCount);
       UIImage* safeIconImage =
           UseSymbols()
-              ? DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+              ? DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
                                                    kTrailingSymbolSize)
               : [[UIImage imageNamed:@"settings_safe_state"]
                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
