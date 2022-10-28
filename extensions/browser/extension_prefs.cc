@@ -553,7 +553,8 @@ void ExtensionPrefs::UpdateExtensionPref(
   DCHECK(CheckPrefType(pref.type, data_value.get()));
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
-  update->Set(pref.name, std::move(data_value));
+  update->Set(pref.name,
+              base::Value::FromUniquePtrValue(std::move(data_value)));
 }
 
 void ExtensionPrefs::UpdateExtensionPref(
@@ -566,7 +567,7 @@ void ExtensionPrefs::UpdateExtensionPref(
   }
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
   if (data_value)
-    update->Set(key, std::move(data_value));
+    update->Set(key, base::Value::FromUniquePtrValue(std::move(data_value)));
   else
     update->Remove(key);
 }
@@ -1654,7 +1655,7 @@ bool ExtensionPrefs::FinishDelayedInstallInfo(
 
   // Commit the delayed install data.
   for (const auto [key, value] : *pending_install_dict->AsConstDict()) {
-    extension_dict->Set(key, std::make_unique<base::Value>(value.Clone()));
+    extension_dict->Set(key, value.Clone());
   }
   FinishExtensionInfoPrefs(extension_id, install_time, needs_sort_ordinal,
                            suggested_page_ordinal, extension_dict.get());
@@ -2488,26 +2489,26 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
   // Reinitializes various preferences with empty dictionaries.
   if (!extension_dict->HasKey(pref_names::kPrefPreferences)) {
     extension_dict->Set(pref_names::kPrefPreferences,
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICT));
   }
 
   if (!extension_dict->HasKey(pref_names::kPrefIncognitoPreferences)) {
     extension_dict->Set(pref_names::kPrefIncognitoPreferences,
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICT));
   }
 
   if (!extension_dict->HasKey(pref_names::kPrefRegularOnlyPreferences)) {
     extension_dict->Set(pref_names::kPrefRegularOnlyPreferences,
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICT));
   }
 
   if (!extension_dict->HasKey(pref_names::kPrefContentSettings))
     extension_dict->Set(pref_names::kPrefContentSettings,
-                        std::make_unique<base::ListValue>());
+                        base::Value(base::Value::Type::LIST));
 
   if (!extension_dict->HasKey(pref_names::kPrefIncognitoContentSettings)) {
     extension_dict->Set(pref_names::kPrefIncognitoContentSettings,
-                        std::make_unique<base::ListValue>());
+                        base::Value(base::Value::Type::LIST));
   }
 
   // If this point has been reached, any pending installs should be considered

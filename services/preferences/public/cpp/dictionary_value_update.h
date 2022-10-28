@@ -49,8 +49,8 @@ class DictionaryValueUpdate {
   // within a key, but there are no other restrictions on keys.
   // If the key at any step of the way doesn't exist, or exists but isn't
   // a DictionaryValue, a new DictionaryValue will be created and attached
-  // to the path in that location. |in_value| must be non-null.
-  void Set(base::StringPiece path, std::unique_ptr<base::Value> in_value);
+  // to the path in that location.
+  void Set(base::StringPiece path, base::Value in_value);
 
   // This is similar to |Set|, but lets callers explicitly specify the path
   // components and thus allows nested keys with periods in them.

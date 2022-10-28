@@ -46,14 +46,13 @@ void DictionaryValueUpdate::Clear() {
   value_->DictClear();
 }
 
-void DictionaryValueUpdate::Set(base::StringPiece path,
-                                std::unique_ptr<base::Value> in_value) {
+void DictionaryValueUpdate::Set(base::StringPiece path, base::Value in_value) {
   const base::Value* old_value = value_->FindPath(path);
-  if (old_value != nullptr && *old_value == *in_value)
+  if (old_value && *old_value == in_value)
     return;
 
   RecordPath(path);
-  value_->Set(path, std::move(in_value));
+  value_->GetDict().SetByDottedPath(path, std::move(in_value));
 }
 
 void DictionaryValueUpdate::SetPath(
@@ -68,25 +67,25 @@ void DictionaryValueUpdate::SetPath(
 }
 
 void DictionaryValueUpdate::SetBoolean(base::StringPiece path, bool in_value) {
-  Set(path, std::make_unique<base::Value>(in_value));
+  Set(path, base::Value(in_value));
 }
 
 void DictionaryValueUpdate::SetInteger(base::StringPiece path, int in_value) {
-  Set(path, std::make_unique<base::Value>(in_value));
+  Set(path, base::Value(in_value));
 }
 
 void DictionaryValueUpdate::SetDouble(base::StringPiece path, double in_value) {
-  Set(path, std::make_unique<base::Value>(in_value));
+  Set(path, base::Value(in_value));
 }
 
 void DictionaryValueUpdate::SetString(base::StringPiece path,
                                       base::StringPiece in_value) {
-  Set(path, std::make_unique<base::Value>(in_value));
+  Set(path, base::Value(in_value));
 }
 
 void DictionaryValueUpdate::SetString(base::StringPiece path,
                                       const std::u16string& in_value) {
-  Set(path, std::make_unique<base::Value>(in_value));
+  Set(path, base::Value(in_value));
 }
 
 std::unique_ptr<DictionaryValueUpdate> DictionaryValueUpdate::SetDictionary(
