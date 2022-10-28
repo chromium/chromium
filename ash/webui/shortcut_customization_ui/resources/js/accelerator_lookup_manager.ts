@@ -53,6 +53,14 @@ export class AcceleratorLookupManager {
    */
   private reverseAcceleratorLookup_: ReverseAcceleratorLookupMap = new Map();
 
+  /**
+   * Used to generate the keys for the ReverseAcceleratorLookupMap.
+   */
+  private getKeyForLookup(accelerator: Accelerator): string {
+    return JSON.stringify(
+        {keyCode: accelerator.key, modifiers: accelerator.modifiers});
+  }
+
   getAccelerators(source: number|string, action: number|string):
       AcceleratorInfo[] {
     const uuid = `${source}-${action}`;
@@ -86,7 +94,8 @@ export class AcceleratorLookupManager {
    */
   getAcceleratorIdFromReverseLookup(accelerator: Accelerator): string
       |undefined {
-    return this.reverseAcceleratorLookup_.get(JSON.stringify(accelerator));
+    return this.reverseAcceleratorLookup_.get(
+        this.getKeyForLookup(accelerator));
   }
 
   setAcceleratorLookup(acceleratorConfig: AcceleratorConfig) {
@@ -105,7 +114,7 @@ export class AcceleratorLookupManager {
         accelInfos.forEach((info: AcceleratorInfo) => {
           this.getAccelerators(source, actionId).push(Object.assign({}, info));
           this.reverseAcceleratorLookup_.set(
-              JSON.stringify(info.accelerator), id);
+              this.getKeyForLookup(info.accelerator), id);
         });
       }
     }
@@ -179,8 +188,8 @@ export class AcceleratorLookupManager {
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
-        JSON.stringify(newAccelerator), `${source}-${action}`);
-    this.reverseAcceleratorLookup_.delete(JSON.stringify(oldAccelerator));
+        this.getKeyForLookup(newAccelerator), `${source}-${action}`);
+    this.reverseAcceleratorLookup_.delete(this.getKeyForLookup(oldAccelerator));
   }
 
   addAccelerator(
@@ -210,7 +219,7 @@ export class AcceleratorLookupManager {
 
     // Update the reverse look up maps.
     this.reverseAcceleratorLookup_.set(
-        JSON.stringify(newAccelerator), `${source}-${action}`);
+        this.getKeyForLookup(newAccelerator), `${source}-${action}`);
   }
 
   removeAccelerator(
@@ -222,7 +231,7 @@ export class AcceleratorLookupManager {
     assert(foundAccel != null);
 
     // Remove from reverse lookup.
-    this.reverseAcceleratorLookup_.delete(JSON.stringify(accelerator));
+    this.reverseAcceleratorLookup_.delete(this.getKeyForLookup(accelerator));
 
     // Default accelerators are only disabled, not removed.
     if (foundAccel!.type === AcceleratorType.kDefault) {
