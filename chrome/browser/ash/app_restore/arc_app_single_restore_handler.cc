@@ -81,9 +81,21 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
   window_info_->display_id = window_info->display_id;
   window_info_->state = window_info->state;
 
-  // TODO: Add initial launch type.
   ghost_window_handler_->LaunchArcGhostWindow(app_id, window_info->window_id,
                                               &restore_data);
+  ghost_window_handler_->UpdateArcGhostWindowType(
+      window_info->window_id, arc::GhostWindowType::kAppLaunch);
+
+  // TODO: Add initial launch type on `LaunchArcGhostWindow`, rather update ARC
+  // app states manually here.
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (prefs) {
+    auto app_info = prefs->GetApp(app_id);
+    if (app_info) {
+      ghost_window_handler_->OnAppStatesUpdate(app_id, app_info->ready,
+                                               app_info->need_fixup);
+    }
+  }
 
   if (IsAppReadyForLaunch(profile_, app_id)) {
     // SendAppLaunchRequestToARC will reset `app_id_` after request sent.

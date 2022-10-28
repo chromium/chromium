@@ -23,6 +23,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest;
 
 namespace app_restore {
 
+class ArcAppSingleRestoreHandler;
 class ArcAppQueueRestoreHandler;
 
 namespace {
@@ -68,9 +69,9 @@ class AppRestoreArcTaskHandler : public KeyedService,
   // Get or create full restore arc app queue restore handler.
   ArcAppQueueRestoreHandler* GetFullRestoreArcAppQueueRestoreHandler();
 
-  // Get or create window predictor arc app queue restore handler by
+  // Get or create window predictor arc app restore handler by
   // `launch_id`.
-  ArcAppQueueRestoreHandler* GetWindowPredictorArcAppQueueRestoreHandler(
+  ArcAppSingleRestoreHandler* GetWindowPredictorArcAppRestoreHandler(
       int32_t launch_id);
 
   // Get or create desk template arc app queue restore handler by `launch_id`.
@@ -112,6 +113,9 @@ class AppRestoreArcTaskHandler : public KeyedService,
       LauncherTag launcher_tag,
       bool call_init_callback);
 
+  ArcAppSingleRestoreHandler* CreateOrGetArcAppSingleRestoreHandler(
+      LauncherTag launcher_tag);
+
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
 
@@ -119,9 +123,15 @@ class AppRestoreArcTaskHandler : public KeyedService,
   std::unique_ptr<full_restore::ArcGhostWindowHandler> window_handler_;
 #endif
 
-  // Maps LauncherTag to ArcAppQueueRestoreHandlers.
+  // Maps LauncherTag to ArcAppQueueRestoreHandlers. Currently FullRestore
+  // and DeskTemplate use it.
   std::map<LauncherTag, std::unique_ptr<ArcAppQueueRestoreHandler>>
       arc_app_queue_restore_handlers_;
+
+  // Maps LauncherTag to ArcAppSingleRestoreHandlers. Currently WindowPredictor
+  // use it.
+  std::map<LauncherTag, std::unique_ptr<ArcAppSingleRestoreHandler>>
+      arc_app_single_restore_handlers_;
 
   // These cache the readiness status of the subsystems needed to launch ARC
   // apps. They are used when new handlers are dynamically created so that the

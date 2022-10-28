@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
-#include "chrome/browser/ash/app_restore/arc_app_queue_restore_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_single_restore_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -101,16 +101,15 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
     return false;
   }
 
+  launch_counter++;
+
   arc::mojom::WindowInfoPtr predict_window_info =
       PredictAppWindowInfo(app_info, window_info.Clone());
 
-  auto data_handler = std::make_unique<ArcPredictorAppLaunchHandler>();
-  data_handler->AddPendingApp(arc_app_id, event_flags, window_type,
-                              std::move(predict_window_info));
-  arc_task_handler
-      ->GetWindowPredictorArcAppQueueRestoreHandler(handlers_.size())
-      ->RestoreArcApps(data_handler.get());
-  handlers_.push_back(std::move(data_handler));
+  arc_task_handler->GetWindowPredictorArcAppRestoreHandler(launch_counter)
+      ->LaunchGhostWindowWithApp(profile, arc_app_id, event_flags,
+                                 GhostWindowType::kAppLaunch,
+                                 std::move(predict_window_info));
 
   base::UmaHistogramEnumeration(kWindowPredictorLaunchHistogram,
                                 WindowPredictorLaunchType::kSuccess);

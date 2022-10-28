@@ -45,7 +45,7 @@ class WindowPredictor {
   WindowPredictor();
   ~WindowPredictor();
 
-  std::vector<std::unique_ptr<ArcPredictorAppLaunchHandler>> handlers_;
+  int32_t launch_counter = 0;
 };
 
 }  // namespace arc
