@@ -405,8 +405,7 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
   // TODO(https://crbug.com/749276): Check the signature algorithm against
   // policy.
   absl::optional<SignatureAlgorithm> signature_algorithm =
-      ParseSignatureAlgorithm(signature_algorithm_tlv,
-                              /*errors=*/nullptr);
+      ParseSignatureAlgorithm(signature_algorithm_tlv);
   if (!signature_algorithm) {
     return CRLRevocationStatus::UNKNOWN;
   }
@@ -414,8 +413,7 @@ CRLRevocationStatus CheckCRL(std::string_view raw_crl,
   //    This field MUST contain the same algorithm identifier as the
   //    signature field in the sequence tbsCertList (Section 5.1.2.2).
   absl::optional<SignatureAlgorithm> tbs_alg =
-      ParseSignatureAlgorithm(tbs_cert_list.signature_algorithm_tlv,
-                              /*errors=*/nullptr);
+      ParseSignatureAlgorithm(tbs_cert_list.signature_algorithm_tlv);
   if (!tbs_alg || *signature_algorithm != *tbs_alg) {
     return CRLRevocationStatus::UNKNOWN;
   }

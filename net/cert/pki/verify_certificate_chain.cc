@@ -144,14 +144,12 @@ bool VerifySignatureAlgorithmsMatch(const ParsedCertificate& cert,
   // But make a compatibility concession if alternate encodings are used
   // TODO(eroman): Turn this warning into an error.
   // TODO(eroman): Add a unit-test that exercises this case.
-  absl::optional<SignatureAlgorithm> alg1 =
-      ParseSignatureAlgorithm(alg1_tlv, errors);
+  absl::optional<SignatureAlgorithm> alg1 = ParseSignatureAlgorithm(alg1_tlv);
   if (!alg1) {
     errors->AddError(cert_errors::kUnacceptableSignatureAlgorithm);
     return false;
   }
-  absl::optional<SignatureAlgorithm> alg2 =
-      ParseSignatureAlgorithm(alg2_tlv, errors);
+  absl::optional<SignatureAlgorithm> alg2 = ParseSignatureAlgorithm(alg2_tlv);
   if (!alg2) {
     errors->AddError(cert_errors::kUnacceptableSignatureAlgorithm);
     return false;

@@ -744,8 +744,7 @@ bool X509Certificate::IsSelfSigned(const CRYPTO_BUFFER* cert_buffer) {
     return false;
 
   absl::optional<SignatureAlgorithm> signature_algorithm =
-      ParseSignatureAlgorithm(signature_algorithm_tlv,
-                              /*errors=*/nullptr);
+      ParseSignatureAlgorithm(signature_algorithm_tlv);
   if (!signature_algorithm)
     return false;
 

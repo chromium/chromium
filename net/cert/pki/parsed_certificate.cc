@@ -105,7 +105,7 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
 
   // Attempt to parse the signature algorithm contained in the Certificate.
   result->signature_algorithm_ =
-      ParseSignatureAlgorithm(result->signature_algorithm_tlv_, errors);
+      ParseSignatureAlgorithm(result->signature_algorithm_tlv_);
 
   der::Input subject_value;
   if (!GetSequenceValue(result->tbs_.subject_tlv, &subject_value)) {

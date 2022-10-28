@@ -339,7 +339,7 @@ bool ParseBasicOCSPResponse(const der::Input& raw_tlv, OCSPResponse* out) {
     return false;
   // TODO(crbug.com/634443): Propagate the errors.
   absl::optional<SignatureAlgorithm> sigalg =
-      ParseSignatureAlgorithm(sigalg_tlv, /*errors=*/nullptr);
+      ParseSignatureAlgorithm(sigalg_tlv);
   if (!sigalg)
     return false;
   out->signature_algorithm = sigalg.value();

@@ -13,8 +13,6 @@
 
 namespace net {
 
-class CertErrors;
-
 namespace der {
 class Input;
 }  // namespace der
@@ -76,8 +74,7 @@ enum class SignatureAlgorithm {
 // returns `absl::nullopt` if `algorithm_identifer` either cannot be parsed or
 // is not a recognized signature algorithm.
 NET_EXPORT absl::optional<SignatureAlgorithm> ParseSignatureAlgorithm(
-    const der::Input& algorithm_identifier,
-    CertErrors* errors);
+    const der::Input& algorithm_identifier);
 
 // Returns the hash to be used with the tls-server-end-point channel binding
 // (RFC 5929) or `absl::nullopt`, if not supported for this signature algorithm.

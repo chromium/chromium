@@ -1007,8 +1007,7 @@ void CertBuilder::InitFromCert(const der::Input& cert) {
   // signature
   der::Input signature_algorithm_tlv;
   ASSERT_TRUE(tbs_certificate.ReadRawTLV(&signature_algorithm_tlv));
-  auto signature_algorithm =
-      ParseSignatureAlgorithm(signature_algorithm_tlv, nullptr);
+  auto signature_algorithm = ParseSignatureAlgorithm(signature_algorithm_tlv);
   ASSERT_TRUE(signature_algorithm);
   signature_algorithm_ = *signature_algorithm;
 
