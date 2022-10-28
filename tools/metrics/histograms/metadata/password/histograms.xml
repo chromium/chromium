@@ -95,6 +95,27 @@ chromium-metrics-reviews@google.com.
                performing reenrollment possibility check"/>
 </variants>
 
+<variants name="UserSyncingType">
+  <variant name="" summary="all users."/>
+  <variant name=".SignedInAccountStoreUser"
+      summary="signed-in user, opted in to the account storage, and saving
+               passwords to the account storage."/>
+  <variant name=".SignedInAccountStoreUserSavingLocally"
+      summary="signed-in user and opted in to the account storage, but has
+               chosen to save passwords only on the device."/>
+  <variant name=".SignedInUser"
+      summary="signed-in user, not opted in to the account storage (but will
+               save passwords to the account storage by default)."/>
+  <variant name=".SignedInUserSavingLocally"
+      summary="signed-in user, not opted in to the account storage, and has
+               explicitly chosen to save passwords only on the device."/>
+  <variant name=".SignedOutAccountStoreUser"
+      summary="signed-out user, but an account storage opt-in exists."/>
+  <variant name=".SignedOutUser"
+      summary="signed-out user (and no account storage opt-in exists)."/>
+  <variant name=".SyncUser" summary="syncing user."/>
+</variants>
+
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
     enum="AccessoryAction" expires_after="2023-02-26">
   <owner>fhorschig@chromium.org</owner>
@@ -464,10 +485,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="PasswordManager.AccountStorageUserStateDuration"
-    units="ms" expires_after="2023-04-16">
-<!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
-
+<histogram
+    name="PasswordManager.AccountStorageUserStateDuration{UserSyncingType}"
+    units="ms" expires_after="2023-02-12">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -495,7 +515,10 @@ chromium-metrics-reviews@google.com.
     at the same time, their session activity will be logged from all the
     profiles, instead of only from the profile that the user is using at that
     moment.
+
+    Recorded for {UserSyncingType}
   </summary>
+  <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
 <histogram name="PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn"
@@ -1795,17 +1818,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.MoveUIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2023-04-23">
-<!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
-
+<histogram name="PasswordManager.MoveUIDismissalReason{UserSyncingType}"
+    enum="PasswordManagerUIDismissalReason" expires_after="2023-02-19">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
     Why was the &quot;move password to account?&quot; bubble closed? Recorded
     whenever the bubble is closed, either because the user clicked one of the
-    buttons or it went away automatically (lost focus).
+    buttons or it went away automatically (lost focus) for {UserSyncingType}
   </summary>
+  <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
 <histogram
@@ -2750,15 +2772,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.SavedGaiaPasswordHashCount" units="count"
-    expires_after="2023-03-26">
+<histogram name="PasswordManager.SavedGaiaPasswordHashCount{SyncConsentStatus}"
+    units="count" expires_after="2023-03-26">
   <owner>vsemeniuk@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of Gaia password hashes that have been saved for password
-    reuse detection. This is logged during the initialization of the
-    PasswordReuseManagerImpl class.
+    reuse detection {SyncConsentStatus}. This is logged during the
+    initialization of the PasswordReuseManagerImpl class.
   </summary>
+  <token key="SyncConsentStatus">
+    <variant name="" summary=""/>
+    <variant name=".SignedInNonSync"
+        summary="when the primary account for the profile does not have Sync
+                 consent"/>
+    <variant name=".Sync"
+        summary="when the primary account for the profile has Sync consent"/>
+  </token>
 </histogram>
 
 <histogram
@@ -2793,16 +2823,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.SaveUIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2023-02-26">
-<!-- Name completed by histogram_suffixes name="PasswordAccountStorageUserState" -->
-
-  <owner>vasilii@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>Why was the save password UI (bubble or infobar) closed?</summary>
-</histogram>
-
 <histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
     enum="PasswordManagerUIDismissalReason" expires_after="M110">
   <owner>ioanap@chromium.org</owner>
@@ -2813,6 +2833,18 @@ chromium-metrics-reviews@google.com.
     recorded only for Android and only after the user has unblacklisted an
     origin for saving from the accessory sheet.
   </summary>
+</histogram>
+
+<histogram name="PasswordManager.SaveUIDismissalReason{UserSyncingType}"
+    enum="PasswordManagerUIDismissalReason" expires_after="2023-02-26">
+  <owner>vasilii@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    Why was the save password UI (bubble or infobar) closed? Recorded for
+    {UserSyncingType}
+  </summary>
+  <token key="UserSyncingType" variants="UserSyncingType"/>
 </histogram>
 
 <histogram

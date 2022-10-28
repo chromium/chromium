@@ -2867,13 +2867,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PLT.PT_StartToFinish"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GaiaAccountType" separator=".">
-  <suffix name="SignedInNonSync"
-      label="A primary account does not exist for the profile"/>
-  <suffix name="Sync" label="A primary account exists for the profile"/>
-  <affected-histogram name="PasswordManager.SavedGaiaPasswordHashCount"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GeolocationSettingsDialogSource" separator=".">
   <suffix name="DSE" label="Default search engine"/>
   <suffix name="NonDSE" label="Non-default search engine"/>
@@ -6959,29 +6952,6 @@ chromium-metrics-reviews@google.com.
       label="The user is signed in and has opted in to the account storage."/>
   <affected-histogram name="PasswordManager.FillingAssistance"/>
   <affected-histogram name="PasswordManager.NewlySavedPasswordIsGenerated"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PasswordAccountStorageUserState" separator=".">
-  <suffix name="SignedInAccountStoreUser"
-      label="Signed-in user, opted in to the account storage, and saving
-             passwords to the account storage."/>
-  <suffix name="SignedInAccountStoreUserSavingLocally"
-      label="Signed-in user and opted in to the account storage, but has
-             chosen to save passwords only on the device."/>
-  <suffix name="SignedInUser"
-      label="Signed-in user, not opted in to the account storage (but will
-             save passwords to the account storage by default)."/>
-  <suffix name="SignedInUserSavingLocally"
-      label="Signed-in user, not opted in to the account storage, and has
-             explicitly chosen to save passwords only on the device."/>
-  <suffix name="SignedOutAccountStoreUser"
-      label="Signed-out user, but an account storage opt-in exists."/>
-  <suffix name="SignedOutUser"
-      label="Signed-out user (and no account storage opt-in exists)."/>
-  <suffix name="SyncUser" label="Syncing user."/>
-  <affected-histogram name="PasswordManager.AccountStorageUserStateDuration"/>
-  <affected-histogram name="PasswordManager.MoveUIDismissalReason"/>
-  <affected-histogram name="PasswordManager.SaveUIDismissalReason"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PasswordCustomPassphrase" separator=".">
