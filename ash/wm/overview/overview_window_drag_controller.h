@@ -125,6 +125,8 @@ class ASH_EXPORT OverviewWindowDragController {
   }
 
  private:
+  class ScopedFloatDragHelper;
+
   enum NormalDragAction {
     kToGrid = 0,
     kToDesk = 1,
@@ -173,6 +175,10 @@ class ASH_EXPORT OverviewWindowDragController {
   void RecordNormalDrag(NormalDragAction action,
                         bool is_dragged_to_other_display) const;
   void RecordDragToClose(DragToCloseAction action) const;
+
+  // Called by `float_drag_helper_` to destroy itself as it may need to live
+  // after a gesture is completed if there is an animation.
+  void DestroyFloatDragHelper();
 
   OverviewSession* overview_session_;
 
@@ -242,6 +248,12 @@ class ASH_EXPORT OverviewWindowDragController {
 
   SplitViewController::SnapPosition snap_position_ =
       SplitViewController::SnapPosition::kNone;
+
+  // Helper class that encapsulates the logic needed to alter the floated
+  // windows' container during a drag. May stay alive shortly after a drag is
+  // completed to keep the float container stacked below for the drag end
+  // animation.
+  std::unique_ptr<ScopedFloatDragHelper> float_drag_helper_;
 };
 
 }  // namespace ash

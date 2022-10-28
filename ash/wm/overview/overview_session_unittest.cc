@@ -3448,14 +3448,104 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
 
 INSTANTIATE_TEST_SUITE_P(All, OverviewSessionTest, testing::Bool());
 
+class FloatOverviewSessionTest : public OverviewTestBase {
+ public:
+  FloatOverviewSessionTest() = default;
+  FloatOverviewSessionTest(const FloatOverviewSessionTest&) = delete;
+  FloatOverviewSessionTest& operator=(const FloatOverviewSessionTest&) = delete;
+  ~FloatOverviewSessionTest() override = default;
+
+  // OverviewTestBase:
+  void SetUp() override {
+    feature_list.InitAndEnableFeature(chromeos::wm::features::kFloatWindow);
+    OverviewTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+// Tests that when we drag in overview, and there is a floated window, the
+// float container gets restacked so it will appear under the dragged window.
+// See b/252504134 for more details.
+TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
+  UpdateDisplay("800x600,800x600");
+
+  // Create one normal and one floated window.
+  auto normal_window = CreateAppWindow();
+  auto floated_window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  // Checks if the float container is in its regular position above the
+  // always on top container and below the app list container. This should
+  // always be the case unless we are dragging a non-floated window in overview,
+  // and there is a floated window.
+  auto check_float_container_normal_stacked = []() {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      EXPECT_TRUE(IsStackedBelow(
+          root->GetChildById(kShellWindowId_AlwaysOnTopContainer),
+          root->GetChildById(kShellWindowId_FloatContainer)));
+      EXPECT_TRUE(
+          IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
+                         root->GetChildById(kShellWindowId_AppListContainer)));
+    }
+  };
+
+  check_float_container_normal_stacked();
+  ToggleOverview();
+  OverviewItem* normal_item = GetOverviewItemForWindow(normal_window.get());
+  OverviewItem* floated_item = GetOverviewItemForWindow(floated_window.get());
+
+  // Dragging the floated window does not cause restacking as it is already on
+  // top of other windows like it should be.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(floated_item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  check_float_container_normal_stacked();
+
+  // Move the mouse a bit before releasing so that we stay in overview.
+  generator->MoveMouseBy(10, 10);
+  generator->ReleaseLeftButton();
+
+  // Start dragging the regular window. Check that the float container gets
+  // stacked under the desk container.
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    EXPECT_TRUE(
+        IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
+                       root->GetChildById(kShellWindowId_DeskContainerA)));
+  }
+
+  // Move the mouse a bit before releasing so that we stay in overview. We are
+  // no longer in a drag, and the float container is restacked between the
+  // always on top container and the app list container.
+  generator->MoveMouseBy(10, 10);
+  generator->ReleaseLeftButton();
+  ASSERT_TRUE(InOverviewSession());
+  check_float_container_normal_stacked();
+
+  // Tests that the stacking order is correct if we start dragging a normal
+  // overview item, and then exit overview.
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+  ToggleOverview();
+  // `OverviewWindowDragController` gets deleted using `DeleteSoon()`.
+  base::RunLoop().RunUntilIdle();
+  check_float_container_normal_stacked();
+}
+
 class TabletModeOverviewSessionTest : public OverviewTestBase {
  public:
   TabletModeOverviewSessionTest() = default;
-  ~TabletModeOverviewSessionTest() override = default;
-
   TabletModeOverviewSessionTest(const TabletModeOverviewSessionTest&) = delete;
   TabletModeOverviewSessionTest& operator=(
       const TabletModeOverviewSessionTest&) = delete;
+  ~TabletModeOverviewSessionTest() override = default;
 
   // OverviewTestBase:
   void SetUp() override {

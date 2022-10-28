@@ -1295,7 +1295,7 @@ void OverviewItem::CreateItemWidget() {
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.visible_on_all_workspaces = true;
   params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.name = "OverviewModeLabel";
+  params.name = "OverviewItemWidget";
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
   params.accept_events = true;
   params.parent = transform_window_.window()->parent();
