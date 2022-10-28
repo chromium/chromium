@@ -65,8 +65,6 @@ std::unique_ptr<views::WebView> CreateWebView(
 }  // namespace
 
 namespace lens {
-constexpr int kDefaultSidePanelHeaderHeight = 40;
-constexpr gfx::Insets kLensLabelButtonMargins = gfx::Insets::VH(12, 0);
 constexpr char kStaticLoadingScreenURL[] =
     "https://www.gstatic.com/lens/chrome/lens_side_panel_loading.html";
 
@@ -90,9 +88,6 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
   separator_ = AddChildView(std::make_unique<views::Separator>());
-
-  if (lens::features::GetEnableLensSidePanelFooter())
-    CreateAndInstallFooter();
 
   SetContentAndNewTabButtonVisible(/* visible= */ false,
                                    /* enable_new_tab_button= */ false);
@@ -214,7 +209,7 @@ void LensUnifiedSidePanelView::PrimaryPageChanged(content::Page& page) {
 }
 
 bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
-  return launch_button_ != nullptr && launch_button_->GetEnabled();
+  return !update_new_tab_button_callback_.is_null();
 }
 
 bool LensUnifiedSidePanelView::HandleContextMenu(
@@ -252,59 +247,6 @@ void LensUnifiedSidePanelView::DidOpenRequestedURL(
       base::UserMetricsAction("LensUnifiedSidePanel.ResultLinkClick"));
 }
 
-void LensUnifiedSidePanelView::CreateAndInstallFooter() {
-  auto footer = std::make_unique<views::FlexLayoutView>();
-  // ChromeLayoutProvider for providing margins.
-  ChromeLayoutProvider* const chrome_layout_provider =
-      ChromeLayoutProvider::Get();
-
-  // Set the interior margins of the footer on the left and right sides.
-  footer->SetInteriorMargin(gfx::Insets::TLBR(
-      0,
-      chrome_layout_provider->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL),
-      0,
-      chrome_layout_provider->GetDistanceMetric(
-          ChromeDistanceMetric::
-              DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL)));
-
-  // Set alignments for horizontal (main) and vertical (cross) axes.
-  footer->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  footer->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-
-  // The minimum cross axis size should the expected height of the footer.
-  footer->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
-  footer->SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorWindowBackground));
-
-  // create text button to host open in new tab
-  std::unique_ptr<views::MdTextButton> label_button =
-      std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&LensUnifiedSidePanelView::LoadResultsInNewTab,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_LABEL));
-  label_button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  label_button->SetProminent(false);
-  // set margins per UX mock
-  label_button->SetProperty(views::kMarginsKey, kLensLabelButtonMargins);
-
-  launch_button_ = footer->AddChildView(std::move(label_button));
-
-  // Create an empty view between right and the buttons to align empty space on
-  // left without hardcoding margins.
-  auto container = std::make_unique<views::View>();
-  container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  // adding empty view to the left
-  footer->AddChildView(std::move(container));
-
-  // Install footer.
-  AddChildView(std::move(footer));
-}
-
 void LensUnifiedSidePanelView::MaybeLoadURLWithParams() {
   // Ensure the side panel view has a width before loading URL. If side panel is
   // still closed (width == 0), defer loading the URL to
@@ -338,8 +280,6 @@ void LensUnifiedSidePanelView::SetContentAndNewTabButtonVisible(
   web_view_->SetVisible(visible);
   loading_indicator_web_view_->SetVisible(!visible);
 
-  if (launch_button_ != nullptr)
-    launch_button_->SetEnabled(enable_new_tab_button);
   if (!update_new_tab_button_callback_.is_null())
     update_new_tab_button_callback_.Run();
 }

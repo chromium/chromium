@@ -72,7 +72,6 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
            {lens::features::kHomepageURLForLens.name,
             GetLensImageSearchURL().spec()}}},
          {features::kUnifiedSidePanel, {{}}},
-         {lens::features::kLensUnifiedSidePanelFooter, {{}}},
          {lens::features::kEnableImageSearchSidePanelFor3PDse, {{}}}},
         {});
     InProcessBrowserTest::SetUp();
@@ -367,48 +366,6 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   EXPECT_EQ(new_tab_contents, nav_url);
 }
 
-class SearchImageWithUnifiedSidePanelFooterDisabled
-    : public SearchImageWithUnifiedSidePanel {
- protected:
-  void SetUp() override {
-    // The test server must start first, so that we know the port that the test
-    // server is using.
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    base::test::ScopedFeatureList features;
-    features.InitWithFeaturesAndParameters(
-        {{lens::features::kLensStandalone,
-          {{lens::features::kEnableSidePanelForLens.name, "true"},
-           {lens::features::kHomepageURLForLens.name,
-            GetLensImageSearchURL().spec()}}},
-         {features::kUnifiedSidePanel, {{}}}},
-        {lens::features::kLensUnifiedSidePanelFooter});
-    InProcessBrowserTest::SetUp();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
-                       ImageSearchWithValidImageOpensUnifiedSidePanel) {
-  SetupImageSearchEngine();
-  SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
-
-  content::WebContents* contents =
-      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
-
-  std::string expected_content = GetLensImageSearchURL().GetContent();
-  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
-  // Match strings up to the query.
-  std::size_t query_start_pos = side_panel_content.find("?");
-  EXPECT_EQ(expected_content.substr(0, query_start_pos),
-            side_panel_content.substr(0, query_start_pos));
-  EXPECT_FALSE(
-      GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
-  // Match the query parameters, without the value of start_time.
-  EXPECT_THAT(side_panel_content,
-              testing::MatchesRegex(kExpectedSidePanelContentUrlRegex));
-}
-
 class SearchImageWithSidePanel3PDseDisabled
     : public SearchImageWithUnifiedSidePanel {
  protected:
@@ -423,7 +380,6 @@ class SearchImageWithSidePanel3PDseDisabled
           {{lens::features::kEnableSidePanelForLens.name, "true"},
            {lens::features::kHomepageURLForLens.name,
             GetLensImageSearchURL().spec()}}},
-         {lens::features::kLensUnifiedSidePanelFooter, {{}}},
          {features::kUnifiedSidePanel, {{}}}},
         {lens::features::kEnableImageSearchSidePanelFor3PDse});
     InProcessBrowserTest::SetUp();

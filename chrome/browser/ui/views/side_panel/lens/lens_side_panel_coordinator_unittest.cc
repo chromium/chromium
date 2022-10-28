@@ -44,8 +44,7 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
         {{lens::features::kLensStandalone,
           {{lens::features::kEnableSidePanelForLens.name, "true"},
            {lens::features::kHomepageURLForLens.name, kLensHomepageURL}}},
-         {features::kUnifiedSidePanel, {{}}},
-         {lens::features::kLensUnifiedSidePanelFooter, {{}}}},
+         {features::kUnifiedSidePanel, {{}}}},
         {});
     TestWithBrowserView::SetUp();
 

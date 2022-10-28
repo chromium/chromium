@@ -30,10 +30,6 @@ BASE_FEATURE(kLensSearchImageInScreenshotSharing,
              "LensSearchImageInScreenshotSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensUnifiedSidePanelFooter,
-             "LensUnifiedSidePanelFooter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableLatencyLogging,
              "LensImageLatencyLogging",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -114,10 +110,6 @@ bool GetEnableUKMLoggingForRegionSearch() {
 
 bool GetEnableUKMLoggingForImageSearch() {
   return kEnableUKMLoggingForImageSearch.Get();
-}
-
-bool GetEnableLensSidePanelFooter() {
-  return base::FeatureList::IsEnabled(kLensUnifiedSidePanelFooter);
 }
 
 int GetMaxPixelsForRegionSearch() {

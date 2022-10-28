@@ -75,9 +75,6 @@ extern const base::FeatureParam<std::string> kHomepageURLForLens;
 // Enable Lens HTML redirect fix.
 extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 
-// Enables footer for the unified side panel
-BASE_DECLARE_FEATURE(kLensUnifiedSidePanelFooter);
-
 // Enables Lens fullscreen search on Desktop platforms.
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 
@@ -108,9 +105,6 @@ extern bool GetEnableUKMLoggingForRegionSearch();
 
 // Returns whether to enable UKM logging for LensStandalone feature.
 extern bool GetEnableUKMLoggingForImageSearch();
-
-// Returns whether to enable footer for lens in the unified side panel
-extern bool GetEnableLensSidePanelFooter();
 
 // Returns the max pixel width/height for the image to be sent to Lens via
 // region search. The images are sent at 1x as PNGs.
