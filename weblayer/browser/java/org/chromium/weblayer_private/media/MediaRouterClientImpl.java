@@ -94,6 +94,17 @@ public class MediaRouterClientImpl extends MediaRouterClient {
                 .getSupportFragmentManager();
     }
 
+    @Override
+    // TODO(crbug.com/1377518): Implement addDeferredTask().
+    public void addDeferredTask(Runnable deferredTask) {
+        deferredTask.run();
+    }
+
+    @Override
+    public boolean isCafMrpDeferredDiscoveryEnabled() {
+        return true;
+    }
+
     @CalledByNative
     public static void initialize() {
         if (MediaRouterClient.getInstance() != null) return;

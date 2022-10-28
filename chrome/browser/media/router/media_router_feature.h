@@ -26,7 +26,11 @@ bool MediaRouterEnabled(content::BrowserContext* context);
 // process.
 void ClearMediaRouterStoredPrefsForTesting();
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, the sink discovery on Caf MRP is run asynchronously when the main
+// thread is idle.
+BASE_DECLARE_FEATURE(kCafMRPDeferredDiscovery);
+#else
 
 // Enables the media router. Can be disabled in tests unrelated to
 // Media Router where it interferes. Can also be useful to disable for local

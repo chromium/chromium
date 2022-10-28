@@ -53,7 +53,7 @@ public abstract class MediaRouterClient {
     public abstract Intent createBringTabToFrontIntent(int tabId);
 
     /**
-     * @param MediaNotificationInfo contains contents and metadata about a media notification
+     * @param notificationInfo contains contents and metadata about a media notification
      *         that should be shown.
      */
     public abstract void showNotification(MediaNotificationInfo notificationInfo);
@@ -70,4 +70,10 @@ public abstract class MediaRouterClient {
      *         DialogFragment} in.
      */
     public abstract FragmentManager getSupportFragmentManager(WebContents initiator);
+
+    /** Runs deferredTask on the main thread when the main thread is idle. */
+    public abstract void addDeferredTask(Runnable deferredTask);
+
+    /** @return true if the kCafMRPDeferredDiscovery feature flag is enabled. */
+    public abstract boolean isCafMrpDeferredDiscoveryEnabled();
 }

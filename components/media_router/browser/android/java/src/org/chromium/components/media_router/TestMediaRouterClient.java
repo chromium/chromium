@@ -53,6 +53,16 @@ public class TestMediaRouterClient extends MediaRouterClient {
         return null;
     }
 
+    @Override
+    public void addDeferredTask(Runnable deferredTask) {
+        deferredTask.run();
+    }
+
+    @Override
+    public boolean isCafMrpDeferredDiscoveryEnabled() {
+        return true;
+    }
+
     @CalledByNative
     public static void initialize() {
         if (MediaRouterClient.getInstance() != null) return;

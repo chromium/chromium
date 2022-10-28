@@ -15,7 +15,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -65,6 +67,17 @@ public class ChromeMediaRouterClient extends MediaRouterClient {
         FragmentActivity currentActivity =
                 (FragmentActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         return currentActivity == null ? null : currentActivity.getSupportFragmentManager();
+    }
+
+    @Override
+    public void addDeferredTask(Runnable deferredTask) {
+        DeferredStartupHandler.getInstance().addDeferredTask(deferredTask);
+        DeferredStartupHandler.getInstance().queueDeferredTasksOnIdleHandler();
+    }
+
+    @Override
+    public boolean isCafMrpDeferredDiscoveryEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CAF_MRP_DEFERRED_DISCOVERY);
     }
 
     @CalledByNative

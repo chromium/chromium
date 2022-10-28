@@ -23,16 +23,20 @@ public class DiscoveryCallback extends MediaRouter.Callback {
     private Set<String> mSourceUrns = new HashSet<String>();
     private List<MediaSink> mSinks = new ArrayList<MediaSink>();
 
-    public DiscoveryCallback(String sourceUrn, List<MediaSink> knownSinks,
-            DiscoveryDelegate delegate, MediaRouteSelector selector) {
+    public DiscoveryCallback(
+            String sourceUrn, DiscoveryDelegate delegate, MediaRouteSelector selector) {
         assert delegate != null;
         assert sourceUrn != null && !sourceUrn.isEmpty();
 
-        mSinks.addAll(knownSinks);
+        mSourceUrns.add(sourceUrn);
         mDiscoveryDelegate = delegate;
         mRouteSelector = selector;
+    }
 
-        addSourceUrn(sourceUrn);
+    public DiscoveryCallback(String sourceUrn, List<MediaSink> knownSinks,
+            DiscoveryDelegate delegate, MediaRouteSelector selector) {
+        this(sourceUrn, delegate, selector);
+        setAndUpdateSinks(knownSinks);
     }
 
     public void addSourceUrn(String sourceUrn) {
@@ -47,6 +51,11 @@ public class DiscoveryCallback extends MediaRouter.Callback {
 
     public boolean isEmpty() {
         return mSourceUrns.isEmpty();
+    }
+
+    public void setAndUpdateSinks(List<MediaSink> knownSinks) {
+        mSinks = knownSinks;
+        updateBrowserMediaRouter();
     }
 
     @Override
