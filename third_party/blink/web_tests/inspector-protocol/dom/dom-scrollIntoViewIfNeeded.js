@@ -42,6 +42,7 @@
       <div class=child>
       </div>
     </div>
+    <input type=hidden>
   `,
       'Tests DOM.scrollIntoViewIfNeeded.');
 
@@ -80,6 +81,10 @@
   const buttonObjectId = (await dp.Runtime.evaluate({expression: `document.querySelector('button')`})).result.result.objectId;
   dp.DOM.scrollIntoViewIfNeeded({objectId: buttonObjectId});
   testRunner.log(await session.evaluate(`getScroll()`));
+
+  // hidden elements should return an error, but not crash.
+  const inputObjectId = (await dp.Runtime.evaluate({expression: `document.querySelector('input')`})).result.result.objectId;
+  testRunner.log(await dp.DOM.scrollIntoViewIfNeeded({objectId: inputObjectId}));
 
   testRunner.completeTest();
 })
