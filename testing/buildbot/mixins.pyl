@@ -1052,14 +1052,14 @@
       'optional_dimensions': {
         '60': [
           {
-            'caches': 'generic_android25',
+            'caches': 'generic_android24',
           }
         ],
       },
       'named_caches': [
         {
-          'name': 'generic_android25',
-          'path': '.android_emulator/generic_android25',
+          'name': 'generic_android24',
+          'path': '.android_emulator/generic_android24',
         },
       ]
     },
