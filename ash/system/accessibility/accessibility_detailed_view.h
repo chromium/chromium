@@ -106,24 +106,6 @@ class ASH_EXPORT AccessibilityDetailedView
   views::Button* help_view_ = nullptr;
   views::Button* settings_view_ = nullptr;
 
-  // These exist for tests. The canonical state is stored in prefs.
-  bool spoken_feedback_enabled_ = false;
-  bool select_to_speak_enabled_ = false;
-  bool dictation_enabled_ = false;
-  bool high_contrast_enabled_ = false;
-  bool screen_magnifier_enabled_ = false;
-  bool docked_magnifier_enabled_ = false;
-  bool large_cursor_enabled_ = false;
-  bool autoclick_enabled_ = false;
-  bool virtual_keyboard_enabled_ = false;
-  bool switch_access_enabled_ = false;
-  bool live_caption_enabled_ = false;
-  bool mono_audio_enabled_ = false;
-  bool caret_highlight_enabled_ = false;
-  bool highlight_mouse_cursor_enabled_ = false;
-  bool highlight_keyboard_focus_enabled_ = false;
-  bool sticky_keys_enabled_ = false;
-
   LoginStatus login_;
 };
 

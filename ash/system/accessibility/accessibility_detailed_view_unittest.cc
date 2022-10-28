@@ -137,11 +137,13 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
          ash::features::kOnDeviceSpeechRecognition},
         {});
     AshTestBase::SetUp();
-    Shell::Get()->accessibility_controller()->AddObserver(this);
+    controller_ = Shell::Get()->accessibility_controller();
+    controller_->AddObserver(this);
   }
 
   void TearDown() override {
-    Shell::Get()->accessibility_controller()->RemoveObserver(this);
+    controller_->RemoveObserver(this);
+    controller_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -318,69 +320,69 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   }
 
   bool IsSpokenFeedbackEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->spoken_feedback_enabled_,
+    return IsEnabledOnDetailMenu(controller_->spoken_feedback().enabled(),
                                  detailed_menu_->spoken_feedback_view_);
   }
 
   bool IsSelectToSpeakEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->select_to_speak_enabled_,
+    return IsEnabledOnDetailMenu(controller_->select_to_speak().enabled(),
                                  detailed_menu_->select_to_speak_view_);
   }
 
   bool IsDictationEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->dictation_enabled_,
+    return IsEnabledOnDetailMenu(controller_->dictation().enabled(),
                                  detailed_menu_->dictation_view_);
   }
 
   bool IsHighContrastEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->high_contrast_enabled_,
+    return IsEnabledOnDetailMenu(controller_->high_contrast().enabled(),
                                  detailed_menu_->high_contrast_view_);
   }
 
   bool IsScreenMagnifierEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->screen_magnifier_enabled_,
-                                 detailed_menu_->screen_magnifier_view_);
+    return IsEnabledOnDetailMenu(
+        Shell::Get()->accessibility_delegate()->IsMagnifierEnabled(),
+        detailed_menu_->screen_magnifier_view_);
   }
 
   bool IsDockedMagnifierEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->docked_magnifier_enabled_,
+    return IsEnabledOnDetailMenu(controller_->docked_magnifier().enabled(),
                                  detailed_menu_->docked_magnifier_view_);
   }
 
   bool IsLargeCursorEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->large_cursor_enabled_,
+    return IsEnabledOnDetailMenu(controller_->large_cursor().enabled(),
                                  detailed_menu_->large_cursor_view_);
   }
 
   bool IsLiveCaptionEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->live_caption_enabled_,
+    return IsEnabledOnDetailMenu(controller_->live_caption().enabled(),
                                  detailed_menu_->live_caption_view_);
   }
 
   bool IsAutoclickEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->autoclick_enabled_,
+    return IsEnabledOnDetailMenu(controller_->autoclick().enabled(),
                                  detailed_menu_->autoclick_view_);
   }
 
   bool IsVirtualKeyboardEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->virtual_keyboard_enabled_,
+    return IsEnabledOnDetailMenu(controller_->virtual_keyboard().enabled(),
                                  detailed_menu_->virtual_keyboard_view_);
   }
 
   bool IsMonoAudioEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->mono_audio_enabled_,
+    return IsEnabledOnDetailMenu(controller_->mono_audio().enabled(),
                                  detailed_menu_->mono_audio_view_);
   }
 
   bool IsCaretHighlightEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->caret_highlight_enabled_,
+    return IsEnabledOnDetailMenu(controller_->caret_highlight().enabled(),
                                  detailed_menu_->caret_highlight_view_);
   }
 
   bool IsHighlightMouseCursorEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(
-        detailed_menu_->highlight_mouse_cursor_enabled_,
-        detailed_menu_->highlight_mouse_cursor_view_);
+    return IsEnabledOnDetailMenu(controller_->cursor_highlight().enabled(),
+                                 detailed_menu_->highlight_mouse_cursor_view_);
   }
 
   bool IsHighlightKeyboardFocusEnabledOnDetailMenu() const {
@@ -388,20 +390,20 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
     // is enabled.
     if (IsSpokenFeedbackEnabledOnDetailMenu()) {
       DCHECK(!detailed_menu_->highlight_keyboard_focus_view_);
-      return detailed_menu_->highlight_keyboard_focus_enabled_;
+      return false;
     }
     return IsEnabledOnDetailMenu(
-        detailed_menu_->highlight_keyboard_focus_enabled_,
+        controller_->focus_highlight().enabled(),
         detailed_menu_->highlight_keyboard_focus_view_);
   }
 
   bool IsStickyKeysEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->sticky_keys_enabled_,
+    return IsEnabledOnDetailMenu(controller_->sticky_keys().enabled(),
                                  detailed_menu_->sticky_keys_view_);
   }
 
   bool IsSwitchAccessEnabledOnDetailMenu() const {
-    return IsEnabledOnDetailMenu(detailed_menu_->switch_access_enabled_,
+    return IsEnabledOnDetailMenu(controller_->switch_access().enabled(),
                                  detailed_menu_->switch_access_view_);
   }
 
@@ -471,6 +473,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
       detailed_menu_->OnAccessibilityStatusChanged();
   }
 
+  AccessibilityControllerImpl* controller_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   std::unique_ptr<AccessibilityDetailedView> detailed_menu_;
   base::test::ScopedFeatureList scoped_feature_list_;
