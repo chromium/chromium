@@ -448,7 +448,9 @@ TEST_F(SessionTest, AudioAndVideoMirroring) {
   StopSession();
 }
 
-TEST_F(SessionTest, AnswerWithConstraints) {
+TEST_F(SessionTest, AnswerWithConstraintsLetterboxDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kCastDisableLetterboxing);
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(2, 2),

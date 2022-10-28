@@ -28,7 +28,7 @@ BASE_FEATURE(kCastStreamingVp9,
 // TODO(crbug.com/1363512):  Remove support for sender side letterboxing.
 BASE_FEATURE(kCastDisableLetterboxing,
              "CastDisableLetterboxing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsCastStreamingAV1Enabled() {
 #if BUILDFLAG(ENABLE_LIBAOM)
