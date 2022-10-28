@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset=utf-8>
 <title>Stats exposing hardware capability</title>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -25,7 +26,7 @@ function getStatEntry(report, type, kind) {
   return for_kind[0];
 }
 
-async function hasSentAndReceivedVideoPackets(pc) {
+async function hasSentAndReceivedVideoPackets(pc, t) {
   while (true) {
     const report = await pc.getStats();
     const inboundRtp = getStatEntry(report, 'inbound-rtp', 'video');
@@ -33,6 +34,8 @@ async function hasSentAndReceivedVideoPackets(pc) {
     if (inboundRtp.packetsReceived > 0 && outboundRtp.packetsSent > 0) {
       return;
     }
+    // Avoid any stats caching, which can otherwise make this an infinite loop.
+    await (new Promise(r => t.step_timeout(r, 100)));
   }
 }
 
@@ -50,7 +53,7 @@ async function setupPcAndGetStatEntry(
 
   exchangeIceCandidates(pc1, pc2);
   await exchangeOfferAnswer(pc1, pc2);
-  await hasSentAndReceivedVideoPackets(pc1);
+  await hasSentAndReceivedVideoPackets(pc1, t);
   const report = await pc1.getStats();
   return getStatEntry(report, type, kind);
 }
