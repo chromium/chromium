@@ -2243,7 +2243,7 @@ error::Error GLES2DecoderPassthroughImpl::PatchGetNumericResults(GLenum pname,
       if (length < 4) {
         return error::kInvalidArguments;
       }
-      std::copy(std::begin(viewport_), std::end(viewport_), params);
+      base::ranges::copy(viewport_, params);
       break;
 
     case GL_SCISSOR_BOX:
@@ -2252,7 +2252,7 @@ error::Error GLES2DecoderPassthroughImpl::PatchGetNumericResults(GLenum pname,
       if (length < 4) {
         return error::kInvalidArguments;
       }
-      std::copy(std::begin(scissor_), std::end(scissor_), params);
+      base::ranges::copy(scissor_, params);
       break;
 
     default:

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/common/gpu_feature_info_mojom_traits.h"
+
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
 namespace mojo {
@@ -15,7 +17,7 @@ bool StructTraits<gpu::mojom::GpuFeatureInfoDataView, gpu::GpuFeatureInfo>::
     return false;
   if (info_status.size() != gpu::NUMBER_OF_GPU_FEATURE_TYPES)
     return false;
-  std::copy(info_status.begin(), info_status.end(), out->status_values);
+  base::ranges::copy(info_status, out->status_values);
   return data.ReadEnabledGpuDriverBugWorkarounds(
              &out->enabled_gpu_driver_bug_workarounds) &&
          data.ReadDisabledExtensions(&out->disabled_extensions) &&
