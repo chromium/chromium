@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
@@ -45,6 +47,11 @@ base::Value::List GetTrustedUrls() {
 }
 
 constexpr char kChallenge[] = R"({"challenge": "encrypted_challenge_string"})";
+constexpr char kChallengeResponse[] = "sample response";
+constexpr char kLatencyHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.%s";
+constexpr char kFunnelHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.Funnel";
 
 scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
     const std::string& challenge) {
@@ -93,6 +100,36 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  void TestReplyChallengeResponseAndResume(DeviceTrustResponse response,
+                                           std::string expected_json) {
+    content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                              main_frame());
+    test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
+    auto throttle = CreateThrottle(&test_handle);
+    base::RunLoop run_loop;
+    throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
+    EXPECT_CALL(mock_device_trust_service_,
+                BuildChallengeResponse(kChallenge, _))
+        .WillOnce(
+            [&response](
+                const std::string& serialized_challenge,
+                test::MockDeviceTrustService::DeviceTrustCallback callback) {
+              std::move(callback).Run(response);
+            });
+    EXPECT_CALL(test_handle,
+                SetRequestHeader("X-Verified-Access-Challenge-Response",
+                                 expected_json));
+    EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+    histogram_tester_.ExpectUniqueSample(kFunnelHistogramName, 1, 1);
+    run_loop.Run();
+    histogram_tester_.ExpectTotalCount(
+        base::StringPrintf(kLatencyHistogramName,
+                           (response.error || response.challenge_response == "")
+                               ? "Failure"
+                               : "Success"),
+        1);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -102,6 +139,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   test::MockDeviceTrustService mock_device_trust_service_;
   std::unique_ptr<FakeDeviceTrustConnectorService> fake_connector_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DeviceTrustNavigationThrottleTest, ExpectHeaderDeviceTrustOnRequest) {
@@ -132,6 +170,15 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoHeaderDeviceTrustOnRequest) {
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 }
 
+TEST_F(DeviceTrustNavigationThrottleTest, InvalidURL) {
+  GURL invalid_url = GURL("https://www.invalid.com/", url::Parsed(), false);
+  content::MockNavigationHandle test_handle(invalid_url, main_frame());
+  EXPECT_CALL(test_handle, SetRequestHeader("X-Device-Trust", "VerifiedAccess"))
+      .Times(0);
+  auto throttle = CreateThrottle(&test_handle);
+  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
+}
+
 TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
   content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
                                             main_frame());
@@ -144,6 +191,62 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
               BuildChallengeResponse(kChallenge, _));
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, TestReplyValidChallengeResponse) {
+  DeviceTrustResponse test_response_valid = {kChallengeResponse, absl::nullopt,
+                                             absl::nullopt};
+  std::string valid_challenge_json = kChallengeResponse;
+  TestReplyChallengeResponseAndResume(test_response_valid,
+                                      valid_challenge_json);
+  histogram_tester_.ExpectBucketCount(kFunnelHistogramName, 3, 1);
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest,
+       TestReplyEmptyChallengeResponseUnknownError) {
+  DeviceTrustResponse test_response_unknown = {"", absl::nullopt,
+                                               absl::nullopt};
+  std::string unknown_error_json = "{\"error\":\"unknown\"}";
+  TestReplyChallengeResponseAndResume(test_response_unknown,
+                                      unknown_error_json);
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest,
+       TestReplyEmptyChallengeResponseKnownError) {
+  DeviceTrustResponse test_response_timeout = {"", DeviceTrustError::kTimeout,
+                                               absl::nullopt};
+  std::string timeout_json = "{\"error\":\"timeout\"}";
+  TestReplyChallengeResponseAndResume(test_response_timeout, timeout_json);
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest,
+       TestReplyChallengeResponseAttestationFailure) {
+  DeviceTrustResponse test_response_timeout = {
+      kChallengeResponse, DeviceTrustError::kTimeout,
+      DTAttestationResult::kMissingSigningKey};
+  std::string timeout_json =
+      "{\"code\":\"missing_signing_key\",\"error\":\"timeout\"}";
+  TestReplyChallengeResponseAndResume(test_response_timeout, timeout_json);
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, TestChallengeNotFromIdp) {
+  content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                            main_frame());
+
+  std::string raw_response_headers =
+      "HTTP/1.1 200 OK\r\n non-idp-challenge: some challenge \r\n";
+  test_handle.set_response_headers(
+      base::MakeRefCounted<net::HttpResponseHeaders>(
+          net::HttpUtil::AssembleRawHeaders(raw_response_headers)));
+  auto throttle = CreateThrottle(&test_handle);
+
+  EXPECT_CALL(test_handle, RemoveRequestHeader(_)).Times(0);
+  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(_, _))
+      .Times(0);
+
+  EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 
   base::RunLoop().RunUntilIdle();
 }
