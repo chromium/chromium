@@ -22,6 +22,8 @@
   UIMenu* fileMenu = [UIMenu menuWithChildren:@[
     UIKeyCommand.cr_openNewTab,
     UIKeyCommand.cr_openNewIncognitoTab,
+    UIKeyCommand.cr_openNewWindow,
+    UIKeyCommand.cr_focusOmnibox,
     UIKeyCommand.cr_closeTab,
     UIKeyCommand.cr_startVoiceSearch,
   ]];
@@ -41,6 +43,7 @@
   UIMenu* viewMenu = [UIMenu menuWithChildren:@[
     UIKeyCommand.cr_stop,
     UIKeyCommand.cr_reload,
+    UIKeyCommand.cr_goToTabGrid,
   ]];
   [builder insertChildMenu:viewMenu atStartOfMenuForIdentifier:UIMenuView];
 
@@ -51,6 +54,7 @@
                                        UIKeyCommand.cr_goForward,
                                        UIKeyCommand.cr_reopenLastClosedTab,
                                        UIKeyCommand.cr_showHistory,
+                                       UIKeyCommand.cr_clearBrowsingData,
                                      ]];
   [builder insertSiblingMenu:historyMenu afterMenuForIdentifier:UIMenuView];
 
@@ -59,6 +63,7 @@
                                        children:@[
                                          UIKeyCommand.cr_showBookmarks,
                                          UIKeyCommand.cr_addToBookmarks,
+                                         UIKeyCommand.cr_addToReadingList,
                                        ]];
   [builder insertSiblingMenu:bookmarksMenu
       afterMenuForIdentifier:historyMenu.identifier];
@@ -77,6 +82,7 @@
   // Help
   UIMenu* helpMenu = [UIMenu menuWithChildren:@[
     UIKeyCommand.cr_showHelp,
+    UIKeyCommand.cr_reportAnIssue,
   ]];
   [builder insertChildMenu:helpMenu atStartOfMenuForIdentifier:UIMenuHelp];
 }
