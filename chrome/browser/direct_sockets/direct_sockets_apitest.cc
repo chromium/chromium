@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 #include <type_traits>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
@@ -373,6 +376,11 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
 
 class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
     : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  IsolatedWebAppTestHarnessWithDirectSocketsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
 
@@ -381,6 +389,9 @@ class IsolatedWebAppTestHarnessWithDirectSocketsEnabled
     command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
                                     isolated_app_origins);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using ChromeDirectSocketsTcpIsolatedWebAppTest = ChromeDirectSocketsTcpTest<

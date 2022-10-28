@@ -48,6 +48,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -838,6 +839,10 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
        DedicatedPartitionIsUsedForIsolatedHttpsApps) {
   RegisterAppIsolationState(kAppId, kHttpsScope, /*isolated=*/true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
+
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kIsolatedAppOrigins, kHttpsScope);
 
@@ -869,6 +874,9 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest,
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest,
        DedicatedPartitionIsUsedForIsolatedApps) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kIsolatedWebApps);
+
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kIsolatedAppOrigins, kIsolatedAppScope);
 

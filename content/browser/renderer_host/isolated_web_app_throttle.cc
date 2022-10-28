@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/isolated_web_app_throttle.h"
 
+#include "base/feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_exposed_isolation_info.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -66,7 +68,7 @@ absl::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
 // static
 std::unique_ptr<IsolatedWebAppThrottle>
 IsolatedWebAppThrottle::MaybeCreateThrottleFor(NavigationHandle* handle) {
-  if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
     return std::make_unique<IsolatedWebAppThrottle>(handle);
   }
   return nullptr;

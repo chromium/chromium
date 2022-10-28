@@ -438,7 +438,8 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/direct-sockets",
     	      "wpt_internal/direct-sockets"],
-    "args": ["--isolated-app-origins=https://web-platform.test"]
+    "args": ["--enable-features=IsolatedWebApps",
+             "--isolated-app-origins=https://web-platform.test"]
   },
   {
     "prefix": "display-compositor-pixel-dump",

@@ -6,11 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -86,6 +88,8 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kIsolatedAppOrigins, kAppUrl);
@@ -211,6 +215,8 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
   raw_ptr<ContentBrowserClient> old_client_;
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers_;
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(IsolatedWebAppThrottleTest, AllowNavigationWithinNonApp) {

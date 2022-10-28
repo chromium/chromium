@@ -329,14 +329,6 @@ void SiteIsolationPolicy::ApplyGlobalIsolatedOrigins() {
 }
 
 // static
-bool SiteIsolationPolicy::IsApplicationIsolationLevelEnabled() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (g_disable_flag_caching_for_tests)
-    return !CreateIsolatedAppOriginSet().empty();
-  return !GetIsolatedAppOriginSet().empty();
-}
-
-// static
 bool SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url) {

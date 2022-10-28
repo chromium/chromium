@@ -95,7 +95,6 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, Disabled) {
 
   EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, origin_url));
-  EXPECT_FALSE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
 }
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, MatchingOrigin) {
@@ -105,7 +104,6 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, MatchingOrigin) {
   GURL origin_url("https://www.bar.com");
   EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, origin_url));
-  EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
 }
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, NotMatchingOrigin) {
@@ -115,7 +113,6 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, NotMatchingOrigin) {
   GURL origin_url("https://www.not-allowed.com");
   EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, origin_url));
-  EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
 }
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, InvalidOrigin) {
@@ -127,7 +124,6 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, InvalidOrigin) {
   GURL origin_url(origin_string);
   EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, origin_url));
-  EXPECT_FALSE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
 }
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, FlagTypo) {
@@ -142,7 +138,6 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, FlagTypo) {
   GURL valid_origin_url(valid_origin_string);
   EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, valid_origin_url));
-  EXPECT_FALSE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
 }
 
 TEST_F(SiteIsolationPolicyIsolatedApplicationTest, PortRemoved) {
@@ -152,7 +147,6 @@ TEST_F(SiteIsolationPolicyIsolatedApplicationTest, PortRemoved) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kIsolatedAppOrigins, origin_string);
 
-  EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
   EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
       /*browser_context=*/nullptr, GURL(origin_string)));
   EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(

@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/character_encoding.h"
 #include "base/memory/raw_ptr.h"
@@ -2293,7 +2294,7 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
     const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (content::SiteIsolationPolicy::IsApplicationIsolationLevelEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kIsolatedWebApps)) {
     // TODO(crbug.com/1363756): Remove the GetStorageIsolationKey call.
     Profile* profile = Profile::FromBrowserContext(browser_context);
     return url.SchemeIs(chrome::kIsolatedAppScheme) ||

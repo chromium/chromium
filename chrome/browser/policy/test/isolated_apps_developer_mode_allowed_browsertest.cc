@@ -39,7 +39,9 @@ class IsolatedWebAppsDeveloperModeAllowedPolicyTest
     : public web_app::IsolatedWebAppBrowserTestHarness,
       public testing::WithParamInterface<PolicyVerdictPair> {
  public:
-  ~IsolatedWebAppsDeveloperModeAllowedPolicyTest() override = default;
+  IsolatedWebAppsDeveloperModeAllowedPolicyTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
@@ -76,6 +78,8 @@ class IsolatedWebAppsDeveloperModeAllowedPolicyTest
   }
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppsDeveloperModeAllowedPolicyTest, MockTcp) {

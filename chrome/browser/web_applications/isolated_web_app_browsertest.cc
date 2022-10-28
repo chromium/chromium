@@ -39,6 +39,7 @@
 #include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -178,11 +179,13 @@ class ServiceWorkerVersionStoppedRunningWaiter
 
 class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
  public:
-  IsolatedWebAppBrowserTest() = default;
+  IsolatedWebAppBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+  }
+
   IsolatedWebAppBrowserTest(const IsolatedWebAppBrowserTest&) = delete;
   IsolatedWebAppBrowserTest& operator=(const IsolatedWebAppBrowserTest&) =
       delete;
-  ~IsolatedWebAppBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
@@ -203,6 +206,9 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {

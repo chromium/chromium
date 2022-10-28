@@ -78,10 +78,6 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // startup.
   static void ApplyGlobalIsolatedOrigins();
 
-  // Returns true if the application isolation level is enabled.
-  // This must be called on the UI thread.
-  static bool IsApplicationIsolationLevelEnabled();
-
   // Returns true if the given URL should be assigned the application isolation
   // level.
   // This must be called on the UI thread.
