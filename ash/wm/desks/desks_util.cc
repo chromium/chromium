@@ -66,61 +66,20 @@ std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
 }
 
 const char* GetDeskContainerName(int container_id) {
-  DCHECK(IsDeskContainerId(container_id));
-
-  switch (container_id) {
-    case kShellWindowId_DeskContainerA:
-      return "Desk_Container_A";
-
-    case kShellWindowId_DeskContainerB:
-      return "Desk_Container_B";
-
-    case kShellWindowId_DeskContainerC:
-      return "Desk_Container_C";
-
-    case kShellWindowId_DeskContainerD:
-      return "Desk_Container_D";
-
-    case kShellWindowId_DeskContainerE:
-      return "Desk_Container_E";
-
-    case kShellWindowId_DeskContainerF:
-      return "Desk_Container_F";
-
-    case kShellWindowId_DeskContainerG:
-      return "Desk_Container_G";
-
-    case kShellWindowId_DeskContainerH:
-      return "Desk_Container_H";
-
-    case kShellWindowId_DeskContainerI:
-      return "Desk_Container_I";
-
-    case kShellWindowId_DeskContainerJ:
-      return "Desk_Container_J";
-
-    case kShellWindowId_DeskContainerK:
-      return "Desk_Container_K";
-
-    case kShellWindowId_DeskContainerL:
-      return "Desk_Container_L";
-
-    case kShellWindowId_DeskContainerM:
-      return "Desk_Container_M";
-
-    case kShellWindowId_DeskContainerN:
-      return "Desk_Container_N";
-
-    case kShellWindowId_DeskContainerO:
-      return "Desk_Container_O";
-
-    case kShellWindowId_DeskContainerP:
-      return "Desk_Container_P";
-
-    default:
-      NOTREACHED();
-      return "";
+  if (!IsDeskContainerId(container_id)) {
+    NOTREACHED();
+    return "";
   }
+
+  static const char* kDeskContainerNames[] = {
+      "Desk_Container_A", "Desk_Container_B", "Desk_Container_C",
+      "Desk_Container_D", "Desk_Container_E", "Desk_Container_F",
+      "Desk_Container_G", "Desk_Container_H", "Desk_Container_I",
+      "Desk_Container_J", "Desk_Container_K", "Desk_Container_L",
+      "Desk_Container_M", "Desk_Container_N", "Desk_Container_O",
+      "Desk_Container_P",
+  };
+  return kDeskContainerNames[container_id - kShellWindowId_DeskContainerA];
 }
 
 bool IsDeskContainer(const aura::Window* container) {
@@ -129,22 +88,8 @@ bool IsDeskContainer(const aura::Window* container) {
 }
 
 bool IsDeskContainerId(int id) {
-  return id == kShellWindowId_DeskContainerA ||
-         id == kShellWindowId_DeskContainerB ||
-         id == kShellWindowId_DeskContainerC ||
-         id == kShellWindowId_DeskContainerD ||
-         id == kShellWindowId_DeskContainerE ||
-         id == kShellWindowId_DeskContainerF ||
-         id == kShellWindowId_DeskContainerG ||
-         id == kShellWindowId_DeskContainerH ||
-         id == kShellWindowId_DeskContainerI ||
-         id == kShellWindowId_DeskContainerJ ||
-         id == kShellWindowId_DeskContainerK ||
-         id == kShellWindowId_DeskContainerL ||
-         id == kShellWindowId_DeskContainerM ||
-         id == kShellWindowId_DeskContainerN ||
-         id == kShellWindowId_DeskContainerO ||
-         id == kShellWindowId_DeskContainerP;
+  return id >= kShellWindowId_DeskContainerA &&
+         id <= kShellWindowId_DeskContainerP;
 }
 
 int GetActiveDeskContainerId() {
