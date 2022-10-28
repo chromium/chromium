@@ -238,12 +238,15 @@ class ClankCompiler:
   """Handles compilation of clank."""
 
   def __init__(self, out_dir, step_recorder, arch, use_goma, goma_dir,
-               system_health_profiling, monochrome, public, orderfile_location):
+               use_remoteexec, system_health_profiling, monochrome, public,
+               orderfile_location):
     self._out_dir = out_dir
     self._step_recorder = step_recorder
     self._arch = arch
+    # TODO(b/236070141): remove goma config.
     self._use_goma = use_goma
     self._goma_dir = goma_dir
+    self._use_remoteexec = use_remoteexec
     self._system_health_profiling = system_health_profiling
     self._public = public
     self._orderfile_location = orderfile_location
@@ -288,6 +291,7 @@ class ClankCompiler:
         'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
         'target_os="android"',
         'use_goma=' + str(self._use_goma).lower(),
+        'use_remoteexec=' + str(self._use_remoteexec).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
         'use_call_graph=' + str(use_call_graph).lower(),
     ]
@@ -903,6 +907,7 @@ class OrderfileGenerator:
       self._compiler = ClankCompiler(out_directory, self._step_recorder,
                                      self._options.arch, self._options.use_goma,
                                      self._options.goma_dir,
+                                     self._options.use_remoteexec,
                                      self._options.system_health_orderfile,
                                      self._monochrome, self._options.public,
                                      self._GetPathToOrderfile())
@@ -950,8 +955,8 @@ class OrderfileGenerator:
         self._compiler = ClankCompiler(
             self._instrumented_out_dir, self._step_recorder, self._options.arch,
             self._options.use_goma, self._options.goma_dir,
-            self._options.system_health_orderfile, self._monochrome,
-            self._options.public, self._GetPathToOrderfile())
+            self._options.use_remoteexec, self._options.system_health_orderfile,
+            self._monochrome, self._options.public, self._GetPathToOrderfile())
         if not self._options.pregenerated_profiles:
           # If there are pregenerated profiles, the instrumented build should
           # not be changed to avoid invalidating the pregenerated profile
@@ -988,8 +993,8 @@ class OrderfileGenerator:
         self._compiler = ClankCompiler(
             self._uninstrumented_out_dir, self._step_recorder,
             self._options.arch, self._options.use_goma, self._options.goma_dir,
-            self._options.system_health_orderfile, self._monochrome,
-            self._options.public, self._GetPathToOrderfile())
+            self._options.use_remoteexec, self._options.system_health_orderfile,
+            self._monochrome, self._options.public, self._GetPathToOrderfile())
 
         self._compiler.CompileLibchrome(instrumented=False,
                                         use_call_graph=False)
@@ -1072,6 +1077,10 @@ def CreateArgumentParser():
   parser.add_argument('--goma-dir', help='GOMA directory.')
   parser.add_argument(
       '--use-goma', action='store_true', help='Enable GOMA.', default=False)
+  parser.add_argument('--use-remoteexec',
+                      action='store_true',
+                      help='Enable remoteexec.',
+                      default=False)
   parser.add_argument('--adb-path', help='Path to the adb binary.')
 
   parser.add_argument('--public',
