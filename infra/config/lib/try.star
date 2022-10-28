@@ -23,51 +23,12 @@ load("./builders.star", "builders", "os", "os_category")
 load("./orchestrator.star", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
-def _default_location_filters(builder_name):
-    """Get the default location filters for a builder.
-
-    Args:
-      builder_name: The qualified-name of the builder to get the location
-        filters for. May be a bucket-qualified name (e.g. try/linux-rel) or a
-        project-qualified name (e.g. chromium/try/linux-rel).
-
-    Returns:
-      A list of cq.location_filter objects to use for the builder.
-    """
-    pieces = builder_name.split("/")
-    if len(pieces) == 2:
-        bucket, builder = pieces
-    elif len(pieces) == 3:
-        _, bucket, builder = pieces
-    else:
-        fail("builder_name must be a qualified builder name, got {}".format(builder_name))
-
-    def location_filter(*, path_regexp, exclude = False):
-        return cq.location_filter(
-            gerrit_host_regexp = ".*",
-            gerrit_project_regexp = ".*",
-            path_regexp = path_regexp,
-            exclude = exclude,
-        )
-
-    return [
-        # Contains documentation that doesn't affect the outputs
-        location_filter(path_regexp = "docs/.+", exclude = True),
-        # Contains configuration files that aren't active until after committed
-        location_filter(path_regexp = "infra/config/.+", exclude = True),
-        # Contains builder-specific files that can be consumed by the builder
-        # pre-submit
-        location_filter(path_regexp = "infra/config/generated/builder/{}/{}/.+".format(bucket, builder)),
-    ]
-
-def location_filters_without_defaults(tryjob_builder_proto):
-    default_filters = _default_location_filters(tryjob_builder_proto.name)
-    return [f for f in tryjob_builder_proto.location_filters if cq.location_filter(
-        gerrit_host_regexp = f.gerrit_host_regexp,
-        gerrit_project_regexp = f.gerrit_project_regexp,
-        path_regexp = f.path_regexp,
-        exclude = f.exclude,
-    ) not in default_filters]
+DEFAULT_EXCLUDE_LOCATION_FILTERS = [
+    # Contains documentation that doesn't affect the outputs
+    cq.location_filter(path_regexp = "docs/.+", exclude = True),
+    # Contains configuration files that aren't active until after committed
+    cq.location_filter(path_regexp = "infra/config/.+", exclude = True),
+]
 
 # Intended to be used for the `caches` builder arg when no source checkout is
 # required.
@@ -107,7 +68,7 @@ def tryjob(
         experiment_percentage = None,
         location_filters = None,
         cancel_stale = None,
-        add_default_filters = True):
+        add_default_excludes = True):
     """Specifies the details of a tryjob verifier.
 
     See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.cq_tryjob_verifier
@@ -121,10 +82,10 @@ def tryjob(
         except that strings can be provided, which will be converted to a
         cq.location_filter with path_regexp set to the provided string.
       cancel_stale: See cq.tryjob_verifier.
-      add_default_filters: A bool indicating whether to add default filters that
-        exclude certain directories that would have no impact when building
-        chromium with the patch applied (docs, config files that don't take
-        effect until landing, etc., see _default_location_filters).
+      add_default_excludes: A bool indicating whether to add exclude filters
+        for certain directories that would have no impact when building chromium
+        with the patch applied (docs, config files that don't take effect until
+        landing, etc., see DEFAULT_EXCLUDE_LOCATION_FILTERS).
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
@@ -142,7 +103,7 @@ def tryjob(
     return struct(
         disable_reuse = disable_reuse,
         experiment_percentage = experiment_percentage,
-        add_default_filters = add_default_filters,
+        add_default_excludes = add_default_excludes,
         location_filters = location_filters,
         cancel_stale = cancel_stale,
     )
@@ -286,8 +247,8 @@ def try_builder(
     cq_group = defaults.get_value("cq_group", cq_group)
     if tryjob != None:
         location_filters = tryjob.location_filters
-        if tryjob.add_default_filters:
-            location_filters = (location_filters or []) + _default_location_filters(builder)
+        if tryjob.add_default_excludes:
+            location_filters = (location_filters or []) + DEFAULT_EXCLUDE_LOCATION_FILTERS
 
         luci.cq_tryjob_verifier(
             builder = builder,
