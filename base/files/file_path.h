@@ -132,7 +132,14 @@
 
 // Macros for string literal initialization of FilePath::CharType[].
 #if BUILDFLAG(IS_WIN)
-#define FILE_PATH_LITERAL(x) L##x
+
+// The `FILE_PATH_LITERAL_INTERNAL` indirection allows `FILE_PATH_LITERAL` to
+// work correctly with macro parameters, for example
+// `FILE_PATH_LITERAL(TEST_FILE)` where `TEST_FILE` is a macro #defined as
+// "TestFile".
+#define FILE_PATH_LITERAL_INTERNAL(x) L##x
+#define FILE_PATH_LITERAL(x) FILE_PATH_LITERAL_INTERNAL(x)
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define FILE_PATH_LITERAL(x) x
 #endif  // BUILDFLAG(IS_WIN)

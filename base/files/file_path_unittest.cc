@@ -23,6 +23,9 @@
 #include "base/test/scoped_locale.h"
 #endif
 
+// This macro helps test `FILE_PATH_LITERAL` macro expansion.
+#define TEST_FILE "TestFile"
+
 // This macro helps avoid wrapped lines in the test structs.
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -737,6 +740,10 @@ TEST_F(FilePathTest, EqualityTest) {
       "inequality i: " << i << ", a: " << a.value() << ", b: " <<
       b.value();
   }
+}
+
+TEST_F(FilePathTest, MacroExpansion) {
+  EXPECT_EQ(FILE_PATH_LITERAL(TEST_FILE), FILE_PATH_LITERAL("TestFile"));
 }
 
 TEST_F(FilePathTest, Extension) {
