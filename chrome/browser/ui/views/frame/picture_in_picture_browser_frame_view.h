@@ -59,6 +59,7 @@ class PictureInPictureBrowserFrameView
   void UpdateWindowTitle() override {}
   void SizeConstraintsChanged() override {}
   gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
   void Layout() override;
   void AddedToWidget() override;

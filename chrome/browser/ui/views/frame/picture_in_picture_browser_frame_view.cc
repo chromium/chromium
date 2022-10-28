@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/window_shape.h"
 
@@ -45,9 +46,8 @@ constexpr int kTopControlsHeight = 30;
 constexpr int kWindowBorderThickness = 5;
 constexpr int kResizeAreaCornerSize = 10;
 
-// The window has a standard Chrome minimum size and does not have a maximum
-// size.
-constexpr gfx::Size kMinWindowSize(500, 500);
+// The window has a smaller minimum size than normal Chrome windows.
+constexpr gfx::Size kMinWindowSize(300, 300);
 
 class BackToTabButton : public OverlayWindowImageButton {
  public:
@@ -222,6 +222,15 @@ void PictureInPictureBrowserFrameView::UpdateWindowIcon() {
 
 gfx::Size PictureInPictureBrowserFrameView::GetMinimumSize() const {
   return kMinWindowSize;
+}
+
+gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
+  if (!GetWidget() || !GetWidget()->GetNativeWindow())
+    return gfx::Size();
+
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+      GetWidget()->GetNativeWindow());
+  return gfx::ScaleToRoundedSize(display.size(), 0.8);
 }
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {
