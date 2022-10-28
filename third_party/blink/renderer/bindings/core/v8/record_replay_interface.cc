@@ -1212,9 +1212,7 @@ static int GetAPIObjectIdCallback(v8::Local<v8::Object> object) {
   for (const WrapperTypeInfo* info : infos) {
     if (V8PerIsolateData::From(isolate)->HasInstance(info, object)) {
       ScriptWrappable* wrappable = ToScriptWrappable(object);
-      int id = recordreplay::PointerId(wrappable);
-      CHECK(id);
-      return id;
+      return wrappable->RecordReplayId();
     }
   }
   return 0;
@@ -1334,7 +1332,6 @@ static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& in
   if (requestInfo == gActiveNetworkRequests->end()) {
     recordreplay::Print("Unknown request received response: %s",
       request_id.c_str());
-    requestInfo->second.response_received = true;
     return;
   }
 
