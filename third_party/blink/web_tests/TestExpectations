@@ -205,6 +205,9 @@ crbug.com/1354678 compositing/reflections/nested-reflection-transformed.html [ F
 crbug.com/1354678 compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
 crbug.com/1354678 fast/css/transformed-mask.html [ Failure Pass ]
 crbug.com/1354678 paint/invalidation/reflection/reflection-with-rotation.html [ Failure Pass ]
+crbug.com/1354678 css3/filters/effect-reference-zoom-hw.html [ Failure Pass ]
+crbug.com/1354678 css3/filters/effect-reference-zoom.html [ Failure Pass ]
+crbug.com/1354678 svg/filters/feOffset.svg [ Failure Pass ]
 
 crbug.com/1376647 [ Linux ] compositing/masks/mask-with-added-filters.html [ Failure Pass ]
 crbug.com/1376647 [ Linux ] compositing/overflow/border-radius-above-composited-subframe.html [ Failure Pass ]
