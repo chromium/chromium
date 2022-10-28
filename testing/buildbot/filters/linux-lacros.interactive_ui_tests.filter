@@ -101,3 +101,7 @@
 
 # TODO(crbug.com/1342797): Flaking on linux-lacros-rel
 -TabDragging/DetachToBrowserTabDragControllerTest.DragPinnedTabDoesNotGroup/1
+
+# TODO(b/256212431): Re-enable when linux-lacros-rel support
+# signin::MakePrimaryAccountAvailable().
+-AccessCodeCastHandlerBrowserTest.ExpectProfileSynErrorWhenNoSync
