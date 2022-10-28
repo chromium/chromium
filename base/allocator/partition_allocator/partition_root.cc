@@ -230,6 +230,34 @@ void AfterForkInChild() {
 }
 #endif  // defined(PA_HAS_ATFORK_HANDLER)
 
+// An address constructed by repeating `kQuarantinedByte` shouldn't never point
+// to valid memory. Preemptively reserve a memory region around that address and
+// make it inaccessible. Not needed for 64-bit platforms where the address is
+// guaranteed to be non-canonical.
+void ReserveBackupRefPtrGuardRegionIfNeeded() {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
+    !defined(PA_HAS_64_BITS_POINTERS)
+  size_t alignment = internal::PageAllocationGranularity();
+
+  uintptr_t requested_address;
+  memset(&requested_address, internal::kQuarantinedByte,
+         sizeof(requested_address));
+  requested_address = RoundDownToPageAllocationGranularity(requested_address);
+
+  // Request several pages so that even unreasonably large C++ objects stay
+  // within the inaccessible region. If some of the pages can't be reserved,
+  // it's still preferable to try and reserve the rest.
+  for (size_t i = 0; i < 4; ++i) {
+    [[maybe_unused]] uintptr_t allocated_address =
+        AllocPages(requested_address, alignment, alignment,
+                   PageAccessibilityConfiguration::kInaccessible,
+                   PageTag::kPartitionAlloc);
+    requested_address += alignment;
+  }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
+        // !defined(PA_HAS_64_BITS_POINTERS)
+}
+
 std::atomic<bool> g_global_init_called;
 void PartitionAllocMallocInitOnce() {
   bool expected = false;
@@ -264,6 +292,8 @@ void PartitionAllocMallocInitOnce() {
       pthread_atfork(BeforeForkInParent, AfterForkInParent, AfterForkInChild);
   PA_CHECK(err == 0);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  ReserveBackupRefPtrGuardRegionIfNeeded();
 }
 
 }  // namespace
