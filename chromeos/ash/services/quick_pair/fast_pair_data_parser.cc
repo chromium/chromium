@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/quick_pair/fast_pair_data_parser.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "base/base64.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/quick_pair/fast_pair_decryption.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/battery_notification.h"
@@ -85,10 +85,8 @@ void ConvertVectorsToArrays(
     const std::vector<uint8_t>& encrypted_bytes,
     std::array<uint8_t, kAesBlockByteSize>& out_aes_key_bytes,
     std::array<uint8_t, kEncryptedDataByteSize>& out_encrypted_bytes) {
-  std::copy(aes_key_bytes.begin(), aes_key_bytes.end(),
-            out_aes_key_bytes.begin());
-  std::copy(encrypted_bytes.begin(), encrypted_bytes.end(),
-            out_encrypted_bytes.begin());
+  base::ranges::copy(aes_key_bytes, out_aes_key_bytes.begin());
+  base::ranges::copy(encrypted_bytes, out_encrypted_bytes.begin());
 }
 
 int GetBatteryPercentange(uint8_t battery_byte) {
@@ -454,7 +452,7 @@ mojom::MessageStreamMessagePtr FastPairDataParser::ParseDeviceInformationEvent(
     }
 
     std::array<uint8_t, 6> address_bytes;
-    std::copy_n(additional_data.begin(), 6, address_bytes.begin());
+    base::ranges::copy(additional_data, address_bytes.begin());
 
     return mojom::MessageStreamMessage::NewBleAddressUpdate(
         device::CanonicalizeBluetoothAddress(address_bytes));

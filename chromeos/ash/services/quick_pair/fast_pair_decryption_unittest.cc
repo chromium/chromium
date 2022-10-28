@@ -4,9 +4,11 @@
 
 #include "chromeos/ash/services/quick_pair/fast_pair_decryption.h"
 
+#include <algorithm>
 #include <array>
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,13 +30,12 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Success) {
 
   // Address bytes.
   std::array<uint8_t, 6> address_bytes = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-  std::copy(address_bytes.begin(), address_bytes.end(),
-            std::back_inserter(response_bytes));
+  base::ranges::copy(address_bytes, std::back_inserter(response_bytes));
 
   // Random salt
   std::array<uint8_t, 9> salt = {0x08, 0x09, 0x0A, 0x0B, 0x0C,
                                  0x0D, 0x0E, 0x0F, 0x00};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(response_bytes));
+  base::ranges::copy(salt, std::back_inserter(response_bytes));
 
   std::array<uint8_t, kBlockByteSize> response_bytes_array;
   std::copy_n(response_bytes.begin(), kBlockByteSize,
@@ -91,7 +92,7 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedPasskey_Success) {
   // Random salt
   std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
                                   0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(passkey_bytes));
+  base::ranges::copy(salt, std::back_inserter(passkey_bytes));
 
   std::array<uint8_t, kBlockByteSize> passkey_bytes_array;
   std::copy_n(passkey_bytes.begin(), kBlockByteSize,

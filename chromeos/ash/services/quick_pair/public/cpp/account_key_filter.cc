@@ -5,9 +5,11 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/account_key_filter.h"
 
 #include <math.h>
+
 #include <cstddef>
 #include <iterator>
 
+#include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "crypto/sha2.h"
 
@@ -22,8 +24,7 @@ AccountKeyFilter::AccountKeyFilter(
     const NotDiscoverableAdvertisement& advertisement)
     : bit_sets_(advertisement.account_key_filter) {
   salt_values_.resize(advertisement.salt.size());
-  std::copy(advertisement.salt.begin(), advertisement.salt.end(),
-            salt_values_.begin());
+  base::ranges::copy(advertisement.salt, salt_values_.begin());
 
   // If the advertisement contains battery information, then that information
   // was also appended to the account keys to generate the filter. We need to

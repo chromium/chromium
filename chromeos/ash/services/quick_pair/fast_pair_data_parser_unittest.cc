@@ -5,9 +5,11 @@
 #include "chromeos/ash/services/quick_pair/fast_pair_data_parser.h"
 
 #include <stddef.h>
+
 #include <iterator>
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -115,13 +117,12 @@ TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
 
   // Address bytes.
   std::array<uint8_t, 6> address_bytes = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-  std::copy(address_bytes.begin(), address_bytes.end(),
-            std::back_inserter(response_bytes));
+  base::ranges::copy(address_bytes, std::back_inserter(response_bytes));
 
   // Random salt
   std::array<uint8_t, 9> salt = {0x08, 0x09, 0x0A, 0x0B, 0x0C,
                                  0x0D, 0x0E, 0x0F, 0x00};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(response_bytes));
+  base::ranges::copy(salt, std::back_inserter(response_bytes));
 
   std::vector<uint8_t> encrypted_bytes = EncryptBytes(response_bytes);
 
@@ -188,7 +189,7 @@ TEST_F(FastPairDataParserTest, DecryptSeekerPasskeySuccessfully) {
   // Random salt
   std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
                                   0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(passkey_bytes));
+  base::ranges::copy(salt, std::back_inserter(passkey_bytes));
 
   std::vector<uint8_t> encrypted_bytes = EncryptBytes(passkey_bytes);
 
@@ -224,7 +225,7 @@ TEST_F(FastPairDataParserTest, DecryptProviderPasskeySuccessfully) {
   // Random salt
   std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
                                   0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
-  std::copy(salt.begin(), salt.end(), std::back_inserter(passkey_bytes));
+  base::ranges::copy(salt, std::back_inserter(passkey_bytes));
 
   std::vector<uint8_t> encrypted_bytes = EncryptBytes(passkey_bytes);
 

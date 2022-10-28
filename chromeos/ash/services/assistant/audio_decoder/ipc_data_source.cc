@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/assistant/audio_decoder/ipc_data_source.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -82,7 +82,7 @@ void IPCDataSource::ReadDone(uint8_t* destination,
     return;
   }
 
-  std::copy(data.begin(), data.end(), destination);
+  base::ranges::copy(data, destination);
   std::move(callback).Run(data.size());
 }
 

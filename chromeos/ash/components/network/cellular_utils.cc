@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,8 +102,7 @@ std::vector<CellularESimProfile> GenerateProfilesFromHermes() {
        HermesManagerClient::Get()->GetAvailableEuiccs()) {
     std::vector<CellularESimProfile> profiles_from_euicc =
         GenerateProfilesFromEuicc(euicc_path);
-    std::copy(profiles_from_euicc.begin(), profiles_from_euicc.end(),
-              std::back_inserter(profiles));
+    base::ranges::copy(profiles_from_euicc, std::back_inserter(profiles));
   }
 
   return profiles;

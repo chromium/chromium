@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/services/quick_pair/fast_pair_decryption.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"

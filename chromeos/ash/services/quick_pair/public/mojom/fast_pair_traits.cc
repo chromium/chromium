@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_traits.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,9 +30,8 @@ bool StructTraits<DecryptedResponseDataView, DecryptedResponse>::Read(
           data.message_type(), &out->message_type))
     return false;
 
-  std::copy(address_bytes.begin(), address_bytes.end(),
-            out->address_bytes.begin());
-  std::copy(salt_bytes.begin(), salt_bytes.end(), out->salt.begin());
+  base::ranges::copy(address_bytes, out->address_bytes.begin());
+  base::ranges::copy(salt_bytes, out->salt.begin());
 
   return true;
 }
@@ -50,7 +49,7 @@ bool StructTraits<DecryptedPasskeyDataView, DecryptedPasskey>::Read(
     return false;
 
   out->passkey = data.passkey();
-  std::copy(salt_bytes.begin(), salt_bytes.end(), out->salt.begin());
+  base::ranges::copy(salt_bytes, out->salt.begin());
 
   return true;
 }
