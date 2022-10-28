@@ -328,4 +328,11 @@ BASE_FEATURE(kPreconnectOnRedirect,
              "PreconnectOnRedirect",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables out-of-process system DNS resolution so getaddrinfo() never runs in
+// the network service sandbox. System DNS resolution will instead be brokered
+// out over Mojo, likely to run in the browser process.
+BASE_FEATURE(kOutOfProcessSystemDnsResolution,
+             "OutOfProcessSystemDnsResolution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features

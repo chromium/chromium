@@ -2681,6 +2681,10 @@ source_set("browser") {
     ]
   }
 
+  if (is_android || is_linux || is_chromeos) {
+    deps += [ "//content/browser/system_dns_resolution" ]
+  }
+
   if (use_udev) {
     deps += [
       "//device/udev_linux",

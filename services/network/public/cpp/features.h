@@ -103,6 +103,9 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPreconnectInNetworkService);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPreconnectOnRedirect);
 
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kOutOfProcessSystemDnsResolution);
+
 }  // namespace features
 }  // namespace network
 

@@ -18,8 +18,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
@@ -635,12 +637,21 @@ class RuleBasedHostResolverProc : public HostResolverProc {
 
   RuleList GetRules();
 
+  // Returns the number of calls to Resolve() where |host| matched
+  // |host_pattern|.
+  size_t NumResolvesForHostPattern(base::StringPiece host_pattern);
+
  private:
   ~RuleBasedHostResolverProc() override;
 
   void AddRuleInternal(const Rule& rule);
 
-  RuleList rules_;
+  RuleList rules_ GUARDED_BY(rule_lock_);
+
+  // Tracks the number of calls to Resolve() where |host| matches a rule's host
+  // pattern.
+  std::map<base::StringPiece, size_t> num_resolves_per_host_pattern_
+      GUARDED_BY(rule_lock_);
 
   // Must be obtained before writing to or reading from |rules_|.
   base::Lock rule_lock_;

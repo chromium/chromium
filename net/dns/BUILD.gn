@@ -21,6 +21,10 @@ source_set("dns") {
     "//chrome/test/*",
     "//components/certificate_transparency:unit_tests",
     "//components/cronet/*",
+
+    # Needed for brokering system DNS resolution out of the network service.
+    "//content/browser/system_dns_resolution",
+    "//content/test/*",
     "//net/*",
     "//services/network/*",
   ]

@@ -1289,6 +1289,12 @@ RuleBasedHostResolverProc::RuleList RuleBasedHostResolverProc::GetRules() {
   return rv;
 }
 
+size_t RuleBasedHostResolverProc::NumResolvesForHostPattern(
+    base::StringPiece host_pattern) {
+  base::AutoLock lock(rule_lock_);
+  return num_resolves_per_host_pattern_[host_pattern];
+}
+
 int RuleBasedHostResolverProc::Resolve(const std::string& host,
                                        AddressFamily address_family,
                                        HostResolverFlags host_resolver_flags,
@@ -1311,6 +1317,8 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
     bool matches_flags = (r->host_resolver_flags & flags) == flags;
     if (matches_flags && matches_address_family &&
         base::MatchPattern(host, r->host_pattern)) {
+      num_resolves_per_host_pattern_[r->host_pattern]++;
+
       if (r->latency_ms != 0) {
         base::PlatformThread::Sleep(base::Milliseconds(r->latency_ms));
       }

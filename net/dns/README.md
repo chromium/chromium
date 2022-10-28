@@ -249,9 +249,11 @@ always be used for **address resolves** when **any** of the following are true:
 
 Secure DNS requests cannot be made using the system resolver.
 
-`net::HostResolverSystemTask` posts a blocking task to a
+`net::HostResolverSystemTask`'s behavior can be overridden by an asynchronous
+global override (e.g. in case resolution needs to be brokered out of the current
+process for sandboxing reasons). Otherwise, it posts a blocking task to a
 [`base::ThreadPool`](/base/task/thread_pool.h) to make blocking resolution
-requests.
+requests in-process.
 On a timeout, additional attempts are made, but previous attempts are not
 cancelled as there is no cancellation mechanism for `getaddrinfo()`. The first
 attempt to complete is used and any other attempt completions are ignored.

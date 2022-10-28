@@ -28,8 +28,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/address_list.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -48,6 +50,7 @@
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/system_dns_resolution.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
@@ -315,6 +318,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   // Sets First-Party Set data after having read it from a file.
   void OnReadFirstPartySetsFile(const std::string& raw_sets);
+
+  void SetSystemDnsResolver(
+      mojo::PendingRemote<mojom::SystemDnsResolver> override_remote);
 
   bool initialized_ = false;
 

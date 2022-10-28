@@ -23,13 +23,17 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_host_resolver.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/address_family.h"
+#include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/http/transport_security_state.h"
@@ -710,6 +714,25 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     // For purposes of tests, this IPC only supports sync Write calls.
     DCHECK_NE(net::ERR_IO_PENDING, rv);
     std::move(callback).Run(rv == static_cast<int>(kRequest.size()));
+  }
+
+  void ResolveOwnHostnameWithSystemDns(
+      ResolveOwnHostnameWithSystemDnsCallback callback) override {
+    std::unique_ptr<net::HostResolverSystemTask> system_task =
+        net::HostResolverSystemTask::CreateForOwnHostname(
+            net::AddressFamily::ADDRESS_FAMILY_UNSPECIFIED, 0);
+    net::HostResolverSystemTask* system_task_ptr = system_task.get();
+    auto forward_system_dns_results =
+        [](std::unique_ptr<net::HostResolverSystemTask>,
+           net::SystemDnsResultsCallback callback,
+           const net::AddressList& addr_list, int os_error, int net_error) {
+          std::move(callback).Run(addr_list, os_error, net_error);
+        };
+    auto results_cb = base::BindOnce(
+        std::move(forward_system_dns_results), std::move(system_task),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(callback), net::AddressList(), 0, net::ERR_ABORTED));
+    system_task_ptr->Start(std::move(results_cb));
   }
 
  private:

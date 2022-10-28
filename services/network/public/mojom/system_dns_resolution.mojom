@@ -1,0 +1,22 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/address_family.mojom";
+import "services/network/public/mojom/address_list.mojom";
+
+// An interface for system DNS resolution. Implementers should return the
+// results of the platform-specific API.
+interface SystemDnsResolver {
+  // Perform a system DNS resolution for `hostname`. `flags` is the bitfield
+  // net::HostResolverFlags and `network` is a net::handles::NetworkHandle.
+  // If `hostname` is null, performs a resolution for the machine's own
+  // hostname.
+  Resolve(string? hostname,
+          AddressFamily addr_family,
+          int32 flags,
+          uint64 network) => (network.mojom.AddressList addr_list,
+                              int32 os_error, int32 net_error);
+};

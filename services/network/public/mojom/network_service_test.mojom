@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -242,4 +243,8 @@ interface NetworkServiceTest {
   // that a TransferableSocket can be transferred between processes.
   MakeRequestToServer(TransferableSocket s, IPEndPoint endpoint)
       => (bool result);
+
+  // Resolves the machine's own hostname with net::HostResolverSystemTask.
+  ResolveOwnHostnameWithSystemDns()
+      => (network.mojom.AddressList addr_list, int32 os_error, int32 net_error);
 };

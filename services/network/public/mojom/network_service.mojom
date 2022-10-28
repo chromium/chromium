@@ -26,6 +26,7 @@ import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
+import "services/network/public/mojom/system_dns_resolution.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
@@ -118,6 +119,10 @@ struct NetworkServiceParams {
   // A boolean provided by the Browser Process in order to plumb into the
   // First-Party Sets attribute during NetworkService::Initialize().
   bool first_party_sets_enabled;
+
+  // A SystemDnsResolver to provide out-of-process system DNS resolution, in
+  // case the system DNS resolver cannot always run sandboxed.
+  pending_remote<SystemDnsResolver>? system_dns_resolver;
 };
 
 // Configuration settings for SCT Auditing.

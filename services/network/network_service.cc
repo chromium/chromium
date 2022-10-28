@@ -32,8 +32,11 @@
 #include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/os_crypt/os_crypt.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/logging_network_change_observer.h"
 #include "net/base/network_change_notifier.h"
@@ -46,6 +49,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
@@ -76,6 +80,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
 #include "services/network/url_loader.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
@@ -87,6 +92,10 @@
     BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #include "components/os_crypt/key_storage_config_linux.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "sandbox/linux/services/libc_interceptor.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -211,6 +220,21 @@ void HandleBadMessage(const std::string& error) {
   network::debug::ClearDeserializationCrashKeyString();
 }
 
+void ResolveSystemDnsWithMojo(
+    const mojo::Remote<mojom::SystemDnsResolver>& system_dns_override,
+    const absl::optional<std::string>& hostname,
+    net::AddressFamily addr_family,
+    net::HostResolverFlags flags,
+    net::SystemDnsResultsCallback results_cb,
+    net::handles::NetworkHandle network) {
+  auto results_cb_with_default_invoke =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(results_cb), net::AddressList(), 0,
+          net::ERR_DNS_REQUEST_CANCELLED);
+  system_dns_override->Resolve(hostname, addr_family, flags, network,
+                               std::move(results_cb_with_default_invoke));
+}
+
 }  // namespace
 
 // static
@@ -313,6 +337,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   UMA_HISTOGRAM_BOOLEAN(
       "Net.Certificate.IgnoreCertificateErrorsSPKIListPresent",
       command_line->HasSwitch(switches::kIgnoreCertificateErrorsSPKIList));
+
+  if (params->system_dns_resolver)
+    SetSystemDnsResolver(std::move(params->system_dns_resolver));
 
   network_change_manager_ = std::make_unique<NetworkChangeManager>(
       CreateNetworkChangeNotifierIfNeeded(
@@ -478,6 +505,32 @@ void NetworkService::CreateNetLogEntriesForActiveObjects(
 
 void NetworkService::SetParams(mojom::NetworkServiceParamsPtr params) {
   Initialize(std::move(params));
+}
+
+void NetworkService::SetSystemDnsResolver(
+    mojo::PendingRemote<mojom::SystemDnsResolver> override_remote) {
+  CHECK(
+      base::FeatureList::IsEnabled(features::kOutOfProcessSystemDnsResolution));
+  CHECK(override_remote);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // The in-process system DNS resolver is being overridden with an
+  // out-of-process Mojo implementation. So, generate a crash dump if this
+  // process ever calls getaddrinfo().
+  // TODO(crbug.com/1312224): remove this once network service is sandboxed.
+  sandbox::DiscourageGetaddrinfo();
+#endif
+
+  // Using a Remote (as opposed to a SharedRemote) is fine as system host
+  // resolver overrides should only be invoked on the main thread.
+  mojo::Remote<mojom::SystemDnsResolver> system_dns_override(
+      std::move(override_remote));
+
+  // Note that if this override replaces a currently existing override, it wil
+  // destruct the Remote<mojom::SystemDnsResolver> owned by the other override,
+  // which will cancel all ongoing DNS resolutions.
+  net::SetSystemDnsResolverOverride(base::BindRepeating(
+      ResolveSystemDnsWithMojo, std::move(system_dns_override)));
 }
 
 void NetworkService::StartNetLog(base::File file,

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/task_runner.h"
-#include "base/types/pass_key.h"
 #include "net/base/address_list.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
@@ -19,13 +19,14 @@
 
 namespace net {
 
-// Calls SystemHostResolverCallAsync() (or in some tests, HostResolverProc) in
-// ThreadPool. Performs retries if specified by HostResolverSystemTask::Params.
-//
-// In non-test code, the HostResolverProc is always null, and this class calls
-// SystemHostResolverCall() which calls a platform API that implements host
-// resolution. So EnsureSystemHostResolverCallReady() must be called before
+using SystemDnsResultsCallback = base::OnceCallback<
+    void(const AddressList& addr_list, int os_error, int net_error)>;
+
+// Calls SystemHostResolverCall() (or in some tests, HostResolverProc::Resolve)
+// in ThreadPool. So EnsureSystemHostResolverCallReady() must be called before
 // using this class.
+//
+// Performs retries if specified by HostResolverSystemTask::Params.
 //
 // Whenever we try to resolve the host, we post a delayed task to check if host
 // resolution (OnLookupComplete) is completed or not. If the original attempt
@@ -35,11 +36,11 @@ namespace net {
 //
 // This class is designed to be used not just by HostResolverManager, but by
 // general consumers.
+//
+// It should only be used on the main thread to ensure that hooks (see
+// SetSystemHostResolverOverride()) only ever run on the main thread.
 class NET_EXPORT HostResolverSystemTask {
  public:
-  using SystemDnsResultsCallback = base::OnceCallback<
-      void(const AddressList& addr_list, int os_error, int net_error)>;
-
   // Parameters for customizing HostResolverSystemTask behavior.
   //
   // |resolver_proc| is used to override resolution in tests; it must be
@@ -104,9 +105,10 @@ class NET_EXPORT HostResolverSystemTask {
       const NetLogWithSource& job_net_log = NetLogWithSource(),
       handles::NetworkHandle network = handles::kInvalidNetworkHandle);
 
-  // "Private" constructor for the above 2 static functions.
+  // If `hostname` is absl::nullopt, resolves the result of GetHostName().
+  // Prefer using the above 2 static functions for constructing a
+  // HostResolverSystemTask.
   HostResolverSystemTask(
-      base::PassKey<HostResolverSystemTask>,
       absl::optional<std::string> hostname,
       AddressFamily address_family,
       HostResolverFlags flags,
@@ -186,6 +188,8 @@ NET_EXPORT void EnsureSystemHostResolverCallReady();
 // `network` is an optional parameter, when specified (!=
 // handles::kInvalidNetworkHandle) the lookup will be performed specifically for
 // `network`.
+//
+// This should NOT be called in a sandboxed process.
 NET_EXPORT_PRIVATE int SystemHostResolverCall(
     const std::string& host,
     AddressFamily address_family,
@@ -198,6 +202,17 @@ NET_EXPORT_PRIVATE int SystemHostResolverCall(
 // useful for tests and fuzzers that need reproducibilty of failures.
 NET_EXPORT_PRIVATE void SetSystemDnsResolutionTaskRunnerForTesting(
     scoped_refptr<base::TaskRunner> task_runner);
+
+// The following will be used to override the behavior of
+// HostResolverSystemTask. This override will be called instead of posting
+// SystemHostResolverCall() to a worker thread. The override will only be
+// invoked on the main thread.
+NET_EXPORT void SetSystemDnsResolverOverride(
+    base::RepeatingCallback<void(const absl::optional<std::string>& host,
+                                 AddressFamily address_family,
+                                 HostResolverFlags host_resolver_flags,
+                                 SystemDnsResultsCallback results_cb,
+                                 handles::NetworkHandle network)> dns_override);
 
 }  // namespace net
 

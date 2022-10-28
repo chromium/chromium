@@ -1101,6 +1101,7 @@ mojom("mojom") {
     "reporting_service.mojom",
     "socket_broker.mojom",
     "ssl_config.mojom",
+    "system_dns_resolution.mojom",
     "tcp_socket.mojom",
     "tls_socket.mojom",
     "transferable_directory.mojom",
