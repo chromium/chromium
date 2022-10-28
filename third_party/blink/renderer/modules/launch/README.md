@@ -1,6 +1,6 @@
 # Launch Events API
 
-This directory contains the renderer side implementation of the client window [launch event API](https://github.com/WICG/sw-launch/blob/master/explainer.md).
+This directory contains the renderer side implementation of the client window [launch event API](https://github.com/WICG/web-app-launch/blob/master/explainer.md).
 
 > Note: This API is under active development, and is a work in progress.
 

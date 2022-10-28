@@ -33,7 +33,7 @@ class WebAppProvider;
 // link capturing, etc.).
 //
 // Implements the behaviour of the `launch_handler` manifest field:
-// https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+// https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 class WebAppLaunchProcess {
  public:
   WebAppLaunchProcess(Profile& profile, const apps::AppLaunchParams& params);

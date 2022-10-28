@@ -16,7 +16,7 @@ namespace web_app {
 // This class ensures web apps have their automatic link capturing user
 // preference set to enabled if they were using the "capture_links" manifest
 // API:
-// https://github.com/WICG/sw-launch/blob/main/declarative_link_capturing.md
+// https://github.com/WICG/web-app-launch/blob/main/declarative_link_capturing.md
 //
 // These web apps are exempt from the user preference opt in model we have now
 // as they would have been installed prior to the opt in model coming into

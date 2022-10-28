@@ -464,7 +464,7 @@ class MODULES_EXPORT ManifestParser {
                                       const String& feature);
 
   // Parses the 'launch_handler' field of the manifest as defined in:
-  // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+  // https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
   // Returns default values if parsing fails.
   mojom::blink::ManifestLaunchHandlerPtr ParseLaunchHandler(
       const JSONObject* object);

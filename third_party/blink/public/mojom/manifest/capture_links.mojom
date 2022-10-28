@@ -9,7 +9,7 @@ enum CaptureLinks {
   kUndefined,
 
   // Standard link capturing behaviours described by:
-  // https://github.com/WICG/sw-launch/blob/master/declarative_link_capturing.md#proposal
+  // https://github.com/WICG/web-app-launch/blob/master/declarative_link_capturing.md#proposal
 
   // No link capturing.
   kNone,

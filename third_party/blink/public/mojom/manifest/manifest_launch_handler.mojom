@@ -2,7 +2,7 @@ module blink.mojom;
 
 // Represents how web app launches should be handled with regard to opening
 // windows or recycling existing ones.
-// Spec: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+// Spec: https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 struct ManifestLaunchHandler {
   // The client behavior to use for app launches.
   enum ClientMode {

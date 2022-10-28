@@ -929,7 +929,7 @@ const char kDesktopPWAsLaunchHandlerName[] = "Desktop PWA launch handler";
 const char kDesktopPWAsLaunchHandlerDescription[] =
     "Enable web app manifests to declare app launch behavior. Prototype "
     "implementation of: "
-    "https://github.com/WICG/sw-launch/blob/main/launch_handler.md";
+    "https://github.com/WICG/web-app-launch/blob/main/launch_handler.md";
 
 const char kDesktopPWAsTabStripName[] = "Desktop PWA tab strips";
 const char kDesktopPWAsTabStripDescription[] =
