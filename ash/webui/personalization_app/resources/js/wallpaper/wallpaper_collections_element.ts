@@ -23,7 +23,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText, isNonEmptyArray, isPngDataUrl, isSelectionEvent} from '../utils.js';
+import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, getPathOrSymbol} from './utils.js';
@@ -117,7 +117,7 @@ function getImages(
   for (const image of localImages) {
     const key = getPathOrSymbol(image);
     const data = localImageData[key];
-    if (isPngDataUrl(data)) {
+    if (isImageDataUrl(data)) {
       result.push(data);
     }
     // Add at most |kMaximumLocalImagePreviews| thumbnail urls.
@@ -155,7 +155,7 @@ function getLocalTile(
   // Count all images that failed to load and subtract them from "My Images"
   // count.
   const failureCount = Object.values(localImageData).reduce((result, next) => {
-    return !isPngDataUrl(next) ? result + 1 : result;
+    return !isImageDataUrl(next) ? result + 1 : result;
   }, 0);
 
   return {

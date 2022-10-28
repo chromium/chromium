@@ -22,7 +22,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isPngDataUrl, isSelectionEvent} from '../utils.js';
+import {isImageDataUrl, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {getTemplate} from './local_images_element.html.js';
@@ -132,7 +132,7 @@ export class LocalImages extends WithPersonalizationStore {
     this.imagesToDisplay_ = (images || []).filter(image => {
       const key = getPathOrSymbol(image);
       if (this.imageDataLoading_[key] === false) {
-        return isPngDataUrl(this.imageData_[key]);
+        return isImageDataUrl(this.imageData_[key]);
       }
       return true;
     });
@@ -154,7 +154,7 @@ export class LocalImages extends WithPersonalizationStore {
       const image = this.imagesToDisplay_[i];
       const key = getPathOrSymbol(image);
       const failed =
-          imageDataLoading[key] === false && !isPngDataUrl(imageData[key]);
+          imageDataLoading[key] === false && !isImageDataUrl(imageData[key]);
       if (failed) {
         this.splice('imagesToDisplay_', i, 1);
       }
@@ -218,7 +218,7 @@ export class LocalImages extends WithPersonalizationStore {
     }
     const data = imageData[getPathOrSymbol(image)];
     // Return a "fail" url that will not load.
-    if (!isPngDataUrl(data)) {
+    if (!isImageDataUrl(data)) {
       return {url: ''};
     }
     return data;

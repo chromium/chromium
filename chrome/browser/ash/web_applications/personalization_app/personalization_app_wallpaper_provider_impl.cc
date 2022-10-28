@@ -25,6 +25,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -66,6 +67,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -116,6 +118,21 @@ scoped_refptr<base::RefCountedMemory> ResizeAndEncodeWallpaperImage() {
   scoped_refptr<base::RefCountedMemory> png_bytes =
       gfx::Image(resized).As1xPNGBytes();
   return png_bytes;
+}
+
+std::string GetJpegDataUrl(const unsigned char* data, size_t size) {
+  std::string output = "data:image/jpeg;base64,";
+  base::Base64EncodeAppend(base::make_span(data, size), &output);
+  return output;
+}
+
+std::string GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
+  std::vector<unsigned char> output;
+  if (!gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &output)) {
+    LOG(ERROR) << "Unable to encode bitmap";
+    return std::string();
+  }
+  return GetJpegDataUrl(output.data(), output.size());
 }
 
 }  // namespace
@@ -890,7 +907,7 @@ void PersonalizationAppWallpaperProviderImpl::OnGetLocalImageThumbnail(
     std::move(callback).Run(GURL());
     return;
   }
-  std::move(callback).Run(GURL(webui::GetBitmapDataUrl(*bitmap)));
+  std::move(callback).Run(GURL(GetBitmapJpegDataUrl(*bitmap)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected(
