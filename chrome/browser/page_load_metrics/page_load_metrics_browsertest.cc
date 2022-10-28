@@ -3656,21 +3656,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
   test_animated_image_lcp(/*smaller=*/true, /*animated=*/true);
 }
 
-// Tests that an animated image's reported LCP values are larger than its load
-// times, when only the feature flag for animated image web exposure is enabled.
-// TODO(crbug.com/1306758): Flaky on Mac/Linux/Lacros.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PageLCPAnimatedImageOnlyRuntimeFlag \
-  DISABLED_PageLCPAnimatedImageOnlyRuntimeFlag
-#else
-#define MAYBE_PageLCPAnimatedImageOnlyRuntimeFlag \
-  PageLCPAnimatedImageOnlyRuntimeFlag
-#endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithRuntimeAnimatedLCPFlag,
-                       MAYBE_PageLCPAnimatedImageOnlyRuntimeFlag) {
-  test_animated_image_lcp(/*smaller=*/false, /*animated=*/true);
-}
-
 // Tests that a non-animated image's reported LCP values are larger than its
 // load times, when the feature flag for animated image reporting is enabled.
 // TODO(crbug.com/1306713): Flaky on Mac/Linux/Lacros.
