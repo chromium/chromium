@@ -5,7 +5,9 @@
 #include <wayland-server-core.h>
 
 #include "base/debug/crash_logging.h"
+#include "base/environment.h"
 #include "base/i18n/number_formatting.h"
+#include "base/nix/xdg_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
@@ -100,6 +102,27 @@ TEST_P(WaylandEventWatcherTest, CrashKeyClientImplementationError) {
 
   EXPECT_EQ(expected_error_code,
             crash_reporter::GetCrashKeyValue("wayland_error"));
+}
+
+TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameSet) {
+  const std::string kTestWaylandCompositor = "OzoneWaylandTestCompositor";
+  base::Environment::Create()->SetVar(base::nix::kXdgCurrentDesktopEnvVar,
+                                      kTestWaylandCompositor);
+
+  wl_client_post_implementation_error(server_.client(), "%s", "stub error");
+  Sync();
+
+  EXPECT_EQ(kTestWaylandCompositor,
+            crash_reporter::GetCrashKeyValue("wayland_compositor"));
+}
+
+TEST_P(WaylandEventWatcherTest, CrashKeyCompositorNameUnset) {
+  base::Environment::Create()->UnSetVar(base::nix::kXdgCurrentDesktopEnvVar);
+
+  wl_client_post_implementation_error(server_.client(), "%s", "stub error");
+  Sync();
+
+  EXPECT_EQ("Unknown", crash_reporter::GetCrashKeyValue("wayland_compositor"));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

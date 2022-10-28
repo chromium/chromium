@@ -7,7 +7,9 @@
 #include <wayland-client-core.h>
 #include <cstring>
 
+#include "base/environment.h"
 #include "base/logging.h"
+#include "base/nix/xdg_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -63,6 +65,17 @@ std::string GetWaylandProtocolError(int err, wl_display* display) {
   // be lost and local development and debugging will be harder to do.
   FormatErrorMessage(&error_string);
   return error_string;
+}
+
+void RecordCrashKeys(const std::string& error_string) {
+  static crash_reporter::CrashKeyString<256> error("wayland_error");
+  error.Set(error_string);
+
+  static crash_reporter::CrashKeyString<32> compositor("wayland_compositor");
+  std::string compositor_name("Unknown");
+  base::Environment::Create()->GetVar(base::nix::kXdgCurrentDesktopEnvVar,
+                                      &compositor_name);
+  compositor.Set(compositor_name);
 }
 
 }  // namespace
@@ -180,9 +193,10 @@ void WaylandEventWatcher::WlDisplayCheckForErrors() {
     } else {
       error_string = GetWaylandProtocolError(err, display_);
     }
-    // Add a crash key so we can figure out why this is happening.
-    static crash_reporter::CrashKeyString<256> wayland_error("wayland_error");
-    wayland_error.Set(std::move(error_string));
+
+    // Record the Wayland compositor name as well as the protocol error message
+    // into crash keys, so we can figure out why it is happening.
+    RecordCrashKeys(error_string);
 
     // This can be null in tests.
     if (!shutdown_cb_.is_null()) {
