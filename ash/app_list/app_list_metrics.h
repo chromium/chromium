@@ -234,11 +234,9 @@ struct AppLaunchedMetricParams {
   absl::optional<base::TimeTicks> launcher_show_timestamp;
 };
 
-void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
-                                                bool is_tablet_mode);
+void AppListRecordPageSwitcherSourceByEventType(ui::EventType type);
 
-void RecordPageSwitcherSource(AppListPageSwitcherSource source,
-                              bool is_tablet_mode);
+void RecordPageSwitcherSource(AppListPageSwitcherSource source);
 
 void RecordZeroStateSearchResultUserActionHistogram(
     ZeroStateSearchResultUserActionType action);

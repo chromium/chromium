@@ -2907,7 +2907,7 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 
   if (target_index.page != original_selected_view_index.page &&
       !folder_delegate_) {
-    RecordPageSwitcherSource(kMoveAppWithKeyboard, IsTabletMode());
+    RecordPageSwitcherSource(kMoveAppWithKeyboard);
   }
 }
 

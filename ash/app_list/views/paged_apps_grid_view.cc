@@ -212,8 +212,7 @@ PagedAppsGridView::PagedAppsGridView(
 
   pagination_controller_ = std::make_unique<PaginationController>(
       &pagination_model_, PaginationController::SCROLL_AXIS_VERTICAL,
-      base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType),
-      IsTabletMode());
+      base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType));
 }
 
 PagedAppsGridView::~PagedAppsGridView() {
@@ -221,8 +220,6 @@ PagedAppsGridView::~PagedAppsGridView() {
 }
 
 void PagedAppsGridView::OnTabletModeChanged(bool started) {
-  pagination_controller_->set_is_tablet_mode(started);
-
   // Enable/Disable folder icons's background blur based on tablet mode.
   for (const auto& entry : view_model()->entries()) {
     auto* item_view = static_cast<AppListItemView*>(entry.view);
@@ -861,7 +858,7 @@ void PagedAppsGridView::OnPageFlipTimer() {
 
   pagination_model_.SelectPage(page_flip_target_, true);
   if (!IsInFolder())
-    RecordPageSwitcherSource(kDragAppToBorder, IsTabletMode());
+    RecordPageSwitcherSource(kDragAppToBorder);
 
   BeginHideCurrentGhostImageView();
 }

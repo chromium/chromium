@@ -22,12 +22,9 @@ class PaginationModel;
 class PageSwitcher : public views::View,
                      public PaginationModelObserver {
  public:
-  static constexpr int kMaxButtonRadiusForRootGrid = 16;
-  static constexpr int kMaxButtonRadiusForFolderGrid = 10;
+  static constexpr int kMaxButtonRadius = 16;
 
-  PageSwitcher(PaginationModel* model,
-               bool is_root_app_grid_page_switcher,
-               bool is_tablet_mode);
+  explicit PageSwitcher(PaginationModel* model);
   PageSwitcher(const PageSwitcher&) = delete;
   PageSwitcher& operator=(const PageSwitcher&) = delete;
   ~PageSwitcher() override;
@@ -37,8 +34,6 @@ class PageSwitcher : public views::View,
   void Layout() override;
   const char* GetClassName() const override;
   void OnThemeChanged() override;
-
-  void set_is_tablet_mode(bool started) { is_tablet_mode_ = started; }
 
  private:
   // Button pressed callback.
@@ -50,12 +45,6 @@ class PageSwitcher : public views::View,
 
   PaginationModel* model_;       // Owned by AppsGridView.
   views::View* buttons_;         // Owned by views hierarchy.
-
-  // True if the page switcher's root view is the AppsGridView.
-  const bool is_root_app_grid_page_switcher_;
-
-  // Whether tablet mode is enabled.
-  bool is_tablet_mode_;
 };
 
 }  // namespace ash

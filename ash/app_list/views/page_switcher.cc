@@ -42,10 +42,6 @@ constexpr SkScalar kStrokeWidth = SkIntToScalar(2);
 // The padding on top/bottom side of each button.
 constexpr int kVerticalButtonPadding = 0;
 
-// Constants for the button strip that grows horizontally.
-// The padding on left/right side of each button.
-constexpr int kHorizontalButtonPadding = 0;
-
 class PageSwitcherButton : public IconButton {
  public:
   PageSwitcherButton(PressedCallback callback,
@@ -130,24 +126,13 @@ PageSwitcherButton* GetButtonByIndex(views::View* buttons, size_t index) {
 
 }  // namespace
 
-PageSwitcher::PageSwitcher(PaginationModel* model,
-                           bool is_root_app_grid_page_switcher,
-                           bool is_tablet_mode)
-    : model_(model),
-      buttons_(new views::View),
-      is_root_app_grid_page_switcher_(is_root_app_grid_page_switcher),
-      is_tablet_mode_(is_tablet_mode) {
+PageSwitcher::PageSwitcher(PaginationModel* model)
+    : model_(model), buttons_(new views::View) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  if (is_root_app_grid_page_switcher_) {
-    buttons_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-        kVerticalButtonPadding));
-  } else {
-    buttons_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-        kHorizontalButtonPadding));
-  }
+  buttons_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kVerticalButtonPadding));
 
   AddChildView(buttons_);
 
@@ -162,15 +147,10 @@ PageSwitcher::~PageSwitcher() {
 }
 
 gfx::Size PageSwitcher::CalculatePreferredSize() const {
-  const int max_radius = is_root_app_grid_page_switcher_
-                             ? PageSwitcher::kMaxButtonRadiusForRootGrid
-                             : PageSwitcher::kMaxButtonRadiusForFolderGrid;
   // Always return a size with correct width so that container resize is not
   // needed when more pages are added.
-  if (is_root_app_grid_page_switcher_) {
-    return gfx::Size(2 * max_radius, buttons_->GetPreferredSize().height());
-  }
-  return gfx::Size(buttons_->GetPreferredSize().width(), 2 * max_radius);
+  return gfx::Size(2 * PageSwitcher::kMaxButtonRadius,
+                   buttons_->GetPreferredSize().height());
 }
 
 void PageSwitcher::Layout() {
@@ -206,11 +186,8 @@ void PageSwitcher::HandlePageSwitch(const ui::Event& event) {
   const int page = std::distance(children.begin(), it);
   if (page == model_->selected_page())
     return;
-  if (is_root_app_grid_page_switcher_) {
-    RecordPageSwitcherSource(
-        event.IsGestureEvent() ? kTouchPageIndicator : kClickPageIndicator,
-        is_tablet_mode_);
-  }
+  RecordPageSwitcherSource(event.IsGestureEvent() ? kTouchPageIndicator
+                                                  : kClickPageIndicator);
   model_->SelectPage(page, true /* animate */);
 }
 

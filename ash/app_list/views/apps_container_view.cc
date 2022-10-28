@@ -308,9 +308,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     apps_grid_view_->set_margin_for_gradient_mask(kDefaultFadeoutMaskHeight);
 
   // Page switcher should be initialized after AppsGridView.
-  auto page_switcher = std::make_unique<PageSwitcher>(
-      apps_grid_view_->pagination_model(), true /* vertical */,
-      contents_view->app_list_view()->is_tablet_mode());
+  auto page_switcher =
+      std::make_unique<PageSwitcher>(apps_grid_view_->pagination_model());
   page_switcher_ = AddChildView(std::move(page_switcher));
 
   auto app_list_folder_view = std::make_unique<AppListFolderView>(
@@ -888,7 +887,6 @@ void AppsContainerView::AnimateYPosition(AppListViewState target_view_state,
 void AppsContainerView::OnTabletModeChanged(bool started) {
   apps_grid_view_->OnTabletModeChanged(started);
   app_list_folder_view_->OnTabletModeChanged(started);
-  page_switcher_->set_is_tablet_mode(started);
 }
 
 void AppsContainerView::Layout() {

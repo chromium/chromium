@@ -23,12 +23,10 @@ const double kFinishTransitionThreshold = 0.33;
 
 PaginationController::PaginationController(PaginationModel* model,
                                            ScrollAxis scroll_axis,
-                                           const RecordMetrics& record_metrics,
-                                           bool is_tablet_mode)
+                                           const RecordMetrics& record_metrics)
     : pagination_model_(model),
       scroll_axis_(scroll_axis),
-      record_metrics_(record_metrics),
-      is_tablet_mode_(is_tablet_mode) {
+      record_metrics_(record_metrics) {
   DCHECK(pagination_model_);
   DCHECK(record_metrics_);
 }
@@ -149,7 +147,7 @@ bool PaginationController::EndDrag(const ui::LocatedEvent& event) {
   pagination_model_->EndScroll(cancel_transition);
 
   if (!cancel_transition)
-    record_metrics_.Run(event.type(), is_tablet_mode_);
+    record_metrics_.Run(event.type());
 
   return true;
 }
@@ -157,7 +155,7 @@ bool PaginationController::EndDrag(const ui::LocatedEvent& event) {
 void PaginationController::SelectPageAndRecordMetric(int delta,
                                                      ui::EventType type) {
   if (pagination_model_->IsValidPageRelative(delta)) {
-    record_metrics_.Run(type, is_tablet_mode_);
+    record_metrics_.Run(type);
   }
   pagination_model_->SelectPageRelative(delta, true);
 }

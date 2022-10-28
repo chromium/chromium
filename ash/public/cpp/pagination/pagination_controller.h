@@ -24,15 +24,14 @@ class ASH_PUBLIC_EXPORT PaginationController {
  public:
   enum ScrollAxis { SCROLL_AXIS_HORIZONTAL, SCROLL_AXIS_VERTICAL };
 
-  using RecordMetrics = base::RepeatingCallback<void(ui::EventType, bool)>;
+  using RecordMetrics = base::RepeatingCallback<void(ui::EventType)>;
 
   // Creates a PaginationController. Does not take ownership of |model|. The
   // |model| is required to outlive this PaginationController. |scroll_axis|
   // specifies the axis in which the pages will scroll.
   PaginationController(PaginationModel* model,
                        ScrollAxis scroll_axis,
-                       const RecordMetrics& record_metrics,
-                       bool is_tablet_mode);
+                       const RecordMetrics& record_metrics);
 
   PaginationController(const PaginationController&) = delete;
   PaginationController& operator=(const PaginationController&) = delete;
@@ -57,8 +56,6 @@ class ASH_PUBLIC_EXPORT PaginationController {
                        const gfx::Rect& bounds);
   void EndMouseDrag(const ui::MouseEvent& event);
 
-  void set_is_tablet_mode(bool started) { is_tablet_mode_ = started; }
-
  private:
   // Drag related functions. Utilized by both gesture drag and mouse drag:
   bool StartDrag(float scroll);
@@ -72,9 +69,6 @@ class ASH_PUBLIC_EXPORT PaginationController {
   const ScrollAxis scroll_axis_;
 
   const RecordMetrics record_metrics_;
-
-  // Whether tablet mode is enabled.
-  bool is_tablet_mode_;
 };
 
 }  // namespace ash

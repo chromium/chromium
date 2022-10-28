@@ -406,12 +406,12 @@ class AppListViewTest : public views::ViewsTestBase {
               apps_grid_view()->size());
 
     // Verify page switcher bounds.
-    EXPECT_EQ(gfx::Rect(expected_grid_width + expected_horizontal_margin +
-                            kPageSwitcherSpacing,
-                        expected_scrollable_container_top,
-                        2 * PageSwitcher::kMaxButtonRadiusForRootGrid,
-                        expected_grid_height),
-              page_switcher_view()->bounds());
+    EXPECT_EQ(
+        gfx::Rect(expected_grid_width + expected_horizontal_margin +
+                      kPageSwitcherSpacing,
+                  expected_scrollable_container_top,
+                  2 * PageSwitcher::kMaxButtonRadius, expected_grid_height),
+        page_switcher_view()->bounds());
 
     // Verify recent apps view visibility and bounds (when visible).
     EXPECT_EQ(has_recent_apps, recent_apps()->GetVisible());

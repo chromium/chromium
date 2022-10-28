@@ -152,8 +152,7 @@ AppLaunchedMetricParams::AppLaunchedMetricParams(
 
 AppLaunchedMetricParams::~AppLaunchedMetricParams() = default;
 
-void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
-                                                bool is_tablet_mode) {
+void AppListRecordPageSwitcherSourceByEventType(ui::EventType type) {
   AppListPageSwitcherSource source;
 
   switch (type) {
@@ -176,20 +175,12 @@ void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
       NOTREACHED();
       return;
   }
-  RecordPageSwitcherSource(source, is_tablet_mode);
+  RecordPageSwitcherSource(source);
 }
 
-void RecordPageSwitcherSource(AppListPageSwitcherSource source,
-                              bool is_tablet_mode) {
+void RecordPageSwitcherSource(AppListPageSwitcherSource source) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListPageSwitcherSource", source,
                             kMaxAppListPageSwitcherSource);
-  if (is_tablet_mode) {
-    UMA_HISTOGRAM_ENUMERATION("Apps.AppListPageSwitcherSource.TabletMode",
-                              source, kMaxAppListPageSwitcherSource);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Apps.AppListPageSwitcherSource.ClamshellMode",
-                              source, kMaxAppListPageSwitcherSource);
-  }
 }
 
 void RecordSearchResultOpenSource(const SearchResult* result,
