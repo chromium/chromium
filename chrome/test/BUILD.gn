@@ -4103,7 +4103,7 @@ if (!is_android) {
         "../browser/ui/webui/ash/parent_access/parent_access_ui_browsertest.cc",
         "../browser/ui/webui/ash/parent_access/parent_access_ui_handler_impl_browsertest.cc",
         "../browser/ui/webui/ash/smb_shares/smb_credentials_dialog_browsertest.cc",
-        "../browser/ui/webui/chromeos/system_web_dialog_browsertest.cc",
+        "../browser/ui/webui/ash/system_web_dialog_browsertest.cc",
         "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
         "../browser/ui/webui/settings/ash/accessibility_handler_browsertest.cc",
         "../browser/ui/webui/settings/ash/account_manager_ui_handler_browsertest.cc",

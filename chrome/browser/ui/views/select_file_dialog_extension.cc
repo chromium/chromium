@@ -42,7 +42,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -188,13 +188,13 @@ SelectFileDialogExtension::RoutingID GetRoutingID(
 // A customization of SystemWebDialogDelegate that provides notifications
 // to SelectFileDialogExtension about web dialog closing events. Must be outside
 // anonymous namespace for the friend declaration to work.
-class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
+class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
  public:
   SystemFilesAppDialogDelegate(base::WeakPtr<SelectFileDialogExtension> parent,
                                const std::string& id,
                                GURL url,
                                std::u16string title)
-      : chromeos::SystemWebDialogDelegate(url, title),
+      : ash::SystemWebDialogDelegate(url, title),
         id_(id),
         parent_(std::move(parent)) {}
   ~SystemFilesAppDialogDelegate() override = default;
@@ -223,7 +223,7 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
     if (parent_) {
       parent_->OnSystemDialogShown(webui->GetWebContents(), id_);
     }
-    chromeos::SystemWebDialogDelegate::OnDialogShown(webui);
+    ash::SystemWebDialogDelegate::OnDialogShown(webui);
   }
 
   void OnDialogWillClose() override {

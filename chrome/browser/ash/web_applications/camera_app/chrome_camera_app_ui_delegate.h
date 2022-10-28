@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path_watcher.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
 
@@ -39,7 +39,7 @@ enum ModalType;
  */
 class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
  public:
-  class CameraAppDialog : public chromeos::SystemWebDialogDelegate {
+  class CameraAppDialog : public ash::SystemWebDialogDelegate {
    public:
     CameraAppDialog(const CameraAppDialog&) = delete;
     CameraAppDialog& operator=(const CameraAppDialog&) = delete;

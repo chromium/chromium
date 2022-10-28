@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/shimless_rma_dialog.h"
+#include "chrome/browser/ui/webui/ash/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -220,7 +220,7 @@ void LaunchShimlessRma() {
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::RMA);
 
-  chromeos::ShimlessRmaDialog::ShowDialog();
+  ShimlessRmaDialog::ShowDialog();
   // Login screen is skipped but 'login-prompt-visible' signal is still
   // needed.
   VLOG(1) << "Shimless RMA app auto launch >> login-prompt-visible";

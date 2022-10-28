@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,7 +26,7 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // should be in the form "XX:XX:XX:XX:XX:XX". When |device_address| is not
   // provided the dialog will show the device list instead. The returned object
   // manages its own lifetime, for more information see
-  // chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h.
+  // chrome/browser/ui/webui/ash/system_web_dialog_delegate.h.
   static SystemWebDialogDelegate* ShowDialog(
       absl::optional<base::StringPiece> device_address = absl::nullopt);
 

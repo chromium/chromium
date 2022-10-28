@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -24,7 +24,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -72,7 +72,7 @@ using SystemWebDialogOobeTest = OobeBaseTest;
 IN_PROC_BROWSER_TEST_F(SystemWebDialogOobeTest, ModalTest) {
   auto* dialog = new MockSystemWebDialog();
   dialog->ShowSystemDialog();
-  EXPECT_TRUE(ash::ShellTestApi().IsSystemModalWindowOpen());
+  EXPECT_TRUE(ShellTestApi().IsSystemModalWindowOpen());
 }
 
 // Verifies that system dialogs are not modal and always-on-top after login.
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogLoginTest, NonModalTest) {
   LoginUser(login_mixin_.users()[0].account_id);
   auto* dialog = new MockSystemWebDialog();
   dialog->ShowSystemDialog();
-  EXPECT_FALSE(ash::ShellTestApi().IsSystemModalWindowOpen());
+  EXPECT_FALSE(ShellTestApi().IsSystemModalWindowOpen());
   aura::Window* window_to_test = dialog->dialog_window();
   EXPECT_NE(ui::ZOrderLevel::kNormal,
             window_to_test->GetProperty(aura::client::kZOrderingKey));
@@ -140,4 +140,4 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, PageZoom) {
       << dialog_level;
 }
 
-}  // namespace chromeos
+}  // namespace ash

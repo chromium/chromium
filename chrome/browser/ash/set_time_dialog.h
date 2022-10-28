@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SET_TIME_DIALOG_H_
 #define CHROME_BROWSER_ASH_SET_TIME_DIALOG_H_
 
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash {

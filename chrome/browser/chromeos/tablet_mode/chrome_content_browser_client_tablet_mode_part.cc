@@ -23,7 +23,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "extensions/common/constants.h"
 #endif
@@ -86,7 +86,7 @@ void OverrideWebkitPrefsForTabletMode(
 // Takes a URL because the WebContents may not yet be associated with a window,
 // SettingsWindowManager, etc.
 bool UseDefaultFontSize(const GURL& url) {
-  if (chromeos::SystemWebDialogDelegate::HasInstance(url))
+  if (ash::SystemWebDialogDelegate::HasInstance(url))
     return true;
 
   if (url.SchemeIs(content::kChromeUIScheme))

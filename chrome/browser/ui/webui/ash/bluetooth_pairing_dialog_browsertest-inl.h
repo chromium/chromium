@@ -63,7 +63,7 @@ void BluetoothPairingDialogTest::ShowDialog() {
   EXPECT_CALL(*mock_adapter_, GetDevice(testing::_))
       .WillRepeatedly(testing::Return(mock_device_.get()));
 
-  chromeos::SystemWebDialogDelegate* dialog =
+  ash::SystemWebDialogDelegate* dialog =
       ash::BluetoothPairingDialog::ShowDialog(mock_device_->GetAddress());
   content::WebUI* webui = dialog->GetWebUIForTest();
   content::WebContents* webui_webcontents = webui->GetWebContents();

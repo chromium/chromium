@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CELLULAR_SETUP_MOBILE_SETUP_DIALOG_H_
 
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 namespace ash {
 

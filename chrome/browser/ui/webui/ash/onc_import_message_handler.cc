@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/onc_import_message_handler.h"
+#include "chrome/browser/ui/webui/ash/onc_import_message_handler.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -23,7 +23,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -99,7 +99,7 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
   base::Value::List network_configs;
   base::Value::Dict global_network_config;
   base::Value::List certificates;
-  if (!onc::ParseAndValidateOncForImport(
+  if (!chromeos::onc::ParseAndValidateOncForImport(
           onc_blob, onc_source, /*passphrase=*/std::string(), &network_configs,
           &global_network_config, &certificates)) {
     has_error = true;
@@ -124,7 +124,7 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
 
   auto cert_importer = std::make_unique<onc::CertificateImporterImpl>(
       content::GetIOThreadTaskRunner({}), nssdb);
-  auto certs = std::make_unique<onc::OncParsedCertificates>(
+  auto certs = std::make_unique<chromeos::onc::OncParsedCertificates>(
       base::Value(std::move(certificates)));
   if (certs->has_error()) {
     has_error = true;
@@ -153,4 +153,4 @@ void OncImportMessageHandler::OnCertificatesImported(
   // |cert_importer| will be destroyed when the callback exits.
 }
 
-}  // namespace chromeos
+}  // namespace ash

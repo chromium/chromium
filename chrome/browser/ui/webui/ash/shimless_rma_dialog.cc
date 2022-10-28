@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/shimless_rma_dialog.h"
+#include "chrome/browser/ui/webui/ash/shimless_rma_dialog.h"
 
 #include <string>
 
@@ -12,7 +12,8 @@
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
+
 // static
 void ShimlessRmaDialog::ShowDialog() {
   ShimlessRmaDialog* dialog = new ShimlessRmaDialog();
@@ -20,7 +21,7 @@ void ShimlessRmaDialog::ShowDialog() {
 }
 
 ShimlessRmaDialog::ShimlessRmaDialog()
-    : SystemWebDialogDelegate(GURL(ash::kChromeUIShimlessRMAUrl),
+    : SystemWebDialogDelegate(GURL(kChromeUIShimlessRMAUrl),
                               /*title=*/std::u16string()) {
   // MODAL_TYPE_SYSTEM renders over OOBE/login screens, but does not support
   // ui::SHOW_STATE_FULLSCREEN correctly.
@@ -70,4 +71,4 @@ void ShimlessRmaDialog::OnDisplayMetricsChanged(const display::Display& display,
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
 }
 
-}  // namespace chromeos
+}  // namespace ash

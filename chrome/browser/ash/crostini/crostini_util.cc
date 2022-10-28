@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -451,7 +451,7 @@ bool ShouldWarnAboutExpiredVersion(Profile* profile,
   // If the warning dialog is already open we can add more callbacks to it, but
   // if we've moved to the upgrade dialog proper we should run them now as they
   // may be part of the upgrade process.
-  if (chromeos::SystemWebDialogDelegate::FindInstance(
+  if (ash::SystemWebDialogDelegate::FindInstance(
           GURL{chrome::kChromeUICrostiniUpgraderUrl}.spec())) {
     return false;
   }

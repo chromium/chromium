@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_ONC_IMPORT_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_ONC_IMPORT_MESSAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_ONC_IMPORT_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_ONC_IMPORT_MESSAGE_HANDLER_H_
 
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/onc/onc_certificate_importer_impl.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace net {
 class NSSCertDatabase;
 }
 
-namespace chromeos {
+namespace ash {
+namespace onc {
+class CertificateImporterImpl;
+}
 
 class OncImportMessageHandler : public content::WebUIMessageHandler {
  public:
@@ -47,6 +48,6 @@ class OncImportMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<OncImportMessageHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ONC_IMPORT_MESSAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_ONC_IMPORT_MESSAGE_HANDLER_H_

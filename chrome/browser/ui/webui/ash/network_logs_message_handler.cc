@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/network_logs_message_handler.h"
+#include "chrome/browser/ui/webui/ash/network_logs_message_handler.h"
 
 #include <iostream>
 
@@ -24,7 +24,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -91,7 +91,7 @@ void NetworkLogsMessageHandler::OnStoreLogs(const base::Value::List& list) {
 
   if (GetBoolOrFalse(options, "systemLogs")) {
     bool scrub_data = GetBoolOrFalse(options, "filterPII");
-    chromeos::system_logs_writer::WriteSystemLogs(
+    system_logs_writer::WriteSystemLogs(
         out_dir_, scrub_data,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteSystemLogs,
                        weak_factory_.GetWeakPtr(), callback_id,
@@ -122,7 +122,7 @@ void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
       return;
     }
     bool include_chrome = GetBoolOrFalse(options, "chromeLogs");
-    chromeos::debug_log_writer::StoreLogs(
+    debug_log_writer::StoreLogs(
         out_dir_, include_chrome,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteDebugLogs,
                        weak_factory_.GetWeakPtr(), callback_id,
@@ -183,7 +183,7 @@ void NetworkLogsMessageHandler::OnSetShillDebugging(
   std::string callback_id = list[0].GetString();
   std::string subsystem = list[1].GetString();
   AllowJavascript();
-  chromeos::DebugDaemonClient::Get()->SetDebugMode(
+  DebugDaemonClient::Get()->SetDebugMode(
       subsystem,
       base::BindOnce(&NetworkLogsMessageHandler::OnSetShillDebuggingCompleted,
                      weak_factory_.GetWeakPtr(), callback_id));
@@ -195,4 +195,4 @@ void NetworkLogsMessageHandler::OnSetShillDebuggingCompleted(
   Respond(callback_id, /*result=*/"", !succeeded);
 }
 
-}  // namespace chromeos
+}  // namespace ash

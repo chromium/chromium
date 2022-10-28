@@ -275,18 +275,18 @@
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/network_ui.h"
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
+#include "chrome/browser/ui/webui/ash/power_ui.h"
+#include "chrome/browser/ui/webui/ash/set_time_ui.h"
+#include "chrome/browser/ui/webui/ash/slow_trace_ui.h"
+#include "chrome/browser/ui/webui/ash/slow_ui.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
-#include "chrome/browser/ui/webui/chromeos/network_ui.h"
-#include "chrome/browser/ui/webui/chromeos/power_ui.h"
-#include "chrome/browser/ui/webui/chromeos/set_time_ui.h"
-#include "chrome/browser/ui/webui/chromeos/slow_trace_ui.h"
-#include "chrome/browser/ui/webui/chromeos/slow_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
@@ -1040,7 +1040,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIMultiDeviceSetupHost)
     return &NewWebUI<ash::multidevice_setup::MultiDeviceSetupDialogUI>;
   if (url.host_piece() == chrome::kChromeUINetworkHost)
-    return &NewWebUI<chromeos::NetworkUI>;
+    return &NewWebUI<ash::NetworkUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {
     if (ash::ProfileHelper::IsSigninProfile(profile)) {
       return &NewWebUI<chromeos::OobeUI>;
@@ -1050,7 +1050,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIOSSettingsHost)
     return &NewWebUI<ash::settings::OSSettingsUI>;
   if (url.host_piece() == chrome::kChromeUIPowerHost)
-    return &NewWebUI<chromeos::PowerUI>;
+    return &NewWebUI<ash::PowerUI>;
   if (url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
     return &NewWebUI<ash::DiagnosticsDialogUI>;
   }
@@ -1093,11 +1093,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
-    return &NewWebUI<chromeos::SetTimeUI>;
+    return &NewWebUI<ash::SetTimeUI>;
   if (url.host_piece() == chrome::kChromeUISlowHost)
-    return &NewWebUI<chromeos::SlowUI>;
+    return &NewWebUI<ash::SlowUI>;
   if (url.host_piece() == chrome::kChromeUISlowTraceHost)
-    return &NewWebUI<chromeos::SlowTraceController>;
+    return &NewWebUI<ash::SlowTraceController>;
   if (url.host_piece() == chrome::kChromeUISmbCredentialsHost)
     return &NewWebUI<ash::smb_dialog::SmbCredentialsDialogUI>;
   if (url.host_piece() == chrome::kChromeUISmbShareHost)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/set_time_ui.h"
+#include "chrome/browser/ui/webui/ash/set_time_ui.h"
 
 #include <stdint.h>
 
@@ -37,12 +37,12 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
 class SetTimeMessageHandler : public content::WebUIMessageHandler,
-                              public chromeos::SystemClockClient::Observer,
+                              public SystemClockClient::Observer,
                               public system::TimezoneSettings::Observer {
  public:
   SetTimeMessageHandler() : weak_factory_(this) {}
@@ -124,7 +124,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
 
   void DoneClicked(const base::Value::List& args) {
     if (!parent_access::ParentAccessService::IsApprovalRequired(
-            ash::SupervisedAction::kUpdateClock)) {
+            SupervisedAction::kUpdateClock)) {
       OnParentAccessValidation(true);
       return;
     }
@@ -136,12 +136,11 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
       account_id =
           user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
     }
-    ash::ParentAccessController::Get()->ShowWidget(
+    ParentAccessController::Get()->ShowWidget(
         account_id,
         base::BindOnce(&SetTimeMessageHandler::OnParentAccessValidation,
                        weak_factory_.GetWeakPtr()),
-        ash::SupervisedAction::kUpdateClock,
-        !is_user_logged_in /* extra_dimmer */,
+        SupervisedAction::kUpdateClock, !is_user_logged_in /* extra_dimmer */,
         base::Time::FromDoubleT(seconds));
   }
 
@@ -179,7 +178,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
   base::Value::Dict values;
   // List of list of strings: [[ID, name], [ID, name], ...]
-  values.Set("timezoneList", chromeos::system::GetTimezoneList());
+  values.Set("timezoneList", system::GetTimezoneList());
 
   // If we are not logged in, we need to show the time zone dropdown.
   values.Set("showTimezone", SetTimeDialog::ShouldShowTimezone());
@@ -202,4 +201,4 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
 SetTimeUI::~SetTimeUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

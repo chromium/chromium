@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/user_image_source.h"
+#include "chrome/browser/ui/webui/ash/user_image_source.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/user_manager/user.h"
@@ -47,7 +47,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
   response.Set("email", user->GetDisplayEmail());
 
   scoped_refptr<base::RefCountedMemory> image =
-      chromeos::UserImageSource::GetUserImage(user->GetAccountId());
+      UserImageSource::GetUserImage(user->GetAccountId());
   response.Set("profilePhotoUrl",
                webui::GetPngDataUrl(image->front(), image->size()));
 

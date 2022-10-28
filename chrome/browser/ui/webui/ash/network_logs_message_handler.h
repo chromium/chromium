@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_LOGS_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_LOGS_MESSAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_LOGS_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_LOGS_MESSAGE_HANDLER_H_
 
 #include <string>
 
@@ -13,7 +13,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
  public:
@@ -51,6 +51,6 @@ class NetworkLogsMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<NetworkLogsMessageHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_LOGS_MESSAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_NETWORK_LOGS_MESSAGE_HANDLER_H_

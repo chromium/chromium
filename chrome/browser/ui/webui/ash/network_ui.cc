@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/network_ui.h"
+#include "chrome/browser/ui/webui/ash/network_ui.h"
 
 #include <memory>
 #include <string>
@@ -25,8 +25,8 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/network_logs_message_handler.h"
-#include "chrome/browser/ui/webui/chromeos/onc_import_message_handler.h"
+#include "chrome/browser/ui/webui/ash/network_logs_message_handler.h"
+#include "chrome/browser/ui/webui/ash/onc_import_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -62,7 +62,22 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace network_config {
+namespace mojom = ::chromeos::network_config::mojom;
+}
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace network_health {
+namespace mojom = ::chromeos::network_health::mojom;
+}
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace network_diagnostics {
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+}
 
 namespace {
 
@@ -135,7 +150,7 @@ absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
     NET_LOG(ERROR) << "Couldn't reset EUICC in guest mode.";
     return absl::nullopt;
   }
-  absl::optional<dbus::ObjectPath> euicc_path = chromeos::GetCurrentEuiccPath();
+  absl::optional<dbus::ObjectPath> euicc_path = GetCurrentEuiccPath();
   if (!euicc_path) {
     NET_LOG(ERROR) << "No current EUICC. Unable to reset EUICC";
     return absl::nullopt;
@@ -948,7 +963,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
 
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());
-  html->AddBoolean("isHotspotEnabled", ash::features::IsHotspotEnabled());
+  html->AddBoolean("isHotspotEnabled", features::IsHotspotEnabled());
   html->AddString("tetheringStateStarting", shill::kTetheringStateStarting);
   html->AddString("tetheringStateActive", shill::kTetheringStateActive);
   network_health::AddResources(html);
@@ -972,28 +987,28 @@ NetworkUI::~NetworkUI() = default;
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver) {
-  ash::GetNetworkConfigService(std::move(receiver));
+  GetNetworkConfigService(std::move(receiver));
 }
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
         receiver) {
-  ash::network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
+  network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
       std::move(receiver));
 }
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<
         network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
-  ash::network_health::NetworkHealthManager::GetInstance()
-      ->BindDiagnosticsReceiver(std::move(receiver));
+  network_health::NetworkHealthManager::GetInstance()->BindDiagnosticsReceiver(
+      std::move(receiver));
 }
 
 void NetworkUI::BindInterface(
-    mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver) {
-  ash::GetESimManager(std::move(receiver));
+    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+  GetESimManager(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NetworkUI)
 
-}  // namespace chromeos
+}  // namespace ash

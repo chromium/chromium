@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_USER_IMAGE_SOURCE_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_USER_IMAGE_SOURCE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_USER_IMAGE_SOURCE_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_USER_IMAGE_SOURCE_H_
 
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@ namespace base {
 class RefCountedMemory;
 }
 
-namespace chromeos {
+namespace ash {
 
 // UserImageSource is the data source that serves user images for users that
 // have it.
@@ -46,6 +46,11 @@ class UserImageSource : public content::URLDataSource {
       const AccountId& account_id);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_USER_IMAGE_SOURCE_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::UserImageSource;
+}
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_USER_IMAGE_SOURCE_H_

@@ -16,7 +16,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/webui/chromeos/user_image_source.h"
+#include "chrome/browser/ui/webui/ash/user_image_source.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -38,7 +38,7 @@ ProfileInfoHandler::ProfileInfoHandler(Profile* profile) : profile_(profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Set up the chrome://userimage/ source.
   content::URLDataSource::Add(profile,
-                              std::make_unique<chromeos::UserImageSource>());
+                              std::make_unique<ash::UserImageSource>());
 #endif
 }
 
@@ -145,7 +145,7 @@ base::Value::Dict ProfileInfoHandler::GetAccountNameAndIcon() {
   // Get image as data URL instead of using chrome://userimage source to avoid
   // issues with caching.
   scoped_refptr<base::RefCountedMemory> image =
-      chromeos::UserImageSource::GetUserImage(user->GetAccountId());
+      ash::UserImageSource::GetUserImage(user->GetAccountId());
   icon_url = webui::GetPngDataUrl(image->front(), image->size());
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   ProfileAttributesEntry* entry =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/power_ui.h"
+#include "chrome/browser/ui/webui/ash/power_ui.h"
 
 #include <stddef.h>
 
@@ -30,7 +30,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -270,4 +270,4 @@ PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 PowerUI::~PowerUI() {
 }
 
-}  // namespace chromeos
+}  // namespace ash

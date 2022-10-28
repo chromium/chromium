@@ -69,7 +69,7 @@ class CrostiniUpgradeAvailableNotificationTest
   ash::CrostiniUpgraderDialog* GetCrostiniUpgraderDialog() {
     auto url = GURL{chrome::kChromeUICrostiniUpgraderUrl};
     return static_cast<ash::CrostiniUpgraderDialog*>(
-        chromeos::SystemWebDialogDelegate::FindInstance(url.spec()));
+        ash::SystemWebDialogDelegate::FindInstance(url.spec()));
   }
 
   void SafelyCloseDialog() {

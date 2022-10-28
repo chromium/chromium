@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CHROMEBOX_FOR_MEETINGS_NETWORK_SETTINGS_DIALOG_H_
 
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

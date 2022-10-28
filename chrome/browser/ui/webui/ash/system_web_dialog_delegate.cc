@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 
 #include <list>
 
@@ -27,7 +27,7 @@
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -240,4 +240,4 @@ void SystemWebDialogDelegate::ShowSystemDialog(gfx::NativeWindow parent) {
   ShowSystemDialogForBrowserContext(ProfileManager::GetActiveUserProfile(),
                                     parent);
 }
-}  // namespace chromeos
+}  // namespace ash

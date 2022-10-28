@@ -32,9 +32,9 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -445,8 +445,7 @@ class LoginUIDiagnosticsTest : public LoginUITestBase {
   ~LoginUIDiagnosticsTest() override = default;
 
   static bool IsDiagnosticsDialogVisible() {
-    return chromeos::SystemWebDialogDelegate::HasInstance(
-        GURL("chrome://diagnostics"));
+    return SystemWebDialogDelegate::HasInstance(GURL("chrome://diagnostics"));
   }
 
  protected:
@@ -473,8 +472,7 @@ class LoginUIDiagnosticsDisabledTest : public LoginUIDiagnosticsTest {
   ~LoginUIDiagnosticsDisabledTest() override = default;
 
   bool IsDiagnosticsDialogVisible() {
-    return chromeos::SystemWebDialogDelegate::HasInstance(
-        GURL("chrome://diagnostics"));
+    return SystemWebDialogDelegate::HasInstance(GURL("chrome://diagnostics"));
   }
 
  protected:

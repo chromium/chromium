@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash::smb_dialog {

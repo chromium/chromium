@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYSTEM_WEB_DIALOG_DELEGATE_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYSTEM_WEB_DIALOG_DELEGATE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SYSTEM_WEB_DIALOG_DELEGATE_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SYSTEM_WEB_DIALOG_DELEGATE_H_
 
 #include <string>
 #include <vector>
@@ -21,7 +21,7 @@
 // like the login and lock screens, the dialog must be modal to be displayed on
 // top of the overlay.
 
-namespace chromeos {
+namespace ash {
 
 class SystemWebDialogDelegate : public ui::WebDialogDelegate {
  public:
@@ -123,12 +123,11 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   gfx::NativeWindow dialog_window_ = nullptr;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SystemWebDialogDelegate;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::SystemWebDialogDelegate;
 }
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYSTEM_WEB_DIALOG_DELEGATE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SYSTEM_WEB_DIALOG_DELEGATE_H_

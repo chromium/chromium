@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/slow_ui.h"
+#include "chrome/browser/ui/webui/ash/slow_ui.h"
 
 #include <memory>
 #include <string>
@@ -35,7 +35,7 @@ const char kJsApiLoadComplete[] = "loadComplete";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 content::WebUIDataSource* CreateSlowUIHTMLSource() {
   content::WebUIDataSource* source =
@@ -89,8 +89,7 @@ SlowHandler::SlowHandler(Profile* profile) : profile_(profile) {
   user_pref_registrar_->Init(profile_->GetPrefs());
 }
 
-SlowHandler::~SlowHandler() {
-}
+SlowHandler::~SlowHandler() {}
 
 void SlowHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -147,4 +146,4 @@ SlowUI::SlowUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   content::WebUIDataSource::Add(profile, CreateSlowUIHTMLSource());
 }
 
-}  // namespace chromeos
+}  // namespace ash

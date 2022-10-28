@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/user_image_source.h"
+#include "chrome/browser/ui/webui/ash/user_image_source.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/ref_counted_memory.h"
@@ -23,7 +23,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/third_party/mozilla/url_parse.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // URL parameter specifying frame index.
@@ -201,4 +201,4 @@ std::string UserImageSource::GetMimeType(const GURL& url) {
   return "image/png";
 }
 
-}  // namespace chromeos
+}  // namespace ash

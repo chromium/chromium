@@ -811,7 +811,7 @@
                   'chrome/browser/resources/chromeos/network_ui/|'\
                   'chrome/browser/resources/settings/chromeos/internet_page/|'\
                   'chrome/browser/ui/ash/network/|'\
-                  'chrome/browser/ui/webui/chromeos/network|'\
+                  'chrome/browser/ui/webui/ash/network|'\
                   'chrome/test/data/webui/cr_components/chromeos/network/|'\
                   'components/onc/|'\
                   'extensions/browser/api/networking_private/|'\
@@ -824,7 +824,8 @@
       'filepath': 'chromeos/ash/components/timezone/',
     },
     'chromeos_webui': {
-      'filepath': 'chrome/browser/ui/webui/chromeos/|'\
+      'filepath': 'chrome/browser/ui/webui/ash/|'\
+                  'chrome/browser/ui/webui/chromeos/|'\
                   'chrome/browser/resources/chromeos/',
     },
     'chromeos_wifi_sync': {

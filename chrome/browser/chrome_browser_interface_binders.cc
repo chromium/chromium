@@ -280,11 +280,11 @@
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/network_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
-#include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"  // nogncheck crbug.com/1125897
@@ -1095,7 +1095,7 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
-      chromeos::NetworkUI, chromeos::OobeUI>(map);
+      ash::NetworkUI, chromeos::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::guest_os_installer::mojom::PageHandlerFactory,
@@ -1126,9 +1126,9 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(PLATFORM_CFM)
       ash::cfm::NetworkSettingsDialogUi,
 #endif  // BUILDFLAG(PLATFORM_CFM)
-      ash::InternetConfigDialogUI, ash::InternetDetailDialogUI,
-      chromeos::NetworkUI, chromeos::OobeUI, ash::settings::OSSettingsUI,
-      ash::LockScreenNetworkUI, ash::ShimlessRMADialogUI>(map);
+      ash::InternetConfigDialogUI, ash::InternetDetailDialogUI, ash::NetworkUI,
+      chromeos::OobeUI, ash::settings::OSSettingsUI, ash::LockScreenNetworkUI,
+      ash::ShimlessRMADialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::printing::printing_manager::mojom::PrintingMetadataProvider,
@@ -1171,12 +1171,12 @@ void PopulateChromeWebUIFrameBinders(
       ash::media_app_ui::mojom::PageHandlerFactory, ash::MediaAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::network_health::mojom::NetworkHealthService,
-      chromeos::NetworkUI, ash::ConnectivityDiagnosticsUI>(map);
+      chromeos::network_health::mojom::NetworkHealthService, ash::NetworkUI,
+      ash::ConnectivityDiagnosticsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines,
-      chromeos::NetworkUI, ash::ConnectivityDiagnosticsUI>(map);
+      ash::NetworkUI, ash::ConnectivityDiagnosticsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::diagnostics::mojom::InputDataProvider, ash::DiagnosticsDialogUI>(
