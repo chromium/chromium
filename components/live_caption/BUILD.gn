@@ -11,6 +11,8 @@ if (!is_android) {
       "caption_bubble_controller.h",
       "live_caption_controller.cc",
       "live_caption_controller.h",
+      "live_translate_controller.cc",
+      "live_translate_controller.h",
     ]
 
     deps = [

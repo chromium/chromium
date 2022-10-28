@@ -2412,6 +2412,7 @@ if (!is_android) {
         "../browser/accessibility/live_caption_controller_browsertest.cc",
         "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
         "../browser/accessibility/live_caption_unavailability_notifier_browsertest.cc",
+        "../browser/accessibility/live_translate_controller_browsertest.cc",
 
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.

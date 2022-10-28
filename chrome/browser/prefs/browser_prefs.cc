@@ -276,6 +276,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/live_caption/live_caption_controller.h"
+#include "components/live_caption/live_translate_controller.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1393,6 +1394,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserFeaturePromoSnoozeService::RegisterProfilePrefs(registry);
   captions::LiveCaptionController::RegisterProfilePrefs(registry);
+  captions::LiveTranslateController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   DeviceServiceImpl::RegisterProfilePrefs(registry);
   DevToolsWindow::RegisterProfilePrefs(registry);

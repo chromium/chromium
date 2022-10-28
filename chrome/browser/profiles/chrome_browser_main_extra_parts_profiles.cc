@@ -151,6 +151,7 @@
 #include "components/commerce/core/proto/merchant_signal_db_content.pb.h"
 #else
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/cart/cart_service_factory.h"
@@ -420,6 +421,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   }
 #if !BUILDFLAG(IS_ANDROID)
   captions::LiveCaptionControllerFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate))
+    captions::LiveTranslateControllerFactory::GetInstance();
 #endif
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
