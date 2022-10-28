@@ -124,7 +124,7 @@ class BrowsingTopicsCalculatorTest : public testing::Test {
                          base::Time time) {
     history::HistoryAddPageArgs add_page_args;
     add_page_args.time = time;
-    add_page_args.context_id = reinterpret_cast<history::ContextID>(1);
+    add_page_args.context_id = 1;
 
     for (const std::string& host : hosts) {
       static int nav_entry_id = 0;

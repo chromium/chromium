@@ -1327,7 +1327,7 @@ TEST_F(TemplateURLServiceTest, GenerateVisitOnKeyword) {
   history->AddPage(
       GURL(t_url->url_ref().ReplaceSearchTerms(
           TemplateURLRef::SearchTermsArgs(u"blah"), search_terms_data())),
-      Time::Now(), nullptr, 0, GURL(), history::RedirectList(),
+      Time::Now(), 0, 0, GURL(), history::RedirectList(),
       ui::PAGE_TRANSITION_KEYWORD, history::SOURCE_BROWSED, false);
 
   // Wait for history to finish processing the request.

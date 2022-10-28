@@ -56,7 +56,7 @@ void HistoryTabHelper::UpdateHistoryForNavigation(
   // Update the previous navigation's end time.
   if (cached_navigation_state_) {
     history_service->UpdateWithPageEndTime(
-        /*context_id=*/this, cached_navigation_state_->nav_entry_id,
+        GetContextID(), cached_navigation_state_->nav_entry_id,
         cached_navigation_state_->url, base::Time::Now());
   }
   // Cache the relevant fields of the current navigation, so we can later update
@@ -156,7 +156,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   context_annotations.response_code = http_response_code;
 
   return history::HistoryAddPageArgs(
-      url, last_committed_item->GetTimestamp(), /*context_id=*/this,
+      url, last_committed_item->GetTimestamp(), GetContextID(),
       last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
       hidden, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
@@ -195,7 +195,7 @@ void HistoryTabHelper::OnLanguageDetermined(
         web_state_->GetNavigationManager()->GetLastCommittedItem();
     if (last_committed_item) {
       hs->SetPageLanguageForVisit(
-          /*context_id=*/this, last_committed_item->GetUniqueID(),
+          GetContextID(), last_committed_item->GetUniqueID(),
           web_state_->GetLastCommittedURL(), details.adopted_language);
     }
   }
@@ -322,11 +322,11 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
     // update its end time.
     if (cached_navigation_state_) {
       history_service->UpdateWithPageEndTime(
-          /*context_id=*/this, cached_navigation_state_->nav_entry_id,
+          GetContextID(), cached_navigation_state_->nav_entry_id,
           cached_navigation_state_->url, base::Time::Now());
     }
 
-    history_service->ClearCachedDataForContextID(/*context_id=*/this);
+    history_service->ClearCachedDataForContextID(GetContextID());
   }
 
   web_state_->RemoveObserver(this);

@@ -272,7 +272,7 @@ void AddToHistory(history::HistoryService* service,
                   ui::PageTransition transition,
                   history::VisitSource source,
                   const base::Time& timestamp) {
-  service->AddPage(url, timestamp, /*context_id=*/nullptr,
+  service->AddPage(url, timestamp, /*context_id=*/0,
                    /*nav_entry_id=*/1234,
                    /*referrer=*/GURL(), history::RedirectList(), transition,
                    source, /*did_replace_entry=*/false);

@@ -28,7 +28,7 @@ struct VisitToTest {
 void AddVisitToTracker(const VisitToTest& test_data, VisitTracker* tracker) {
   // Our host pointer is actually just an int, convert it (it will not get
   // dereferenced).
-  ContextID context_id = reinterpret_cast<ContextID>(test_data.context_id_int);
+  ContextID context_id = test_data.context_id_int;
 
   // Check the referrer for this visit.
   VisitID ref_visit = tracker->GetLastVisit(context_id, test_data.nav_entry_id,
@@ -119,7 +119,7 @@ TEST(VisitTracker, ProcessRemove) {
   RunTest(&tracker, part1, std::size(part1));
 
   // Say that context has been invalidated.
-  tracker.ClearCachedDataForContextID(reinterpret_cast<ContextID>(1));
+  tracker.ClearCachedDataForContextID(1);
 
   // Simple navigation from a new process with the same ID, it should not find
   // a referrer.
@@ -144,39 +144,36 @@ TEST(VisitTracker, RemoveVisitById) {
   tracker.RemoveVisitById(removed.visit_id);
 
   // The first visit should no longer be in the tracker.
-  EXPECT_EQ(0, tracker.GetLastVisit(
-                   reinterpret_cast<ContextID>(removed.context_id_int),
-                   removed.nav_entry_id, GURL(removed.url)));
+  EXPECT_EQ(0, tracker.GetLastVisit(removed.context_id_int,
+                                    removed.nav_entry_id, GURL(removed.url)));
   // The second and third should still be present.
   EXPECT_EQ(test_simple[1].visit_id,
-            tracker.GetLastVisit(
-                reinterpret_cast<ContextID>(test_simple[1].context_id_int),
-                test_simple[1].nav_entry_id, GURL(test_simple[1].url)));
+            tracker.GetLastVisit(test_simple[1].context_id_int,
+                                 test_simple[1].nav_entry_id,
+                                 GURL(test_simple[1].url)));
   EXPECT_EQ(test_simple[2].visit_id,
-            tracker.GetLastVisit(
-                reinterpret_cast<ContextID>(test_simple[2].context_id_int),
-                test_simple[2].nav_entry_id, GURL(test_simple[2].url)));
+            tracker.GetLastVisit(test_simple[2].context_id_int,
+                                 test_simple[2].nav_entry_id,
+                                 GURL(test_simple[2].url)));
 
   // Add back the first one, reusing the id and verify it is present.
   AddVisitToTracker(removed, &tracker);
-  EXPECT_EQ(
-      removed.visit_id,
-      tracker.GetLastVisit(reinterpret_cast<ContextID>(removed.context_id_int),
-                           removed.nav_entry_id, GURL(removed.url)));
+  EXPECT_EQ(removed.visit_id,
+            tracker.GetLastVisit(removed.context_id_int, removed.nav_entry_id,
+                                 GURL(removed.url)));
 
   // Remove the first one again, and verify state.
   tracker.RemoveVisitById(removed.visit_id);
-  EXPECT_EQ(0, tracker.GetLastVisit(
-                   reinterpret_cast<ContextID>(removed.context_id_int),
-                   removed.nav_entry_id, GURL(removed.url)));
+  EXPECT_EQ(0, tracker.GetLastVisit(removed.context_id_int,
+                                    removed.nav_entry_id, GURL(removed.url)));
   EXPECT_EQ(test_simple[1].visit_id,
-            tracker.GetLastVisit(
-                reinterpret_cast<ContextID>(test_simple[1].context_id_int),
-                test_simple[1].nav_entry_id, GURL(test_simple[1].url)));
+            tracker.GetLastVisit(test_simple[1].context_id_int,
+                                 test_simple[1].nav_entry_id,
+                                 GURL(test_simple[1].url)));
   EXPECT_EQ(test_simple[2].visit_id,
-            tracker.GetLastVisit(
-                reinterpret_cast<ContextID>(test_simple[2].context_id_int),
-                test_simple[2].nav_entry_id, GURL(test_simple[2].url)));
+            tracker.GetLastVisit(test_simple[2].context_id_int,
+                                 test_simple[2].nav_entry_id,
+                                 GURL(test_simple[2].url)));
 }
 
 TEST(VisitTracker, Clear) {

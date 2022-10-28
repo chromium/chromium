@@ -70,7 +70,7 @@ class HistoryTabHelperTest : public PlatformTest {
         ios::HistoryServiceFactory::GetForBrowserState(
             chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
     service->AddPage(
-        url, base::Time::Now(), NULL, 0, GURL(), history::RedirectList(),
+        url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
   }
 

@@ -392,7 +392,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     // Add some initial history.
     history::HistoryAddPageArgs add_page_args;
     add_page_args.time = base::Time::Now();
-    add_page_args.context_id = reinterpret_cast<history::ContextID>(1);
+    add_page_args.context_id = 1;
     add_page_args.nav_entry_id = 1;
 
     // Note: foo6.com isn't in the initial history.

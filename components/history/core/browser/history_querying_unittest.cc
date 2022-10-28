@@ -174,7 +174,7 @@ class HistoryQueryTest : public testing::Test {
 
   void AddEntryToHistory(const TestEntry& entry) {
     // We need the ID scope and page ID so that the visit tracker can find it.
-    ContextID context_id = reinterpret_cast<ContextID>(1);
+    ContextID context_id = 1;
     GURL url(entry.url);
 
     history_->AddPage(url, entry.time, context_id, nav_entry_id_++, GURL(),

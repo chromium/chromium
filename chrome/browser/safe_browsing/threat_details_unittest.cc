@@ -404,9 +404,8 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     // The last item of the redirect chain has to be the final url when adding
     // to history backend.
     redirects->push_back(url);
-    history_service()->AddPage(url, base::Time::Now(),
-                               reinterpret_cast<history::ContextID>(1), 0,
-                               GURL(), *redirects, ui::PAGE_TRANSITION_TYPED,
+    history_service()->AddPage(url, base::Time::Now(), 1, 0, GURL(), *redirects,
+                               ui::PAGE_TRANSITION_TYPED,
                                history::SOURCE_BROWSED, false);
   }
 

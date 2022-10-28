@@ -78,7 +78,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         profile(), ServiceAccessType::IMPLICIT_ACCESS);
     ASSERT_TRUE(history_service_);
     history_service_->AddPage(
-        page_url_, base::Time::Now(), /*context_id=*/nullptr,
+        page_url_, base::Time::Now(), /*context_id=*/0,
         /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
         history::SOURCE_BROWSED, /*did_replace_entry=*/false);

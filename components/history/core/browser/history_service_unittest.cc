@@ -80,7 +80,7 @@ class HistoryServiceTest : public testing::Test {
     DCHECK(history_service_);
 
     base::RunLoop run_loop;
-    history_service_->ClearCachedDataForContextID(nullptr);
+    history_service_->ClearCachedDataForContextID(0);
     history_service_->SetOnBackendDestroyTask(run_loop.QuitClosure());
     history_service_->Cleanup();
     history_service_.reset();
@@ -187,7 +187,7 @@ TEST_F(HistoryServiceTest, RemoveNotification) {
   // Add a URL.
   GURL url("http://www.google.com");
 
-  history_service_->AddPage(url, base::Time::Now(), nullptr, 1, GURL(),
+  history_service_->AddPage(url, base::Time::Now(), 0, 1, GURL(),
                             RedirectList(), ui::PAGE_TRANSITION_TYPED,
                             SOURCE_BROWSED, false);
 
@@ -201,7 +201,7 @@ TEST_F(HistoryServiceTest, AddPage) {
   // Add the page once from a child frame.
   const GURL test_url("http://www.google.com/");
   history_service_->AddPage(
-      test_url, base::Time::Now(), nullptr, 0, GURL(), history::RedirectList(),
+      test_url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
       ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
@@ -210,7 +210,7 @@ TEST_F(HistoryServiceTest, AddPage) {
       query_url_result_.row.hidden());  // Hidden because of child frame.
 
   // Add the page once from the main frame (should unhide it).
-  history_service_->AddPage(test_url, base::Time::Now(), nullptr, 0, GURL(),
+  history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url));
@@ -227,9 +227,8 @@ TEST_F(HistoryServiceTest, AddRedirect) {
 
   // Add the sequence of pages as a server with no referrer. Note that we need
   // to have a non-NULL page ID scope.
-  history_service_->AddPage(first_redirects.back(), base::Time::Now(),
-                            reinterpret_cast<ContextID>(1), 0, GURL(),
-                            first_redirects, ui::PAGE_TRANSITION_LINK,
+  history_service_->AddPage(first_redirects.back(), base::Time::Now(), 1, 0,
+                            GURL(), first_redirects, ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, true);
 
   // The first page should be added once with a link visit type (because we set
@@ -268,8 +267,8 @@ TEST_F(HistoryServiceTest, AddRedirect) {
   history::RedirectList second_redirects = {first_redirects[1],
                                             GURL("http://last.page.com/")};
   history_service_->AddPage(
-      second_redirects[1], base::Time::Now(), reinterpret_cast<ContextID>(1), 1,
-      second_redirects[0], second_redirects,
+      second_redirects[1], base::Time::Now(), 1, 1, second_redirects[0],
+      second_redirects,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_CLIENT_REDIRECT),
       history::SOURCE_BROWSED, true);
@@ -297,7 +296,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   // Add a non-typed visit to an intranet URL on an unvisited host.  This should
   // get promoted to a typed visit.
   const GURL test_url("http://intranet_host/path");
-  history_service_->AddPage(test_url, base::Time::Now(), nullptr, 0, GURL(),
+  history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url));
@@ -312,7 +311,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
 
   // Different path.
   const GURL test_url2("http://intranet_host/different_path");
-  history_service_->AddPage(test_url2, base::Time::Now(), nullptr, 0, GURL(),
+  history_service_->AddPage(test_url2, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url2));
@@ -324,7 +323,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
 
   // No path.
   const GURL test_url3("http://intranet_host/");
-  history_service_->AddPage(test_url3, base::Time::Now(), nullptr, 0, GURL(),
+  history_service_->AddPage(test_url3, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url3));
@@ -336,7 +335,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
 
   // Different scheme.
   const GURL test_url4("https://intranet_host/");
-  history_service_->AddPage(test_url4, base::Time::Now(), nullptr, 0, GURL(),
+  history_service_->AddPage(test_url4, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url4));
@@ -349,7 +348,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   // Different transition.
   const GURL test_url5("http://intranet_host/another_path");
   history_service_->AddPage(
-      test_url5, base::Time::Now(), nullptr, 0, GURL(), history::RedirectList(),
+      test_url5, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
       ui::PAGE_TRANSITION_AUTO_BOOKMARK, history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url5));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
@@ -360,7 +359,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK));
 
   // Original URL.
-  history_service_->AddPage(test_url, base::Time::Now(), nullptr, 0, GURL(),
+  history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(test_url));
@@ -374,8 +373,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   history::RedirectList redirects1 = {GURL("http://intranet1/path"),
                                       GURL("http://second1.com/"),
                                       GURL("http://third1.com/")};
-  history_service_->AddPage(redirects1.back(), base::Time::Now(), nullptr, 0,
-                            GURL(), redirects1, ui::PAGE_TRANSITION_LINK,
+  history_service_->AddPage(redirects1.back(), base::Time::Now(), 0, 0, GURL(),
+                            redirects1, ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(redirects1.front()));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
@@ -388,8 +387,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   history::RedirectList redirects2 = {GURL("http://first2.com/"),
                                       GURL("http://second2.com/"),
                                       GURL("http://intranet2/path")};
-  history_service_->AddPage(redirects2.back(), base::Time::Now(), nullptr, 0,
-                            GURL(), redirects2, ui::PAGE_TRANSITION_LINK,
+  history_service_->AddPage(redirects2.back(), base::Time::Now(), 0, 0, GURL(),
+                            redirects2, ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(redirects2.back()));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
@@ -402,8 +401,8 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   history::RedirectList redirects3 = {GURL("http://first3.com/"),
                                       GURL("http://intranet3/path"),
                                       GURL("http://third3.com/")};
-  history_service_->AddPage(redirects3.back(), base::Time::Now(), nullptr, 0,
-                            GURL(), redirects3, ui::PAGE_TRANSITION_LINK,
+  history_service_->AddPage(redirects3.back(), base::Time::Now(), 0, 0, GURL(),
+                            redirects3, ui::PAGE_TRANSITION_LINK,
                             history::SOURCE_BROWSED, false);
   EXPECT_TRUE(QueryURL(redirects3[1]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
@@ -414,7 +413,7 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
 }
 
 TEST_F(HistoryServiceTest, Typed) {
-  const ContextID context_id = reinterpret_cast<ContextID>(1);
+  const ContextID context_id = 1;
 
   ASSERT_TRUE(history_service_.get());
 
@@ -499,7 +498,7 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   const GURL url3("http://www.google.com/url3/");
   const GURL url4("http://www.google.com/url4/");
 
-  const ContextID context_id = reinterpret_cast<ContextID>(1);
+  const ContextID context_id = 1;
 
   // Add two pages.
   history_service_->AddPage(url0, base::Time::Now(), context_id, 0, GURL(),
@@ -758,9 +757,8 @@ void AddPageAtTime(HistoryService* history,
                    const std::string& url_spec,
                    base::Time time_in_the_past) {
   const GURL url(url_spec);
-  history->AddPage(url, time_in_the_past, nullptr, 0, GURL(),
-                   history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                   history::SOURCE_BROWSED, false);
+  history->AddPage(url, time_in_the_past, 0, 0, GURL(), history::RedirectList(),
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
 }
 
 void AddPageInThePast(HistoryService* history,

@@ -195,8 +195,7 @@ void HistoryService::ClearCachedDataForContextID(ContextID context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::ClearCachedDataForContextID,
-                              history_backend_,
-                              base::UnsafeDanglingUntriaged(context_id)));
+                              history_backend_, context_id));
 }
 
 void HistoryService::ClearAllOnDemandFavicons() {
@@ -402,7 +401,7 @@ void HistoryService::AddPage(const GURL& url,
                              VisitSource visit_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddPage(HistoryAddPageArgs(
-      url, time, /*context_id=*/nullptr, /*nav_entry_id=*/0,
+      url, time, /*context_id=*/0, /*nav_entry_id=*/0,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
       /*hidden=*/false, visit_source,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true));
@@ -474,8 +473,7 @@ void HistoryService::UpdateWithPageEndTime(ContextID context_id,
   ScheduleTask(
       PRIORITY_NORMAL,
       base::BindOnce(&HistoryBackend::UpdateWithPageEndTime, history_backend_,
-                     base::UnsafeDanglingUntriaged(context_id), nav_entry_id,
-                     url, end_ts));
+                     context_id, nav_entry_id, url, end_ts));
 }
 
 void HistoryService::SetBrowsingTopicsAllowed(ContextID context_id,
@@ -499,8 +497,7 @@ void HistoryService::SetPageLanguageForVisit(ContextID context_id,
   ScheduleTask(
       PRIORITY_NORMAL,
       base::BindOnce(&HistoryBackend::SetPageLanguageForVisit, history_backend_,
-                     base::UnsafeDanglingUntriaged(context_id), nav_entry_id,
-                     url, page_language));
+                     context_id, nav_entry_id, url, page_language));
 }
 
 void HistoryService::SetPasswordStateForVisit(

@@ -566,7 +566,7 @@ TEST_F(HistoryURLProviderTest, CullRedirects) {
   redirects_to_a.push_back(GURL(test_cases[2].url));
   redirects_to_a.push_back(GURL(test_cases[0].url));
   client_->GetHistoryService()->AddPage(
-      GURL(test_cases[0].url), Time::Now(), nullptr, 0, GURL(), redirects_to_a,
+      GURL(test_cases[0].url), Time::Now(), 0, 0, GURL(), redirects_to_a,
       ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED, true);
 
   // Because all the results are part of a redirect chain with other results,

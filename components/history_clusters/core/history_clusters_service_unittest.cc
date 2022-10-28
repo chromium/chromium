@@ -136,8 +136,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
 
   // Add a complete visit with context annotations to the history database.
   void AddCompleteVisit(const history::AnnotatedVisit& visit) {
-    static const history::ContextID context_id =
-        reinterpret_cast<history::ContextID>(1);
+    static const history::ContextID context_id = 1;
 
     history::HistoryAddPageArgs add_page_args;
     add_page_args.context_id = context_id;
@@ -369,7 +368,7 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   config.max_visits_to_cluster = 20;
   SetConfigForTesting(config);
 
-  history::ContextID context_id = reinterpret_cast<history::ContextID>(1);
+  history::ContextID context_id = 1;
   auto visit = GetHardcodedTestVisits()[0];
   for (size_t i = 0; i < 100; ++i) {
     // Visit IDs start at 1.

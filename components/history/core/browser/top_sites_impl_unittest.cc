@@ -192,8 +192,8 @@ class TopSitesImplTest : public HistoryUnitTestBase {
                         RedirectList redirects = RedirectList()) {
     if (redirects.empty())
       redirects.emplace_back(url);
-    history_service()->AddPage(url, time, reinterpret_cast<ContextID>(1), 0,
-                               GURL(), redirects, ui::PAGE_TRANSITION_TYPED,
+    history_service()->AddPage(url, time, 1, 0, GURL(), redirects,
+                               ui::PAGE_TRANSITION_TYPED,
                                history::SOURCE_BROWSED, false);
     if (!title.empty())
       history_service()->SetPageTitle(url, title);

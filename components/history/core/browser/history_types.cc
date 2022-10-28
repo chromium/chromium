@@ -256,7 +256,7 @@ TopSitesDelta::~TopSitesDelta() = default;
 // Opener
 // -----------------------------------------------------------------------
 
-Opener::Opener() : Opener(nullptr, 0, GURL()) {}
+Opener::Opener() : Opener(0, 0, GURL()) {}
 
 Opener::Opener(ContextID context_id, int nav_entry_id, const GURL& url)
     : context_id(context_id), nav_entry_id(nav_entry_id), url(url) {}
@@ -270,7 +270,7 @@ Opener::~Opener() = default;
 HistoryAddPageArgs::HistoryAddPageArgs()
     : HistoryAddPageArgs(GURL(),
                          base::Time(),
-                         nullptr,
+                         0,
                          0,
                          GURL(),
                          RedirectList(),
