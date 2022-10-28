@@ -71,6 +71,7 @@ class TestSkiaImageRepresentation : public SkiaImageRepresentation {
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) override {

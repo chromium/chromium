@@ -177,14 +177,15 @@ class WrappedSkiaCompoundImageRepresentation : public SkiaImageRepresentation {
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
+      const gfx::Rect& update_rect,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) final {
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kSkia,
                                           AccessMode::kWrite);
     return wrapped_->BeginWriteAccess(final_msaa_count, surface_props,
-                                      begin_semaphores, end_semaphores,
-                                      end_state);
+                                      update_rect, begin_semaphores,
+                                      end_semaphores, end_state);
   }
   std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,

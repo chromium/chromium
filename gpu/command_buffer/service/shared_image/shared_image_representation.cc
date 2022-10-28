@@ -170,6 +170,7 @@ std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
 SkiaImageRepresentation::BeginScopedWriteAccess(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
+    const gfx::Rect& update_rect,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores,
     AllowUnclearedAccess allow_uncleared,
@@ -182,8 +183,8 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
   std::unique_ptr<GrBackendSurfaceMutableState> end_state;
   if (use_sk_surface) {
     std::vector<sk_sp<SkSurface>> surfaces =
-        BeginWriteAccess(final_msaa_count, surface_props, begin_semaphores,
-                         end_semaphores, &end_state);
+        BeginWriteAccess(final_msaa_count, surface_props, update_rect,
+                         begin_semaphores, end_semaphores, &end_state);
     if (surfaces.empty()) {
       LOG(ERROR) << "Unable to initialize SkSurface";
       return nullptr;
@@ -207,6 +208,19 @@ SkiaImageRepresentation::BeginScopedWriteAccess(
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<SkiaImageRepresentation>(), this,
       std::move(promise_image_textures), std::move(end_state));
+}
+
+std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
+SkiaImageRepresentation::BeginScopedWriteAccess(
+    int final_msaa_count,
+    const SkSurfaceProps& surface_props,
+    std::vector<GrBackendSemaphore>* begin_semaphores,
+    std::vector<GrBackendSemaphore>* end_semaphores,
+    AllowUnclearedAccess allow_uncleared,
+    bool use_sk_surface) {
+  return BeginScopedWriteAccess(
+      final_msaa_count, surface_props, gfx::Rect(size()), begin_semaphores,
+      end_semaphores, allow_uncleared, use_sk_surface);
 }
 
 std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
