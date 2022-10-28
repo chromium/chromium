@@ -293,23 +293,6 @@ SkiaImageRepresentation::BeginScopedReadAccess(
       std::move(promise_image_textures), std::move(end_state));
 }
 
-std::vector<sk_sp<SkSurface>> SkiaImageRepresentation::BeginWriteAccess(
-    int final_msaa_count,
-    const SkSurfaceProps& surface_props,
-    std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  return {};
-}
-
-std::vector<sk_sp<SkPromiseImageTexture>>
-SkiaImageRepresentation::BeginReadAccess(
-    std::vector<GrBackendSemaphore>* begin_semaphores,
-    std::vector<GrBackendSemaphore>* end_semaphores,
-    std::unique_ptr<GrBackendSurfaceMutableState>* end_state) {
-  return {};
-}
-
 #if BUILDFLAG(IS_ANDROID)
 AHardwareBuffer* OverlayImageRepresentation::GetAHardwareBuffer() {
   NOTREACHED();

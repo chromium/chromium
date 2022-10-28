@@ -389,7 +389,7 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       const SkSurfaceProps& surface_props,
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state);
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) = 0;
   virtual std::vector<sk_sp<SkPromiseImageTexture>> BeginWriteAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
@@ -410,7 +410,7 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
   virtual std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores,
-      std::unique_ptr<GrBackendSurfaceMutableState>* end_state);
+      std::unique_ptr<GrBackendSurfaceMutableState>* end_state) = 0;
   virtual void EndReadAccess() = 0;
 };
 
