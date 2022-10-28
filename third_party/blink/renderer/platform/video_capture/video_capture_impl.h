@@ -288,6 +288,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
   media::GpuVideoAcceleratorFactories* gpu_factories_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+  bool gmb_not_supported_ = false;
 
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 

@@ -18,6 +18,10 @@ namespace viz {
 class TestSharedImageInterface;
 }  // namespace viz
 
+namespace gpu {
+struct Capabilities;
+}
+
 namespace blink {
 
 class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
@@ -40,10 +44,13 @@ class TestingPlatformSupportForGpuMemoryBuffer
   ~TestingPlatformSupportForGpuMemoryBuffer() override;
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
 
+  void SetGpuCapabilities(gpu::Capabilities* capabilities);
+
  private:
   std::unique_ptr<viz::TestSharedImageInterface> sii_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   base::Thread media_thread_;
+  gpu::Capabilities* capabilities_ = nullptr;
 };
 
 }  // namespace blink

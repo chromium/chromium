@@ -67,6 +67,8 @@ TestingPlatformSupportForGpuMemoryBuffer::
   media_thread_.Start();
   ON_CALL(*gpu_factories_, GetTaskRunner())
       .WillByDefault(Return(media_thread_.task_runner()));
+  ON_CALL(*gpu_factories_, ContextCapabilities())
+      .WillByDefault(testing::Invoke([&]() { return capabilities_; }));
 }
 
 TestingPlatformSupportForGpuMemoryBuffer::
@@ -77,6 +79,11 @@ TestingPlatformSupportForGpuMemoryBuffer::
 media::GpuVideoAcceleratorFactories*
 TestingPlatformSupportForGpuMemoryBuffer::GetGpuFactories() {
   return gpu_factories_.get();
+}
+
+void TestingPlatformSupportForGpuMemoryBuffer::SetGpuCapabilities(
+    gpu::Capabilities* capabilities) {
+  capabilities_ = capabilities;
 }
 
 }  // namespace blink

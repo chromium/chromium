@@ -15,6 +15,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/token.h"
+#include "build/build_config.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #include "media/capture/mojom/video_capture.mojom-blink.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-blink.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -175,6 +177,8 @@ class VideoCaptureImplTest : public ::testing::Test {
                   media::mojom::VideoCaptureState::STARTED));
         }));
 
+    platform_->SetGpuCapabilities(&fake_capabilities_);
+
     video_capture_impl_->SetGpuMemoryBufferSupportForTesting(
         std::make_unique<FakeGpuMemoryBufferSupport>());
   }
@@ -269,6 +273,8 @@ class VideoCaptureImplTest : public ::testing::Test {
   media::VideoCaptureParams params_small_;
   media::VideoCaptureParams params_large_;
   base::test::ScopedFeatureList feature_list_;
+
+  gpu::Capabilities fake_capabilities_;
 };
 
 TEST_F(VideoCaptureImplTest, Simple) {
@@ -422,6 +428,7 @@ TEST_F(VideoCaptureImplTest, BufferReceived_GpuMemoryBufferHandle) {
   base::WaitableEvent frame_ready_event;
   scoped_refptr<media::VideoFrame> frame;
 
+  fake_capabilities_.shared_image_d3d = true;
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _, _))
@@ -555,6 +562,7 @@ TEST_F(VideoCaptureImplTest, ScaledBufferReceived_SoftwareAndHardware) {
   scoped_refptr<media::VideoFrame> ready_frame;
   std::vector<scoped_refptr<media::VideoFrame>> ready_scaled_frames;
 
+  fake_capabilities_.shared_image_d3d = true;
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _, _))
@@ -678,6 +686,7 @@ TEST_F(VideoCaptureImplTest, BufferReceivedAfterStop_GpuMemoryBufferHandle) {
   gmb_handle.type = gfx::NATIVE_PIXMAP;
   gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
 
+  fake_capabilities_.shared_image_d3d = true;
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
   EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
   EXPECT_CALL(*this, OnFrameReady(_, _, _)).Times(0);
@@ -962,5 +971,78 @@ TEST_F(VideoCaptureImplTest, ErrorBeforeStart) {
   histogram_tester.ExpectUniqueSample("Media.VideoCapture.StartOutcome",
                                       VideoCaptureStartOutcome::kFailed, 1);
 }
+
+#if BUILDFLAG(IS_WIN)
+// This is windows-only scenario.
+TEST_F(VideoCaptureImplTest, FallbacksToPremappedGmbsWhenNotSupported) {
+  const int kArbitraryBufferId = 11;
+
+  // With GpuMemoryBufferHandle, the buffer handle is received on the IO thread
+  // and passed to a media thread to create a SharedImage. After the SharedImage
+  // is created and wrapped in a video frame, we pass the video frame back to
+  // the IO thread to pass to the clients by calling their frame-ready
+  // callbacks.
+  base::Thread testing_io_thread("TestingIOThread");
+  base::WaitableEvent frame_ready_event;
+  media::VideoCaptureFeedback feedback;
+
+  fake_capabilities_.shared_image_d3d = false;
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STARTED));
+  EXPECT_CALL(*this, OnStateUpdate(blink::VIDEO_CAPTURE_STATE_STOPPED));
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+  EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
+      .WillOnce(
+          Invoke([&](const base::UnguessableToken& device_id, int32_t buffer_id,
+                     const media::VideoCaptureFeedback& fb) {
+            // Hold on a reference to the video frame to emulate that we're
+            // actively using the buffer.
+            feedback = fb;
+            frame_ready_event.Signal();
+          }));
+
+  // The first half of the test: Create and queue the GpuMemoryBufferHandle.
+  // VideoCaptureImpl would:
+  //   1. create a GpuMemoryBuffer out of the handle on |testing_io_thread|
+  //   2. create a SharedImage from the GpuMemoryBuffer on |media_thread_|
+  //   3. invoke OnFrameReady callback on |testing_io_thread|
+  auto create_and_queue_buffer = [&]() {
+    gfx::GpuMemoryBufferHandle gmb_handle;
+    gmb_handle.type = gfx::NATIVE_PIXMAP;
+    gmb_handle.id = gfx::GpuMemoryBufferId(kArbitraryBufferId);
+
+    StartCapture(0, params_small_);
+    SimulateGpuMemoryBufferCreated(kArbitraryBufferId, std::move(gmb_handle));
+    SimulateBufferReceived(BufferDescription(
+        kArbitraryBufferId, params_small_.requested_format.frame_size,
+        media::PIXEL_FORMAT_NV12));
+  };
+
+  // The second half of the test: Stop capture and destroy the buffer.
+  // Everything should happen on |testing_io_thread| here.
+  auto stop_capture_and_destroy_buffer = [&]() {
+    StopCapture(0);
+    SimulateBufferDestroyed(kArbitraryBufferId);
+    // Explicitly destroy |video_capture_impl_| to make sure it's destroyed on
+    // the right thread.
+    video_capture_impl_.reset();
+  };
+
+  testing_io_thread.Start();
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(create_and_queue_buffer));
+
+  // Wait until OnFrameReady is called on |testing_io_thread|.
+  EXPECT_TRUE(frame_ready_event.TimedWait(base::Seconds(3)));
+
+  EXPECT_TRUE(feedback.require_mapped_frame);
+
+  testing_io_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(stop_capture_and_destroy_buffer));
+  testing_io_thread.Stop();
+
+  EXPECT_EQ(mock_video_capture_host_.released_buffer_count(), 0);
+}
+#endif
 
 }  // namespace blink

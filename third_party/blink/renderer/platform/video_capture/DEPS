@@ -22,6 +22,7 @@ include_rules = [
 
 specific_include_rules = {
     "video_capture_impl_test.cc": [
+        "+gpu/command_buffer/common/capabilities.h",
         "+third_party/blink/renderer/platform/testing/gpu_memory_buffer_test_support.h",
         "+third_party/blink/renderer/platform/testing/histogram_tester.h",
     ],
