@@ -274,7 +274,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    // Previously disabled: https://crbug.com/837998
+    @DisabledTest(message = "See https://crbug.com/837998")
     public void testLongPressGestureFollowedByTapDoesntSelect() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
