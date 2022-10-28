@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
@@ -301,7 +302,7 @@ void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
   }
 
   std::vector<url::Origin> origin_vector;
-  std::copy(origins.begin(), origins.end(), std::back_inserter(origin_vector));
+  base::ranges::copy(origins, std::back_inserter(origin_vector));
   client->OnCanSendReportingReports(
       origin_vector,
       base::BindOnce(

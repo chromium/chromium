@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <numeric>
@@ -21,6 +20,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -1000,11 +1000,11 @@ TEST_F(USBDeviceImplTest, GenericTransfer) {
 
   std::string message1 = "say hello please";
   std::vector<uint8_t> fake_outbound_data(message1.size());
-  std::copy(message1.begin(), message1.end(), fake_outbound_data.begin());
+  base::ranges::copy(message1, fake_outbound_data.begin());
 
   std::string message2 = "hello world!";
   std::vector<uint8_t> fake_inbound_data(message2.size());
-  std::copy(message2.begin(), message2.end(), fake_inbound_data.begin());
+  base::ranges::copy(message2, fake_inbound_data.begin());
 
   AddMockConfig(ConfigBuilder(1).AddInterface(7, 0, 1, 2, 3).Build());
   AddMockOutboundData(fake_outbound_data);
@@ -1071,13 +1071,11 @@ TEST_F(USBDeviceImplTest, IsochronousTransfer) {
 
   std::string outbound_data = "aaaaaaaabbbbbbbbccccccccdddddddd";
   std::vector<uint8_t> fake_outbound_data(outbound_data.size());
-  std::copy(outbound_data.begin(), outbound_data.end(),
-            fake_outbound_data.begin());
+  base::ranges::copy(outbound_data, fake_outbound_data.begin());
 
   std::string inbound_data = "ddddddddccccccccbbbbbbbbaaaaaaaa";
   std::vector<uint8_t> fake_inbound_data(inbound_data.size());
-  std::copy(inbound_data.begin(), inbound_data.end(),
-            fake_inbound_data.begin());
+  base::ranges::copy(inbound_data, fake_inbound_data.begin());
 
   AddMockConfig(ConfigBuilder(1).AddInterface(7, 0, 1, 2, 3).Build());
   AddMockOutboundPackets(fake_outbound_data, std::move(fake_packets_in));
