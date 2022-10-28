@@ -355,7 +355,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnBeforePipelineResume();
   void OnPipelineResumed();
   void OnPipelineSeeked(bool time_updated);
-  void OnDemuxerOpened();
+  void OnChunkDemuxerOpened();
 
   // media::Pipeline::Client overrides.
   void OnError(media::PipelineStatus status) override;

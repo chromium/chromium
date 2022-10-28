@@ -1849,9 +1849,11 @@ void WebMediaPlayerImpl::OnPipelineResumed() {
   UpdateBackgroundVideoOptimizationState();
 }
 
-void WebMediaPlayerImpl::OnDemuxerOpened() {
+void WebMediaPlayerImpl::OnChunkDemuxerOpened() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  client_->MediaSourceOpened(new WebMediaSourceImpl(chunk_demuxer_));
+  CHECK_EQ(demuxer_->GetDemuxerType(), media::DemuxerType::kChunkDemuxer);
+  client_->MediaSourceOpened(new WebMediaSourceImpl(
+      static_cast<media::ChunkDemuxer*>(demuxer_.get())));
 }
 
 void WebMediaPlayerImpl::OnMemoryPressure(
@@ -2981,8 +2983,8 @@ void WebMediaPlayerImpl::StartPipeline() {
             &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_));
 
     chunk_demuxer_ = new media::ChunkDemuxer(
-        media::BindToCurrentLoop(
-            base::BindOnce(&WebMediaPlayerImpl::OnDemuxerOpened, weak_this_)),
+        media::BindToCurrentLoop(base::BindOnce(
+            &WebMediaPlayerImpl::OnChunkDemuxerOpened, weak_this_)),
         media::BindToCurrentLoop(
             base::BindRepeating(&WebMediaPlayerImpl::OnProgress, weak_this_)),
         encrypted_media_init_data_cb, media_log_.get());
