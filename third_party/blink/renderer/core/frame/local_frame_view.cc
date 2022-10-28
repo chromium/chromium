@@ -1041,7 +1041,6 @@ void LocalFrameView::RunPostLifecycleSteps() {
   base::AutoReset<bool> in_post_lifecycle_steps(&in_post_lifecycle_steps_,
                                                 true);
   AllowThrottlingScope allow_throttling(*this);
-  RunAccessibilitySteps();
   RunIntersectionObserverSteps();
   if (mobile_friendliness_checker_)
     mobile_friendliness_checker_->MaybeRecompute();
@@ -2254,6 +2253,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
 
   // Only the following target states are supported.
   DCHECK(target_state == DocumentLifecycle::kLayoutClean ||
+         target_state == DocumentLifecycle::kAccessibilityClean ||
          target_state == DocumentLifecycle::kCompositingInputsClean ||
          target_state == DocumentLifecycle::kPrePaintClean ||
          target_state == DocumentLifecycle::kPaintClean);
@@ -2433,6 +2433,13 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 #if DCHECK_IS_ON()
       DisallowLayoutInvalidationScope disallow_layout_invalidation(this);
 #endif
+
+      DCHECK_GE(target_state, DocumentLifecycle::kAccessibilityClean);
+      run_more_lifecycle_phases = RunAccessibilityLifecyclePhase(target_state);
+      DCHECK(ShouldThrottleRendering() || !ExistingAXObjectCache() ||
+             Lifecycle().GetState() == DocumentLifecycle::kAccessibilityClean);
+      if (!run_more_lifecycle_phases)
+        return;
 
       DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
           TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "SetLayerTreeId",
@@ -2842,8 +2849,10 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     GetPage()->Animator().ReportFrameAnimations(GetCompositorAnimationHost());
 }
 
-void LocalFrameView::RunAccessibilitySteps() {
-  TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunAccessibilitySteps");
+bool LocalFrameView::RunAccessibilityLifecyclePhase(
+    DocumentLifecycle::LifecycleState target_state) {
+  TRACE_EVENT0("blink,benchmark",
+               "LocalFrameView::RunAccessibilityLifecyclePhase");
 
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kAccessibility);
@@ -2854,10 +2863,14 @@ void LocalFrameView::RunAccessibilitySteps() {
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     if (AXObjectCache* cache = frame_view.ExistingAXObjectCache()) {
+      frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);
       cache->ProcessDeferredAccessibilityEvents(
           *frame_view.GetFrame().GetDocument());
+      frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kAccessibilityClean);
     }
   });
+
+  return target_state > DocumentLifecycle::kAccessibilityClean;
 }
 
 void LocalFrameView::EnqueueScrollAnchoringAdjustment(

@@ -1766,7 +1766,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsAccessibilityEnabled() const { return !ax_contexts_.empty(); }
 
   void DispatchHandleLoadStart();
-  void DispatchHandleLoadComplete();
+  void DispatchHandleLoadOrLayoutComplete();
 
   bool HaveRenderBlockingStylesheetsLoaded() const;
   bool HaveRenderBlockingResourcesLoaded() const;

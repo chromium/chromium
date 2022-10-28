@@ -1771,8 +1771,7 @@ bool RootWebAXObjectProxy::IsRoot() const {
   return true;
 }
 
-WebAXObjectProxyList::WebAXObjectProxyList(blink::WebAXContext& ax_context)
-    : ax_context_(&ax_context) {}
+WebAXObjectProxyList::WebAXObjectProxyList() = default;
 
 WebAXObjectProxyList::~WebAXObjectProxyList() {
   Clear();
@@ -1830,6 +1829,10 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
 
   elements_.emplace_back(isolate, handle);
   return handle;
+}
+
+void WebAXObjectProxyList::SetAXContext(blink::WebAXContext* ax_context) {
+  ax_context_ = ax_context;
 }
 
 blink::WebAXContext* WebAXObjectProxyList::GetAXContext() {

@@ -110,16 +110,19 @@
 #include "ui/accessibility/mojom/ax_relative_bounds.mojom-blink.h"
 
 // Prevent code that runs during the lifetime of the stack from altering the
-// document lifecycle, for the main document, and the popup document if present.
+// document lifecycle. Usually doc is the same as document_, but it can be
+// different when it is a popup document. Because it's harmless to test both
+// documents, even if they are the same, the scoped check is initialized for
+// both documents.
+// clang-format off
 #if DCHECK_IS_ON()
-#define SCOPED_DISALLOW_LIFECYCLE_TRANSITION()                               \
-  DocumentLifecycle::DisallowTransitionScope scoped(document_->Lifecycle()); \
-  DocumentLifecycle::DisallowTransitionScope scoped2(                        \
-      popup_document_ ? popup_document_->Lifecycle()                         \
-                      : document_->Lifecycle());
+#define SCOPED_DISALLOW_LIFECYCLE_TRANSITION(document)                        \
+  DocumentLifecycle::DisallowTransitionScope scoped1((document).Lifecycle()); \
+  DocumentLifecycle::DisallowTransitionScope scoped2(document_->Lifecycle())
 #else
-#define SCOPED_DISALLOW_LIFECYCLE_TRANSITION()
+#define SCOPED_DISALLOW_LIFECYCLE_TRANSITION(document)
 #endif  // DCHECK_IS_ON()
+// clang-format on
 
 namespace blink {
 
@@ -705,48 +708,54 @@ Node* AXObjectCacheImpl::FocusedElement() {
   return focused_node;
 }
 
+void AXObjectCacheImpl::UpdateLayoutForAllDocuments() {
+  UpdateLifecycleIfNeeded(GetDocument());
+  if (Document* popup_document = GetPopupDocumentIfShowing())
+    UpdateLifecycleIfNeeded(*popup_document);
+}
+
 void AXObjectCacheImpl::UpdateLifecycleIfNeeded(Document& document) {
   DCHECK(document.defaultView());
   DCHECK(document.GetFrame());
   DCHECK(document.View());
 
+  // TODO(accessibility) This temporarily requires kPrePaintClean as
+  // WebAXObject::UpdateLayout() did. Once a11y is moved to
+  // PostRunLifecycleTasks, restore to only require kLayoutClean.
   // TODO(accessibility) Remove conditions and just update the lifecycle.
   if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-      document.Lifecycle().GetState() < DocumentLifecycle::kLayoutClean) {
+      document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
     document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kAccessibility);
   }
 }
 
 void AXObjectCacheImpl::UpdateAXForAllDocuments() {
-#if DCHECK_IS_ON()
-  DCHECK(!IsFrozen())
-      << "Don't call UpdateAXForAllDocuments() here; layout and a11y are "
-         "already clean at the start of serialization.";
-  DCHECK(!updating_layout_and_ax_) << "Undesirable recursion.";
-  base::AutoReset<bool> updating(&updating_layout_and_ax_, true);
-#endif
+  UpdateLayoutForAllDocuments();
 
-  // First update the layout for the main and popup document.
-  UpdateLifecycleIfNeeded(GetDocument());
-  if (Document* popup_document = GetPopupDocumentIfShowing())
-    UpdateLifecycleIfNeeded(*popup_document);
-
-  // Next flush all accessibility events and dirty objects, for both the main
-  // and popup document.
-  if (IsDirty())
+  if (IsMainDocumentDirty())
     ProcessDeferredAccessibilityEvents(GetDocument());
+
+  if (IsPopupDocumentDirty())
+    ProcessDeferredAccessibilityEvents(*GetPopupDocumentIfShowing());
 }
 
 AXObject* AXObjectCacheImpl::GetOrCreateFocusedObjectFromNode(Node* node) {
-#if DCHECK_IS_ON()
-  DCHECK(GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kAfterPerformLayout);
-  if (GetPopupDocumentIfShowing()) {
-    DCHECK(GetPopupDocumentIfShowing()->Lifecycle().GetState() >=
-           DocumentLifecycle::kAfterPerformLayout);
+  if (!node)
+    return nullptr;
+
+  // TODO(chrishtr): refactor to use UpdateLayoutForAllDocuments().
+  if (node->GetDocument() != GetDocument() &&
+      node->GetDocument().Lifecycle().GetState() <
+          DocumentLifecycle::kLayoutClean) {
+    // Node is in a different, unclean document. This can occur in an open
+    // popup. Ensure the popup document has a clean layout before trying to
+    // create an AXObject from a node in it.
+    if (node->GetDocument().View()) {
+      node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+          DocumentUpdateReason::kAccessibility);
+    }
   }
-#endif
 
   AXObject* obj = GetOrCreate(node);
   if (!obj)
@@ -1558,27 +1567,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
     return result;
   }
 
-  if (!parent_if_known &&
-      (layout_object->IsText() || layout_object->IsPseudoElement() || !node)) {
-    // If the parent is not known, it means we are creating an AXObject at an
-    // arbitrary place in the tree. Ensure its parent has it as a
-    // child. an thus is connected to the root in both directions,
-    // and is not an orphan.
-    // This is accomplished by creating  an AXObject for |layout_object|, by
-    // first asking the parent to create its children, and then returning the
-    // matching AXObject for |layout_object|.
-    // This prevents situations where we attempt to serialize a node
-    // and fail, because the parent does not reach it via its children.
-    // It is only known to be an issue with AXObjects backed by layout, where a
-    // change to layout has invalidated the inclusion of something in the tree.
-    // For now, do this only for text and pseudo content, as it is a smaller
-    // change, but consider doing it for more/all nodes in the future.
-    DCHECK(!use_axid)
-        << "Cannot enforce an AXID when creating in the middle of the tree.";
-    parent->UpdateChildrenIfNecessary();
-    return Get(layout_object);
-  }
-
   AXObject* new_obj = CreateFromRenderer(layout_object);
 
   DCHECK(new_obj) << "Could not create AXObject for " << layout_object;
@@ -1942,11 +1930,28 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
     return;
   }
 
+#if DCHECK_IS_ON()
+  // TODO(accessibility) Restore this check. Currently must be removed because a
+  // loop in ProcessDeferredAccessibilityEvents() is allowed to queue deferred
+  // ChildrenChanged() events and process them.
+  // DCHECK(!tree_update_document->GetPage()->Animator().IsServicingAnimations()
+  // ||
+  //        (tree_update_document->Lifecycle().GetState() <
+  //             DocumentLifecycle::kInAccessibility ||
+  //         tree_update_document->Lifecycle().StateAllowsDetach()))
+  //     << "DeferTreeUpdateInternal should only be outside of the lifecycle or
+  //     "
+  //        "before the accessibility state:"
+  //     << "\n* IsServicingAnimations: "
+  //     << tree_update_document->GetPage()->Animator().IsServicingAnimations()
+  //     << "\n* Lifecycle: " << tree_update_document->Lifecycle().ToString();
+#endif
+
   queue.push_back(MakeGarbageCollected<TreeUpdateParams>(
       obj->GetNode(), obj->AXObjectID(), ComputeEventFrom(),
       active_event_from_action_, ActiveEventIntents(), std::move(callback)));
 
-  // These events are fired during RunPostLifecycleTasks(),
+  // These events are fired during DocumentLifecycle::kInAccessibility,
   // ensure there is a document lifecycle update scheduled.
   ScheduleVisualUpdate(*tree_update_document);
 }
@@ -1977,11 +1982,30 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
     return;
   }
 
+#if DCHECK_IS_ON()
+  // TODO(accessibility) Consider re-adding. However, it conflicts with some
+  // calls from HandleTextMarkerDataAdded(), which need to defer even when
+  // already in clean layout. Removing this is not dangerous -- it helped ensure
+  // that we weren't bothering to defer when layout is already clean. It's
+  // actually ok if that's wrong here or there.
+  // DCHECK(!tree_update_document.GetPage()->Animator().IsServicingAnimations()
+  // ||
+  //        (tree_update_document.Lifecycle().GetState() <
+  //             DocumentLifecycle::kInAccessibility ||
+  //         tree_update_document.Lifecycle().StateAllowsDetach()))
+  //     << "DeferTreeUpdateInternal should only be outside of the lifecycle or
+  //     "
+  //        "before the accessibility state:"
+  //     << "\n* IsServicingAnimations: "
+  //     << tree_update_document.GetPage()->Animator().IsServicingAnimations()
+  //     << "\n* Lifecycle: " << tree_update_document.Lifecycle().ToString();
+#endif
+
   queue.push_back(MakeGarbageCollected<TreeUpdateParams>(
       node, 0, ComputeEventFrom(), active_event_from_action_,
       ActiveEventIntents(), std::move(callback)));
 
-  // These events are fired during RunPostLifecycleTasks(),
+  // These events are fired during DocumentLifecycle::kInAccessibility,
   // ensure there is a document lifecycle update scheduled.
   ScheduleVisualUpdate(tree_update_document);
 }
@@ -2061,7 +2085,7 @@ void AXObjectCacheImpl::UpdateReverseTextRelations(
 
 void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object) {
   DCHECK(layout_object);
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(layout_object->GetDocument());
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node)
     DeferTreeUpdate(&AXObjectCacheImpl::StyleChangedWithCleanLayout, node);
@@ -2148,7 +2172,8 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
   if (obj) {
     if (obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
         obj->LastKnownIsIncludedInTreeValue()) {
-      if (InlineTextBoxAccessibilityEnabled()) {
+      Settings* settings = GetSettings();
+      if (settings && settings->GetInlineTextBoxAccessibilityEnabled()) {
         // Update inline text box children.
         ChildrenChangedWithCleanLayout(optional_node_for_relation_update, obj);
         return;
@@ -2202,19 +2227,13 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
 
 void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
   DCHECK(node);
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
   Document* document = DynamicTo<Document>(node);
   if (document) {
     // A popup is being shown.
-    DCHECK(*document != GetDocument());
-    DCHECK(!popup_document_);
-    popup_document_ = document;
     DCHECK(IsPopup(*document));
-    // Fire children changed on the focused element that owns this popup.
-    ChildrenChanged(GetDocument().FocusedElement());
-    return;
+    popup_document_ = document;
   }
-
   DeferTreeUpdate(
       &AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout, node);
 }
@@ -2479,37 +2498,12 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
-  if (IsPopup(document)) {
-    // Only process popup document together with main document.
-    DCHECK_EQ(&document, GetPopupDocumentIfShowing());
-    // Since a change occurred in the popup, processing of both documents will
-    // be needed. A visual update on the main document will force this.
-    ScheduleVisualUpdate(GetDocument());
-    return;
-  }
+  ProcessDeferredAccessibilityEventsImpl(document);
 
-  DCHECK_EQ(document, GetDocument());
-
-  DCHECK(!processing_deferred_events_);
-
-  if (IsDirty()) {
-    if (GetPopupDocumentIfShowing()) {
-      UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
-      ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
-    }
-    ProcessDeferredAccessibilityEventsImpl(document);
-  }
-
-  // Accessibility is now clean for both documents: AXObjects can be safely
-  // traversed and AXObject's properties can be safely fetched.
-  // TODO(accessibility) Now that both documents are always processed at the
-  // same time, consider modifying the InspectorAccessibilityAgent so that only
-  // the callback for the main document is needed.
-  for (auto agent : agents_) {
+  // Accessibility is now clean: AXObjects can be safely traversed and
+  // AXObject's properties can be safely fetched.
+  for (auto agent : agents_)
     agent->AXReadyCallback(document);
-    if (GetPopupDocumentIfShowing())
-      agent->AXReadyCallback(*GetPopupDocumentIfShowing());
-  }
 
   // TODO(chrishtr): Accessibility serializations should happen now, on the
   // condition that enough time has passed since the last serialization.
@@ -2518,6 +2512,16 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
     Document& document) {
   TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents");
+
+  DCHECK(document.Lifecycle().GetState() >= DocumentLifecycle::kInAccessibility)
+      << "Deferred events should only be processed during the "
+         "accessibility document lifecycle or later.";
+
+  // When tree updates are paused, IsDirty() will return false. In this
+  // situation we should not return early because we would never trigger the
+  // code that resumes the tree updates, inside ProcessCleanLayoutCallbacks.
+  if (!IsDirty() && !tree_updates_paused_)
+    return;
 
   DCHECK(GetDocument().IsAccessibilityEnabled())
       << "ProcessDeferredAccessibilityEvents should not perform work when "
@@ -2530,8 +2534,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
 #if DCHECK_IS_ON()
   int loop_counter = 0;
 #endif
-
-  base::AutoReset<bool> processing(&processing_deferred_events_, true);
 
   do {
     // Destroy and recreate any objects which are no longer valid, for example
@@ -2581,6 +2583,8 @@ bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
 }
 
 bool AXObjectCacheImpl::IsDirty() const {
+  if (tree_updates_paused_)
+    return false;
   return IsMainDocumentDirty() || IsPopupDocumentDirty() ||
          relation_cache_->IsDirty();
 }
@@ -2607,7 +2611,14 @@ bool AXObjectCacheImpl::IsPopup(Document& document) const {
         << "The popup document's owner should be in the main document.";
     Page* main_page = GetDocument().GetPage();
     DCHECK(main_page);
-    DCHECK_EQ(&document, popup_document_);
+    // TODO(accessibility) Verify that the main document's popup is |document|.
+    // PagePopupController* popup_controller =
+    //     PagePopupController::From(*main_page);
+    // DCHECK(popup_controller);
+    // AXObject* popup_root_ax_object = popup_controller->RootAXObject();
+    // DCHECK(popup_root_ax_object);
+    // DCHECK_EQ(popup_root_ax_object->GetDocument(), &document)
+    //     << "There can be only one active popup document.";
   }
 #endif
   return is_popup;
@@ -2678,8 +2689,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     // TODO(accessibility) That may be the only example of this, in which case
     // it could be handled in RoleChangedWithCleanLayout(), and the cached
     // parent could be used.
-    AXObject* new_object = CreateAndInit(
-        node, AXObject::ComputeNonARIAParent(*this, node), retained_axid);
+    AXObject* new_object = CreateAndInit(node, nullptr, retained_axid);
     if (new_object) {
       // Any owned objects need to reset their parent_ to point to the
       // new object.
@@ -2758,7 +2768,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
 }
 
 void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(document);
 
   if (tree_updates_paused_) {
     ChildrenChangedWithCleanLayout(nullptr, GetOrCreate(&document));
@@ -2875,7 +2885,7 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
   // It's possible for FireAXEventImmediately to post another notification.
   // If we're still in the accessibility document lifecycle, fire these events
   // immediately rather than deferring them.
-  if (processing_deferred_events_) {
+  if (document.Lifecycle().GetState() == DocumentLifecycle::kInAccessibility) {
     FireAXEventImmediately(object, event_type, ComputeEventFrom(),
                            active_event_from_action_, ActiveEventIntents());
     return;
@@ -2886,7 +2896,7 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
           object, event_type, ComputeEventFrom(), active_event_from_action_,
           ActiveEventIntents()));
 
-  // These events are fired during RunPostLifecycleTasks(),
+  // These events are fired during DocumentLifecycle::kInAccessibility,
   // ensure there is a visual update scheduled.
   ScheduleVisualUpdate(document);
 }
@@ -2907,7 +2917,9 @@ void AXObjectCacheImpl::ScheduleVisualUpdate(Document& document) {
     return;
 
   if (!frame_view->CanThrottleRendering() &&
-      !document.GetPage()->Animator().IsServicingAnimations()) {
+      (!document.GetPage()->Animator().IsServicingAnimations() ||
+       document.Lifecycle().GetState() >=
+           DocumentLifecycle::kInAccessibility)) {
     page->Animator().ScheduleVisualUpdate(document.GetFrame());
   }
 }
@@ -2918,7 +2930,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents,
     base::OnceClosure callback) {
-  DCHECK(processing_deferred_events_);
+  DCHECK_GE(document.Lifecycle().GetState(),
+            DocumentLifecycle::kInAccessibility);
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
       &active_event_from_, event_from);
@@ -2935,6 +2948,9 @@ void AXObjectCacheImpl::FireAXEventImmediately(
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
+  DCHECK_GE(obj->GetDocument()->Lifecycle().GetState(),
+            DocumentLifecycle::kInAccessibility);
+
 #if DCHECK_IS_ON()
   // Make sure none of the layout views are in the process of being laid out.
   // Notifications should only be sent after the layoutObject has finished
@@ -2945,7 +2961,7 @@ void AXObjectCacheImpl::FireAXEventImmediately(
       DCHECK(!layout_object->View()->GetLayoutState());
   }
 
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*obj->GetDocument());
 #endif  // DCHECK_IS_ON()
 
   if (event_type == ax::mojom::blink::Event::kChildrenChanged &&
@@ -3008,7 +3024,7 @@ void AXObjectCacheImpl::ListboxSelectedChildrenChanged(
 }
 
 void AXObjectCacheImpl::ListboxActiveIndexChanged(HTMLSelectElement* select) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(select->GetDocument());
 
   auto* ax_object = DynamicTo<AXListBox>(Get(select));
   if (!ax_object)
@@ -3057,7 +3073,7 @@ void AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout(Node* node) {
   if (!node)
     return;
 
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
 
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
   if (AXObject* obj = GetOrCreate(node))
@@ -3081,30 +3097,14 @@ void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(
     PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
 }
 
-// In single selection containers, selection follows focus, so a selection
-// changed event must be fired. This ensures the AT is notified that the
-// selected state has changed, so that it does not read "unselected" as
-// the user navigates through the items. The event generator will handle
-// the correct events as long as the old and newly selected objects are marked
-// dirty.
 void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
   DCHECK(node);
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
 
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
   AXObject* obj = Get(node);
   if (!obj)
     return;
-
-  // Mark the previous selected item dirty if it was selected viaa "selection
-  // follows focus".
-  if (last_selected_from_active_descendant_)
-    MarkElementDirtyWithCleanLayout(last_selected_from_active_descendant_);
-
-  // Mark the newly selected item dirty, and track it for use in the future.
-  MarkAXObjectDirtyWithCleanLayout(obj);
-  if (obj->IsSelectedFromFocus())
-    last_selected_from_active_descendant_ = node;
 
   PostNotification(obj, ax::mojom::Event::kCheckedStateChanged);
 
@@ -3138,6 +3138,15 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
   node = FocusedElement();  // Needs to get this with clean layout.
   if (!node || !node->GetDocument().View())
     return;
+
+  // TODO(chrishtr): refactor to use UpdateLifecycleIfNeeded.
+  if (node->GetDocument().NeedsLayoutTreeUpdateForNode(*node)) {
+    // This should only occur when focus goes into a popup document. The main
+    // document has an updated layout, but the popup does not.
+    DCHECK_NE(document_, node->GetDocument());
+    node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kAccessibility);
+  }
 
   AXObject* obj = GetOrCreateFocusedObjectFromNode(node);
   if (!obj)
@@ -3252,7 +3261,7 @@ void AXObjectCacheImpl::HandleAriaHiddenChangedWithCleanLayout(Node* node) {
   if (!node)
     return;
 
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
   AXObject* obj = GetOrCreate(node);
@@ -3516,7 +3525,7 @@ void AXObjectCacheImpl::RemoveValidationMessageObjectWithCleanLayout(
 void AXObjectCacheImpl::HandleValidationMessageVisibilityChanged(
     const Node* form_control) {
   DCHECK(form_control);
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(form_control->GetDocument());
 
   DeferTreeUpdate(&AXObjectCacheImpl::
                       HandleValidationMessageVisibilityChangedWithCleanLayout,
@@ -3697,13 +3706,6 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   if (!obj)
     return;
 
-  // If the content is inside the popup, mark the owning element dirty.
-  // TODO(aleventhal): not sure why this works, but now that we run a11y in
-  // PostRunLifecycleTasks(), we need this, otherwise the pending updates in
-  // the popup aren't processed.
-  if (IsPopup(*obj->GetDocument()))
-    MarkElementDirty(GetDocument().FocusedElement());
-
   WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(
       obj->GetDocument()->AXObjectCacheOwner().GetFrame());
   if (webframe && webframe->Client()) {
@@ -3739,7 +3741,6 @@ void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
 void AXObjectCacheImpl::MarkAXObjectDirty(AXObject* obj) {
   if (!obj)
     return;
-
   base::OnceClosure callback =
       WTF::BindOnce(&AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout,
                     WrapWeakPersistent(this), WrapWeakPersistent(obj));
@@ -3821,7 +3822,7 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
 
 #if DCHECK_IS_ON()
   // The focus can be in a different document when a popup is open.
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(focused_doc);
 #endif  // DCHECK_IS_ON()
 
   if (focused_doc.GetPage() && focused_doc.GetPage()->InsidePortal())
@@ -4019,10 +4020,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
   size_t num_remaining_objects_to_serialize =
       dirty_objects_.size() + kMaxExtraDirtyObjectsToSerialize;
 
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kLayoutClean);
-  DCHECK(!popup_document_ || popup_document_->Lifecycle().GetState() >=
-                                 DocumentLifecycle::kLayoutClean);
+  UpdateLayoutForAllDocuments();
 
   while (!dirty_objects_.empty() && --num_remaining_objects_to_serialize > 0) {
     AXDirtyObject* current_dirty_object = std::move(dirty_objects_.front());
@@ -4052,7 +4050,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     // ends up skipping it. That's probably a Blink bug if that happens, but
     // still we need to make sure we don't keep trying the same object over
     // again.
-    if (already_serialized_ids.Contains(obj->AXObjectID()))
+    if (!already_serialized_ids.insert(obj->AXObjectID()).is_new_entry)
       continue;  // No insertion, was already present.
 
     ui::AXTreeUpdate update;
@@ -4071,19 +4069,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     }
 
     DCHECK_GT(update.nodes.size(), 0U);
-
     for (auto& node : update.nodes) {
       DCHECK(node.id);
       already_serialized_ids.insert(node.id);
     }
-
-    DCHECK(already_serialized_ids.Contains(obj->AXObjectID()))
-        << "Did not serialize original node, so it was probably not included "
-           "in its parent's children, and should never have been created in "
-           "the first place: "
-        << obj->ToString(true)
-        << "\nParent: " << obj->ParentObjectIncludedInTree()->ToString(true)
-        << "\nIndex in parent: " << obj->IndexInParent();
 
     updates.push_back(update);
   }
@@ -4156,7 +4145,7 @@ void AXObjectCacheImpl::HandleEditableTextContentChanged(Node* node) {
   if (!node)
     return;
 
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
 
   DeferTreeUpdate(
       &AXObjectCacheImpl::HandleEditableTextContentChangedWithCleanLayout,
@@ -4272,7 +4261,7 @@ void AXObjectCacheImpl::HandleUpdateActiveMenuOptionWithCleanLayout(
 }
 
 void AXObjectCacheImpl::DidShowMenuListPopup(LayoutObject* menu_list) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(menu_list->GetDocument());
 
   DCHECK(menu_list->GetNode());
   DeferTreeUpdate(&AXObjectCacheImpl::DidShowMenuListPopupWithCleanLayout,
@@ -4291,7 +4280,7 @@ void AXObjectCacheImpl::DidShowMenuListPopupWithCleanLayout(Node* menu_list) {
 }
 
 void AXObjectCacheImpl::DidHideMenuListPopup(LayoutObject* menu_list) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(menu_list->GetDocument());
 
   DCHECK(menu_list->GetNode());
   DeferTreeUpdate(&AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout,
@@ -4310,22 +4299,18 @@ void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
 }
 
 void AXObjectCacheImpl::HandleLoadStart(Document* document) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  if (!IsPopup(*document)) {
-    DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
-                    ax::mojom::blink::Event::kLoadStart);
-  }
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
+  MarkAXObjectDirty(Get(document));
+  DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
+                  ax::mojom::blink::Event::kLoadStart);
 }
 
 void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
 
-  // Popups do not need to fire a load complete message.
-  if (!IsPopup(*document)) {
-    AddPermissionStatusListener();
-    DeferTreeUpdate(&AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout,
-                    document);
-  }
+  AddPermissionStatusListener();
+  DeferTreeUpdate(&AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout,
+                  document);
 }
 
 void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
@@ -4344,14 +4329,7 @@ void AXObjectCacheImpl::HandleLoadCompleteWithCleanLayout(Node* document_node) {
 }
 
 void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-  DCHECK(document);
-  // Do not fire kLayoutComplete for popup document.
-  if (document == GetPopupDocumentIfShowing())
-    return;
-
-  // TODO(accessibility) What is the purpose of firing kLayoutComplete?
-  // Do we even need this?
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
   if (document->Lifecycle().GetState() >=
       DocumentLifecycle::kAfterPerformLayout) {
     PostNotification(GetOrCreate(document),
@@ -4366,7 +4344,7 @@ void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
   if (!anchor_node)
     return;
 
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(anchor_node->GetDocument());
 
   AXObject* obj = GetOrCreate(anchor_node->GetLayoutObject());
   if (!obj)
@@ -4399,7 +4377,7 @@ void AXObjectCacheImpl::SerializerClearedNode(AXID id) {
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(
     LocalFrameView* frame_view) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*frame_view->GetFrame().GetDocument());
 
   InvalidateBoundingBoxForFixedOrStickyPosition();
   MarkElementDirty(document_);
@@ -4409,7 +4387,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(
     LayoutObject* layout_object) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(layout_object->GetDocument());
   InvalidateBoundingBoxForFixedOrStickyPosition();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
@@ -4420,7 +4398,7 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
 }
 
 const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
 
   AXObject* obj = GetOrCreate(node);
   if (!obj)
@@ -4429,7 +4407,7 @@ const AtomicString& AXObjectCacheImpl::ComputedRoleForNode(Node* node) {
 }
 
 String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
   AXObject* obj = GetOrCreate(node);
   if (!obj)
     return "";
@@ -4455,7 +4433,7 @@ void AXObjectCacheImpl::OnTouchAccessibilityHover(const gfx::Point& location) {
 void AXObjectCacheImpl::SetCanvasObjectBounds(HTMLCanvasElement* canvas,
                                               Element* element,
                                               const LayoutRect& rect) {
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+  SCOPED_DISALLOW_LIFECYCLE_TRANSITION(element->GetDocument());
 
   AXObject* obj = GetOrCreate(element);
   if (!obj)
@@ -4533,7 +4511,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agents_);
   visitor->Trace(document_);
   visitor->Trace(popup_document_);
-  visitor->Trace(last_selected_from_active_descendant_);
   visitor->Trace(accessible_node_mapping_);
   visitor->Trace(layout_object_mapping_);
   visitor->Trace(node_object_mapping_);

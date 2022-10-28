@@ -2129,7 +2129,6 @@ const AtomicString& Element::computedRole() {
         DocumentUpdateReason::kJavaScript);
   }
   AXContext ax_context(document, ui::kAXModeBasic);
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedRoleForNode(this);
 }
 
@@ -2143,7 +2142,6 @@ String Element::computedName() {
         DocumentUpdateReason::kJavaScript);
   }
   AXContext ax_context(document, ui::kAXModeBasic);
-  ax_context.GetAXObjectCache().ProcessDeferredAccessibilityEvents(document);
   return ax_context.GetAXObjectCache().ComputedNameForNode(this);
 }
 

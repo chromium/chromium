@@ -163,9 +163,7 @@ AccessibilityController::~AccessibilityController() {
 }
 
 void AccessibilityController::Reset() {
-  if (!IsInstalled())
-    return;
-  elements_->Clear();
+  elements_.Clear();
   notification_callback_.Reset();
   log_accessibility_events_ = false;
   ax_context_.reset();
@@ -174,7 +172,7 @@ void AccessibilityController::Reset() {
 void AccessibilityController::Install(blink::WebLocalFrame* frame) {
   ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument(),
                                                       ui::kAXModeComplete);
-  elements_ = std::make_unique<WebAXObjectProxyList>(*ax_context_);
+  elements_.SetAXContext(ax_context_.get());
   frame->View()->GetSettings()->SetInlineTextBoxAccessibilityEnabled(true);
 
   AccessibilityControllerBindings::Install(weak_factory_.GetWeakPtr(), frame);
@@ -200,9 +198,6 @@ void AccessibilityController::PostNotification(
     const blink::WebAXObject& target,
     const std::string& notification_name,
     const std::vector<ui::AXEventIntent>& event_intents) {
-  if (!IsInstalled())
-    return;
-
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
 
@@ -218,7 +213,7 @@ void AccessibilityController::PostNotification(
   v8::Context::Scope context_scope(context);
 
   // Call notification listeners on the element.
-  v8::Local<v8::Object> element_handle = elements_->GetOrCreate(target);
+  v8::Local<v8::Object> element_handle = elements_.GetOrCreate(target);
   if (element_handle.IsEmpty())
     return;
 
@@ -259,7 +254,7 @@ void AccessibilityController::UnsetNotificationListener() {
 
 v8::Local<v8::Object> AccessibilityController::FocusedElement() {
   blink::WebFrame* frame = web_view()->MainFrame();
-  if (!frame || !IsInstalled())
+  if (!frame)
     return v8::Local<v8::Object>();
 
   // TODO(lukasza): Finish adding OOPIF support to the web tests harness.
@@ -272,14 +267,11 @@ v8::Local<v8::Object> AccessibilityController::FocusedElement() {
           frame->ToWebLocalFrame()->GetDocument());
   if (focused_element.IsNull())
     focused_element = GetAccessibilityObjectForMainFrame();
-  return elements_->GetOrCreate(focused_element);
+  return elements_.GetOrCreate(focused_element);
 }
 
 v8::Local<v8::Object> AccessibilityController::RootElement() {
-  if (!IsInstalled())
-    return v8::Local<v8::Object>();
-  ax_context_->UpdateAXForAllDocuments();
-  return elements_->GetOrCreate(GetAccessibilityObjectForMainFrame());
+  return elements_.GetOrCreate(GetAccessibilityObjectForMainFrame());
 }
 
 v8::Local<v8::Object> AccessibilityController::AccessibleElementById(
@@ -307,7 +299,7 @@ AccessibilityController::FindAccessibleElementByIdRecursive(
   if (!node.IsNull() && node.IsElementNode()) {
     blink::WebElement element = node.To<blink::WebElement>();
     if (element.GetAttribute("id") == id)
-      return elements_->GetOrCreate(obj);
+      return elements_.GetOrCreate(obj);
   }
 
   unsigned childCount = obj.ChildCount();

@@ -61,7 +61,6 @@ class AccessibilityController {
   v8::Local<v8::Object> RootElement();
   v8::Local<v8::Object> AccessibleElementById(const std::string& id);
   bool CanCallAOMEventListeners() const;
-  bool IsInstalled() { return elements_ != nullptr; }
 
   v8::Local<v8::Object> FindAccessibleElementByIdRecursive(
       const blink::WebAXObject&,
@@ -72,7 +71,7 @@ class AccessibilityController {
   // If true, will log all accessibility notifications.
   bool log_accessibility_events_;
 
-  std::unique_ptr<WebAXObjectProxyList> elements_;
+  WebAXObjectProxyList elements_;
 
   v8::Persistent<v8::Function> notification_callback_;
 
