@@ -575,12 +575,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Stops any pending navigations in all WebStates which are loading.
 - (void)stopAllWebStatesLoading;
 
-// Clears all web state browsing data. A GREYAssert is induced if the data
-// cannot be cleared.
-// TODO:(crbug.com/1362915): Remove after all tests are updated to use
-// `clearAllWebStateBrowsingData:` below.
-- (void)clearAllWebStateBrowsingData;
-
 // Clears all web state browsing data then relaunches the application. (A
 // GREYAssert is induced if the data cannot be cleared.)
 // NOTE: The passed in `config` will be modified to set `relaunch_policy` to

@@ -749,11 +749,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       @"Failed to wait app to idle after stopping all WebStates");
 }
 
-- (void)clearAllWebStateBrowsingData {
-  EG_TEST_HELPER_ASSERT_NO_ERROR(
-      [ChromeEarlGreyAppInterface clearAllWebStateBrowsingData]);
-}
-
 - (void)clearAllWebStateBrowsingData:(AppLaunchConfiguration)config {
   EG_TEST_HELPER_ASSERT_NO_ERROR(
       [ChromeEarlGreyAppInterface clearAllWebStateBrowsingData]);
