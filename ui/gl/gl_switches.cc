@@ -247,6 +247,11 @@ BASE_FEATURE(kIntelVpSuperResolution,
              "IntelVpSuperResolution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow overlay swapchain to use NVIDIA video processor for super resolution.
+BASE_FEATURE(kNvidiaVpSuperResolution,
+             "NvidiaVpSuperResolution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Default to using ANGLE's OpenGL backend
 BASE_FEATURE(kDefaultANGLEOpenGL,
              "DefaultANGLEOpenGL",

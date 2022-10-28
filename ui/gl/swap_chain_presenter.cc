@@ -251,6 +251,39 @@ void ToggleIntelVpSuperResolution(ID3D11VideoContext* video_context,
   }
 }
 
+void ToggleNvidiaVpSuperResolution(ID3D11VideoContext* video_context,
+                                   ID3D11VideoProcessor* video_processor,
+                                   bool is_on_battery_power) {
+  TRACE_EVENT1("gpu", "ToggleNvidiaVpSuperResolution", "on",
+               !is_on_battery_power);
+
+  constexpr GUID kNvidiaPPEInterfaceGUID = {
+      0xd43ce1b3,
+      0x1f4b,
+      0x48ac,
+      {0xba, 0xee, 0xc3, 0xc2, 0x53, 0x75, 0xe6, 0xf7}};
+  constexpr UINT kStreamExtensionVersionV1 = 0x1;
+  constexpr UINT kStreamExtensionMethodSuperResolution = 0x2;
+
+  struct {
+    UINT version;
+    UINT method;
+    UINT enable;
+  } stream_extension_info = {kStreamExtensionVersionV1,
+                             kStreamExtensionMethodSuperResolution,
+                             is_on_battery_power ? 0 : 1u};
+
+  HRESULT hr = video_context->VideoProcessorSetStreamExtension(
+      video_processor, 0, &kNvidiaPPEInterfaceGUID,
+      sizeof(stream_extension_info), &stream_extension_info);
+
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "VideoProcessorSetStreamExtension failed with error 0x"
+                << std::hex << hr;
+    return;
+  }
+}
+
 bool IsWithinMargin(int i, int j) {
   constexpr int kFullScreenMargin = 10;
   return (std::abs(i - j) < kFullScreenMargin);
@@ -1566,10 +1599,17 @@ bool SwapChainPresenter::VideoProcessorBlt(
       DCHECK(output_view_);
     }
 
-    if (!layer_tree_->disable_vp_super_resolution() &&
-        base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
-      ToggleIntelVpSuperResolution(video_context.Get(), video_processor.Get(),
-                                   is_on_battery_power_);
+    if (!layer_tree_->disable_vp_super_resolution()) {
+      if (gpu_vendor_id_ == 0x8086 &&
+          base::FeatureList::IsEnabled(features::kIntelVpSuperResolution)) {
+        ToggleIntelVpSuperResolution(video_context.Get(), video_processor.Get(),
+                                     is_on_battery_power_);
+      }
+      if (gpu_vendor_id_ == 0x10de &&
+          base::FeatureList::IsEnabled(features::kNvidiaVpSuperResolution)) {
+        ToggleNvidiaVpSuperResolution(
+            video_context.Get(), video_processor.Get(), is_on_battery_power_);
+      }
     }
 
     hr = video_context->VideoProcessorBlt(video_processor.Get(),
@@ -1606,6 +1646,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   DCHECK(!swap_chain_size.IsEmpty());
   swap_chain_size_ = swap_chain_size;
   protected_video_type_ = protected_video_type;
+  gpu_vendor_id_ = 0;
 
   ReleaseSwapChainResources();
 
@@ -1723,6 +1764,15 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
   swap_chain_format_ = swap_chain_format;
   SetSwapChainPresentDuration();
+
+  DXGI_ADAPTER_DESC adapter_desc;
+  HRESULT hr = dxgi_adapter->GetDesc(&adapter_desc);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to get adapter desc with error 0x" << std::hex << hr;
+  } else {
+    gpu_vendor_id_ = adapter_desc.VendorId;
+  }
+
   return true;
 }
 

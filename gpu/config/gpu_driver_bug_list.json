@@ -3980,7 +3980,7 @@
     {
       "id": 394,
       "cr_bugs": [1318380],
-      "description": "Don't use video processor super resolution on Intel Gen9 and older GPUs and non-Intel GPUs.",
+      "description": "Only enable video processor super resolution on Intel Gen10+ GPUs and NVIDIA GPUs with 530+ drivers",
       "os": {
         "type" : "win"
       },
@@ -3994,6 +3994,17 @@
           "driver_version": {
             "op": ">",
             "value": "27.20.100.8681"
+          }
+        },
+        {
+          "vendor_id": "0x10de",
+          "os": {
+            "type" : "win"
+          },
+          "driver_version": {
+            "schema": "nvidia_driver",
+            "op": ">",
+            "value": "530.00"
           }
         }
       ],
