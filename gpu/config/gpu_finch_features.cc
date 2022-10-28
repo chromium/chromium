@@ -503,14 +503,8 @@ bool NeedThreadSafeAndroidMedia() {
 }
 
 bool IsANGLEValidationEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  // Skia depends GL validation sometime. Without it, crashes happen in ANGLE,
-  // so we have to enable it. See crbug.com/1268568
-  return UsePassthroughCommandDecoder();
-#else
   return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation) &&
          UsePassthroughCommandDecoder();
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
