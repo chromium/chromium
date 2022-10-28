@@ -90,16 +90,16 @@ void SchemaRegistryTrackingPolicyProvider::OnUpdatePolicy(
   if (state_ == WAITING_FOR_REFRESH)
     state_ = READY;
 
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
+  PolicyBundle bundle;
   if (state_ == READY) {
-    bundle->CopyFrom(delegate_->policies());
-    schema_map()->FilterBundle(bundle.get(),
+    bundle.CopyFrom(delegate_->policies());
+    schema_map()->FilterBundle(&bundle,
                                /*drop_invalid_component_policies=*/true);
   } else {
     // Always pass on the Chrome policy, even if the components are not ready
     // yet.
     const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, "");
-    bundle->Get(chrome_ns) = delegate_->policies().Get(chrome_ns).Clone();
+    bundle.Get(chrome_ns) = delegate_->policies().Get(chrome_ns).Clone();
   }
 
   UpdatePolicy(std::move(bundle));

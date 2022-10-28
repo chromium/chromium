@@ -37,9 +37,9 @@ class ProxyPolicyProviderTest : public testing::Test {
   MockConfigurationPolicyProvider mock_provider_;
   ProxyPolicyProvider proxy_provider_;
 
-  static std::unique_ptr<PolicyBundle> CopyBundle(const PolicyBundle& bundle) {
-    std::unique_ptr<PolicyBundle> copy(new PolicyBundle());
-    copy->CopyFrom(bundle);
+  static PolicyBundle CopyBundle(const PolicyBundle& bundle) {
+    PolicyBundle copy;
+    copy.CopyFrom(bundle);
     return copy;
   }
 };
@@ -90,7 +90,7 @@ TEST_F(ProxyPolicyProviderTest, RefreshPolicies) {
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(&proxy_provider_));
-  mock_provider_.UpdatePolicy(std::make_unique<PolicyBundle>());
+  mock_provider_.UpdatePolicy(PolicyBundle());
   Mock::VerifyAndClearExpectations(&observer_);
 }
 

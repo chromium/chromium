@@ -214,8 +214,8 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
   const PolicyNamespace chrome_namespaces(POLICY_DOMAIN_CHROME, std::string());
   const PolicyMap& device_policy_map =
       device_policy_service_->GetPolicies(chrome_namespaces);
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle);
-  PolicyMap& user_policy_map = bundle->Get(chrome_namespaces);
+  PolicyBundle bundle;
+  PolicyMap& user_policy_map = bundle.Get(chrome_namespaces);
 
   // The device policies which includes the policy options
   // |kDevicePoliciesWithPolicyOptionsMap| should be applied after

@@ -314,9 +314,8 @@ void PolicyUITest::SetUpInProcessBrowserTestFixture() {
 void PolicyUITest::UpdateProviderPolicyForNamespace(
     const policy::PolicyNamespace& policy_namespace,
     const policy::PolicyMap& policy) {
-  std::unique_ptr<policy::PolicyBundle> bundle =
-      std::make_unique<policy::PolicyBundle>();
-  bundle->Get(policy_namespace) = policy.Clone();
+  policy::PolicyBundle bundle;
+  bundle.Get(policy_namespace) = policy.Clone();
   provider_.UpdatePolicy(std::move(bundle));
 }
 

@@ -80,7 +80,7 @@ void AsyncPolicyLoader::Reload(bool force) {
     return;
   }
 
-  std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>(Load());
+  PolicyBundle bundle = Load();
 
   // Reset so that we get the latest management trustworthiness at the next
   // reload.
@@ -93,7 +93,7 @@ void AsyncPolicyLoader::Reload(bool force) {
   }
 
   // Filter out mismatching policies.
-  schema_map_->FilterBundle(bundle.get(),
+  schema_map_->FilterBundle(&bundle,
                             /*drop_invalid_component_policies=*/true);
 
   update_callback_.Run(std::move(bundle));
@@ -120,7 +120,7 @@ void AsyncPolicyLoader::SetPlatformManagementTrustworthinessAndReload(
   Reload(force);
 }
 
-std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
+PolicyBundle AsyncPolicyLoader::InitialLoad(
     const scoped_refptr<SchemaMap>& schema_map) {
   // This is the first load, early during startup. Use this to record the
   // initial |last_modification_time_|, so that potential changes made before
@@ -132,10 +132,10 @@ std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
     platform_management_trustworthiness_ =
         management_service_->GetManagementAuthorityTrustworthiness();
   }
-  std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>(Load());
+  PolicyBundle bundle = Load();
   platform_management_trustworthiness_.reset();
   // Filter out mismatching policies.
-  schema_map_->FilterBundle(bundle.get(),
+  schema_map_->FilterBundle(&bundle,
                             /*drop_invalid_component_policies=*/true);
   return bundle;
 }

@@ -111,11 +111,11 @@ void CloudPolicyManager::OnComponentCloudPolicyUpdated() {
 void CloudPolicyManager::CheckAndPublishPolicy() {
   if (IsInitializationComplete(POLICY_DOMAIN_CHROME) &&
       !waiting_for_policy_refresh_) {
-    std::unique_ptr<PolicyBundle> bundle(new PolicyBundle);
+    PolicyBundle bundle;
     GetChromePolicy(
-        &bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
+        &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
     if (component_policy_service_)
-      bundle->MergeFrom(component_policy_service_->policy());
+      bundle.MergeFrom(component_policy_service_->policy());
     UpdatePolicy(std::move(bundle));
   }
 }

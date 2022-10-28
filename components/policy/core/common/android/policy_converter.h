@@ -7,11 +7,11 @@
 
 #include <jni.h>
 
-#include <memory>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +23,6 @@ class Value;
 
 namespace policy {
 
-class PolicyBundle;
 class Schema;
 
 namespace android {
@@ -39,7 +38,7 @@ class POLICY_EXPORT PolicyConverter {
 
   // Returns a policy bundle containing all policies collected since the last
   // call to this method.
-  std::unique_ptr<PolicyBundle> GetPolicyBundle();
+  PolicyBundle GetPolicyBundle();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -82,7 +81,7 @@ class POLICY_EXPORT PolicyConverter {
  private:
   const raw_ptr<const Schema> policy_schema_;
 
-  std::unique_ptr<PolicyBundle> policy_bundle_;
+  PolicyBundle policy_bundle_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 

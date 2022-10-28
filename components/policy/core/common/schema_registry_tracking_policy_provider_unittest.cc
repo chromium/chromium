@@ -89,9 +89,9 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, PassOnChromePolicy) {
                             nullptr);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(&schema_registry_tracking_provider_));
-  std::unique_ptr<PolicyBundle> delegate_bundle(new PolicyBundle);
-  delegate_bundle->CopyFrom(bundle);
-  delegate_bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"))
+  PolicyBundle delegate_bundle;
+  delegate_bundle.CopyFrom(bundle);
+  delegate_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"))
       .Set("foo", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
            POLICY_SOURCE_CLOUD, base::Value("not visible"), nullptr);
   mock_provider_.UpdatePolicy(std::move(delegate_bundle));
@@ -121,9 +121,9 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, SchemaReadyWithComponents) {
   PolicyMap policy_map;
   policy_map.Set("foo", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                  POLICY_SOURCE_CLOUD, base::Value("omg"), nullptr);
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, "")) = policy_map.Clone();
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz")) =
+  PolicyBundle bundle;
+  bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, "")) = policy_map.Clone();
+  bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz")) =
       policy_map.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(&schema_registry_tracking_provider_));
   mock_provider_.UpdatePolicy(std::move(bundle));
@@ -207,8 +207,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, RemoveAndAddComponent) {
   PolicyBundle platform_policy;
   platform_policy.Get(ns).Set("foo", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                               POLICY_SOURCE_CLOUD, base::Value("omg"), nullptr);
-  std::unique_ptr<PolicyBundle> copy(new PolicyBundle);
-  copy->CopyFrom(platform_policy);
+  PolicyBundle copy;
+  copy.CopyFrom(platform_policy);
   EXPECT_CALL(observer_, OnUpdatePolicy(_));
   mock_provider_.UpdatePolicy(std::move(copy));
   Mock::VerifyAndClearExpectations(&observer_);
@@ -229,8 +229,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, RemoveAndAddComponent) {
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(_));
-  copy = std::make_unique<PolicyBundle>();
-  copy->CopyFrom(platform_policy);
+  copy = PolicyBundle();
+  copy.CopyFrom(platform_policy);
   mock_provider_.UpdatePolicy(std::move(copy));
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_TRUE(

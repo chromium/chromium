@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_ASYNC_POLICY_LOADER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_ASYNC_POLICY_LOADER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -71,8 +69,7 @@ class POLICY_EXPORT AsyncPolicyLoader {
   // Used by the AsyncPolicyProvider to do the initial Load(). The first load
   // is also used to initialize |last_modification_time_| and
   // |schema_map_|.
-  std::unique_ptr<PolicyBundle> InitialLoad(
-      const scoped_refptr<SchemaMap>& schemas);
+  PolicyBundle InitialLoad(const scoped_refptr<SchemaMap>& schemas);
 
   // Implementations should invoke Reload() when a change is detected. This
   // must be invoked from the background thread and will trigger a Load(),
@@ -98,8 +95,7 @@ class POLICY_EXPORT AsyncPolicyLoader {
   // Allow AsyncPolicyProvider to call Init().
   friend class AsyncPolicyProvider;
 
-  typedef base::RepeatingCallback<void(std::unique_ptr<PolicyBundle>)>
-      UpdateCallback;
+  using UpdateCallback = base::RepeatingCallback<void(PolicyBundle)>;
 
   // Used by the AsyncPolicyProvider to install the |update_callback_|.
   // Invoked on the background thread.

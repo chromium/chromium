@@ -66,12 +66,12 @@ RestrictedMGSPolicyProvider::Create() {
 void RestrictedMGSPolicyProvider::RefreshPolicies() {}
 
 void RestrictedMGSPolicyProvider::UpdatePolicyBundle() {
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
+  PolicyBundle bundle;
   weak_factory_.InvalidateWeakPtrs();
-  bundle->CopyFrom(policies());
+  bundle.CopyFrom(policies());
 
   PolicyMap& chrome_policy =
-      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+      bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   if (IsDeviceRestrictedManagedGuestSessionEnabled())
     ApplyRestrictedManagedGuestSessionOverride(&chrome_policy);
 

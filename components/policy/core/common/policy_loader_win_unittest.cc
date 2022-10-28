@@ -411,9 +411,8 @@ class PolicyLoaderWinTest : public PolicyTestBase {
     PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
                            PlatformManagementService::GetInstance(),
                            kTestPolicyKey);
-    std::unique_ptr<PolicyBundle> loaded(
-        loader.InitialLoad(schema_registry_.schema_map()));
-    return loaded->Equals(expected);
+    PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+    return loaded.Equals(expected);
   }
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;

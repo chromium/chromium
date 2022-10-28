@@ -107,8 +107,7 @@ void AsyncPolicyProvider::ReloadAfterRefreshSync() {
                                 base::Unretained(loader_.get()), schema_map()));
 }
 
-void AsyncPolicyProvider::OnLoaderReloaded(
-    std::unique_ptr<PolicyBundle> bundle) {
+void AsyncPolicyProvider::OnLoaderReloaded(PolicyBundle bundle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   first_policies_loaded_ = true;
   // Only propagate policy updates if there are no pending refreshes, and if
@@ -121,7 +120,7 @@ void AsyncPolicyProvider::OnLoaderReloaded(
 void AsyncPolicyProvider::LoaderUpdateCallback(
     scoped_refptr<base::SingleThreadTaskRunner> runner,
     base::WeakPtr<AsyncPolicyProvider> weak_this,
-    std::unique_ptr<PolicyBundle> bundle) {
+    PolicyBundle bundle) {
   runner->PostTask(FROM_HERE,
                    base::BindOnce(&AsyncPolicyProvider::OnLoaderReloaded,
                                   weak_this, std::move(bundle)));

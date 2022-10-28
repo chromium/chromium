@@ -49,7 +49,7 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   void ReloadAfterRefreshSync();
 
   // Invoked with the latest bundle loaded by the |loader_|.
-  void OnLoaderReloaded(std::unique_ptr<PolicyBundle> bundle);
+  void OnLoaderReloaded(PolicyBundle bundle);
 
   // Callback passed to the loader that it uses to pass back the current policy
   // bundle to the provider. This is invoked on the background thread and
@@ -58,7 +58,7 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   static void LoaderUpdateCallback(
       scoped_refptr<base::SingleThreadTaskRunner> runner,
       base::WeakPtr<AsyncPolicyProvider> weak_this,
-      std::unique_ptr<PolicyBundle> bundle);
+      PolicyBundle bundle);
 
   // The |loader_| that does the platform-specific policy loading. It lives
   // on the background thread but is owned by |this|.

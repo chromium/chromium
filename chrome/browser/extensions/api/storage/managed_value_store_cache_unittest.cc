@@ -95,7 +95,7 @@ class PolicyBuilder {
   PolicyBuilder& AddMandatoryPolicy(scoped_refptr<const Extension> extension,
                                     const std::string& key,
                                     const std::string& value) {
-    bundle_->Get({domain_, extension->id()})
+    bundle_.Get({domain_, extension->id()})
         .Set(key, policy::POLICY_LEVEL_MANDATORY, kAnyPolicyScope,
              kAnyPolicySource, base::Value(value), nullptr);
     return *this;
@@ -104,7 +104,7 @@ class PolicyBuilder {
   PolicyBuilder& AddRecommendedPolicy(scoped_refptr<const Extension> extension,
                                       const std::string& key,
                                       const std::string& value) {
-    bundle_->Get({domain_, extension->id()})
+    bundle_.Get({domain_, extension->id()})
         .Set(key, policy::POLICY_LEVEL_RECOMMENDED, kAnyPolicyScope,
              kAnyPolicySource, base::Value(value), nullptr);
     return *this;
@@ -114,20 +114,19 @@ class PolicyBuilder {
                                    policy::PolicyDomain domain,
                                    const std::string& key,
                                    const std::string& value) {
-    bundle_->Get({domain, extension->id()})
+    bundle_.Get({domain, extension->id()})
         .Set(key, policy::POLICY_LEVEL_MANDATORY, kAnyPolicyScope,
              kAnyPolicySource, base::Value(value), nullptr);
     return *this;
   }
 
-  std::unique_ptr<policy::PolicyBundle> Build() { return std::move(bundle_); }
+  policy::PolicyBundle Build() { return std::move(bundle_); }
 
  private:
   // The domain that will be used for any policy added (unless explicitly
   // specified otherwise)
   const policy::PolicyDomain domain_;
-  std::unique_ptr<policy::PolicyBundle> bundle_ =
-      std::make_unique<policy::PolicyBundle>();
+  policy::PolicyBundle bundle_;
 };
 
 class FakeSettingsObserver {
@@ -236,7 +235,7 @@ class ManagedValueStoreCacheTest : public testing::Test {
 
   // Sends the new policy values to the policy provider, and wait until the
   // policy has been applied.
-  void UpdatePolicy(std::unique_ptr<policy::PolicyBundle> new_policy) {
+  void UpdatePolicy(policy::PolicyBundle new_policy) {
     EXPECT_NE(cache_, nullptr) << "Call CreateCache() first";
     policy_provider().UpdatePolicy(std::move(new_policy));
     observer().WaitForPolicyUpdate();

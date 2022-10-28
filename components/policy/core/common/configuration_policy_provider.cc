@@ -48,13 +48,8 @@ bool ConfigurationPolicyProvider::IsFirstPolicyLoadComplete(
   return true;
 }
 
-void ConfigurationPolicyProvider::UpdatePolicy(
-    std::unique_ptr<PolicyBundle> bundle) {
-  if (bundle) {
-    policy_bundle_.Swap(bundle.get());
-  } else {
-    policy_bundle_.Clear();
-  }
+void ConfigurationPolicyProvider::UpdatePolicy(PolicyBundle bundle) {
+  policy_bundle_ = std::move(bundle);
   for (auto& observer : observer_list_)
     observer.OnUpdatePolicy(this);
 }

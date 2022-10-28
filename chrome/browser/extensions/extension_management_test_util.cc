@@ -334,12 +334,12 @@ void ExtensionManagementPrefUpdaterBase::RemoveStringFromList(
 
 ExtensionManagementPolicyUpdater::ExtensionManagementPolicyUpdater(
     policy::MockConfigurationPolicyProvider* policy_provider)
-    : provider_(policy_provider), policies_(new policy::PolicyBundle) {
-  policies_->CopyFrom(provider_->policies());
+    : provider_(policy_provider) {
+  policies_.CopyFrom(provider_->policies());
   const base::Value* policy_value =
       policies_
-          ->Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
-                                        std::string()))
+          .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                       std::string()))
           .GetValue(policy::key::kExtensionSettings, base::Value::Type::DICT);
   base::Value::Dict dict;
   if (policy_value && policy_value->is_dict()) {
@@ -350,8 +350,7 @@ ExtensionManagementPolicyUpdater::ExtensionManagementPolicyUpdater(
 
 ExtensionManagementPolicyUpdater::~ExtensionManagementPolicyUpdater() {
   policies_
-      ->Get(
-          policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()))
+      .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()))
       .Set(policy::key::kExtensionSettings, policy::POLICY_LEVEL_MANDATORY,
            policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
            base::Value(TakePref()), nullptr);

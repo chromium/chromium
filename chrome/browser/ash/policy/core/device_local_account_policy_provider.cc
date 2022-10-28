@@ -109,17 +109,17 @@ void DeviceLocalAccountPolicyProvider::ReportPolicyRefresh(bool success) {
 
 void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
   DeviceLocalAccountPolicyBroker* broker = GetBroker();
-  std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
+  PolicyBundle bundle;
   if (broker) {
     store_initialized_ |= broker->core()->store()->is_initialized();
     if (!waiting_for_policy_refresh_) {
       // Copy policy from the broker.
-      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
           broker->core()->store()->policy_map().Clone();
       external_data_manager_ = broker->external_data_manager();
 
       if (broker->component_policy_service())
-        bundle->MergeFrom(broker->component_policy_service()->policy());
+        bundle.MergeFrom(broker->component_policy_service()->policy());
     } else {
       // Wait for the refresh to finish.
       return;
@@ -128,11 +128,11 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
     // Keep existing policy, but do send an update.
     waiting_for_policy_refresh_ = false;
     weak_factory_.InvalidateWeakPtrs();
-    bundle->CopyFrom(policies());
+    bundle.CopyFrom(policies());
   }
 
   PolicyMap& chrome_policy =
-      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+      bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   // Apply the defaults for policies that haven't been configured by the
   // administrator given that this is an enterprise user.
   SetEnterpriseUsersDefaults(&chrome_policy);

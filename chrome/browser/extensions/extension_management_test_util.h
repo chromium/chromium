@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
+#include "components/policy/core/common/policy_bundle.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_id.h"
 
@@ -173,7 +174,7 @@ class ExtensionManagementPolicyUpdater
 
  private:
   raw_ptr<policy::MockConfigurationPolicyProvider> provider_;
-  std::unique_ptr<policy::PolicyBundle> policies_;
+  policy::PolicyBundle policies_;
 };
 
 }  // namespace extensions
