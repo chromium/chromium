@@ -1671,14 +1671,12 @@ TEST_F(SingleOverlayOnTopTest, AcceptBlending) {
   EXPECT_FALSE(overlay_damage_rect.IsEmpty());
 }
 
-TEST_F(SingleOverlayOnTopTest, AcceptBackgroundColorWithoutAlpha) {
+TEST_F(SingleOverlayOnTopTest, AcceptBackgroundColorWithoutBlending) {
   auto pass = CreateRenderPass();
   TextureDrawQuad* quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  // Alpha is zero but rgb components are not; this only makes sense in
-  // non-premult alpha.
-  quad->background_color = {1, 0.3, 0.7, 0};
+  quad->background_color = SkColors::kBlack;
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -1695,12 +1693,13 @@ TEST_F(SingleOverlayOnTopTest, AcceptBackgroundColorWithoutAlpha) {
   EXPECT_EQ(1U, candidate_list.size());
 }
 
-TEST_F(SingleOverlayOnTopTest, RejectBackgroundColorForNonOpaqueFormat) {
+TEST_F(SingleOverlayOnTopTest, RejectBackgroundColorWithBlending) {
   auto pass = CreateRenderPass();
   TextureDrawQuad* quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
   quad->background_color = SkColors::kBlack;
+  quad->needs_blending = true;
 
   OverlayCandidateList candidate_list;
   OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -2142,18 +2141,15 @@ TEST_F(UnderlayTest, AllowsOpaqueCandidates) {
   ASSERT_EQ(1U, candidate_list.size());
 }
 
-TEST_F(UnderlayTest, AllowRoundedCornerRectWithBackgroundColorOpaqueFormat) {
+TEST_F(UnderlayTest, AllowRoundedCornerRectWithBackgroundColor) {
   auto pass = CreateRenderPass();
   auto* sqs = pass->shared_quad_state_list.back();
   sqs->mask_filter_info =
       gfx::MaskFilterInfo(gfx::RectF(kOverlayRect), gfx::RoundedCornersF(10.f),
                           gfx::LinearGradient::GetEmpty());
-
-  auto* quad = CreateCandidateQuadAt(
+  auto* quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
-      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
-      gfx::Rect(kDisplaySize), gfx::ProtectedVideoType::kClear,
-      YUV_420_BIPLANAR);
+      child_provider_.get(), sqs, pass.get());
   quad->needs_blending = false;
   // Any color is valid for this tests except transparent.
   quad->background_color = SkColors::kYellow;

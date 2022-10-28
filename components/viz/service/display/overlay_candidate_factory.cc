@@ -5,7 +5,6 @@
 #include "components/viz/service/display/overlay_candidate_factory.h"
 
 #include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -32,22 +31,13 @@ namespace viz {
 
 namespace {
 
-constexpr auto kOverlayFormats = base::MakeFixedFlatSet<gfx::BufferFormat>(
-    {gfx::BufferFormat::RGBX_8888, gfx::BufferFormat::RGBA_8888,
-     gfx::BufferFormat::BGRX_8888, gfx::BufferFormat::BGRA_8888,
-     gfx::BufferFormat::BGR_565, gfx::BufferFormat::YUV_420_BIPLANAR,
-     gfx::BufferFormat::P010});
+const gfx::BufferFormat kOverlayFormats[] = {
+    gfx::BufferFormat::RGBX_8888, gfx::BufferFormat::RGBA_8888,
+    gfx::BufferFormat::BGRX_8888, gfx::BufferFormat::BGRA_8888,
+    gfx::BufferFormat::BGR_565,   gfx::BufferFormat::YUV_420_BIPLANAR,
+    gfx::BufferFormat::P010};
 
 enum Axis { NONE, AXIS_POS_X, AXIS_NEG_X, AXIS_POS_Y, AXIS_NEG_Y };
-
-constexpr auto kOpaqueFormats = base::MakeFixedFlatSet<gfx::BufferFormat>(
-    {gfx::BufferFormat::RGBX_8888, gfx::BufferFormat::BGRX_8888,
-     gfx::BufferFormat::BGR_565, gfx::BufferFormat::YUV_420_BIPLANAR,
-     gfx::BufferFormat::P010});
-
-bool IsOpaque(const gfx::BufferFormat& format) {
-  return base::Contains(kOpaqueFormats, format);
-}
 
 Axis VectorToAxis(const gfx::Vector3dF& vec) {
   if (!cc::MathUtil::IsWithinEpsilon(vec.z(), 0.f))
@@ -503,26 +493,22 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
   if (quad->nearest_neighbor)
     return CandidateStatus::kFailNearFilter;
 
+  if (quad->background_color != SkColors::kTransparent &&
+      (quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter() ||
+       quad->shared_quad_state->mask_filter_info.HasGradientMask())) {
+    // This path can also be used by other platforms like Ash/Chrome, which does
+    // not support overlays with background color. Only LaCros/Wayland supports
+    // that.
+    if (!is_delegated_context_)
+      return CandidateStatus::kFailBlending;
+    candidate.color = quad->background_color;
+  }
+
   candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 
   auto rtn = FromDrawQuadResource(quad, quad->resource_id(), quad->y_flipped,
                                   candidate);
   if (rtn == CandidateStatus::kSuccess) {
-    // Background color applies through the transparency of the texture draw
-    // quad buffer. It is independent of any blending or opaqueness flags.
-    // Specifically it is independent of |shared_quad_state| flags of
-    // |blend_mode| and |are_contents_opaque |.
-    if (quad->background_color.fA != 0.f && !IsOpaque(candidate.format)) {
-      // This path can also be used by other platforms like Ash/Chrome, which
-      // does not support overlays with background color. Only LaCros/Wayland
-      // supports that.
-      // TODO(https://crbug.com/1366397): Support |background_color| for real
-      // hardware overlays.
-      if (!is_delegated_context_)
-        return CandidateStatus::kFailBlending;
-      candidate.color = quad->background_color;
-    }
-
     // Only handle clip rect for required overlays
     if (!is_delegated_context_ && candidate.requires_overlay)
       HandleClipAndSubsampling(candidate);
