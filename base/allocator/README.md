@@ -1,7 +1,7 @@
 This document describes how malloc / new calls are routed in the various Chrome
 platforms.
 
-Bare in mind that the chromium codebase does not always just use `malloc()`.
+Bear in mind that the chromium codebase does not always just use `malloc()`.
 Some examples:
  - Large parts of the renderer (Blink) use two home-brewed allocators,
    PartitionAlloc and BlinkGC (Oilpan).
@@ -70,7 +70,7 @@ a central place.
  - Full documentation: [Allocator shim design doc][url-allocator-shim].
  - Current state: Available and enabled by default on Android, CrOS, Linux,
    Mac OS and Windows.
- - Tracking bug: [https://crbug.com/550886][crbug.com/550886].
+ - Tracking bug: [crbug.com/550886](https://crbug.com/550886).
  - Build-time flag: `use_allocator_shim`.
 
 **Overview of the unified allocator shim**
