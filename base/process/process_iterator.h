@@ -134,10 +134,16 @@ class BASE_EXPORT ProcessIterator {
 // on the current machine that were started from the given executable
 // name.  To use, create an instance and then call NextProcessEntry()
 // until it returns false.
+// If `use_prefix_match` is true, this iterates all processes that
+// begin with `executable_name`; for example, "Google Chrome Helper" would
+// match "Google Chrome Helper", "Google Chrome Helper (Renderer)" and
+// "Google Chrome Helper (GPU)" if `use_prefix_match` is true and otherwise
+// only "Google Chrome Helper". This option is only implemented on Mac.
 class BASE_EXPORT NamedProcessIterator : public ProcessIterator {
  public:
   NamedProcessIterator(const FilePath::StringType& executable_name,
-                       const ProcessFilter* filter);
+                       const ProcessFilter* filter,
+                       bool use_prefix_match = false);
 
   NamedProcessIterator(const NamedProcessIterator&) = delete;
   NamedProcessIterator& operator=(const NamedProcessIterator&) = delete;
@@ -149,6 +155,7 @@ class BASE_EXPORT NamedProcessIterator : public ProcessIterator {
 
  private:
   FilePath::StringType executable_name_;
+  const bool use_prefix_match_;
 };
 
 // Returns the number of processes on the machine that are running from the

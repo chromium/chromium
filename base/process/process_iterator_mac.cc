@@ -131,8 +131,10 @@ bool ProcessIterator::CheckForNextProcess() {
 }
 
 bool NamedProcessIterator::IncludeEntry() {
-  return (executable_name_ == entry().exe_file() &&
-          ProcessIterator::IncludeEntry());
+  const bool name_match =
+      use_prefix_match_ ? base::StartsWith(entry().exe_file(), executable_name_)
+                        : executable_name_ == entry().exe_file();
+  return name_match && ProcessIterator::IncludeEntry();
 }
 
 }  // namespace base

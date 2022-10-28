@@ -113,7 +113,7 @@ void MemoryDetails::CollectProcessData(
   // Get PIDs of the helper.
   {
     base::NamedProcessIterator helper_it(chrome::kHelperProcessExecutableName,
-                                         NULL);
+                                         NULL, /*use_prefix_match=*/true);
     while (const base::ProcessEntry* entry = helper_it.NextProcessEntry()) {
       all_pids.push_back(entry->pid());
     }
