@@ -25,6 +25,9 @@ struct AppStorage {
 };
 
 // Describes ARC app.
+// The list of AppInfo sent by AppInstance contains Android apps which can work
+// as ChromeOS apps (e.g. can handle CATEGORY_LAUNCHER ACTION_MAIN intents).
+// This is different from ArcPackageInfo.
 struct AppInfo {
   string name;
   string package_name;
@@ -85,6 +88,9 @@ struct WindowLayout {
 };
 
 // Describes ARC package.
+// The list of ArcPackageInfo sent by AppInstance contains all the installed
+// Android packages including ones other than launchable apps (e.g. Google Play
+// Services). This is different from AppInfo.
 struct ArcPackageInfo {
   string package_name;
   int32 package_version;
