@@ -207,7 +207,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedHeaderItem() {
   header_item->setAttribute(html_names::kRoleAttr, "button");
   header_item->setAttribute(html_names::kAriaLabelAttr,
                             AtomicString(GetLocale().QueryString(
-                                IDS_AX_MEDIA_HIDE_PLAYBACK_SPEED_MENU_BUTTON)));
+                                IDS_AX_MEDIA_BACK_TO_OPTIONS_BUTTON)));
   header_item->setTabIndex(0);
   return header_item;
 }

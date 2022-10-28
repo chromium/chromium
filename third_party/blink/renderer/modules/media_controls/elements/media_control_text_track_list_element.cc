@@ -185,10 +185,9 @@ Element* MediaControlTextTrackListElement::CreateTextTrackHeaderItem() {
                    GetLocale().QueryString(
                        IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS_SUBMENU_TITLE)));
   header_item->setAttribute(html_names::kRoleAttr, "button");
-  header_item->setAttribute(
-      html_names::kAriaLabelAttr,
-      AtomicString(GetLocale().QueryString(
-          IDS_AX_MEDIA_HIDE_CLOSED_CAPTIONS_MENU_BUTTON)));
+  header_item->setAttribute(html_names::kAriaLabelAttr,
+                            AtomicString(GetLocale().QueryString(
+                                IDS_AX_MEDIA_BACK_TO_OPTIONS_BUTTON)));
   header_item->setTabIndex(0);
   return header_item;
 }

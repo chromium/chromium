@@ -32,7 +32,7 @@ video.onloadeddata = t.step_func(_ => {
       var captionsList = textTrackMenu(video);
       assert_equals(captionsList.getAttribute('aria-label'), 'Options');
       var trackListHeader = textTrackListHeader(video);
-      assert_equals(trackListHeader.getAttribute('aria-label'), 'hide closed captions menu');
+      assert_equals(trackListHeader.getAttribute('aria-label'), 'back to options');
 
       var offTrack = textTrackListItemAtIndex(video, -1);
       assert_equals(offTrack.innerText, 'Off');

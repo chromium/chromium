@@ -29,7 +29,7 @@ video.onloadeddata = t.step_func(_ => {
       var playbackSpeedsList = playbackSpeedMenu(video);
       assert_equals(playbackSpeedsList.getAttribute('aria-label'), 'Options');
       var listHeader = playbackSpeedListHeader(video);
-      assert_equals(listHeader.getAttribute('aria-label'), 'hide playback speed menu');
+      assert_equals(listHeader.getAttribute('aria-label'), 'back to options');
 
       const playbackSpeeds = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2];
       playbackSpeeds.forEach(function(playbackSpeed, index) {

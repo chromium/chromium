@@ -498,16 +498,12 @@ below:
         show closed captions menu
       </message>
 
-      <message name="IDS_AX_MEDIA_HIDE_CLOSED_CAPTIONS_MENU_BUTTON" desc="Accessibility label for hide closed captions menu button">
-        hide closed captions menu
-      </message>
-
       <message name="IDS_AX_MEDIA_SHOW_PLAYBACK_SPEED_MENU_BUTTON" desc="Accessibility label for show playback speed menu button">
         show playback speed menu
       </message>
 
-      <message name="IDS_AX_MEDIA_HIDE_PLAYBACK_SPEED_MENU_BUTTON" desc="Accessibility label for hide playback speed menu button">
-        hide playback speed menu
+      <message name="IDS_AX_MEDIA_BACK_TO_OPTIONS_BUTTON" desc="Accessibility label for back to options button">
+        back to options
       </message>
 
       <message name="IDS_AX_MEDIA_CAST_OFF_BUTTON" desc="Accessibility label for remote playback button">
