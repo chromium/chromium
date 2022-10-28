@@ -148,6 +148,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ambient-subpage-ui-change",
+    "owners": [ "assistive-eng@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 109

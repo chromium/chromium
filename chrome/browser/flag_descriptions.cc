@@ -4703,6 +4703,12 @@ const char kAlwaysEnableHdcpDefault[] = "Default";
 const char kAlwaysEnableHdcpType0[] = "Type 0";
 const char kAlwaysEnableHdcpType1[] = "Type 1";
 
+const char kAmbientSubpageUIChangeName[] =
+    "Show the revised UI for ambient mode subpage in Personalization Hub";
+const char kAmbientSubpageUIChangeDescription[] =
+    "Implement the new UI design for the ambient mode subpage in "
+    "Personalization Hub.";
+
 const char kAmbientModeThrottleAnimationName[] =
     "Throttle the frame rate of Lottie animations in ambient mode";
 const char kAmbientModeThrottleAnimationDescription[] =

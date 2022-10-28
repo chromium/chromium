@@ -4190,6 +4190,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDarkLightModeKMeansColorName,
      flag_descriptions::kDarkLightModeKMeansColorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDarkLightModeKMeansColor)},
+    {"ambient-subpage-ui-change",
+     flag_descriptions::kAmbientSubpageUIChangeName,
+     flag_descriptions::kAmbientSubpageUIChangeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAmbientSubpageUIChange)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

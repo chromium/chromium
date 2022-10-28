@@ -58887,6 +58887,7 @@ from previous Chrome versions.
   <int value="-1193375480" label="DownloadBubble:enabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
+  <int value="-1191392087" label="AmbientSubpageUIChange:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1191035428" label="LensOnQuickActionSearchWidget:enabled"/>
   <int value="-1190174011" label="enable-hdr"/>
@@ -62991,6 +62992,7 @@ from previous Chrome versions.
   <int value="1279584261" label="enable-carrier-switching"/>
   <int value="1280208275" label="QueryTilesOnStart:disabled"/>
   <int value="1280614081" label="show-overdraw-feedback"/>
+  <int value="1281379527" label="AmbientSubpageUIChange:enabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
   <int value="1283956865" label="force-tablet-mode"/>
