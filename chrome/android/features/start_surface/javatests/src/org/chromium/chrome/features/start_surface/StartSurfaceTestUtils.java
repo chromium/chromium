@@ -333,9 +333,6 @@ public class StartSurfaceTestUtils {
 
         // Toolbar layout view should show.
         onViewWaiting(withId(R.id.toolbar));
-        // The home button shouldn't show on homepage whether it's scrolled or not.
-        onView(withId(R.id.home_button))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
         // The start surface toolbar should be scrolled up and not be displayed.
         onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
