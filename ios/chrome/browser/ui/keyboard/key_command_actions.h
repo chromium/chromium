@@ -46,6 +46,7 @@
 - (void)keyCommand_showLastTab;
 - (void)keyCommand_reportAnIssue;
 - (void)keyCommand_addToReadingList;
+- (void)keyCommand_showReadingList;
 - (void)keyCommand_goToTabGrid;
 - (void)keyCommand_clearBrowsingData;
 

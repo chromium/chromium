@@ -135,6 +135,7 @@ TEST_F(KeyCommandsProviderTest, ImplementsActions) {
   [provider_ keyCommand_showLastTab];
   [provider_ keyCommand_reportAnIssue];
   [provider_ keyCommand_addToReadingList];
+  [provider_ keyCommand_showReadingList];
   [provider_ keyCommand_goToTabGrid];
   [provider_ keyCommand_clearBrowsingData];
 }

@@ -63,6 +63,7 @@
                                        children:@[
                                          UIKeyCommand.cr_showBookmarks,
                                          UIKeyCommand.cr_addToBookmarks,
+                                         UIKeyCommand.cr_showReadingList,
                                          UIKeyCommand.cr_addToReadingList,
                                        ]];
   [builder insertSiblingMenu:bookmarksMenu

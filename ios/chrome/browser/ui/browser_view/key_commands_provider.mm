@@ -411,6 +411,10 @@
   // TODO(crbug.com/1378944): Implement this action.
 }
 
+- (void)keyCommand_showReadingList {
+  [_browserCoordinatorCommandsHandler showReadingList];
+}
+
 - (void)keyCommand_goToTabGrid {
   // TODO(crbug.com/1378942): Implement this action.
 }

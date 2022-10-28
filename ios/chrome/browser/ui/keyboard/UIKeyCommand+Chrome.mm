@@ -431,6 +431,13 @@ NSString* Delete(void) {
                            titleID:IDS_IOS_KEYBOARD_ADD_TO_READING_LIST];
 }
 
++ (UIKeyCommand*)cr_showReadingList {
+  return [self cr_commandWithInput:@"r"
+                     modifierFlags:AltCommand
+                            action:@selector(keyCommand_showReadingList)
+                           titleID:IDS_IOS_KEYBOARD_SHOW_READING_LIST];
+}
+
 + (UIKeyCommand*)cr_goToTabGrid {
   return [self cr_commandWithInput:@"\\"
                      modifierFlags:ShiftCommand

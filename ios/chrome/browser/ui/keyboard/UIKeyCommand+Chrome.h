@@ -64,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reportAnIssue;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_reportAnIssue_2;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_addToReadingList;
+@property(class, nonatomic, readonly) UIKeyCommand* cr_showReadingList;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_goToTabGrid;
 @property(class, nonatomic, readonly) UIKeyCommand* cr_clearBrowsingData;
 
