@@ -91,19 +91,16 @@ source_set("browser") {
     "//components/os_crypt",
     "//components/payments/content/icon",
     "//components/payments/mojom",
-    "//components/services/screen_ai/buildflags",
-    "//components/sqlite_proto",
-
-    # TODO(crbug.com/1327384): Remove `permissions_common`.
-    "//components/permissions:permissions_common",
     "//components/power_scheduler",
     "//components/services/filesystem:lib",
     "//components/services/quarantine:quarantine",
+    "//components/services/screen_ai/buildflags",
     "//components/services/storage",
     "//components/services/storage:filesystem_proxy_factory",
     "//components/services/storage/dom_storage:local_storage_proto",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
+    "//components/sqlite_proto",
     "//components/system_media_controls",
     "//components/tracing:startup_tracing",
     "//components/ui_devtools",
@@ -1314,6 +1311,12 @@ source_set("browser") {
     "network/browser_online_state_observer.cc",
     "network/browser_online_state_observer.h",
     "network/cookie_store_factory.cc",
+    "network/cross_origin_embedder_policy_reporter.cc",
+    "network/cross_origin_embedder_policy_reporter.h",
+    "network/cross_origin_opener_policy_reporter.cc",
+    "network/cross_origin_opener_policy_reporter.h",
+    "network/http_cache_backend_file_operations_factory.cc",
+    "network/http_cache_backend_file_operations_factory.h",
     "network/network_errors_listing_ui.cc",
     "network/network_errors_listing_ui.h",
     "network/network_quality_observer_impl.cc",
@@ -1385,16 +1388,6 @@ source_set("browser") {
     "permissions/permission_service_context.h",
     "permissions/permission_service_impl.cc",
     "permissions/permission_service_impl.h",
-
-    # TODO(crbug.com/1327384): Remove `permission_util.*`.
-    "network/cross_origin_embedder_policy_reporter.cc",
-    "network/cross_origin_embedder_policy_reporter.h",
-    "network/cross_origin_opener_policy_reporter.cc",
-    "network/cross_origin_opener_policy_reporter.h",
-    "network/http_cache_backend_file_operations_factory.cc",
-    "network/http_cache_backend_file_operations_factory.h",
-    "permissions/permission_util.cc",
-    "permissions/permission_util.h",
     "picture_in_picture/document_picture_in_picture_window_controller_impl.cc",
     "picture_in_picture/document_picture_in_picture_window_controller_impl.h",
     "picture_in_picture/picture_in_picture_service_impl.cc",
@@ -2275,6 +2268,17 @@ source_set("browser") {
     "worker_host/worker_script_loader_factory.h",
   ]
 
+  # TODO(crbug.com/1327384): Remove `permissions_common`.
+  # DO NOT add unrelated entries to this block.
+  deps += [ "//components/permissions:permissions_common" ]
+
+  # TODO(crbug.com/1327384): Remove `permission_util.*`.
+  # DO NOT add unrelated entries to this block.
+  sources += [
+    "permissions/permission_util.cc",
+    "permissions/permission_util.h",
+  ]
+
   if (use_viz_debugger) {
     sources += [
       "$target_gen_dir/devtools/protocol/visual_debugger.cc",
@@ -2285,10 +2289,6 @@ source_set("browser") {
   }
   if (toolkit_views) {
     deps += [ "//ui/events" ]
-  }
-
-  if (use_ozone) {
-    deps += [ "//ui/ozone:buildflags" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -3159,7 +3159,10 @@ source_set("browser") {
   }
 
   if (use_ozone) {
-    deps += [ "//ui/ozone" ]
+    deps += [
+      "//ui/ozone",
+      "//ui/ozone:buildflags",
+    ]
   }
 
   if (use_cras) {
