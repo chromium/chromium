@@ -11,7 +11,7 @@ import "components/feed/core/proto/v2/wire/xsurface_content.proto";
 option optimize_for = LITE_RUNTIME;
 
 message Stream {}
-message Cluster {}
+message Group {}
 message PrefetchMetadata {
   optional string uri = 1;
   optional string title = 2;

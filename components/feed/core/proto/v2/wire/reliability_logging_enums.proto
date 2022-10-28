@@ -43,6 +43,8 @@ enum DiscoverLaunchResult {
   DATA_IN_STORE_IS_FOR_ANOTHER_USER = 40;
   NOT_A_WEB_FEED_SUBSCRIBER = 41;
   SWITCHED_FEED_TABS = 42;
+  BACKGROUND_APPLICATION = 53;
+  IN_APP_NAVIGATION_AWAY_FROM_DISCOVER = 54;
 }
 enum DiscoverCardReadCacheResult {
   CACHE_UNSPECIFIED = 0 [deprecated = true];

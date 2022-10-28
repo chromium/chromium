@@ -316,7 +316,7 @@ TEST(StreamModelTest, CommitEphemeralChange) {
   ASSERT_TRUE(store_observer.GetUpdate());
   const StoreUpdate& store_update = *store_observer.GetUpdate();
   ASSERT_EQ(3UL, store_update.operations.size());
-  EXPECT_EQ(feedstore::StreamStructure::CLUSTER,
+  EXPECT_EQ(feedstore::StreamStructure::GROUP,
             store_update.operations[0].structure().type());
   EXPECT_EQ(feedstore::StreamStructure::CONTENT,
             store_update.operations[1].structure().type());

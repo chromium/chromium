@@ -82,7 +82,7 @@ feedstore::StreamStructure MakeStream(int id_number) {
 
 feedstore::StreamStructure MakeCluster(int id_number, ContentId parent) {
   feedstore::StreamStructure result;
-  result.set_type(feedstore::StreamStructure::CLUSTER);
+  result.set_type(feedstore::StreamStructure::GROUP);
   result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
   *result.mutable_content_id() = MakeClusterId(id_number);
   *result.mutable_parent_id() = parent;
@@ -92,7 +92,7 @@ feedstore::StreamStructure MakeCluster(int id_number, ContentId parent) {
 feedstore::StreamStructure MakeNoticeCardCluster(int id_number,
                                                  ContentId parent) {
   feedstore::StreamStructure result;
-  result.set_type(feedstore::StreamStructure::CLUSTER);
+  result.set_type(feedstore::StreamStructure::GROUP);
   result.set_operation(feedstore::StreamStructure::UPDATE_OR_APPEND);
   *result.mutable_content_id() = MakeClusterId(id_number);
   *result.mutable_parent_id() = parent;

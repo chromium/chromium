@@ -191,7 +191,7 @@ message StreamStructure {
     // A leaf node, which provides content.
     CONTENT = 3;
     // An internal tree node, which may have children.
-    CLUSTER = 4;
+    GROUP = 4;
   }
   Type type = 4;
   // Set iff type=CONTENT

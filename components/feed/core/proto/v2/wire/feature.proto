@@ -18,7 +18,7 @@ message Feature {
     UNKNOWN_RENDERABLE_UNIT = 0;
     STREAM = 1;
     CONTENT = 3;
-    CLUSTER = 4;
+    GROUP = 4;
   }
   oneof parent_info {
     ContentId parent_id = 1;
@@ -28,6 +28,6 @@ message Feature {
   optional ExpirationInfo expiration_info = 3;
   optional Stream stream = 185431437;
   optional Content content = 185431439;
-  optional Cluster cluster = 190812910;
+  optional Group group = 190812910;
   optional Token token = 194964015;
 }

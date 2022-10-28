@@ -53,8 +53,8 @@ feedstore::StreamStructure::Type TranslateNodeType(
       return feedstore::StreamStructure::STREAM;
     case feedwire::Feature::CONTENT:
       return feedstore::StreamStructure::CONTENT;
-    case feedwire::Feature::CLUSTER:
-      return feedstore::StreamStructure::CLUSTER;
+    case feedwire::Feature::GROUP:
+      return feedstore::StreamStructure::GROUP;
     default:
       return feedstore::StreamStructure::UNKNOWN_TYPE;
   }
