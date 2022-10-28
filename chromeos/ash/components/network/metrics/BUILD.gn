@@ -26,6 +26,8 @@ source_set("metrics") {
     "connection_results.h",
     "esim_policy_login_metrics_logger.cc",
     "esim_policy_login_metrics_logger.h",
+    "hidden_network_metrics_helper.cc",
+    "hidden_network_metrics_helper.h",
     "network_metrics_helper.cc",
     "network_metrics_helper.h",
     "vpn_network_metrics_helper.cc",
@@ -51,6 +53,7 @@ source_set("unit_tests") {
     "cellular_network_metrics_logger_unittest.cc",
     "connection_info_metrics_logger_unittest.cc",
     "esim_policy_login_metrics_logger_unittest.cc",
+    "hidden_network_metrics_helper_unittest.cc",
     "network_metrics_helper_unittest.cc",
     "vpn_network_metrics_helper_unittest.cc",
   ]
