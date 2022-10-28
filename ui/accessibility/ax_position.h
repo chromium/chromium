@@ -2606,6 +2606,10 @@ class AXPosition {
           parent_affinity = ax::mojom::TextAffinity::kDownstream;
         }
 
+        // There are two cases for which we need to set an upstream affinity on
+        // the parent position:
+        //
+        // Case 1:
         // If the current position is pointing at the end of its anchor, we need
         // to check if the parent position has introduced ambiguity as to
         // whether it refers to the end of a line or the start of the next.
@@ -2621,12 +2625,38 @@ class AXPosition {
         // We could not have checked if the child was at the end of the line,
         // because our "AtEndOfLine" predicate takes into account trailing line
         // breaks, which would create false positives.
+        //
+        // Case 2:
+        // If the current position is followed by a generated newline character,
+        // which is a character that is actually not represented in the text
+        // content of the nodes but should still act as a stop when navigating
+        // to the previous/next character.
+        //
+        // When this is the case, we almost always want to set an upstream
+        // affinity on the `parent_position`. The only exception is when our
+        // current position is contained on a descendant of an empty object,
+        // because an empty object will hide the textual representation of its
+        // descendants, including the generated newline characters, by exposing
+        // a only the empty object character.
+        //
+        // Example:
+        // ++1 kLink "<embedded_object>"
+        // ++++2 kStaticText "hello" IsLineBreakingObject=true
+        // ++++++3 kInlineTextBox "hello"
+        // ++++4 kStaticText "world"
+        // ++++++5 kInlineTextBox "world"
+        //
+        // While there should be a generated newline character at the end of a
+        // position created on node 2, there won't be one represented to the
+        // user because node 1 simply exposes the empty object character and not
+        // its children's text.
 
         AXPositionInstance parent_position =
             CreateTextPosition(*parent_anchor, parent_offset, parent_affinity);
-        if (AtEndOfAnchor() && !parent_position->AtStartOfAnchor() &&
-            !parent_position->AtEndOfAnchor() &&
-            parent_position->AtStartOfLine()) {
+        if ((AtEndOfAnchor() && !parent_position->AtStartOfAnchor() &&
+             !parent_position->AtEndOfAnchor() &&
+             parent_position->AtStartOfLine()) ||
+            (!IsEmbeddedObjectInParent() && IsFollowedByGeneratedNewline())) {
           parent_position->affinity_ = ax::mojom::TextAffinity::kUpstream;
         }
         return parent_position;
@@ -2662,6 +2692,152 @@ class AXPosition {
         base::BindRepeating(&DefaultAbortMovePredicate));
   }
 
+  AXPositionInstance CreateNextPositionAtAnchorWithText() const {
+    AXPositionInstance text_position = AsLeafTextPosition();
+    do {
+      text_position = text_position->CreateNextLeafTextPosition(
+          base::BindRepeating(&AbortMoveAtRootBoundary));
+    } while (!text_position->IsNullPosition() &&
+             (text_position->IsIgnored() || !text_position->MaxTextOffset()));
+
+    return text_position;
+  }
+
+  AXPositionInstance CreatePreviousPositionAtAnchorWithText() const {
+    AXPositionInstance text_position = AsLeafTextPosition();
+    do {
+      text_position = text_position->CreatePreviousLeafTextPosition(
+          base::BindRepeating(&AbortMoveAtRootBoundary));
+    } while (!text_position->IsNullPosition() &&
+             (text_position->IsIgnored() || !text_position->MaxTextOffset()));
+
+    return text_position->CreatePositionAtEndOfAnchor();
+  }
+
+  // Generated newline characters are not part of any AXNode in the AXTree. They
+  // are appended to the accessible textual representation exposed to ATs in
+  // AXRange::GetText. They are necessary to expose the implicit newlines
+  // created from the layout breaks to screen reader users. For example, the
+  // following HTML will create an implicit line break after "hello":
+  //
+  // <div contenteditable>
+  //     <div>hello</div>
+  //     <div>world</div>
+  // </div>
+  //
+  // Even though there is not explicit line break in this template, the text
+  // returned for this contenteditable is "hello\nworld". In order to allow
+  // screen reader users to navigate (either using the caret or the controls
+  // built-in the AT), we need to create character stops around these
+  // generated characters.
+  //
+  // We can only create character stops around generated newline characters
+  // when empty objects are represented in the accessible text (ie. when the
+  // behavior is set to `AXEmbeddedObjectBehavior::kExposeCharacter`).
+  // Otherwise, there's a risk that `CreateParentPosition` will create a
+  // position that doesn't point to the same character. This is because a
+  // position located right before a generated newline character will be
+  // represented in the parent ancestor with an upstream affinity.
+  //
+  // Let's consider this AXTree:
+  // 1 root
+  // ++2 button
+  // ++3 checkbox
+  // ++4 static text
+  // ++++5 inline text box "abc"
+  //
+  // The text representation for the entire document, including the generated
+  // newlines, will be "\n\nabc" if the empty objects do not expose the empty
+  // object character. If we were to allow character stops at generated
+  // newline characters, it would be possible to create a next and previous
+  // position located before/after a generated newline character. However,
+  // creating an equivalent position in an ancestor would potentially lead to
+  // an incorrect position.
+  //
+  // Example:
+  // leaf_position_1: anchor=2, text_offset=0, affinity=downstream
+  // leaf_position_2: anchor=3, text_offset=0, affinity=downstream
+  //
+  // `leaf_position_1` and `leaf_position_2` should both return true for
+  // `AtStartOfParagraph` and `AtEndOfParagraph`. Calling
+  // `CreateParentPosition` on each of those will respectively create:
+  // parent_position_1: anchor=1, text_offset=0, affinity=upstream
+  // parent_position_1: anchor=1, text_offset=0, affinity=upstream
+  //
+  // ...which are both the same. `CreateParentPosition` is relatively important
+  // when it comes to moving the position by character because
+  // `CreatePreviousCharacterPosition` uses it in many cases to create the
+  // previous position on the same anchor as the original position.
+  //
+  // This is a quirk of the current implementation which cannot easily be fixed,
+  // because when object replacement characters are missing from empty objects
+  // (sucha as a checkbox without a label, etc.) any leaf equivalent position
+  // from one of the objects' ancestors would skip the empty object and create
+  // the child position at the first non-empty object. Consequently,
+  // CreateParentPosition cannot easily determine the correct affinity when
+  // computing parent equivalent positions from positions on empty objects, i.e.
+  // like the example positions given here. Skipping empty objects when creating
+  // leaf equivalent positions had to be done, because on platforms where they
+  // are not represented by an object replacement character, the AT does not
+  // even know they are there.
+  bool AllowsCharacterStopsOnGeneratedNewline() const {
+    return g_ax_embedded_object_behavior ==
+               AXEmbeddedObjectBehavior::kExposeCharacter ||
+           !IsInUnignoredEmptyObject();
+  }
+
+  bool IsFollowedByGeneratedNewline() const {
+    // Hard line breaks (such as <br> in HTML) are discounted because generated
+    // newlines are only inserted between neighboring block elements (such as
+    // <p>Hello</p><p>world</p>). Generated newlines are always a product of
+    // layout and have no corresponding AXNode to it. Hard line breaks have
+    // a matching AXNode and thus do not require to be treated differently.
+    AXPositionInstance leaf_text_position = AsLeafTextPosition();
+    if (!leaf_text_position->AllowsCharacterStopsOnGeneratedNewline() ||
+        leaf_text_position->affinity_ != ax::mojom::TextAffinity::kDownstream ||
+        leaf_text_position->GetAnchor()->IsLineBreak() ||
+        !leaf_text_position->AtEndOfParagraph()) {
+      return false;
+    }
+
+    AXPositionInstance next_position =
+        leaf_text_position->CreateNextPositionAtAnchorWithText();
+    return next_position->AllowsCharacterStopsOnGeneratedNewline() &&
+           !next_position->IsNullPosition() &&
+           !next_position->GetAnchor()->IsLineBreak() &&
+           next_position->AtStartOfParagraph();
+  }
+
+  bool IsPrecededByGeneratedNewline() const {
+    // Hard line breaks (such as <br> in HTML) are discounted because generated
+    // newlines are only inserted between neighboring block elements (such as
+    // <p>Hello</p><p>world</p>). Generated newlines are always a product of
+    // layout and have no corresponding AXNode to it. Hard line breaks have
+    // a matching AXNode and thus do not require to be treated differently.
+    AXPositionInstance leaf_text_position = AsLeafTextPosition();
+    if (!leaf_text_position->AllowsCharacterStopsOnGeneratedNewline() ||
+        leaf_text_position->GetAnchor()->IsLineBreak() ||
+        !leaf_text_position->AtStartOfParagraph()) {
+      return false;
+    }
+
+    AXPositionInstance previous_position =
+        leaf_text_position->CreatePreviousPositionAtAnchorWithText();
+    if (previous_position->IsNullPosition()) {
+      // When it's null, it's because we've reached the beginning of the tree.
+      // We need to make sure we didn't skip any generated newlines that could
+      // have been before the start of the page and our current position.
+      AXPositionInstance start_of_content =
+          CreatePositionAtStartOfContent()->AsLeafTextPosition();
+      return *start_of_content < *this &&
+             start_of_content->IsFollowedByGeneratedNewline();
+    }
+
+    return previous_position->AllowsCharacterStopsOnGeneratedNewline() &&
+           !previous_position->GetAnchor()->IsLineBreak() &&
+           previous_position->AtEndOfParagraph();
+  }
+
   // Returns a text position located right before the next character (from this
   // position) in the tree's text representation, following these conditions:
   //
@@ -2687,6 +2863,10 @@ class AXPosition {
   AXPositionInstance AsLeafTextPositionBeforeCharacter() const {
     if (IsNullPosition())
       return Clone();
+
+    AXPositionInstance leaf_text_position = AsLeafTextPosition();
+    if (leaf_text_position->IsFollowedByGeneratedNewline())
+      return leaf_text_position;
 
     AXPositionInstance text_position = AsTextPosition();
 
@@ -2730,12 +2910,7 @@ class AXPosition {
       return text_position;
     }
 
-    do {
-      text_position = text_position->CreateNextLeafTextPosition(
-          base::BindRepeating(&AbortMoveAtRootBoundary));
-    } while (!text_position->IsNullPosition() &&
-             (text_position->IsIgnored() || !text_position->MaxTextOffset()));
-    return text_position;
+    return text_position->CreateNextPositionAtAnchorWithText();
   }
 
   // Returns a text position located right after the previous character (from
@@ -2745,6 +2920,10 @@ class AXPosition {
   AXPositionInstance AsLeafTextPositionAfterCharacter() const {
     if (IsNullPosition())
       return Clone();
+
+    AXPositionInstance leaf_text_position = AsLeafTextPosition();
+    if (leaf_text_position->IsPrecededByGeneratedNewline())
+      return leaf_text_position;
 
     AXPositionInstance text_position = AsTextPosition();
     // Temporarily set the affinity to upstream.
@@ -2791,12 +2970,7 @@ class AXPosition {
       return text_position;
     }
 
-    do {
-      text_position = text_position->CreatePreviousLeafTextPosition(
-          base::BindRepeating(&AbortMoveAtRootBoundary));
-    } while (!text_position->IsNullPosition() &&
-             (text_position->IsIgnored() || !text_position->MaxTextOffset()));
-    return text_position->CreatePositionAtEndOfAnchor();
+    return text_position->CreatePreviousPositionAtAnchorWithText();
   }
 
   // Creates a position pointing to before the next character, which is defined
@@ -2823,6 +2997,9 @@ class AXPosition {
 
       return text_position;
     }
+
+    if (text_position->IsFollowedByGeneratedNewline())
+      return CreateNextPositionAtAnchorWithText();
 
     // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
     // position that is either at a grapheme boundary, or a null position. If
@@ -2905,35 +3082,45 @@ class AXPosition {
     }
 
     // Calling "AsLeafTextPositionAfterCharacter" should have created a text
-    // position that is either at a grapheme boundary, or a null position. If
-    // our text offset is pointing to a position that is in the middle of a
-    // grapheme cluster, we should not erroneously assume that we are at a
-    // character boundary and stop because we had been asked to "stop if already
-    // at boundary". However, we should not modify our position if
-    // `AsLeafTextPositionAfterCharacter` has simply moved us to the end of the
-    // previous leaf anchor because we originally happened to be at the start of
-    // our current anchor. We also need to ignore any differences that might be
-    // due to the affinity, because that should not be a determining factor as
-    // to whether we would stop if we are already at boundary or not.
-    if (options.boundary_behavior ==
-            AXBoundaryBehavior::kStopAtAnchorBoundary &&
-        options.boundary_detection ==
-            AXBoundaryDetection::kCheckInitialPosition &&
-        (AtStartOfAnchor() || *text_position == *CloneWithUpstreamAffinity() ||
-         *text_position == *CloneWithDownstreamAffinity())) {
-      return Clone();
-    }
+    // position that is either at the start of an anchor that is preceded by a
+    // generated newline, at a grapheme boundary or a null position.
+    if (text_position->IsPrecededByGeneratedNewline()) {
+      // When `text_position` is right after a generated newline character, we
+      // should create a position located at the end of the previous anchor.
+      text_position = CreatePreviousPositionAtAnchorWithText();
+      DCHECK(!text_position->IsNullPosition());
+    } else {
+      // If our text offset is pointing to a position that is in the middle of a
+      // grapheme cluster, we should not erroneously assume that we are at a
+      // character boundary and stop because we had been asked to "stop if
+      // already at boundary". However, we should not modify our position if
+      // `AsLeafTextPositionAfterCharacter` has simply moved us to the end of
+      // the previous leaf anchor because we originally happened to be at the
+      // start of our current anchor. We also need to ignore any differences
+      // that might be due to the affinity, because that should not be a
+      // determining factor as to whether we would stop if we are already at
+      // boundary or not.
+      if (options.boundary_behavior ==
+              AXBoundaryBehavior::kStopAtAnchorBoundary &&
+          options.boundary_detection ==
+              AXBoundaryDetection::kCheckInitialPosition &&
+          (AtStartOfAnchor() ||
+           *text_position == *CloneWithUpstreamAffinity() ||
+           *text_position == *CloneWithDownstreamAffinity())) {
+        return Clone();
+      }
 
-    DCHECK_GT(text_position->text_offset_, 0);
-    std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
-        text_position->GetGraphemeIterator();
-    do {
-      --text_position->text_offset_;
-    } while (!text_position->AtStartOfAnchor() && grapheme_iterator &&
-             !grapheme_iterator->IsGraphemeBoundary(
-                 static_cast<size_t>(text_position->text_offset_)));
-    DCHECK_GE(text_position->text_offset_, 0);
-    DCHECK_LT(text_position->text_offset_, text_position->MaxTextOffset());
+      DCHECK_GT(text_position->text_offset_, 0);
+      std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
+          text_position->GetGraphemeIterator();
+      do {
+        --text_position->text_offset_;
+      } while (!text_position->AtStartOfAnchor() && grapheme_iterator &&
+               !grapheme_iterator->IsGraphemeBoundary(
+                   static_cast<size_t>(text_position->text_offset_)));
+      DCHECK_GE(text_position->text_offset_, 0);
+      DCHECK_LT(text_position->text_offset_, text_position->MaxTextOffset());
+    }
 
     // The character boundary should be in the same subtree. Return a position
     // rooted at this position's anchor. This is necessary because we don't want

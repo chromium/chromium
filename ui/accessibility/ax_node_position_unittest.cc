@@ -8012,7 +8012,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithIgnoredNodes) {
   EXPECT_TRUE(parent_position->IsTextPosition());
   EXPECT_EQ(generic_container_ignored.id, parent_position->anchor_id());
   EXPECT_EQ(5, parent_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
   // Move one more level up to get to the root.
   parent_position = parent_position->CreateParentPosition();
   ASSERT_NE(nullptr, parent_position);
@@ -8268,7 +8268,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
   EXPECT_TRUE(parent_position->IsTextPosition());
   EXPECT_EQ(link.id, parent_position->anchor_id());
   EXPECT_EQ(5, parent_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, parent_position->affinity());
+  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, parent_position->affinity());
 
   leaf_position = middle_root_upstream->AsLeafTextPosition();
   ASSERT_NE(nullptr, leaf_position);
@@ -9166,6 +9166,79 @@ TEST_F(AXPositionTest, AsLeafTextPositionBeforeCharacter) {
   EXPECT_TRUE(test_position->IsNullPosition());
 }
 
+TEST_F(AXPositionTest,
+       AsLeafTextPositionBeforeCharacterIncludingGeneratedNewlines) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
+
+  TestPositionType text_position = CreateTextPosition(
+      button_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  TestPositionType test_position =
+      text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(root_, 1 /* text_offset */,
+                                     ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(check_box_, 1 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(root_, 2 /* text_offset */,
+                                     ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(inline_box1_, 6 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(line_break_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+
+  text_position = CreateTextPosition(inline_box2_, 6 /* text_offset */,
+                                     ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsNullPosition());
+
+  text_position = CreateTextPosition(root_, 13 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionBeforeCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsNullPosition());
+}
+
 TEST_F(AXPositionTest, AsLeafTextPositionAfterCharacter) {
   TestPositionType text_position = CreateTextPosition(
       inline_box1_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
@@ -9213,6 +9286,81 @@ TEST_F(AXPositionTest, AsLeafTextPositionAfterCharacter) {
   test_position = text_position->AsLeafTextPositionAfterCharacter();
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsNullPosition());
+}
+
+TEST_F(AXPositionTest,
+       AsLeafTextPositionAfterCharacterIncludingGeneratedNewlines) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
+
+  TestPositionType text_position = CreateTextPosition(
+      button_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  TestPositionType test_position =
+      text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsNullPosition());
+
+  text_position = CreateTextPosition(button_, 1 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(check_box_.id, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+
+  text_position = CreateTextPosition(check_box_, 1 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(inline_box1_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+
+  text_position = CreateTextPosition(line_break_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(6, test_position->text_offset());
+
+  text_position = CreateTextPosition(inline_box2_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kUpstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+  test_position = text_position->AsLeafTextPositionAfterCharacter();
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(line_break_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
 }
 
 TEST_F(AXPositionTest, CreateNextAndPreviousCharacterPositionWithNullPosition) {
@@ -9607,6 +9755,145 @@ TEST_F(AXPositionTest, CreateNextCharacterPosition) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 }
 
+TEST_F(AXPositionTest, CreateNextCharacterPositionIncludingGeneratedNewlines) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
+
+  TestPositionType text_position = CreateTextPosition(
+      inline_box1_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  TestPositionType test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(6, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(line_break_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(6, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(line_break_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(inline_box2_, 6 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsNullPosition());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
+  EXPECT_EQ(6, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
+  EXPECT_EQ(6, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
+  EXPECT_EQ(6, test_position->text_offset());
+
+  text_position = CreateTextPosition(check_box_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(check_box_, 1 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreateNextCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+}
+
 TEST_F(AXPositionTest, CreatePreviousCharacterPosition) {
   TestPositionType text_position = CreateTextPosition(
       inline_box2_, 5 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
@@ -9789,6 +10076,147 @@ TEST_F(AXPositionTest, CreatePreviousCharacterPosition) {
   EXPECT_EQ(0, test_position->text_offset());
   // Affinity should have been reset to downstream.
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
+}
+
+TEST_F(AXPositionTest,
+       CreatePreviousCharacterPositionIncludingGeneratedNewlines) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
+
+  TestPositionType text_position = CreateTextPosition(
+      inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  TestPositionType test_position =
+      text_position->CreatePreviousCharacterPosition(
+          {AXBoundaryBehavior::kStopAtAnchorBoundary,
+           AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(line_break_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(line_break_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+
+  text_position = CreateTextPosition(inline_box1_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(check_box_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(check_box_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  text_position = CreateTextPosition(button_, 0 /* text_offset */,
+                                     ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  ASSERT_TRUE(text_position->IsTextPosition());
+
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kCrossBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsNullPosition());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
+  test_position = text_position->CreatePreviousCharacterPosition(
+      {AXBoundaryBehavior::kStopAtLastAnchorBoundary,
+       AXBoundaryDetection::kDontCheckInitialPosition});
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(0, test_position->text_offset());
 }
 
 TEST_F(AXPositionTest, CreateNextCharacterPositionAtGraphemeBoundary) {

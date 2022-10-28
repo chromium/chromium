@@ -900,9 +900,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // Make the range degenerate.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
-      /*count*/ 1,
+      /*count*/ 2,
       /*expected_text*/ L"\n3",
-      /*expected_count*/ 1);
+      /*expected_count*/ 2);
 
   // The range should now span two nodes: start: "item<>", end: "<3>.14".
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\n3");
@@ -2574,9 +2574,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
-      /*count*/ -17,
+      /*count*/ -18,
       /*expected_text*/ L"iframe\nAfter frame",
-      /*expected_count*/ -17);
+      /*expected_count*/ -18);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider,
                                    TextPatternRangeEndpoint_End, TextUnit_Line,
                                    /*count*/ -1,
@@ -2600,21 +2600,21 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                   /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
-      /*count*/ 1,
+      /*count*/ 2,
       /*expected_text*/ L"frame\nT",
-      /*expected_count*/ 1);
+      /*expected_count*/ 2);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
-                  /*count*/ 6,
+                  /*count*/ 7,
                   /*expected_text*/ L"e",
-                  /*expected_count*/ 6);
+                  /*expected_count*/ 7);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
-                  /*count*/ 19,
+                  /*count*/ 20,
                   /*expected_text*/ L"f",
-                  /*expected_count*/ 19);
+                  /*expected_count*/ 20);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
-                  /*count*/ -7,
+                  /*count*/ -8,
                   /*expected_text*/ L"e",
-                  /*expected_count*/ -7);
+                  /*expected_count*/ -8);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Line,
                   /*count*/ 1,
                   /*expected_text*/ L"After frame",
@@ -2754,15 +2754,15 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
-      /*count*/ 3,
+      /*count*/ 4,
       /*expected_text*/ L"plain\ntext\nita",
-      /*expected_count*/ 3);
+      /*expected_count*/ 4);
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
-      /*count*/ 10,
+      /*count*/ 12,
       /*expected_text*/ L"ta",
-      /*expected_count*/ 10);
+      /*expected_count*/ 12);
 
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Format));
@@ -3084,9 +3084,23 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   </html>)HTML";
 
   const std::vector<const wchar_t*> characters = {
-      L"S", L"o", L"m", L"e", L" ",
-      L"t", L"e", L"x", L"t", kEmbeddedCharacterAsString.c_str(),
-      L"a", L"f", L"t", L"e", L"r"};
+      L"S",
+      L"o",
+      L"m",
+      L"e",
+      L" ",
+      L"t",
+      L"e",
+      L"x",
+      L"t",
+      L"\n",
+      kEmbeddedCharacterAsString.c_str(),
+      L"\n",
+      L"a",
+      L"f",
+      L"t",
+      L"e",
+      L"r"};
 
   AssertMoveByUnitForMarkup(TextUnit_Character, html_markup, characters);
 }
@@ -3154,7 +3168,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
                   /*count*/ 19,
-                  /*expected_text*/ L"e",
+                  /*expected_text*/ L"t",
                   /*expected_count*/ 19);
   text_range_provider->ExpandToEnclosingUnit(TextUnit_Word);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"item");

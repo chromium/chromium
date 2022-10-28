@@ -567,7 +567,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
   if (attribute_id == UIA_IsReadOnlyAttributeId &&
       start()->anchor_id() != end()->anchor_id() &&
       start()->AtEndOfParagraph() && end()->AtStartOfParagraph() &&
-      *start()->AsLeafTextPositionBeforeCharacter() == *end()) {
+      *start()->CreateNextCharacterPosition(
+          {AXBoundaryBehavior::kCrossBoundary,
+           AXBoundaryDetection::kDontCheckInitialPosition}) == *end()) {
     AXPlatformNodeWin* common_anchor = GetLowestAccessibleCommonPlatformNode();
     DCHECK(common_anchor);
 
