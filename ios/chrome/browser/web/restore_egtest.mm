@@ -157,7 +157,13 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored.
-- (void)testRestoreHistory {
+// Disabled due to flakes on iPad Air 2 14.5; see https://crbug.com/1379254.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreHistory testRestoreHistory
+#else
+#define MAYBE_testRestoreHistory FLAKY_testRestoreHistory
+#endif
+- (void)MAYBE_testRestoreHistory {
   [self setUpRestoreServers];
   [self loadTestPages];
   [self verifyRestoredTestPages:YES];
@@ -165,7 +171,13 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored in airplane mode.
-- (void)testRestoreNoNetwork {
+// Disabled due to flakes on iPad Air 2 14.5; see https://crbug.com/1379254.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreNoNetwork testRestoreNoNetwork
+#else
+#define MAYBE_testRestoreNoNetwork FLAKY_testRestoreNoNetwork
+#endif
+- (void)MAYBE_testRestoreNoNetwork {
   [self setUpRestoreServers];
   [self loadTestPages];
   self.serverRespondsWithContent = false;
@@ -173,7 +185,13 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 }
 
 // Tests that only the selected web state is loaded on a session restore.
-- (void)testRestoreOneWebstateOnly {
+// Disabled due to flakes on iPad Air 2 14.5; see https://crbug.com/1379254.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreOneWebstateOnly testRestoreOneWebstateOnly
+#else
+#define MAYBE_testRestoreOneWebstateOnly FLAKY_testRestoreOneWebstateOnly
+#endif
+- (void)MAYBE_testRestoreOneWebstateOnly {
   // Visit the background page.
   int visitCounter = 0;
   self.testServer->RegisterRequestHandler(
