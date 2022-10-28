@@ -1595,7 +1595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchQueryLengthV2{TabletOrClamshell}"
-    units="characters" expires_after="2022-12-01">
+    units="characters" expires_after="2023-10-01">
   <owner>yulunwu@chromium.org</owner>
   <owner>calamity@chromium.org</owner>
   <summary>
