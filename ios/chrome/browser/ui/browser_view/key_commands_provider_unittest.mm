@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -26,14 +28,17 @@
 
 namespace {
 
-class KeyCommandsProviderTest : public PlatformTest {
+class NoMenuKeyCommandsProviderTest : public PlatformTest {
  protected:
-  KeyCommandsProviderTest() {
+  NoMenuKeyCommandsProviderTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     web_state_list_ = browser_->GetWebStateList();
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kKeyboardShortcutsMenu});
   }
-  ~KeyCommandsProviderTest() override {}
+  ~NoMenuKeyCommandsProviderTest() override {}
 
   web::FakeWebState* InsertNewWebState(int index) {
     auto web_state = std::make_unique<web::FakeWebState>();
@@ -49,9 +54,12 @@ class KeyCommandsProviderTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   WebStateList* web_state_list_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(KeyCommandsProviderTest, NoTabs_ReturnsObjects) {
+TEST_F(NoMenuKeyCommandsProviderTest, NoTabs_ReturnsObjects) {
   id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
      FindInPageCommands>
       dispatcher = nil;
@@ -66,7 +74,7 @@ TEST_F(KeyCommandsProviderTest, NoTabs_ReturnsObjects) {
   EXPECT_NE(0u, provider.keyCommands.count);
 }
 
-TEST_F(KeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
+TEST_F(NoMenuKeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
   id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
      FindInPageCommands>
       dispatcher = nil;
@@ -83,7 +91,7 @@ TEST_F(KeyCommandsProviderTest, ReturnsKeyCommandsObjects) {
   }
 }
 
-TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenTabs) {
+TEST_F(NoMenuKeyCommandsProviderTest, MoreKeyboardCommandsWhenTabs) {
   id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
      FindInPageCommands>
       dispatcher = nil;
@@ -106,7 +114,7 @@ TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenTabs) {
   EXPECT_GT(numberOfKeyCommandsWithTabs, numberOfKeyCommandsWithoutTabs);
 }
 
-TEST_F(KeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
+TEST_F(NoMenuKeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
   id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
      FindInPageCommands>
       dispatcher = nil;
@@ -141,7 +149,8 @@ TEST_F(KeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
   [textField resignFirstResponder];
 }
 
-TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenFindInPageAvailable) {
+TEST_F(NoMenuKeyCommandsProviderTest,
+       MoreKeyboardCommandsWhenFindInPageAvailable) {
   id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
      FindInPageCommands>
       dispatcher = nil;
@@ -171,8 +180,8 @@ TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenFindInPageAvailable) {
   EXPECT_GT(numberOfKeyCommandsWithFIP, numberOfKeyCommandsWithoutFIP);
 }
 
-//// Verifies the the next/previous tab commands from the keyboard work OK.
-TEST_F(KeyCommandsProviderTest, TestFocusNextPrevious) {
+// Verifies the next/previous tab commands from the keyboard work OK.
+TEST_F(NoMenuKeyCommandsProviderTest, TestFocusNextPrevious) {
   // Add more web states.
   InsertNewWebState(0);
   InsertNewWebState(1);
