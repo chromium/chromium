@@ -61,9 +61,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent updating accessibility in the Blink document lifecycle.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -86,9 +89,12 @@ chromium-metrics-reviews@google.com.
     elements within the visible viewport. Recorded when an intersection
     observation attributed to anchor element metrics is updated.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -107,12 +113,14 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent processing main frame animations during a main frame update.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note that the histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
-    105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
-    aggregating or comparing these histograms across the version.
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note that the histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes
+    before 105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful
+    when aggregating or comparing these histograms across the version.
   </summary>
 </histogram>
 
@@ -594,10 +602,12 @@ chromium-metrics-reviews@google.com.
     Time spent updating and pushing layers at the end of the paint step in the
     Blink document lifecycle. This is implemented by PaintArtifactCompositor.
 
-    Note: As of M70, this histogram has stopped recording metrics on machines
-    with low-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -614,13 +624,14 @@ chromium-metrics-reviews@google.com.
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
-    Time spent updating compositing inputs in the Blink document lifecycle. This
-    is the legacy compositing approach.
+    Time spent updating compositing inputs in the Blink document lifecycle.
 
-    Note: this histogram has stopped recording metrics on machines with
-    low-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -665,10 +676,12 @@ chromium-metrics-reviews@google.com.
     plugin during a main frame update. Includes time spent in style update and
     layout.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -749,8 +762,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent updating the cull rect in the Blink document lifecycle.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
   </summary>
 </histogram>
 
@@ -842,9 +854,12 @@ chromium-metrics-reviews@google.com.
     lifecycle where the observation is for Display Locking. Recorded when an
     intersection observation is made for the Display Locking reason.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1196,9 +1211,12 @@ chromium-metrics-reviews@google.com.
     Time spent computing layouts due to Javascript value requests. Specifically,
     time spent in Blink Document::UpdateStyleAndLayout.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1230,10 +1248,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent processing rAF-aligned input during a main frame update.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1254,10 +1274,12 @@ chromium-metrics-reviews@google.com.
     update. It does not compute the actual hit test time, rather the style,
     layout, compositing, etc time to prepare for the test.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1599,10 +1621,12 @@ chromium-metrics-reviews@google.com.
     ProxyMain::BeginMainFrame. It is the actual work time, excluding time spent
     waiting for the compositor thread to begin.
 
-    Note: This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1634,10 +1658,12 @@ chromium-metrics-reviews@google.com.
     Time spent computing IntersectionObserver observations in the Blink document
     lifecycle.
 
-    Note: As of M70, this histogram has stopped recording metrics on machines
-    with low-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1702,10 +1728,12 @@ chromium-metrics-reviews@google.com.
     be servicing internal needs, but we have no way to disambiguate those from
     JS driven activity.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1726,9 +1754,12 @@ chromium-metrics-reviews@google.com.
     lifecycle where the observation is due to a Javascript request. Recorded
     when an intersection observation is made for the Javascript reason.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1787,10 +1818,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent updating layout in the Blink document lifecycle.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1859,9 +1892,12 @@ chromium-metrics-reviews@google.com.
     Recorded when an intersection observation is made to determine when a lazy
     loaded image should be loaded.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1912,10 +1948,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time between a BeginMainFrame and paint results commit in Blink.
 
-    This histogram will not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -1937,9 +1975,12 @@ chromium-metrics-reviews@google.com.
     intersection observation is made attributed to a media element (such as
     video auto-play).
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2129,10 +2170,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent updating paint in the Blink document lifecycle.
 
-    Note: As of M70, this histogram has stopped recording metrics on machines
-    with low-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2152,9 +2195,12 @@ chromium-metrics-reviews@google.com.
     Time spent parsing style sheets for a document. Only recorded when the
     CSSParserContext has a document available.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2202,13 +2248,14 @@ chromium-metrics-reviews@google.com.
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating paint properties and paint invalidation in the Blink
-    document lifecycle. Available when SlimmingPaintInvalidation or
-    SlimmingPaintV2 is enabled.
+    document lifecycle.
 
-    Note: As of M70, this histogram has stopped recording metrics on machines
-    with low-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2431,10 +2478,12 @@ chromium-metrics-reviews@google.com.
     scroll chaining or other programatic scrolling. Includes time spent in style
     update and layout.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2449,10 +2498,12 @@ chromium-metrics-reviews@google.com.
     Examples include accessibility, intersection observer, display locking and
     spell checking. Includes time spent in style update and layout. {Period}
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2628,10 +2679,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent updating style in the Blink document lifecycle.
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -2675,9 +2728,12 @@ chromium-metrics-reviews@google.com.
     of their embedding document. This time is also included in the
     Blink.IntersectionObservation.UpdateTime metric.
 
-    This histogram only records metrics on machines with high-resolution clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -3100,10 +3156,12 @@ chromium-metrics-reviews@google.com.
     include inspector, selection, editing, find-in-page and focus. Includes time
     spent in style update and layout. {Period}
 
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
@@ -3218,10 +3276,12 @@ chromium-metrics-reviews@google.com.
     Time spent waiting for the compositor thread to begin processing a layer
     update inside ProxyMain::BeginMainFrame.
 
-    Note: This histogram does not record metrics on machines with low-resolution
-    clocks.
+    Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
+    AggregatedPreFCP metrics are only recorded if FCP is reached.
 
-    Note: The histograms with PreFCP/PostFCP/AggregatedFCP suffixes before
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+
+    Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
