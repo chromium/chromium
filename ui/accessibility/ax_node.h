@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -127,7 +128,8 @@ class AX_EXPORT AXNode final {
   AXNode* GetParentCrossingTreeBoundary() const;
   AXNode* GetUnignoredParent() const;
   AXNode* GetUnignoredParentCrossingTreeBoundary() const;
-  base::stack<AXNode*> GetAncestorsCrossingTreeBoundary() const;
+  base::queue<AXNode*> GetAncestorsCrossingTreeBoundaryAsQueue() const;
+  base::stack<AXNode*> GetAncestorsCrossingTreeBoundaryAsStack() const;
   size_t GetIndexInParent() const;
   size_t GetUnignoredIndexInParent() const;
   AXNode* GetFirstChild() const;

@@ -161,6 +161,15 @@ void SetSelectionFocusOffset(v8::Isolate* isolate,
   gin::ConvertFromV8(isolate, v8_focus_offset, &ax_tree_data->sel_focus_offset);
 }
 
+void SetSelectionIsBackward(v8::Isolate* isolate,
+                            gin::Dictionary* v8_dict,
+                            ui::AXTreeData* ax_tree_data) {
+  v8::Local<v8::Value> v8_sel_is_backward;
+  v8_dict->Get("is_backward", &v8_sel_is_backward);
+  gin::ConvertFromV8(isolate, v8_sel_is_backward,
+                     &ax_tree_data->sel_is_backward);
+}
+
 void SetAXTreeUpdateRootId(v8::Isolate* isolate,
                            gin::Dictionary* v8_dict,
                            ui::AXTreeUpdate* snapshot) {
@@ -209,6 +218,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   SetSelectionFocusObjectId(isolate, &v8_selection_dict, &ax_tree_data);
   SetSelectionAnchorOffset(isolate, &v8_selection_dict, &ax_tree_data);
   SetSelectionFocusOffset(isolate, &v8_selection_dict, &ax_tree_data);
+  SetSelectionIsBackward(isolate, &v8_selection_dict, &ax_tree_data);
   snapshot.has_tree_data = true;
   snapshot.tree_data = ax_tree_data;
 
@@ -258,6 +268,13 @@ ReadAnythingAppController::~ReadAnythingAppController() = default;
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeUpdate& snapshot,
     const std::vector<ui::AXNodeID>& content_node_ids) {
+  // Reset state.
+  display_root_id_ = ui::kInvalidAXNodeID;
+  display_node_ids_.clear();
+  start_node_ = nullptr;
+  end_node_ = nullptr;
+  start_offset_ = -1;
+  end_offset_ = -1;
   content_node_ids_ = content_node_ids;
   tree_ = std::make_unique<ui::AXTree>();
 
@@ -277,36 +294,119 @@ void ReadAnythingAppController::OnAXTreeDistilled(
                    tree_data.sel_anchor_object_id != ui::kInvalidAXNodeID &&
                    tree_data.sel_focus_object_id != ui::kInvalidAXNodeID;
   if (has_selection_) {
-    ui::AXNode* anchor_node = GetAXNode(tree_data.sel_anchor_object_id);
-    DCHECK(anchor_node);
-    ui::AXNode* focus_node = GetAXNode(tree_data.sel_focus_object_id);
-    DCHECK(focus_node);
-    start_node_ = tree_data.sel_is_backward ? focus_node : anchor_node;
-    end_node_ = tree_data.sel_is_backward ? anchor_node : focus_node;
-    start_offset_ = tree_data.sel_is_backward ? tree_data.sel_focus_offset
-                                              : tree_data.sel_anchor_offset;
-    end_offset_ = tree_data.sel_is_backward ? tree_data.sel_anchor_offset
-                                            : tree_data.sel_focus_offset;
-
-    // Store the lowest common ancestor between the start and end nodes as
-    // the selection node ID. This is the lowest node in the tree which entirely
-    // contains the selection.
-    ui::AXNode* common_ancestor =
-        start_node_->GetLowestCommonAncestor(*end_node_);
-    selection_node_ids_.push_back(common_ancestor->id());
+    PostProcessAXTreeWithSelection(tree_data);
   } else {
-    // Reset selection-related state to default values.
-    selection_node_ids_.clear();
-    start_node_ = nullptr;
-    end_node_ = nullptr;
-    start_offset_ = -1;
-    end_offset_ = -1;
+    PostProcessAXTreeWithoutSelection();
   }
 
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
   std::string script = "chrome.readAnything.updateContent();";
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
+}
+
+void ReadAnythingAppController::PostProcessAXTreeWithSelection(
+    const ui::AXTreeData& tree_data) {
+  // Identify the start and end nodes and offsets. The start node comes earlier
+  // the end node in the tree order.
+  ui::AXNode* anchor_node = GetAXNode(tree_data.sel_anchor_object_id);
+  DCHECK(anchor_node);
+  ui::AXNode* focus_node = GetAXNode(tree_data.sel_focus_object_id);
+  DCHECK(focus_node);
+  start_node_ = tree_data.sel_is_backward ? focus_node : anchor_node;
+  end_node_ = tree_data.sel_is_backward ? anchor_node : focus_node;
+  start_offset_ = tree_data.sel_is_backward ? tree_data.sel_focus_offset
+                                            : tree_data.sel_anchor_offset;
+  end_offset_ = tree_data.sel_is_backward ? tree_data.sel_anchor_offset
+                                          : tree_data.sel_focus_offset;
+
+  // If start node or end node is ignored, go to the nearest unignored node
+  // within the selection.
+  if (start_node_->IsIgnored()) {
+    start_node_ = start_node_->GetNextUnignoredInTreeOrder();
+    start_offset_ = 0;
+  }
+  if (end_node_->IsIgnored()) {
+    end_node_ = end_node_->GetNextUnignoredInTreeOrder();
+    end_offset_ = 0;
+  }
+
+  // The display root is the lowest common ancestor between the start and end
+  // nodes. This is the lowest node in the tree which entirely contains the
+  // selection.
+  display_root_id_ = start_node_->GetLowestCommonAncestor(*end_node_)->id();
+
+  // Display nodes are the nodes which will be displayed by the rendering
+  // algorithm of Read Anything app.ts. We wish to create a subtree with display
+  // root as the root which stretches from start node to end node.
+
+  // Add all ancestor ids of start node up to the display root. The first
+  // ancestor is the content node, which should also be added. This does a first
+  // walk from display root down to start node.
+  base::queue<ui::AXNode*> ancestors =
+      start_node_->GetAncestorsCrossingTreeBoundaryAsQueue();
+  while (!ancestors.empty()) {
+    ui::AXNodeID ancestor_id = ancestors.front()->id();
+    display_node_ids_.insert(ancestor_id);
+    if (ancestor_id == display_root_id_)
+      break;
+    ancestors.pop();
+  }
+
+  // Do a pre-order walk of the tree from the start node to the end node and add
+  // all nodes to the list of display node ids.
+  ui::AXNode* next_node = start_node_;
+  DCHECK(!start_node_->IsIgnored());
+  DCHECK(!end_node_->IsIgnored());
+  while (next_node != end_node_) {
+    next_node = next_node->GetNextUnignoredInTreeOrder();
+    display_node_ids_.insert(next_node->id());
+  }
+}
+
+void ReadAnythingAppController::PostProcessAXTreeWithoutSelection() {
+  // If there are no content node IDs, do nothing.
+  if (content_node_ids_.empty())
+    return;
+
+  // The display root is the lowest common ancestor between all of the content
+  // node IDs. This is the lowest node in the tree which entirely contains the
+  // distilled content.
+  display_root_id_ = GetLowestCommonAncestorOfContentNodes()->id();
+
+  // Display nodes are the nodes which will be displayed by the rendering
+  // algorithm of Read Anything app.ts. We wish to create a subtree with display
+  // root as the root which stretches down to every content node and includes
+  // the descendants of each content node.
+  for (auto content_node_id : content_node_ids_) {
+    ui::AXNode* content_node = GetAXNode(content_node_id);
+    DCHECK(content_node);
+
+    // Add all ancestor ids in the queue up to the display root. The first
+    // ancestor is the content node, which should also be added.
+    base::queue<ui::AXNode*> ancestors =
+        content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
+    while (!ancestors.empty()) {
+      ui::AXNodeID ancestor_id = ancestors.front()->id();
+      if (base::Contains(display_node_ids_, ancestor_id))
+        break;
+      display_node_ids_.insert(ancestor_id);
+      if (ancestor_id == display_root_id_)
+        break;
+      ancestors.pop();
+    }
+
+    // Add all descendant ids to the set.
+    ui::AXNode* next_node = content_node;
+    ui::AXNode* deepest_last_child =
+        content_node->GetDeepestLastUnignoredChild();
+    if (!deepest_last_child)
+      continue;
+    while (next_node != deepest_last_child) {
+      next_node = next_node->GetNextUnignoredInTreeOrder();
+      display_node_ids_.insert(next_node->id());
+    }
+  }
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
@@ -329,7 +429,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
              isolate)
       .SetProperty("backgroundColor",
                    &ReadAnythingAppController::BackgroundColor)
-      .SetProperty("displayNodeIds", &ReadAnythingAppController::DisplayNodeIds)
+      .SetProperty("displayRootId", &ReadAnythingAppController::DisplayRootId)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("foregroundColor",
@@ -350,73 +450,67 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetThemeForTesting);
 }
 
-std::vector<ui::AXNodeID> ReadAnythingAppController::DisplayNodeIds() {
-  if (has_selection_)
-    return selection_node_ids_;
-  return content_node_ids_;
+ui::AXNodeID ReadAnythingAppController::DisplayRootId() const {
+  return display_root_id_;
 }
 
-SkColor ReadAnythingAppController::BackgroundColor() {
+SkColor ReadAnythingAppController::BackgroundColor() const {
   return background_color_;
 }
 
-std::string ReadAnythingAppController::FontName() {
+std::string ReadAnythingAppController::FontName() const {
   return font_name_;
 }
 
-float ReadAnythingAppController::FontSize() {
+float ReadAnythingAppController::FontSize() const {
   return font_size_;
 }
 
-SkColor ReadAnythingAppController::ForegroundColor() {
+SkColor ReadAnythingAppController::ForegroundColor() const {
   return foreground_color_;
 }
 
-float ReadAnythingAppController::LetterSpacing() {
+float ReadAnythingAppController::LetterSpacing() const {
   return letter_spacing_;
 }
 
-float ReadAnythingAppController::LineSpacing() {
+float ReadAnythingAppController::LineSpacing() const {
   return line_spacing_;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
-    ui::AXNodeID ax_node_id) {
+    ui::AXNodeID ax_node_id) const {
   std::vector<ui::AXNodeID> child_ids;
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return std::vector<ui::AXNodeID>();
+  DCHECK(ax_node);
   for (auto it = ax_node->UnignoredChildrenBegin();
        it != ax_node->UnignoredChildrenEnd(); ++it) {
-    // If there is no selection, always add the node ID to the list. If there
-    // is a selection and the node is partially or entirely contained in the
-    // selection, also add the node ID to the list.
-    if (!has_selection_ || SelectionContainsNode(&*it))
+    if (base::Contains(display_node_ids_, it->id()))
       child_ids.push_back(it->id());
   }
   return child_ids;
 }
 
-std::string ReadAnythingAppController::GetHtmlTag(ui::AXNodeID ax_node_id) {
+std::string ReadAnythingAppController::GetHtmlTag(
+    ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return std::string();
+  DCHECK(ax_node);
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
 }
 
-std::string ReadAnythingAppController::GetLanguage(ui::AXNodeID ax_node_id) {
+std::string ReadAnythingAppController::GetLanguage(
+    ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return std::string();
+  DCHECK(ax_node);
   if (NodeIsContentNode(ax_node_id))
     return ax_node->GetLanguage();
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
 }
 
-std::string ReadAnythingAppController::GetTextContent(ui::AXNodeID ax_node_id) {
+std::string ReadAnythingAppController::GetTextContent(
+    ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return std::string();
+  DCHECK(ax_node);
   std::string text_content = ax_node->GetTextContentUTF8();
   // If this node is the start or end node, truncate the text content by the
   // corresponding offset.
@@ -430,7 +524,7 @@ std::string ReadAnythingAppController::GetTextContent(ui::AXNodeID ax_node_id) {
 }
 
 std::string ReadAnythingAppController::GetTextDirection(
-    ui::AXNodeID ax_node_id) {
+    ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   if (!ax_node)
     return std::string();
@@ -453,10 +547,9 @@ std::string ReadAnythingAppController::GetTextDirection(
   }
 }
 
-std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) {
+std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  if (!ax_node)
-    return std::string();
+  DCHECK(ax_node);
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
 }
 
@@ -496,7 +589,7 @@ void ReadAnythingAppController::SetContentForTesting(
 }
 
 double ReadAnythingAppController::GetLetterSpacingValue(
-    read_anything::mojom::Spacing letter_spacing) {
+    read_anything::mojom::Spacing letter_spacing) const {
   // auto ls = static_cast<read_anything::mojom::Spacing>(letter_spacing);
   switch (letter_spacing) {
     case read_anything::mojom::Spacing::kTight:
@@ -511,7 +604,7 @@ double ReadAnythingAppController::GetLetterSpacingValue(
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(
-    read_anything::mojom::Spacing line_spacing) {
+    read_anything::mojom::Spacing line_spacing) const {
   // auto ls = static_cast<read_anything::mojom::Spacing>(line_spacing);
   switch (line_spacing) {
     case read_anything::mojom::Spacing::kTight:
@@ -526,20 +619,28 @@ double ReadAnythingAppController::GetLineSpacingValue(
   }
 }
 
-ui::AXNode* ReadAnythingAppController::GetAXNode(ui::AXNodeID ax_node_id) {
-  if (!tree_)
-    return nullptr;
+ui::AXNode* ReadAnythingAppController::GetAXNode(
+    ui::AXNodeID ax_node_id) const {
+  DCHECK(tree_);
   return tree_->GetFromId(ax_node_id);
 }
 
-bool ReadAnythingAppController::SelectionContainsNode(ui::AXNode* ax_node) {
-  DCHECK(has_selection_);
-  return (start_node_->IsDescendantOf(ax_node) ||
-          end_node_->IsDescendantOf(ax_node) ||
-          (ax_node->CompareTo(*start_node_) > 0 &&
-           ax_node->CompareTo(*end_node_) < 0));
+ui::AXNode* ReadAnythingAppController::GetLowestCommonAncestorOfContentNodes()
+    const {
+  ui::AXNode* common_ancestor = nullptr;
+  for (auto content_node_id : content_node_ids_) {
+    ui::AXNode* content_node = GetAXNode(content_node_id);
+    DCHECK(content_node);
+    if (common_ancestor) {
+      common_ancestor = content_node->GetLowestCommonAncestor(*common_ancestor);
+    } else {
+      common_ancestor = content_node;
+    }
+  }
+  return common_ancestor;
 }
 
-bool ReadAnythingAppController::NodeIsContentNode(ui::AXNodeID ax_node_id) {
+bool ReadAnythingAppController::NodeIsContentNode(
+    ui::AXNodeID ax_node_id) const {
   return base::Contains(content_node_ids_, ax_node_id);
 }

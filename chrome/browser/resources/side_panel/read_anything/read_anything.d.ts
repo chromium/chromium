@@ -10,8 +10,8 @@ declare namespace chrome {
     // Implemented in read_anything_app_controller.cc and consumed by ts.
     /////////////////////////////////////////////////////////////////////
 
-    // A list of AXNodeIDs whose subtree should be displayed.
-    let displayNodeIds: number[];
+    // The root AXNodeID of the tree to be displayed.
+    let displayRootId: number;
 
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;

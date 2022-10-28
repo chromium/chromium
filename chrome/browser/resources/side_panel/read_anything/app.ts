@@ -68,7 +68,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private buildNode_(nodeId: number): Node|null {
+  private buildSubtree_(nodeId: number): Node {
     let htmlTag = chrome.readAnything.getHtmlTag(nodeId);
     // Text nodes do not have an html tag.
     if (!htmlTag.length) {
@@ -94,16 +94,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (language) {
       element.setAttribute('lang', language);
     }
-    this.appendChildNodes_(element, nodeId);
+    this.appendChildSubtrees_(element, nodeId);
     return element;
   }
 
-  private appendChildNodes_(node: Node, nodeId: number) {
+  private appendChildSubtrees_(node: Node, nodeId: number) {
     for (const childNodeId of chrome.readAnything.getChildren(nodeId)) {
-      const childNode = this.buildNode_(childNodeId);
-      if (childNode) {
-        node.appendChild(childNode);
-      }
+      const childNode = this.buildSubtree_(childNodeId);
+      node.appendChild(childNode);
     }
   }
 
@@ -121,17 +119,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // setting `innerHTML = ''` in order to remove all listeners, too.
     container.replaceChildren();
 
-    // Construct a dom node corresponding to each AXNode and append it to
-    // container. This does not use polymer's templating abstraction, which
+    // Construct a dom subtree starting with the display root and append it to
+    // the container. The display root may be invalid if there are no content
+    // nodes and no selection.
+    // This does not use polymer's templating abstraction, which
     // would create a shadow node element representing each AXNode, because
     // experimentation found the shadow node creation to be ~8-10x slower than
     // constructing and appending nodes directly to the container element.
-    for (const nodeId of chrome.readAnything.displayNodeIds) {
-      const node = this.buildNode_(nodeId);
-      if (node) {
-        container.appendChild(node);
-      }
+    const displayRootId = chrome.readAnything.displayRootId;
+    if (!displayRootId) {
+      return;
     }
+    const node = this.buildSubtree_(displayRootId);
+    container.appendChild(node);
   }
 
   validatedFontName(): string {

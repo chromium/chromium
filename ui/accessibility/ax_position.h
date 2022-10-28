@@ -4563,7 +4563,7 @@ class AXPosition {
   base::stack<AXNode*> GetAncestorAnchors() const {
     if (!GetAnchor())
       return base::stack<AXNode*>();
-    return GetAnchor()->GetAncestorsCrossingTreeBoundary();
+    return GetAnchor()->GetAncestorsCrossingTreeBoundaryAsStack();
   }
 
   AXNode* GetLowestUnignoredAncestor() const {

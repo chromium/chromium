@@ -176,7 +176,17 @@ AXNode* AXNode::GetUnignoredParentCrossingTreeBoundary() const {
   return unignored_parent;
 }
 
-base::stack<AXNode*> AXNode::GetAncestorsCrossingTreeBoundary() const {
+base::queue<AXNode*> AXNode::GetAncestorsCrossingTreeBoundaryAsQueue() const {
+  base::queue<AXNode*> ancestors;
+  AXNode* ancestor = const_cast<AXNode*>(this);
+  while (ancestor) {
+    ancestors.push(ancestor);
+    ancestor = ancestor->GetParentCrossingTreeBoundary();
+  }
+  return ancestors;
+}
+
+base::stack<AXNode*> AXNode::GetAncestorsCrossingTreeBoundaryAsStack() const {
   base::stack<AXNode*> ancestors;
   AXNode* ancestor = const_cast<AXNode*>(this);
   while (ancestor) {
@@ -638,9 +648,10 @@ AXNode* AXNode::GetLowestCommonAncestor(const AXNode& other) {
     return this;
 
   AXNode* common_ancestor = nullptr;
-  base::stack<AXNode*> our_ancestors = GetAncestorsCrossingTreeBoundary();
+  base::stack<AXNode*> our_ancestors =
+      GetAncestorsCrossingTreeBoundaryAsStack();
   base::stack<AXNode*> other_ancestors =
-      other.GetAncestorsCrossingTreeBoundary();
+      other.GetAncestorsCrossingTreeBoundaryAsStack();
   while (!our_ancestors.empty() && !other_ancestors.empty() &&
          our_ancestors.top() == other_ancestors.top()) {
     common_ancestor = our_ancestors.top();
@@ -655,9 +666,10 @@ absl::optional<int> AXNode::CompareTo(const AXNode& other) const {
     return 0;
 
   AXNode* common_ancestor = nullptr;
-  base::stack<AXNode*> our_ancestors = GetAncestorsCrossingTreeBoundary();
+  base::stack<AXNode*> our_ancestors =
+      GetAncestorsCrossingTreeBoundaryAsStack();
   base::stack<AXNode*> other_ancestors =
-      other.GetAncestorsCrossingTreeBoundary();
+      other.GetAncestorsCrossingTreeBoundaryAsStack();
   while (!our_ancestors.empty() && !other_ancestors.empty() &&
          our_ancestors.top() == other_ancestors.top()) {
     common_ancestor = our_ancestors.top();
