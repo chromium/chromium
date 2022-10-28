@@ -63,6 +63,10 @@ function createOSSettingsRoutes() {
   r.KNOWN_NETWORKS = createSubpage(
       r.INTERNET, routesMojomWebui.KNOWN_NETWORKS_SUBPAGE_PATH,
       Subpage.kKnownNetworks);
+  if (loadTimeData.getBoolean('isApnRevampEnabled')) {
+    r.APN = createSubpage(
+        r.INTERNET, routesMojomWebui.APN_SUBPAGE_PATH, Subpage.kApn);
+  }
 
   // Bluetooth section.
   r.BLUETOOTH = createSection(

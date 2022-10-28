@@ -352,8 +352,8 @@ class SettingsInternetDetailPageElement extends
       isApnRevampEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.valueExists('apnRevamp') &&
-              loadTimeData.getBoolean('apnRevamp');
+          return loadTimeData.valueExists('isApnRevampEnabled') &&
+              loadTimeData.getBoolean('isApnRevampEnabled');
         },
       },
 
@@ -2025,9 +2025,10 @@ class SettingsInternetDetailPageElement extends
 
   /**
    * @private
-   * TODO: implement
    */
-  onApnRowClicked_() {}
+  onApnRowClicked_() {
+    Router.getInstance().navigateTo(routes.APN);
+  }
 
   /**
    * Event triggered when the IP Config or NameServers element changes.

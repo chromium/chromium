@@ -17,6 +17,7 @@ import './device_page/storage_external.js';
 import './device_page/storage_external_entry.js';
 import './device_page/stylus.js';
 import './google_assistant_page/google_assistant_page.js';
+import './internet_page/apn_subpage.js';
 import './internet_page/cellular_roaming_toggle_button.js';
 import './internet_page/cellular_setup_dialog.js';
 import './internet_page/esim_remove_profile_dialog.js';

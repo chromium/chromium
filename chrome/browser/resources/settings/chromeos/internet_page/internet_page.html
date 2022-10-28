@@ -107,6 +107,14 @@
     </settings-subpage>
   </template>
 
+  <template is="dom-if" if="[[isApnRevampEnabled_]]" restamp>
+    <template is="dom-if" route-path="/apn" restamp>
+      <settings-subpage page-title="$i18n{internetApnPageTitle}">
+        <apn-subpage></apn-subpage>
+      </settings-subpage>
+    </template>
+  </template>
+
   <template is="dom-if" route-path="/networks" restamp>
     <settings-subpage page-title="[[getNetworksPageTitle_(subpageType_)]]"
         show-spinner="[[showSpinner_]]"

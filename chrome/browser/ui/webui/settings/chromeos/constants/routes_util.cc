@@ -29,6 +29,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kCellularDetailsSubpagePath,
       chromeos::settings::mojom::kTetherDetailsSubpagePath,
       chromeos::settings::mojom::kVpnDetailsSubpagePath,
+      chromeos::settings::mojom::kApnSubpagePath,
 
       // Bluetooth section.
       chromeos::settings::mojom::kBluetoothSectionPath,

@@ -306,6 +306,7 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
 
 void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"internetApnPageTitle", IDS_SETTINGS_ACCESS_POINT_NAME_APN},
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
       {"networkProxy", IDS_SETTINGS_INTERNET_NETWORK_PROXY_PROXY},
@@ -443,7 +444,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isSimLockPolicyEnabled",
                           chromeos::features::IsSimLockPolicyEnabled());
-  html_source->AddBoolean("apnRevamp", ash::features::IsApnRevampEnabled());
+  html_source->AddBoolean("isApnRevampEnabled",
+                          ash::features::IsApnRevampEnabled());
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

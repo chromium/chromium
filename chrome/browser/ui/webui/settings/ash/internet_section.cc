@@ -40,6 +40,7 @@ namespace mojom = chromeos::network_config::mojom;
 namespace ash::settings {
 
 namespace mojom {
+using ::chromeos::settings::mojom::kApnSubpagePath;
 using ::chromeos::settings::mojom::kCellularDetailsSubpagePath;
 using ::chromeos::settings::mojom::kCellularNetworksSubpagePath;
 using ::chromeos::settings::mojom::kEthernetDetailsSubpagePath;
@@ -994,7 +995,6 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                       mojom::Subpage::kKnownNetworks);
   generator->RegisterNestedAltSetting(mojom::Setting::kForgetWifiNetwork,
                                       mojom::Subpage::kKnownNetworks);
-
   // Mobile data. Used for both Cellular and Instant Tethering networks.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_INTERNET_MOBILE_DATA_NETWORKS,
                                      mojom::Subpage::kMobileDataNetworks,
@@ -1019,6 +1019,12 @@ void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::kCellularDetailsSubpagePath);
   RegisterNestedSettingBulk(mojom::Subpage::kCellularDetails,
                             GetCellularDetailsSettings(), generator);
+
+  // APN.
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_INTERNET_NETWORK_ACCESS_POINT, mojom::Subpage::kApn,
+      mojom::Subpage::kCellularDetails, mojom::SearchResultIcon::kCellular,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kApnSubpagePath);
 
   // Instant Tethering. Although this is a multi-device feature, its UI resides
   // in the network section.

@@ -75750,6 +75750,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Cellular Details"/>
   <int value="6" label="Tether Details"/>
   <int value="7" label="Vpn Details"/>
+  <int value="8" label="APN"/>
   <int value="100" label="Bluetooth Devices"/>
   <int value="101" label="Bluetooth Device Details"/>
   <int value="102" label="Bluetooth Saved Devices"/>

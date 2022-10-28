@@ -10,7 +10,7 @@ import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, ManagedProp
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.js';
@@ -158,6 +158,7 @@ suite('InternetDetailPage', function() {
       internetDetailPageTitle: 'internetDetailPageTitle',
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
       showMeteredToggle: true,
+      isApnRevampEnabled: false,
     });
 
     PolymerTest.clearBody();
@@ -1426,9 +1427,7 @@ suite('InternetDetailPage', function() {
     // apnRevamp feature flag.
     [true, false].forEach(isApnRevampEnabled => {
       test('Show/Hide APN row correspondingly to ApnRevamp flag', async () => {
-        loadTimeData.overrideValues({
-          apnRevamp: isApnRevampEnabled,
-        });
+        loadTimeData.overrideValues({isApnRevampEnabled});
         init();
         mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
         const apnName = 'test';
@@ -1447,6 +1446,10 @@ suite('InternetDetailPage', function() {
         if (isApnRevampEnabled) {
           assertTrue(!!apn);
           assertEquals(apn.textContent.trim(), apnName);
+
+          // Test the redirection to APN page.
+          crLink.click();
+          assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
         } else {
           assertFalse(!!apn);
         }

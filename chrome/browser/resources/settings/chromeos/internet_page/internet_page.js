@@ -279,6 +279,18 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         type: String,
         value: '',
       },
+
+      /**
+       * Return true if apnRevamp feature flag is enabled.
+       * @private
+       */
+      isApnRevampEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isApnRevampEnabled') &&
+              loadTimeData.getBoolean('isApnRevampEnabled');
+        },
+      },
     };
   }
 

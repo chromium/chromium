@@ -3608,6 +3608,12 @@ Try tapping the mic to ask me anything.
         Keyboard settings
       </message>
       <!-- End of Shortcut Customization -->
+
+      <!-- APN -->
+      <message name="IDS_SETTINGS_ACCESS_POINT_NAME_APN" desc="Name of the settings page which displays APN related configuration.">
+        Access point name (APN)
+      </message>
+      <!-- End of APN -->
     </messages>
   </release>
 </grit>

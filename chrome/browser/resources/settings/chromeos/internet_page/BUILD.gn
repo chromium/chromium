@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
+    ":apn_subpage",
     ":cellular_networks_list",
     ":cellular_roaming_toggle_button",
     ":cellular_setup_dialog",
@@ -33,6 +34,14 @@ js_type_check("closure_compile_module") {
     ":settings_traffic_counters",
     ":tether_connection_dialog",
   ]
+}
+
+js_library("apn_subpage") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+
+  externs_list = []
 }
 
 js_library("cellular_setup_dialog") {
@@ -399,6 +408,7 @@ js_library("settings_traffic_counters") {
 
 html_to_js("web_components") {
   js_files = [
+    "apn_subpage.js",
     "cellular_networks_list.js",
     "cellular_roaming_toggle_button.js",
     "cellular_setup_dialog.js",
