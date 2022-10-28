@@ -212,17 +212,27 @@ const char kMimeTypePDF[] = "application/pdf";
 
   // Retrieve the current page's URL.
   __weak __typeof(self) weakSelf = self;
-  activity_services::RetrieveCanonicalUrl(currentWebState, ^(const GURL& url) {
-    [weakSelf sharePageWithCanonicalURL:url];
-  });
+  activity_services::RetrieveCanonicalUrl(
+      currentWebState,
+      base::BindOnce(
+          ^(base::WeakPtr<web::WebState> weak_web_state, const GURL& url) {
+            [weakSelf sharePageWithCanonicalURL:url
+                                       webState:weak_web_state.get()];
+          },
+          currentWebState->GetWeakPtr()));
 }
 
 // Shares the current page using its `canonicalURL`.
-- (void)sharePageWithCanonicalURL:(const GURL&)canonicalURL {
-  ShareToData* data = activity_services::ShareToDataForWebState(
-      self.browser->GetWebStateList()->GetActiveWebState(), canonicalURL);
-  if (!data)
+- (void)sharePageWithCanonicalURL:(const GURL&)canonicalURL
+                         webState:(web::WebState*)webState {
+  if (!webState)
     return;
+
+  if (webState != self.browser->GetWebStateList()->GetActiveWebState())
+    return;
+
+  ShareToData* data =
+      activity_services::ShareToDataForWebState(webState, canonicalURL);
 
   NSArray<ChromeActivityURLSource*>* items =
       [self.mediator activityItemsForDataItems:@[ data ]];
@@ -262,27 +272,44 @@ const char kMimeTypePDF[] = "application/pdf";
 
   // Retrieve the current page's URL.
   __weak __typeof(self) weakSelf = self;
-  activity_services::RetrieveCanonicalUrl(currentWebState, ^(const GURL& url) {
-    ShareToData* URLData = activity_services::ShareToDataForWebState(
-        weakSelf.browser->GetWebStateList()->GetActiveWebState(), url);
+  activity_services::RetrieveCanonicalUrl(
+      currentWebState,
+      base::BindOnce(
+          ^(base::WeakPtr<web::WebState> weak_web_state, const GURL& url) {
+            [weakSelf shareFileWithCanonicalURL:url
+                                       webState:weak_web_state.get()];
+          },
+          currentWebState->GetWeakPtr()));
+}
 
-    // As giving a PDF file to the UIActivityViewController will add the "Print"
-    // activity from Apple, Chrome's print activity is disabled to avoid
-    // duplicate.
-    BOOL isPDF = currentWebState->GetContentsMimeType() == kMimeTypePDF;
-    if (isPDF) {
-      URLData.isPagePrintable = NO;
-    }
+// Shares the current PDF using its `canonicalURL`.
+- (void)shareFileWithCanonicalURL:(const GURL&)canonicalURL
+                         webState:(web::WebState*)webState {
+  if (!webState)
+    return;
 
-    ShareFileData* fileData =
-        [[ShareFileData alloc] initWithFilePath:self.params.filePath];
+  if (webState != self.browser->GetWebStateList()->GetActiveWebState())
+    return;
 
-    NSArray<ChromeActivityFileSource*>* items =
-        [weakSelf.mediator activityItemsForFileData:fileData];
-    NSArray* activities =
-        [weakSelf.mediator applicationActivitiesForDataItems:@[ URLData ]];
-    [weakSelf shareItems:items activities:activities];
-  });
+  ShareToData* URLData =
+      activity_services::ShareToDataForWebState(webState, canonicalURL);
+
+  // As giving a PDF file to the UIActivityViewController will add the "Print"
+  // activity from Apple, Chrome's print activity is disabled to avoid
+  // duplicate.
+  const BOOL isPDF = webState->GetContentsMimeType() == kMimeTypePDF;
+  if (isPDF) {
+    URLData.isPagePrintable = NO;
+  }
+
+  ShareFileData* fileData =
+      [[ShareFileData alloc] initWithFilePath:self.params.filePath];
+
+  NSArray<ChromeActivityFileSource*>* items =
+      [self.mediator activityItemsForFileData:fileData];
+  NSArray* activities =
+      [self.mediator applicationActivitiesForDataItems:@[ URLData ]];
+  [self shareItems:items activities:activities];
 }
 
 #pragma mark - Private Methods: Share URL

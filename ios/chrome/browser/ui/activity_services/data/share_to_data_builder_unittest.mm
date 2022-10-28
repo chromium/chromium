@@ -132,12 +132,6 @@ TEST_F(ShareToDataBuilderTest, TestSharePageCommandHandlingNoShareUrl) {
   }
 }
 
-// Verifies that `ShareToDataForWebState()` returns nil if the WebState passed
-// is nullptr.
-TEST_F(ShareToDataBuilderTest, TestReturnsNilWhenClosing) {
-  EXPECT_EQ(nil, activity_services::ShareToDataForWebState(nullptr, GURL()));
-}
-
 // Tests that the ShareToDataForURL function creates a ShareToData instance with
 // valid properties.
 TEST_F(ShareToDataBuilderTest, ShareToDataForURL) {

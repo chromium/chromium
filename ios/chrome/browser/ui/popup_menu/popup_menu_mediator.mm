@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_consumer.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_notification_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_notifier.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -598,22 +599,11 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 #pragma mark - PopupMenuActionHandlerDelegate
 
 - (void)readPageLater {
-  if (!self.webState)
+  web::WebState* webState = self.webState;
+  if (!webState)
     return;
-  // The mediator can be destroyed when this callback is executed. So it is not
-  // possible to use a weak self.
-  __weak id<BrowserCommands> weakDispatcher = self.dispatcher;
-  GURL visibleURL = self.webState->GetVisibleURL();
-  NSString* title = base::SysUTF16ToNSString(self.webState->GetTitle());
-  activity_services::RetrieveCanonicalUrl(self.webState, ^(const GURL& URL) {
-    const GURL& pageURL = !URL.is_empty() ? URL : visibleURL;
-    if (!pageURL.is_valid() || !pageURL.SchemeIsHTTPOrHTTPS())
-      return;
 
-    ReadingListAddCommand* command =
-        [[ReadingListAddCommand alloc] initWithURL:pageURL title:title];
-    [weakDispatcher addToReadingList:command];
-  });
+  reading_list::AddToReadingListUsingCanonicalUrl(self.dispatcher, webState);
 }
 
 - (void)navigateToPageForItem:(TableViewItem<PopupMenuItem>*)item {

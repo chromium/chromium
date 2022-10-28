@@ -28,8 +28,8 @@ void LogCanonicalUrlResultHistogram(ui_metrics::CanonicalURLResult result) {
 
 // Converts a `value` to a GURL. Returns an empty GURL if `value` is not a valid
 // HTTPS URL, indicating that retrieval failed. This function also handles
-// logging retrieval failures if applicable.
-GURL UrlFromValue(const base::Value* value) {
+// logging retrieval failures and success.
+GURL UrlFromValue(const GURL& visible_url, const base::Value* value) {
   GURL canonical_url;
   bool canonical_url_found = false;
 
@@ -50,10 +50,20 @@ GURL UrlFromValue(const base::Value* value) {
   } else if (!canonical_url.is_valid()) {
     // Log result if an invalid canonical URL is found.
     LogCanonicalUrlResultHistogram(ui_metrics::FAILED_CANONICAL_URL_INVALID);
+  } else {
+    // If the canonical URL is valid, then the retrieval was successful,
+    // and the success can be logged.
+    LogCanonicalUrlResultHistogram(
+        !canonical_url.SchemeIsCryptographic()
+            ? ui_metrics::SUCCESS_CANONICAL_URL_NOT_HTTPS
+        : visible_url == canonical_url
+            ? ui_metrics::SUCCESS_CANONICAL_URL_SAME_AS_VISIBLE
+            : ui_metrics::SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
   }
 
-  return canonical_url.is_valid() ? canonical_url : GURL::EmptyGURL();
+  return canonical_url.is_valid() ? canonical_url : GURL();
 }
+
 }  // namespace
 
 namespace activity_services {
@@ -65,44 +75,23 @@ const char16_t kCanonicalURLScript[] =
     u"})()";
 
 void RetrieveCanonicalUrl(web::WebState* web_state,
-                          void (^completion)(const GURL&)) {
+                          CanonicalUrlRetrievedCallback completion) {
   // Do not use the canonical URL if the page is not secured with HTTPS.
   const GURL visible_url = web_state->GetVisibleURL();
   if (!visible_url.SchemeIsCryptographic()) {
     LogCanonicalUrlResultHistogram(ui_metrics::FAILED_VISIBLE_URL_NOT_HTTPS);
-    completion(GURL::EmptyGURL());
+    std::move(completion).Run(GURL());
     return;
   }
 
   web::WebFrame* main_frame = web::GetMainFrame(web_state);
   if (!main_frame) {
-    completion(GURL::EmptyGURL());
+    std::move(completion).Run(GURL());
     return;
   }
 
-  void (^javascript_completion)(const base::Value*) =
-      ^(const base::Value* value) {
-        GURL canonical_url = UrlFromValue(value);
-
-        // If the canonical URL is not empty, then the retrieval was successful,
-        // and the success can be logged.
-        if (!canonical_url.is_empty()) {
-          // Log whether the success occurred with an HTTP canonical URL, a
-          // canonical URL that is the same as the visible URL, or a canonical
-          // URL that is different from the visible URL.
-          LogCanonicalUrlResultHistogram(
-              !canonical_url.SchemeIsCryptographic()
-                  ? ui_metrics::SUCCESS_CANONICAL_URL_NOT_HTTPS
-                  : visible_url == canonical_url
-                        ? ui_metrics::SUCCESS_CANONICAL_URL_SAME_AS_VISIBLE
-                        : ui_metrics::
-                              SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
-        }
-
-        completion(canonical_url);
-      };
-
-  main_frame->ExecuteJavaScript(kCanonicalURLScript,
-                                base::BindOnce(javascript_completion));
+  main_frame->ExecuteJavaScript(
+      kCanonicalURLScript,
+      base::BindOnce(&UrlFromValue, visible_url).Then(std::move(completion)));
 }
 }  // namespace activity_services

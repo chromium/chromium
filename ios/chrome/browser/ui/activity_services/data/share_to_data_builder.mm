@@ -31,12 +31,7 @@ namespace activity_services {
 
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url) {
-  // For crash documented in crbug.com/503955, tab.url which is being passed
-  // as a reference parameter caused a crash due to invalid address which
-  // suggests that tab may get closed along the way. Check that web_state
-  // is still valid.
-  if (!web_state)
-    return nil;
+  DCHECK(web_state);
 
   BOOL is_original_title = NO;
   DCHECK(web_state->GetNavigationManager());

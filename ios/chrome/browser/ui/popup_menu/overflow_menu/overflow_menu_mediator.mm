@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
@@ -1597,30 +1598,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)addToReadingList {
   RecordAction(UserMetricsAction("MobileMenuReadLater"));
 
-  // Dismissing the menu disconnects the mediator, so save anything cleaned up
-  // there.
   web::WebState* webState = self.webState;
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-
   if (!webState) {
     return;
   }
 
-  // The mediator can be destroyed when this callback is executed. So it is not
-  // possible to use a weak self.
-  __weak id<BrowserCommands> weakDispatcher = self.dispatcher;
-  GURL visibleURL = webState->GetVisibleURL();
-  NSString* title = base::SysUTF16ToNSString(webState->GetTitle());
-  activity_services::RetrieveCanonicalUrl(webState, ^(const GURL& URL) {
-    const GURL& pageURL = !URL.is_empty() ? URL : visibleURL;
-    if (!pageURL.is_valid() || !pageURL.SchemeIsHTTPOrHTTPS()) {
-      return;
-    }
+  // Fetching the canonical URL is asynchronous (and happen on a background
+  // thread), so the operation can be started before the UI is dismissed.
+  reading_list::AddToReadingListUsingCanonicalUrl(self.dispatcher, webState);
 
-    ReadingListAddCommand* command =
-        [[ReadingListAddCommand alloc] initWithURL:pageURL title:title];
-    [weakDispatcher addToReadingList:command];
-  });
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }
 
 // Dismisses the menu and starts translating the current page.
