@@ -17,52 +17,42 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
+import {cast} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
+import {getTemplate} from './keyboard_and_text_input_page.html.js';
 import {KeyboardAndTextInputPageBrowserProxy, KeyboardAndTextInputPageBrowserProxyImpl} from './keyboard_and_text_input_page_browser_proxy.js';
 
+interface LocaleInfo {
+  name: string;
+  value: string;
+  worksOffline: boolean;
+  installed: boolean;
+  recommended: boolean;
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsKeyboardAndTextInputPageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      RouteOriginBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsKeyboardAndTextInputPageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          RouteOriginBehavior,
+        ],
+        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & DeepLinkingBehaviorInterface &
+          RouteOriginBehaviorInterface,
+    };
 
-/**
- * @typedef {{
- * name: string,
- * value: string,
- * worksOffline: boolean,
- * installed: boolean,
- * recommended: boolean
- * }}
- */
-let LocaleInfo;
-
-/** @polymer */
 class SettingsKeyboardAndTextInputPageElement extends
     SettingsKeyboardAndTextInputPageElementBase {
   static get is() {
@@ -70,7 +60,7 @@ class SettingsKeyboardAndTextInputPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -85,7 +75,6 @@ class SettingsKeyboardAndTextInputPageElement extends
 
       /**
        * Whether the user is in kiosk mode.
-       * @protected
        */
       isKioskModeActive_: {
         type: Boolean,
@@ -94,7 +83,6 @@ class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
-      /** @protected */
       dictationLocaleMenuSubtitle_: {
         type: String,
         computed: 'computeDictationLocaleSubtitle_(' +
@@ -103,10 +91,6 @@ class SettingsKeyboardAndTextInputPageElement extends
             'dictationLocaleSubtitleOverride_)',
       },
 
-      /**
-       * @type {!Array<!LocaleInfo>}
-       * @protected
-       */
       dictationLocaleOptions_: {
         type: Array,
         value() {
@@ -114,7 +98,6 @@ class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
-      /** @protected */
       dictationLocalesList_: {
         type: Array,
         value() {
@@ -122,13 +105,11 @@ class SettingsKeyboardAndTextInputPageElement extends
         },
       },
 
-      /** @protected */
       showDictationLocaleMenu_: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       dictationLearnMoreUrl_: {
         type: String,
         value: 'https://support.google.com/chromebook?p=text_dictation_m100',
@@ -136,7 +117,6 @@ class SettingsKeyboardAndTextInputPageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -152,33 +132,41 @@ class SettingsKeyboardAndTextInputPageElement extends
     };
   }
 
-  /** @override */
+  prefs: {[key: string]: any};
+  private dictationLearnMoreUrl_: string;
+  private dictationLocaleMenuSubtitle_: string;
+  private dictationLocaleOptions_: LocaleInfo[];
+  private dictationLocaleSubtitleOverride_: string;
+  private dictationLocalesList_: LocaleInfo[];
+  private isKioskModeActive_: boolean;
+  private keyboardAndTextInputBrowserProxy_:
+      KeyboardAndTextInputPageBrowserProxy;
+  private route_: Route;
+  private showDictationLocaleMenu_: boolean;
+  private useDictationLocaleSubtitleOverride_: boolean;
+
   constructor() {
     super();
 
     /** RouteOriginBehavior override */
     this.route_ = routes.A11Y_KEYBOARD_AND_TEXT_INPUT;
 
-    /** @private {!KeyboardAndTextInputPageBrowserProxy} */
     this.keyboardAndTextInputBrowserProxy_ =
         KeyboardAndTextInputPageBrowserProxyImpl.getInstance();
 
-    /** @private {string} */
     this.dictationLocaleSubtitleOverride_ = '';
 
-    /** @private {boolean} */
     this.useDictationLocaleSubtitleOverride_ = false;
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.addWebUIListener(
         'dictation-locale-menu-subtitle-changed',
-        (result) => this.onDictationLocaleMenuSubtitleChanged_(result));
+        (result: string) => this.onDictationLocaleMenuSubtitleChanged_(result));
     this.addWebUIListener(
         'dictation-locales-set',
-        (locales) => this.onDictationLocalesSet_(locales));
+        (locales: LocaleInfo[]) => this.onDictationLocalesSet_(locales));
     this.keyboardAndTextInputBrowserProxy_.keyboardAndTextInputPageReady();
 
     const r = routes;
@@ -189,11 +177,8 @@ class SettingsKeyboardAndTextInputPageElement extends
 
   /**
    * Note: Overrides RouteOriginBehavior implementation
-   * @param {!Route} newRoute
-   * @param {!Route=} prevRoute
-   * @protected
    */
-  currentRouteChanged(newRoute, prevRoute) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
     RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -204,24 +189,19 @@ class SettingsKeyboardAndTextInputPageElement extends
     this.attemptDeepLink();
   }
 
-  /** @private */
-  onSwitchAccessSettingsTap_() {
+  private onSwitchAccessSettingsTap_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   }
 
-  /** @private */
-  onKeyboardTap_() {
+  private onKeyboardTap_(): void {
     Router.getInstance().navigateTo(
         routes.KEYBOARD,
-        /* dynamicParams */ null, /* removeSearch */ true);
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onA11yCaretBrowsingChange_(event) {
-    if (event.target.checked) {
+  private onA11yCaretBrowsingChange_(event: Event): void {
+    const targetEl = cast(event.target, SettingsToggleButtonElement);
+    if (targetEl.checked) {
       chrome.metricsPrivate.recordUserAction(
           'Accessibility.CaretBrowsing.EnableWithSettings');
     } else {
@@ -230,22 +210,15 @@ class SettingsKeyboardAndTextInputPageElement extends
     }
   }
 
-  /**
-   * @param {string} subtitle
-   * @private
-   */
-  onDictationLocaleMenuSubtitleChanged_(subtitle) {
+  private onDictationLocaleMenuSubtitleChanged_(subtitle: string): void {
     this.useDictationLocaleSubtitleOverride_ = true;
     this.dictationLocaleSubtitleOverride_ = subtitle;
   }
 
-
   /**
    * Saves a list of locales and updates the UI to reflect the list.
-   * @param {!Array<!LocaleInfo>} locales
-   * @private
    */
-  onDictationLocalesSet_(locales) {
+  private onDictationLocalesSet_(locales: LocaleInfo[]): void {
     this.dictationLocalesList_ = locales;
     this.onDictationLocalesChanged_();
   }
@@ -255,9 +228,8 @@ class SettingsKeyboardAndTextInputPageElement extends
    * an array of menu options.
    * TODO(crbug.com/1195916): Use 'offline' to indicate to the user which
    * locales work offline with an icon in the select options.
-   * @private
    */
-  onDictationLocalesChanged_() {
+  private onDictationLocalesChanged_(): void {
     const currentLocale =
         this.get('prefs.settings.a11y.dictation_locale.value');
     this.dictationLocaleOptions_ =
@@ -276,10 +248,8 @@ class SettingsKeyboardAndTextInputPageElement extends
   /**
    * Calculates the Dictation locale subtitle based on the current
    * locale from prefs and the offline availability of that locale.
-   * @return {string}
-   * @private
    */
-  computeDictationLocaleSubtitle_() {
+  private computeDictationLocaleSubtitle_(): string {
     if (this.useDictationLocaleSubtitleOverride_) {
       // Only use the subtitle override once, since we still want the subtitle
       // to repsond to changes to the dictation locale.
@@ -311,14 +281,19 @@ class SettingsKeyboardAndTextInputPageElement extends
     return this.i18n('dictationLocaleSubLabelOffline', locale.name);
   }
 
-  /** @private */
-  onChangeDictationLocaleButtonClicked_() {
+  private onChangeDictationLocaleButtonClicked_(): void {
     this.showDictationLocaleMenu_ = true;
   }
 
-  /** @private */
-  onChangeDictationLocalesDialogClosed_() {
+  private onChangeDictationLocalesDialogClosed_(): void {
     this.showDictationLocaleMenu_ = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-keyboard-and-text-input-page':
+        SettingsKeyboardAndTextInputPageElement;
   }
 }
 
