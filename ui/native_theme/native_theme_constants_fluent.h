@@ -48,6 +48,16 @@ constexpr int kFluentScrollbarPressedArrowRectFallbackLength = 6;
 // Offset the arrow icon by this amount off-center, away from the thumb.
 constexpr int kFluentScrollbarArrowOffset = 1;
 
+// The font that supports the drawing of Fluent scrollbar arrow icons.
+// Currently, it's only available on Windows 11 by default.
+constexpr char kFluentScrollbarFont[] = "Segoe Fluent Icons";
+
+// Fluent scrollbar arrow code points.
+constexpr char kFluentScrollbarUpArrow[] = "\uEDDB";
+constexpr char kFluentScrollbarDownArrow[] = "\uEDDC";
+constexpr char kFluentScrollbarLeftArrow[] = "\uEDD9";
+constexpr char kFluentScrollbarRightArrow[] = "\uEDDA";
+
 }  // namespace ui
 
 #endif  // UI_NATIVE_THEME_NATIVE_THEME_CONSTANTS_FLUENT_H_

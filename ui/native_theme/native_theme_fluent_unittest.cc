@@ -5,7 +5,9 @@
 #include "ui/native_theme/native_theme_fluent.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/rect.h"
+#include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/native_theme/native_theme_constants_fluent.h"
 
 namespace ui {
@@ -13,67 +15,109 @@ namespace ui {
 class NativeThemeFluentTest : public ::testing::Test,
                               public ::testing::WithParamInterface<float> {
  protected:
-  int ArrowRectLength() const {
-    const int arrow_rect_length =
-        base::ClampFloor(kFluentScrollbarArrowRectLength * ScaleFromDIP());
-    return (TrackThickness() - arrow_rect_length) % 2 == 0
-               ? arrow_rect_length
-               : arrow_rect_length + 1;
+  void VerifyArrowRectCommonDimensions(const gfx::RectF& arrow_rect) const {
+    EXPECT_FALSE(arrow_rect.IsEmpty());
+    EXPECT_EQ(arrow_rect.width(), arrow_rect.height());
+    EXPECT_EQ(arrow_rect.width(), std::floor(arrow_rect.width()));
   }
 
-  // Returns an arrow rect x() coordinate for vertical arrows.
-  int ArrowRectX() const {
-    EXPECT_EQ((TrackThickness() - ArrowRectLength()) % 2, 0);
-    return base::ClampFloor((TrackThickness() - ArrowRectLength()) / 2.0f);
+  void VerifyArrowRectIsCentered(const gfx::RectF& button_rect,
+                                 const gfx::RectF& arrow_rect,
+                                 NativeTheme::Part part) const {
+    if (part == NativeTheme::kScrollbarUpArrow ||
+        part == NativeTheme::kScrollbarDownArrow) {
+      EXPECT_EQ(button_rect.CenterPoint().x(), arrow_rect.CenterPoint().x());
+      // Due to the offset the arrow rect is shifted from the center.
+      // See NativeThemeFluent::OffsetArrowRect() for more details. Same below.
+      EXPECT_NEAR(button_rect.CenterPoint().y(), arrow_rect.CenterPoint().y(),
+                  ScaleFromDIP() * 2);
+    } else {
+      EXPECT_EQ(button_rect.CenterPoint().y(), arrow_rect.CenterPoint().y());
+      EXPECT_NEAR(button_rect.CenterPoint().x(), arrow_rect.CenterPoint().x(),
+                  ScaleFromDIP() * 2);
+    }
   }
 
-  // Returns an arrow rect y() coordinate for vertical arrows.
-  int ArrowRectY() const {
-    const float dsf = ScaleFromDIP();
-    if (dsf == 1.f)
-      return 4;
-    if (dsf == 1.25f)
-      return 4;
-    if (dsf == 1.5f)
-      return 5;
-    if (dsf == 1.75f)
-      return 6;
-    if (dsf == 2.f)
-      return 8;
+  void VerifyArrowRectIsIntRect(const gfx::RectF& arrow_rect) const {
+    if (theme_.ArrowIconsAvailable())
+      return;
 
-    NOTREACHED();
-    return 0;
+    // Verify that an arrow rect with triangular arrows is an integer rect.
+    EXPECT_TRUE(IsNearestRectWithinDistance(arrow_rect, 0.01f));
   }
 
-  int ButtonLength() const {
-    return base::ClampFloor(kFluentScrollbarButtonSideLength * ScaleFromDIP());
+  void VerifyArrowRectLengthRatio(const gfx::RectF& button_rect,
+                                  const gfx::RectF& arrow_rect,
+                                  NativeTheme::State state) const {
+    const int smaller_button_side =
+        std::min(button_rect.width(), button_rect.height());
+    if (state == NativeTheme::kNormal) {
+      // Default state arrows are slightly bigger than the half of the button's
+      // smaller side (track thickness).
+      EXPECT_GT(arrow_rect.width(), smaller_button_side / 2.0f);
+      EXPECT_LT(arrow_rect.width(), smaller_button_side);
+    } else {
+      EXPECT_GT(arrow_rect.width(), smaller_button_side / 3.0f);
+      EXPECT_LT(arrow_rect.width(), smaller_button_side / 1.5f);
+    }
   }
 
-  int TrackThickness() const {
-    return base::ClampFloor(kFluentScrollbarThickness * ScaleFromDIP());
+  void VerifyArrowRect() const {
+    for (auto const& part :
+         {NativeTheme::kScrollbarUpArrow, NativeTheme::kScrollbarLeftArrow}) {
+      const gfx::RectF button_rect(ButtonRect(part));
+      for (auto const& state : {NativeTheme::kNormal, NativeTheme::kPressed}) {
+        const gfx::RectF arrow_rect =
+            theme_.GetArrowRect(ToNearestRect(button_rect), part, state);
+        VerifyArrowRectCommonDimensions(arrow_rect);
+        VerifyArrowRectIsIntRect(arrow_rect);
+        VerifyArrowRectIsCentered(button_rect, arrow_rect, part);
+        VerifyArrowRectLengthRatio(button_rect, arrow_rect, state);
+      }
+    }
+  }
+
+  gfx::RectF ButtonRect(NativeTheme::Part part) const {
+    const int button_length =
+        base::ClampFloor(kFluentScrollbarButtonSideLength * ScaleFromDIP());
+    const int track_thickness =
+        base::ClampFloor(kFluentScrollbarThickness * ScaleFromDIP());
+
+    if (part == NativeTheme::kScrollbarUpArrow ||
+        part == NativeTheme::kScrollbarDownArrow)
+      return gfx::RectF(0, 0, track_thickness, button_length);
+
+    return gfx::RectF(0, 0, button_length, track_thickness);
   }
 
   float ScaleFromDIP() const { return GetParam(); }
+
+  // Mocks the availability of the font for drawing arrow icons.
+  void SetArrowIconsAvailable(bool enabled) {
+    if (enabled) {
+      theme_.typeface_ = SkTypeface::MakeDefault();
+      EXPECT_TRUE(theme_.ArrowIconsAvailable());
+    } else {
+      theme_.typeface_ = nullptr;
+      EXPECT_FALSE(theme_.ArrowIconsAvailable());
+    }
+  }
+
+  NativeThemeFluent theme_{false};
 };
 
-TEST_P(NativeThemeFluentTest, VerticalArrowRectDefault) {
-  const gfx::Rect button_rect(0, 0, TrackThickness(), ButtonLength());
-  const NativeThemeFluent theme(false);
-
-  EXPECT_EQ(theme.GetArrowRect(button_rect, NativeTheme::kScrollbarUpArrow,
-                               NativeTheme::kNormal),
-            gfx::Rect(ArrowRectX(), ArrowRectY(), ArrowRectLength(),
-                      ArrowRectLength()));
+// Verify the dimensions of an arrow rect with triangular arrows for a given
+// button rect depending on the arrow direction and state.
+TEST_P(NativeThemeFluentTest, VerifyArrowRectWithTriangularArrows) {
+  SetArrowIconsAvailable(false);
+  VerifyArrowRect();
 }
 
-TEST_P(NativeThemeFluentTest, HorizontalArrowRectDefault) {
-  const gfx::Rect button_rect(0, 0, ButtonLength(), TrackThickness());
-  const NativeThemeFluent theme(false);
-
-  EXPECT_EQ(theme.GetArrowRect(button_rect, NativeTheme::kScrollbarLeftArrow,
-                               NativeTheme::kNormal),
-            gfx::Rect(ArrowRectY(), ArrowRectX(), ArrowRectLength(),
-                      ArrowRectLength()));
+// Verify the dimensions of an arrow rect with arrow icons for a given
+// button rect depending on the arrow direction and state.
+TEST_P(NativeThemeFluentTest, VerifyArrowRectWithArrowIcons) {
+  SetArrowIconsAvailable(true);
+  VerifyArrowRect();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -7,8 +7,13 @@
 #include "base/no_destructor.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/native_theme/native_theme_constants_fluent.h"
 
@@ -17,6 +22,13 @@ namespace ui {
 NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
     : NativeThemeBase(should_only_use_dark_colors) {
   scrollbar_width_ = kFluentScrollbarThickness;
+
+  const sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
+  SkFontStyleSet* font_style_set =
+      font_manager->matchFamily(kFluentScrollbarFont);
+  if (font_style_set->count()) {
+    typeface_ = sk_sp<SkTypeface>(font_style_set->matchStyle(SkFontStyle()));
+  }
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
@@ -144,21 +156,36 @@ void NativeThemeFluent::PaintArrow(cc::PaintCanvas* canvas,
   cc::PaintFlags flags;
   flags.setColor(arrow_color);
 
-  // TODO(crbug.com/1353576). Paint arrow icons if the font is available on the
-  // device.
-  const SkPath path = PathForArrow(GetArrowRect(rect, part, state), part);
-  canvas->drawPath(path, flags);
+  if (!ArrowIconsAvailable()) {
+    // Paint regular triangular arrows if the font with arrow icons is not
+    // available. GetArrowRect() returns the float rect but it is expected to be
+    // the integer rect in this case.
+    const SkPath path =
+        PathForArrow(ToNearestRect(GetArrowRect(rect, part, state)), part);
+    canvas->drawPath(path, flags);
+    return;
+  }
+
+  const gfx::RectF bounding_rect = GetArrowRect(rect, part, state);
+  // The bounding rect for an arrow is a square, so that we can use the width
+  // despite the arrow direction.
+  DCHECK(typeface_);
+  SkFont font(typeface_, bounding_rect.width());
+  font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
+  font.setSubpixel(true);
+  flags.setAntiAlias(true);
+  const char* arrow_code_point = GetArrowCodePointForScrollbarPart(part);
+  canvas->drawTextBlob(SkTextBlob::MakeFromString(arrow_code_point, font),
+                       bounding_rect.x(), bounding_rect.bottom(), flags);
 }
 
-gfx::Rect NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
-                                          Part part,
-                                          State state) const {
+gfx::RectF NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
+                                           Part part,
+                                           State state) const {
   int min_rect_side, max_rect_side;
   std::tie(min_rect_side, max_rect_side) =
       std::minmax(rect.width(), rect.height());
-  const int arrow_side = state == kPressed
-                             ? kFluentScrollbarPressedArrowRectFallbackLength
-                             : kFluentScrollbarArrowRectLength;
+  const int arrow_side = GetArrowSideLength(state);
 
   // Calculates the scaling ratio used to determine the arrow rect side length.
   const float arrow_to_button_side_scale_ratio =
@@ -166,14 +193,18 @@ gfx::Rect NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
   int side_length =
       base::ClampCeil(max_rect_side * arrow_to_button_side_scale_ratio);
 
-  // Add 1px to the side length if the difference between smaller button rect
-  // and arrow side length is odd to keep the arrow rect in the center as well
-  // as use int coordinates. This avoids the usage of anti-aliasing.
-  side_length += (min_rect_side - side_length) % 2;
-  gfx::Rect arrow_rect(
-      rect.x() + base::ClampFloor((rect.width() - side_length) / 2.0f),
-      rect.y() + base::ClampFloor((rect.height() - side_length) / 2.0f),
-      side_length, side_length);
+  gfx::RectF arrow_rect(rect);
+  if (ArrowIconsAvailable()) {
+    arrow_rect.ClampToCenteredSize(gfx::SizeF(side_length, side_length));
+  } else {
+    // Add 1px to the side length if the difference between smaller button rect
+    // and arrow side length is odd to keep the arrow rect in the center as well
+    // as use int coordinates. This avoids the usage of anti-aliasing.
+    side_length += (min_rect_side - side_length) % 2;
+    arrow_rect.ClampToCenteredSize(gfx::SizeF(side_length, side_length));
+    arrow_rect.set_origin(
+        gfx::PointF(std::floor(arrow_rect.x()), std::floor(arrow_rect.y())));
+  }
 
   // The end result is a centered arrow rect within the button rect with the
   // applied offset.
@@ -181,12 +212,21 @@ gfx::Rect NativeThemeFluent::GetArrowRect(const gfx::Rect& rect,
   return arrow_rect;
 }
 
-void NativeThemeFluent::OffsetArrowRect(gfx::Rect& arrow_rect,
+int NativeThemeFluent::GetArrowSideLength(State state) const {
+  if (state == NativeTheme::kPressed)
+    return ArrowIconsAvailable()
+               ? kFluentScrollbarPressedArrowRectLength
+               : kFluentScrollbarPressedArrowRectFallbackLength;
+
+  return kFluentScrollbarArrowRectLength;
+}
+
+void NativeThemeFluent::OffsetArrowRect(gfx::RectF& arrow_rect,
                                         Part part,
                                         int max_rect_side) const {
-  const int scaled_offset =
-      base::ClampRound(kFluentScrollbarArrowOffset * max_rect_side /
-                       static_cast<float>(kFluentScrollbarButtonSideLength));
+  const float scaled_offset =
+      std::round(kFluentScrollbarArrowOffset * max_rect_side /
+                 static_cast<float>(kFluentScrollbarButtonSideLength));
   switch (part) {
     case kScrollbarUpArrow:
       arrow_rect.Offset(0, -scaled_offset);
@@ -202,6 +242,23 @@ void NativeThemeFluent::OffsetArrowRect(gfx::Rect& arrow_rect,
       break;
     default:
       NOTREACHED();
+  }
+}
+
+const char* NativeThemeFluent::GetArrowCodePointForScrollbarPart(
+    Part part) const {
+  switch (part) {
+    case Part::kScrollbarUpArrow:
+      return kFluentScrollbarUpArrow;
+    case Part::kScrollbarDownArrow:
+      return kFluentScrollbarDownArrow;
+    case Part::kScrollbarLeftArrow:
+      return kFluentScrollbarLeftArrow;
+    case Part::kScrollbarRightArrow:
+      return kFluentScrollbarRightArrow;
+    default:
+      NOTREACHED();
+      return nullptr;
   }
 }
 
