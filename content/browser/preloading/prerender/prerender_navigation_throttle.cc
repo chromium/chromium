@@ -86,17 +86,9 @@ PrerenderNavigationThrottle::MaybeCreateThrottleFor(
       frame_tree_node->frame_tree()->is_prerendering()) {
     DCHECK(blink::features::IsPrerender2Enabled());
 
-    PrerenderHostRegistry* prerender_host_registry =
-        frame_tree_node->current_frame_host()
-            ->delegate()
-            ->GetPrerenderHostRegistry();
     PrerenderHost* prerender_host =
-        prerender_host_registry->FindNonReservedHostById(
-            frame_tree_node->frame_tree_node_id());
-    if (!prerender_host) {
-      // The prerender may be cancelled.
-      return nullptr;
-    }
+        static_cast<PrerenderHost*>(frame_tree_node->frame_tree()->delegate());
+    DCHECK(prerender_host);
 
     return base::WrapUnique(new PrerenderNavigationThrottle(navigation_handle));
   }
@@ -121,12 +113,8 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
     NavigationHandle* navigation_handle)
     : NavigationThrottle(navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
-  FrameTreeNode* ftn = navigation_request->frame_tree_node();
-  PrerenderHostRegistry* prerender_host_registry =
-      ftn->current_frame_host()->delegate()->GetPrerenderHostRegistry();
-  int ftn_id = ftn->frame_tree_node_id();
-  PrerenderHost* prerender_host =
-      prerender_host_registry->FindNonReservedHostById(ftn_id);
+  PrerenderHost* prerender_host = static_cast<PrerenderHost*>(
+      navigation_request->frame_tree_node()->frame_tree()->delegate());
   DCHECK(prerender_host);
 
   // This throttle is responsible for setting the initial navigation id on the
@@ -152,18 +140,15 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   DCHECK(frame_tree_node->IsMainFrame());
   DCHECK(frame_tree_node->frame_tree()->is_prerendering());
 
-  // Get the prerender host of the prerendering page.
   PrerenderHostRegistry* prerender_host_registry =
       frame_tree_node->current_frame_host()
           ->delegate()
           ->GetPrerenderHostRegistry();
+
+  // Get the prerender host of the prerendering page.
   PrerenderHost* prerender_host =
-      prerender_host_registry->FindNonReservedHostById(
-          frame_tree_node->frame_tree_node_id());
-  if (!prerender_host) {
-    // prerender may be cancelled.
-    return CANCEL;
-  }
+      static_cast<PrerenderHost*>(frame_tree_node->frame_tree()->delegate());
+  DCHECK(prerender_host);
 
   // Navigations after the initial prerendering navigation are disallowed.
   if (*prerender_host->GetInitialNavigationId() !=
