@@ -80,6 +80,15 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
       FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
 }
 
+TEST_F(FirstPartySetsNavigationThrottleTest,
+       MaybeCreateNavigationThrottle_ServiceNotReady) {
+  // Create throttle for main frames.
+  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
+  ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  EXPECT_TRUE(
+      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+}
+
 TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Defer) {
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());

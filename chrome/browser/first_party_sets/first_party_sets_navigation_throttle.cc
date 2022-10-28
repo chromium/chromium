@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -25,20 +24,15 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 }  // namespace
 
 FirstPartySetsNavigationThrottle::FirstPartySetsNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle),
-      profile_(*Profile::FromBrowserContext(
-          navigation_handle->GetWebContents()->GetBrowserContext())) {}
+    content::NavigationHandle* navigation_handle,
+    FirstPartySetsPolicyService& service)
+    : content::NavigationThrottle(navigation_handle), service_(service) {}
 
 FirstPartySetsNavigationThrottle::~FirstPartySetsNavigationThrottle() = default;
 
 ThrottleCheckResult FirstPartySetsNavigationThrottle::WillStartRequest() {
-  FirstPartySetsPolicyService* service =
-      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile_);
-  // FirstPartySetsPolicyService is always created.
-  DCHECK(service);
-  if (!service->is_ready()) {
-    service->RegisterThrottleResumeCallback(base::BindOnce(
+  if (!service_->is_ready()) {
+    service_->RegisterThrottleResumeCallback(base::BindOnce(
         &FirstPartySetsNavigationThrottle::Resume, weak_factory_.GetWeakPtr()));
     return content::NavigationThrottle::DEFER;
   }
@@ -53,11 +47,16 @@ std::unique_ptr<FirstPartySetsNavigationThrottle>
 FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+          navigation_handle->GetWebContents()->GetBrowserContext());
   if (!features::kFirstPartySetsClearSiteDataOnChangedSets.Get() ||
-      navigation_handle->GetParentFrameOrOuterDocument()) {
+      navigation_handle->GetParentFrameOrOuterDocument() ||
+      service->is_ready()) {
     return nullptr;
   }
-  return std::make_unique<FirstPartySetsNavigationThrottle>(navigation_handle);
+  return std::make_unique<FirstPartySetsNavigationThrottle>(navigation_handle,
+                                                            *service);
 }
 
 }  // namespace first_party_sets

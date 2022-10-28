@@ -15,28 +15,31 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-class Profile;
-
 namespace first_party_sets {
+
+class FirstPartySetsPolicyService;
 
 // Observes navigations and defers navigations of outermost frames on
 // First-Party Sets initialization during startup.
 class FirstPartySetsNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit FirstPartySetsNavigationThrottle(content::NavigationHandle* handle);
+  explicit FirstPartySetsNavigationThrottle(
+      content::NavigationHandle* handle,
+      FirstPartySetsPolicyService& service);
   ~FirstPartySetsNavigationThrottle() override;
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   const char* GetNameForLogging() override;
 
-  // Only create throttle if FPS clearing is enabled and this is the outermost
-  // frame navigation; returns nullptr otherwise.
+  // Only create throttle if FPS initialization has not completed and FPS
+  // clearing is enabled and this is the outermost frame navigation; returns
+  // nullptr otherwise.
   static std::unique_ptr<FirstPartySetsNavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
 
  private:
-  raw_ref<Profile> profile_;
+  raw_ref<FirstPartySetsPolicyService> service_;
 
   base::WeakPtrFactory<FirstPartySetsNavigationThrottle> weak_factory_{this};
 };
