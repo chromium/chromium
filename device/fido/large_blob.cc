@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "crypto/aead.h"
@@ -29,10 +30,9 @@ std::array<uint8_t, kAssociatedDataLength> GenerateLargeBlobAdditionalData(
   std::array<uint8_t, kAssociatedDataLength> additional_data;
   const std::array<uint8_t, 8>& size_array =
       fido_parsing_utils::Uint64LittleEndian(size);
-  std::copy(kLargeBlobADPrefix.begin(), kLargeBlobADPrefix.end(),
-            additional_data.begin());
-  std::copy(size_array.begin(), size_array.end(),
-            additional_data.begin() + kLargeBlobADPrefix.size());
+  base::ranges::copy(kLargeBlobADPrefix, additional_data.begin());
+  base::ranges::copy(size_array,
+                     additional_data.begin() + kLargeBlobADPrefix.size());
   return additional_data;
 }
 
@@ -217,7 +217,7 @@ LargeBlobData::LargeBlobData(
     base::span<const uint8_t, kLargeBlobArrayNonceLength> nonce,
     int64_t orig_size)
     : ciphertext_(std::move(ciphertext)), orig_size_(std::move(orig_size)) {
-  std::copy(nonce.begin(), nonce.end(), nonce_.begin());
+  base::ranges::copy(nonce, nonce_.begin());
 }
 LargeBlobData::LargeBlobData(LargeBlobKey key, LargeBlob large_blob)
     : orig_size_(large_blob.original_size) {

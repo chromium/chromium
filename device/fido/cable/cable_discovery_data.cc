@@ -144,8 +144,7 @@ absl::optional<std::unique_ptr<Pairing>> Pairing::Parse(
   pairing->id = its[1]->second.GetBytestring();
   pairing->secret = its[2]->second.GetBytestring();
   const std::vector<uint8_t>& peer_public_key = its[3]->second.GetBytestring();
-  std::copy(peer_public_key.begin(), peer_public_key.end(),
-            pairing->peer_public_key_x962.begin());
+  base::ranges::copy(peer_public_key, pairing->peer_public_key_x962.begin());
   pairing->name = name_it->second.GetString();
 
   if (!VerifyPairingSignature(local_identity_seed,

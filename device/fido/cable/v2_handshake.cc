@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
 #include <array>
 #include <type_traits>
 
@@ -13,6 +14,7 @@
 #include "base/bits.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -64,7 +66,7 @@ bool ConstructNonce(uint32_t counter,
            sizeof(counter));
   } else {
     memcpy(counter_bytes.data(), &counter, sizeof(counter));
-    std::copy(counter_bytes.begin(), counter_bytes.end(), out_nonce.begin());
+    base::ranges::copy(counter_bytes, out_nonce.begin());
     std::fill(out_nonce.begin() + counter_bytes.size(), out_nonce.end(), 0);
   }
   return true;
@@ -399,7 +401,7 @@ absl::optional<Components> Parse(const std::string& qr_url) {
   if (qr_secret.size() != ret.secret.size()) {
     return absl::nullopt;
   }
-  std::copy(qr_secret.begin(), qr_secret.end(), ret.secret.begin());
+  base::ranges::copy(qr_secret, ret.secret.begin());
 
   absl::optional<std::array<uint8_t, device::kP256X962Length>> peer_identity =
       DecompressPublicKey(compressed_public_key);

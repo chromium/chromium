@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <array>
 #include <iterator>
 #include <utility>
@@ -16,6 +15,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "crypto/sha2.h"
@@ -60,7 +60,7 @@ absl::optional<std::vector<uint8_t>> MaterializeOrNull(
 template <size_t N>
 std::array<uint8_t, N> Materialize(base::span<const uint8_t, N> span) {
   std::array<uint8_t, N> array;
-  std::copy(span.begin(), span.end(), array.begin());
+  base::ranges::copy(span, array.begin());
   return array;
 }
 
@@ -99,7 +99,7 @@ bool ExtractArray(base::span<const uint8_t> span,
   if (extracted_span.size() != N)
     return false;
 
-  std::copy(extracted_span.begin(), extracted_span.end(), array->begin());
+  base::ranges::copy(extracted_span, array->begin());
   return true;
 }
 

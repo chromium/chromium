@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
@@ -203,8 +204,9 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
   // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
   // If the session request has succeeded, we can assume that the required
   // features are supported.
-  std::copy(required_features.begin(), required_features.end(),
-            std::inserter(enabled_features_, enabled_features_.begin()));
+  base::ranges::copy(
+      required_features,
+      std::inserter(enabled_features_, enabled_features_.begin()));
   std::copy_if(optional_features.begin(), optional_features.end(),
                std::inserter(enabled_features_, enabled_features_.begin()),
                openxr_extension_enabled_filter);

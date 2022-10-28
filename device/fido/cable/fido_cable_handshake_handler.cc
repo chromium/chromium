@@ -4,12 +4,12 @@
 
 #include "device/fido/cable/fido_cable_handshake_handler.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/cbor/reader.h"
@@ -60,20 +60,18 @@ ConstructHandshakeMessage(base::StringPiece handshake_key,
   if (!hmac.Init(handshake_key))
     return absl::nullopt;
 
-  std::array<uint8_t, 32> client_hello_mac;
+  std::array<uint8_t, kCableHandshakeMacMessageSize> client_hello_mac;
   if (!hmac.Sign(fido_parsing_utils::ConvertToStringPiece(*client_hello),
                  client_hello_mac.data(), client_hello_mac.size())) {
     return absl::nullopt;
   }
 
   DCHECK_EQ(kClientHelloMessageSize,
-            client_hello->size() + kCableHandshakeMacMessageSize);
+            client_hello->size() + client_hello_mac.size());
   std::array<uint8_t, kClientHelloMessageSize> handshake_message;
-  std::copy(client_hello->begin(), client_hello->end(),
-            handshake_message.begin());
-  std::copy(client_hello_mac.begin(),
-            client_hello_mac.begin() + kCableHandshakeMacMessageSize,
-            handshake_message.begin() + client_hello->size());
+  base::ranges::copy(*client_hello, handshake_message.begin());
+  base::ranges::copy(client_hello_mac,
+                     handshake_message.begin() + client_hello->size());
 
   return handshake_message;
 }

@@ -115,8 +115,8 @@ void HidHapticGamepad::SetVibration(mojom::GamepadEffectParametersPtr params) {
     // Vibration magnitude must not overrun the report buffer.
     DCHECK_LE(strong_offset_bytes_ + vibration_bytes.size(),
               report_length_bytes_);
-    std::copy(vibration_bytes.begin(), vibration_bytes.end(),
-              control_report.begin() + strong_offset_bytes_);
+    base::ranges::copy(vibration_bytes,
+                       control_report.begin() + strong_offset_bytes_);
   } else {
     // Dual channel vibration.
     std::vector<uint8_t> left_bytes;
@@ -134,10 +134,10 @@ void HidHapticGamepad::SetVibration(mojom::GamepadEffectParametersPtr params) {
     // The strong and weak vibration magnitude fields must not overlap.
     DCHECK(strong_offset_bytes_ + left_bytes.size() <= weak_offset_bytes_ ||
            weak_offset_bytes_ + right_bytes.size() <= strong_offset_bytes_);
-    std::copy(left_bytes.begin(), left_bytes.end(),
-              control_report.begin() + strong_offset_bytes_);
-    std::copy(right_bytes.begin(), right_bytes.end(),
-              control_report.begin() + weak_offset_bytes_);
+    base::ranges::copy(left_bytes,
+                       control_report.begin() + strong_offset_bytes_);
+    base::ranges::copy(right_bytes,
+                       control_report.begin() + weak_offset_bytes_);
   }
   writer_->WriteOutputReport(control_report);
 }
