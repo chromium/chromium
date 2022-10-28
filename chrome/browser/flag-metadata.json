@@ -6707,7 +6707,7 @@
   },
   {
     "name": "trust-tokens",
-    "owners": [ "svaldez", "privacy-sandbox-dev" ],
+    "owners": [ "svaldez", "aykutb@google.com" ],
     "expiry_milestone": 105
   },
   {
