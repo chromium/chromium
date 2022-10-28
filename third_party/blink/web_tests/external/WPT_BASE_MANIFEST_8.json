@@ -860,6 +860,27 @@
        ]
       ],
       "repeated-section": {
+       "border-spacing-taller-than-fragmentainer-001-crash.html": [
+        "dc87e5dd4fa904b648c07a2594e905fc806a01e8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "border-spacing-taller-than-fragmentainer-002-crash.html": [
+        "778c1c61c165b31569b3c0f383793098fc28a486",
+        [
+         null,
+         {}
+        ]
+       ],
+       "border-spacing-taller-than-fragmentainer-003-crash.html": [
+        "ce7a13282b2859b91e49e05f8e4e051974fee2c5",
+        [
+         null,
+         {}
+        ]
+       ],
        "nested-repeated-header-crash.html": [
         "1dffcf821a113b6afe6c4205cee892007f83eb30",
         [
@@ -89509,6 +89530,19 @@
        ],
        "repeated-header-border-spacing.tentative.html": [
         "7471c342a90f118ef7a33ac42a1fc9921617729e",
+        [
+         null,
+         [
+          [
+           "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "tall-monolithic-after-repeated-header.tentative.html": [
+        "8ded5f5f17e38c1e2b56b550fea1d871519a5481",
         [
          null,
          [
@@ -236043,6 +236077,36 @@
        {}
       ]
      ]
+    },
+    "orb": {
+     "tentative": {
+      "img-png-mislabeled-as-html.sub.html": [
+       "aa03f4db636f788e00673e896e78a1056f92cea6",
+       [
+        null,
+        [
+         [
+          "/fetch/orb/tentative/img-png-mislabeled-as-html.sub-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "img-png-unlabeled.sub.html": [
+       "77415f6af1dfc1037d3fce38e13a7116c0fcdc27",
+       [
+        null,
+        [
+         [
+          "/fetch/orb/tentative/img-png-unlabeled.sub-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     }
     }
    },
    "forced-colors-mode": {
@@ -255454,6 +255518,10 @@
      "545f0bec6d9822e7862fc4010fb8d52d3dc4b768",
      []
     ],
+    "back-forward-cache-open-connection.window-expected.txt": [
+     "2dcffa0f1274add67549e79ac56681157cfb95b2",
+     []
+    ],
     "idb-partitioned-basic.tentative.sub-expected.txt": [
      "f34c47c662d47df8d9de74ea270b98d243614c54",
      []
@@ -255972,11 +256040,11 @@
     },
     "sign_verify": {
      "ecdsa.js": [
-      "6133a7ecba290c8e799ced180ab53af9358f4add",
+      "6bf662adcc547fbf53e98942460fba2b54d51093",
       []
      ],
      "ecdsa_vectors.js": [
-      "e605821aebf92134aec1d756f4037d27fd6e98f3",
+      "2d1fb6d5c9e80bbc1b4ece377a4743f7ed371bb7",
       []
      ],
      "eddsa.https.any-expected.txt": [
@@ -256004,7 +256072,7 @@
       []
      ],
      "rsa.js": [
-      "7a38089ec36343f312d53ee2621a86c2722dba2f",
+      "3eb79fb0131d25e3974bd62d2293d59ce0fd2957",
       []
      ],
      "rsa_pkcs_vectors.js": [
@@ -314494,6 +314562,40 @@
       ]
      }
     },
+    "orb": {
+     "resources": {
+      "js-unlabeled.js": [
+       "a880a5bc724a8571459eef0fe9dc23b86ff3a01e",
+       []
+      ],
+      "png-mislabeled-as-html.png": [
+       "820f8cace2143bfc45c0c301e84b6c29b8630068",
+       []
+      ],
+      "png-mislabeled-as-html.png.headers": [
+       "156209f9c81ff73b6aaf1a0734ef770ddf0a8e3e",
+       []
+      ],
+      "png-unlabeled.png": [
+       "820f8cace2143bfc45c0c301e84b6c29b8630068",
+       []
+      ]
+     },
+     "tentative": {
+      "img-mime-types-coverage.tentative.sub-expected.txt": [
+       "0ace58c3df95639cb99630cb1c1536c51f351f28",
+       []
+      ],
+      "img-png-mislabeled-as-html.sub-ref.html": [
+       "66462fb5e3ce2d0a2528bd72ece0e5a3419514ea",
+       []
+      ],
+      "img-png-unlabeled.sub-ref.html": [
+       "2d5e3bb8b58610ae8fd36d9c98ff6d08c6d4cb8b",
+       []
+      ]
+     }
+    },
     "origin": {
      "assorted.window-expected.txt": [
       "1c2da8742f2a7f567e614b507a7a6d1abde66c40",
@@ -316708,6 +316810,10 @@
         ],
         "inflight-fetch-helper.js": [
          "7832003b76b9518d5f3588bb5e9f6e0dbd8cea07",
+         []
+        ],
+        "rc-helper.js": [
+         "ef0da2da1ed8f9684637d48991b2ea9abfb986c9",
          []
         ],
         "service-worker.js": [
@@ -339086,7 +339192,7 @@
     ],
     "not-restored-reasons": {
      "test-helper.js": [
-      "26d2a3cd65b997c094365ee6e703ec6138655810",
+      "03ae1df3d3103c83f9b2487ed7f2281bfd861def",
       []
      ]
     },
@@ -360309,6 +360415,36 @@
      [
       null,
       {}
+     ]
+    ],
+    "back-forward-cache-open-connection.window.js": [
+     "b0abd651feba6894996798726c2431142300ed1e",
+     [
+      "IndexedDB/back-forward-cache-open-connection.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "BFCache support test for page with open IndexedDB connection"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ]
+       ]
+      }
      ]
     ],
     "bigint_value.htm": [
@@ -426253,6 +426389,15 @@
         }
        ]
       ],
+      "scrollend-event-handler-content-attributes.html": [
+       "60e9da72c38d546dae1e29c0a9c1cc7e8e053584",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "scrollend-event-not-fired-after-removing-scroller.tentative.html": [
        "95447fbd12ea2a0c149d196a3ef0fe681ea03131",
        [
@@ -457170,6 +457315,24 @@
        {}
       ]
      ]
+    },
+    "orb": {
+     "tentative": {
+      "img-mime-types-coverage.tentative.sub.html": [
+       "5dc6c5d63afca55fb5f7bad5b9849224fcf203cf",
+       [
+        null,
+        {}
+       ]
+      ],
+      "script-unlabeled.sub.html": [
+       "4987f1307e73783a25ac7a6c2a4ae4d870489c18",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     },
     "origin": {
      "assorted.window.js": [
@@ -528316,7 +528479,7 @@
     ],
     "not-restored-reasons": {
      "performance-navigation-timing-bfcache-reasons-stay.window.js": [
-      "d0b7e100d8ca1d1519dcff7671b37bcd688067fb",
+      "a39663f3d8661f4f68e8d254267f776fed6ffebb",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-bfcache-reasons-stay.window.html",
        {
@@ -528343,6 +528506,10 @@
          ],
          [
           "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+         ],
+         [
+          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
@@ -528354,7 +528521,7 @@
       ]
      ],
      "performance-navigation-timing-bfcache.window.js": [
-      "96a79fd1b5d001529e4bf10a67051b7357de4c89",
+      "82c4c9bdd85e40730bbdc0ef7749c23e50bbcf6c",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-bfcache.window.html",
        {
@@ -528381,6 +528548,10 @@
          ],
          [
           "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+         ],
+         [
+          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ]
         ]
@@ -528388,7 +528559,7 @@
       ]
      ],
      "performance-navigation-timing-cross-origin-bfcache.window.js": [
-      "bca00af6e10f510ca3f6bee3ff173576e0d5b205",
+      "222ed3b54a29981a2b7e0bbc48ffca81073ea021",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-cross-origin-bfcache.window.html",
        {
@@ -528415,6 +528586,10 @@
          ],
          [
           "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+         ],
+         [
+          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
@@ -528426,7 +528601,7 @@
       ]
      ],
      "performance-navigation-timing-not-bfcached.window.js": [
-      "3dd13b2152dcaeaea5ff2c8cd62bee4aae7a2870",
+      "7bbc59e94bd7fdd5d9ce1f279ad86d89ee88f60e",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-not-bfcached.window.html",
        {
@@ -528453,6 +528628,10 @@
          ],
          [
           "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+         ],
+         [
+          "script",
           "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
          ],
          [
@@ -528464,7 +528643,7 @@
       ]
      ],
      "performance-navigation-timing-same-origin-bfcache.window.js": [
-      "db1051c3bb01f62aa817b60cc179223b8885ce15",
+      "36ec53364b56c386bc59849cd905a1b24069c95a",
       [
        "performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html",
        {
@@ -528488,6 +528667,10 @@
          [
           "script",
           "/common/utils.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
          ],
          [
           "script",
@@ -529054,7 +529237,7 @@
       ]
      ],
      "unload-allowed-by-default.tentative.window.js": [
-      "6db5291ebb65562e2fe2f32f29ebf250f871ccb3",
+      "3fdc9ed047a4ac0481b28a59b9e7ea3ddb82cd13",
       [
        "permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html",
        {
@@ -529066,6 +529249,10 @@
          [
           "script",
           "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
          ],
          [
           "script",
