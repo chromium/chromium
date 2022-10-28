@@ -205,8 +205,6 @@ class ClientCertificateDelegate;
 class ControllerPresentationServiceDelegate;
 class DevToolsManagerDelegate;
 class DirectSocketsDelegate;
-class DocumentOverlayWindow;
-class DocumentPictureInPictureWindowController;
 class FeatureObserverClient;
 class FontAccessDelegate;
 class HidDelegate;
@@ -1964,18 +1962,15 @@ class CONTENT_EXPORT ContentBrowserClient {
       RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
-  // Creates an OverlayWindow to be used for video or document
-  // Picture-in-Picture respectively. This window will house the content shown
-  // when in Picture-in-Picture mode. This will return a new OverlayWindow.
+  // Creates an OverlayWindow to be used for video or Picture-in-Picture.
+  // This window will house the content shown when in Picture-in-Picture mode.
+  // This will return a new OverlayWindow.
   //
   // May return nullptr if embedder does not support this functionality. The
   // default implementation provides nullptr OverlayWindow.
   virtual std::unique_ptr<VideoOverlayWindow>
   CreateWindowForVideoPictureInPicture(
       VideoPictureInPictureWindowController* controller);
-  virtual std::unique_ptr<DocumentOverlayWindow>
-  CreateWindowForDocumentPictureInPicture(
-      DocumentPictureInPictureWindowController* controller);
 
   // Registers the watcher to observe updates in RendererPreferences.
   virtual void RegisterRendererPreferenceWatcher(

@@ -455,10 +455,6 @@ void OverlayWindowViews::RecordButtonPressed(
 }
 
 void OverlayWindowViews::ForceControlsVisibleForTesting(bool visible) {
-  ForceControlsVisible(visible);
-}
-
-void OverlayWindowViews::ForceControlsVisible(bool visible) {
   force_controls_visible_ = visible;
   UpdateControlsVisibility(visible);
 }

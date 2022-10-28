@@ -6019,18 +6019,6 @@ ChromeContentBrowserClient::CreateWindowForVideoPictureInPicture(
   return content::VideoOverlayWindow::Create(controller);
 }
 
-std::unique_ptr<content::DocumentOverlayWindow>
-ChromeContentBrowserClient::CreateWindowForDocumentPictureInPicture(
-    content::DocumentPictureInPictureWindowController* controller) {
-  // Note: content::DocumentOverlayWindow::Create() is defined by
-  // platform-specific implementation in chrome/browser/ui/views. This layering
-  // hack, which goes through //content and ContentBrowserClient, allows us to
-  // work around the dependency constraints that disallow directly calling
-  // chrome/browser/ui/views code either from here or from other code in
-  // chrome/browser.
-  return content::DocumentOverlayWindow::Create(controller);
-}
-
 void ChromeContentBrowserClient::RegisterRendererPreferenceWatcher(
     content::BrowserContext* browser_context,
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {

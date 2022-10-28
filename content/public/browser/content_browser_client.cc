@@ -1109,12 +1109,6 @@ ContentBrowserClient::CreateWindowForVideoPictureInPicture(
   return nullptr;
 }
 
-std::unique_ptr<DocumentOverlayWindow>
-ContentBrowserClient::CreateWindowForDocumentPictureInPicture(
-    DocumentPictureInPictureWindowController* controller) {
-  return nullptr;
-}
-
 void ContentBrowserClient::RegisterRendererPreferenceWatcher(
     BrowserContext* browser_context,
     mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher) {

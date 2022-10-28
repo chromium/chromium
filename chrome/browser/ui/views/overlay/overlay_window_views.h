@@ -16,9 +16,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
-// Base class for the Chrome desktop implementation of VideoOverlayWindow and
-// DocumentOverlayWindow. This will only be implemented in views, which will
-// support all desktop platforms.
+// Base class for the Chrome desktop implementation of VideoOverlayWindow.
+// This will only be implemented in views, which will support all desktop
+// platforms.
 //
 // This class is a views::Widget. The subclasses implement the needed
 // methods for their corresponding OverlayWindow subclass.
@@ -89,9 +89,7 @@ class OverlayWindowViews : public views::Widget,
   // Updates the controls view::Views to reflect |is_visible|.
   void UpdateControlsVisibility(bool is_visible);
 
-  // DocumentOverlayWindowViews currently always forces the controls
-  // to be visible. VideoOverlayWindowViews does so for testing.
-  void ForceControlsVisible(bool visible);
+  // VideoOverlayWindowViews does this for testing.
   void ForceControlsVisibleForTesting(bool visible);
 
   // Determines whether a layout of the window controls has been scheduled but

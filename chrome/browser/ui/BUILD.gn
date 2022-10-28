@@ -4688,8 +4688,6 @@ static_library("ui") {
       "views/overlay/close_image_button.cc",
       "views/overlay/close_image_button.h",
       "views/overlay/constants.h",
-      "views/overlay/document_overlay_window_views.cc",
-      "views/overlay/document_overlay_window_views.h",
       "views/overlay/hang_up_button.cc",
       "views/overlay/hang_up_button.h",
       "views/overlay/overlay_window_image_button.cc",
