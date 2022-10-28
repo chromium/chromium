@@ -3685,6 +3685,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4394049700291259645">Deaktiveer</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Maak almal &amp;oop}=1{Maak boekmerk &amp;oop}other{Maak almal ({COUNT}) &amp;oop}}</translation>
 <translation id="4397372003838952832">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal in <ph name="GOOGLE_PASSWORD_MANAGER" /> gestoor word vir <ph name="EMAIL" /></translation>
+<translation id="4397844455100743910">Kom meer te wete oor toegangversoeke.</translation>
 <translation id="439817266247065935">Jou toestel het nie reg afgeskakel nie. Herbegin Linux om Linux-programme te gebruik.</translation>
 <translation id="4400367121200150367">Werwe wat nooit wagwoorde stoor nie, sal hier verskyn</translation>
 <translation id="4400632832271803360">Hou die Lanseerder-sleutel in om te verander wat die boonste ry sleutels doen</translation>
@@ -4053,6 +4054,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4733793249294335256">Ligging</translation>
 <translation id="473546211690256853">Hierdie rekening word bestuur deur <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Omkring wyser</translation>
+<translation id="4735793370946506039">Kom meer te wete oor Verbeterde Veiligblaai.</translation>
 <translation id="4735803855089279419">Die stelsel kon nie toestelidentifiseerders vir hierdie toestel bepaal nie.</translation>
 <translation id="4736292055110123391">Sinkroniseer jou boekmerke, wagwoorde, geskiedenis en meer op al jou toestelle</translation>
 <translation id="473775607612524610">Dateer op</translation>
@@ -4081,6 +4083,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Hierdie toestel sal 1 maand lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}other{Hierdie toestel sal {MONTHS} maande lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}}</translation>
 <translation id="4765582662863429759">Laat Android Boodskappe toe om SMS'e van jou foon af na jou Chromebook toe oor te dra</translation>
 <translation id="4766598565665644999">Alle uitbreidings kan <ph name="HOST" /> lees en verander</translation>
+<translation id="4767427586072640478">Kom meer te wete oor gedeaktiveerde uitbreidings.</translation>
 <translation id="4768332406694066911">Jy het sertifikate van hierdie organisasies af wat jou identifiseer</translation>
 <translation id="4770119228883592393">Toestemming is versoek; druk ⌘ + Option + afpyl om te antwoord</translation>
 <translation id="4773112038801431077">Gradeer Linux op</translation>
@@ -5159,6 +5162,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5799508265798272974">Linux- virtuele masjien: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Bestemminglêer is afgekap of verwyder sedert die laaste aflaai.</translation>
 <translation id="5800351251499368110">Maak soekbladsy in kantpaneel toe Soekbladsy is oop in die kantpaneel.</translation>
+<translation id="5801051031414037185">Stel foon op</translation>
 <translation id="5801568494490449797">Voorkeure</translation>
 <translation id="5804241973901381774">Toestemmings</translation>
 <translation id="5805268472388605531">Druk en hou sleutelbordsleutels om aksentmerke en spesiale karakters te sien</translation>
@@ -5450,6 +5454,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> word nie op hierdie toestel toegelaat nie. Kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stop opname</translation>
 <translation id="6073903501322152803">Voeg toeganklikheidkenmerke by</translation>
+<translation id="6075075631258766703">Verifieer foonnommer</translation>
 <translation id="6075731018162044558">Oeps! Die stelsel kon nie 'n langtermyn-API-toegangbewys vir hierdie toestel verkry nie.</translation>
 <translation id="6075907793831890935">Ruil data uit met die toestel genaamd <ph name="HOSTNAME" /></translation>
 <translation id="6076175485108489240">Gebruik ligging. Laat programme en dienste met liggingtoestemming toe om jou toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op 'n anonieme manier gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter. <ph name="BEGIN_LINK1" />Kom meer te wete<ph name="END_LINK1" /></translation>

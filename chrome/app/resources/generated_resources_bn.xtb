@@ -2433,6 +2433,7 @@
 <translation id="3197453258332670132">ডানদিকের বোতামে ক্লিক করলে বা অনেকক্ষণ প্রেস করে ধরে রাখলে, আপনার বেছে নেওয়া টেক্সটের ব্যাপারে তথ্য দেখা যায়</translation>
 <translation id="3199127022143353223">সার্ভারসমূহ</translation>
 <translation id="3200061262156232574">আপনার শপিং কার্টে এগুলি রয়েছে</translation>
+<translation id="3201237270673604992">Z থেকে A</translation>
 <translation id="3201422919974259695">উপলভ্য ইউএসবি ডিভাইসগুলি এখানে দেখা যাবে।</translation>
 <translation id="3202131003361292969">পাথ</translation>
 <translation id="3202173864863109533">এই ট্যাবের অডিও মিউট করা হচ্ছে৷</translation>
@@ -3756,6 +3757,7 @@
 <translation id="4460014764210899310">আলাদা করুন</translation>
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-এর জন্য <ph name="TIME" /> টাইম লিমিট সেট করা হয়েছে</translation>
+<translation id="4465649939134800363">বাছাই করা বিকল্পগুলি</translation>
 <translation id="4466839823729730432">এখানে তোমার স্মৃতি দেখো</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-এর কাছে <ph name="FOLDERNAME" /> ফোল্ডারের ফাইল এডিট করার অনুমতি আছে</translation>
@@ -6273,6 +6275,7 @@
 <translation id="6843264316370513305">নেটওয়ার্ক ডিবাগিং</translation>
 <translation id="6843423766595476978">হ্যালো Google ব্যবহারের জন্য প্রস্তুত</translation>
 <translation id="6845038076637626672">সর্বাধিক খুলুন</translation>
+<translation id="6845231585063669905">A থেকে Z</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="PRINTER_NAME" /> নামের প্রিন্টারের মাধ্যমে <ph name="FILE_NAME" /> প্রিন্ট করতে চাইছে।</translation>
 <translation id="6847125920277401289">চালিয়ে যেতে জায়গা খালি করুন</translation>
 <translation id="6848388270925200958">এই মুহূর্তে, আপনার কাছে কিছু কার্ড রয়েছে যা শুধুমাত্র এই ডিভাইসে ব্যবহার করা যেতে পারে</translation>
@@ -7426,6 +7429,7 @@
 <translation id="7939073735115504773"><ph name="HOST" /> পড়তে ও পরিবর্তন করতে, এই এক্সটেনশনের আইকন ক্লিক করুন</translation>
 <translation id="7939328347457537652">ডিভাইস সার্টিফিকেট ম্যানেজ করুন</translation>
 <translation id="7939412583708276221">যে কোনও অবস্থাতেই রাখুন</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> অনুসারে সাজান</translation>
 <translation id="7941179291434537290">টেথারিং রেডিনেস:</translation>
 <translation id="7942349550061667556">লাল</translation>
 <translation id="7943368935008348579">পিডিএফ ফাইল ডাউনলোড করুন</translation>

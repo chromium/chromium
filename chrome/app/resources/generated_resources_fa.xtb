@@ -2429,6 +2429,7 @@
 <translation id="3197453258332670132">با کلیک راست یا فشار طولانی، اطلاعات مربوط به انتخاب نوشتار نمایش داده شود</translation>
 <translation id="3199127022143353223">سرورها</translation>
 <translation id="3200061262156232574">در سبد خرید</translation>
+<translation id="3201237270673604992">ی تا الف</translation>
 <translation id="3201422919974259695">‏دستگاه‌های USB دردسترس در اینجا نشان داده می‌شود.</translation>
 <translation id="3202131003361292969">مسیر</translation>
 <translation id="3202173864863109533">صدای این برگه قطع شده است.</translation>
@@ -3752,6 +3753,7 @@
 <translation id="4460014764210899310">لغو گروه‌بندی</translation>
 <translation id="4462159676511157176">سرورهای نام سفارشی</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> محدودیت زمانی برای <ph name="APP_NAME" /> تنظیم شده است</translation>
+<translation id="4465649939134800363">گزینه‌های مرتب‌سازی</translation>
 <translation id="4466839823729730432">خاطراتتان را اینجا ببینید</translation>
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> می‌تواند فایل‌های <ph name="FOLDERNAME" /> را ویرایش کند</translation>
@@ -6266,6 +6268,7 @@
 <translation id="6843264316370513305">اشکال‌زدایی شبکه</translation>
 <translation id="6843423766595476978">‏Ok Google کاملاً آماده است</translation>
 <translation id="6845038076637626672">باز کردن در حداکثر اندازه</translation>
+<translation id="6845231585063669905">الف تا ی</translation>
 <translation id="6846178040388691741">«<ph name="EXTENSION_NAME" />» می‌خواهد <ph name="FILE_NAME" /> را با <ph name="PRINTER_NAME" /> چاپ کند.</translation>
 <translation id="6847125920277401289">برای ادامه، فضا خالی کنید</translation>
 <translation id="6848388270925200958">درحال‌حاضر، کارت‌هایی دارید که فقط در این دستگاه قابل استفاده‌اند</translation>
@@ -7419,6 +7422,7 @@
 <translation id="7939073735115504773">برای خواندن و تغییر دادن <ph name="HOST" />، روی نماد این افزونه کلیک کنید</translation>
 <translation id="7939328347457537652">مدیریت گواهینامه‌های دستگاه</translation>
 <translation id="7939412583708276221">درهر حال حفظ شود</translation>
+<translation id="7940265372707990269">به‌ترتیب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>
 <translation id="7942349550061667556">قرمز</translation>
 <translation id="7943368935008348579">‏بارگیری فایل‌های PDF</translation>

@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">गेम्स</translation>
 <translation id="2678852583403169292">'चुनें और सुनें' मेन्यू</translation>
 <translation id="2689613560355655046">डेस्क 8</translation>
+<translation id="2695132445805301912">बटन और क्लिक दिखाएं</translation>
 <translation id="2695305337569143674">वेब</translation>
 <translation id="2697697418792422688">कीबोर्ड की सेटिंग दिखाएं. <ph name="KEYBOARD_NAME" /> को चुना गया है.</translation>
 <translation id="2700493154570097719">अपना कीबोर्ड सेट करें</translation>
@@ -1125,6 +1126,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">कैमरा बड़ा करें</translation>
 <translation id="731589979057211264">शेल्फ़ पार्टी मोड चालू है.</translation>
+<translation id="7340731148882810149">अपने-आप क्लिक होने की सुविधा वाला मेन्यू</translation>
 <translation id="7346909386216857016">ठीक है, समझ लिया</translation>
 <translation id="7348093485538360975">ऑन-स्‍क्रीन कीबोर्ड</translation>
 <translation id="735745346212279324">VPN डिसकनेक्ट है</translation>
@@ -1302,6 +1304,7 @@
 <translation id="826107067893790409">Enter दबाकर <ph name="USER_EMAIL_ADDRESS" /> के लिए अनलॉक करें</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8270450402312105425">{0,plural, =1{डिवाइस को एक घंटे के अंदर पिछले वर्शन पर ले जाएं}one{डिवाइस को # घंटे के अंदर पिछले वर्शन पर ले जाएं}other{डिवाइस को # घंटों के अंदर पिछले वर्शन पर ले जाएं}}</translation>
+<translation id="8277261673056602147">अपनी स्क्रीन पर मौजूद टेक्स्ट को हाइलाइट करें</translation>
 <translation id="8284362522226889623">पिछले डेस्क पर स्विच करने के लिए, चार उंगलियों से बाईं ओर स्वाइप करें</translation>
 <translation id="828708037801473432">बंद है</translation>
 <translation id="8297006494302853456">कमज़ोर</translation>

@@ -3667,6 +3667,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4394049700291259645">Deaktiv edin</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Hamısını açın}=1{&amp;Əlfəcini açın}other{&amp;Hamısını açın ({COUNT})}}</translation>
 <translation id="4397372003838952832">Bu parolu yadda saxlamağa ehtiyac yoxdur. <ph name="EMAIL" /> üçün burada saxlanılacaq: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="4397844455100743910">Giriş sorğuları haqqında ətraflı məlumat.</translation>
 <translation id="439817266247065935">Cihazınız düzgün qaydada söndürülməyib. Linux tətbiqlərindən istifadə etmək üçün Linux'u yenidən başladın.</translation>
 <translation id="4400367121200150367">Parolları heç vaxt yadda saxlamayan saytlar burada görünəcək</translation>
 <translation id="4400632832271803360">Üst sıradakı düymələrin funksiyasını dəyişmək üçün Başladıcı düyməsini basıb saxlayın</translation>
@@ -4034,6 +4035,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4733793249294335256">Məkan</translation>
 <translation id="473546211690256853">Bu hesab <ph name="DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="4735506354605317060">Dairəvi göstərici</translation>
+<translation id="4735793370946506039">Qabaqcıl Güvənli Baxış haqqında ətraflı məlumat.</translation>
 <translation id="4735803855089279419">Sistem bu cihazda cihaz identifikatorları aşkarlamadı.</translation>
 <translation id="4736292055110123391">Bütün cihazlardakı əlfəcin, parol, tarixçə və daha çoxunu sinxronizasiya edin</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
@@ -4062,6 +4064,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4765524037138975789">{MONTHS,plural, =1{Bu cihaz 1 ay saxlanacaq və növbəti dəfə kod olmadan qoşula bilərsiniz. Bu, administratorunuz tərəfindən ayarlanıb.}other{Bu cihaz {MONTHS} ay saxlanacaq və növbəti dəfə kod olmadan qoşula bilərsiniz. Bu, administratorunuz tərəfindən ayarlanıb.}}</translation>
 <translation id="4765582662863429759">Android Mesajın telefonunuzdan Chromebook'a mesaj ötürməsinə icazə verir</translation>
 <translation id="4766598565665644999">Bu artırmalar <ph name="HOST" /> domenini oxuya və dəyişə bilər</translation>
+<translation id="4767427586072640478">Deaktiv artırmalar haqqında ətraflı məlumat.</translation>
 <translation id="4768332406694066911">Bu təşkilatlardan Sizi tanıdacaq sertifikatlarınız var</translation>
 <translation id="4770119228883592393">İcazə tələb edilib, cavablandırmaq üçün ⌘ + Seçim + Aşağı ox düyməsini basın</translation>
 <translation id="4773112038801431077">Linux'u təkmilləşdirin</translation>

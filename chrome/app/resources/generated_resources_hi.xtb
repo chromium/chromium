@@ -896,6 +896,7 @@
 <translation id="1805967612549112634">पिन की पुष्टि करें</translation>
 <translation id="1806335016774576568">किसी दूसरे खुले हुए ऐप्लिकेशन पर स्विच करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
+<translation id="1809201888580326312">आपने इन ऐप्लिकेशन और साइटों के लिए पासवर्ड सेव न करने का विकल्प चुना है</translation>
 <translation id="1809483812148634490">जिन ऐप्लिकेशन को आपने Google Play से डाउनलोड किया था उन्हें इस Chromebook से मिटा दिया जाएगा.
     <ph name="LINE_BREAKS1" />
     आपने जो सामग्री खरीदी है, जैसे कि फ़िल्में, टीवी शो, संगीत, किताबें या दूसरी इन-ऐप्लिकेशन खरीदारी भी मिटाई जा सकती हैं.
@@ -1810,6 +1811,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> को सुरक्षित रूप से डाउनलोड नहीं किया जा सकता.</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="262154978979441594">Google Assistant की आवाज़ के नमूने को ट्रेनिंग दें</translation>
+<translation id="2621763461149967601"><ph name="FOLDER_TITLE" /> (<ph name="SORT_TYPE" /></translation>
 <translation id="26224892172169984">किसी भी साइट को प्रोटोकॉल प्रबंधित करने की अनुमति न दें</translation>
 <translation id="262373406453641243">कोलमैक कीबोर्ड इस्तेमाल करें</translation>
 <translation id="2624142942574147739">यह पेज आपके कैमरा और माइक्रोफ़ोन को ऐक्सेस कर रहा है.</translation>
@@ -2431,6 +2433,7 @@
 <translation id="3197453258332670132">दायां क्लिक करने या दबाकर रखने पर, आपके चुने गए टेक्स्ट से जुड़ी जानकारी दिखती है</translation>
 <translation id="3199127022143353223">सर्वर</translation>
 <translation id="3200061262156232574">आपके शॉपिंग कार्ट में</translation>
+<translation id="3201237270673604992">Z से A के क्रम में</translation>
 <translation id="3201422919974259695">उपलब्ध यूएसबी डिवाइस यहां दिखाई देंगे.</translation>
 <translation id="3202131003361292969">पाथ</translation>
 <translation id="3202173864863109533">इस टैब का ऑडियो म्‍यूट किया जा रहा है.</translation>
@@ -3753,6 +3756,7 @@
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
 <translation id="4462159676511157176">कस्टम नाम सर्वर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> के लिए <ph name="TIME" /> की समयसीमा तय की गई</translation>
+<translation id="4465649939134800363">क्रम में लगाने के विकल्प</translation>
 <translation id="4466839823729730432">अपनी यादें यहां देखें</translation>
 <translation id="4469324811108161144">पासवर्ड के नोट में <ph name="CHARACTER_LIMIT" /> वर्ण तक सेव किए जा सकते हैं.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> में जाकर फ़ाइलों में बदलाव कर सकती है</translation>
@@ -4961,6 +4965,7 @@
 <translation id="5612734644261457353">क्षमा करें, आपका पासवर्ड अब भी सत्यापित नहीं किया जा सकता. ध्यान दें: अगर आपने हाल ही में अपना पासवर्ड बदला है, तो आपके प्रस्थान करते ही आपका नया पासवर्ड लागू हो जाएगा, कृपया यहां पुराने पासवर्ड का उपयोग करें.</translation>
 <translation id="5614190747811328134">उपयोगकर्ता सूचना</translation>
 <translation id="5614553682702429503">पासवर्ड सेव करें?</translation>
+<translation id="5616571005307953937">बुकमार्क की गई सबसे पुरानी साइटें</translation>
 <translation id="5616726534702877126">साइज़ रिज़र्व करें</translation>
 <translation id="561698261642843490">Firefox बंद करें</translation>
 <translation id="5620540760831960151">इस सूची में मौजूद यूआरएल पर <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />
@@ -5592,6 +5597,7 @@
 <translation id="6212168817037875041">डिसप्ले बंद करें</translation>
 <translation id="6212752530110374741">लिंक ईमेल करें</translation>
 <translation id="621470880408090483">साइटों को ब्लूटूथ डिवाइसों से कनेक्ट करने की अनुमति न दें</translation>
+<translation id="6216239400972191926">ऐसी साइटें या ऐप्लिकेशन जिन्हें मंज़ूरी नहीं मिली है</translation>
 <translation id="6216601812881225442">आपके कंटेनर में साइज़ बदलने की सुविधा नहीं है. Linux के लिए पहले से तय की गई जगह में बदलाव करने के लिए, उसका बैक अप लें. इसके बाद, उसे नए कंटेनर में फिर से सेव करें.</translation>
 <translation id="6216696360484424239">अपने आप साइन इन करें</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> ऑफ़लाइन है. इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
@@ -6265,6 +6271,7 @@
 <translation id="6843264316370513305">नेटवर्क डीबग करना</translation>
 <translation id="6843423766595476978">Ok Google पूरी तरह तैयार है</translation>
 <translation id="6845038076637626672">बड़े दृश्य में खोलें</translation>
+<translation id="6845231585063669905">A से Z के क्रम में</translation>
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />", <ph name="FILE_NAME" /> को <ph name="PRINTER_NAME" /> इस्तेमाल करके प्रिंट करना चाहता है.</translation>
 <translation id="6847125920277401289">जारी रखने के लिए डिवाइस में स्पेस खाली करें</translation>
 <translation id="6848388270925200958">फ़िलहाल, आपके कुछ कार्ड सिर्फ़ इसी डिवाइस पर इस्तेमाल किए जा सकते हैं</translation>
@@ -7418,6 +7425,7 @@
 <translation id="7939073735115504773">इस एक्सटेंशन के आइकॉन पर क्लिक करें, ताकि एक्सटेंशन, <ph name="HOST" /> को पढ़ सके और उसमें बदलाव कर सके</translation>
 <translation id="7939328347457537652">डिवाइस के सर्टिफ़िकेट मैनेज करें</translation>
 <translation id="7939412583708276221">फिर भी रखें</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> के हिसाब से क्रम में लगाएं</translation>
 <translation id="7941179291434537290">टेदरिंग की जा सकती या नहीं:</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943368935008348579">पीडीएफ़ डाउनलोड करें</translation>
@@ -8073,7 +8081,7 @@
 <translation id="8549316893834449916">आप Chromebook में साइन इन करने के लिए, Google खाते का इस्तेमाल करेंगे. यह वही खाता है जिसे आप Gmail, Drive, YouTube वगैरह के लिए इस्तेमाल करते हैं.</translation>
 <translation id="8551388862522347954">लाइसेंस</translation>
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
-<translation id="8552102814346875916">"इन साइटों को हमेशा चालू रखें" सूची में सेव करें</translation>
+<translation id="8552102814346875916">"इन साइटों को हमेशा चालू रखें" सूची में जोड़ें</translation>
 <translation id="8553342806078037065">अन्य लोगों को प्रबंधित करें</translation>
 <translation id="8554899698005018844">कोई भाषा नहीं</translation>
 <translation id="855604308879080518">Android ऐप्लिकेशन को इस Chromebook में यूएसबी डिवाइसों को ऐक्सेस करने की अनुमति दें. यूएसबी डिवाइस को प्लग-इन किए जाने पर, हर बार अनुमति मांगी जाएगी. Android का हर ऐप्लिकेशन कुछ और भी अनुमतियां मांगेगा.</translation>

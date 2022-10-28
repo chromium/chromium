@@ -435,6 +435,7 @@
 <translation id="3413817803639110246">Ештеңе жоқ</translation>
 <translation id="3428447136709161042"><ph name="NETWORK_NAME" /> желісінен ажырату</translation>
 <translation id="3430396595145920809">Артқа оралу үшін оңнан солға қарай сырғытыңыз.</translation>
+<translation id="3431517721463707585">14-жұмыс үстелі</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="343571671045587506">Еске салғышты өңдеу</translation>
 <translation id="3435967511775410570">Саусақ ізі танылды.</translation>
@@ -675,6 +676,7 @@
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (сол)</translation>
 <translation id="4734965478015604180">Көлденең</translation>
+<translation id="4735944890391795473">12-жұмыс үстелі</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4740516757091333363">Сақталған жұмыс үстелін жою керек пе?</translation>
 <translation id="4752784485658729358">Тек сақталған 6 жұмыс үстеліне рұқсат етіледі. Жаңа жұмыс үстелін сақтау үшін олардың бірін өшіріңіз.</translation>
@@ -695,6 +697,7 @@
 <translation id="4860284199500934869"><ph name="FILENAME" /> файлын жүктеп алу үшін желі байланысын тексеріңіз.</translation>
 <translation id="486056901304535126">Жүктеп алу кейінірек қайталанады. Жүктеп алу аяқталғанша, айтылған сөз оны өңдеу үшін Google-ға жіберіледі.</translation>
 <translation id="4864369630010738180">Жүйеге кіруде…</translation>
+<translation id="4864648187878336334">15-жұмыс үстелі</translation>
 <translation id="4868492592575313542">іске қосылды</translation>
 <translation id="4872237917498892622">Alt+іздеу немесе Shift</translation>
 <translation id="4881695831933465202">Ашу</translation>
@@ -722,6 +725,7 @@
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
         <ph name="NUM_OTHER_NOTIFICATION" /></translation>
+<translation id="4987738733603015246">16-жұмыс үстелі</translation>
 <translation id="5003993274120026347">Келесі сөйлем</translation>
 <translation id="5016558321564993266">Ауыстырғыш белгілегіші. <ph name="STATE_TEXT" /></translation>
 <translation id="5030687792513154421">Уақыт бітті</translation>
@@ -738,6 +742,7 @@
 <translation id="5098537242461068432">Жұмыс үстелі мен терезелер қайта ашылды.</translation>
 <translation id="5104236669533825617">Скринкаст жасау мүмкін емес</translation>
 <translation id="5107522548814527560">Интернет</translation>
+<translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
@@ -828,6 +833,7 @@
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Микрофон ұяшығы</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> қолданбасы назар аударуыңызды сұрайды.</translation>
+<translation id="5662075790140998213">10-жұмыс үстелі</translation>
 <translation id="5662709761327382534">Микрофон арқылы жазу <ph name="CURRENT_STATE" />. <ph name="NEW_STATE" /> үшін Enter пернесін басыңыз.</translation>
 <translation id="5669267381087807207">Белсендірілуде</translation>
 <translation id="5673434351075758678">Параметрлер синхрондалғаннан кейін, "<ph name="FROM_LOCALE" />" тілі "<ph name="TO_LOCALE" />" тіліне өзгертілді.</translation>
@@ -1029,6 +1035,8 @@
 <translation id="6753390234084146956">қойындылар</translation>
 <translation id="6757237461819837179">Ешқандай медиамазмұн ойнатылып жатқан жоқ.</translation>
 <translation id="6777216307882431711">Жалғанған USB-C құрылғыларына қуат берілуде</translation>
+<translation id="6781002679438061620">9-жұмыс үстелі</translation>
+<translation id="6782182743534150858">13-жұмыс үстелі</translation>
 <translation id="6786750046913594791">Қалтаны жабу</translation>
 <translation id="6787595647772650851">Соңғы сеансты қалпына келтіру</translation>
 <translation id="6790428901817661496">Ойнату</translation>
@@ -1090,6 +1098,7 @@
 <translation id="7098053464892629930">Барлық қолжетімді функцияны көру үшін Google Play қызметіндегі <ph name="NAME" /> қолданбасына арналған қосымша қолданбаны жүктеп алыңыз</translation>
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
 <translation id="7106330611027933926">Іздеу жолағын көрсету</translation>
+<translation id="7116969082764510092">11-жұмыс үстелі</translation>
 <translation id="7118268675952955085">скриншот</translation>
 <translation id="7126996685418858413">Өткен аптада ашылды.</translation>
 <translation id="7130207228079676353">ЕҢ ЫҚТИМАЛ</translation>
@@ -1189,6 +1198,7 @@
 <translation id="7662283695561029522">Конфигурациялау үшін түртіңіз</translation>
 <translation id="7670953955701272011">Google Calendar қолданбасында осы күнді ашу</translation>
 <translation id="7671610481353807627">Қолданбалар түсі бойынша сұрыпталған.</translation>
+<translation id="7672095158465655885"><ph name="NAME" /> құрылғысына жалғанған, <ph name="SUBTEXT" /></translation>
 <translation id="7684531502177797067">Камера кірісі <ph name="CAMERA_NAME" /> деп өзгертілді.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Жаңа ұялы желі қосу</translation>
@@ -1474,5 +1484,6 @@
 <translation id="974545358917229949"><ph name="QUERY" /> бойынша <ph name="RESULT_COUNT" /> нәтиже көрсетілуде</translation>
 <translation id="98515147261107953">Альбомдық</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезесі жабық.</translation>
+<translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Соңғы шыққан функцияларды және қауіпсіздікті жақсарту мүмкіндіктерін пайдаланыңыз. Жаңарту әрекеттері фондық режимде жасалады.</translation>
 </translationbundle>

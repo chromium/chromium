@@ -274,6 +274,7 @@
 <translation id="1244303850296295656">Кеңейтім қатесі</translation>
 <translation id="1245628370644070008">Жергілікті деректерді қалпына келтіру</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> орнатылмады: суреттің URL мекенжайы <ph name="HTTP_ERROR" /> қате кодын қайтарды. Әкімшіге хабарласыңыз.</translation>
+<translation id="1249818027270187058">{NUM_SITES,plural, =1{1 сайтта хабарландырулар рұқсат етілмеді}other{{NUM_SITES} сайтта хабарландырулар рұқсат етілмеді}}</translation>
 <translation id="1251366534849411931">Ирек жақша ашылмаған: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Сайттарда және орнатылған қолданбаларда сақталған <ph name="TOTAL_USAGE" /> дерек өшіріледі.</translation>
 <translation id="1251578593170406502">Мобильдік интернет желілері ізделуде…</translation>
@@ -1643,6 +1644,7 @@
 <translation id="2476974672882258506"><ph name="PARALLELS_DESKTOP" /> бағдарламасын жою үшін Windows жүйесін өшіріңіз.</translation>
 <translation id="2477065602824695373">Бірнеше ауыстырғыш тағайындалғандықтан, автосканерлеу функциясы өшірілді.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" үшін мультимедиа файлының рұқсаттары</translation>
+<translation id="24786041351753425">Деректерді қалпына келтіру қызметін қосу</translation>
 <translation id="2480868415629598489">Көшіріліп қойылатын деректерді жаңарту</translation>
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="2482895651873876648">Қойынды "<ph name="GROUP_NAME" />" тобына (<ph name="GROUP_CONTENTS" />) жылжытылды.</translation>
@@ -2258,6 +2260,7 @@
 <translation id="3024374909719388945">24 сағаттық пішімді пайдалану</translation>
 <translation id="3027296729579831126">Nearby Share функциясын қосу</translation>
 <translation id="3029466929721441205">Стилус құралдарын сөреде көрсету</translation>
+<translation id="3029808567601324798">Құлыптау уақыты</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> жаңа нұсқаны бүгін жүктеп алуыңызды талап етеді. Интернетке қосылғаннан кейін, жаңа нұсқа автоматты түрде жүктеп алынады.}other{Мерзім аяқталғанға дейін, <ph name="MANAGER" /> жаңа нұсқаны жүктеп алуыңызды талап етеді. Интернетке қосылғаннан кейін, жаңа нұсқа автоматты түрде жүктеп алынады.}}</translation>
 <translation id="3030967311408872958">Күн батқаннан күн шыққанға дейін</translation>
 <translation id="3031417829280473749">Agent X</translation>
@@ -4216,6 +4219,7 @@
 <translation id="4901154724271753917">Жақында жабылған беттерді жаю</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз.</translation>
 <translation id="49027928311173603">Серверден жүктелген саясат жарамсыз: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4903967893652864401">Ол фондық әрекеттерді және біркелкі айналдыру сияқты визуалды әсерлерді шектеу арқылы батареяның жұмысын ұзартады.</translation>
 <translation id="4906490889887219338">Желінің ортақ каталогтерін реттеу немесе басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Бұл кеңейтімнің сайт деректерін қашан оқитынын және өзгертетінін таңдаңыз</translation>
 <translation id="4907161631261076876">Бұл файл әдетте жүктелмейді және ол қауіпті болуы мүмкін.</translation>
@@ -4576,6 +4580,7 @@
 <translation id="527605982717517565"><ph name="HOST" /> үшін JavaScript қосуға әрдайым рұқсат беру</translation>
 <translation id="5277127016695466621">Бүйірлік панельді көрсету</translation>
 <translation id="5278823018825269962">Күй идентификаторы</translation>
+<translation id="5279600392753459966">Барлығын бөгеу</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> тіркелу деректерін жаңартыңыз</translation>
 <translation id="5280243692621919988">Терезелердің барлығы жабылғанда, cookie файлдары мен сайт деректерін өшіріп отыру</translation>
 <translation id="5280335021886535443">Осы қалқымалы анықтаманы ерекшелеу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз.</translation>
@@ -5320,6 +5325,7 @@
 <translation id="5971037678316050792">Bluetooth адаптерінің күйін және жұптаcуын басқару</translation>
 <translation id="597235323114979258">Басып шығарудың басқа белгіленген жерлерін көру</translation>
 <translation id="5972543790327947908">Кейбір қолдау көрсету сілтемелері <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> немесе <ph name="APP_NAME_3" /> қолданбаларында ашық болады.</translation>
+<translation id="5972559880616357748"><ph name="SITE_GROUP" /> арналған қосымша әрекеттер</translation>
 <translation id="5972666587303800813">NOOP</translation>
 <translation id="5972708806901999743">Басына өту</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> іске қосу</translation>
@@ -8518,6 +8524,7 @@
 <translation id="8987927404178983737">Ай</translation>
 <translation id="8989359959810288806">Тетеринг күйін жаңарту</translation>
 <translation id="8991520179165052608">Сайт микрофонды пайдалана алады</translation>
+<translation id="8993059306046735527"><ph name="DEVICE_TYPE" /> құпия сөзін ұмытып қалсаңыз, жергілікті деректерді қалпына келтіре бересіз. Google аккаунтына кіруіңіз немесе аккаунтты қалпына келтіру функциясын пайдалануыңыз керек.</translation>
 <translation id="899384117894244799">Шектелген пайдаланушыны өшіру</translation>
 <translation id="899403249577094719">Netscape сертификатының негізгі URL мекенжайы</translation>
 <translation id="899657321862108550">Chrome-ды кез келген жерде пайдаланыңыз</translation>
@@ -8617,6 +8624,7 @@
 <translation id="9078316009970372699">Жылдам тетерингті өшіру</translation>
 <translation id="9078842827190780028">Бүйірлік панельден тағы да іздеу нәтижелерін қараңыз.</translation>
 <translation id="9079267182985899251">Жақында бұл опцияға қолдау көрсетілмейтін болады. Қойындыны көрсету үшін <ph name="GOOGLE_MEET" /> пайдаланыңыз.</translation>
+<translation id="9080175821499742274">Жад үнемдегіш белсенді емес қойындылардағы жадты босатып, оны басқа белсенді қойындылар мен қолданбаларға үлестіреді.</translation>
 <translation id="9080971985541434310">қызығушылықтарыңызды болжайды – Chrome браузері қызығушылықтарыңызды болжай алады</translation>
 <translation id="9081543426177426948">Кірген сайттарыңыз инкогнито режимінде сақталмайды</translation>
 <translation id="9084064520949870008">Терезе ретінде ашу</translation>
@@ -8804,6 +8812,7 @@
 <translation id="964790508619473209">Экранды реттеу</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> құрылғысына мәтіндік хабарлар жіберіңіз және одан мәтіндік хабарлар алыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast мәселесі туралы хабарлау</translation>
+<translation id="965470117154635268">{NUM_SITES,plural, =1{Жақында көп хабарландыру жіберген 1 сайтты қарап шығу}other{Жақында көп хабарландыру жіберген {NUM_SITES} сайтты қарап шығу}}</translation>
 <translation id="967398046773905967">Ешқандай сайтқа HID құрылғыларын пайдалануға рұқсат етпеу</translation>
 <translation id="967624055006145463">Сақталған деректер</translation>
 <translation id="96774243435178359">Басқарылатын принтерлер</translation>
