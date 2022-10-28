@@ -280,8 +280,6 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 
 # Fails on Android Nvidia Tegra driver version 343, passes on 361
 # We don't have tags for specific driver version so just fail all.
-[ android nvidia ] WebglExtension_EXT_texture_compression_bptc [ Failure ]
-[ android nvidia ] WebglExtension_EXT_texture_compression_rgtc [ Failure ]
 
 # ========================
 # Conformance expectations
@@ -306,7 +304,6 @@ crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-wit
 
 # Skipping new tests
 crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
@@ -317,13 +314,10 @@ crbug.com/849572 [ angle-swiftshader passthrough ] conformance/extensions/angle-
 
 # Nvidia bugs fixed in latest driver
 # TODO(http://crbug.com/887241): Upgrade the drivers on the bots.
-crbug.com/905370 [ android nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
-crbug.com/772651 [ android nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 
 crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
-crbug.com/angleproject/7672 [ angle-swiftshader passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
@@ -331,14 +325,12 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Win / AMD / Passthrough command decoder / D3D11
-crbug.com/1282819 [ win amd-0x6613 angle-d3d11 passthrough ] conformance/canvas/canvas-test.html [ Failure ]
 
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 # Bug where RelaxedPrecision applied to normalize() produces 0
-crbug.com/angleproject/6228 [ win intel angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
 # Flaky timeouts on multiple platforms - at least Linux/Mac/Win
 crbug.com/1254497 conformance/misc/type-conversion-test.html [ RetryOnFailure ]
@@ -368,9 +360,6 @@ crbug.com/1356275 [ fuchsia fuchsia-board-astro ] conformance/state/gl-enable-en
 
 # Flaky tests
 crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/functions/glsl-function* [ Failure ]
-crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/fract/fract_001_to_006.html [ Failure ]
-crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/build/build_009_to_016.html [ RetryOnFailure ]
-crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/mat/mat_009_to_016.html [ Failure ]
 
 # Anti-aliasing disabled on Fuchsia
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
@@ -380,103 +369,7 @@ crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/mat/ma
 crbug.com/1261867 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Failing on emulator seemingly due to network issues.
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/attribs/gl-vertexattribpointer-offsets.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/buffers/buffer-data-dynamic-delay.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/canvas/buffer-offscreen-test.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/canvas/buffer-preserve-test.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/canvas/framebuffer-bindings-unaffected-on-resize.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/canvas/to-data-url-after-composite.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/context-attribute-preserve-drawing-buffer-antialias.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/context-no-alpha-fbo-with-alpha.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/deleted-object-behavior.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/context/user-defined-properties-on-context.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-with-canvas.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webgl-multi-draw.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/bugs/qualcomm-crash.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/bugs/qualcomm-loop-with-continue-crash.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/bugs/sketchfab-lighting-shader-crash.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/constructors/glsl-construct-bvec4.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/misc/shader-with-non-reserved-words-1-of-8.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/misc/shader-with-non-reserved-words-5-of-8.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/misc/shader-with-non-reserved-words-7-of-8.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/misc/shader-with-reserved-words.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/samplers/glsl-function-texture2dproj.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/more/functions/readPixelsBadArgs.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/more/functions/texImage2DHTML.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/more/functions/texSubImage2DHTML.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/offscreencanvas/context-attribute-preserve-drawing-buffer.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/all/all_001_to_004.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/build/build_073_to_080.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/build/build_161_to_168.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/control_flow/control_flow_009_to_010.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/exp2/exp2_001_to_008.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/functions/functions_009_to_016.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/functions/functions_105_to_112.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/mat/mat_025_to_032.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/notEqual/notEqual_001_to_008.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/pow/pow_009_to_016.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/struct/struct_009_to_016.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/struct/struct_017_to_024.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/swizzlers/swizzlers_009_to_016.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/swizzlers/swizzlers_097_to_104.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/swizzlers/swizzlers_105_to_112.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/vec3/vec3_001_to_008.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/line-loop-tri-fan.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/line-rendering-quality.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/more-than-65536-indices.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/scissor-rect-repeated-rendering.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/rendering/triangle.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/state/gl-enable-enum-test.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/state/state-uneffected-after-compositing.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas_sub_rectangle/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas_sub_rectangle/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_blob/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_blob/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_blob/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_image_bitmap/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_image_bitmap/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_image_data/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_image/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_data/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_data/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/exif-orientation.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/format-filterable-renderable.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/gl-teximage.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/origin-clean-conformance-offscreencanvas.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texparameter-test.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-npot.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-size-cube-maps.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/svg_image/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/svg_image/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/svg_image/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/typedarrays/array-buffer-crash.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/typedarrays/array-buffer-view-crash.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/no-over-optimization-on-uniform-array-01.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/no-over-optimization-on-uniform-array-06.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/no-over-optimization-on-uniform-array-07.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/no-over-optimization-on-uniform-array-08.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/no-over-optimization-on-uniform-array-13.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/no-over-optimization-on-uniform-array-14.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
-crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] deqp/data/gles2/shaders/conditionals.html [ Failure ]
 
 ####################
 # Win failures     #
@@ -490,7 +383,6 @@ crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/function
 crbug.com/1043773 [ win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
 
 # Win / AMD D3D9 failures
-crbug.com/475095 [ win amd angle-d3d9 ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
 
 # Win / AMD RX 5500 XT failures
 crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
@@ -504,7 +396,6 @@ crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.h
 
 # D3D9 / AMD RX 5500 XT / Passthrough command decoder
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/* [ RetryOnFailure ]
-crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/uniformOutOfBounds.html [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/more/glsl/arrayOutOfBounds.html [ RetryOnFailure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
@@ -515,8 +406,6 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shad
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_matrix_combine.html [ Failure ]
 
 # Vulkan / Win (32-bit) / Passthrough command decoder
-crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
-crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
 # win10 / angle-d3d11 / Passthrough command decoder failures.
 crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
@@ -524,7 +413,6 @@ crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/misc/shader
 
 # Vulkan / Win / NVIDIA / Passthrough command decoder
 crbug.com/1209189 [ win nvidia angle-vulkan passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
-crbug.com/angleproject/6281 [ win nvidia angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1242454 [ win nvidia angle-vulkan passthrough ] conformance/glsl/bugs/pow-with-constant-exponent-should-not-crash.html [ Failure ]
 crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
 crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/glsl/functions/glsl-function-ceil.html [ Failure ]
@@ -533,15 +421,11 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
 # Flaky on Win / Passthrough command decoder (both GL and D3D11 backends)
-crbug.com/1307905 [ win passthrough ] conformance/attribs/gl-vertexattribpointer.html [ RetryOnFailure ]
 
 # Fail when ANGLE GLES3 is requested for OOPR and SkiaRenderer.
 crbug.com/1336736 [ win angle-d3d11 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
-crbug.com/982294 [ win debug passthrough nvidia ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
 
-[ win angle-swiftshader passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
-[ win angle-swiftshader passthrough ] conformance/renderbuffers/framebuffer-object-attachment.html [ Slow ]
 
 ####################
 # Mac failures     #
@@ -561,50 +445,32 @@ crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-de
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 # Mac Intel ANGLE and native OpenGL
-crbug.com/1144247 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
-crbug.com/1144207 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 
 # Mac Retina NVidia failures / flakes
 crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Skip ]
-crbug.com/635081 [ mac nvidia-0xfe9 no-passthrough ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
-crbug.com/635081 [ mac nvidia-0xfe9 no-passthrough ] conformance/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
-crbug.com/1136231 [ mac nvidia-0xfe9 passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
 # Mac / Passthrough command decoder / OpenGL / NVIDIA
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
-crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/texture-npot-video.html [ RetryOnFailure ]
-crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/uniforms/uniform-samplers-test.html [ Slow ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
 # Mac / Passthrough command decoder / Metal
-crbug.com/angleproject/4846 [ mac angle-metal passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
-crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/acos/acos_001_to_006.html [ Failure ]
-crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/asin/asin_001_to_006.html [ Failure ]
 crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
 
 # Mac / Passthrough command decoder / Metal / Intel
-crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
-crbug.com/1291005 [ mac angle-metal intel ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1291005 [ mac angle-metal intel ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 
 # Mac / M1 / OpenGL
-crbug.com/1130703 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1130703 [ mac apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1130703 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
-crbug.com/1130703 [ mac apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 # No active browser window, but no crash stack.
 crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 # Mac / M1 / Metal
-crbug.com/1130759 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 # Introduced by upstreaming Apple's direct-to-metal backend
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/multisample-corruption.html [ Failure ]
 
 ####################
 # Linux failures   #
@@ -624,7 +490,6 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/fun
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/pow/pow_017_to_024.html [ Failure ]
 
-[ linux angle-swiftshader passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 ####################
 # Android failures #
@@ -643,11 +508,9 @@ crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ex
 crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
-crbug.com/679697 [ android qualcomm no-passthrough ] conformance/textures/misc/copytexsubimage2d-large-partial-copy-corruption.html [ Failure ]
 
 # Also flaky on nexus9 non-webview (bug=834933) but can't specify both.
 crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/352645 [ android android-webview-instrumentation angle-disabled ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 
 # These video tests appear to be flaky.
 # TODO(crbug.com/1178518): This crbug caused the test to fail consistently. It
@@ -674,17 +537,6 @@ crbug.com/478572 [ android android-nexus-5 ] deqp/data/gles2/shaders/linkage.htm
 crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAttribPointerBadArgs.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
 
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-bvec4.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-ivec3.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-ivec4.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-mat2.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-mat3.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec3.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/glsl/constructors/glsl-construct-vec4.html [ Failure ]
-crbug.com/1338214 [ android android-chromium android-Nexus-5 passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-crbug.com/1338214 [ android android-Nexus-5 passthrough ] WebglExtension_OES_texture_float_linear [ Failure ]
 
 crbug.com/1357064 [ android android-nexus-5 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1359027 [ android android-nexus-5 ] conformance/attribs/gl-enable-vertex-attrib.html [ Failure ]
@@ -697,16 +549,11 @@ crbug.com/1264882 [ android-marshmallow android-nexus-5 ] conformance/glsl/bugs/
 # Nexus 5X
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
 # flaky (2018-09-10) that it had to be upgraded to Fail.
-crbug.com/882323 [ android android-nexus-5x ] deqp/data/gles2/shaders/conversions* [ Failure ]
 crbug.com/609883 [ android android-nexus-5x ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
-crbug.com/1043431 [ android android-nexus-5x ] conformance/limits/gl-max-texture-dimensions.html [ RetryOnFailure ]
 crbug.com/951628 [ android android-nexus-5x no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1083320 [ android android-nexus-5x ] conformance/misc/uninitialized-test.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 # Timing out on this device for unknown reasons.
-crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles* [ Failure ]
 crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Failure ]
-crbug.com/1270815 [ android android-nexus-5x ] conformance/textures/misc/texture-size.html [ RetryOnFailure ]
 # Flakily returning RGBA(0,0,0,0) for pixels in video related tests
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
@@ -715,14 +562,11 @@ crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/
 # Android NVIDIA Shield TV
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
-crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
-crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 crbug.com/1357064 [ android android-shield-android-tv no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Pixel 4
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1278904 [ android android-pixel-4 android-chromium ] conformance/textures/misc/texture-npot-video.html [ RetryOnFailure ]
 
 # Pixel 6
 crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_EXT_shader_texture_lod [ Failure ]
@@ -730,16 +574,12 @@ crbug.com/1286830 [ android android-pixel-6 arm ] WebglExtension_WEBGL_draw_buff
 crbug.com/1286924 [ android android-pixel-6 arm ] conformance/textures/image_bitmap_from_video/* [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm ] conformance/textures/video/* [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1286924 [ android android-pixel-6 arm passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1286924 [ android android-pixel-6 passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
-crbug.com/1286924 [ android android-pixel-6 passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
-crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
-crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_float [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_OES_texture_half_float [ Failure ]
@@ -779,10 +619,7 @@ crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/render
 # ChromeOS: affecting all devices.
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/957807 [ chromeos ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
-crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/conversions* [ Failure ]
-crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/swizzles* [ Failure ]
 
 # finder:disable-unused Reported by Intel but not currently testable in Chromium
 crbug.com/1237319 [ chromeos chromeos-board-eve passthrough intel ] conformance/textures/misc/texture-size-limit.html [ Failure ]
@@ -802,16 +639,10 @@ crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/
 crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
 crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/default/default_001_to_001.html [ Failure ]
-crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/mix/mix_001_to_006.html [ Failure ]
 
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
-crbug.com/1271227 [ chromeos chromeos-board-amd64-generic ] conformance/attribs/gl-bindAttribLocation-aliasing.html [ RetryOnFailure ]
 crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
-[ chromeos chromeos-board-amd64-generic ] conformance/context/context-eviction-with-garbage-collection.html [ Slow ]
-[ chromeos chromeos-board-amd64-generic ] conformance/reading/read-pixels-test.html [ Slow ]
-[ chromeos chromeos-board-amd64-generic ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 # Need to investigate failure on basically all devices with passthrough on CrOS.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
@@ -832,8 +663,6 @@ crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough 
 crbug.com/1357064 [ linux intel display-server-wayland no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 # Flaky tests on Android Nexus 5
-crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/draw-webgl-to-canvas-2d-repeatedly.html [ RetryOnFailure ]
-crbug.com/1341423 [ android android-nexus-5 no-passthrough ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
