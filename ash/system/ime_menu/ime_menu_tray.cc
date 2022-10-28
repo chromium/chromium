@@ -4,6 +4,7 @@
 
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
+#include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -465,7 +466,7 @@ bool ImeMenuTray::ShouldShowBottomButtons() {
     const bool is_dictation_enabled =
         Shell::Get()
             ->accessibility_controller()
-            ->GetFeature(AccessibilityControllerImpl::FeatureType::kDictation)
+            ->GetFeature(A11yFeatureType::kDictation)
             .enabled();
 
     // Only enable voice button in IME tray if the function is enabled and

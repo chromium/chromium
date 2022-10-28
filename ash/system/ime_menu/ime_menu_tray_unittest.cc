@@ -5,6 +5,7 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
@@ -558,7 +559,7 @@ TEST_P(ImeMenuTrayTest, ShowVoiceButtonWhenDictationDisabled) {
   // Disable accessibility dictation.
   Shell::Get()
       ->accessibility_controller()
-      ->GetFeature(AccessibilityControllerImpl::FeatureType::kDictation)
+      ->GetFeature(A11yFeatureType::kDictation)
       .SetEnabled(false);
 
   // Show IME tray bubble.
@@ -579,7 +580,7 @@ TEST_P(ImeMenuTrayTest, HideVoiceButtonWhenDictationEnabled) {
   // Enable accessibility dictation.
   Shell::Get()
       ->accessibility_controller()
-      ->GetFeature(AccessibilityControllerImpl::FeatureType::kDictation)
+      ->GetFeature(A11yFeatureType::kDictation)
       .SetEnabled(true);
 
   // Show IME tray bubble.

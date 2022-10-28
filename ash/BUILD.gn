@@ -70,6 +70,7 @@ component("ash") {
     "accelerometer/accelerometer_samples_observer.h",
     "accelerometer/accelerometer_types.cc",
     "accelerometer/accelerometer_types.h",
+    "accessibility/a11y_feature_type.h",
     "accessibility/accessibility_controller_impl.cc",
     "accessibility/accessibility_controller_impl.h",
     "accessibility/accessibility_delegate.h",

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/dictation_nudge_controller.h"
@@ -79,7 +80,7 @@ using session_manager::SessionState;
 namespace ash {
 namespace {
 
-using FeatureType = AccessibilityControllerImpl::FeatureType;
+using FeatureType = A11yFeatureType;
 
 // These classes are used to store the static configuration for a11y features.
 struct FeatureData {
@@ -90,7 +91,7 @@ struct FeatureData {
 };
 
 struct FeatureDialogData {
-  AccessibilityControllerImpl::FeatureType type;
+  FeatureType type;
   const char* pref;
   int title;
   int body;
@@ -724,7 +725,7 @@ void AccessibilityControllerImpl::Feature::SetEnabled(bool enabled) {
 }
 
 bool AccessibilityControllerImpl::Feature::IsVisibleInTray() const {
-  return (conflicting_feature_ == kNoConflictingFeature ||
+  return (conflicting_feature_ == FeatureType::kNoConflictingFeature ||
           !owner_->GetFeature(conflicting_feature_).enabled()) &&
          owner_->IsAccessibilityFeatureVisibleInTrayMenu(pref_name_);
 }
@@ -759,7 +760,7 @@ void AccessibilityControllerImpl::Feature::UpdateFromPref() {
 }
 
 void AccessibilityControllerImpl::Feature::SetConflictingFeature(
-    AccessibilityControllerImpl::FeatureType feature) {
+    FeatureType feature) {
   DCHECK_EQ(conflicting_feature_, FeatureType::kNoConflictingFeature);
   conflicting_feature_ = feature;
 }
@@ -850,13 +851,14 @@ void AccessibilityControllerImpl::CreateAccessibilityFeatures() {
                                  dialog_data.body, dialog_data.mandatory};
   }
   for (auto feature_data : kFeatures) {
-    DCHECK(!features_[feature_data.type]);
+    size_t feature_index = static_cast<size_t>(feature_data.type);
+    DCHECK(!features_[feature_index]);
     auto it = dialogs.find(feature_data.type);
     if (it == dialogs.end()) {
-      features_[feature_data.type] = std::make_unique<Feature>(
+      features_[feature_index] = std::make_unique<Feature>(
           feature_data.type, feature_data.pref, feature_data.icon, this);
     } else {
-      features_[feature_data.type] = std::make_unique<FeatureWithDialog>(
+      features_[feature_index] = std::make_unique<FeatureWithDialog>(
           feature_data.type, feature_data.pref, feature_data.icon, it->second,
           this);
     }
@@ -1099,8 +1101,9 @@ void AccessibilityControllerImpl::RemoveObserver(
 
 AccessibilityControllerImpl::Feature& AccessibilityControllerImpl::GetFeature(
     FeatureType type) const {
-  DCHECK(features_[type].get());
-  return *features_[type].get();
+  size_t feature_index = static_cast<size_t>(type);
+  DCHECK(features_[feature_index].get());
+  return *features_[feature_index].get();
 }
 
 base::WeakPtr<AccessibilityControllerImpl>
@@ -1759,15 +1762,13 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
       ::features::AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
 
   // It is safe to use base::Unreatined since we own pref_change_registrar.
-  for (int feature_id = 0; feature_id < FeatureType::kFeatureCount;
-       feature_id++) {
-    Feature* feature = features_[feature_id].get();
+  for (const std::unique_ptr<Feature>& feature : features_) {
     DCHECK(feature);
     pref_change_registrar_->Add(
         feature->pref_name(),
         base::BindRepeating(
             &AccessibilityControllerImpl::Feature::UpdateFromPref,
-            base::Unretained(feature)));
+            base::Unretained(feature.get())));
     feature->UpdateFromPref();
   }
 
@@ -1885,9 +1886,8 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   }
 
   // Load current state.
-  for (int feature_id = 0; feature_id < FeatureType::kFeatureCount;
-       feature_id++) {
-    features_[feature_id]->UpdateFromPref();
+  for (const std::unique_ptr<Feature>& feature : features_) {
+    feature->UpdateFromPref();
   }
 
   UpdateAutoclickDelayFromPref();
@@ -2435,9 +2435,10 @@ AccessibilityControllerImpl::A11yNotificationWrapper::A11yNotificationWrapper(
     const A11yNotificationWrapper&) = default;
 
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
-  bool enabled = features_[feature]->enabled();
-  bool is_managed =
-      active_user_prefs_->IsManagedPreference(features_[feature]->pref_name());
+  size_t feature_index = static_cast<size_t>(feature);
+  bool enabled = features_[feature_index]->enabled();
+  bool is_managed = active_user_prefs_->IsManagedPreference(
+      features_[feature_index]->pref_name());
 
   switch (feature) {
     case FeatureType::kAutoclick:

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -3883,7 +3884,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   autoclick_controller->SetEnabled(true, /*show_confirmation_dialog=*/false);
   Shell::Get()
       ->accessibility_controller()
-      ->GetFeature(AccessibilityControllerImpl::FeatureType::kAutoclick)
+      ->GetFeature(A11yFeatureType::kAutoclick)
       .SetEnabled(true);
 
   views::Widget* autoclick_bubble_widget =
