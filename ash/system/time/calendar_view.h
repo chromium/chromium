@@ -358,6 +358,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   CalendarHeaderView* temp_header_ = nullptr;
   views::Button* reset_to_today_button_ = nullptr;
   views::Button* settings_button_ = nullptr;
+  IconButton* managed_button_ = nullptr;
   IconButton* up_button_ = nullptr;
   IconButton* down_button_ = nullptr;
   CalendarEventListView* event_list_view_ = nullptr;

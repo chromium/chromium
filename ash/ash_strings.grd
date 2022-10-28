@@ -4125,6 +4125,14 @@ Connect your device to power.
         Date and time settings
       </message>
 
+      <message name="IDS_ASH_CALENDAR_DISABLED_BY_ADMIN" desc="The label used in the managed button in the calendar view system settings.">
+        Disabled by admin
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_DISABLED_BY_ADMIN_TOOLTIP" desc="The tooltip label used in the managed button in the calendar view system settings.">
+        Disabled by Admin
+      </message>
+
       <message name="IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible label used in the close button in the calendar event list view.">
         Close event panel
       </message>

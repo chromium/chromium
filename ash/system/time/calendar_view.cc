@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
@@ -500,9 +501,20 @@ CalendarView::~CalendarView() {
 }
 
 void CalendarView::CreateExtraTitleRowButtons() {
-  DCHECK(!reset_to_today_button_);
   tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
+  if (calendar_utils::IsDisabledByAdmin()) {
+    DCHECK(!managed_button_);
+    managed_button_ = tri_view()->AddView(
+        TriView::Container::END,
+        std::make_unique<IconButton>(
+            base::BindRepeating(
+                &UnifiedSystemTrayController::HandleEnterpriseInfoAction,
+                base::Unretained(controller_)),
+            IconButton::Type::kSmall, &kSystemTrayManagedIcon,
+            IDS_ASH_CALENDAR_DISABLED_BY_ADMIN));
+  }
 
+  DCHECK(!reset_to_today_button_);
   reset_to_today_button_ = CreateInfoButton(
       base::BindRepeating(&CalendarView::ResetToTodayWithAnimation,
                           base::Unretained(this)),

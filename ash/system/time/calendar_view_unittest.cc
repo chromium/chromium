@@ -53,6 +53,7 @@ using ::google_apis::calendar::EventList;
 
 constexpr char kTestUser[] = "user@test";
 constexpr int kLoadingBarIndex = 2;
+constexpr char kManagedPage[] = "ChromeOS.SystemTray.OpenHelpPageForManaged";
 
 }  // namespace
 
@@ -178,6 +179,8 @@ class CalendarViewTest : public AshTestBase {
     return calendar_view_->reset_to_today_button_;
   }
   views::Button* settings_button() { return calendar_view_->settings_button_; }
+
+  views::Button* managed_button() { return calendar_view_->managed_button_; }
   IconButton* up_button() { return calendar_view_->up_button_; }
   IconButton* down_button() { return calendar_view_->down_button_; }
   views::View* close_button() {
@@ -1220,6 +1223,67 @@ TEST_F(CalendarViewTest, EventListBoundsTest) {
       scroll_view()->bounds().y() + scroll_view()->GetMaxHeight();
   const int top_of_event_list_view = event_list_view()->y();
   EXPECT_EQ(bottom_of_scroll_view_visible_area, top_of_event_list_view);
+}
+
+TEST_F(CalendarViewTest, AdminDisabledTest) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      ash::prefs::kCalendarIntegrationEnabled, false);
+
+  CreateCalendarView();
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  // Todays DateCellView should be focused on open.
+  ASSERT_TRUE(focus_manager->GetFocusedView()->GetClassName());
+  ASSERT_TRUE(focus_manager->GetFocusedView());
+
+  // Moves to the back button.
+  PressTab();
+
+  // Moves to the next focusable view - managed icon button.
+  PressTab();
+  EXPECT_EQ(managed_button(), focus_manager->GetFocusedView());
+
+  // Moves to the next focusable view. Today's button.
+  PressTab();
+  EXPECT_EQ(reset_to_today_button(), focus_manager->GetFocusedView());
+
+  // Moves to settings button.
+  PressTab();
+  EXPECT_EQ(settings_button(), focus_manager->GetFocusedView());
+
+  // Moves back to managed icon button.
+  PressShiftTab();
+  PressShiftTab();
+  EXPECT_EQ(managed_button(), focus_manager->GetFocusedView());
+}
+
+TEST_F(CalendarViewTest, ManagedButtonTest) {
+  base::HistogramTester histogram_tester;
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      ash::prefs::kCalendarIntegrationEnabled, false);
+  CreateCalendarView();
+
+  // Click on managed button to open chrome://management.
+  GestureTapOn(managed_button());
+
+  // Expect increment to UMA histogram count for managed page - enterprise.
+  histogram_tester.ExpectBucketCount(kManagedPage, 0, 1);
 }
 
 // A test class for testing animation. This class cannot set fake now since it's
