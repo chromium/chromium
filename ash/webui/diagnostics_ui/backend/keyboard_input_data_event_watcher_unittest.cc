@@ -79,6 +79,9 @@ struct KeyEventParams {
   uint32_t key_code;
   uint32_t scan_code;
   bool down;
+  KeyEventParams(uint32_t id, uint32_t key_code, uint32_t scan_code, bool down)
+      : id(id), key_code(key_code), scan_code(scan_code), down(down) {}
+  ~KeyEventParams() = default;
 };
 
 // Simple stub that tracks dispatch events.
@@ -91,12 +94,16 @@ class StubDispatcher : public KeyboardInputDataEventWatcher::Dispatcher {
                          uint32_t key_code,
                          uint32_t scan_code,
                          bool down) override {
-    calls_.emplace_back(KeyEventParams{id, key_code, scan_code, down});
+    calls_.emplace_back(id, key_code, scan_code, down);
   }
 
-  size_t CallCount() { return calls_.size(); }
+  size_t CallCount() const { return calls_.size(); }
 
-  KeyEventParams GetCall(size_t index) { return calls_[index]; }
+  KeyEventParams GetCall(size_t index) const {
+    DCHECK(index >= 0ul && index < calls_.size());
+
+    return calls_[index];
+  }
 
   base::WeakPtr<StubDispatcher> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
