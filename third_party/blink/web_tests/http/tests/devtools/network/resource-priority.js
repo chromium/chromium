@@ -60,7 +60,10 @@
       {
           var iframe = document.createElement("iframe");
           document.body.appendChild(iframe);
-          iframe.srcdoc = '<html><body><img src="resources/abe.png?precedingScript">'
+          // A slow parsing-blocking script is added to ensure the preload
+          // scanner runs earlier than main <img> requests.
+          iframe.srcdoc = '<html><body><script src="/resources/slow-script.pl?delay=500&sendScriptRequestPrecededByImage"></s'
+              + 'cript><img src="resources/abe.png?precedingScript">'
               + '<script src="http://localhost:8000/devtools/network/resources/empty-script.js?precededByImage"></s'
               + 'cript>;</body></html>';
       }
@@ -78,7 +81,8 @@
       {
           var iframe = document.createElement("iframe");
           document.body.appendChild(iframe);
-          iframe.srcdoc = '<html><body><img src="resources/abe.png?precedingStyle">'
+          iframe.srcdoc = '<html><body><script src="/resources/slow-script.pl?delay=500&sendStyleRequestPrecededByImage"></s'
+              + 'cript><img src="resources/abe.png?precedingStyle">'
               + '<link rel="stylesheet" type="text/css" href="http://localhost:8000/devtools/network/resources/style.css?precededByImage">'
               + '</body></html>';
       }
@@ -96,7 +100,8 @@
       {
           var iframe = document.createElement("iframe");
           document.body.appendChild(iframe);
-          iframe.srcdoc = '<html><body><img src="resources/abe.png?precedingDocWrite">'
+          iframe.srcdoc = '<html><body><script src="/resources/slow-script.pl?delay=500&sendScriptsFromDocumentWriteAfterImage"></s'
+              + 'cript><img src="resources/abe.png?precedingDocWrite">'
               + '<script src="resources/docwrite.js"></s'
               + 'cript></body></html>';
       }
@@ -113,16 +118,16 @@
     {'fn': 'sendSyncScriptRequest', 'requests': 1},
     {'fn': 'sendAsyncScriptRequest', 'requests': 1},
     {'fn': 'sendModuleScriptRequest', 'requests': 2},
-    {'fn': 'sendScriptRequestPrecededByImage', 'requests': 2},
+    {'fn': 'sendScriptRequestPrecededByImage', 'requests': 3},
     {'fn': 'sendScriptRequestPrecededByPreloadedImage', 'requests': 2},
-    {'fn': 'sendStyleRequestPrecededByImage', 'requests': 2},
+    {'fn': 'sendStyleRequestPrecededByImage', 'requests': 3},
     {'fn': 'sendStyleRequestPrecededByPreloadedImage', 'requests': 2},
     {'fn': 'sendXHRSync', 'requests': 1},
     {'fn': 'sendXHRAsync', 'requests': 1},
     {'fn': 'sendImageRequest', 'requests': 1},
     {'fn': 'sendStyleRequest', 'requests': 1},
     {'fn': 'createIFrame', 'requests': 1},
-    {'fn': 'sendScriptsFromDocumentWriteAfterImage', 'requests': 5},
+    {'fn': 'sendScriptsFromDocumentWriteAfterImage', 'requests': 6},
   ];
   TestRunner.networkManager.addEventListener(SDK.NetworkManager.Events.RequestStarted, onRequestStarted);
 
