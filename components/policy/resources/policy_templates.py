@@ -10,11 +10,25 @@ import copy
 import os
 import sys
 
-_SRC_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
-import pyyaml
-
+# This script runs in Chromium and ChromiumOS.
+try:
+  # Chromium.
+  _SRC_PATH = os.path.abspath(
+      os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+  sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
+  import pyyaml
+except ImportError:
+  # ChromiumOS.
+  # Some consumers (ChromiumOS ebuilds) of this script have pyyaml already in
+  # their environment and may not have access to the full Chromium repository
+  # nor the exact file structure. Import based on the Chromium third_party may
+  # not always be possible.
+  # Those consumers may install pyyaml in their environment and import it with
+  # the name of the module instead as per the library documentation.
+  # For compatibility reasons, please refer to
+  # https://source.chromium.org/chromium/chromium/src/+/main:third_party/pyyaml/README.chromium
+  # to know which version of pyyaml to use.
+  import yaml as pyyaml
 
 TEMPLATES_PATH =  os.path.join(
   os.path.dirname(__file__), 'templates')
