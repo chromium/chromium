@@ -45,6 +45,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kRemoveCanceledTasksInTaskQueue);
 // kRemoveCanceledTasksInTaskQueue.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAlwaysAbandonScheduledTask);
 
+// This feature controls whether ThreadPool WorkerThreads should hold off waking
+// up to purge partition alloc within the first minute of their lifetime. See
+// base::internal::GetSleepTimeBeforePurge.
+BASE_EXPORT BASE_DECLARE_FEATURE(kDelayFirstWorkerWake);
+
 // Under this feature, a non-zero leeway is added to delayed tasks. Along with
 // DelayPolicy, this affects the time at which a delayed task runs.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAddTaskLeewayFeature);

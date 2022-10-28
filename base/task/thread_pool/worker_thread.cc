@@ -18,6 +18,7 @@
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_features.h"
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
@@ -41,14 +42,17 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
 
+namespace base::internal {
+
 namespace {
+
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_CACHE_SUPPORTED)
 // Returns the desired sleep time before the worker has to wake up to purge
 // the cache thread or reclaim itself. |min_sleep_time| contains the minimal
 // acceptable amount of time to sleep.
-base::TimeDelta GetSleepTimeBeforePurge(base::TimeDelta min_sleep_time) {
-  const base::TimeTicks now = base::TimeTicks::Now();
+TimeDelta GetSleepTimeBeforePurge(TimeDelta min_sleep_time) {
+  const TimeTicks now = TimeTicks::Now();
 
   // Do not wake up to purge within the first minute of process lifetime. In
   // short lived processes this will avoid waking up to try and save memory
@@ -56,27 +60,31 @@ base::TimeDelta GetSleepTimeBeforePurge(base::TimeDelta min_sleep_time) {
   // should allow for better performance at process startup since even if a
   // worker goes to sleep for kPurgeThreadCacheIdleDelay it's very likely it
   // will be needed soon after because of heavy startup workloads.
-  constexpr base::TimeDelta kFirstSleepLength = base::Minutes(1);
+  constexpr TimeDelta kFirstSleepLength = Minutes(1);
 
   // Use the first time a worker goes to sleep in this process as an
   // approximation of the process creation time.
-  static const base::TimeTicks first_scheduled_wake = now + kFirstSleepLength;
+  static const TimeTicks first_scheduled_wake = now + kFirstSleepLength;
 
   // Align wakeups for purges to reduce the chances of taking the CPU out of
   // sleep multiple times for these operations.
-  constexpr base::TimeDelta kPurgeThreadCacheIdleDelay = base::Seconds(1);
-  const base::TimeTicks snapped_wake =
+  constexpr TimeDelta kPurgeThreadCacheIdleDelay = Seconds(1);
+  const TimeTicks snapped_wake =
       (now + min_sleep_time)
-          .SnappedToNextTick(base::TimeTicks(), kPurgeThreadCacheIdleDelay);
+          .SnappedToNextTick(TimeTicks(), kPurgeThreadCacheIdleDelay);
 
   // Avoid scheduling at |first_scheduled_wake| if it would result in a sleep
   // that's too short.
   return std::max(snapped_wake - now, first_scheduled_wake - now);
 }
 #endif
-}  // namespace
 
-namespace base::internal {
+bool IsDelayFirstWorkerSleepEnabled() {
+  static bool state = FeatureList::IsEnabled(kDelayFirstWorkerWake);
+  return state;
+}
+
+}  // namespace
 
 constexpr TimeDelta WorkerThread::Delegate::kPurgeThreadCacheIdleDelay;
 
@@ -102,16 +110,7 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
     defined(PA_THREAD_CACHE_SUPPORTED)
   TimeDelta min_sleep_time = std::min(sleep_time, kPurgeThreadCacheIdleDelay);
 
-  static BASE_FEATURE(kDelayFirstWorkerWake, "DelayFirstWorkerWake",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
-  // ThreadPoolInstance::Start() must always be after FeatureList
-  // initialization. This means this function has access to the feature state on
-  // first call. Cache the feature check to avoid the overhead of calling
-  // IsEnabled() every time.
-  static const bool is_delay_first_worker_sleep_enabled =
-      FeatureList::IsEnabled(kDelayFirstWorkerWake);
-
-  if (is_delay_first_worker_sleep_enabled)
+  if (IsDelayFirstWorkerSleepEnabled())
     min_sleep_time = GetSleepTimeBeforePurge(min_sleep_time);
 
   const bool was_signaled = wake_up_event->TimedWait(min_sleep_time);
@@ -154,6 +153,21 @@ bool WorkerThread::Start(
     scoped_refptr<SingleThreadTaskRunner> io_thread_task_runner,
     WorkerThreadObserver* worker_thread_observer) {
   CheckedLock::AssertNoLockHeldOnCurrentThread();
+
+  // Prime kDelayFirstWorkerWake's feature state right away on thread creation
+  // instead of looking it up for the first time later on thread as this avoids
+  // a data race in tests that may ~FeatureList while the first worker thread
+  // is still initializing (the first WorkerThread will be started on the main
+  // thread as part of ThreadPoolImpl::Start() so doing it then avoids this
+  // race), crbug.com/1344573.
+  // Note 1: the feature state is always available at this point as
+  // ThreadPoolInstance::Start() contractually happens-after FeatureList
+  // initialization.
+  // Note 2: This is done on Start instead of in the constructor as construction
+  // happens under a ThreadGroupImpl lock which precludes calling into
+  // FeatureList (as that can also use a lock).
+  IsDelayFirstWorkerSleepEnabled();
+
   CheckedAutoLock auto_lock(thread_lock_);
   DCHECK(thread_handle_.is_null());
 
