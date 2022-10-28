@@ -66541,6 +66541,8 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="FailedToGetDCompSurface"/>
   <int value="11" label="FailedToDuplicateHandle"/>
   <int value="12" label="FailedToCreateMediaEngine"/>
+  <int value="13" label="FailedToCreateDCompTextureWrapper"/>
+  <int value="14" label="FailedToInitDCompTextureWrapper"/>
 </enum>
 
 <enum name="MediaGalleriesUsageType">

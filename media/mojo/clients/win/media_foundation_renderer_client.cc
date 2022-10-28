@@ -19,6 +19,10 @@
 
 namespace media {
 
+#define REPORT_ERROR_REASON(reason)           \
+  MediaFoundationRenderer::ReportErrorReason( \
+      MediaFoundationRenderer::ErrorReason::reason)
+
 MediaFoundationRendererClient::MediaFoundationRendererClient(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     std::unique_ptr<MediaLog> media_log,
@@ -57,6 +61,14 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!init_cb_);
+
+  if (!dcomp_texture_wrapper_) {
+    MEDIA_LOG(ERROR, media_log_) << "Failed to create DCOMPTextureWrapper";
+    REPORT_ERROR_REASON(kFailedToCreateDCompTextureWrapper);
+    std::move(init_cb).Run({PIPELINE_ERROR_INITIALIZATION_FAILED,
+                            "DComTextureWrapper creation failed"});
+    return;
+  }
 
   // Consume and bind the delayed PendingRemote and PendingReceiver now that
   // we are on |media_task_runner_|.
@@ -398,8 +410,9 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
       base::BindRepeating(&MediaFoundationRendererClient::OnOutputRectChange,
                           weak_factory_.GetWeakPtr()));
   if (!success) {
-    std::move(init_cb_).Run(PipelineStatus(PIPELINE_ERROR_INITIALIZATION_FAILED,
-                                           "DComTextureWrapper init failed"));
+    REPORT_ERROR_REASON(kFailedToInitDCompTextureWrapper);
+    std::move(init_cb_).Run({PIPELINE_ERROR_INITIALIZATION_FAILED,
+                             "DComTextureWrapper init failed"});
     return;
   }
 
@@ -504,8 +517,7 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
 
   if (!success) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
-    MediaFoundationRenderer::ReportErrorReason(
-        MediaFoundationRenderer::ErrorReason::kOnDCompSurfaceHandleSetError);
+    REPORT_ERROR_REASON(kOnDCompSurfaceHandleSetError);
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
   }
 }
@@ -544,8 +556,7 @@ void MediaFoundationRendererClient::OnConnectionError() {
   DVLOG_FUNC(1);
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
-  MediaFoundationRenderer::ReportErrorReason(
-      MediaFoundationRenderer::ErrorReason::kOnConnectionError);
+  REPORT_ERROR_REASON(kOnConnectionError);
   OnError(PIPELINE_ERROR_DISCONNECTED);
 }
 

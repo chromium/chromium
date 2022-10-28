@@ -89,6 +89,8 @@ const std::string GetErrorReasonString(
     STRINGIFY(kFailedToGetDCompSurface);
     STRINGIFY(kFailedToDuplicateHandle);
     STRINGIFY(kFailedToCreateMediaEngine);
+    STRINGIFY(kFailedToCreateDCompTextureWrapper);
+    STRINGIFY(kFailedToInitDCompTextureWrapper);
   }
 #undef STRINGIFY
 }

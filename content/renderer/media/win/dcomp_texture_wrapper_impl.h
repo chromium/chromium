@@ -36,6 +36,8 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
     : public media::DCOMPTextureWrapper,
       public DCOMPTextureHost::Listener {
  public:
+  // Creates a media::DCOMPTextureWrapper implementation. Can return nullptr if
+  // `factory` is null.
   static std::unique_ptr<media::DCOMPTextureWrapper> Create(
       scoped_refptr<DCOMPTextureFactory> factory,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner);

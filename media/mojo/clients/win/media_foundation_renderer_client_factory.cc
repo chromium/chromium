@@ -76,8 +76,10 @@ MediaFoundationRendererClientFactory::CreateRenderer(
   auto client_extension_receiver =
       client_extension_remote.InitWithNewPipeAndPassReceiver();
 
+  // `dcomp_texture_wrapper` could be null, which will be handled in
+  // MediaFoundationRendererClient::Initialize() for a more consistent error
+  // handling.
   auto dcomp_texture_wrapper = get_dcomp_texture_wrapper_cb_.Run();
-  DCHECK(dcomp_texture_wrapper);
 
   std::unique_ptr<media::MojoRenderer> mojo_renderer =
       mojo_renderer_factory_->CreateMediaFoundationRenderer(

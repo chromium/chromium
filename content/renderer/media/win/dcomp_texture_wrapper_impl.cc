@@ -80,7 +80,13 @@ std::unique_ptr<media::DCOMPTextureWrapper> DCOMPTextureWrapperImpl::Create(
     scoped_refptr<DCOMPTextureFactory> factory,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner) {
   DVLOG(1) << __func__;
-  // auto* impl = new DCOMPTextureWrapperImpl(factory, media_task_runner);
+  DCHECK(media_task_runner);
+
+  // This can happen if EstablishGpuChannelSync() failed previously.
+  // See https://crbug.com/1378123.
+  if (!factory)
+    return nullptr;
+
   return base::WrapUnique(
       new DCOMPTextureWrapperImpl(factory, media_task_runner));
 }
@@ -90,6 +96,7 @@ DCOMPTextureWrapperImpl::DCOMPTextureWrapperImpl(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     : factory_(factory), media_task_runner_(media_task_runner) {
   DVLOG_FUNC(1);
+  DCHECK(factory_);
 }
 
 DCOMPTextureWrapperImpl::~DCOMPTextureWrapperImpl() {
