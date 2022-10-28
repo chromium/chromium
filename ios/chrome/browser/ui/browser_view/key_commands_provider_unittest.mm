@@ -136,6 +136,9 @@ TEST_F(KeyCommandsProviderTest, LessKeyCommandsWhenTabsAndEditingText) {
 
   EXPECT_LT(numberOfKeyCommandsWhenEditingText,
             numberOfKeyCommandsWhenNotEditingText);
+
+  // Reset the first responder.
+  [textField resignFirstResponder];
 }
 
 TEST_F(KeyCommandsProviderTest, MoreKeyboardCommandsWhenFindInPageAvailable) {
