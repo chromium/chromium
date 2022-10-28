@@ -30,6 +30,10 @@ void ExpectDictStringValue(StringPiece expected_value,
                            const Value::Dict& dict,
                            StringPiece path);
 
+void ExpectDictValue(const Value::Dict& expected_value,
+                     const Value::Dict& dict,
+                     StringPiece path);
+
 void ExpectDictValue(const Value& expected_value,
                      const Value::Dict& dict,
                      StringPiece path);

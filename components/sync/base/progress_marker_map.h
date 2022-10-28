@@ -9,11 +9,8 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "components/sync/base/model_type.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace syncer {
 
@@ -21,7 +18,7 @@ namespace syncer {
 // DataTypeProgressMarkers.
 using ProgressMarkerMap = std::map<ModelType, std::string>;
 
-std::unique_ptr<base::DictionaryValue> ProgressMarkerMapToValue(
+base::Value::Dict ProgressMarkerMapToValueDict(
     const ProgressMarkerMap& marker_map);
 
 }  // namespace syncer

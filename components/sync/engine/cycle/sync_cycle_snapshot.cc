@@ -65,42 +65,39 @@ SyncCycleSnapshot::SyncCycleSnapshot(const SyncCycleSnapshot& other) = default;
 
 SyncCycleSnapshot::~SyncCycleSnapshot() = default;
 
-std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetStringKey("birthday", birthday_);
+base::Value::Dict SyncCycleSnapshot::ToValue() const {
+  base::Value::Dict value;
+  value.Set("birthday", birthday_);
   std::string encoded_bag_of_chips;
   base::Base64Encode(bag_of_chips_, &encoded_bag_of_chips);
-  value->SetStringKey("bagOfChips", encoded_bag_of_chips);
-  value->SetIntKey("numSuccessfulCommits",
-                   model_neutral_state_.num_successful_commits);
-  value->SetIntKey("numSuccessfulBookmarkCommits",
-                   model_neutral_state_.num_successful_bookmark_commits);
-  value->SetIntKey("numUpdatesDownloadedTotal",
-                   model_neutral_state_.num_updates_downloaded_total);
-  value->SetIntKey("numTombstoneUpdatesDownloadedTotal",
-                   model_neutral_state_.num_tombstone_updates_downloaded_total);
-  value->SetKey("downloadProgressMarkers",
-                base::Value::FromUniquePtrValue(
-                    ProgressMarkerMapToValue(download_progress_markers_)));
-  value->SetBoolKey("isSilenced", is_silenced_);
+  value.Set("bagOfChips", encoded_bag_of_chips);
+  value.Set("numSuccessfulCommits",
+            model_neutral_state_.num_successful_commits);
+  value.Set("numSuccessfulBookmarkCommits",
+            model_neutral_state_.num_successful_bookmark_commits);
+  value.Set("numUpdatesDownloadedTotal",
+            model_neutral_state_.num_updates_downloaded_total);
+  value.Set("numTombstoneUpdatesDownloadedTotal",
+            model_neutral_state_.num_tombstone_updates_downloaded_total);
+  value.Set("downloadProgressMarkers",
+            ProgressMarkerMapToValueDict(download_progress_markers_));
+  value.Set("isSilenced", is_silenced_);
   // We don't care too much if we lose precision here, also.
-  value->SetIntKey("numServerConflicts", num_server_conflicts_);
-  value->SetStringKey("getUpdatesOrigin",
-                      ProtoEnumToString(get_updates_origin_));
-  value->SetBoolKey("notificationsEnabled", notifications_enabled_);
+  value.Set("numServerConflicts", num_server_conflicts_);
+  value.Set("getUpdatesOrigin", ProtoEnumToString(get_updates_origin_));
+  value.Set("notificationsEnabled", notifications_enabled_);
 
-  value->SetBoolKey("hasRemainingLocalChanges", has_remaining_local_changes_);
-  value->SetStringKey("poll_interval", FormatTimeDelta(poll_interval_));
-  value->SetStringKey(
-      "poll_finish_time",
-      base::TimeFormatShortDateAndTimeWithTimeZone(poll_finish_time_));
+  value.Set("hasRemainingLocalChanges", has_remaining_local_changes_);
+  value.Set("poll_interval", FormatTimeDelta(poll_interval_));
+  value.Set("poll_finish_time",
+            base::TimeFormatShortDateAndTimeWithTimeZone(poll_finish_time_));
   return value;
 }
 
 std::string SyncCycleSnapshot::ToString() const {
   std::string json;
   base::JSONWriter::WriteWithOptions(
-      *ToValue(), base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
+      ToValue(), base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
   return json;
 }
 

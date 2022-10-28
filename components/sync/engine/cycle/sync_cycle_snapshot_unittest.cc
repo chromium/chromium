@@ -35,9 +35,8 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   ProgressMarkerMap download_progress_markers;
   download_progress_markers[BOOKMARKS] = "\xef\xb7\xa4";
   download_progress_markers[APPS] = "apps";
-  std::unique_ptr<base::DictionaryValue>
-      expected_download_progress_markers_value(
-          ProgressMarkerMapToValue(download_progress_markers));
+  base::Value::Dict expected_download_progress_markers_value =
+      ProgressMarkerMapToValueDict(download_progress_markers);
 
   const std::string kBirthday = "test_birthday";
   const std::string kBagOfChips = "bagofchips\1";
@@ -49,9 +48,8 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       base::Time::Now(), sync_pb::SyncEnums::UNKNOWN_ORIGIN,
       /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
-  std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(14u, value->DictSize());
-  const base::Value::Dict& dict = value->GetDict();
+  base::Value::Dict dict(snapshot.ToValue());
+  EXPECT_EQ(14u, dict.size());
   ExpectDictStringValue(kBirthday, dict, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", dict, "bagOfChips");
@@ -63,7 +61,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
                          "numUpdatesDownloadedTotal");
   ExpectDictIntegerValue(model_neutral.num_tombstone_updates_downloaded_total,
                          dict, "numTombstoneUpdatesDownloadedTotal");
-  ExpectDictValue(*expected_download_progress_markers_value, dict,
+  ExpectDictValue(expected_download_progress_markers_value, dict,
                   "downloadProgressMarkers");
   ExpectDictBooleanValue(kIsSilenced, dict, "isSilenced");
   ExpectDictIntegerValue(kNumServerConflicts, dict, "numServerConflicts");
@@ -72,8 +70,7 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
   ExpectDictStringValue("0h 30m", dict, "poll_interval");
   // poll_finish_time includes the local time zone, so simply verify its
   // existence.
-  EXPECT_TRUE(
-      value->FindKeyOfType("poll_finish_time", base::Value::Type::STRING));
+  EXPECT_TRUE(dict.FindString("poll_finish_time"));
 }
 
 }  // namespace

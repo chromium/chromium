@@ -40,6 +40,14 @@ void ExpectDictStringValue(StringPiece expected_value,
       << path;
 }
 
+void ExpectDictValue(const Value::Dict& expected_value,
+                     const Value::Dict& dict,
+                     StringPiece path) {
+  const Value* found_value = dict.FindByDottedPath(path);
+  ASSERT_TRUE(found_value) << path;
+  EXPECT_EQ(*found_value, expected_value) << path;
+}
+
 void ExpectDictValue(const Value& expected_value,
                      const Value::Dict& dict,
                      StringPiece path) {
