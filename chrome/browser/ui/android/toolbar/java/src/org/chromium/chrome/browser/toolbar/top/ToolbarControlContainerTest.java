@@ -27,7 +27,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -148,7 +147,6 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
-    @DisabledTest(message = "Temporarily disabled due to https://crbug.com/1344612")
     public void testIsDirty() {
         ToolbarViewResourceAdapter adapter = makeAdapter();
         adapter.setOnResourceReadyCallback((resource) -> {});
