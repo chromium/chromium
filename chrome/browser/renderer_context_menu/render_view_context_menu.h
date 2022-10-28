@@ -360,6 +360,11 @@ class RenderViewContextMenu
   // menu is opened.
   void OnLinkToTextMenuCompleted();
 
+  // Whether or not translation on this page can be triggered. This method
+  // checks multiple criteria, e.g. whether translation is disabled by a policy
+  // or whether the current page can be translated.
+  bool CanTranslate(bool menu_logging);
+
   // The destination URL to use if the user tries to search for or navigate to
   // a text selection.
   GURL selection_navigation_url_;
