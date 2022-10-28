@@ -216,6 +216,29 @@ TEST(InteractionSequenceTest,
   EXPECT_CALL_IN_SCOPE(aborted, Run, sequence.reset());
 }
 
+// This tests a case where the element is hidden on the first step and there is
+// an explicit step transition.
+TEST(InteractionSequenceTest, TransitionOnElementHiddenFirstStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element(kTestIdentifier1, kTestContext1);
+  element.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element.identifier())
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .SetTransitionOnlyOnEvent(true))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element.Hide());
+}
+
 // Now that we're fairly confident that sequences can complete, try all the
 // different ways to construct and add steps.
 TEST(InteractionSequenceTest, TestStepBuilderConstructAndAdd) {

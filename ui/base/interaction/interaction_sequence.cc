@@ -456,7 +456,7 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
     return;
   }
 
-  if (current_step_->element == element) {
+  if (current_step_ && current_step_->element == element) {
     // If the current step is marked as needing to remain visible and we haven't
     // seen the triggering event for the next step, abort.
     if (current_step_->must_remain_visible.value() &&
