@@ -146,11 +146,6 @@ class ThreadState::IncrementalMarkingScheduler {
   }
 
   void ScheduleTask() {
-    // Avoid posting non-deterministic runnables when recording/replaying.
-    if (recordreplay::IsRecordingOrReplaying("deterministic-tasks")) {
-      return;
-    }
-
     // Reassigning to the task will cancel the currently scheduled one.
     task_ = PostNonNestableCancellableTask(
         *ThreadScheduler::Current()->V8TaskRunner(), FROM_HERE,
@@ -1342,10 +1337,8 @@ void ThreadState::AtomicPauseSweepAndCompact(
   PoisonUnmarkedObjects();
 #endif  // ADDRESS_SANITIZER
   DCHECK(IsSweepingInProgress());
-  if (sweeping_type == BlinkGC::kEagerSweeping ||
-      recordreplay::IsRecordingOrReplaying("deterministic-tasks")) {
-    // Eager sweeping should happen only in testing, or when recording/replaying
-    // to avoid posting runnables at non-deterministic points.
+  if (sweeping_type == BlinkGC::kEagerSweeping) {
+    // Eager sweeping should happen only in testing.
     CompleteSweep();
   } else {
     DCHECK(sweeping_type == BlinkGC::kConcurrentAndLazySweeping);
