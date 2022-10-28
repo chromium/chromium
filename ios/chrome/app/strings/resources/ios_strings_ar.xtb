@@ -121,6 +121,7 @@
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
+<translation id="1891796056033961979">يمكنك من خلال هذه الشاشة الاطّلاع على إشاراتك المرجعية وكلمات المرور والإعدادات المحفوظة وغيرها.</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
 <translation id="1930989359703290198">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -148,6 +149,7 @@
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="214201757571129614">تسجيل الدخول…</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
+<translation id="2150175299852799498">‏متصفح Chrome للأجهزة الجوّالة</translation>
 <translation id="2155145621546387786">‏مشاركة رابط تطبيق Chrome</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
 <translation id="2178545675770638239">اختيار كلمة مرور</translation>
@@ -329,6 +331,7 @@
 <translation id="3533202363250687977">إغلاق جميع علامات تبويب التصفُّح المتخفي</translation>
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
+<translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
 <translation id="3595252146048399851">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
@@ -496,6 +499,7 @@
 <translation id="4904877109095351937">وضع علامة كمقروءة</translation>
 <translation id="4908869848243824489">‏اقتراحات من Google</translation>
 <translation id="4916679969857390442">العدسة</translation>
+<translation id="4922154083994158612">هل تريد الحصول على مزيد من الحماية؟</translation>
 <translation id="4930714375720679147">تفعيل</translation>
 <translation id="4941089862236492464">عذرًا، حدثت مشكلة أثناء مشاركة العنصر.</translation>
 <translation id="4944543191714094452">البحث في الصفحة…</translation>
@@ -834,11 +838,11 @@
 <translation id="7435356471928173109">أوقَف المشرف وضع "التصفُّح الآمن".</translation>
 <translation id="7438481509621345350">ستظهر لك قصص من <ph name="CHANNEL_NAME" /> عند فتح علامة تبويب جديدة</translation>
 <translation id="7454057999980797137">الولاية/المقاطعة</translation>
+<translation id="7459628154744868585">"الحماية المحسَّنة" مفعَّلة</translation>
 <translation id="7464701184726199289">يمحو هذا الخيار البيانات المتزامنة من كافة الأجهزة. لن يتم حذف إعدادات الموقع الإلكتروني المحفوظة وقد تعكس عادات التصفح. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">‏3- اختَر Chrome.</translation>
 <translation id="7472734401283673885">اسم الشركة</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
-<translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="7514365320538308">تنزيل</translation>
@@ -1026,6 +1030,7 @@
 <translation id="9037965129289936994">عرض الصفحة الأصلية</translation>
 <translation id="9039373489628511875">النطاق الترددي</translation>
 <translation id="9055772144595778347">تعذر تسجيل الدخول</translation>
+<translation id="9055960261314198756">"الحماية المحسَّنة" غير مفعَّلة</translation>
 <translation id="9057972802061533987">تتعذّر المتابعة. حدث خطأ.</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9068336935206019333">‏فتح الرابط في وضع "التصفُّح المتخفي" في Chrome</translation>

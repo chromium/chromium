@@ -117,7 +117,6 @@
 <translation id="1815941218935345331">密码</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
-<translation id="1857751338515529195">转到下一个标签页</translation>
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
 <translation id="1891796056033961979">此屏幕中会显示您已保存的书签、密码、设置等信息。</translation>
@@ -228,7 +227,6 @@
 <translation id="2783054063075604403">无法创建链接</translation>
 <translation id="2786701870377699570">跨各部已同步的设备搜索标签页</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
-<translation id="2812727400746650635">转到上一个标签页</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
 <translation id="2820289420301699633">您的管理员控制着 Chrome，且可访问其中的数据</translation>
 <translation id="2830972654601096923">管理地址…</translation>
@@ -453,7 +451,6 @@
 <translation id="4630540211544979320">翻译网页</translation>
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4636930964841734540">信息</translation>
-<translation id="4649294145748405669">Chrome 更快速、更安全、更如您所愿。可从此处下载。</translation>
 <translation id="4650125387981512669">继续以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份登录</translation>
 <translation id="4659126640776004816">当您登录自己的 Google 帐号后，系统即会启用此功能。</translation>
 <translation id="4659667755519643272">进入标签页切换器</translation>
@@ -622,7 +619,6 @@
 <translation id="5913600720976431809">网页翻译选项</translation>
 <translation id="5938160824633642847">您设备上的存储空间即将用尽，请释放空间并重试。</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
-<translation id="5949969988218625680">显示历史记录</translation>
 <translation id="5951816930277761335">分享链接</translation>
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
@@ -703,7 +699,6 @@
 您的数据已于 <ph name="TIME" />使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="6418346271604475326">正在准备 PDF 文件</translation>
 <translation id="6434591244308415567">发生错误，请稍后重试。</translation>
-<translation id="6435817889602303010">重新打开最后关闭的标签页</translation>
 <translation id="6439338047467462846">全部允许</translation>
 <translation id="6445051938772793705">国家/地区</translation>
 <translation id="6445981559479772097">短信已发送。</translation>
@@ -846,7 +841,6 @@
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7472734401283673885">公司名称</translation>
 <translation id="7473891865547856676">不，谢谢</translation>
-<translation id="7481312909269577407">前进</translation>
 <translation id="750493650310597496">未选中任何项</translation>
 <translation id="7508728395076009983">如需锁定您的无痕式标签页，请设置触控 ID、面容 ID 或密码。</translation>
 <translation id="7514365320538308">下载</translation>
@@ -870,7 +864,6 @@
 <translation id="7720410380936703141">重试</translation>
 <translation id="7726702057919861819">菜单 → 历史 → 清除浏览数据</translation>
 <translation id="7741325291586284254">新的无痕式标签页</translation>
-<translation id="7743314735291715910">打开位置信息…</translation>
 <translation id="7756478488453921771">菜单 → 设置 → 付款方式</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>

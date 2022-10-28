@@ -2311,6 +2311,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Nivel del zoom</translation>
 <translation id="7016992613359344582">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes.</translation>
+<translation id="7023162328967545559">Advertencia del administrador</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030436163253143341">El certificado no es válido</translation>
 <translation id="7031646650991750659">Las apps de Google Play que instalaste</translation>
@@ -2497,6 +2498,7 @@ Detalles adicionales:
 <translation id="7489473601138133813">Recursos y planificación profesional</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Comunícate con el propietario del sitio para solucionar el problema.</translation>
 <translation id="7497998058912824456">Botón Crear documento, presiona Intro para crear un nuevo documento de Google</translation>
+<translation id="7501663406926337752">Tu organización marcó el sitio que intentas abrir</translation>
 <translation id="7501853161948120656">Recursos educativos</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
         <ph name="BEGIN_LIST" />
@@ -2743,6 +2745,7 @@ Detalles adicionales:
 <translation id="8094917007353911263">Es posible que la red que estás usando requiera que accedas a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Se quitaron las tarjetas no válidas</translation>
+<translation id="8100666323495101203">Tu organización identificó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> como un sitio que podría incumplir una política. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">Conferencias y publicaciones académicas</translation>
 <translation id="8103161714697287722">Forma de pago</translation>
 <translation id="8103643211515685474">Imprimir de todos modos</translation>

@@ -2270,6 +2270,7 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7016992613359344582">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में स्पष्ट जानकारी न दी जाए.</translation>
+<translation id="7023162328967545559">एडमिन की चेतावनी</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7030436163253143341">प्रमाणपत्र मान्य नहीं है</translation>
 <translation id="7031646650991750659">आपने Google Play के कौनसे ऐप्लिकेशन इंस्टॉल किए हैं</translation>
@@ -2454,6 +2455,7 @@
 <translation id="7489473601138133813">करियर से जुड़े संसाधन और प्लानिंग</translation>
 <translation id="7495528107193238112">इस कॉन्टेंट को ब्लॉक कर दिया गया है. समस्या को ठीक करने के लिए, साइट के मालिक से संपर्क करें.</translation>
 <translation id="7497998058912824456">दस्तावेज़ बनाने के लिए बटन, जल्दी से नया Google दस्तावेज़ बनाने के लिए Enter दबाएं</translation>
+<translation id="7501663406926337752">आपको जिस साइट पर जाना है उसे आपके संगठन ने फ़्लैग किया है</translation>
 <translation id="7501853161948120656">शिक्षा से जुड़े संसाधन</translation>
 <translation id="7506488012654002225">Chromium यहां बताई गई जानकारी को <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -2698,6 +2700,7 @@
 <translation id="8094917007353911263">आप जिस नेटवर्क का उपयोग कर रहे हैं उसके लिए आपको <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> पर जाने की ज़रूरत पड़ सकती है.</translation>
 <translation id="809898108652741896">ए6</translation>
 <translation id="8100588592594801589">अमान्य कार्ड हटा दिए गए हैं</translation>
+<translation id="8100666323495101203">आपके संगठन ने  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> की पहचान एक ऐसी साइट के रूप में की है जो शायद किसी नीति का उल्लंघन करती है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">अकैडमिक कॉन्फ़्रेंस और पब्लिकेशन</translation>
 <translation id="8103161714697287722">भुगतान का तरीका</translation>
 <translation id="8103643211515685474">फिर भी प्रिंट करें</translation>

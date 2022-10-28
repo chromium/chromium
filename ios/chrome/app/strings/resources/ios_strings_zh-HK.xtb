@@ -117,7 +117,6 @@
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1820259098641718022">已加入閣讀清單</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
-<translation id="1857751338515529195">前往下一個分頁</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
 <translation id="1891796056033961979">您儲存嘅書籤、密碼、設定同其他內容會喺呢度顯示。</translation>
@@ -228,7 +227,6 @@
 <translation id="2783054063075604403">無法建立連結</translation>
 <translation id="2786701870377699570">搜尋所有已同步裝置的分頁</translation>
 <translation id="2800683595868705743">退出分頁切換選項</translation>
-<translation id="2812727400746650635">前往上一個分頁</translation>
 <translation id="2815198996063984598">2. 輕按 [預設瀏覽器應用程式]</translation>
 <translation id="2820289420301699633">管理員可控制 Chrome，並存取其中的資料</translation>
 <translation id="2830972654601096923">管理地址…</translation>
@@ -453,7 +451,6 @@
 <translation id="4630540211544979320">翻譯網頁</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4636930964841734540">資訊</translation>
-<translation id="4649294145748405669">Chrome 更快捷、更安全，而且功能全由您掌管。請在此下載。</translation>
 <translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分繼續</translation>
 <translation id="4659126640776004816">當您登入 Google 帳戶時，系統會啟用此功能</translation>
 <translation id="4659667755519643272">進入分頁切換選項</translation>
@@ -622,7 +619,6 @@
 <translation id="5913600720976431809">網頁翻譯選項</translation>
 <translation id="5938160824633642847">您裝置上的儲存空間即將用完。請釋放空間並再試一次。</translation>
 <translation id="5948291296578561264">這樣您便可將相片儲存至相片庫。</translation>
-<translation id="5949969988218625680">顯示記錄</translation>
 <translation id="5951816930277761335">分享連結</translation>
 <translation id="5955891643922670672">正在查看離線版本</translation>
 <translation id="5957613098218939406">更多選項</translation>
@@ -703,7 +699,6 @@
 您已於 <ph name="TIME" />使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
-<translation id="6435817889602303010">重新開啟最近關閉的分頁</translation>
 <translation id="6439338047467462846">全部允許</translation>
 <translation id="6445051938772793705">國家/地區</translation>
 <translation id="6445981559479772097">訊息已送出。</translation>
@@ -844,7 +839,6 @@
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7472734401283673885">公司名稱</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
-<translation id="7481312909269577407">向前</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
 <translation id="7508728395076009983">如要鎖定無痕式分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="7514365320538308">下載</translation>
@@ -868,7 +862,6 @@
 <translation id="7720410380936703141">再試一次</translation>
 <translation id="7726702057919861819">「選單」→「記錄」→「清除瀏覽資料」</translation>
 <translation id="7741325291586284254">新無痕式分頁頁面</translation>
-<translation id="7743314735291715910">開啟位置…</translation>
 <translation id="7756478488453921771">「選單」→「設定」→「付款方法」</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>

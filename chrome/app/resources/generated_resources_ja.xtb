@@ -455,6 +455,7 @@
            • Cookie や他の一時的なサイトデータが削除されます
             <ph name="LINE_BREAKS" />
            ブックマーク、履歴、保存したパスワードへの影響はありません。</translation>
+<translation id="1425040197660226913">アップロードできません。20 MB 未満の画像を使用してください。</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> はブロックされています</translation>
 <translation id="1426870617281699524">[再試行] をクリックし、パソコンに表示されるメッセージに同意してください</translation>
@@ -581,6 +582,7 @@
 <translation id="1545177026077493356">自動キオスク モード</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
 <translation id="1545775234664667895">テーマ「<ph name="THEME_NAME" />」をインストールしました</translation>
+<translation id="1546031833947068368">{COUNT,plural, =1{シークレット ウィンドウは、再起動後は自動的には開きません。}other{現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1546280085599573572">この拡張機能により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> さんが次の処理を行う<ph name="EXTENSION_TYPE" />のインストールを求めています。</translation>
 <translation id="1547808936554660006">eSIM プロファイルは Powerwash で削除されないことを理解しました</translation>
@@ -939,7 +941,6 @@
 <translation id="1852799913675865625">ファイルの読み込み中にエラーが発生しました: <ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">中断したところから続行します。[設定] で、起動時に常に復元するか、復元をオフにするようアプリを設定できます。</translation>
 <translation id="1854180393107901205">キャストを停止</translation>
-<translation id="1855079636134697549">カメラがオンになりました</translation>
 <translation id="1856715684130786728">位置情報を追加...</translation>
 <translation id="1858585891038687145">ソフトウェア作成元の識別でこの証明書を信頼します</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
@@ -998,6 +999,7 @@
 <translation id="1908591798274282246">閉じたグループを開く</translation>
 <translation id="1909880997794698664">このデバイスをキオスク モードに固定してもよろしいですか？</translation>
 <translation id="1910721550319506122">ようこそ！</translation>
+<translation id="1910736334623230603">複数の画像を検索することはできません。一度につき画像を 1 つだけ追加してください。</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">通話を終了</translation>
 <translation id="1916502483199172559">デフォルトの赤のアバター</translation>
@@ -1603,7 +1605,6 @@
 <translation id="2453860139492968684">終了</translation>
 <translation id="2454206500483040640">分割</translation>
 <translation id="2454247629720664989">キーワード</translation>
-<translation id="2454264884354864965">カメラはオフです</translation>
 <translation id="2454524890947537054">ウェブサイトへのアクセスを承認しますか？</translation>
 <translation id="245650153866130664">チケットを自動的に更新するには、[パスワードを保存する] チェックボックスをオンにします。パスワードはお使いのデバイスにのみ保存されます。</translation>
 <translation id="2456827790665612305">サイトのフォローを解除</translation>
@@ -1753,6 +1754,7 @@
 <translation id="2591895621127187078">メールを確認し、新しいパスワードを選択してください</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
 <translation id="2594999711683503743">Google で検索、または URL を入力</translation>
+<translation id="25957578727513093">このページにすばやくアクセスするには、Google パスワード マネージャーにショートカットを追加してください</translation>
 <translation id="2599048253926156421">ユーザー名をクリップボードにコピーしました</translation>
 <translation id="2602501489742255173">開始するには上にスワイプします</translation>
 <translation id="2603115962224169880">パソコンのクリーンアップ</translation>
@@ -1926,7 +1928,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> にログイン</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
-<translation id="2753677631968972007">サイトの権限を手動で管理します。</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> に保存されているファスト ペアリング デバイスを検出しています</translation>
 <translation id="2754825024506485820">仕事効率化からエンタメまで、Google Play ストアで必要なアプリを探しましょう。アプリはいつでもインストールできます。</translation>
 <translation id="2755349111255270002">この <ph name="DEVICE_TYPE" /> をリセットします</translation>
@@ -2397,6 +2398,7 @@
 <translation id="3197453258332670132">右クリックするか長押しすると、選択したテキストに関連する情報が表示されます</translation>
 <translation id="3199127022143353223">サーバー</translation>
 <translation id="3200061262156232574">ショッピング カートの商品</translation>
+<translation id="3201237270673604992">降順</translation>
 <translation id="3201422919974259695">使用可能な USB デバイスがここに表示されます。</translation>
 <translation id="3202131003361292969">パス</translation>
 <translation id="3202173864863109533">このタブの音声はミュートされています。</translation>
@@ -2855,6 +2857,7 @@
 <translation id="3642699533549879077">誰かに画面を見られたときには、アラートが表示され、通知コンテンツは表示されなくなります。</translation>
 <translation id="3643962751030964445">このデバイスは <ph name="DEVICE_MANAGER" /> によって管理されています。<ph name="DEVICE_MANAGER" /> がアカウント <ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成するよう求めています</translation>
 <translation id="3645372836428131288">指紋の別の部分を登録するため、指を少し移動してください。</translation>
+<translation id="3647654707956482440">このリンクは使用できません。入力ミスがないかご確認いただくか、別のリンクを使用してもう一度お試しください。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取りました}}</translation>
 <translation id="3648348069317717750">「<ph name="USB_DEVICE_NAME" />」を検出しました</translation>
 <translation id="3650753875413052677">登録エラー</translation>
@@ -3713,6 +3716,7 @@
 <translation id="4460014764210899310">グループを解除</translation>
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> の使用時間制限が <ph name="TIME" /> に設定されました</translation>
+<translation id="4465649939134800363">並べ替えオプション</translation>
 <translation id="4466839823729730432">思い出を振り返りましょう</translation>
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」のファイルを編集できます</translation>
@@ -3950,7 +3954,6 @@
 <translation id="4675828034887792601">サイト内検索のショートカットの設定や検索エンジンの管理を行います</translation>
 <translation id="4676595058027112862">スマートフォン ハブ、詳細</translation>
 <translation id="4677772697204437347">GPU メモリ</translation>
-<translation id="467823995058589466">カメラがオフになっています</translation>
 <translation id="4680105648806843642">このページでは音声がミュートされています</translation>
 <translation id="4680112532510845139">ここに画像をドロップしてください</translation>
 <translation id="4681453295291708042">ニアバイシェアを無効にする</translation>
@@ -3960,7 +3963,6 @@
 <translation id="4683629100208651599">小文字にする</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
-<translation id="4684471265911890182"><ph name="APP_NAME" /> がカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="4687613760714619596">不明なデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="4688036121858134881">ローカルログ ID は <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /> です。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しています（<ph name="PROGRESS_PERCENT" />）</translation>
@@ -6208,6 +6210,7 @@
 <translation id="6843264316370513305">ネットワークのデバッグ</translation>
 <translation id="6843423766595476978">OK Google の設定が完了しました</translation>
 <translation id="6845038076637626672">最大化して開く</translation>
+<translation id="6845231585063669905">昇順</translation>
 <translation id="6846178040388691741">「<ph name="EXTENSION_NAME" />」が <ph name="PRINTER_NAME" /> での <ph name="FILE_NAME" /> の印刷をリクエストしています。</translation>
 <translation id="6847125920277401289">続行するには容量を空けてください</translation>
 <translation id="6848388270925200958">現在、このデバイスでのみ使用できるカードがいくつかあります</translation>
@@ -6737,6 +6740,7 @@
 <translation id="7371490947952970241">位置情報の使用を無効にするには、このデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。</translation>
 <translation id="7371917887111892735">タブを固定幅まで縮小</translation>
 <translation id="7374376573160927383">USB デバイスを管理する</translation>
+<translation id="7376124766545122644">このリンクは使用できません。リンクが「http://」または「https://」で始まっていることを確認して、もう一度お試しください。</translation>
 <translation id="7376553024552204454">移動時にマウスカーソルを強調表示する</translation>
 <translation id="737728204345822099">このサイトへのアクセスの記録がセキュリティ キーに保存される可能性があります。</translation>
 <translation id="7377451353532943397">センサーへのアクセスを引き続きブロックする</translation>
@@ -6747,6 +6751,7 @@
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>
 <translation id="7380768571499464492">更新: <ph name="PRINTER_NAME" /></translation>
 <translation id="7382085868019811559">従来のブラウザのサポート（LBS）を使用すると、サイトを適切に表示するために必要な従来の機能をサポートしている代替ブラウザで特定の URL パターンを開くことができます。</translation>
+<translation id="738322632977123193">アップロードできません。使用できる画像の形式は .jpg、.gif、.png、.bmp、.tif、.webp のいずれかです</translation>
 <translation id="73843634555824551">入力とキーボード</translation>
 <translation id="7384687527486377545">キーボードの自動リピート</translation>
 <translation id="7385490373498027129">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除します。</translation>
@@ -7353,6 +7358,7 @@
 <translation id="7939073735115504773">この拡張機能のアイコンをクリックすると、<ph name="HOST" /> の読み取りと変更を許可します</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
 <translation id="7939412583708276221">続行する</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>
@@ -7944,7 +7950,6 @@
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8481980314595922412">試用版機能はオンになっています</translation>
 <translation id="8486666913807228950">理由: 反転ルール <ph name="REVERT_RULE" /> が「次で強制的に開く」のリストに含まれています。</translation>
-<translation id="848666842773560761">アプリがカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
 <translation id="8487678622945914333">拡大</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>
 <translation id="8489156414266187072">候補はお客様のアカウントにのみ表示されます</translation>

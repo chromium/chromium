@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Cỡ chữ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Tổ hợp phím <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Màu phong lan hài hòa</translation>
+<translation id="1928535370180099152">đánh dấu ký tự trước</translation>
 <translation id="1928932365747995741">Không có trường văn bản có thể chỉnh sửa nào trước đó</translation>
 <translation id="1964135212174907577">Đối tượng tiếp theo</translation>
 <translation id="1966649499058910679">Làm nổi bật từng từ khi từ được đọc</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Bật hoặc tắt giọng nói</translation>
 <translation id="2390264819538553347">Để chuyển tới trang tiếp theo, nhấn enter; để quay lại trang trước, nhấn phím xóa lùi.</translation>
 <translation id="2398579267367951220">Nhập để tìm kiếm trang. Nhấn phím Enter để xem kết quả, phím mũi tên lên hoặc xuống để duyệt qua kết quả, tiếp tục nhập để thay đổi nội dung tìm kiếm hoặc nhấn phím Escape để hủy.</translation>
+<translation id="2407047351320112166">đánh dấu ký tự tiếp theo</translation>
 <translation id="240709722712693803">Màu lam tím</translation>
 <translation id="2410298923485357543">Sử dụng giọng nói tự nhiên khi thiết bị có kết nối mạng</translation>
 <translation id="2416512023405990736">Hộp kiểm được bỏ chọn</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Trường biểu mẫu trước</translation>
 <translation id="3393605254399152980">Kéo một ngón tay để nghe nội dung mà bạn chạm vào</translation>
 <translation id="3406283310380167331">Hiển thị danh sách biểu mẫu</translation>
+<translation id="3407726812456125464">Đọc to phần văn bản đã chọn</translation>
 <translation id="3414400929511680526">Màu xanh lam Alice</translation>
 <translation id="3418936350470374046">Không có ô nào bên dưới</translation>
 <translation id="3419269701801640163">dán</translation>

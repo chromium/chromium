@@ -946,7 +946,6 @@
 <translation id="1852799913675865625">यो फाइल पढ्न प्रयास गर्दा त्यहाँ एउटा त्रुटि भयोः <ph name="ERROR_TEXT" /> ।</translation>
 <translation id="1854049213067042715">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस्। तपाईं ब्राउजर खुल्दा एपहरू सधैँ रिस्टोर हुने बनाउन सक्नुहुन्छ वा सेटिङमा गएर एपहरू रिस्टोर गर्ने सुविधा अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
-<translation id="1855079636134697549">क्यामेरा अन गरिएको छ</translation>
 <translation id="1856715684130786728">स्थान थप्नुहोस्...</translation>
 <translation id="1858585891038687145">सफ्टवेयर निर्माताहरूको पहिचान गर्न यस प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
@@ -1617,7 +1616,6 @@
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2454206500483040640">पार्टिसन गरिएको</translation>
 <translation id="2454247629720664989">कुञ्जीशब्द</translation>
-<translation id="2454264884354864965">क्यामेरा अफ छ</translation>
 <translation id="2454524890947537054">वेबसाइट खोल्न पाऊँ भनी गरिएको अनुरोध अनुमोदन गर्ने हो?</translation>
 <translation id="245650153866130664">टिकट स्वत: पुन: ताजा गर्न “पासवर्ड सम्झनुहोस्” भन्ने विकल्प चिन्हमार्फत चयन गर्नुहोस्। तपाईंको पासवर्ड तपाईंको डिभाइसमा मात्र भण्डार हुने छ।</translation>
 <translation id="2456827790665612305">साइट अनफलो गर्नुहोस्</translation>
@@ -1943,7 +1941,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">व्याकरणसँगै हिज्जे पनि जाँच्नुहोस्</translation>
-<translation id="2753677631968972007">म्यानुअल रूपमा साइटका अनुमतिहरू नियन्त्रण गर्नुहोस्।</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> मा सेभ गरिएका फास्ट पेयर डिभाइसहरू खोज्नुहोस्</translation>
 <translation id="2754825024506485820">Google Play स्टोरमा उत्पादकत्वदेखि मनोरञ्‍जनलगायतका कुरासँग सम्बन्धित आफूलाई चाहिएका एपहरू भेट्टाउनुहोस्। तपाईं जुनसुकै बेला एपहरू इन्स्टल गर्न सक्नुहुन्छ।</translation>
 <translation id="2755349111255270002">यो <ph name="DEVICE_TYPE" /> रिसेट गर्नुहोस्</translation>
@@ -3980,7 +3977,6 @@
 <translation id="4675828034887792601">साइटहरूमा भएका कुरा खोज्नका निम्ति सर्टकट बनाउनुहोस् र आफ्नो सर्च इन्जिन व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4676595058027112862">फोन हब, थप जान्नुहोस्</translation>
 <translation id="4677772697204437347">GPU स्मृति</translation>
-<translation id="467823995058589466">क्यामेरा अफ गरिएको छ</translation>
 <translation id="4680105648806843642">यस पृष्ठमा आवाज म्युट गरियो</translation>
 <translation id="4680112532510845139">कुनै फोटो ड्रयाग गरेर यहाँ ड्रप गर्नुहोस्</translation>
 <translation id="4681453295291708042">नजिकैका डिभाइससँग सेयर गर्ने सुविधा असक्षम पार्नुहोस्</translation>
@@ -3990,7 +3986,6 @@
 <translation id="4683629100208651599">ठुलो अक्षरमा बदल्नुहोस्</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डिफल्ट)</translation>
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
-<translation id="4684471265911890182"><ph name="APP_NAME" /> ले क्यामेरा प्रयोग गर्न खोज्दै छ। उक्त एपलाई क्यामेरा प्रयोग गर्ने अनुमति दिन क्यामेराको गोपनीयता स्विच अफ गर्नुहोस्।</translation>
 <translation id="4687613760714619596">अज्ञात यन्त्र (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Local लग ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> ले यो डिभाइसमा अघिल्लो संस्करण रिस्टोर गर्दै छ (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -8005,7 +8000,6 @@
 <translation id="8481187309597259238">USB अनुमति निश्चित गर्नुहोस्</translation>
 <translation id="8481980314595922412">ट्रायल सुविधाहरू अन गरिएका छन्</translation>
 <translation id="8486666913807228950">कारण: <ph name="REVERT_RULE" /> इन्भर्टेड रुल "जे भए पनि यो ब्राउजरमा खोलियोस्" को सूचीमा भेटिएको थियो।</translation>
-<translation id="848666842773560761">कुनै एपले क्यामेरा प्रयोग गर्न खोज्दै छ। उक्त एपलाई क्यामेरा प्रयोग गर्ने अनुमति दिन क्यामेराको गोपनीयता स्विच अफ गर्नुहोस्।</translation>
 <translation id="8487678622945914333">जुम बढाउनुहोस्</translation>
 <translation id="8487699605742506766">हटस्पट</translation>
 <translation id="8489156414266187072">व्यक्तिगत सिफारिस तपाईंको खातामा मात्र देखाइन्छन्</translation>

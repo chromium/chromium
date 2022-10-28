@@ -951,7 +951,6 @@
 <translation id="1852799913675865625">Произошла ошибка при чтении файла: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Вы продолжите работу с того места, на котором остановились. Настроить восстановление приложений при запуске или отключить эту функцию можно в настройках.</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
-<translation id="1855079636134697549">Камера включена.</translation>
 <translation id="1856715684130786728">Добавить папку...</translation>
 <translation id="1858585891038687145">Доверять этому сертификату при идентификации производителей ПО</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
@@ -1622,7 +1621,6 @@
 <translation id="2453860139492968684">Закрыть</translation>
 <translation id="2454206500483040640">Секционированные</translation>
 <translation id="2454247629720664989">Ключевое слово</translation>
-<translation id="2454264884354864965">Камера выключена</translation>
 <translation id="2454524890947537054">Одобрить запрос на доступ к сайту?</translation>
 <translation id="245650153866130664">Чтобы билет обновлялся автоматически, установите флажок "Запомнить пароль". Пароль будет храниться только на вашем устройстве.</translation>
 <translation id="2456827790665612305">Отменить подписку на сайт</translation>
@@ -1948,7 +1946,6 @@
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
-<translation id="2753677631968972007">Управление доступом к сайтам вручную</translation>
 <translation id="2754226775788136540">Выполняется поиск устройств с Быстрым подключением, сохраненных в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="2754825024506485820">В Google Play вы найдете любые интересующие вас приложения. Их можно установить в любое время.</translation>
 <translation id="2755349111255270002">Сбросьте настройки устройства <ph name="DEVICE_TYPE" /></translation>
@@ -2455,6 +2452,7 @@
 <translation id="3241680850019875542">Выберите корневой каталог упаковываемого расширения. Для обновления расширения также укажите закрытый ключ.</translation>
 <translation id="3242289508736283383">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска Chrome OS.</translation>
 <translation id="3242665648857227438">В этом профиле используются настройки прокси-сервера Chrome OS.</translation>
+<translation id="3243017971870859287">Чтение серийных номеров устройства с ChromeOS Flex и его компонентов</translation>
 <translation id="3244294424315804309">Не включать звук</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
 <translation id="3248902735035392926">Безопасность – это важно. <ph name="BEGIN_LINK" />Проверьте расширения<ph name="END_LINK" />, которые у вас установлены.</translation>
@@ -2511,6 +2509,7 @@
 <translation id="3297105622164376095">Разрешить предложения войти в аккаунт через сторонние сервисы</translation>
 <translation id="3297536526040732495">Когда выполнен вход в аккаунт Google, между этими данными и аккаунтом временно устанавливается связь, чтобы защитить вас во время работы с приложениями Google.</translation>
 <translation id="329838636886466101">Восстановить</translation>
+<translation id="3298438307450647315">Чтение сведений об устройстве с ChromeOS и данных на нем</translation>
 <translation id="3298789223962368867">Введен недопустимый URL.</translation>
 <translation id="32991397311664836">Устройства:</translation>
 <translation id="33022249435934718">GDI-дескрипторы</translation>
@@ -2617,6 +2616,7 @@
 <translation id="3402255108239926910">Выберите аватар</translation>
 <translation id="3402585168444815892">Регистрация для использования демонстрационного режима</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3403071741485135898">Чтение сведений об устройстве с ChromeOS Flex и данных на нем</translation>
 <translation id="3404065873681873169">Для этого сайта нет сохраненных паролей</translation>
 <translation id="3405664148539009465">Настроить шрифты</translation>
 <translation id="3405763860805964263">…</translation>
@@ -3980,7 +3980,6 @@
 <translation id="4675828034887792601">Быстрые команды для поиска на сайтах и управление поисковыми системами</translation>
 <translation id="4676595058027112862">Узнать больше о функции "Управление телефоном"</translation>
 <translation id="4677772697204437347">Память GPU</translation>
-<translation id="467823995058589466">Камера выключена.</translation>
 <translation id="4680105648806843642">Звук на этой странице был отключен</translation>
 <translation id="4680112532510845139">Перетащите изображение сюда</translation>
 <translation id="4681453295291708042">Отключить Обмен с окружением</translation>
@@ -3990,7 +3989,6 @@
 <translation id="4683629100208651599">Заменить на строчные</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (по умолчанию)</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
-<translation id="4684471265911890182">Приложение "<ph name="APP_NAME" />" пытается получить доступ к камере. Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности камеры.</translation>
 <translation id="4687613760714619596">Неизвестное устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Локальный идентификатор журнала: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761">По требованию <ph name="MANAGER" /> на этом устройстве восстанавливается предыдущая версия ОС (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -4028,6 +4026,7 @@
 <translation id="4726710355753484204">Чтобы увеличить масштаб, нажмите Ctrl + Alt + Увеличить яркость.
 Чтобы уменьшить масштаб, нажмите Ctrl + Alt + Уменьшить яркость.</translation>
 <translation id="4726710629007580002">При установке расширения возникли предупреждения:</translation>
+<translation id="472738079453283624">Товары</translation>
 <translation id="4727847987444062305">Управляемый гостевой сеанс</translation>
 <translation id="4728558894243024398">Платформа</translation>
 <translation id="4728570203948182358"><ph name="BEGIN_LINK" />Администратор<ph name="END_LINK" /> отключил проверку на наличие вредоносного ПО.</translation>
@@ -4170,6 +4169,7 @@
 <translation id="486635084936119914">Автоматически открывать некоторые типы файлов после скачивания</translation>
 <translation id="4868281708609571334">Научите Google Ассистента узнавать голос пользователя <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Это диалоговое окно находится не в фокусе. Чтобы это исправить, нажмите Command + Shift + Option + A.</translation>
+<translation id="4869170227080975044">Чтение данных сети ChromeOS</translation>
 <translation id="4870724079713069532">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Проводника и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Чтобы просмотреть сведения о конфигурации, введите пароль, полученный от администратора</translation>
 <translation id="4870995365819149457">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и ещё в 1 сервисе.</translation>
@@ -4903,6 +4903,7 @@
 <translation id="5571066253365925590">Bluetooth включен</translation>
 <translation id="5571092938913434726">Универсальные элементы управления медиафайлами</translation>
 <translation id="5571832155627049070">Настройте профиль</translation>
+<translation id="5572252023412311448">Показать сведения о сайтах группы <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">В адресной строке появятся улучшенные подсказки.</translation>
 <translation id="5572851009514199876">Выполните вход, чтобы Chrome определил, разрешен ли вам доступ к этому сайту.</translation>
 <translation id="557506220935336383">Показать разрешения для расширений на других сайтах</translation>
@@ -6098,6 +6099,7 @@
 <translation id="6703212423117969852">Повторите попытку позже в браузере Chrome.</translation>
 <translation id="6703254819490889819">Восстановить данные из резервной копии</translation>
 <translation id="6706210727756204531">Область применения</translation>
+<translation id="6707122714992751648">Запуск диагностики ChromeOS</translation>
 <translation id="6707389671160270963">Клиентский сертификат SSL</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{"<ph name="PAGE_TITLE" />" и ещё 1 вкладка}one{"<ph name="PAGE_TITLE" />" и ещё # вкладка}few{"<ph name="PAGE_TITLE" />" и ещё # вкладки}many{"<ph name="PAGE_TITLE" />" и ещё # вкладок}other{"<ph name="PAGE_TITLE" />" и ещё # вкладки}}</translation>
 <translation id="6709133671862442373">Новости</translation>
@@ -6276,6 +6278,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="6860097299815761905">Настройки прокси-сервера...</translation>
 <translation id="6860427144121307915">Открыть в новой вкладке</translation>
+<translation id="6861179941841598556">Другие действия для профиля "<ph name="PROFILE_NAME" />"</translation>
 <translation id="6863496016067551393">Все расширения разрешены</translation>
 <translation id="686366188661646310">Удаление пароля</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
@@ -6365,6 +6368,7 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Вы можете изменить настройки в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
+<translation id="6949089178006131285">Чтение данных сети ChromeOS Flex</translation>
 <translation id="6949434160682548041">Пароль (необязательно)</translation>
 <translation id="6950627417367801484">Восстановить приложения</translation>
 <translation id="6952242901357037157">Вы можете добавить в этот список пароли из вашего <ph name="BEGIN_LINK" />аккаунта Google<ph name="END_LINK" /></translation>
@@ -7981,6 +7985,7 @@
 <translation id="8463001014623882202">Ошибка авторизации</translation>
 <translation id="846374874681391779">Панель загрузок</translation>
 <translation id="8463955938112983119">Плагин <ph name="PLUGIN_NAME" /> отключен.</translation>
+<translation id="846399539692727039">Запуск диагностики ChromeOS Flex</translation>
 <translation id="8464132254133862871">Этот аккаунт пользователя не имеет допуска к этой службе.</translation>
 <translation id="8465252176946159372">Недопустимо</translation>
 <translation id="8465444703385715657">Для работы плагина <ph name="PLUGIN_NAME" /> необходимо разрешение</translation>
@@ -8004,7 +8009,6 @@
 <translation id="8481187309597259238">Подтвердите разрешение</translation>
 <translation id="8481980314595922412">Функции включены</translation>
 <translation id="8486666913807228950">Причина: в списке "Принудительное открытие" обнаружено инвертированное правило <ph name="REVERT_RULE" />.</translation>
-<translation id="848666842773560761">Приложение пытается получить доступ к камере. Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности камеры.</translation>
 <translation id="8487678622945914333">Увеличить</translation>
 <translation id="8487699605742506766">Точка доступа</translation>
 <translation id="8489156414266187072">Персональные подсказки показываются только в вашем аккаунте</translation>
@@ -8127,6 +8131,7 @@
 <translation id="8624315169751085215">Копировать в буфер обмена</translation>
 <translation id="8624354461147303341">Разрешить</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
+<translation id="8625124982056504555">Чтение серийных номеров устройства с ChromeOS и его компонентов</translation>
 <translation id="862542460444371744">Расширения</translation>
 <translation id="8625663000550647058">Запретить сайтам использовать микрофон</translation>
 <translation id="8625916342247441948">Запретить сайтам подключаться к HID-устройствам</translation>

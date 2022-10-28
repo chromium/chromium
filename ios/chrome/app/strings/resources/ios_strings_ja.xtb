@@ -114,7 +114,6 @@
 <translation id="1815941218935345331">パスコード</translation>
 <translation id="1820259098641718022">リーディング リストに追加しました</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
-<translation id="1857751338515529195">次のタブに移動する</translation>
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
@@ -222,7 +221,6 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">リンクを作成できません</translation>
 <translation id="2800683595868705743">タブ切り替え機能を終了</translation>
-<translation id="2812727400746650635">前のタブに移動する</translation>
 <translation id="2815198996063984598">2. [デフォルトのブラウザアプリ] をタップする</translation>
 <translation id="2820289420301699633">Chrome は管理者の制御下にあり、管理者は Chrome のデータにアクセスできます</translation>
 <translation id="2830972654601096923">住所を管理...</translation>
@@ -438,7 +436,6 @@
 <translation id="4630540211544979320">ページの翻訳</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
 <translation id="4636930964841734540">情報</translation>
-<translation id="4649294145748405669">高速、安全で便利な Chrome。こちらからダウンロードしてください。</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> として続行</translation>
 <translation id="4659126640776004816">この機能は Google アカウントにログインすると有効になります。</translation>
 <translation id="4659667755519643272">タブ切り替え機能を開始</translation>
@@ -599,7 +596,6 @@
 <translation id="5913600720976431809">ページ翻訳のオプション</translation>
 <translation id="5938160824633642847">デバイスの空き容量が少なくなっています。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
-<translation id="5949969988218625680">履歴を表示する</translation>
 <translation id="5955891643922670672">オフライン版を表示しています</translation>
 <translation id="5957613098218939406">その他のオプション</translation>
 <translation id="5963939892571022323">選択箇所へのリンクを作成できません。</translation>
@@ -678,7 +674,6 @@
 データは <ph name="TIME" /> に同期パスフレーズで暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6418346271604475326">PDF を準備しています</translation>
 <translation id="6434591244308415567">エラーが発生しました。しばらくしてからもう一度お試しください。</translation>
-<translation id="6435817889602303010">最後に閉じたタブを開く</translation>
 <translation id="6439338047467462846">すべて許可</translation>
 <translation id="6445051938772793705">国名</translation>
 <translation id="6445981559479772097">メッセージ送信完了。</translation>
@@ -814,7 +809,6 @@
 <translation id="746684838091935575">3.[Chrome] を選択する</translation>
 <translation id="7472734401283673885">会社名</translation>
 <translation id="7473891865547856676">スキップ</translation>
-<translation id="7481312909269577407">進む</translation>
 <translation id="750493650310597496">選択されていません</translation>
 <translation id="7508728395076009983">シークレット タブをロックするには、Touch ID、Face ID、またはパスコードを設定してください。</translation>
 <translation id="7514365320538308">ダウンロード</translation>
@@ -836,7 +830,6 @@
 <translation id="7720410380936703141">再試行</translation>
 <translation id="7726702057919861819">メニュー → 履歴 → 閲覧履歴データの削除</translation>
 <translation id="7741325291586284254">新しいシークレット タブ ページ</translation>
-<translation id="7743314735291715910">場所を開く…</translation>
 <translation id="7756478488453921771">メニュー → 設定 → お支払い方法</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>

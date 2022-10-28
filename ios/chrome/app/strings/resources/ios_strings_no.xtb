@@ -117,7 +117,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1815941218935345331">Sikkerhetskode</translation>
 <translation id="1820259098641718022">Lagt til i leselisten</translation>
 <translation id="1832848789136765277">For å sikre at du alltid har tilgang til de synkroniserte dataene dine, må du bekrefte at det er deg</translation>
-<translation id="1857751338515529195">Gå til neste fane</translation>
 <translation id="1870148520156231997">Vis passordet</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1891796056033961979">Lagrede bokmerker, passord, innstillinger med mer er tilgjengelig på denne skjermen.</translation>
@@ -228,7 +227,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2783054063075604403">Kan ikke opprette linken</translation>
 <translation id="2786701870377699570">Søk etter faner på synkroniserte enheter</translation>
 <translation id="2800683595868705743">Avslutt fanevelgeren</translation>
-<translation id="2812727400746650635">Gå til forrige fane</translation>
 <translation id="2815198996063984598">2. Trykk på Standard nettleserapp.</translation>
 <translation id="2820289420301699633">Administratoren din har kontroll over Chrome og tilgang til de tilhørende dataene</translation>
 <translation id="2830972654601096923">Administrer adresser</translation>
@@ -453,7 +451,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4630540211544979320">Oversett sider</translation>
 <translation id="4634124774493850572">Bruk passord</translation>
 <translation id="4636930964841734540">Info</translation>
-<translation id="4649294145748405669">Chrome er raskere, tryggere og mer personlig. Last den ned her.</translation>
 <translation id="4650125387981512669">Fortsett som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Når du logger på Google-kontoen din, blir denne funksjonen slått på.</translation>
 <translation id="4659667755519643272">Åpne fanevelgeren</translation>
@@ -622,7 +619,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5913600720976431809">Alternativer for oversetting av siden</translation>
 <translation id="5938160824633642847">Enheten er nesten full. Frigjør plass og prøv på nytt.</translation>
 <translation id="5948291296578561264">Da kan du lagre bilder i bildebiblioteket ditt.</translation>
-<translation id="5949969988218625680">Vis loggen</translation>
 <translation id="5951816930277761335">Del linken</translation>
 <translation id="5955891643922670672">Du ser en versjon uten nett</translation>
 <translation id="5957613098218939406">Flere alternativer</translation>
@@ -703,7 +699,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 Dataene dine er kryptert med passordfrasen din for synkronisering <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="6418346271604475326">Forbereder PDF</translation>
 <translation id="6434591244308415567">Det oppsto en feil. Prøv på nytt senere.</translation>
-<translation id="6435817889602303010">Åpne sist lukkede fane på nytt</translation>
 <translation id="6439338047467462846">Tillat alle</translation>
 <translation id="6445051938772793705">Land</translation>
 <translation id="6445981559479772097">Melding sendt.</translation>
@@ -846,7 +841,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="746684838091935575">3. Velg Chrome.</translation>
 <translation id="7472734401283673885">Bedriftsnavn</translation>
 <translation id="7473891865547856676">Nei takk</translation>
-<translation id="7481312909269577407">Frem</translation>
 <translation id="750493650310597496">0 er valgt</translation>
 <translation id="7508728395076009983">For å låse inkognitofanene dine, konfigurer Touch ID, Face ID eller en sikkerhetskode.</translation>
 <translation id="7514365320538308">Last ned</translation>
@@ -870,7 +864,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7720410380936703141">PRØV PÅ NYTT</translation>
 <translation id="7726702057919861819">Meny → Logg → Slett nettlesingsdata</translation>
 <translation id="7741325291586284254">Ny side i inkognitofane</translation>
-<translation id="7743314735291715910">Åpne plassering</translation>
 <translation id="7756478488453921771">Meny → Innstillinger → Betalingsmåter</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>

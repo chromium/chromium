@@ -956,7 +956,6 @@
 <translation id="1852799913675865625">Файлыг уншуулахыг оролдож байх үед алдаа гарлаа: <ph name="ERROR_TEXT" /> .</translation>
 <translation id="1854049213067042715">Орхисон газраасаа үргэлжлүүлнэ үү. Та Тохиргоо хэсэгт эхлүүлэх үед аппуудыг үргэлж сэргээхээр тохируулах эсвэл сэргээхийг унтраах боломжтой.</translation>
 <translation id="1854180393107901205">Каст хийхийг зогсоох</translation>
-<translation id="1855079636134697549">Камер асаалттай байна</translation>
 <translation id="1856715684130786728">Байршил нэмэх...</translation>
 <translation id="1858585891038687145">Програм хангамж боловсруулагчийг тодорхойлох итгэмжлэлийг энэ сертификатад олгох</translation>
 <translation id="1861262398884155592">Энэ фолдер хоосон байна</translation>
@@ -1631,7 +1630,6 @@
 <translation id="2453860139492968684">Дуусгах</translation>
 <translation id="2454206500483040640">Хуваагдсан</translation>
 <translation id="2454247629720664989">Түлхүүр үг</translation>
-<translation id="2454264884354864965">Камер унтраалттай байна</translation>
 <translation id="2454524890947537054">Вебийн хүсэлтийг зөвшөөрөх үү?</translation>
 <translation id="245650153866130664">Тасалбарыг автоматаар дахин шинэчлэхийн тулд “Нууц үг санах”-г тэмдэглэнэ үү. Таны нууц үгийг зөвхөн таны төхөөрөмж дээр хадгална.</translation>
 <translation id="2456827790665612305">Сайтыг дагахаа болих</translation>
@@ -1957,7 +1955,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> руу нэвтрэх</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Зөв бичих дүрмийн алдааг шалгах</translation>
-<translation id="2753677631968972007">Сайтын зөвшөөрлийг гар аргаар хянана уу.</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />-д хадгалсан Хурдан холбох төхөөрөмжүүдийг хүлээж байна</translation>
 <translation id="2754825024506485820">Бүтээмжээс эхлээд энтертэйнмент хүртэлх хэрэгтэй аппуудаа Google Play Дэлгүүрээс олоорой. Та аппуудыг хүссэн үедээ суулгах боломжтой.</translation>
 <translation id="2755349111255270002">Энэ <ph name="DEVICE_TYPE" />-г шинэчлэх</translation>
@@ -3994,7 +3991,6 @@
 <translation id="4675828034887792601">Сайт хайх болон хайлтын системээ удирдахад зориулж товчлол үүсгэнэ үү</translation>
 <translation id="4676595058027112862">Phone Hub, Нэмэлт мэдээлэл авах</translation>
 <translation id="4677772697204437347">GPU санах ой</translation>
-<translation id="467823995058589466">Камер унтраалттай байна</translation>
 <translation id="4680105648806843642">Энэ хуудасны дууг хаасан</translation>
 <translation id="4680112532510845139">Энд зураг буулгана уу</translation>
 <translation id="4681453295291708042">Ойролцоо хуваалцах онцлогийг идэвхгүй болгох</translation>
@@ -4004,7 +4000,6 @@
 <translation id="4683629100208651599">Жижиг үсэг болгох</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (өгөгдмөл)</translation>
 <translation id="4684427112815847243">Бүгдийг sync хийх</translation>
-<translation id="4684471265911890182"><ph name="APP_NAME" /> камерт хандахаар оролдож байна Хандалтыг зөвшөөрөхийн тулд камерын нууцлалын сэлгүүрийг унтраана уу.</translation>
 <translation id="4687613760714619596">Үл мэдэгдэх төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Дотоод логийн ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> энэ төхөөрөмжийг өмнөх хувилбар дээр нь тавьж байна (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -8020,7 +8015,6 @@
 <translation id="8481187309597259238">USB-н зөвшөөрлийг баталгаажуулах</translation>
 <translation id="8481980314595922412">Туршилтын онцлог асаалттай байна</translation>
 <translation id="8486666913807228950">Шалтгаан: <ph name="REVERT_RULE" /> урвуу дүрмийг "Хүчээр нээх" жагсаалтаас олсон.</translation>
-<translation id="848666842773560761">Апп камерт хандахаар оролдож байна. Хандалтыг зөвшөөрөхийн тулд камерын нууцлалын сэлгүүрийг унтраана уу.</translation>
 <translation id="8487678622945914333">Томруулж харах</translation>
 <translation id="8487699605742506766">Сүлжээний цэг</translation>
 <translation id="8489156414266187072">Хувийн зөвлөмж зөвхөн таны бүртгэл дээр харагдана</translation>

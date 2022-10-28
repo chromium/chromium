@@ -960,7 +960,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1852799913675865625">There was an error while trying to read the file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Continue from where you left off. You can set apps to always restore on startup or turn off restore in Settings.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
-<translation id="1855079636134697549">Camera is turned on</translation>
 <translation id="1856715684130786728">Add location...</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
@@ -1635,7 +1634,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2454206500483040640">Partitioned</translation>
 <translation id="2454247629720664989">Keyword</translation>
-<translation id="2454264884354864965">Camera is off</translation>
 <translation id="2454524890947537054">Approve web request?</translation>
 <translation id="245650153866130664">To automatically refresh a ticket, tick 'Remember password'. Your password will be stored on your device only.</translation>
 <translation id="2456827790665612305">Unfollow site</translation>
@@ -1961,7 +1959,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2749756011735116528">Sign in to <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
-<translation id="2753677631968972007">Manually control site permissions.</translation>
 <translation id="2754226775788136540">Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Find the apps that you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.</translation>
 <translation id="2755349111255270002">Reset this <ph name="DEVICE_TYPE" /></translation>
@@ -4000,7 +3997,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4675828034887792601">Create shortcuts for searching sites and manage your search engine</translation>
 <translation id="4676595058027112862">Phone Hub, learn more</translation>
 <translation id="4677772697204437347">GPU memory</translation>
-<translation id="467823995058589466">Camera is turned off</translation>
 <translation id="4680105648806843642">Sound was muted on this page</translation>
 <translation id="4680112532510845139">Drop an image here</translation>
 <translation id="4681453295291708042">Disable Nearby Share</translation>
@@ -4010,7 +4006,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4683629100208651599">Make Lower Case</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sync everything</translation>
-<translation id="4684471265911890182"><ph name="APP_NAME" /> is trying to access the camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="4687613760714619596">Unknown device (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Local log ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> is putting this device on a previous version (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -8029,7 +8024,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8481187309597259238">Confirm USB Permission</translation>
 <translation id="8481980314595922412">Trial features are on</translation>
 <translation id="8486666913807228950">Reason: The inverted rule <ph name="REVERT_RULE" /> was found in the 'Force open in' list.</translation>
-<translation id="848666842773560761">An app is trying to access the camera. Turn off the camera privacy switch to allow access.</translation>
 <translation id="8487678622945914333">Zoom In</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>

@@ -117,7 +117,6 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1815941218935345331">Jelkód</translation>
 <translation id="1820259098641718022">Hozzáadva az olvasási listához</translation>
 <translation id="1832848789136765277">Igazolja személyazonosságát, hogy mindig hozzáférhessen szinkronizált adataihoz</translation>
-<translation id="1857751338515529195">Ugrás a következő lapra</translation>
 <translation id="1870148520156231997">Jelszó megjelenítése</translation>
 <translation id="1872096359983322073">Vaku</translation>
 <translation id="1891796056033961979">Mentett könyvjelzőihez, jelszavaihoz, beállításaihoz és még sok máshoz erről a képernyőről férhet hozzá</translation>
@@ -228,7 +227,6 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2783054063075604403">Nem sikerült a link létrehozása</translation>
 <translation id="2786701870377699570">Keresés a lapokon a szinkronizált eszközökön</translation>
 <translation id="2800683595868705743">Kilépés a lapváltóból</translation>
-<translation id="2812727400746650635">Ugrás az előző lapra</translation>
 <translation id="2815198996063984598">2. Koppintson az Alapértelmezett böngésző lehetőségre.</translation>
 <translation id="2820289420301699633">A Chrome a rendszergazda irányítása alatt van, aki hozzáférhet a hozzá tartozó adatokhoz is</translation>
 <translation id="2830972654601096923">Címek kezelése…</translation>
@@ -453,7 +451,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4630540211544979320">Oldalak lefordítása</translation>
 <translation id="4634124774493850572">Jelszó használata</translation>
 <translation id="4636930964841734540">Információ</translation>
-<translation id="4649294145748405669">A Chrome gyorsabb, biztonságosabb és az Öné. Innen letöltheti.</translation>
 <translation id="4650125387981512669">Folytatás mint <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót.</translation>
 <translation id="4659667755519643272">Lapváltó megnyitása</translation>
@@ -622,7 +619,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5913600720976431809">Az oldal lefordításával kapcsolatos beállítások</translation>
 <translation id="5938160824633642847">Az eszköz tárhelye majdnem megtelt. Szabadítson fel helyet, és próbálja újra.</translation>
 <translation id="5948291296578561264">Segítségével fotókat menthet a fotótárba.</translation>
-<translation id="5949969988218625680">Előzmények megjelenítése</translation>
 <translation id="5951816930277761335">Ossza meg a linket</translation>
 <translation id="5955891643922670672">Offline verzió</translation>
 <translation id="5957613098218939406">További lehetőségek</translation>
@@ -703,7 +699,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 Adatainak titkosítása megtörtént összetett szinkronizálási jelszavával a következő időpontban: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="6418346271604475326">PDF előkészítése</translation>
 <translation id="6434591244308415567">Hiba történt, próbálja újra később.</translation>
-<translation id="6435817889602303010">A legutóbb bezárt lap újranyitása</translation>
 <translation id="6439338047467462846">Összes engedélyezése</translation>
 <translation id="6445051938772793705">Ország</translation>
 <translation id="6445981559479772097">Üzenet elküldve.</translation>
@@ -846,7 +841,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="746684838091935575">3. Válassza ki a Chrome böngészőt.</translation>
 <translation id="7472734401283673885">Vállalat neve</translation>
 <translation id="7473891865547856676">Nem, köszönöm</translation>
-<translation id="7481312909269577407">Előre</translation>
 <translation id="750493650310597496">0 kiválasztva</translation>
 <translation id="7508728395076009983">Az inkognitó lapok bezárásához állítsa be a következőket: Touch ID, Face ID vagy jelkód.</translation>
 <translation id="7514365320538308">Letöltés</translation>
@@ -870,7 +864,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="7720410380936703141">ÚJRA</translation>
 <translation id="7726702057919861819">Menü → Előzmények → Böngészési adatok törlése</translation>
 <translation id="7741325291586284254">Új inkognitó lap oldal</translation>
-<translation id="7743314735291715910">Hely megnyitása…</translation>
 <translation id="7756478488453921771">Menü → Beállítások → Fizetési módok</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>

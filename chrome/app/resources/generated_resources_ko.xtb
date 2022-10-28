@@ -960,7 +960,6 @@
 <translation id="1852799913675865625">파일을 읽는 중에 오류가 발생했습니다. <ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">이전에 사용하던 부분에서 앱을 다시 시작하세요. 설정에서 앱이 시작될 때 항상 이전 상태를 복원되도록 설정하거나 복원 기능을 끌 수 있습니다.</translation>
 <translation id="1854180393107901205">전송 중지</translation>
-<translation id="1855079636134697549">카메라 켜짐</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
 <translation id="1858585891038687145">소프트웨어 제작자를 식별하기 위해 이 인증서 신뢰</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
@@ -1636,7 +1635,6 @@
 <translation id="2453860139492968684">완료</translation>
 <translation id="2454206500483040640">분할됨</translation>
 <translation id="2454247629720664989">키워드</translation>
-<translation id="2454264884354864965">카메라 꺼짐</translation>
 <translation id="2454524890947537054">웹 요청을 승인할까요?</translation>
 <translation id="245650153866130664">티켓을 자동으로 새로고침하려면 '비밀번호 저장' 체크박스를 선택하세요. 비밀번호는 기기에만 저장됩니다.</translation>
 <translation id="2456827790665612305">사이트 팔로우 해제</translation>
@@ -1962,7 +1960,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />에 로그인</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
-<translation id="2753677631968972007">사이트 권한을 수동으로 관리합니다.</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />에 저장된 빠른 페어링 기기를 찾는 중</translation>
 <translation id="2754825024506485820">Google Play 스토어에서 생산성, 엔터테인먼트 등 나에게 필요한 다양한 앱을 찾아보세요. 언제든지 앱을 설치할 수 있습니다.</translation>
 <translation id="2755349111255270002"><ph name="DEVICE_TYPE" /> 초기화</translation>
@@ -3998,7 +3995,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4675828034887792601">검색 사이트 바로가기를 만들고 검색엔진을 관리합니다.</translation>
 <translation id="4676595058027112862">휴대전화 허브, 자세히 알아보기</translation>
 <translation id="4677772697204437347">GPU 메모리</translation>
-<translation id="467823995058589466">카메라 꺼짐</translation>
 <translation id="4680105648806843642">이 페이지가 음소거됨</translation>
 <translation id="4680112532510845139">이미지를 여기에 드롭하세요.</translation>
 <translation id="4681453295291708042">Nearby Share 사용 중지</translation>
@@ -4008,7 +4004,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4683629100208651599">Make Lowercase(소문자로 표시)</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%(기본)</translation>
 <translation id="4684427112815847243">모두 동기화</translation>
-<translation id="4684471265911890182"><ph name="APP_NAME" /> 앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="4687613760714619596">알 수 없는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">로컬 로그 ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /></translation>
 <translation id="4688176403504673761"><ph name="MANAGER" />에서 기기를 이전 버전으로 롤백 중(<ph name="PROGRESS_PERCENT" />)</translation>
@@ -8026,7 +8021,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8481187309597259238">USB 권한 확인</translation>
 <translation id="8481980314595922412">무료 체험 기능 사용 중</translation>
 <translation id="8486666913807228950">이유: 반전된 규칙인 <ph name="REVERT_RULE" />이(가) "강제로 열기" 목록에 있습니다.</translation>
-<translation id="848666842773560761">앱에서 카메라에 액세스하려고 합니다. 액세스를 허용하려면 카메라 개인정보 보호 스위치를 끄세요.</translation>
 <translation id="8487678622945914333">확대</translation>
 <translation id="8487699605742506766">핫스팟</translation>
 <translation id="8489156414266187072">개인 추천 항목은 내 계정에만 표시됩니다.</translation>

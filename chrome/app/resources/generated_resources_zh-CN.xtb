@@ -942,7 +942,6 @@
 <translation id="1852799913675865625">尝试读取文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
 <translation id="1854049213067042715">从先前中断之处继续操作。您可将应用设为始终在系统启动时恢复，也可在“设置”中关闭恢复功能。</translation>
 <translation id="1854180393107901205">停止投放</translation>
-<translation id="1855079636134697549">摄像头已开启</translation>
 <translation id="1856715684130786728">添加位置…</translation>
 <translation id="1858585891038687145">信任该证书，以便标识软件编写者的身份</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
@@ -1613,7 +1612,6 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454206500483040640">已分区</translation>
 <translation id="2454247629720664989">关键字</translation>
-<translation id="2454264884354864965">摄像头未开启</translation>
 <translation id="2454524890947537054">批准网站请求？</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2456827790665612305">取消关注网站</translation>
@@ -1938,7 +1936,6 @@
 <translation id="2749756011735116528">登录<ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">检查拼写和语法</translation>
-<translation id="2753677631968972007">手动控制网站权限。</translation>
 <translation id="2754226775788136540">正在查找已保存到 <ph name="PRIMARY_EMAIL" /> 的快速配对设备</translation>
 <translation id="2754825024506485820">查找您所需的应用 - 从办公类应用到娱乐类应用，Google Play 商店应有尽有。您随时可安装应用。</translation>
 <translation id="2755349111255270002">重置此 <ph name="DEVICE_TYPE" /></translation>
@@ -3972,7 +3969,6 @@
 <translation id="4675828034887792601">创建用于搜索网站的快捷字词，以及管理您的搜索引擎</translation>
 <translation id="4676595058027112862">Phone Hub，了解详情</translation>
 <translation id="4677772697204437347">GPU内存</translation>
-<translation id="467823995058589466">摄像头未开启</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
 <translation id="4680112532510845139">将图片放到此处</translation>
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
@@ -3982,7 +3978,6 @@
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据类型</translation>
-<translation id="4684471265911890182"><ph name="APP_NAME" />正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关。</translation>
 <translation id="4687613760714619596">未知设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">本地日志 ID：<ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> 正在将此设备回滚到上一个版本 (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -7998,7 +7993,6 @@
 <translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8481980314595922412">试用版功能已开启</translation>
 <translation id="8486666913807228950">原因：系统在“会被强制在…中打开”列表中发现了反转规则“<ph name="REVERT_RULE" />”。</translation>
-<translation id="848666842773560761">有一款应用正在尝试使用摄像头。若要允许它使用摄像头，请关闭摄像头的隐私保护开关。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8487699605742506766">热点</translation>
 <translation id="8489156414266187072">个性化建议仅会显示在您的帐号中</translation>

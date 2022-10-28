@@ -117,7 +117,6 @@
 <translation id="1815941218935345331">Өткөрүүчү код</translation>
 <translation id="1820259098641718022">Окуу тизмесине кошулду</translation>
 <translation id="1832848789136765277">Шайкештирилген маалыматыңызга каалаган убакта кирүү үчүн бул сиз экениңизди ырастаңыз</translation>
-<translation id="1857751338515529195">Кийинки өтмөккө өтүү</translation>
 <translation id="1870148520156231997">Сырсөздү көрсөтүү</translation>
 <translation id="1872096359983322073">Колчырак</translation>
 <translation id="1891796056033961979">Сакталган кыстармалар, сырсөздөр, параметрлер жана башкалар эми ушул экранда болот.</translation>
@@ -228,7 +227,6 @@
 <translation id="2783054063075604403">Шилтеме түзүлгөн жок</translation>
 <translation id="2786701870377699570">Шайкештирилген түзмөктөрдө өтмөктөрдү издеңиз</translation>
 <translation id="2800683595868705743">Өтмөк которуштургучтан кетүү</translation>
-<translation id="2812727400746650635">Мурунку өтмөккө өтүү</translation>
 <translation id="2815198996063984598">2. Демейки серепчи колдонмосун басыңыз</translation>
 <translation id="2820289420301699633">Администраторуңуз Chrome'ду көзөмөлдөп, андагы маалыматты колдоно алат.</translation>
 <translation id="2830972654601096923">Даректерди башкаруу…</translation>
@@ -453,7 +451,6 @@
 <translation id="4630540211544979320">Барактарды которуу</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
 <translation id="4636930964841734540">Маалымат</translation>
-<translation id="4649294145748405669">Chrome — ылдам, коопсуз жана сиз үчүн иштелип чыккан. Аны бул жерден жүктөп алыңыз.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> катары улантуу</translation>
 <translation id="4659126640776004816">Google аккаунтуңузга киргенде, бул функция күйгүзүлөт.</translation>
 <translation id="4659667755519643272">Өтмөк которуштургучка кирүү</translation>
@@ -622,7 +619,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5913600720976431809">Бул баракты которуу параметрлери</translation>
 <translation id="5938160824633642847">Түзмөгүңүздө орун аз калды. Орун бошотуп, кайталап көрүңүз.</translation>
 <translation id="5948291296578561264">Ушуну менен сүрөттөрдү галереяңызга сактоого мүмкүндүк берилет.</translation>
-<translation id="5949969988218625680">Таржымалды көрсөтүү</translation>
 <translation id="5951816930277761335">Шилтемени бөлүшүңүз</translation>
 <translation id="5955891643922670672">Оффлайн версиясын көрүп жатасыз</translation>
 <translation id="5957613098218939406">Дагы параметрлер</translation>
@@ -703,7 +699,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 Дайын-даректериңиз саат <ph name="TIME" /> купуя сөз айкашы менен шифрлеген. Шайкештирип баштоо үчүн аны киргизиңиз.</translation>
 <translation id="6418346271604475326">PDF даярдалууда</translation>
 <translation id="6434591244308415567">Ката кетти. Бир аздан кийин кайталап көрүңүз.</translation>
-<translation id="6435817889602303010">Акыркы жабылган өтмөктү кайра ачуу</translation>
 <translation id="6439338047467462846">Баарына уруксат берүү</translation>
 <translation id="6445051938772793705">Өлкө</translation>
 <translation id="6445981559479772097">Билдирүү жөнөтүлдү.</translation>
@@ -846,7 +841,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="746684838091935575">3. Chrome'ду тандаңыз</translation>
 <translation id="7472734401283673885">Компаниянын аты</translation>
 <translation id="7473891865547856676">Жок, рахмат</translation>
-<translation id="7481312909269577407">Багыттоо</translation>
 <translation id="750493650310597496">0 тандалды</translation>
 <translation id="7508728395076009983">Жашыруун өтмөктөрдү кулпулоо үчүн Touch ID, Face ID же өткөрүүчү кодду жөндөңүз.</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
@@ -870,7 +864,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7720410380936703141">КАЙТАЛОО</translation>
 <translation id="7726702057919861819">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>
 <translation id="7741325291586284254">Жаңы жашыруун өтмөк барагы</translation>
-<translation id="7743314735291715910">Жайгашкан жерди ачуу…</translation>
 <translation id="7756478488453921771">Меню → Тууралоо → Төлөм ыкмалары</translation>
 <translation id="7765158879357617694">Жылуу</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>

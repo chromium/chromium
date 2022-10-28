@@ -949,7 +949,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1852799913675865625">Si è verificato un errore durante la lettura del file: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">Continua da dove avevi interrotto. Puoi impostare il ripristino delle app sempre all'avvio o disattivare il ripristino nelle Impostazioni.</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
-<translation id="1855079636134697549">La fotocamera è attivata</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
 <translation id="1858585891038687145">Considera attendibile questo certificato per l'identificazione dei creatori di software</translation>
 <translation id="1861262398884155592">Questa cartella è vuota</translation>
@@ -1620,7 +1619,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2453860139492968684">Termina</translation>
 <translation id="2454206500483040640">Partizionati</translation>
 <translation id="2454247629720664989">Parola chiave</translation>
-<translation id="2454264884354864965">La fotocamera è spenta</translation>
 <translation id="2454524890947537054">Vuoi approvare la richiesta web?</translation>
 <translation id="245650153866130664">Per aggiornare automaticamente una richiesta, seleziona "Memorizza la password". La tua password verrà memorizzata solo sul tuo dispositivo.</translation>
 <translation id="2456827790665612305">Non seguire più il sito</translation>
@@ -1946,7 +1944,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2749756011735116528">Accedi a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Controllo ortografia e grammatica</translation>
-<translation id="2753677631968972007">Controlla manualmente le autorizzazioni del sito.</translation>
 <translation id="2754226775788136540">Ricerca di dispositivi con Accoppiamento rapido salvati su <ph name="PRIMARY_EMAIL" /> in corso…</translation>
 <translation id="2754825024506485820">Trova le app che ti servono sul Google Play Store, dalle app per la produttività a quelle per l'intrattenimento. Puoi installare app in qualsiasi momento.</translation>
 <translation id="2755349111255270002">Reimposta questo dispositivo <ph name="DEVICE_TYPE" /></translation>
@@ -3983,7 +3980,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4675828034887792601">Crea scorciatoie per cercare nei siti e gestire i motori di ricerca</translation>
 <translation id="4676595058027112862">Phone Hub, scopri di più</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
-<translation id="467823995058589466">La fotocamera è disattivata</translation>
 <translation id="4680105648806843642">L'audio è stato disattivato in questa pagina</translation>
 <translation id="4680112532510845139">Trascina un'immagine qui</translation>
 <translation id="4681453295291708042">Disattiva Condivisione nelle vicinanze</translation>
@@ -3993,7 +3989,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4683629100208651599">Usa lettere minuscole</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (valore predefinito)</translation>
 <translation id="4684427112815847243">Sincronizza tutto</translation>
-<translation id="4684471265911890182">L'app <ph name="APP_NAME" /> sta tentando di accedere alla videocamera. Disattiva l'opzione Privacy videocamera per consentire l'accesso.</translation>
 <translation id="4687613760714619596">Dispositivo sconosciuto (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID log locale: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> sta riportando questo dispositivo a una versione precedente (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -8007,7 +8002,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>
 <translation id="8481980314595922412">Funzionalità di prova attive</translation>
 <translation id="8486666913807228950">Motivo: la regola invertita <ph name="REVERT_RULE" /> è stata rilevata nell'elenco "Forza l'apertura in".</translation>
-<translation id="848666842773560761">Un'app sta tentando di accedere alla videocamera. Disattiva l'opzione Privacy videocamera per consentire l'accesso.</translation>
 <translation id="8487678622945914333">Ingrandisci</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">I suggerimenti personali vengono mostrati soltanto nel tuo account</translation>

@@ -954,7 +954,6 @@
 <translation id="1852799913675865625">ಫೈಲ್ ಅನ್ನು ಓದಲು ಪ್ರಯತ್ನಿಸುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ: <ph name="ERROR_TEXT" />.</translation>
 <translation id="1854049213067042715">ನೀವು ಎಲ್ಲಿ ನಿಲ್ಲಿಸಿರುವಿರೋ, ಅಲ್ಲಿಂದ ಮುಂದುವರಿಸಿ. ಆರಂಭದಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ಯಾವಾಗಲೂ ಮರುಸ್ಥಾಪಿಸಲು ನೀವು ಅವುಗಳನ್ನು ಸೆಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಮರುಸ್ಥಾಪನೆಯನ್ನು ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1854180393107901205">ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
-<translation id="1855079636134697549">ಕ್ಯಾಮರಾ ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1856715684130786728">ಸ್ಥಳ ಸೇರಿಸಿ...</translation>
 <translation id="1858585891038687145">ಸಾಫ್ಟ್‌ವೇರ್ ತಯಾರಕರನ್ನು ಗುರುತಿಸುವುದಕ್ಕಾಗಿ ಈ ಪ್ರಮಾಣಪತ್ರದ ಮೇಲೆ ವಿಶ್ವಾಸವಿಡಿ</translation>
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
@@ -1628,7 +1627,6 @@
 <translation id="2453860139492968684">ಪೂರ್ಣಗೊಳಿಸು</translation>
 <translation id="2454206500483040640">ವಿಭಜಿಸಲಾಗಿದೆ</translation>
 <translation id="2454247629720664989">ಕೀವರ್ಡ್</translation>
-<translation id="2454264884354864965">ಕ್ಯಾಮರಾ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="2454524890947537054">ವೆಬ್ ವಿನಂತಿಯನ್ನು ಅನುಮೋದಿಸಬೇಕೇ?</translation>
 <translation id="245650153866130664">ಟಿಕೆಟ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರಿಫ್ರೆಶ್ ಮಾಡಲು, "ಪಾಸ್‌ವರ್ಡ್‌ ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ" ಚೆಕ್ ಮಾರ್ಕ್ ಆರಿಸಿ. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2456827790665612305">ಸೈಟ್ ಅನ್ನು ಅನುಸರಿಸಬೇಡಿ</translation>
@@ -1954,7 +1952,6 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಆಗಿ</translation>
 <translation id="2749836841884031656">ಸಿಮ್</translation>
 <translation id="2749881179542288782">ವ್ಯಾಕರಣವನ್ನು ಕಾಗುಣಿತದೊಂದಿಗೆ ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="2753677631968972007">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ನಿಯಂತ್ರಿಸಿ.</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> ಗೆ ಉಳಿಸಲಾದ ಶೀಘ್ರ ಜೋಡಿಗೋಳಿಸುವಿಕೆ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2754825024506485820">Google Play Store ನಲ್ಲಿ ಉತ್ಪಾದಕತೆಯಿಂದ ಹಿಡಿದು ಮನರಂಜನೆಯವರೆಗೆ ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಆ್ಯಪ್‌ಗಳನ್ನು ಹುಡುಕಿ. ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2755349111255270002">ಇದನ್ನು <ph name="DEVICE_TYPE" /> ಮರುಹೊಂದಿಸಿ</translation>
@@ -2428,6 +2425,7 @@
 <translation id="3197453258332670132">ಬಲ-ಕ್ಲಿಕ್ ಅಥವಾ ದೀರ್ಘಕಾಲ ಒತ್ತಿಹಿಡಿಯಿರಿ, ನೀವು ಆಯ್ಕೆಮಾಡಿದ ಪಠ್ಯಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3199127022143353223">ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="3200061262156232574">ನಿಮ್ಮ ಶಾಪಿಂಗ್‌ ಕಾರ್ಟ್‌ನಲ್ಲಿ</translation>
+<translation id="3201237270673604992">Z ನಿಂದ A ವರೆಗೆ</translation>
 <translation id="3201422919974259695">ಲಭ್ಯವಿರುವ USB ಸಾಧನಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ.</translation>
 <translation id="3202131003361292969">ಪಾಥ್</translation>
 <translation id="3202173864863109533">ಈ ಟ್ಯಾಬ್‌ನ ಆಡಿಯೋವನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
@@ -3752,6 +3750,7 @@
 <translation id="4460014764210899310">ಗುಂಪು ವಿಂಗಡಿಸಿ</translation>
 <translation id="4462159676511157176">ಕಸ್ಟಮ್ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> ಆ್ಯಪ್‌ಗಾಗಿ <ph name="TIME" /> ಸಮಯದ ಮಿತಿಯನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
+<translation id="4465649939134800363">ವಿಂಗಡಣೆಯ ಆಯ್ಕೆಗಳು</translation>
 <translation id="4466839823729730432">ನಿಮ್ಮ ಮಧುರ ಕ್ಷಣಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="4469324811108161144">ಟಿಪ್ಪಣಿಗಳು ಗರಿಷ್ಠ <ph name="CHARACTER_LIMIT" /> ಅಕ್ಷರಗಳನ್ನು ಉಳಿಸಬಲ್ಲವು.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ನಲ್ಲಿ <ph name="ORIGIN" /> ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
@@ -3990,7 +3989,6 @@
 <translation id="4675828034887792601">ಸೈಟ್‌ಗಳನ್ನು ಹುಡುಕಲು ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ರಚಿಸಿ ಹಾಗೂ ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4676595058027112862">ಫೋನ್ ಹಬ್, ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="4677772697204437347">GPU ಮೆಮೊರಿ</translation>
-<translation id="467823995058589466">ಕ್ಯಾಮರಾವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4680105648806843642">ಈ ಪುಟದಲ್ಲಿ ಧ್ವನಿಯನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4680112532510845139">ಚಿತ್ರವನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4681453295291708042">Nearby ಶೇರ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -4000,7 +3998,6 @@
 <translation id="4683629100208651599">ಲೋವರ್‌ಕೇಸ್ ಮಾಡಿ</translation>
 <translation id="4683947955326903992">ಶೇಕಡಾ <ph name="PERCENTAGE" /> (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
-<translation id="4684471265911890182">ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು <ph name="APP_NAME" /> ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ. ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲು ‌ಕ್ಯಾಮರಾ ಗೌಪ್ಯತೆ ಸ್ವಿಚ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="4687613760714619596">ಅಪರಿಚಿತ ಸಾಧನ (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ಸ್ಥಳೀಯ ಲಾಗ್ ಐಡಿ: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" />, ಈ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಯಲ್ಲಿ ಇರಿಸುತ್ತಿದೆ (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -6269,6 +6266,7 @@
 <translation id="6843264316370513305">ನೆಟ್‌ವರ್ಕ್ ಡೀಬಗ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="6843423766595476978">ಓಕೆ Google ಸಿದ್ಧವಾಗಿದೆ</translation>
 <translation id="6845038076637626672">ಗರಿಷ್ಠಗೊಳಿಸುವಿಕೆಯಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="6845231585063669905">A ನಿಂದ Z ವರೆಗೆ</translation>
 <translation id="6846178040388691741"><ph name="FILE_NAME" /> ಅನ್ನು <ph name="PRINTER_NAME" /> ಮೂಲಕ ಪ್ರಿಂಟ್ ಮಾಡಲು "<ph name="EXTENSION_NAME" />" ಬಯಸುತ್ತದೆ.</translation>
 <translation id="6847125920277401289">ಮುಂದುವರಿಯಲು ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
 <translation id="6848388270925200958">ಸದ್ಯಕ್ಕೆ, ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರವೇ ಬಳಸಬಹುದಾದ ಕೆಲವು ಕಾರ್ಡ್‌ಗಳನ್ನು ನೀವು ಹೊಂದಿದ್ದೀರಿ</translation>
@@ -7423,6 +7421,7 @@
 <translation id="7939073735115504773"><ph name="HOST" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಈ ವಿಸ್ತರಣೆಯ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7939328347457537652">ಸಾಧನ ಪ್ರಮಾಣೀಕರಣಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7939412583708276221">ಹೇಗಾದರೂ ಇರಿಸಿ</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="7941179291434537290">ಟೆಥರಿಂಗ್ ಸಿದ್ಧತೆ:</translation>
 <translation id="7942349550061667556">ಕೆಂಪು</translation>
 <translation id="7943368935008348579">PDF ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -8016,7 +8015,6 @@
 <translation id="8481187309597259238">USB ಅನುಮತಿಯನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="8481980314595922412">ಪ್ರಾಯೋಗಿಕ ವೈಶಿಷ್ಟ್ಯಗಳು ಆನ್ ಆಗಿವೆ</translation>
 <translation id="8486666913807228950">ಕಾರಣ: ಇನ್‌ವರ್ಟ್ ಮಾಡಲಾದ ನಿಯಮ <ph name="REVERT_RULE" /> "ಬಲವಂತವಾಗಿ ತೆರೆಯಲಾಗುತ್ತಿರುವ" ಪಟ್ಟಿಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ.</translation>
-<translation id="848666842773560761">ಆ್ಯಪ್‌ವೊಂದು ಕ್ಯಾಮರಾವನ್ನು ಪ್ರವೇಶಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ ಪ್ರವೇಶವನ್ನು ಅನುಮತಿಸಲು ‌ಕ್ಯಾಮರಾ ಗೌಪ್ಯತೆ ಸ್ವಿಚ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="8487678622945914333">ಝೂಮ್ ಇನ್</translation>
 <translation id="8487699605742506766">ಹಾಟ್‌ಸ್ಪಾಟ್</translation>
 <translation id="8489156414266187072">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಮಾತ್ರ ವೈಯಕ್ತಿಕ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತದೆ</translation>

@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Méret: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> billentyűkombináció</translation>
 <translation id="1923956950274750765">Középorchidea</translation>
+<translation id="1928535370180099152">az előző karakter kiemelése</translation>
 <translation id="1928932365747995741">Nincs előző szerkeszthető szövegmező</translation>
 <translation id="1964135212174907577">Következő objektum</translation>
 <translation id="1966649499058910679">Szavak kiemelése a beszédtempóval egyező ütemben</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Szövegfelolvasás be- és kikapcsolása</translation>
 <translation id="2390264819538553347">Továbblépéshez nyomja le az Enter, visszalépéshez a Backspace billentyűt.</translation>
 <translation id="2398579267367951220">Kezdjen el gépelni az oldalon való kereséshez. Az Enter billentyű megnyomásával a találathoz ugorhat, a felfelé és lefelé mutató nyilakkal váltogathat a találatok között, a keresést módosíthatja további karakterek beírásával, az Esc billentyűvel pedig megszakíthatja a keresést.</translation>
+<translation id="2407047351320112166">a következő karakter kiemelése</translation>
 <translation id="240709722712693803">Kékeslila</translation>
 <translation id="2410298923485357543">Természetes hang használata, amikor az eszköz csatlakozik az internethez</translation>
 <translation id="2416512023405990736">Nem bejelölt négyzet</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Előző űrlap mező</translation>
 <translation id="3393605254399152980">Ha hallani szeretné, mit érintett meg, csúsztasson egy ujjával</translation>
 <translation id="3406283310380167331">Űrlaplista megjelenítése</translation>
+<translation id="3407726812456125464">A kijelölt szöveg meghallgatása</translation>
 <translation id="3414400929511680526">Alice-kék</translation>
 <translation id="3418936350470374046">Nincs több cella lefelé</translation>
 <translation id="3419269701801640163">beillesztés</translation>

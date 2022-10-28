@@ -2305,6 +2305,7 @@
 <translation id="7012363358306927923">சீனா UnionPay</translation>
 <translation id="7014741021609395734">ஜூம் நிலை</translation>
 <translation id="7016992613359344582">இந்தக் கட்டணங்கள் ஒருமுறை அல்லது தொடர்ந்து வசூலிக்கப்படலாம், அவை வெளிப்படையாகத் தெரிவிக்கப்படாமல் இருக்கலாம்.</translation>
+<translation id="7023162328967545559">நிர்வாகியின் எச்சரிக்கை</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="7030436163253143341">தவறான சான்றிதழ்</translation>
 <translation id="7031646650991750659">நீங்கள் நிறுவியுள்ள Google Play ஆப்ஸ்</translation>
@@ -2491,6 +2492,7 @@
 <translation id="7489473601138133813">தொழில் சார்ந்த ஆதாரங்கள் &amp; திட்டமிடல்</translation>
 <translation id="7495528107193238112">இந்த உள்ளடக்கம் தடுக்கப்பட்டுள்ளது. இந்தச் சிக்கலைச் சரிசெய்ய, தளத்தின் உரிமையாளரைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7497998058912824456">ஆவணத்தை உருவாக்குவதற்கான பட்டன். புதிய Google ஆவணத்தை விரைவாக உருவாக்க Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="7501663406926337752">உங்கள் நிறுவனம் இந்தத் தளத்தைக் கொடியிட்டுள்ளது</translation>
 <translation id="7501853161948120656">கல்வி சார்ந்த ஆதாரங்கள்</translation>
 <translation id="7506488012654002225">பின்வரும் தகவல்களை Chromium <ph name="BEGIN_EMPHASIS" />சேமிக்காது<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -2737,6 +2739,7 @@
 <translation id="8094917007353911263">நீங்கள் பயன்படுத்திக் கொண்டிருக்கும் நெட்வொர்க், <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ஐ நீங்கள் பார்க்கக் கோரலாம்.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">செல்லாத கார்டுகள் அகற்றப்பட்டன</translation>
+<translation id="8100666323495101203"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> என்ற தளம் கொள்கையை மீறுவதாக இருக்கலாம் என உங்கள் நிறுவனம் அடையாளம் கண்டுள்ளது. <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">கல்வி சார்ந்த மாநாடுகள் &amp; வெளியீடுகள்</translation>
 <translation id="8103161714697287722">கட்டண முறை</translation>
 <translation id="8103643211515685474">பரவாயில்லை, அச்சிடு</translation>

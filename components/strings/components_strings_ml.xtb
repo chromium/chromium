@@ -2309,6 +2309,7 @@
 <translation id="7012363358306927923">ചൈന UnionPay</translation>
 <translation id="7014741021609395734">സൂം നില</translation>
 <translation id="7016992613359344582">ഈ നിരക്കുകൾ ഒറ്റത്തവണ അടയ്ക്കുന്നതോ അല്ലെങ്കിൽ ആവർത്തിക്കുന്നവയോ ആവാം, ഒപ്പം വ്യക്തമല്ലായിരിക്കാം.</translation>
+<translation id="7023162328967545559">അഡ്‌മിന്റെ മുന്നറിയിപ്പ്</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7030436163253143341">സർട്ടിഫിക്കറ്റ് അസാധുവാണ്</translation>
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>
@@ -2493,6 +2494,7 @@
 <translation id="7489473601138133813">കരിയർ റിസോഴ്‌സുകളും പ്ലാനിംഗുകളും</translation>
 <translation id="7495528107193238112">ഈ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു. പ്രശ്‌നം പരിഹരിക്കാൻ സൈറ്റിന്റെ ഉടമയുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="7497998058912824456">'ഡോക് സൃഷ്ടിക്കുക' ബട്ടൺ, പുതിയൊരു Google ഡോക് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
+<translation id="7501663406926337752">നിങ്ങൾ പോകാനിരിക്കുന്ന സൈറ്റ് നിങ്ങളുടെ സ്ഥാപനം ഫ്ലാഗ് ചെയ്‌തതാണ്</translation>
 <translation id="7501853161948120656">വിദ്യാഭ്യാസ ഉറവിടങ്ങൾ</translation>
 <translation id="7506488012654002225">ഇനിപ്പറയുന്ന വിവരങ്ങൾ Chromium <ph name="BEGIN_EMPHASIS" />സംരക്ഷിക്കില്ല<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
@@ -2739,6 +2741,7 @@
 <translation id="8094917007353911263">നിങ്ങൾക്ക് ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്ക് <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> സന്ദർശിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടാം.</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">അസാധുവായ കാർഡുകൾ നീക്കം ചെയ്‌തു</translation>
+<translation id="8100666323495101203"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നത് നയം ലംഘിക്കാനിടയുള്ള സെെറ്റായി നിങ്ങളുടെ സ്ഥാപനം തിരിച്ചറിഞ്ഞു. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8102225008113166873">അക്കാദമിക് കോൺഫറൻസുകളും പ്രസിദ്ധീകരണങ്ങളും</translation>
 <translation id="8103161714697287722">പേയ്‌മെന്റ് രീതി</translation>
 <translation id="8103643211515685474">എന്തായാലും പ്രിന്റ് ചെയ്യുക</translation>

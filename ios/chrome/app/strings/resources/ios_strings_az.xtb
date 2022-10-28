@@ -117,7 +117,6 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1815941218935345331">Parol</translation>
 <translation id="1820259098641718022">Oxu Siyahısına əlavə edildi</translation>
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
-<translation id="1857751338515529195">Növbəti taba keçin</translation>
 <translation id="1870148520156231997">Parolu Göstərin</translation>
 <translation id="1872096359983322073">Fənər</translation>
 <translation id="1891796056033961979">Yadda saxladığınız əlfəcinlər, parollar, ayarlar və s. bu ekrandan əlçatandır.</translation>
@@ -228,7 +227,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="2783054063075604403">Keçid Yaratmaq Olmur</translation>
 <translation id="2786701870377699570">Sinxronlaşdırılmış Cihazlarda Tabları axtarın</translation>
 <translation id="2800683595868705743">Panel Dəyişdiricini Tərk edin</translation>
-<translation id="2812727400746650635">Əvvəlki taba keçin</translation>
 <translation id="2815198996063984598">2. Defolt Brauzer Tətbiqi seçiminə toxunun</translation>
 <translation id="2820289420301699633">Administrator Chrome'a nəzarət edir və oradakı dataya girişi var</translation>
 <translation id="2830972654601096923">Ünvanları İdarə Edin...</translation>
@@ -453,7 +451,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4630540211544979320">Səhifələri Tərcümə Edin</translation>
 <translation id="4634124774493850572">Parol istifadə edin</translation>
 <translation id="4636930964841734540">İnfo</translation>
-<translation id="4649294145748405669">Chrome daha sürətli, daha təhlükəsizdir və sizin üçün nəzərdə tutulub. Burada endirin.</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> kimi davam edin</translation>
 <translation id="4659126640776004816">Google Hesabınıza daxil olduqda, bu xüsusiyyət aktivləşir.</translation>
 <translation id="4659667755519643272">Panel Dəyişdirici Daxil edin</translation>
@@ -622,7 +619,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5913600720976431809">Səhifəni tərcümə etmək seçimləri</translation>
 <translation id="5938160824633642847">Cihaz doludur. Yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="5948291296578561264">Bu fotoları foto kitabxanada saxlamağa icazə verir.</translation>
-<translation id="5949969988218625680">Tarixi göstərin</translation>
 <translation id="5951816930277761335">Keçidi paylaşın</translation>
 <translation id="5955891643922670672">Oflayn versiyaya baxırsınız</translation>
 <translation id="5957613098218939406">Əlavə Seçimlər</translation>
@@ -703,7 +699,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 Datanız <ph name="TIME" /> tarixində sinxronizasiya parol sözü ilə şifrələndi. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="6418346271604475326">PDF hazırlanır</translation>
 <translation id="6434591244308415567">Xəta baş verdi. Yenidən cəhd edin.</translation>
-<translation id="6435817889602303010">Son Bağlanmış Tabı yenidən açın</translation>
 <translation id="6439338047467462846">Hamısına İcazə Verin</translation>
 <translation id="6445051938772793705">Ölkə</translation>
 <translation id="6445981559479772097">Mesaj göndərildi.</translation>
@@ -846,7 +841,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="746684838091935575">3. Chrome seçin</translation>
 <translation id="7472734401283673885">Şirkətin Adı</translation>
 <translation id="7473891865547856676">Yox</translation>
-<translation id="7481312909269577407">İrəli</translation>
 <translation id="750493650310597496">1 ədəd seçilib</translation>
 <translation id="7508728395076009983">Anonim tablarınızı kilidləmək üçün Touch ID, Face ID və ya Parol ayarlayın.</translation>
 <translation id="7514365320538308">Endirmə</translation>
@@ -870,7 +864,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7720410380936703141">YENİDƏN SINAYIN</translation>
 <translation id="7726702057919861819">Menyu → Tarixçə → Brauzer Datasını Silin</translation>
 <translation id="7741325291586284254">Yeni Anonim Tab Səhifəsi</translation>
-<translation id="7743314735291715910">Məkanı Açın…</translation>
 <translation id="7756478488453921771">Menyu → Ayarlar → Ödəniş Metodları</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>

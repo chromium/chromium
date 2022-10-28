@@ -3047,6 +3047,7 @@
 
       <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> を未設定のままにした場合、キーワードで検索プロバイダは実行されません。</translation>
 <translation id="4090088362777472639">Ansible playbook の SHA-256 ハッシュです。</translation>
+<translation id="4091040199847925434">セーフ ブラウジングの改善に役立てるためのシステム情報とページ コンテンツのレポートを無効にする</translation>
 <translation id="4097556069183835428">このポリシーを None（なし）に設定した場合、拡大鏡が無効になります。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、拡大鏡は最初は無効ですが、ユーザーはいつでも有効にできます。</translation>

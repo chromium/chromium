@@ -960,7 +960,6 @@
 <translation id="1852799913675865625">嘗試讀取檔案時發生錯誤：<ph name="ERROR_TEXT" /></translation>
 <translation id="1854049213067042715">繼續進行還原程序。您可在「設定」中將應用程式設定為一律在啟動或關閉時還原。</translation>
 <translation id="1854180393107901205">停止投放</translation>
-<translation id="1855079636134697549">攝錄機已開啟</translation>
 <translation id="1856715684130786728">新增位置…</translation>
 <translation id="1858585891038687145">信任這個用於識別軟件製造商的憑證</translation>
 <translation id="1861262398884155592">此資料夾中沒有內容</translation>
@@ -1635,7 +1634,6 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454206500483040640">已分割</translation>
 <translation id="2454247629720664989">關鍵字</translation>
-<translation id="2454264884354864965">攝錄機已關閉</translation>
 <translation id="2454524890947537054">要核准網絡要求嗎？</translation>
 <translation id="245650153866130664">如要自動重新整理票證，請勾選「記住密碼」。密碼只會儲存在您的裝置上。</translation>
 <translation id="2456827790665612305">取消追蹤網站</translation>
@@ -1961,7 +1959,6 @@
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">檢查拼字及文法</translation>
-<translation id="2753677631968972007">手動控制網站權限。</translation>
 <translation id="2754226775788136540">正在尋找已儲存至 <ph name="PRIMARY_EMAIL" /> 的「快速配對」裝置</translation>
 <translation id="2754825024506485820">在 Google Play 商店上尋找您需要的應用程式，從提升工作效率到娛樂，種類一應俱全。您可隨時安裝應用程式。</translation>
 <translation id="2755349111255270002">重設此 <ph name="DEVICE_TYPE" /></translation>
@@ -3999,7 +3996,6 @@
 <translation id="4675828034887792601">建立捷徑以搜尋網站及管理搜尋引擎</translation>
 <translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
 <translation id="4677772697204437347">GPU 記憶體使用量</translation>
-<translation id="467823995058589466">攝錄機已關閉</translation>
 <translation id="4680105648806843642">此網頁已設為靜音</translation>
 <translation id="4680112532510845139">將圖片拖放到這裡</translation>
 <translation id="4681453295291708042">停用「咫尺共享」功能</translation>
@@ -4009,7 +4005,6 @@
 <translation id="4683629100208651599">設為小寫</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
-<translation id="4684471265911890182">「<ph name="APP_NAME" />」正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
 <translation id="4687613760714619596">不明裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">本機記錄 ID：<ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />。</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> 正在將此裝置回復為先前的版本 (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -5161,6 +5156,7 @@
 <translation id="5799508265798272974">Linux 虛擬機器：<ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">上次下載之後，目標檔案已被截斷或移除。</translation>
 <translation id="5800351251499368110">閂側面板入面嘅搜尋工具列。側面板入面嘅搜尋工具列開咗。</translation>
+<translation id="5801051031414037185">設定手機</translation>
 <translation id="5801568494490449797">偏好設定</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5805268472388605531">按住鍵盤按鍵以查看重音標記和特殊字元</translation>
@@ -5451,6 +5447,7 @@
 <translation id="6072442788591997866">此裝置不支援 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6073903501322152803">新增無障礙功能</translation>
+<translation id="6075075631258766703">驗證手機</translation>
 <translation id="6075731018162044558">糟糕！系統無法為這部裝置取得長期 API 存取憑證。</translation>
 <translation id="6075907793831890935">與名稱為「<ph name="HOSTNAME" />」的裝置交換數據</translation>
 <translation id="6076175485108489240">使用定位服務。允許擁有位置資訊存取權的應用程式和服務使用此裝置的位置資訊。Google 可能會定期收集位置資訊資料，並以匿名方式使用這些資料，以提高定位的精確度及改善適地性服務。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -8024,7 +8021,6 @@
 <translation id="8481187309597259238">確認 USB 權限</translation>
 <translation id="8481980314595922412">試用功能已開啟</translation>
 <translation id="8486666913807228950">原因：在「強制開啟方式」清單中找到反轉規則 <ph name="REVERT_RULE" />。</translation>
-<translation id="848666842773560761">一個應用程式正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8487699605742506766">熱點</translation>
 <translation id="8489156414266187072">個人建議只會在您的帳戶上顯示</translation>

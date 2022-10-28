@@ -117,7 +117,6 @@
 <translation id="1815941218935345331">Лозинка</translation>
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
-<translation id="1857751338515529195">Одете на следната картичка</translation>
 <translation id="1870148520156231997">Прикажете ја лозинката</translation>
 <translation id="1872096359983322073">Светилка</translation>
 <translation id="1891796056033961979">Вашите зачувани обележувачи, лозинки, поставки и друго отсега се достапни од екранов.</translation>
@@ -138,7 +137,6 @@
 <translation id="202292859882676807">Дозволен е пристап до „Микрофонот“</translation>
 <translation id="2073572773299281212">Активен пред <ph name="DAYS" /> дена</translation>
 <translation id="2074131957428911366">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
-<translation id="207803097150348092">Прикажи ги обележувачите</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2080769225927880590">Најавете се со важечка сметка</translation>
 <translation id="209018056901015185">Барај десктоп-локација</translation>
@@ -229,7 +227,6 @@
 <translation id="2783054063075604403">Не може да се создаде линк</translation>
 <translation id="2786701870377699570">Пребарувајте картички на синхронизирани уреди</translation>
 <translation id="2800683595868705743">Излези од менувачот на картички</translation>
-<translation id="2812727400746650635">Оди на претходната картичка</translation>
 <translation id="2815198996063984598">2. Допрете „Стандардна апликација за прелистување“</translation>
 <translation id="2820289420301699633">Вашиот администратор го контролира Chrome и може да пристапува до неговите податоци</translation>
 <translation id="2830972654601096923">Управувајте со адресите…</translation>
@@ -454,7 +451,6 @@
 <translation id="4630540211544979320">Преведувај страници</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
 <translation id="4636930964841734540">Информации</translation>
-<translation id="4649294145748405669">Chrome е побрз, побезбеден и можете да го приспособувате. Преземете го овде.</translation>
 <translation id="4650125387981512669">Продолжете како <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4659126640776004816">Функцијава е вклучена кога ќе се најавите на сметката на Google.</translation>
 <translation id="4659667755519643272">Влези во менувачот на картички</translation>
@@ -623,7 +619,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5913600720976431809">Опции за „Преведи ја страницата“</translation>
 <translation id="5938160824633642847">Уредот е речиси полн. Ослободете простор и обидете се повторно.</translation>
 <translation id="5948291296578561264">Ова ви овозможува да ги зачувате фотографиите во збирката со фотографии.</translation>
-<translation id="5949969988218625680">Прикажи ја историјата</translation>
 <translation id="5951816930277761335">Споделете го линкот</translation>
 <translation id="5955891643922670672">Се прегледува офлајн верзија</translation>
 <translation id="5957613098218939406">Повеќе опции</translation>
@@ -704,7 +699,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 Вашите податоци беа шифрирани со лозинка за синхронизирање на <ph name="TIME" />. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="6418346271604475326">Се подготвува PDF</translation>
 <translation id="6434591244308415567">Грешка. Обидете се повторно подоцна.</translation>
-<translation id="6435817889602303010">Повторно отвори ја затворената картичка</translation>
 <translation id="6439338047467462846">Дозволени се сите</translation>
 <translation id="6445051938772793705">Земја</translation>
 <translation id="6445981559479772097">Пораката е испратена.</translation>
@@ -847,7 +841,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="746684838091935575">3. Изберете Chrome</translation>
 <translation id="7472734401283673885">Име на компанија</translation>
 <translation id="7473891865547856676">Не, фала</translation>
-<translation id="7481312909269577407">Напред</translation>
 <translation id="750493650310597496">0 избрани</translation>
 <translation id="7508728395076009983">За да ги заклучите картичките „Инкогнито“, поставете „ID на допир“, „ID на лик“ или лозинка.</translation>
 <translation id="7514365320538308">Преземи</translation>
@@ -871,7 +864,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7726702057919861819">Мени → Историја → Избришете ги податоците од прелистување</translation>
 <translation id="7741325291586284254">Нова страница во картичка „Инкогнито“</translation>
-<translation id="7743314735291715910">Отвори ја локацијата…</translation>
 <translation id="7756478488453921771">Мени → Поставки → Начини на плаќање</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
