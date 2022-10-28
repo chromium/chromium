@@ -458,72 +458,84 @@
       Envelope 9 x 12 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_B_12X18IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Architecture-B''">
-      Architecture-B
+             desc="In Title Case: Media size shown to user in print preview for media ``12 x 18 in'' with dimensions in inches">
+      12 x 18 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_C_18X24IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Architecture-C''">
-      Architecture-C
+             desc="In Title Case: Media size shown to user in print preview for media ``18 x 24 in'' with dimemsions in inches">
+      18 x 24 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_D_24X36IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Architecture-D''">
-      Architecture-D
+             desc="In Title Case: Media size shown to user in print preview for media ``24 x 36 in'' with dimemsions in inches">
+      24 x 36 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_E_36X48IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Architecture-E''">
-      Architecture-E
+             desc="In Title Case: Media size shown to user in print preview for media ``36 x 48 in'' with dimemsions in inches">
+      36 x 48 in
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_E2_26X38IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``26 x 38 in'' with dimemsions in inches">
+      26 x 38 in
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_ARCH_E3_27X39IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``27 x 39 in'' with dimemsions in inches">
+      27 x 39 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_B_PLUS_12X19_17IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``B-Plus''">
-      B-Plus
+             desc="In Title Case: Media size shown to user in print preview for media ``North American B+''">
+      North American B+
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_C5_6_5X9_5IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope C5''">
       Envelope C5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_C_17X22IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Engineering-C''">
-      Engineering-C
+             desc="In Title Case: Media size shown to user in print preview for media ``17 x 22 in'' with dimensions in inches">
+      17 x 22 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_D_22X34IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Engineering-D''">
-      Engineering-D
+             desc="In Title Case: Media size shown to user in print preview for media ``22 x 34 in'' with dimensions in inches">
+      22 x 34 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_EDP_11X14IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Edp''">
-      Edp
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``EDP''">
+      EDP
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_EUR_EDP_12X14IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``European-Edp''">
-      European-Edp
+             desc="Media size shown to user in print preview for media ``European EDP''.  EDP is an acronym.">
+      European EDP
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_E_34X44IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Engineering-E''">
-      Engineering-E
+             desc="In Title Case: Media size shown to user in print preview for media ``34 x 44 in'' with dimensions in inches">
+      34 x 44 in
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_EXECUTIVE_7_25X10_5IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``Executive''">
+      Executive
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_FANFOLD_EUR_8_5X12IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Fanfold-European''">
-      Fanfold-European
+             desc="In Title Case: Media size shown to user in print preview for media ``European Fanfold''">
+      European Fanfold
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_FANFOLD_US_11X14_875IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Fanfold-Us''">
-      Fanfold-Us
+             desc="In Title Case: Media size shown to user in print preview for media ``US Fanfold''">
+      US Fanfold
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_FOOLSCAP_8_5X13IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Foolscap''">
       Foolscap
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_F_44X68IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``F''">
-      F
+             desc="In Title Case: Media size shown to user in print preview for media ``44 x 68 in''">
+      44 x 68 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_GOVT_LEGAL_8X13IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Government-Legal''">
-      Government-Legal
+             desc="In Title Case: Media size shown to user in print preview for media ``Government Legal''">
+      Government Legal
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_GOVT_LETTER_8X10IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Government-Letter''">
-      Government-Letter
+             desc="In Title Case: Media size shown to user in print preview for media ``Government Letter''">
+      Government Letter
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_INDEX_3X5_3X5IN"
              desc="In Title Case: Media size shown to user in print preview for media ``3 x 5 in'' with dimensions in inches">
@@ -554,20 +566,20 @@
       Legal
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_LEGAL_EXTRA_9_5X15IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Legal-Extra''">
-      Legal-Extra
+             desc="In Title Case: Media size shown to user in print preview for media ``Legal Extra''">
+      Legal Extra
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_LETTER_8_5X11IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Letter''">
       Letter
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_LETTER_EXTRA_9_5X12IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Letter-Extra''">
-      Letter-Extra
+             desc="In Title Case: Media size shown to user in print preview for media ``Letter Extra''">
+      Letter Extra
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_LETTER_PLUS_8_5X12_69IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Letter-Plus''">
-      Letter-Plus
+             desc="In Title Case: Media size shown to user in print preview for media ``Letter Plus''">
+      Letter Plus
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_MONARCH_3_875X7_5IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Monarch''">
@@ -593,17 +605,25 @@
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope #14''">
       Envelope #14
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_OFICIO_8_5X13_4IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``Oficio''">
+      Oficio
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_PERSONAL_3_625X6_5IN"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Personal''">
       Envelope Personal
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_NA_QUARTO_8_5X10_83IN"
+             desc="In Title Case: Media size shown to user in print preview for media ``Quarto''">
+      Quarto
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_SUPER_A_8_94X14IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Super-A''">
-      Super-A
+             desc="In Title Case: Media size shown to user in print preview for media ``Super A''">
+      Super A
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_SUPER_B_13X19IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Super-B''">
-      Super-B
+             desc="In Title Case: Media size shown to user in print preview for media ``Super B''">
+      Super B
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_WIDE_FORMAT_30X42IN"
              desc="In Title Case: Media size shown to user in print preview for media ``30 x 42 in'' with dimensions in inches">
