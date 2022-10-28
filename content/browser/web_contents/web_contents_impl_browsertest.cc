@@ -2895,10 +2895,14 @@ class WebContentsImplBrowserTestReduceAcceptLanguageOn
             ->browser_context()
             ->GetReduceAcceptLanguageControllerDelegate();
 
-    delegate->PersistReducedLanguage(url::Origin::Create(url), persist_lang);
+    url::Origin origin = url::Origin::Create(url);
+    delegate->PersistReducedLanguage(origin, persist_lang);
     const absl::optional<std::string>& language =
-        delegate->GetReducedLanguage(url::Origin::Create(url));
+        delegate->GetReducedLanguage(origin);
     EXPECT_EQ(expect_lang, language);
+
+    delegate->ClearReducedLanguage(origin);
+    EXPECT_FALSE(delegate->GetReducedLanguage(origin).has_value());
   }
 
  private:

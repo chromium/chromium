@@ -58,4 +58,12 @@ void MockReduceAcceptLanguageControllerDelegate::PersistReducedLanguage(
   reduce_accept_language_map_[origin] = language;
 }
 
+void MockReduceAcceptLanguageControllerDelegate::ClearReducedLanguage(
+    const url::Origin& origin) {
+  if (!origin.GetURL().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  reduce_accept_language_map_.erase(origin);
+}
+
 }  // namespace content

@@ -29,25 +29,27 @@ class ReduceAcceptLanguageServiceTester {
 
   // Checks whether read accept language lists from language prefs as expected.
   void VerifyFetchAcceptLanguageList(
-      const std::vector<std::string>& expected_langauges) const;
+      const std::vector<std::string>& expected_languages) const;
 
   // Checks whether JavaScriptAllowed works as expected.
   void VerifyIsJavaScriptAllowed(const GURL& host) const;
 
-  // Checks whether persisted |lang| failed when provided host.
-  void VerifyPersistFail(const GURL& host, const std::string& lang) const;
+  // Checks whether persisted `language` failed when provided host.
+  void VerifyPersistFail(const GURL& host, const std::string& language) const;
 
-  // Checks whether persisted |lang| success when JavaScript is disabled.
-  void VerifyPersistSuccessOnJavaScriptDisable(const GURL& host,
-                                               const std::string& lang) const;
+  // Checks whether persisted `language` success when JavaScript is disabled.
+  void VerifyPersistSuccessOnJavaScriptDisable(
+      const GURL& host,
+      const std::string& language) const;
 
-  // Checks whether persisted |lang| success.
-  void VerifyPersistSuccess(const GURL& host, const std::string& lang) const;
+  // Checks whether persisted `language` success.
+  void VerifyPersistSuccess(const GURL& host,
+                            const std::string& language) const;
 
-  // Checks whether persisted |lang| success.
+  // Checks whether persisted `languages` success.
   void VerifyPersistMultipleHostsSuccess(
       const std::vector<GURL>& hosts,
-      const std::vector<std::string>& langs) const;
+      const std::vector<std::string>& languages) const;
 
  private:
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;

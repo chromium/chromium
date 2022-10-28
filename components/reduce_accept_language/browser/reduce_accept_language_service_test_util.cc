@@ -29,58 +29,85 @@ ReduceAcceptLanguageServiceTester::ReduceAcceptLanguageServiceTester(
     : settings_map_(settings_map), service_(service), prefs_(prefs) {}
 
 void ReduceAcceptLanguageServiceTester::VerifyFetchAcceptLanguageList(
-    const std::vector<std::string>& expected_langauges) const {
-  const std::vector<std::string>& languages =
+    const std::vector<std::string>& expected_languages) const {
+  const std::vector<std::string>& persisted_languages =
       service_->GetUserAcceptLanguages();
-  EXPECT_EQ(languages, expected_langauges);
+  EXPECT_EQ(persisted_languages, expected_languages);
 }
 
 void ReduceAcceptLanguageServiceTester::VerifyPersistFail(
     const GURL& host,
-    const std::string& lang) const {
-  service_->PersistReducedLanguage(url::Origin::Create(host), lang);
+    const std::string& language) const {
+  service_->PersistReducedLanguage(url::Origin::Create(host), language);
 
-  const absl::optional<std::string>& language =
+  const absl::optional<std::string>& persisted_language =
       service_->GetReducedLanguage(url::Origin::Create(host));
-  EXPECT_FALSE(language.has_value());
+  EXPECT_FALSE(persisted_language.has_value());
 }
 
 void ReduceAcceptLanguageServiceTester::VerifyPersistSuccessOnJavaScriptDisable(
     const GURL& host,
-    const std::string& lang) const {
+    const std::string& language) const {
   settings_map_->SetContentSettingDefaultScope(
       host, GURL(), ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK);
-  VerifyPersistSuccess(host, lang);
+  VerifyPersistSuccess(host, language);
+
+  // Clear settings map changes to avoid side effects for other tests.
+  settings_map_->SetWebsiteSettingDefaultScope(
+      host, GURL(), ContentSettingsType::JAVASCRIPT, base::Value());
 }
 
 void ReduceAcceptLanguageServiceTester::VerifyPersistSuccess(
     const GURL& host,
-    const std::string& lang) const {
+    const std::string& language) const {
   base::HistogramTester histograms;
-  service_->PersistReducedLanguage(url::Origin::Create(host), lang);
 
-  const absl::optional<std::string>& language =
-      service_->GetReducedLanguage(url::Origin::Create(host));
-  EXPECT_TRUE(language.has_value());
-  EXPECT_EQ(language.value(), lang);
+  url::Origin origin = url::Origin::Create(host);
+  service_->PersistReducedLanguage(origin, language);
+
+  const absl::optional<std::string>& persisted_language =
+      service_->GetReducedLanguage(origin);
+  EXPECT_TRUE(persisted_language.has_value());
+  EXPECT_EQ(persisted_language.value(), language);
 
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
-  histograms.ExpectUniqueSample("ReduceAcceptLanguage.UpdateSize", lang.size(),
-                                1);
+  histograms.ExpectUniqueSample("ReduceAcceptLanguage.UpdateSize",
+                                language.size(), 1);
+
+  service_->ClearReducedLanguage(origin);
+  EXPECT_FALSE(service_->GetReducedLanguage(origin).has_value());
 }
 
 void ReduceAcceptLanguageServiceTester::VerifyPersistMultipleHostsSuccess(
     const std::vector<GURL>& hosts,
-    const std::vector<std::string>& langs) const {
-  EXPECT_EQ(hosts.size(), langs.size());
+    const std::vector<std::string>& languages) const {
+  EXPECT_EQ(hosts.size(), languages.size());
 
   for (size_t i = 0; i < hosts.size(); i++) {
-    service_->PersistReducedLanguage(url::Origin::Create(hosts[i]), langs[i]);
+    service_->PersistReducedLanguage(url::Origin::Create(hosts[i]),
+                                     languages[i]);
 
-    const absl::optional<std::string>& language =
+    const absl::optional<std::string>& persisted_language =
         service_->GetReducedLanguage(url::Origin::Create(hosts[i]));
-    EXPECT_TRUE(language.has_value());
-    EXPECT_EQ(language.value(), langs[i]);
+    EXPECT_TRUE(persisted_language.has_value());
+    EXPECT_EQ(persisted_language.value(), languages[i]);
+  }
+
+  // Clear first origin storage and verify the first origin has no persisted
+  // language.
+  url::Origin clear_origin = url::Origin::Create(hosts[0]);
+  service_->ClearReducedLanguage(clear_origin);
+  EXPECT_FALSE(service_->GetReducedLanguage(clear_origin).has_value());
+
+  // Verify other origins still have the persisted language.
+  for (size_t i = 1; i < hosts.size(); i++) {
+    const absl::optional<std::string>& persisted_language =
+        service_->GetReducedLanguage(url::Origin::Create(hosts[i]));
+    EXPECT_TRUE(persisted_language.has_value());
+    EXPECT_EQ(persisted_language.value(), languages[i]);
+
+    // Clear persisted language to avoid side effects for other tests.
+    service_->ClearReducedLanguage(url::Origin::Create(hosts[i]));
   }
 }
 

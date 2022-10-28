@@ -124,6 +124,18 @@ void ReduceAcceptLanguageService::PersistReducedLanguage(
                               language.size());
 }
 
+void ReduceAcceptLanguageService::ClearReducedLanguage(
+    const url::Origin& origin) {
+  const GURL& url = origin.GetURL();
+
+  // Only reduce accept-language in http and https scheme.
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
+
+  settings_map_->SetWebsiteSettingDefaultScope(
+      url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, base::Value());
+}
+
 void ReduceAcceptLanguageService::UpdateAcceptLanguage() {
   // In incognito mode return only the first language.
   std::string accept_languages_str = net::HttpUtil::ExpandLanguageList(

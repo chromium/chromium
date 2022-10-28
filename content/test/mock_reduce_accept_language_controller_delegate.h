@@ -36,6 +36,8 @@ class MockReduceAcceptLanguageControllerDelegate
   void PersistReducedLanguage(const url::Origin& origin,
                               const std::string& language) override;
 
+  void ClearReducedLanguage(const url::Origin& origin) override;
+
  private:
   std::vector<std::string> user_accept_languages_;
   std::map<url::Origin, std::string> reduce_accept_language_map_;

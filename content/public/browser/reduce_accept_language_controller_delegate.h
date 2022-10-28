@@ -28,6 +28,9 @@ class CONTENT_EXPORT ReduceAcceptLanguageControllerDelegate {
   // top-level frames with the same origin.
   virtual void PersistReducedLanguage(const url::Origin& origin,
                                       const std::string& language) = 0;
+
+  // Clear the persisted reduced language for the given origin.
+  virtual void ClearReducedLanguage(const url::Origin& origin) = 0;
 };
 
 }  // namespace content
