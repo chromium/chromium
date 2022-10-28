@@ -141,6 +141,64 @@ bool IsValidSourceContext(RenderProcessHost& process,
   return true;
 }
 
+// Returns true if `source_url` can be legitimately claimed/used by `process`.
+// Otherwise reports a bad IPC message and returns false (expecting the caller
+// to not take any action based on the rejected, untrustworthy `source_url`).
+bool IsValidSourceUrl(content::RenderProcessHost& process,
+                      const GURL& source_url,
+                      const PortContext& source_context) {
+  // Some scenarios may end up with an empty `source_url` (e.g. this may have
+  // been triggered by the ExtensionApiTabTest.TabConnect test).
+  //
+  // TODO(https://crbug.com/1370079): Remove this workaround once the bug is
+  // fixed.
+  if (source_url.is_empty())
+    return true;
+
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  if (source_context.is_for_render_frame()) {
+    // We don't just use (or compare against) the trustworthy
+    // `render_frame_host->GetLastCommittedURL()` because the renderer-side and
+    // browser-side URLs may differ in some scenarios (e.g. see
+    // https://crbug.com/1197308).
+    if (!policy->CanCommitURL(process.GetID(), source_url)) {
+      bad_message::ReceivedBadMessage(
+          &process, bad_message::EMF_INVALID_SOURCE_URL_FROM_FRAME);
+      return false;
+    }
+  } else if (source_context.is_for_service_worker()) {
+    // Validate `source_context` before using it to validate `source_url`.
+    if (!IsValidSourceContext(process, source_context))
+      return false;
+
+    // The `base_origin` and `url_origin` below are considered trustworthy,
+    // because `source_context` has been validated above.
+    url::Origin base_origin = Extension::CreateOriginFromExtensionId(
+        source_context.worker->extension_id);
+    url::Origin url_origin = url::Origin::Resolve(source_url, base_origin);
+
+    // The CanCommitURL check (in the `is_for_render_frame` branch of the `if`
+    // statement) can't cover service workers (see
+    // https://crbug.com/1038996#c35) so we do an origin-based check instead.
+    if (!policy->CanAccessDataForOrigin(process.GetID(), url_origin)) {
+      bad_message::ReceivedBadMessage(
+          &process, bad_message::EMF_INVALID_SOURCE_URL_FROM_WORKER);
+      return false;
+    }
+  } else {
+    DCHECK(source_context.is_for_native_host());
+    // `ExtensionHostMsg_OpenChannelToExtension` is sent in
+    // `//extensions/renderer/ipc_message_sender.cc` only for frames and
+    // workers (and never for native hosts).
+    bad_message::ReceivedBadMessage(
+        &process,
+        bad_message::EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST);
+    return false;
+  }
+
+  return true;
+}
+
 base::debug::CrashKeyString* GetTargetIdCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "ExternalConnectionInfo-target_id", base::debug::CrashKeySize::Size64);
@@ -316,6 +374,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
   ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
   debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
   if (!IsValidMessagingSource(*process, info.source_endpoint) ||
+      !IsValidSourceUrl(*process, info.source_url, source_context) ||
       !IsValidSourceContext(*process, source_context)) {
     // No need to call ReceivedBadMessage here, because it will be called (when
     // appropriate) within IsValidSourceContext and/or IsValidMessagingSource.

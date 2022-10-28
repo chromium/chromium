@@ -213,9 +213,9 @@ Compromised renderers shouldn’t be able to:
 - Spoof the `MessageEvent.origin` seen by a recipient of a `postMessage`.
 - Bypass enforcement of the `targetOrigin` argument of `postMessage`.
 - Send or receive `BroadcastChannel` messages for another origin.
-- Spoof the `MessageSender.origin`, nor `MessageSender.id` (i.e. an
-  extension id which can differ from the origin when the message is sent
-  from a content script), as seen by a recipient of a
+- Spoof the `MessageSender.url`, nor `MessageSender.origin`, nor
+  `MessageSender.id` (i.e. an extension id which can differ from the origin when
+  the message is sent from a content script), as seen by a recipient of a
   `chrome.runtime.sendMessage`.
   See also [MessageSender documentation](https://developers.chrome.com/extensions/runtime#type-MessageSender) and [content script security guidance](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-extensions/0ei-UCHNm34).
 - Spoof the id of a Chrome extension initiating
