@@ -24,12 +24,14 @@
 
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
@@ -334,6 +336,16 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
   PseudoElement::DetachLayoutTree(performing_reattach);
 }
 
+LayoutObject* FirstLetterPseudoElement::CreateLayoutObject(
+    const ComputedStyle& style,
+    LegacyLayout legacy) {
+  if (UNLIKELY(legacy == LegacyLayout::kAuto &&
+               !style.InitialLetter().IsNormal()))
+    return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
+
+  return PseudoElement::CreateLayoutObject(style, legacy);
+}
+
 scoped_refptr<ComputedStyle>
 FirstLetterPseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
@@ -407,7 +419,15 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* fi
   LayoutTextFragment* letter = LayoutTextFragment::CreateAnonymous(
       *this, old_text.Impl(), 0, length, legacy_layout);
   letter->SetFirstLetterPseudoElement(this);
-  letter->SetStyle(letter_style);
+  if (UNLIKELY(GetLayoutObject()->IsInitialLetterBox())) {
+    const LayoutBlock& paragraph = *GetLayoutObject()->ContainingBlock();
+    scoped_refptr<const ComputedStyle> initial_letter_text_style =
+        GetDocument().GetStyleResolver().StyleForInitialLetterText(
+            *letter_style, paragraph.StyleRef());
+    letter->SetStyle(std::move(initial_letter_text_style));
+  } else {
+    letter->SetStyle(letter_style);
+  }
   GetLayoutObject()->AddChild(letter);
 
   first_letter_text->Destroy();

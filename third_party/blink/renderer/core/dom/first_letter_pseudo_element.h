@@ -60,6 +60,8 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
   Node* InnerNodeForHitTesting() const override;
 
  private:
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
 

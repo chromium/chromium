@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -60,6 +62,61 @@ TEST_F(FirstLetterPseudoElementTest, EmptySpanOnly) {
   // See |FirstLetterPseudoElement::FirstLetterTextLayoutObject()| should
   // return nullptr during rebuilding layout tree.
   EXPECT_FALSE(first_letter);
+}
+
+TEST_F(FirstLetterPseudoElementTest, InitialLetter) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  ScopedCSSInitialLetterForTest enable_initial_letter_scope(true);
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 20px/24px Ahem; }"
+      "p::first-letter { initial-letter: 3; line-height: 200px; }");
+  SetBodyContent("<p id=sample>This paragraph has an initial letter.</p>");
+  auto& sample = *GetElementById("sample");
+  const auto& initial_letter_box =
+      *sample.GetPseudoElement(kPseudoIdFirstLetter)->GetLayoutObject();
+  const auto& initial_letter_text1 =
+      *To<LayoutTextFragment>(initial_letter_box.SlowFirstChild());
+
+  EXPECT_TRUE(initial_letter_box.IsInitialLetterBox());
+  EXPECT_EQ(3.0f, initial_letter_box.StyleRef().InitialLetter().Size());
+  EXPECT_EQ(3, initial_letter_box.StyleRef().InitialLetter().Sink());
+
+  EXPECT_EQ(sample.GetLayoutObject()->StyleRef().GetFont(),
+            initial_letter_box.StyleRef().GetFont())
+      << "initial letter box should have a specified font.";
+
+  const auto& initial_letter_text_style1 = initial_letter_text1.StyleRef();
+  EXPECT_EQ(EVerticalAlign::kBaseline,
+            initial_letter_text_style1.VerticalAlign());
+  EXPECT_EQ(LayoutUnit(80),
+            initial_letter_text_style1.ComputedLineHeightAsFixed());
+  EXPECT_EQ(FontHeight(LayoutUnit(64), LayoutUnit(16)),
+            initial_letter_text_style1.GetFontHeight())
+      << "initial letter box should have a cap font.";
+
+  // Changing paragraph style should be distributed to initial letter text.
+  sample.style()->setProperty(GetDocument().GetExecutionContext(), "font-size",
+                              "30px", String(), ASSERT_NO_EXCEPTION);
+  sample.style()->setProperty(GetDocument().GetExecutionContext(),
+                              "line-height", "34px", String(),
+                              ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& initial_letter_text2 =
+      *To<LayoutTextFragment>(initial_letter_box.SlowFirstChild());
+  EXPECT_EQ(&initial_letter_text2, &initial_letter_text1)
+      << "font-size and line-height changes don't build new first-letter tree.";
+
+  const auto& initial_letter_text_style2 = initial_letter_text2.StyleRef();
+  EXPECT_EQ(EVerticalAlign::kBaseline,
+            initial_letter_text_style2.VerticalAlign());
+  EXPECT_EQ(LayoutUnit(115),
+            initial_letter_text_style2.ComputedLineHeightAsFixed());
+  EXPECT_EQ(FontHeight(LayoutUnit(92), LayoutUnit(23)),
+            initial_letter_text_style2.GetFontHeight())
+      << "initial letter box should have a cap font.";
 }
 
 TEST_F(FirstLetterPseudoElementTest, UnicodePairBreaking) {

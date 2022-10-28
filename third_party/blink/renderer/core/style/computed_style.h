@@ -934,10 +934,12 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Child is aligned to the parent by matching the parent’s dominant baseline
   // to the same baseline in the child.
-  FontBaseline GetFontBaseline() const;
+  CORE_EXPORT FontBaseline GetFontBaseline() const;
 
-  FontHeight GetFontHeight(FontBaseline baseline) const;
-  FontHeight GetFontHeight() const { return GetFontHeight(GetFontBaseline()); }
+  CORE_EXPORT FontHeight GetFontHeight(FontBaseline baseline) const;
+  CORE_EXPORT FontHeight GetFontHeight() const {
+    return GetFontHeight(GetFontBaseline());
+  }
 
   // Compute FontOrientation from this style. It is derived from WritingMode and
   // TextOrientation.
@@ -1270,7 +1272,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Line-height utility functions.
   const Length& SpecifiedLineHeight() const { return LineHeightInternal(); }
   float ComputedLineHeight() const;
-  LayoutUnit ComputedLineHeightAsFixed() const;
+  CORE_EXPORT LayoutUnit ComputedLineHeightAsFixed() const;
   LayoutUnit ComputedLineHeightAsFixed(const Font& font) const;
 
   // Width/height utility functions.

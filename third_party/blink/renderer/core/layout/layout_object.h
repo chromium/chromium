@@ -1509,6 +1509,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return IsFloating() && Parent() && !Parent()->IsLayoutBlockFlow();
   }
 
+  virtual bool IsInitialLetterBox() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
   // absolute or fixed positioning
   bool IsOutOfFlowPositioned() const {
     NOT_DESTROYED();

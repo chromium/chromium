@@ -2584,6 +2584,67 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForFormattedText(
   return style;
 }
 
+static Font ComputeInitialLetterFont(const ComputedStyle& style,
+                                     const ComputedStyle& paragraph_style) {
+  const StyleInitialLetter& initial_letter = style.InitialLetter();
+  DCHECK(!initial_letter.IsNormal());
+  const Font& font = style.GetFont();
+
+  const FontMetrics& metrics = font.PrimaryFont()->GetFontMetrics();
+  const float cap_height = metrics.CapHeight();
+  const float line_height = paragraph_style.ComputedLineHeight();
+  const float cap_height_of_para =
+      paragraph_style.GetFont().PrimaryFont()->GetFontMetrics().CapHeight();
+
+  // See https://drafts.csswg.org/css-inline/#sizing-initial-letter
+  const float desired_cap_height =
+      line_height * (initial_letter.Size() - 1) + cap_height_of_para;
+  float adjusted_font_size =
+      desired_cap_height * style.ComputedFontSize() / cap_height;
+
+  FontDescription adjusted_font_description = style.GetFontDescription();
+  adjusted_font_description.SetComputedSize(adjusted_font_size);
+  adjusted_font_description.SetSpecifiedSize(adjusted_font_size);
+  while (adjusted_font_size > 1) {
+    Font actual_font(adjusted_font_description, font.GetFontSelector());
+    const float actual_cap_height =
+        actual_font.PrimaryFont()->GetFontMetrics().CapHeight();
+    if (actual_cap_height <= desired_cap_height)
+      return actual_font;
+    --adjusted_font_size;
+    adjusted_font_description.SetComputedSize(adjusted_font_size);
+    adjusted_font_description.SetSpecifiedSize(adjusted_font_size);
+  }
+  return font;
+}
+
+// https://drafts.csswg.org/css-inline/#initial-letter-layout
+// 7.5.1. Properties Applying to Initial Letters
+// All properties that apply to an inline box also apply to an inline initial
+// letter except for
+//  * vertical-align and its sub-properties
+//  * font-size,
+//  * line-height,
+//  * text-edge
+//  * inline-sizing.
+// Additionally, all of the sizing properties and box-sizing also apply to
+// initial letters (see [css-sizing-3]).
+scoped_refptr<const ComputedStyle> StyleResolver::StyleForInitialLetterText(
+    const ComputedStyle& initial_letter_box_style,
+    const ComputedStyle& paragraph_style) {
+  DCHECK(paragraph_style.InitialLetter().IsNormal());
+  DCHECK(!initial_letter_box_style.InitialLetter().IsNormal());
+  scoped_refptr<ComputedStyle> initial_letter_text_style =
+      CreateComputedStyle();
+  initial_letter_text_style->InheritFrom(initial_letter_box_style);
+  initial_letter_text_style->SetFont(
+      ComputeInitialLetterFont(initial_letter_box_style, paragraph_style));
+  initial_letter_text_style->SetLineHeight(
+      Length::Fixed(initial_letter_text_style->GetFontHeight().LineHeight()));
+  initial_letter_text_style->SetVerticalAlign(EVerticalAlign::kBaseline);
+  return initial_letter_text_style;
+}
+
 Element& StyleResolver::EnsureElementForFormattedText() {
   if (!formatted_text_element_)
     formatted_text_element_ =

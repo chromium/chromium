@@ -368,6 +368,8 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return MultiColumnFlowThread();
   }
 
+  bool IsInitialLetterBox() const override;
+
   void AddVisualOverflowFromInlineChildren();
 
   void AddLayoutOverflowFromInlineChildren();

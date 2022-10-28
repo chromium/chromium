@@ -107,6 +107,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       bool is_text_run,
       const FontDescription& default_font,
       const CSSPropertyValueSet* css_property_value_set);
+  // Returns `ComputedStyle` for rendering initial letter text.
+  // `initial_letter_box_style` should have non-normal `initial-letter`
+  // property.
+  scoped_refptr<const ComputedStyle> StyleForInitialLetterText(
+      const ComputedStyle& initial_letter_box_style,
+      const ComputedStyle& paragraph_style);
 
   // Propagate computed values from the root or body element to the viewport
   // when specified to do so.

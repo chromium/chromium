@@ -2519,6 +2519,16 @@ void LayoutObject::SetPseudoElementStyle(
     return;
   }
 
+  if (IsText() && Parent() && UNLIKELY(Parent()->IsInitialLetterBox())) {
+    // Note: `Parent()` can be null for text for generated contents.
+    // See "accessibility/css-generated-content.html"
+    scoped_refptr<const ComputedStyle> initial_letter_text_style =
+        GetDocument().GetStyleResolver().StyleForInitialLetterText(
+            *pseudo_style, Parent()->ContainingBlock()->StyleRef());
+    SetStyle(std::move(initial_letter_text_style));
+    return;
+  }
+
   if (IsText() && UNLIKELY(IsA<LayoutNGTextCombine>(Parent()))) {
     // See http://crbug.com/1222640
     scoped_refptr<ComputedStyle> combined_text_style =
