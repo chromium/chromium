@@ -12,6 +12,7 @@ message ChromeSpecificPhaseLatenciesMetadata {
     UNKNOWN = 0;
     JPEG = 1;
     PNG = 2;
+    WEBP = 3;
   }
 
   message Phase {

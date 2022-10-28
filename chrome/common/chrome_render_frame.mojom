@@ -13,6 +13,7 @@ import "url/mojom/url.mojom";
 enum ImageFormat {
   JPEG,
   PNG,
+  WEBP,
   // ORIGINAL means request basic image formats, JPG/PNG/GIF, if the original
   // image format is not one of them, encode the image to JPG and return.
   ORIGINAL,

@@ -65,6 +65,9 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_JpegFormat) {
   EXPECT_TRUE(
       NeedsEncodeImage(/* image_extension */ ".bmp",
                        /* image_format */ chrome::mojom::ImageFormat::JPEG));
+  EXPECT_TRUE(
+      NeedsEncodeImage(/* image_extension */ ".webp",
+                       /* image_format */ chrome::mojom::ImageFormat::JPEG));
 }
 
 TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_PngFormat) {
@@ -80,6 +83,27 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_PngFormat) {
   EXPECT_TRUE(
       NeedsEncodeImage(/* image_extension */ ".bmp",
                        /* image_format */ chrome::mojom::ImageFormat::PNG));
+  EXPECT_TRUE(
+      NeedsEncodeImage(/* image_extension */ ".webp",
+                       /* image_format */ chrome::mojom::ImageFormat::PNG));
+}
+
+TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_WebpFormat) {
+  EXPECT_TRUE(
+      NeedsEncodeImage(/* image_extension */ ".png",
+                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(
+      NeedsEncodeImage(/* image_extension */ ".jpg",
+                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(
+      NeedsEncodeImage(/* image_extension */ ".gif",
+                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(
+      NeedsEncodeImage(/* image_extension */ ".bmp",
+                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_FALSE(
+      NeedsEncodeImage(/* image_extension */ ".webp",
+                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
 }
 
 TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
@@ -94,5 +118,8 @@ TEST_F(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
   EXPECT_TRUE(NeedsEncodeImage(
       /* image_extension */ ".bmp",
+      /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* image_extension */ ".webp",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
 }

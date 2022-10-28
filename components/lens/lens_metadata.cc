@@ -48,6 +48,11 @@ void AddEncodeData(lens::proto::lens_latencies_metadata::
           lens::proto::lens_latencies_metadata::
               ChromeSpecificPhaseLatenciesMetadata::PNG);
       break;
+    case (lens::mojom::ImageFormat::WEBP):
+      encode->set_original_image_type(
+          lens::proto::lens_latencies_metadata::
+              ChromeSpecificPhaseLatenciesMetadata::WEBP);
+      break;
   }
 }
 

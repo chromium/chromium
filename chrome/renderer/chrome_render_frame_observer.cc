@@ -61,6 +61,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "url/gurl.h"
 
@@ -110,6 +111,7 @@ namespace {
 const char kGifExtension[] = ".gif";
 const char kPngExtension[] = ".png";
 const char kJpgExtension[] = ".jpg";
+const char kWebpExtension[] = ".webp";
 
 #if BUILDFLAG(IS_ANDROID)
 base::Lock& GetFrameHeaderMapLock() {
@@ -400,6 +402,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
            lens::mojom::ImageFormat::ORIGINAL},
           {chrome::mojom::ImageFormat::PNG, lens::mojom::ImageFormat::PNG},
           {chrome::mojom::ImageFormat::JPEG, lens::mojom::ImageFormat::JPEG},
+          {chrome::mojom::ImageFormat::WEBP, lens::mojom::ImageFormat::WEBP},
       };
 
   if (context_node.IsNull() || !context_node.IsElementNode()) {
@@ -468,6 +471,12 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
               bitmap, kDiscardTransparencyForContextMenu, &data)) {
         image_data.swap(data);
         image_extension = kPngExtension;
+      }
+      break;
+    case chrome::mojom::ImageFormat::WEBP:
+      if (gfx::WebpCodec::Encode(bitmap, kDefaultQuality, &data)) {
+        image_data.swap(data);
+        image_extension = kWebpExtension;
       }
       break;
     case chrome::mojom::ImageFormat::ORIGINAL:
@@ -698,6 +707,8 @@ bool ChromeRenderFrameObserver::NeedsEncodeImage(
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
       return !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
+    case chrome::mojom::ImageFormat::WEBP:
+      return !base::EqualsCaseInsensitiveASCII(image_extension, kWebpExtension);
     case chrome::mojom::ImageFormat::JPEG:
       return !base::EqualsCaseInsensitiveASCII(image_extension, kJpgExtension);
     case chrome::mojom::ImageFormat::ORIGINAL:
