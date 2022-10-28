@@ -404,4 +404,10 @@ class WebViewPasswordStoreObserver
   return [creditCards copy];
 }
 
+- (void)shutDown {
+  _personalDataManager->RemoveObserver(
+      _personalDataManagerObserverBridge.get());
+  _passwordStore->RemoveObserver(_passwordStoreObserver.get());
+}
+
 @end

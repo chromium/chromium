@@ -1012,6 +1012,8 @@ BOOL gChromeContextMenuEnabled = NO;
 
 - (void)shutDown {
   if (_webState) {
+    // CWVBackForwardList is unsafe to use after shutting down.
+    _backForwardList.navigationManager = nil;
     // To handle the case where -[CWVWebView encodeRestorableStateWithCoder:] is
     // called after this method, precompute the session storage so it may be
     // used during encoding later.

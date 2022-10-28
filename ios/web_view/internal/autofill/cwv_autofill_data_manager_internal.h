@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
                                   (password_manager::PasswordStoreInterface*)
                                       passwordStore NS_DESIGNATED_INITIALIZER;
 
+// This is called by the associated CWVWebViewConfiguration in order to shut
+// down cleanly. See `-[CWVWebViewConfiguration shutDown]` method for more info.
+- (void)shutDown;
+
 @end
 
 NS_ASSUME_NONNULL_END
