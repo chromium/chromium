@@ -4,6 +4,7 @@
 
 #include "ui/gfx/geometry/matrix44.h"
 
+#include <algorithm>
 #include <cmath>
 #include <type_traits>
 #include <utility>

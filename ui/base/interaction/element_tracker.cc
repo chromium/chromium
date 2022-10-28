@@ -4,7 +4,6 @@
 
 #include "ui/base/interaction/element_tracker.h"
 
-#include <algorithm>
 #include <iterator>
 #include <list>
 #include <map>
@@ -15,6 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
@@ -227,8 +227,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   const auto it = element_data_.find(LookupKey(id, context));
   ElementList result;
   if (it != element_data_.end()) {
-    std::copy(it->second.elements().begin(), it->second.elements().end(),
-              std::back_inserter(result));
+    base::ranges::copy(it->second.elements(), std::back_inserter(result));
   }
   return result;
 }
@@ -238,8 +237,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
   ElementList result;
   for (const auto& [key, data] : element_data_) {
     if (key.first == id) {
-      std::copy(data.elements().begin(), data.elements().end(),
-                std::back_inserter(result));
+      base::ranges::copy(data.elements(), std::back_inserter(result));
     }
   }
   return result;

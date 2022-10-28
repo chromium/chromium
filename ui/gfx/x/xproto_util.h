@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/component_export.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
@@ -29,7 +30,7 @@ Future<void> SendEvent(const T& event,
   memcpy(event_bytes.data(), first_buffer->data(), first_buffer->size());
 
   SendEventRequest send_event{false, target, mask};
-  std::copy(event_bytes.begin(), event_bytes.end(), send_event.event.begin());
+  base::ranges::copy(event_bytes, send_event.event.begin());
   return connection->SendEvent(send_event);
 }
 

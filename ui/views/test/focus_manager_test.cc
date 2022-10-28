@@ -4,8 +4,7 @@
 
 #include "ui/views/test/focus_manager_test.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -62,8 +61,7 @@ const Widget* FocusManagerTest::GetWidget() const {
 }
 
 void FocusManagerTest::GetAccessiblePanes(std::vector<View*>* panes) {
-  std::copy(accessible_panes_.begin(), accessible_panes_.end(),
-            std::back_inserter(*panes));
+  base::ranges::copy(accessible_panes_, std::back_inserter(*panes));
 }
 
 void FocusManagerTest::InitContentView() {}
