@@ -754,6 +754,7 @@ instrumented_library("libxkbcommon0") {
   package_ldflags = [ "-Wl,-z,undefs" ]
   build_method = "debian"
   pre_build = "scripts/pre-build/xkbcommon.sh"
+  patches = [ "patches/libxkbcommon0.diff" ]
 }
 
 instrumented_library("libxrandr2") {
