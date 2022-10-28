@@ -51,7 +51,7 @@ void TestExtensionEventObserver::VerifyLatestSecurityInterstitialEvent(
     const std::string& expected_username,
     int expected_net_error_code) {
   EXPECT_EQ(expected_event_name, latest_event_name_);
-  auto captured_args = PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ(expected_page_url.spec(),
             captured_args.FindKey("url")->GetString());
   EXPECT_EQ(expected_reason, captured_args.FindKey("reason")->GetString());

@@ -3111,8 +3111,7 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnDangerousDownloadOpened::kEventName));
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("http://example.com/a.exe",
             captured_args.FindKey("url")->GetString());
   EXPECT_EQ(base::HexEncode(hash.data(), hash.size()),

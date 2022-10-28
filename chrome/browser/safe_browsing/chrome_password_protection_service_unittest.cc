@@ -1165,8 +1165,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordChanged::kEventName));
 
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ("foo@example.com", captured_args.GetString());
 
   // If user is in incognito mode, no event should be sent.
@@ -1198,8 +1197,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
-  auto captured_args =
-      event_observer.PassEventArgs().GetListDeprecated()[0].Clone();
+  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
   EXPECT_EQ(kPasswordReuseURL, captured_args.FindKey("url")->GetString());
   EXPECT_EQ(kUserName, captured_args.FindKey("userName")->GetString());
   EXPECT_TRUE(captured_args.FindKey("isPhishingUrl")->GetBool());
