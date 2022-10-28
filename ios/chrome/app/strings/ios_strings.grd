@@ -1267,14 +1267,26 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH" desc="Accessibility label for a button that starts a Voice Search [iOS only]">
         Voice Search
       </message>
-      <message name="IDS_IOS_KEYBOARD_NEW_WINDOW" desc="The title of the keyboard shortcut to open a new window." meaning="Used as a command title in the iPad command menu.">
-        New Window
-      </message>
       <message name="IDS_IOS_KEYBOARD_ADD_TO_BOOKMARKS" desc="In Title Case: Title of the keyboard shortcut that bookmarks the current page." meaning="Used as a command title in the iPad command menu.">
         Add to Bookmarks
       </message>
-      <message name="IDS_IOS_KEYBOARD_SHOW_BOOKMARKS" desc="In Title Case: Title of the keyboard shortcut that shows the list of bookmarks." meaning="Used as a command title in the iPad command menu.">
-        Show Bookmarks
+      <message name="IDS_IOS_KEYBOARD_ADD_TO_READING_LIST" desc="Title of the keyboard shortcut to add the current URL to the Reading List." meaning="Used as a command title in the iPad command menu.">
+        Add to Reading List
+      </message>
+      <message name="IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA" desc="Title of the keyboard shortcut to clear the browsing data." meaning="Used as a command title in the iPad command menu.">
+        Clear Browsing Data…
+      </message>
+      <message name="IDS_IOS_KEYBOARD_FIND_NEXT" desc="The title of the keyboard shortcut to find the next matching string." meaning="Used as a command title in the iPad command menu.">
+        Find Next
+      </message>
+      <message name="IDS_IOS_KEYBOARD_FIND_PREVIOUS" desc="The title of the keyboard shortcut to find the previous matching string." meaning="Used as a command title in the iPad command menu.">
+        Find Previous
+      </message>
+      <message name="IDS_IOS_KEYBOARD_FIRST_TAB" desc="The title of the keyboard shortcut to open the first tab." meaning="Used as a command title in the iPad command menu.">
+        Go to First Tab
+      </message>
+      <message name="IDS_IOS_KEYBOARD_GO_TO_TAB_GRID" desc="The title of the keyboard shortcut to open the form to report an issue." meaning="Used as a command title in the iPad command menu.">
+        Go to Tab Grid
       </message>
       <message name="IDS_IOS_KEYBOARD_HISTORY_BACK" desc="Title of the keyboard shortcut to go back in the history menu." meaning="Used as a command title in the iPad command menu.">
         Back
@@ -1282,32 +1294,44 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_KEYBOARD_HISTORY_FORWARD" desc="Title of the keyboard shortcut to go forward in the history menu." meaning="Used as a command title in the iPad command menu.">
         Forward
       </message>
-      <message name="IDS_IOS_KEYBOARD_OPEN_LOCATION" desc="Title of the keyboard shortcut to open a location (puts cursor in the URL bar)." meaning="Used as a command title in the iPad command menu.">
-        Open Location…
-      </message>
-      <message name="IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB" desc="Title of the keyboard shortcut to reopen a recently closed tab." meaning="Used as a command title in the iPad command menu.">
-        Reopen Last Closed Tab
+      <message name="IDS_IOS_KEYBOARD_LAST_TAB" desc="The title of the keyboard shortcut to open the last tab." meaning="Used as a command title in the iPad command menu.">
+        Go to Last Tab
       </message>
       <message name="IDS_IOS_KEYBOARD_NEXT_TAB" desc="Title of the keyboard shortcut to switch to the next tab in the tab strip." meaning="Used as a command title in the iPad command menu.">
         Go to Next Tab
       </message>
+      <message name="IDS_IOS_KEYBOARD_NEW_WINDOW" desc="The title of the keyboard shortcut to open a new window." meaning="Used as a command title in the iPad command menu.">
+        New Window
+      </message>
+      <message name="IDS_IOS_KEYBOARD_OPEN_LOCATION" desc="Title of the keyboard shortcut to open a location (puts cursor in the URL bar)." meaning="Used as a command title in the iPad command menu.">
+        Open Location…
+      </message>
       <message name="IDS_IOS_KEYBOARD_PREVIOUS_TAB" desc="Title of the keyboard shortcut to switch to the previous tab in the tab strip." meaning="Used as a command title in the iPad command menu.">
         Go to Previous Tab
       </message>
-      <message name="IDS_IOS_KEYBOARD_SHOW_HISTORY" desc="Title of the keyboard shortcut to show the History." meaning="Used as a command title in the iPad command menu.">
-        Show History
+      <message name="IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB" desc="Title of the keyboard shortcut to reopen a recently closed tab." meaning="Used as a command title in the iPad command menu.">
+        Reopen Last Closed Tab
       </message>
       <message name="IDS_IOS_KEYBOARD_REPORT_AN_ISSUE" desc="The title of the keyboard shortcut to open the form to report an issue." meaning="Used as a command title in the iPad command menu.">
         Report an Issue…
       </message>
-      <message name="IDS_IOS_KEYBOARD_ADD_TO_READING_LIST" desc="Title of the keyboard shortcut to add the current URL to the Reading List." meaning="Used as a command title in the iPad command menu.">
-        Add to Reading List
+      <message name="IDS_IOS_KEYBOARD_SHOW_BOOKMARKS" desc="In Title Case: Title of the keyboard shortcut that shows the list of bookmarks." meaning="Used as a command title in the iPad command menu.">
+        Show Bookmarks
       </message>
-      <message name="IDS_IOS_KEYBOARD_GO_TO_TAB_GRID" desc="The title of the keyboard shortcut to open the form to report an issue." meaning="Used as a command title in the iPad command menu.">
-        Go to Tab Grid
+      <message name="IDS_IOS_KEYBOARD_SHOW_DOWNLOADS" desc="The title of the keyboard shortcut to open the app's Download folder." meaning="Used as a command title in the iPad command menu.">
+        Show Downloads
       </message>
-      <message name="IDS_IOS_KEYBOARD_CLEAR_BROWSING_DATA" desc="Title of the keyboard shortcut to clear the browsing data." meaning="Used as a command title in the iPad command menu.">
-        Clear Browsing Data…
+      <message name="IDS_IOS_KEYBOARD_SHOW_HELP" desc="The title of the keyboard shortcut to open the app's Help." meaning="Used as a command title in the iPad command menu.">
+        Show Help
+      </message>
+      <message name="IDS_IOS_KEYBOARD_SHOW_HISTORY" desc="Title of the keyboard shortcut to show the History." meaning="Used as a command title in the iPad command menu.">
+        Show History
+      </message>
+      <message name="IDS_IOS_KEYBOARD_SHOW_SETTINGS" desc="The title of the keyboard shortcut to open the app's Settings." meaning="Used as a command title in the iPad command menu.">
+        Show Settings
+      </message>
+      <message name="IDS_IOS_KEYBOARD_STOP" desc="The title of the keyboard shortcut to stop the view." meaning="Used as a command title in the iPad command menu.">
+        Stop
       </message>
       <message name="IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_TEXT" desc="Text for the LongPress Toolbar Tip in-product help promotion, explaining that the user can long press on the toolbar's button to display more options. [iOS only]">
         Touch &amp; hold for more tab options

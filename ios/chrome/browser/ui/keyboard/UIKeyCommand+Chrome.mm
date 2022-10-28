@@ -81,16 +81,18 @@ NSString* Delete(void) {
 }
 
 + (UIKeyCommand*)cr_findNextStringInPage {
-  return [self keyCommandWithInput:@"g"
+  return [self cr_commandWithInput:@"g"
                      modifierFlags:Command
-                            action:@selector(keyCommand_findNextStringInPage)];
+                            action:@selector(keyCommand_findNextStringInPage)
+                           titleID:IDS_IOS_KEYBOARD_FIND_NEXT];
 }
 
 + (UIKeyCommand*)cr_findPreviousStringInPage {
   return
-      [self keyCommandWithInput:@"g"
+      [self cr_commandWithInput:@"g"
                   modifierFlags:ShiftCommand
-                         action:@selector(keyCommand_findPreviousStringInPage)];
+                         action:@selector(keyCommand_findPreviousStringInPage)
+                        titleID:IDS_IOS_KEYBOARD_FIND_PREVIOUS];
 }
 
 + (UIKeyCommand*)cr_focusOmnibox {
@@ -320,39 +322,44 @@ NSString* Delete(void) {
 }
 
 + (UIKeyCommand*)cr_showSettings {
-  return [self keyCommandWithInput:@","
+  return [self cr_commandWithInput:@","
                      modifierFlags:Command
-                            action:@selector(keyCommand_showSettings)];
+                            action:@selector(keyCommand_showSettings)
+                           titleID:IDS_IOS_KEYBOARD_SHOW_SETTINGS];
 }
 
 + (UIKeyCommand*)cr_stop {
-  return [self keyCommandWithInput:@"."
+  return [self cr_commandWithInput:@"."
                      modifierFlags:Command
-                            action:@selector(keyCommand_stop)];
+                            action:@selector(keyCommand_stop)
+                           titleID:IDS_IOS_KEYBOARD_STOP];
 }
 
 + (UIKeyCommand*)cr_showHelp {
-  return [self keyCommandWithInput:@"?"
+  return [self cr_commandWithInput:@"?"
                      modifierFlags:AltCommand
-                            action:@selector(keyCommand_showHelp)];
+                            action:@selector(keyCommand_showHelp)
+                           titleID:IDS_IOS_KEYBOARD_SHOW_HELP];
 }
 
 + (UIKeyCommand*)cr_showDownloadsFolder {
+  return [self cr_commandWithInput:@"l"
+                     modifierFlags:AltCommand
+                            action:@selector(keyCommand_showDownloadsFolder)
+                           titleID:IDS_IOS_KEYBOARD_SHOW_DOWNLOADS];
+}
+
++ (UIKeyCommand*)cr_showDownloadsFolder_2 {
   return [self keyCommandWithInput:@"j"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_showDownloadsFolder)];
 }
 
-+ (UIKeyCommand*)cr_showDownloadsFolder_2 {
-  return [self keyCommandWithInput:@"l"
-                     modifierFlags:AltCommand
-                            action:@selector(keyCommand_showDownloadsFolder)];
-}
-
 + (UIKeyCommand*)cr_showTab0 {
-  return [self keyCommandWithInput:@"1"
+  return [self cr_commandWithInput:@"1"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showTab0)];
+                            action:@selector(keyCommand_showTab0)
+                           titleID:IDS_IOS_KEYBOARD_FIRST_TAB];
 }
 
 + (UIKeyCommand*)cr_showTab1 {
@@ -398,9 +405,10 @@ NSString* Delete(void) {
 }
 
 + (UIKeyCommand*)cr_showLastTab {
-  return [self keyCommandWithInput:@"9"
+  return [self cr_commandWithInput:@"9"
                      modifierFlags:Command
-                            action:@selector(keyCommand_showLastTab)];
+                            action:@selector(keyCommand_showLastTab)
+                           titleID:IDS_IOS_KEYBOARD_LAST_TAB];
 }
 
 + (UIKeyCommand*)cr_reportAnIssue {
