@@ -6,11 +6,11 @@
  * Javascript for DeviceTable UI, served from chrome://bluetooth-internals/.
  */
 import {assert} from 'chrome://resources/js/assert.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
-import {$} from 'chrome://resources/js/util.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
+import {getTemplate} from './device_table.html.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 
 const COLUMNS = {
@@ -27,31 +27,40 @@ const COLUMNS = {
  * A table that lists the devices and responds to changes in the given
  * DeviceCollection. Fires events for inspection requests from listed
  * devices.
- * @constructor
- * @extends {HTMLTableElement}
  */
-export const DeviceTable = crUiDefine(function() {
-  return document.importNode($('table-template').content.children[0], true);
-});
+export class DeviceTableElement extends CustomElement {
+  static get template() {
+    return getTemplate();
+  }
 
-DeviceTable.prototype = {
-  __proto__: HTMLTableElement.prototype,
+  static get is() {
+    return 'device-table';
+  }
 
-  /** @private {?DeviceCollection} */
-  devices_: null,
+  constructor() {
+    super();
+
+    /** @private {?DeviceCollection} */
+    this.devices_ = null;
+
+    /** @private {?HTMLTBodyElement} */
+    this.body_ = null;
+
+    /** @private {?NodeListOf<Element>} */
+    this.headers_ = null;
+
+    /** @private {!Map<!DeviceInfo, boolean>} */
+    this.inspectionMap_ = new Map();
+  }
 
   /**
    * Decorates an element as a UI element class. Caches references to the
    *    table body and headers.
    */
-  decorate() {
-    /** @private */
-    this.body_ = this.tBodies[0];
-    /** @private */
-    this.headers_ = this.tHead.rows[0].cells;
-    /** @private {!Map<!DeviceInfo, boolean>} */
-    this.inspectionMap_ = new Map();
-  },
+  connectedCallback() {
+    this.body_ = this.shadowRoot.querySelector('tbody');
+    this.headers_ = this.shadowRoot.querySelector('thead').rows[0].cells;
+  }
 
   /**
    * Sets the tables device collection.
@@ -69,7 +78,7 @@ DeviceTable.prototype = {
         'devices-reset-for-test', this.redraw_.bind(this));
 
     this.redraw_();
-  },
+  }
 
   /**
    * Updates the inspect status of the row matching the given |deviceInfo|.
@@ -81,7 +90,7 @@ DeviceTable.prototype = {
   setInspecting(deviceInfo, isInspecting) {
     this.inspectionMap_.set(deviceInfo, isInspecting);
     this.updateRow_(deviceInfo, this.devices_.getByAddress(deviceInfo.address));
-  },
+  }
 
   /**
    * Fires a forget pressed event for the row |index|.
@@ -91,12 +100,13 @@ DeviceTable.prototype = {
   handleForgetClick_(index) {
     const event = new CustomEvent('forgetpressed', {
       bubbles: true,
+      composed: true,
       detail: {
         address: this.devices_.item(index).address,
       },
     });
     this.dispatchEvent(event);
-  },
+  }
 
   /**
    * Updates table row on change event of the device collection.
@@ -107,7 +117,7 @@ DeviceTable.prototype = {
     this.updateRow_(
         /** @type {!DeviceInfo} */ (this.devices_.item(event.detail)),
         event.detail);
-  },
+  }
 
   /**
    * Fires an inspect pressed event for the row |index|.
@@ -117,12 +127,13 @@ DeviceTable.prototype = {
   handleInspectClick_(index) {
     const event = new CustomEvent('inspectpressed', {
       bubbles: true,
+      composed: true,
       detail: {
         address: this.devices_.item(index).address,
       },
     });
     this.dispatchEvent(event);
-  },
+  }
 
   /**
    * Updates table row on splice event of the device collection.
@@ -131,7 +142,7 @@ DeviceTable.prototype = {
    */
   handleDeviceAdded_(event) {
     this.insertRow_(event.detail.device, event.detail.index);
-  },
+  }
 
   /**
    * Inserts a new row at |index| and updates it with info from |device|.
@@ -171,23 +182,24 @@ DeviceTable.prototype = {
     }.bind(this));
 
     this.updateRow_(device, row.sectionRowIndex);
-  },
+  }
 
   /**
    * Deletes and recreates the table using the cached |devices_|.
    * @private
    */
   redraw_() {
-    this.removeChild(this.body_);
-    this.appendChild(document.createElement('tbody'));
-    this.body_ = this.querySelector('tbody');
+    const table = this.shadowRoot.querySelector('table');
+    table.removeChild(this.body_);
+    table.appendChild(document.createElement('tbody'));
+    this.body_ = this.shadowRoot.querySelector('tbody');
     this.body_.classList.add('table-body');
 
     for (let i = 0; i < this.devices_.length; i++) {
       this.insertRow_(
           /** @type {!DeviceInfo} */ (this.devices_.item(i)), null);
     }
-  },
+  }
 
   /**
    * Updates the row at |index| with the info from |device|.
@@ -238,5 +250,7 @@ DeviceTable.prototype = {
       cell.textContent = obj == null ? 'Unknown' : obj;
       cell.dataset.label = header.textContent;
     }
-  },
-};
+  }
+}
+
+customElements.define('device-table', DeviceTableElement);

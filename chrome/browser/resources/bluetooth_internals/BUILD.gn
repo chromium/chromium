@@ -37,6 +37,7 @@ generate_grd("build_internal_mojo_grdp") {
 html_files = [
   "characteristic_list_item.html",
   "descriptor_list_item.html",
+  "device_table.html",
   "expandable_list.html",
   "expandable_list_item.html",
   "object_fieldset.html",

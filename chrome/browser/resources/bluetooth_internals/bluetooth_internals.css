@@ -194,65 +194,6 @@ h1 {
   }
 }
 
-/* Device table */
-table {
-  border-collapse: collapse;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-}
-
-table a {
-  font-size: 10pt;
-  padding: 6px;
-}
-
-table th,
-table td {
-  border: var(--divider-border);
-  padding: 7px;
-}
-
-table th {
-  background-color: #f0f0f0;
-  font-weight: normal;
-}
-
-table .removed {
-  background-color: #e0e0e0;
-}
-
-@media screen and (max-width: 600px) {
-  table {
-    border-collapse: separate;
-    border-spacing: 0 var(--section-padding);
-  }
-
-  table thead {
-    display: none;
-  }
-
-  table td {
-    display: block;
-    text-align: end;
-  }
-
-  table td::before {
-    content: attr(data-label);
-    float: left;
-    font-weight: bold;
-  }
-
-  table th,
-  table td {
-    border-bottom: 0;
-  }
-
-  table td:last-child {
-    border-bottom: var(--divider-border);
-  }
-}
-
 @media screen and (min-width: 601px) {
   .flex {
     display: flex;

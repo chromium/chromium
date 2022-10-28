@@ -60,7 +60,8 @@ suite('bluetooth_internals', function() {
 
   setup(function() {
     adapterFieldSet = document.querySelector('#adapter object-field-set');
-    deviceTable = document.querySelector('#devices table');
+    deviceTable = document.querySelector('#devices device-table')
+                      .shadowRoot.querySelector('table');
     sidebarNode = document.querySelector('#sidebar');
     devices.resetForTest();
     adapterBroker.deviceAdded(fakeDeviceInfo1());
@@ -534,8 +535,10 @@ suite('bluetooth_internals', function() {
   test('DeviceDetailsPage_NewDelete', function() {
     const device = devices.item(0);
 
-    const deviceInspectLink =
-        $(device.address).querySelector('[is="action-link"]');
+    // Have to search manually since the device row IDs aren't valid selectors.
+    const deviceRow = Array.from(deviceTable.querySelectorAll('tr'))
+                          .find(row => row.id === device.address);
+    const deviceInspectLink = deviceRow.querySelector('[is="action-link"]');
 
     const deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
@@ -562,8 +565,9 @@ suite('bluetooth_internals', function() {
     const device = devices.item(0);
     const deviceDetailsPageId = 'devices/' + device.address.toLowerCase();
 
-    const deviceLinks =
-        $(device.address).querySelectorAll('[is="action-link"]');
+    const deviceRow = Array.from(deviceTable.querySelectorAll('tr'))
+                          .find(row => row.id === device.address);
+    const deviceLinks = deviceRow.querySelectorAll('[is="action-link"]');
 
     // First link is 'Inspect'.
     deviceLinks[0].click();
