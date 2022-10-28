@@ -8,7 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_negotiator.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/arc_terms_of_service_screen_handler.h"
 
 namespace chromeos {
 class ArcTermsOfServiceScreenView;

@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

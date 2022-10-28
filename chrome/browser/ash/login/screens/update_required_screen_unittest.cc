@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ui/ash/test_login_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/fake_update_required_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fake_update_required_screen_handler.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"

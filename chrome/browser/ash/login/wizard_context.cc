@@ -6,7 +6,7 @@
 
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
-#include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {

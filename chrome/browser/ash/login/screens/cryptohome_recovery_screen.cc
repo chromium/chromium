@@ -6,7 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ui/webui/chromeos/login/cryptohome_recovery_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 
 namespace ash {
 

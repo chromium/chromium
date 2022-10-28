@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MOCK_EULA_SCREEN_H_
 
 #include "chrome/browser/ash/login/screens/eula_screen.h"
-#include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/eula_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 
 namespace {
 

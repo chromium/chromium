@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/local_state_error_screen.h"
+
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/chromeos/login/local_state_error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 namespace ash {

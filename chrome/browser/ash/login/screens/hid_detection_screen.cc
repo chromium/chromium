@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_utils.h"

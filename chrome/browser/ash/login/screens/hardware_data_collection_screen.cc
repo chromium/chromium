@@ -14,7 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/hardware_data_collection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {

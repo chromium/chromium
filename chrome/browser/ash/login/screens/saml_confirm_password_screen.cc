@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/webui/chromeos/login/check_passwords_against_cryptohome_helper.h"
+#include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_confirm_password_handler.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 

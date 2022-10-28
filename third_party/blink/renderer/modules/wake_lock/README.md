@@ -124,7 +124,7 @@ In fact, this is why [`WakeLockProvider::GetWakeLockWithoutContext()`](/services
 
 Example usage outside Blink includes:
 
-* ChromeOS's [encryption migration screen handler](/chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.cc)
+* ChromeOS's [encryption migration screen handler](/chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.cc)
 * Media capture code in [content/browser](/content/browser/media/capture/desktop_capture_device.cc)
 * The Google Drive [component](/components/drive/drive_uploader.cc)
 * The `chrome.power` [extension API](/extensions/browser/api/power/power_api.cc)

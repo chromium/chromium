@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
 
 namespace ash {
 namespace {

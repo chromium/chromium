@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
+#include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
@@ -40,6 +40,7 @@
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_names.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+
 namespace {
 using ash::SupervisedAction;
 

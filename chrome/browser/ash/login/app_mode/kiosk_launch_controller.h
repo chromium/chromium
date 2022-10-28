@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
-#include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 

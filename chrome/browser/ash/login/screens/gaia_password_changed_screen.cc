@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 
 namespace ash {
 namespace {
