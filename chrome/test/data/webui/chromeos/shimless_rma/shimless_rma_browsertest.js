@@ -76,7 +76,7 @@ const debug_suites_list = [
   'WrapupWaitForManualWpEnablePageTest',
 ];
 
-TEST_F('ShimlessRMABrowserTest', 'All', function() {
+TEST_F('ShimlessRMABrowserTest', 'DISABLED_All', function() {
   assertDeepEquals(
       debug_suites_list, test_suites_list,
       'List of registered tests suites and debug suites do not match.\n' +
