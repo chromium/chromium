@@ -3,6 +3,7 @@
 // META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
+// META: script=/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
 // META: script=/websockets/constants.sub.js
 
@@ -19,15 +20,9 @@ promise_test(async t => {
   const rc1_url = await rc1.executeScript(() => {
     return location.href;
   });
-  await prepareForBFCache(rc1);
 
-  // Navigate away.
-  const rc2 = await rc1.navigateToNew();
-  // Navigate back.
-  await rc2.historyBack();
-  await assert_not_bfcached(rc1);
-
-  // Check the reported reasons.
+  // Check the BFCache result and the reported reasons.
+  await assertBFCache(rc1, /*shouldRestoreFromBFCache=*/ false);
   await assertNotRestoredReasonsEquals(
       rc1,
       /*blocked=*/ true,
@@ -37,13 +32,10 @@ promise_test(async t => {
       /*name=*/ '',
       /*reasons=*/['WebSocket'],
       /*children=*/[]);
-  await prepareForBFCache(rc1);
 
-  await rc1.historyForward();
-  await rc2.historyBack();
   // This time no blocking feature is used, so the page is restored
   // from BFCache. Ensure that the previous reasons stay there.
-  await assert_implements_bfcache(rc1);
+  await assertBFCache(rc1, /*shouldRestoreFromBFCache=*/ true);
   await assertNotRestoredReasonsEquals(
       rc1,
       /*blocked=*/ true,
