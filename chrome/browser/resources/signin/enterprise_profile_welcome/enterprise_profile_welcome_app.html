@@ -47,6 +47,7 @@
     --action-container-padding: 24px;
     --background-image:
         url(images/lacros_enterprise_profile_welcome_illustration.svg);
+    --buttons-container-max-width: 45%;
     --content-container-font-size: 14px;
     --content-container-line-height: 20px;
     --content-container-margin-top: 72px;
@@ -61,12 +62,14 @@
     --info-box-border-radius: 0px;
     --info-box-font-size: 11px;
     --info-box-line-height: 16px;
+    --info-box-max-width: calc(100% - var(--buttons-container-max-width));
   }
 </if>
 
 <if expr="not chromeos_lacros">
   :host {
     --background-image: url(images/enterprise_profile_welcome_illustration.svg);
+    --buttons-container-max-width: 100%;
     --content-container-font-size: auto;
     --content-container-line-height: auto;
     --content-container-width: auto;
@@ -78,6 +81,7 @@
     --info-box-border-radius: 8px;
     --info-box-font-size: auto;
     --info-box-line-height: auto;
+    --info-box-max-width: none;
     --info-box-padding: 12px 0;
   }
 </if>
@@ -188,6 +192,7 @@
     line-height: var(--info-box-line-height);
     margin-inline: var(--info-box-margin-inline);
     margin-top: var(--info-box-margin-top);
+    max-width: var(--info-box-max-width);
     padding: var(--info-box-padding);
     padding-inline-end: 18px;
     position: var(--info-box-position);
@@ -217,8 +222,15 @@
     width: var(--icon-size);
   }
 
+  #buttonsContainer {
+    flex-wrap: wrap-reverse;
+    max-width: var(--buttons-container-max-width);
+    right: 0;
+  }
+
   #buttonsContainer cr-button {
     font-size: var(--text-font-size);
+    margin: 5px 0;
     min-width: 111px;
   }
 
