@@ -95,11 +95,11 @@ class WebRtcMediaDevicesInteractiveUITest
 
     base::Value& values = *parsed_json;
     ASSERT_TRUE(values.is_list());
-    ASSERT_FALSE(values.GetListDeprecated().empty());
+    ASSERT_FALSE(values.GetList().empty());
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (const auto& dict : values.GetListDeprecated()) {
+    for (const auto& dict : values.GetList()) {
       ASSERT_TRUE(dict.is_dict());
       MediaDeviceInfo device;
       ASSERT_TRUE(dict.FindStringPath("deviceId"));
