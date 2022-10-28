@@ -77,6 +77,16 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
       },
 
       /**
+       * A virtual pref to reflect the Do Not Disturb state.
+       * @type {chrome.settingsPrivate.PrefObject}
+       * @private
+       */
+      virtualDndPref_: {
+        type: Object,
+        computed: 'getVirtualDndPref_(isDndEnabled_)',
+      },
+
+      /**
        * @type {!Array<!Object>}
        * @private
        */
@@ -208,12 +218,15 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   }
 
   /**
-   * @param {!Event} event
+   * @return {!chrome.settingsPrivate.PrefObject}
    * @private
    */
-  onEnableTap_(event) {
-    this.setQuietMode_();
-    event.stopPropagation();
+  getVirtualDndPref_() {
+    return {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: this.isDndEnabled_,
+    };
   }
 
   /**

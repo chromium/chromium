@@ -362,33 +362,26 @@ suite('AppNotificationsSubpageTests', function() {
 
   test('toggleDoNotDisturb', function() {
     createPage();
-    const div = page.$.enableDoNotDisturb;
-    const dndToggle = page.$.enableDndToggle;
+    const dndToggle = page.$.doNotDisturbToggle;
+    assertTrue(!!dndToggle);
 
     flush();
     assertFalse(dndToggle.checked);
     assertFalse(mojoApi_.getCurrentQuietModeState());
 
-    // Test that tapping the single settings-box div enables DND.
-    assertTrue(!!div);
-    div.click();
+    dndToggle.click();
     assertTrue(dndToggle.checked);
     assertTrue(mojoApi_.getCurrentQuietModeState());
 
     // Click again will change the value.
-    div.click();
+    dndToggle.click();
     assertFalse(dndToggle.checked);
     assertFalse(mojoApi_.getCurrentQuietModeState());
-
-    // Test that tapping the toggle itself enables DND.
-    dndToggle.click();
-    assertTrue(dndToggle.checked);
-    assertTrue(mojoApi_.getCurrentQuietModeState());
   });
 
   test('SetQuietMode being called correctly', function() {
     createPage();
-    const dndToggle = page.$.enableDndToggle;
+    const dndToggle = page.$.doNotDisturbToggle;
     // Click the toggle button a certain count.
     const testCount = 3;
 
@@ -415,7 +408,7 @@ suite('AppNotificationsSubpageTests', function() {
 
   test('changing toggle with OnQuietModeChanged', function() {
     createPage();
-    const dndToggle = page.$.enableDndToggle;
+    const dndToggle = page.$.doNotDisturbToggle;
 
     flush();
     assertFalse(dndToggle.checked);

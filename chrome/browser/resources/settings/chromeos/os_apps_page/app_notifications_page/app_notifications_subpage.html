@@ -1,44 +1,23 @@
 <style include="cr-shared-style settings-shared iron-flex">
-  #dndTitle {
-    font-weight: 500;
-    padding-inline-end: 8px;
-  }
-
-  #dndDescription {
-    color: var(--cros-text-color-secondary);
-  }
-
-  #enableDoNotDisturb {
-    display: flex;
-    justify-content: space-between;
-  }
-
   #appNotificationsList {
     margin-top: 24px;
   }
 
-  :host([is-dnd-enabled_]) #dndTitle {
+  :host([is-dnd-enabled_]) #doNotDisturbToggle {
     color: var(--cros-text-color-prominent);
   }
 </style>
-<div id="enableDoNotDisturb" class="cr-row first" on-click="onEnableTap_"
-    actionable>
-  <div id="labelWrapper">
-    <div id="dndTitle" aria-hidden="true">
-      $i18n{doNotDisturbToggleTitle}
-    </div>
-    <div id="dndDescription">
-      $i18n{doNotDisturbToggleDescription}
-    </div>
-  </div>
-  <cr-toggle id="enableDndToggle"
-      checked="[[isDndEnabled_]]"
-      on-change="setQuietMode_"
-      aria-labelledby="dndTitle"
-      aria-describedby="dndDescription"
-      deep-link-focus-id$="[[Setting.kDoNotDisturbOnOff]]">
-  </cr-toggle>
-</div>
+<settings-toggle-button
+    id="doNotDisturbToggle"
+    class="hr"
+    label="$i18n{doNotDisturbToggleTitle}"
+    sub-label="$i18n{doNotDisturbToggleDescription}"
+    pref="[[virtualDndPref_]]"
+    no-set-pref
+    checked="[[isDndEnabled_]]"
+    on-settings-boolean-control-change="setQuietMode_"
+    deep-link-focus-id$="[[Setting.kDoNotDisturbOnOff]]">
+</settings-toggle-button>
 <template is="dom-if" if="[[showAppBadgingToggle_]]">
   <settings-toggle-button
       id="appBadgingToggleButton"
