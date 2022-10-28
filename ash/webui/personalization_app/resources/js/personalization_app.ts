@@ -28,7 +28,7 @@ import './personalization_toast_element.js';
 import './personalization_breadcrumb_element.js';
 import './personalization_main_element.js';
 import './theme/personalization_theme_element.js';
-import './theme/theme_header_element.js';
+import './theme/dynamic_color_element.js';
 import './user/avatar_camera_element.js';
 import './user/avatar_list_element.js';
 import './user/user_preview_element.js';
@@ -79,7 +79,7 @@ export {PersonalizationThemeElement} from './theme/personalization_theme_element
 export {PersonalizationToastElement} from './personalization_toast_element.js';
 export {setDarkModeEnabledAction, SetDarkModeEnabledAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
-export {ThemeHeader} from './theme/theme_header_element.js';
+export {DynamicColorElement} from './theme/dynamic_color_element.js';
 export {ThemeObserver} from './theme/theme_observer.js';
 export {AvatarCamera, AvatarCameraMode} from './user/avatar_camera_element.js';
 export {AvatarList} from './user/avatar_list_element.js';
@@ -123,6 +123,6 @@ if (loadTimeData.getBoolean('isJellyEnabled')) {
   // After the Jelly experiment is launched, replace `cros_styles.css` with
   // `theme/colors.css` directly in `index.html`.
   document.querySelector('link[href*=\'cros_styles.css\']')
-      ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy');
+      ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
   startColorChangeUpdater();
 }

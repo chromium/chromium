@@ -1,0 +1,76 @@
+<style include="common">
+  :host {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+  }
+
+  /* Header */
+  #themeHeader {
+    align-items: center;
+    display: flex;
+  }
+
+  #themeTitle {
+    flex-grow: 1;
+  }
+
+  #dynamicColorToggleDescription {
+    font-weight: var(--cros-body-1-font-weight);
+    margin-inline-end: 12px;
+  }
+
+  /* Buttons */
+  #buttons {
+    display: flex;
+    justify-content: space-between;
+    margin: 16px 0;
+  }
+
+  cr-button {
+    /* TODO(b/254487168): Replace the background color with one that makes more
+       sense. Neutral95. */
+    background-color: var(--cros-sys-input_field_dark);
+    border: none;
+    border-radius: 16px;
+    height: 76px;
+    padding: 0;
+    width: 76px;
+  }
+
+  svg {
+    height: 48px;
+    width: 48px;
+  }
+</style>
+<div id="container">
+  <div id="themeHeader">
+    <!-- TODO(b/253089237): Add the final translated text. -->
+    <div id="themeTitle">[temp]Theme color</div>
+    <!-- TODO(b/253089237): Add the final translated text. -->
+    <div id="dynamicColorToggleDescription">[temp]Auto</div>
+    <!-- TODO(b/253089237): Add the translated aria label. -->
+    <cr-toggle checked="{{automaticSeedColorEnabled}}">
+    </cr-toggle>
+  </div>
+  <div id="buttons">
+    <template is="dom-if" if="[[automaticSeedColorEnabled]]">
+      <template is="dom-repeat" items="[[schemes_]]" as="scheme">
+        <cr-button>
+          <!-- TODO(b/254481177): Replace with the real SVG. -->
+          <svg>
+            <circle style$="fill: [[scheme.primaryColor]]" cx="24" cy="24" r="24"></circle>
+          </svg>
+        </cr-button>
+      </template>
+    </template>
+    <template is="dom-if" if="[[!automaticSeedColorEnabled]]">
+      <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
+        <cr-button>
+          <svg>
+            <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
+          </svg>
+        </cr-button>
+      </template>
+    </template>
+  </div>
+</div>
