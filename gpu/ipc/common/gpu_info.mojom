@@ -179,6 +179,8 @@ struct GpuInfo {
   uint32 vulkan_version;
   [EnableIf=is_win]
   OverlayInfo overlay_info;
+  [EnableIf=is_win]
+  bool shared_image_d3d;
 
   array<VideoDecodeAcceleratorSupportedProfile>
     video_decode_accelerator_supported_profiles;
