@@ -18,32 +18,6 @@
       to   { transform: rotate(360deg); }
     }
   </style>
-  <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-
-    function doTest()
-    {
-      var box = document.getElementById('box');
-      box.addEventListener('animationstart', function() {
-        if (window.testRunner) {
-            var layers = internals.layerTreeAsText(document);
-            var result;
-            if (layers != "")
-              result = "PASS: created compositing layers when animating transform.";
-            else
-              result = "FAIL: no layers found";
-            document.getElementById('result').innerHTML = result;
-            testRunner.notifyDone();
-        }
-      }, false);
-      document.getElementById('box').className = 'spinning';
-    }
-
-    window.addEventListener('load', doTest, false);
-  </script>
 </head>
 <body>
 
@@ -52,5 +26,26 @@
   <!-- We should create layers, even on platforms that don't support accelerated animation. -->
   <div id="result">Test only works in DRT</div>
 
+  <script type="text/javascript" charset="utf-8">
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+
+    var box = document.getElementById('box');
+    box.addEventListener('animationstart', function() {
+      if (window.testRunner) {
+          var layers = internals.layerTreeAsText(document);
+          var result;
+          if (layers.includes("DIV id='box' class='box spinning'"))
+            result = "PASS: created compositing layers when animating transform.";
+          else
+            result = "FAIL: no layers found";
+          document.getElementById('result').innerHTML = result;
+          testRunner.notifyDone();
+      }
+    }, false);
+    box.classList.toggle('spinning');
+  </script>
 </body>
 </html>
