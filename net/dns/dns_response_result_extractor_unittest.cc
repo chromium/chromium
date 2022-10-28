@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata_test_util.h"
@@ -319,11 +320,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsTxtResponses) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   std::vector<std::string> results_vector = results.text_records().value();
   EXPECT_NE(results_vector.end(),
-            std::search(results_vector.begin(), results_vector.end(),
-                        foo_records.begin(), foo_records.end()));
+            base::ranges::search(results_vector, foo_records));
   EXPECT_NE(results_vector.end(),
-            std::search(results_vector.begin(), results_vector.end(),
-                        bar_records.begin(), bar_records.end()));
+            base::ranges::search(results_vector, bar_records));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainTxtResponses) {

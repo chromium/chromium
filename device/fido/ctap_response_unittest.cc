@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -738,9 +737,8 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
 
   // Find the first of the duplicate versions and change it to a different
   // value. That should be sufficient to make the data parsable.
-  static const char kU2Fv9[] = "U2F_V9";
-  uint8_t* first_version =
-      std::search(get_info, get_info + sizeof(get_info), kU2Fv9, kU2Fv9 + 6);
+  static constexpr base::StringPiece kU2Fv9 = "U2F_V9";
+  uint8_t* first_version = base::ranges::search(get_info, kU2Fv9);
   ASSERT_TRUE(first_version);
   memcpy(first_version, "U2F_V3", 6);
   absl::optional<AuthenticatorGetInfoResponse> response =

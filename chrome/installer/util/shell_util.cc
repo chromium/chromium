@@ -15,6 +15,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <memory>
@@ -1707,8 +1708,7 @@ std::wstring GetShellUserChoiceSalt() {
   base::span<const uint8_t> subsalt_span(
       reinterpret_cast<const uint8_t*>(kSaltSubstring.data()),
       kSaltSubstring.size() * sizeof(decltype(kSaltSubstring)::value_type));
-  auto salt_start = std::search(data_section.begin(), data_section.end(),
-                                subsalt_span.begin(), subsalt_span.end());
+  auto salt_start = base::ranges::search(data_section, subsalt_span);
   if (salt_start == data_section.end())
     return result;
 

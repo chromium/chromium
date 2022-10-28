@@ -4,7 +4,6 @@
 
 #include "chrome/chrome_cleaner/strings/string_util.h"
 
-#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -12,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/i18n/streaming_utf8_validator.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
@@ -132,8 +132,8 @@ bool WStringEqualsCaseInsensitive(const std::wstring& str1,
 
 bool WStringContainsCaseInsensitive(const std::wstring& value,
                                     const std::wstring& substring) {
-  return std::search(
-             value.begin(), value.end(), substring.begin(), substring.end(),
+  return base::ranges::search(
+             value, substring,
              base::CaseInsensitiveCompareASCII<std::wstring::value_type>()) !=
          value.end();
 }

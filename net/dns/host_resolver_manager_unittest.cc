@@ -4,7 +4,6 @@
 
 #include "net/dns/host_resolver_manager.h"
 
-#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <string>
@@ -21,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -8871,10 +8871,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   std::vector<std::string> results =
       response.request()->GetTextResults().value();
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       foo_records.begin(), foo_records.end()));
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       bar_records.begin(), bar_records.end()));
+  EXPECT_NE(results.end(), base::ranges::search(results, foo_records));
+  EXPECT_NE(results.end(), base::ranges::search(results, bar_records));
 
   // Expect result to be cached.
   EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
@@ -8887,10 +8885,8 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
               testing::Optional(testing::UnorderedElementsAre(
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   results = cached_response.request()->GetTextResults().value();
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       foo_records.begin(), foo_records.end()));
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       bar_records.begin(), bar_records.end()));
+  EXPECT_NE(results.end(), base::ranges::search(results, foo_records));
+  EXPECT_NE(results.end(), base::ranges::search(results, bar_records));
 }
 
 TEST_F(HostResolverManagerDnsTest, TxtQueryRejectsIpLiteral) {
@@ -9281,10 +9277,8 @@ TEST_F(HostResolverManagerDnsTest, TxtDnsQuery) {
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   std::vector<std::string> results =
       response.request()->GetTextResults().value();
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       foo_records.begin(), foo_records.end()));
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       bar_records.begin(), bar_records.end()));
+  EXPECT_NE(results.end(), base::ranges::search(results, foo_records));
+  EXPECT_NE(results.end(), base::ranges::search(results, bar_records));
 
   // Expect result to be cached.
   EXPECT_EQ(resolve_context_->host_cache()->size(), 1u);
@@ -9297,10 +9291,8 @@ TEST_F(HostResolverManagerDnsTest, TxtDnsQuery) {
               testing::Optional(testing::UnorderedElementsAre(
                   "foo1", "foo2", "foo3", "bar1", "bar2")));
   results = cached_response.request()->GetTextResults().value();
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       foo_records.begin(), foo_records.end()));
-  EXPECT_NE(results.end(), std::search(results.begin(), results.end(),
-                                       bar_records.begin(), bar_records.end()));
+  EXPECT_NE(results.end(), base::ranges::search(results, foo_records));
+  EXPECT_NE(results.end(), base::ranges::search(results, bar_records));
 }
 
 TEST_F(HostResolverManagerDnsTest, PtrQuery) {

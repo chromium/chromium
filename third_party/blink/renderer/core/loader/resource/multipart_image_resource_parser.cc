@@ -4,12 +4,11 @@
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-
-#include <algorithm>
 
 namespace blink {
 
@@ -164,9 +163,8 @@ bool MultipartImageResourceParser::ParseHeaders() {
 // doesn't require the dashes to exist.  See nsMultiMixedConv::FindToken.
 wtf_size_t MultipartImageResourceParser::FindBoundary(const Vector<char>& data,
                                                       Vector<char>* boundary) {
-  auto* it = std::search(data.data(), data.data() + data.size(),
-                         boundary->data(), boundary->data() + boundary->size());
-  if (it == data.data() + data.size())
+  auto* it = base::ranges::search(data, *boundary);
+  if (it == data.end())
     return kNotFound;
 
   wtf_size_t boundary_position = static_cast<wtf_size_t>(it - data.data());

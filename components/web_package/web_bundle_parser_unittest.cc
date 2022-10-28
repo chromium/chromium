@@ -4,11 +4,10 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
-#include <algorithm>
-
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/cbor/writer.h"
@@ -232,15 +231,11 @@ void CheckIfSignatureStackEntryIsValid(
 
   // The attributes should also be part of `complete_entry_cbor`.
   EXPECT_NE(
-      std::search(entry->complete_entry_cbor.begin(),
-                  entry->complete_entry_cbor.end(),
-                  entry->attributes_cbor.begin(), entry->attributes_cbor.end()),
+      base::ranges::search(entry->complete_entry_cbor, entry->attributes_cbor),
       entry->complete_entry_cbor.end());
   // The attributes should contain the public key.
-  EXPECT_NE(
-      std::search(entry->attributes_cbor.begin(), entry->attributes_cbor.end(),
-                  public_key.begin(), public_key.end()),
-      entry->attributes_cbor.end());
+  EXPECT_NE(base::ranges::search(entry->attributes_cbor, public_key),
+            entry->attributes_cbor.end());
 }
 
 }  // namespace
