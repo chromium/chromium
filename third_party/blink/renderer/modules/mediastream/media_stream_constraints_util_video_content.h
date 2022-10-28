@@ -19,6 +19,7 @@ MODULES_EXPORT extern const int kDefaultScreenCastWidth;
 MODULES_EXPORT extern const int kDefaultScreenCastHeight;
 
 MODULES_EXPORT extern const double kMaxScreenCastFrameRate;
+MODULES_EXPORT extern const double kMinScreenCastFrameRate;
 MODULES_EXPORT extern const double kDefaultScreenCastFrameRate;
 
 // This function performs source, source-settings and track-settings selection

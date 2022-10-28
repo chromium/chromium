@@ -35,6 +35,7 @@ static_assert(kDefaultScreenCastWidth <= kMaxScreenCastDimension,
 static_assert(kDefaultScreenCastHeight <= kMaxScreenCastDimension,
               "Invalid kDefaultScreenCastHeight");
 
+const double kMinScreenCastFrameRate = 0.01;
 const double kMaxScreenCastFrameRate = 120.0;
 const double kDefaultScreenCastFrameRate =
     MediaStreamVideoSource::kDefaultFrameRate;
@@ -69,7 +70,7 @@ class VideoContentCaptureCandidates {
                                     kMaxScreenCastDimension),
         frame_rate_set_(
             DoubleRangeSet::FromConstraint(constraint_set.frame_rate,
-                                           0.0,
+                                           kMinScreenCastFrameRate,
                                            kMaxScreenCastFrameRate)),
         device_id_set_(media_constraints::StringSetFromConstraint(
             constraint_set.device_id)),
