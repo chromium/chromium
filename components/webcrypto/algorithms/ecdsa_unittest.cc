@@ -150,60 +150,6 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   EXPECT_TRUE(signature_matches);
 }
 
-// Tests verify() for ECDSA using an assortment of keys, curves and hashes.
-// These tests also include expected failures for bad signatures and keys.
-TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
-  base::Value::List tests = ReadJsonTestFileAsList("ecdsa.json");
-  for (const auto& test_value : tests) {
-    SCOPED_TRACE(&test_value - &tests[0]);
-
-    ASSERT_TRUE(test_value.is_dict());
-    const base::DictionaryValue* test =
-        &base::Value::AsDictionaryValue(test_value);
-
-    blink::WebCryptoNamedCurve curve = GetCurveNameFromDictionary(test);
-    blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
-    std::vector<uint8_t> key_data =
-        GetKeyDataFromJsonTestCase(test, key_format);
-
-    // If the test didn't specify an error, that implies it expects success.
-    std::string expected_error = "Success";
-    test->GetString("error", &expected_error);
-
-    // Import the public key.
-    blink::WebCryptoKey key;
-    Status status =
-        ImportKey(key_format, key_data, CreateEcdsaImportAlgorithm(curve), true,
-                  blink::kWebCryptoKeyUsageVerify, &key);
-    ASSERT_EQ(expected_error, StatusToString(status));
-    if (status.IsError())
-      continue;
-
-    // Basic sanity checks on the imported public key.
-    EXPECT_EQ(blink::kWebCryptoKeyTypePublic, key.GetType());
-    EXPECT_EQ(blink::kWebCryptoKeyUsageVerify, key.Usages());
-    EXPECT_EQ(curve, key.Algorithm().EcParams()->NamedCurve());
-
-    // Now try to verify the given message and signature.
-    std::vector<uint8_t> message = GetBytesFromHexString(test, "msg");
-    std::vector<uint8_t> signature = GetBytesFromHexString(test, "sig");
-    blink::WebCryptoAlgorithm hash = GetDigestAlgorithm(test, "hash");
-
-    bool verify_result;
-    status = Verify(CreateEcdsaAlgorithm(hash.Id()), key, signature, message,
-                    &verify_result);
-    ASSERT_EQ(expected_error, StatusToString(status));
-    if (status.IsError())
-      continue;
-
-    // If no error was expected, the verification's boolean must match
-    // "verify_result" for the test.
-    absl::optional<bool> expected_result = test->FindBoolKey("verify_result");
-    ASSERT_TRUE(expected_result);
-    EXPECT_EQ(expected_result.value(), verify_result);
-  }
-}
-
 // The test file may include either public or private keys. In order to import
 // them successfully, the correct usages need to be specified. This function
 // determines what usages to use for the key.
