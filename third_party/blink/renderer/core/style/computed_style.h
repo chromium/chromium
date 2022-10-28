@@ -2949,6 +2949,13 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   scoped_refptr<ComputedStyle> TakeStyle() { return std::move(style_); }
 
+#if DCHECK_IS_ON()
+  scoped_refptr<ComputedStyle> ToStyle() {
+    DCHECK(style_);
+    return ComputedStyle::Clone(*style_);
+  }
+#endif  // DCHECK_IS_ON()
+
   // column-count
   void SetColumnCount(uint16_t c) {
     SetHasAutoColumnCountInternal(false);
