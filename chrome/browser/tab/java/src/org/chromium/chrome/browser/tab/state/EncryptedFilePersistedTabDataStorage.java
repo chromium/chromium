@@ -127,7 +127,7 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
                 cipherOutputStream = new CipherOutputStream(fileOutputStream, cipher);
                 dataOutputStream = new DataOutputStream(cipherOutputStream);
                 dataOutputStream.writeLong(KEY_CHECKER);
-                dataOutputStream.writeInt(data.limit());
+                dataOutputStream.writeInt(data.remaining());
                 WritableByteChannel channel = Channels.newChannel(dataOutputStream);
                 channel.write(data);
                 success = true;
