@@ -227,9 +227,6 @@ class OpenXrApiWrapper {
   std::unordered_map<XrViewConfigurationType, OpenXrViewConfiguration>
       secondary_view_configs_;
 
-  // Location that describes the viewer (aka. head) pose.
-  XrSpaceLocation local_from_viewer_;
-
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
 

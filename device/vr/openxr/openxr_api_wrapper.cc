@@ -168,7 +168,6 @@ void OpenXrApiWrapper::Reset() {
   secondary_view_configs_.clear();
 
   frame_state_ = {};
-  local_from_viewer_ = {XR_TYPE_SPACE_LOCATION};
   input_helper_.reset();
 
   on_session_started_callback_.Reset();
@@ -890,9 +889,6 @@ XrResult OpenXrApiWrapper::UpdateViewConfigurations() {
 
   RETURN_IF_XR_FAILED(
       LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, primary_view_config_));
-  RETURN_IF_XR_FAILED(xrLocateSpace(view_space_, local_space_,
-                                    frame_state_.predictedDisplayTime,
-                                    &local_from_viewer_));
   RETURN_IF_XR_FAILED(PrepareViewConfigForRender(primary_view_config_));
 
   if (base::Contains(enabled_features_,
@@ -1202,30 +1198,54 @@ std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetDefaultViews() const {
 }
 
 mojom::VRPosePtr OpenXrApiWrapper::GetViewerPose() const {
-  mojom::VRPosePtr pose = mojom::VRPose::New();
+  XrSpaceLocation local_from_viewer = {XR_TYPE_SPACE_LOCATION};
+  if (XR_FAILED(xrLocateSpace(view_space_, local_space_,
+                              frame_state_.predictedDisplayTime,
+                              &local_from_viewer))) {
+    // We failed to locate the space, so just return nullptr to indicate that
+    // we don't have tracking.
+    return nullptr;
+  }
+
+  const auto& pose_state = local_from_viewer.locationFlags;
+  const bool orientation_valid =
+      pose_state & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+  const bool orientation_tracked =
+      pose_state & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
+  const bool position_valid = pose_state & XR_SPACE_LOCATION_POSITION_VALID_BIT;
+  const bool position_tracked =
+      pose_state & XR_SPACE_LOCATION_POSITION_TRACKED_BIT;
+
   // emulated_position indicates when there is a fallback from a fully-tracked
   // (i.e. 6DOF) type case to some form of orientation-only type tracking
   // (i.e. 3DOF/IMU type sensors)
-  // Thus we have to make sure orientation is tracked.
-  // Valid Bit only indicates it's either tracked or emulated, we have to check
-  // for XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT to make sure orientation is
-  // tracked.
-  if (local_from_viewer_.locationFlags &
-      XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) {
-    pose->orientation = gfx::Quaternion(local_from_viewer_.pose.orientation.x,
-                                        local_from_viewer_.pose.orientation.y,
-                                        local_from_viewer_.pose.orientation.z,
-                                        local_from_viewer_.pose.orientation.w);
+  // Thus we have to make sure orientation is tracked to send up a valid pose;
+  // but we can send up a non tracked position, we just have to indicate that it
+  // is emulated.
+  const bool can_send_orientation = orientation_valid && orientation_tracked;
+  const bool can_send_position = position_valid;
+
+  // If we'd end up leaving both pose and orientation unset just return nullptr.
+  if (!can_send_orientation && !can_send_position) {
+    return nullptr;
   }
 
-  if (local_from_viewer_.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) {
-    pose->position = gfx::Point3F(local_from_viewer_.pose.position.x,
-                                  local_from_viewer_.pose.position.y,
-                                  local_from_viewer_.pose.position.z);
+  mojom::VRPosePtr pose = mojom::VRPose::New();
+  if (can_send_orientation) {
+    pose->orientation = gfx::Quaternion(local_from_viewer.pose.orientation.x,
+                                        local_from_viewer.pose.orientation.y,
+                                        local_from_viewer.pose.orientation.z,
+                                        local_from_viewer.pose.orientation.w);
   }
 
-  pose->emulated_position = !(local_from_viewer_.locationFlags &
-                              XR_SPACE_LOCATION_POSITION_TRACKED_BIT);
+  if (can_send_position) {
+    pose->position = gfx::Point3F(local_from_viewer.pose.position.x,
+                                  local_from_viewer.pose.position.y,
+                                  local_from_viewer.pose.position.z);
+  }
+
+  // Position is emulated if it isn't tracked.
+  pose->emulated_position = !position_tracked;
 
   return pose;
 }
