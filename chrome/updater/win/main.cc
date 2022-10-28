@@ -7,5 +7,7 @@
 #include "chrome/updater/updater.h"
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
+  // `argc` and `argv` are ignored by `base::CommandLine` for Windows. Instead,
+  // the implementation parses `GetCommandLineW()` directly.
   return updater::UpdaterMain(0, nullptr);
 }
