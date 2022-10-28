@@ -62,13 +62,13 @@ void VerifyPromptPermissionsCallback(
   std::move(quit_closure).Run();
 }
 
-void VerifyPromptWithholdingUICallback(
+void VerifyPromptWithheldPermissionsUICallback(
     base::OnceClosure quit_closure,
     const bool should_display,
     std::unique_ptr<ExtensionInstallPromptShowParams> params,
     ExtensionInstallPrompt::DoneCallback done_callback,
     std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt) {
-  EXPECT_EQ(should_display, prompt->ShouldDisplayWithholdingUI());
+  EXPECT_EQ(should_display, prompt->ShouldWithheldPermissionsOnDialogAccept());
   std::move(quit_closure).Run();
 }
 
@@ -81,7 +81,7 @@ void SetImage(gfx::Image* image_out,
 
 class ExtensionInstallPromptUnitTest : public testing::Test {
  public:
-  ExtensionInstallPromptUnitTest() {}
+  ExtensionInstallPromptUnitTest() = default;
 
   ExtensionInstallPromptUnitTest(const ExtensionInstallPromptUnitTest&) =
       delete;
@@ -238,10 +238,10 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
   base::RunLoop run_loop;
 
-  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
-                    nullptr,
-                    base::BindRepeating(&VerifyPromptWithholdingUICallback,
-                                        run_loop.QuitClosure(), true));
+  prompt.ShowDialog(
+      ExtensionInstallPrompt::DoneCallback(), extension.get(), nullptr,
+      base::BindRepeating(&VerifyPromptWithheldPermissionsUICallback,
+                          run_loop.QuitClosure(), true));
   run_loop.Run();
 }
 
@@ -253,10 +253,10 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
   base::RunLoop run_loop;
 
-  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
-                    nullptr,
-                    base::BindRepeating(&VerifyPromptWithholdingUICallback,
-                                        run_loop.QuitClosure(), false));
+  prompt.ShowDialog(
+      ExtensionInstallPrompt::DoneCallback(), extension.get(), nullptr,
+      base::BindRepeating(&VerifyPromptWithheldPermissionsUICallback,
+                          run_loop.QuitClosure(), false));
   run_loop.Run();
 }
 
@@ -271,10 +271,10 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
   base::RunLoop run_loop;
 
-  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
-                    nullptr,
-                    base::BindRepeating(&VerifyPromptWithholdingUICallback,
-                                        run_loop.QuitClosure(), false));
+  prompt.ShowDialog(
+      ExtensionInstallPrompt::DoneCallback(), extension.get(), nullptr,
+      base::BindRepeating(&VerifyPromptWithheldPermissionsUICallback,
+                          run_loop.QuitClosure(), false));
   run_loop.Run();
 }
 

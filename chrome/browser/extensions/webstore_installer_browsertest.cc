@@ -244,20 +244,20 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
 // selected.
 IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
                        WithholdingHostsOnInstall) {
-  bool should_check_box = GetParam();
+  bool shoud_withhold_permissions = GetParam();
   std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
 
-  // Create an approval with the check box selection.
+  // Create an approval that withhelds permissions when the checkbox is not
+  // selected.
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
           browser()->profile(), kTestExtensionWithPermissionsId,
           std::move(manifest), false);
-  if (should_check_box)
-    approval->withhold_permissions = true;
+  approval->withhold_permissions = shoud_withhold_permissions;
 
   // Create and run a WebstoreInstaller.
   base::RunLoop run_loop;
@@ -276,16 +276,16 @@ IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
       registry->enabled_extensions().GetByID(kTestExtensionWithPermissionsId);
   ASSERT_TRUE(extension);
 
-  // Host permissions should be withheld only when the box was checked.
+  // Host permissions should be withheld only when the params indicate so.
   ScriptingPermissionsModifier modifier(browser()->profile(), extension);
-  EXPECT_EQ(modifier.HasWithheldHostPermissions(), should_check_box);
+  EXPECT_EQ(modifier.HasWithheldHostPermissions(), shoud_withhold_permissions);
 
-  // Access to google.com should be withheld only when the box was checked.
+  // Access to google.com should be withheld only when the params indicate so.
   const PermissionsManager::ExtensionSiteAccess site_access =
       PermissionsManager::Get(profile())->GetSiteAccess(
           *extension, GURL("https://www.google.com"));
-  EXPECT_EQ(site_access.withheld_site_access, should_check_box);
-  EXPECT_EQ(site_access.has_site_access, !should_check_box);
+  EXPECT_EQ(site_access.withheld_site_access, shoud_withhold_permissions);
+  EXPECT_EQ(site_access.has_site_access, !shoud_withhold_permissions);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

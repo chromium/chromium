@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -323,7 +324,7 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
       title_(prompt_->GetDialogTitle()),
       scroll_view_(nullptr),
       install_button_enabled_(false),
-      withhold_permissions_checkbox_(nullptr) {
+      grant_permissions_checkbox_(nullptr) {
   DCHECK(prompt_->extension());
 
   extensions::ExtensionRegistry* extension_registry =
@@ -365,10 +366,10 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
     store_link->SetCallback(base::BindRepeating(
         &ExtensionInstallDialogView::LinkClicked, base::Unretained(this)));
     SetExtraView(std::move(store_link));
-  } else if (prompt_->ShouldDisplayWithholdingUI()) {
-    withhold_permissions_checkbox_ =
-        SetExtraView(std::make_unique<views::Checkbox>(
-            l10n_util::GetStringUTF16(IDS_EXTENSION_WITHHOLD_PERMISSIONS)));
+  } else if (prompt_->ShouldWithheldPermissionsOnDialogAccept()) {
+    grant_permissions_checkbox_ = SetExtraView(
+        std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
+            IDS_EXTENSION_PROMPT_GRANT_PERMISSIONS_CHECKBOX)));
   }
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK, prompt_->GetAcceptButtonLabel());
@@ -541,12 +542,14 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
   UpdateInstallResultHistogram(true);
   UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(true);
   prompt_->OnDialogAccepted();
-  // If the prompt had a checkbox element and it was checked we send that along
-  // as the result, otherwise we just send a normal accepted result.
+
+  // Permissions are withheld at installation when the prompt specifies it and
+  // `grant_permissions_checkbox_` wasn't selected.
   auto result =
-      withhold_permissions_checkbox_ &&
-              withhold_permissions_checkbox_->GetChecked()
-          ? ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED
+      (prompt_->ShouldWithheldPermissionsOnDialogAccept() &&
+       grant_permissions_checkbox_ &&
+       !grant_permissions_checkbox_->GetChecked())
+          ? ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS
           : ExtensionInstallPrompt::Result::ACCEPTED;
 
   std::move(done_callback_)

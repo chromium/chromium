@@ -9,6 +9,7 @@
 
 #include "apps/saved_files_service.h"
 #include "chrome/browser/apps/platform_apps/app_load_service.h"
+#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "content/public/browser/web_contents.h"
@@ -69,6 +70,10 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
         DevicePermissionsManager::Get(profile_)
             ->GetPermissionMessageStrings(extension_id_);
   }
+
+  // TODO(crbug.com/567839): We reuse the install dialog because it displays the
+  // permissions wanted. However, we should be using a separate dialog since
+  // this dialog is shown after the extension was already installed.
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt(
       new ExtensionInstallPrompt::Prompt(
           ExtensionInstallPrompt::POST_INSTALL_PERMISSIONS_PROMPT));
@@ -85,6 +90,10 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
 
 void ShowPermissionsDialogHelper::OnInstallPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  // This dialog doesn't support the "withhold permissions" checkbox.
+  DCHECK_NE(payload.result,
+            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
+
   if (payload.result == ExtensionInstallPrompt::Result::ACCEPTED) {
     // This is true when the user clicks "Revoke File Access."
     const Extension* extension =

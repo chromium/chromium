@@ -162,6 +162,10 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 
 void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
     OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  // TODO(crbug.com/984069): Handle `ACCEPTED_WITH_WITHHELD_PERMISSIONS` when it
+  // is supported for this case.
+  DCHECK_NE(payload.result,
+            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
   bool accepted = (payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
   Respond(
       BuildResponse(accepted ? api::dashboard_private::RESULT_EMPTY_STRING

@@ -443,7 +443,8 @@ bool ExtensionInstallPrompt::Prompt::ShouldDisplayRevokeButton() const {
   return !retained_files_.empty() || !retained_device_messages_.empty();
 }
 
-bool ExtensionInstallPrompt::Prompt::ShouldDisplayWithholdingUI() const {
+bool ExtensionInstallPrompt::Prompt::ShouldWithheldPermissionsOnDialogAccept()
+    const {
   return base::FeatureList::IsEnabled(
              extensions_features::
                  kAllowWithholdingExtensionPermissionsOnInstall) &&
@@ -680,39 +681,41 @@ void ExtensionInstallPrompt::ShowConfirmation() {
 }
 
 bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
-  switch (extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue()) {
+  auto confirm_value =
+      extensions::ScopedTestDialogAutoConfirm::GetAutoConfirmValue();
+  switch (confirm_value) {
     case extensions::ScopedTestDialogAutoConfirm::NONE:
       return false;
     // We use PostTask instead of calling the callback directly here, because in
     // the real implementations it's highly likely the message loop will be
     // pumping a few times before the user clicks accept or cancel.
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT:
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(done_callback_),
-              DoneCallbackPayload(ExtensionInstallPrompt::Result::ACCEPTED,
-                                  extensions::ScopedTestDialogAutoConfirm::
-                                      GetJustification())));
-      return true;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
-    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
+    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION: {
+      // Permissions are withheld at installation when the prompt specifies it
+      // and option wasn't selected (which grants permissions when selected).
+      auto result =
+          confirm_value == extensions::ScopedTestDialogAutoConfirm::ACCEPT &&
+                  prompt_->ShouldWithheldPermissionsOnDialogAccept()
+              ? ExtensionInstallPrompt::Result::
+                    ACCEPTED_WITH_WITHHELD_PERMISSIONS
+              : ExtensionInstallPrompt::Result::ACCEPTED;
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(
-              std::move(done_callback_),
-              DoneCallbackPayload(
-                  ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED,
-                  extensions::ScopedTestDialogAutoConfirm::
-                      GetJustification())));
+          base::BindOnce(std::move(done_callback_),
+                         DoneCallbackPayload(
+                             result, extensions::ScopedTestDialogAutoConfirm::
+                                         GetJustification())));
       return true;
-    case extensions::ScopedTestDialogAutoConfirm::CANCEL:
+    }
+    case extensions::ScopedTestDialogAutoConfirm::CANCEL: {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(done_callback_),
                          DoneCallbackPayload(
                              ExtensionInstallPrompt::Result::USER_CANCELED)));
       return true;
+    }
   }
 
   NOTREACHED();

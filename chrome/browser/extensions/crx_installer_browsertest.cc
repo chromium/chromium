@@ -1114,10 +1114,13 @@ class ExtensionCrxInstallerTestWithWithholdingUI
 
 IN_PROC_BROWSER_TEST_P(ExtensionCrxInstallerTestWithWithholdingUI,
                        WithholdingHostsOnInstall) {
-  bool should_check_box = GetParam();
+  // Permissions should be withhold when the dialog is accepted with the option
+  // selected.
+  bool should_withhold_permissions = GetParam();
   ScopedTestDialogAutoConfirm::AutoConfirm mode =
-      should_check_box ? ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION
-                       : ScopedTestDialogAutoConfirm::ACCEPT;
+      should_withhold_permissions
+          ? ScopedTestDialogAutoConfirm::ACCEPT
+          : ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION;
   std::unique_ptr<MockPromptProxy> mock_prompt =
       CreateMockPromptProxyForBrowserWithConfirmMode(browser(), mode);
 
@@ -1137,17 +1140,18 @@ IN_PROC_BROWSER_TEST_P(ExtensionCrxInstallerTestWithWithholdingUI,
   EXPECT_TRUE(mock_prompt->did_succeed());
   EXPECT_TRUE(mock_prompt->confirmation_requested());
 
-  // Access to google.com should be withheld only when the box was checked.
+  // Access to google.com should be withheld only when
+  // `should_withhold_permissions` is true.
   const Extension* extension =
       GetInstalledExtension(mock_prompt->extension_id());
   ScriptingPermissionsModifier modifier(browser()->profile(), extension);
-  EXPECT_EQ(should_check_box, modifier.HasWithheldHostPermissions());
+  EXPECT_EQ(should_withhold_permissions, modifier.HasWithheldHostPermissions());
 
   const PermissionsManager::ExtensionSiteAccess site_access =
       PermissionsManager::Get(profile())->GetSiteAccess(
           *extension, GURL("https://google.com"));
-  EXPECT_EQ(should_check_box, site_access.withheld_site_access);
-  EXPECT_EQ(!should_check_box, site_access.has_site_access);
+  EXPECT_EQ(should_withhold_permissions, site_access.withheld_site_access);
+  EXPECT_EQ(!should_withhold_permissions, site_access.has_site_access);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

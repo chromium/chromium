@@ -740,7 +740,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
-    case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED: {
+    case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS: {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       // Handle parent permission for child accounts on ChromeOS.
       if (!dummy_extension_->is_theme()  // Parent permission not required for
@@ -759,7 +759,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnInstallPromptDone(
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
       bool withhold_permissions =
           payload.result ==
-          ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED;
+          ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS;
       HandleInstallProceed(withhold_permissions);
       break;
     }
@@ -784,7 +784,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
     case ExtensionInstallPrompt::Result::USER_CANCELED:
     case ExtensionInstallPrompt::Result::ABORTED:
       break;
-    case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED:
+    case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
       NOTREACHED();
   }
 

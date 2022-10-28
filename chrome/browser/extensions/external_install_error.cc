@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -370,12 +371,16 @@ void ExternalInstallError::OnInstallPromptDone(
 
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
-    case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED:
       if (extension) {
         ExtensionSystem::Get(browser_context_)
             ->extension_service()
             ->GrantPermissionsAndEnableExtension(extension);
       }
+      break;
+    case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
+      // TODO(crbug.com/984069): Handle `ACCEPTED_WITH_WITHHELD_PERMISSIONS`
+      // when it is supported for external installs.
+      NOTREACHED();
       break;
     case ExtensionInstallPrompt::Result::USER_CANCELED:
       if (extension) {

@@ -162,6 +162,10 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
  private:
   void OnInstallPromptDone(
       ExtensionInstallPrompt::DoneCallbackPayload payload) {
+    // This dialog doesn't support the "withhold permissions" checkbox.
+    DCHECK_NE(
+        payload.result,
+        ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
     std::move(callback_).Run(payload.result ==
                              ExtensionInstallPrompt::Result::ACCEPTED);
   }

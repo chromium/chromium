@@ -809,25 +809,28 @@ void CrxInstaller::OnInstallPromptDone(
   ExtensionService* service = service_weak_.get();
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
+    case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
       if (!service || service->browser_terminating())
         return;
 
       // Install (or re-enable) the extension with full permissions.
-      if (update_from_settings_page_)
+      if (update_from_settings_page_) {
+        // TODO(crbug.com/984069): Add support for withholding permissions on
+        // the re-enable prompt here once we know how that should be handled.
+        DCHECK_NE(
+            payload.result,
+            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
         service->GrantPermissionsAndEnableExtension(extension());
-      else
-        UpdateCreationFlagsAndCompleteInstall(kDontWithholdPermissions);
+      } else {
+        WithholdingBehavior withholding_behavior =
+            payload.result == ExtensionInstallPrompt::Result::
+                                  ACCEPTED_WITH_WITHHELD_PERMISSIONS
+                ? kWithholdPermissions
+                : kDontWithholdPermissions;
+        UpdateCreationFlagsAndCompleteInstall(withholding_behavior);
+      }
       break;
-    case ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED:
-      if (!service || service->browser_terminating())
-        return;
 
-      // TODO(tjudkins): Add support for withholding permissions on the
-      // re-enable prompt here once we know how that should be handled.
-      DCHECK(!update_from_settings_page_);
-      // Install the extension with permissions withheld.
-      UpdateCreationFlagsAndCompleteInstall(kWithholdPermissions);
-      break;
     case ExtensionInstallPrompt::Result::USER_CANCELED:
       if (!update_from_settings_page_) {
         NotifyCrxInstallComplete(CrxInstallError(

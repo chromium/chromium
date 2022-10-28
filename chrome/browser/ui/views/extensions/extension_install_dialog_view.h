@@ -18,7 +18,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -130,8 +129,10 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // entered text length is larger than the defined limit.
   bool request_button_enabled_ = true;
 
-  // Checkbox used to indicate if permissions should be withheld on install.
-  raw_ptr<views::Checkbox> withhold_permissions_checkbox_;
+  // Checkbox used to indicate if host permissions should be granted on install.
+  // Should only be present when permissions are withheld on installation by
+  // default.
+  raw_ptr<views::Checkbox> grant_permissions_checkbox_;
 
   // The justification text field view where users enter their justification for
   // requesting an extension.

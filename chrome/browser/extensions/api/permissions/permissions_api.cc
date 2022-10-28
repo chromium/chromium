@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -324,12 +326,13 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   // test.
   if (auto_confirm_for_tests != DO_NOT_SKIP) {
     prompted_permissions_for_testing_ = total_new_permissions->Clone();
-    if (auto_confirm_for_tests == PROCEED)
+    if (auto_confirm_for_tests == PROCEED) {
       OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::ACCEPTED));
-    else if (auto_confirm_for_tests == ABORT)
+    } else if (auto_confirm_for_tests == ABORT) {
       OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::USER_CANCELED));
+    }
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
@@ -350,6 +353,9 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 
 void PermissionsRequestFunction::OnInstallPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  // This dialog doesn't support the "withhold permissions" checkbox.
+  DCHECK_NE(payload.result,
+            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
   if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
     Respond(ArgumentList(api::permissions::Request::Results::Create(false)));
     return;
