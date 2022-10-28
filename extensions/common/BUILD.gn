@@ -547,6 +547,8 @@ source_set("test_support") {
     "api/extension_action/action_info_test_util.h",
     "file_test_util.cc",
     "file_test_util.h",
+    "warnings_test_util.cc",
+    "warnings_test_util.h",
   ]
 
   deps = [
@@ -554,6 +556,8 @@ source_set("test_support") {
     "//base",
     "//components/version_info:channel",
     "//extensions/common/api",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
