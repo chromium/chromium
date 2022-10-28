@@ -138,6 +138,7 @@ const struct {
     {"label_timer_10s", IDS_LABEL_TIMER_10S},
     {"label_timer_3s", IDS_LABEL_TIMER_3S},
     {"label_video_resolution", IDS_LABEL_VIDEO_RESOLUTION},
+    {"low_storage_nudge_warning_msg", IDS_LOW_STORAGE_NUDGE_WARNING_MSG},
     {"migrate_pictures_msg", IDS_MIGRATE_PICTURES_MSG},
     {"moving_in_bottom_direction", IDS_MOVING_IN_BOTTOM_DIRECTION},
     {"moving_in_bottom_left_direction", IDS_MOVING_IN_BOTTOM_LEFT_DIRECTION},

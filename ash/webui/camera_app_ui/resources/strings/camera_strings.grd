@@ -722,6 +722,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Message for page deletion" name="IDS_DELETE_PAGE_MESSAGE">
         Page <ph name="page_number">$1<ex>2</ex></ph> deleted
       </message>
+      <message desc="Warning message about low storage and possible recording automatic stopping." name="IDS_LOW_STORAGE_NUDGE_WARNING_MSG">
+        Recording will stop soon. Go to device storage to free up space.
+      </message>
     </messages>
   </release>
 </grit>

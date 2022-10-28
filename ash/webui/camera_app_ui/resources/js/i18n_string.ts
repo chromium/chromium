@@ -126,6 +126,7 @@ export enum I18nString {
   LABEL_VIDEO_RESOLUTION_FULL_HD = 'label_video_resolution_full_hd',
   LABEL_VIDEO_RESOLUTION_HD = 'label_video_resolution_hd',
   LABEL_VIDEO_RESOLUTION_QUAD_HD = 'label_video_resolution_quad_hd',
+  LOW_STORAGE_NUDGE_WARNING_MSG = 'low_storage_nudge_warning_msg',
   MIGRATE_PICTURES_MSG = 'migrate_pictures_msg',
   MOVING_IN_BOTTOM_DIRECTION = 'moving_in_bottom_direction',
   MOVING_IN_BOTTOM_LEFT_DIRECTION = 'moving_in_bottom_left_direction',

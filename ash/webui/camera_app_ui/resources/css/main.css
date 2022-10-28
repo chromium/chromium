@@ -1032,7 +1032,8 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
 }
 
 #record-time[hidden],
-.menu-item[hidden] {
+.menu-item[hidden],
+#nudge[hidden] {
   display: none;  /* Required for flexbox hidden. */
 }
 
@@ -1514,4 +1515,29 @@ body:not(.video) #settings-video-resolution {
 
 .circle :is(button, input) {
   border-radius: 50%;
+}
+
+#nudge {
+  align-items: center;
+  background: var(--grey-900);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  gap: 8px;
+  opacity: 0.8;
+  padding: 8px 10px;
+  position: absolute;
+  top: 68px;  /* 8px below |record_time| element */
+  z-index: 2;
+}
+
+#nudge .warning-icon {
+  background: url(/images/circle_warning_icon.svg);
+  height: 20px;
+  width: 20px;
+}
+
+#nudge .warning-msg {
+  color: var(--grey-400);
+  font: 400 14px/20px Roboto;
 }
