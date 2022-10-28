@@ -197,6 +197,8 @@ if (enable_vr) {
         "openxr/openxr_api_wrapper.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
+        "openxr/openxr_debug_util.cc",
+        "openxr/openxr_debug_util.h",
         "openxr/openxr_device.cc",
         "openxr/openxr_device.h",
         "openxr/openxr_extension_handle.h",

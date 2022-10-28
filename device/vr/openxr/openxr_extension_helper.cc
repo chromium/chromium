@@ -133,6 +133,11 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
       reinterpret_cast<PFN_xrVoidFunction*>(
           const_cast<PFN_xrGetSceneMeshBuffersMSFT*>(
               &extension_methods_.xrGetSceneMeshBuffersMSFT)));
+  std::ignore = xrGetInstanceProcAddr(
+      instance, "xrConvertWin32PerformanceCounterToTimeKHR",
+      reinterpret_cast<PFN_xrVoidFunction*>(
+          const_cast<PFN_xrConvertWin32PerformanceCounterToTimeKHR*>(
+              &extension_methods_.xrConvertWin32PerformanceCounterToTimeKHR)));
 }
 
 }  // namespace device

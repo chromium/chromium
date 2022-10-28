@@ -164,6 +164,9 @@ XrResult CreateInstance(
     EnableExtensionIfSupported(XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME);
   }
 
+  EnableExtensionIfSupported(
+      XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME);
+
   instance_create_info.enabledExtensionCount =
       static_cast<uint32_t>(extensions.size());
   instance_create_info.enabledExtensionNames = extensions.data();

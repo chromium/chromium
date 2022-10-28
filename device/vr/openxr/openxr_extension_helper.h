@@ -43,6 +43,10 @@ struct OpenXrExtensionMethods {
   PFN_xrGetSceneComponentsMSFT xrGetSceneComponentsMSFT{nullptr};
   PFN_xrLocateSceneComponentsMSFT xrLocateSceneComponentsMSFT{nullptr};
   PFN_xrGetSceneMeshBuffersMSFT xrGetSceneMeshBuffersMSFT{nullptr};
+
+  // Time
+  PFN_xrConvertWin32PerformanceCounterToTimeKHR
+      xrConvertWin32PerformanceCounterToTimeKHR{nullptr};
 };
 
 class OpenXrExtensionEnumeration {
