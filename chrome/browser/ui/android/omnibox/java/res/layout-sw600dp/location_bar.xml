@@ -17,8 +17,6 @@ found in the LICENSE file.
         android:id="@+id/url_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
         android:layout_marginStart="@dimen/location_bar_icon_width"
         android:layout_marginEnd="80dp"
         android:layout_gravity="center_vertical"
