@@ -408,9 +408,8 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   // Attempt to instantiate the ChromeOS platform authenticator for
   // power-button-only requests for compatibility with the legacy
   // DeviceSecondFactorAuthentication policy, if that policy is enabled.
-  if (!options_.make_u2f_api_credential &&
-      options_.authenticator_attachment ==
-          AuthenticatorAttachment::kCrossPlatform) {
+  if (options_.authenticator_attachment ==
+      AuthenticatorAttachment::kCrossPlatform) {
     allow_platform_authenticator_for_cross_platform_request_ = true;
     fido_discovery_factory->set_require_legacy_cros_authenticator(true);
     allowed_transports.insert(FidoTransportProtocol::kInternal);
@@ -1014,9 +1013,8 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       break;
   }
 
-  if (!options_.make_u2f_api_credential &&
-      (request->resident_key_required ||
-       (auth_options_empty_on_win && auth_options_empty_on_win->always_uv))) {
+  if (request->resident_key_required ||
+      (auth_options_empty_on_win && auth_options_empty_on_win->always_uv)) {
     request->user_verification = UserVerificationRequirement::kRequired;
   } else {
     request->user_verification = options_.user_verification;

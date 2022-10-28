@@ -22,7 +22,6 @@ AppIdExcludeProbeTask::~AppIdExcludeProbeTask() = default;
 
 void AppIdExcludeProbeTask::StartTask() {
   DCHECK(request_.app_id_exclude);
-  DCHECK(!options_.make_u2f_api_credential);
   DCHECK_EQ(device()->supported_protocol(), ProtocolVersion::kCtap2);
   DCHECK(!device()->NoSilentRequests());
 

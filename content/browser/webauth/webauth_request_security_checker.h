@@ -50,8 +50,6 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   WebAuthRequestSecurityChecker& operator=(
       const WebAuthRequestSecurityChecker&) = delete;
 
-  static bool OriginIsCryptoTokenExtension(const url::Origin& origin);
-
   // Returns blink::mojom::AuthenticatorStatus::SUCCESS if |origin| is
   // same-origin with all ancestors in the frame tree, or else if
   // requests from cross-origin embeddings are allowed by policy and the

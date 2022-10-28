@@ -126,9 +126,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   absl::optional<LargeBlob> large_blob_write;
   bool get_cred_blob = false;
 
-  // Instructs the request handler only to dispatch this request via U2F.
-  bool is_u2f_only = false;
-
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Incognito or Guest mode in Chrome).
   bool is_off_the_record_context = false;

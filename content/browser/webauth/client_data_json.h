@@ -21,8 +21,6 @@ namespace content {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ClientDataRequestType
 enum class ClientDataRequestType {
-  kU2fRegister,
-  kU2fSign,
   kWebAuthnCreate,
   kWebAuthnGet,
   kPaymentGet,

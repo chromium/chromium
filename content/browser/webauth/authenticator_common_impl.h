@@ -221,7 +221,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // a unit testing fake. InitDiscoveryFactory() must be called before this
   // accessor. It gets reset at the end of each request by Cleanup().
   device::FidoDiscoveryFactory* discovery_factory();
-  void InitDiscoveryFactory(bool is_u2f_api_request);
+  void InitDiscoveryFactory();
 
   WebAuthenticationRequestProxy* GetWebAuthnRequestProxyIfActive();
 

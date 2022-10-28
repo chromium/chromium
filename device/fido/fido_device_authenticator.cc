@@ -142,14 +142,11 @@ void FidoDeviceAuthenticator::MakeCredential(
     MakeCredentialCallback callback) {
   // If the authenticator has UV configured then UV will be required in
   // order to create a credential (as specified by CTAP 2.0), even if
-  // user-verification is "discouraged". However, if the request is U2F-only
-  // then that doesn't apply and UV must be set to discouraged so that the
-  // request can be translated to U2F.
+  // user-verification is "discouraged".
   if (!request.pin_auth &&
       options_->user_verification_availability ==
           UserVerificationAvailability::kSupportedAndConfigured &&
-      !options_->make_cred_uv_not_required &&
-      !request_options.make_u2f_api_credential) {
+      !options_->make_cred_uv_not_required) {
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
     request.user_verification = UserVerificationRequirement::kDiscouraged;

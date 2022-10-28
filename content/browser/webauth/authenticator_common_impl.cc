@@ -108,21 +108,6 @@ std::string Base64UrlEncode(const base::span<const uint8_t> input) {
   return ret;
 }
 
-// Returns an App ID string if a U2F credential must be made for the request
-// with |options|. This is the case for requests that either originate from
-// cryptotoken.
-absl::optional<std::string> MakeCredentialU2fAppIdOverride(
-    const url::Origin& caller_origin,
-    const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options) {
-  // Cryptotoken passes the U2F request's App ID in the RP ID field of the
-  // WebAuthn request.
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin)) {
-    return options->relying_party.id;
-  }
-  return absl::nullopt;
-}
-
 // The application parameter is the SHA-256 hash of the UTF-8 encoding of
 // the application identity (i.e. relying_party_id) of the application
 // requesting the registration.
@@ -254,8 +239,7 @@ bool UsesDiscoverableCreds(const device::CtapGetAssertionRequest& request) {
 // GetWebAuthnTransports returns the set of transports that should be passed to
 // a FidoRequestHandler for a WebAuthn request. This determines for which
 // transports the request handler will attempt to obtain FidoDiscovery
-// instances. This applies only to WebAuthn API requests. For U2F, see
-// |GetU2FTransports|.
+// instances.
 base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
     RenderFrameHost* render_frame_host,
     device::FidoDiscoveryFactory* discovery_factory,
@@ -300,19 +284,11 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
   return transports;
 }
 
-// GetU2FTransports is like GetWebAuthnTransports but for requests that
-// originate from Cryptotoken or use googleLegacyAppidSupport extension.
-base::flat_set<device::FidoTransportProtocol> GetU2FTransports() {
-  return base::flat_set<device::FidoTransportProtocol>(
-      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
-}
-
 // Returns a new FidoDiscoveryFactory for the current request. This may be
 // a factory for virtual authenticators if the testing API is enabled for the
 // given frame.
 std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
-    RenderFrameHost* render_frame_host,
-    bool is_u2f_api_request) {
+    RenderFrameHost* render_frame_host) {
   VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
       AuthenticatorEnvironmentImpl::GetInstance()
           ->MaybeGetVirtualAuthenticatorManager(
@@ -338,11 +314,9 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Ignore the ChromeOS u2fd virtual U2F HID device for WebAuthn requests so
-  // that it doesn't collide with the ChromeOS platform authenticator, also
-  // implemented in u2fd.
-  if (base::FeatureList::IsEnabled(device::kWebAuthCrosPlatformAuthenticator) &&
-      !is_u2f_api_request) {
+  // Ignore the ChromeOS u2fd virtual U2F HID device so that it doesn't collide
+  // with the ChromeOS platform authenticator, also implemented in u2fd.
+  if (base::FeatureList::IsEnabled(device::kWebAuthCrosPlatformAuthenticator)) {
     // There are two possible PIDs the virtual U2F HID device could use, with or
     // without corp protocol functionality.
     constexpr device::VidPid kChromeOsU2fdVidPid{0x18d1, 0x502c};
@@ -407,8 +381,7 @@ AuthenticatorCommonImpl::MaybeCreateRequestDelegate() {
 
 void AuthenticatorCommonImpl::StartMakeCredentialRequest(
     bool allow_skipping_pin_touch) {
-  InitDiscoveryFactory(
-      /*is_u2f_api_request=*/make_credential_options_->make_u2f_api_credential);
+  InitDiscoveryFactory();
 
   device::CableRequestType cable_request_type;
   switch (make_credential_options_->resident_key) {
@@ -429,11 +402,8 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
   make_credential_options_->allow_skipping_pin_touch = allow_skipping_pin_touch;
 
   base::flat_set<device::FidoTransportProtocol> transports =
-      make_credential_options_->make_u2f_api_credential
-          ? GetU2FTransports()
-          : GetWebAuthnTransports(
-                GetRenderFrameHost(), discovery_factory(),
-                UsesDiscoverableCreds(*make_credential_options_));
+      GetWebAuthnTransports(GetRenderFrameHost(), discovery_factory(),
+                            UsesDiscoverableCreds(*make_credential_options_));
 
   request_handler_ = std::make_unique<device::MakeCredentialRequestHandler>(
       discovery_factory(), transports, *ctap_make_credential_request_,
@@ -461,9 +431,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
 
 void AuthenticatorCommonImpl::StartGetAssertionRequest(
     bool allow_skipping_pin_touch) {
-  InitDiscoveryFactory(
-      /*is_u2f_api_request=*/WebAuthRequestSecurityChecker::
-          OriginIsCryptoTokenExtension(caller_origin_));
+  InitDiscoveryFactory();
 
   base::span<const device::CableDiscoveryData> cable_pairings;
   if (ctap_get_assertion_request_->cable_extension && IsFocused()) {
@@ -478,12 +446,9 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
 #endif
 
   base::flat_set<device::FidoTransportProtocol> transports =
-      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin_)
-          ? GetU2FTransports()
-          : GetWebAuthnTransports(
-                GetRenderFrameHost(), discovery_factory(),
-                UsesDiscoverableCreds(*ctap_get_assertion_request_));
+      GetWebAuthnTransports(
+          GetRenderFrameHost(), discovery_factory(),
+          UsesDiscoverableCreds(*ctap_get_assertion_request_));
 
   auto request_handler = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(), transports, *ctap_get_assertion_request_,
@@ -549,19 +514,9 @@ void AuthenticatorCommonImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     blink::mojom::Authenticator::MakeCredentialCallback callback) {
   if (has_pending_request_) {
-    if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-            caller_origin)) {
-      // Requests originating from cryptotoken will generally outlive any
-      // navigation events on the tab of the request's sender. Evict pending
-      // requests if cryptotoken sends a new one such that requests from before
-      // a navigation event do not prevent new requests. See
-      // https://crbug.com/935480.
-      CancelWithStatus(blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    } else {
-      std::move(callback).Run(
-          blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr, nullptr);
-      return;
-    }
+    std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
+                            nullptr, nullptr);
+    return;
   }
   has_pending_request_ = true;
 
@@ -757,11 +712,8 @@ void AuthenticatorCommonImpl::MakeCredential(
         {*cred_protect_request, options->enforce_protection_policy}};
   }
 
-  // Cryptotoken requests and Touch-to-Autofill should be proxied without UI.
-  const bool origin_is_crypto_token_extension =
-      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin);
-  if (origin_is_crypto_token_extension || disable_ui_) {
+  // Touch-to-Autofill should be proxied without UI.
+  if (disable_ui_) {
     request_delegate_->DisableUI();
   }
 
@@ -769,12 +721,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   ClientDataJsonParams client_data_json_params(
       ClientDataRequestType::kWebAuthnCreate, caller_origin_,
       options->challenge, is_cross_origin_iframe);
-  if (origin_is_crypto_token_extension) {
-    // Cryptotoken passes the real caller origin in |relying_party.name|.
-    client_data_json_params.type = ClientDataRequestType::kU2fRegister;
-    client_data_json_params.origin =
-        url::Origin::Create(GURL(*options->relying_party.name));
-  } else if (options->remote_desktop_client_override) {
+  if (options->remote_desktop_client_override) {
     client_data_json_params.origin =
         options->remote_desktop_client_override->origin;
     client_data_json_params.is_cross_origin_iframe =
@@ -785,16 +732,6 @@ void AuthenticatorCommonImpl::MakeCredential(
   ctap_make_credential_request_ = device::CtapMakeCredentialRequest(
       client_data_json_, options->relying_party, options->user,
       device::PublicKeyCredentialParams(options->public_key_parameters));
-
-  // If the request originates from CryptoToken or carries a valid
-  // googleLegacyAppidSupport extension, a U2F/CTAP1 credential bound to an
-  // AppID will be created.
-  const absl::optional<std::string> u2f_credential_app_id_override =
-      MakeCredentialU2fAppIdOverride(caller_origin, options);
-  if (u2f_credential_app_id_override) {
-    ctap_make_credential_request_->rp.id = *u2f_credential_app_id_override;
-    make_credential_options_->make_u2f_api_credential = true;
-  }
 
   ctap_make_credential_request_->exclude_list = options->exclude_credentials;
   if (options->prf_enable) {
@@ -850,8 +787,7 @@ void AuthenticatorCommonImpl::MakeCredential(
       case device::AttestationConveyancePreference::
           kEnterpriseIfRPListedOnAuthenticator:
         if (GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-                GetBrowserContext(), caller_origin,
-                u2f_credential_app_id_override.value_or(relying_party_id_))) {
+                GetBrowserContext(), caller_origin, relying_party_id_)) {
           device_public_key.attestation = device::
               AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
         }
@@ -875,8 +811,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   if (attestation == device::AttestationConveyancePreference::
                          kEnterpriseIfRPListedOnAuthenticator &&
       GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
-          GetBrowserContext(), caller_origin,
-          u2f_credential_app_id_override.value_or(relying_party_id_))) {
+          GetBrowserContext(), caller_origin, relying_party_id_)) {
     attestation =
         device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser;
   }
@@ -891,19 +826,9 @@ void AuthenticatorCommonImpl::GetAssertion(
     blink::mojom::PaymentOptionsPtr payment_options,
     blink::mojom::Authenticator::GetAssertionCallback callback) {
   if (has_pending_request_) {
-    if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-            caller_origin)) {
-      // Requests originating from cryptotoken will generally outlive any
-      // navigation events on the tab of the request's sender. Evict pending
-      // requests if cryptotoken sends a new one such that requests from before
-      // a navigation event do not prevent new requests. See
-      // https://crbug.com/935480.
-      CancelWithStatus(blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    } else {
-      std::move(callback).Run(
-          blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr, nullptr);
-      return;
-    }
+    std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
+                            nullptr, nullptr);
+    return;
   }
   has_pending_request_ = true;
 
@@ -1006,21 +931,11 @@ void AuthenticatorCommonImpl::GetAssertion(
   }
   request_delegate_->SetRelyingPartyId(relying_party_id_);
 
-  const bool origin_is_crypto_token_extension =
-      WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin_);
-
   // Assemble clientDataJSON.
   ClientDataJsonParams client_data_json_params(
       ClientDataRequestType::kWebAuthnGet, caller_origin, options->challenge,
       is_cross_origin_iframe);
-  if (origin_is_crypto_token_extension) {
-    // Cryptotoken provides the sender origin for U2F sign requests in the
-    // |relying_party_id| attribute.
-    client_data_json_params.type = ClientDataRequestType::kU2fSign;
-    client_data_json_params.origin =
-        url::Origin::Create(GURL(options->relying_party_id));
-  } else if (payment_options) {
+  if (payment_options) {
     client_data_json_params.type = ClientDataRequestType::kPaymentGet;
     client_data_json_params.payment_options = std::move(payment_options);
     client_data_json_params.payment_rp = relying_party_id_;
@@ -1046,8 +961,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     return;
   }
 
-  // Cryptotoken requests should be proxied without UI.
-  if (origin_is_crypto_token_extension || disable_ui_) {
+  if (disable_ui_) {
     DCHECK(!options->is_conditional);
     request_delegate_->DisableUI();
   }
@@ -1132,8 +1046,6 @@ void AuthenticatorCommonImpl::GetAssertion(
           std::move(prf_input));
     }
   }
-
-  ctap_get_assertion_request_->is_u2f_only = origin_is_crypto_token_extension;
 
   if (options->device_public_key) {
     requested_extensions_.insert(RequestExtension::kDevicePublicKey);
@@ -1429,29 +1341,12 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
       const auto attestation =
           ctap_make_credential_request_->attestation_preference;
       absl::optional<AttestationErasureOption> attestation_erasure;
-      const bool origin_is_crypto_token_extension =
-          WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-              caller_origin_);
 
-      // cryptotoken checks the attestation blocklist itself.
-      if (!origin_is_crypto_token_extension &&
-          response_data->attestation_should_be_filtered &&
+      if (response_data->attestation_should_be_filtered &&
           !GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
               GetBrowserContext(), caller_origin_, relying_party_id_)) {
         attestation_erasure =
             AttestationErasureOption::kEraseAttestationAndAaguid;
-      } else if (origin_is_crypto_token_extension &&
-                 attestation !=
-                     device::AttestationConveyancePreference::kNone) {
-        // Cryptotoken requests may bypass the attestation prompt because the
-        // extension implements its own. Invoking the attestation prompt code
-        // here would not work anyway, because the WebContents associated with
-        // the extension is not associated with any tab and therefore cannot
-        // draw modal dialogs for the UI.
-        //
-        // Note that for AttestationConveyancePreference::kNone, attestation
-        // erasure is still performed as usual.
-        attestation_erasure = AttestationErasureOption::kIncludeAttestation;
       } else if (attestation == device::AttestationConveyancePreference::
                                     kEnterpriseApprovedByBrowser) {
         // If enterprise attestation was approved by policy then it can be
@@ -2136,9 +2031,8 @@ device::FidoDiscoveryFactory* AuthenticatorCommonImpl::discovery_factory() {
              : discovery_factory_.get();
 }
 
-void AuthenticatorCommonImpl::InitDiscoveryFactory(bool is_u2f_api_request) {
-  discovery_factory_ =
-      MakeDiscoveryFactory(GetRenderFrameHost(), is_u2f_api_request);
+void AuthenticatorCommonImpl::InitDiscoveryFactory() {
+  discovery_factory_ = MakeDiscoveryFactory(GetRenderFrameHost());
   // TODO(martinkr): |discovery_factory_testing_override_| is a long-lived
   // VirtualFidoDeviceDiscovery so that tests can maintain and alter virtual
   // authenticator state in between requests. We should extract a longer-lived

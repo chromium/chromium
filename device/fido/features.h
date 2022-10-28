@@ -33,8 +33,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthCrosPlatformAuthenticator);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kU2fPermissionPrompt);
-
 // Feature flag for the Google-internal
 // `WebAuthenticationAllowGoogleCorpRemoteRequestProxying` enterprise policy.
 COMPONENT_EXPORT(DEVICE_FIDO)

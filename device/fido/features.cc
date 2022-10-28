@@ -30,10 +30,6 @@ BASE_FEATURE(kWebAuthCrosPlatformAuthenticator,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-BASE_FEATURE(kU2fPermissionPrompt,
-             "U2fPermissionPrompt",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
              "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
              base::FEATURE_ENABLED_BY_DEFAULT);

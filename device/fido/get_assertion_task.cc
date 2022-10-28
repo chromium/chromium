@@ -139,8 +139,7 @@ bool GetAssertionTask::StringFixupPredicate(
 }
 
 void GetAssertionTask::StartTask() {
-  if (device()->supported_protocol() == ProtocolVersion::kCtap2 &&
-      !request_.is_u2f_only) {
+  if (device()->supported_protocol() == ProtocolVersion::kCtap2) {
     GetAssertion();
   } else {
     // |device_info| should be present iff the device is CTAP2.

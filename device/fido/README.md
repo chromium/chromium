@@ -2,9 +2,7 @@
 
 Security keys are physical devices that often connect via USB and have a button. They can generate public keys and sign with them to authenticate a user and are most often used as a second factor for security.
 
-Websites interact with them via two APIs: the older [U2F API](https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-javascript-api-v1.2-ps-20170411.html) and the modern [W3C Webauthn API](https://www.w3.org/TR/webauthn/). In Chromium, the U2F API is not directly supported but it can be used by using `postMessage` with an internal extension called [cryptotoken](/chrome/browser/resources/cryptotoken/). Webauthn is supported by Blink and is part of [CredMan](https://www.w3.org/TR/credential-management-1/).
-
-(Historically cryptotoken contained a complete stack that interacted with USB devices directly. Now, however, it's a wrapper layer over the Webauthn APIs.)
+Websites interact with them via the [W3C Webauthn API](https://www.w3.org/TR/webauthn/), part of [CredMan](https://www.w3.org/TR/credential-management-1/).
 
 Several different types of security keys are supported. Older security keys implement the [U2F protocol](https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-raw-message-formats-v1.2-ps-20170411.html) while more modern ones implement [CTAP2](https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html). These devices can work over USB, Bluetooth Low Energy (BLE), or NFC (not supported). Additionally Chromium contains support for using Touch ID on macOS as a security key as well support for forwarding requests to the native libraries on modern versions of Windows.
 

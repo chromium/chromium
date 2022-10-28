@@ -81,14 +81,7 @@ std::string BuildClientDataJson(ClientDataJsonParams params) {
   std::string ret;
   ret.reserve(128);
 
-  // U2F uses "typ", while WebAuthn uses "type" for the type key.
   switch (params.type) {
-    case ClientDataRequestType::kU2fRegister:
-      ret.append(R"({"typ":"navigator.id.finishEnrollment")");
-      break;
-    case ClientDataRequestType::kU2fSign:
-      ret.append(R"({"typ":"navigator.id.getAssertion")");
-      break;
     case ClientDataRequestType::kWebAuthnCreate:
       ret.append(R"({"type":"webauthn.create")");
       break;

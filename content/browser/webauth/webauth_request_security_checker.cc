@@ -27,9 +27,6 @@ namespace content {
 
 namespace {
 
-constexpr char kCryptotokenOrigin[] =
-    "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
-
 // Returns AuthenticatorStatus::SUCCESS if the caller origin is in principle
 // authorized to make WebAuthn requests, and an error if it fails one of the
 // criteria below.
@@ -38,13 +35,6 @@ constexpr char kCryptotokenOrigin[] =
 // https://html.spec.whatwg.org/multipage/origin.html#concept-origin-effective-domain.
 blink::mojom::AuthenticatorStatus OriginAllowedToMakeWebAuthnRequests(
     url::Origin caller_origin) {
-  // For calls originating in the CryptoToken U2F extension, allow CryptoToken
-  // to validate domain.
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin)) {
-    return blink::mojom::AuthenticatorStatus::SUCCESS;
-  }
-
   if (caller_origin.opaque()) {
     return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
   }
@@ -76,12 +66,6 @@ bool OriginIsAllowedToClaimRelyingPartyId(
   // `OriginAllowedToMakeWebAuthnRequests()` must have been called before.
   DCHECK_EQ(OriginAllowedToMakeWebAuthnRequests(caller_origin),
             blink::mojom::AuthenticatorStatus::SUCCESS);
-
-  if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-          caller_origin)) {
-    // This code trusts cryptotoken to handle the validation itself.
-    return true;
-  }
 
   if (claimed_relying_party_id.empty()) {
     return false;
@@ -119,11 +103,6 @@ WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
     : render_frame_host_(host) {}
 
 WebAuthRequestSecurityChecker::~WebAuthRequestSecurityChecker() = default;
-
-bool WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
-    const url::Origin& origin) {
-  return origin == url::Origin::Create(GURL(kCryptotokenOrigin));
-}
 
 bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
     const url::Origin& origin) {
@@ -228,18 +207,6 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
     const blink::mojom::RemoteDesktopClientOverridePtr&
         remote_desktop_client_override,
     std::string* out_appid) {
-  // The CryptoToken U2F extension checks the appid before calling the WebAuthn
-  // API so there is no need to validate it here.
-  if (OriginIsCryptoTokenExtension(caller_origin)) {
-    DCHECK(!remote_desktop_client_override);
-    if (!GURL(appid).is_valid()) {
-      NOTREACHED() << "cryptotoken request did not set a valid App ID";
-      return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
-    }
-    *out_appid = appid;
-    return blink::mojom::AuthenticatorStatus::SUCCESS;
-  }
-
   if (remote_desktop_client_override) {
     if (!GetContentClient()
              ->browser()
@@ -266,9 +233,9 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   // processing."
   if (appid.empty()) {
     // While the U2F spec says to default the App ID to the Facet ID, which is
-    // the origin plus a trailing forward slash [1], cryptotoken and Firefox
-    // just use the site's Origin without trailing slash. We follow their
-    // implementations rather than the spec.
+    // the origin plus a trailing forward slash [1], implementations of U2F
+    // (CryptoToken, Firefox) used to use the site's Origin without trailing
+    // slash. We follow their implementations rather than the spec.
     //
     // [1]https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-appid-and-facets-v2.0-id-20180227.html#determining-the-facetid-of-a-calling-application
     appid = caller_origin.Serialize();

@@ -358,8 +358,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
-  constexpr char kCryptotokenOrigin[] =
-      "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
   constexpr char kTestExtensionOrigin[] = "chrome-extension://abcdef";
   ChromeWebAuthenticationDelegate delegate;
   static const struct {
@@ -369,7 +367,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
   } kTests[] = {
       {"example.com", "https://example.com", absl::nullopt},
       {"foo.com", "https://example.com", absl::nullopt},
-      {"foobar.com", kCryptotokenOrigin, absl::nullopt},
       {"abcdef", kTestExtensionOrigin, kTestExtensionOrigin},
       {"example.com", kTestExtensionOrigin, kTestExtensionOrigin},
   };

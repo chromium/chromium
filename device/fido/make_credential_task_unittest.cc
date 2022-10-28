@@ -169,34 +169,5 @@ TEST_F(FidoMakeCredentialTaskTest, EnforceClientPinWhenUserVerificationSet) {
   EXPECT_FALSE(make_credential_callback_receiver().value());
 }
 
-TEST_F(FidoMakeCredentialTaskTest, TestU2fOnly) {
-  // Regardless of the device's supported protocol, it should receive a U2F
-  // request, because the task is instantiated in U2F-only mode.
-  auto device = MockFidoDevice::MakeCtap();
-
-  device->ExpectWinkedAtLeastOnce();
-  device->ExpectRequestAndRespondWith(
-      test_data::kU2fRegisterCommandApdu,
-      test_data::kApduEncodedNoErrorRegisterResponse);
-
-  PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
-  PublicKeyCredentialUserEntity user(
-      fido_parsing_utils::Materialize(test_data::kUserId));
-  auto request = CtapMakeCredentialRequest(
-      test_data::kClientDataJson, std::move(rp), std::move(user),
-      PublicKeyCredentialParams(
-          std::vector<PublicKeyCredentialParams::CredentialInfo>(1)));
-  MakeCredentialOptions request_options;
-  request_options.make_u2f_api_credential = true;
-  const auto task = std::make_unique<MakeCredentialTask>(
-      device.get(), std::move(request), std::move(request_options),
-      callback_receiver_.callback());
-  make_credential_callback_receiver().WaitForCallback();
-
-  EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
-            make_credential_callback_receiver().status());
-  EXPECT_TRUE(make_credential_callback_receiver().value());
-}
-
 }  // namespace
 }  // namespace device

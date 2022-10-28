@@ -296,8 +296,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback);
 
-  // Disables the UI (needed in cases when called by other components, like
-  // cryptotoken).
+  // Disables the WebAuthn request modal dialog UI.
   virtual void DisableUI();
 
   virtual bool IsWebAuthnUIEnabled();

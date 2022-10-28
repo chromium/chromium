@@ -322,11 +322,8 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   }
 
   uint32_t authenticator_attachment;
-  if (request_options.make_u2f_api_credential) {
-    authenticator_attachment =
-        WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request_options.is_off_the_record_context &&
-             api_version < WEBAUTHN_API_VERSION_4) {
+  if (request_options.is_off_the_record_context &&
+      api_version < WEBAUTHN_API_VERSION_4) {
     // API versions before `WEBAUTHN_API_VERSION_4` don't have support for
     // showing a warning message that platform credentials will out last the
     // Incognito session. Thus, in this case, only external authenticators are
@@ -486,14 +483,6 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   // request.allow_list.
   auto legacy_credentials = ToWinCredentialVector(&request.allow_list);
 
-  uint32_t authenticator_attachment;
-  if (request.is_u2f_only) {
-    authenticator_attachment =
-        WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else {
-    authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
-  }
-
   std::vector<WEBAUTHN_EXTENSION> extensions;
   if (api_version >= WEBAUTHN_API_VERSION_3 && request.get_cred_blob) {
     static const BOOL kCredBlobTrue = TRUE;
@@ -523,7 +512,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                            legacy_credentials.data()},
       WEBAUTHN_EXTENSIONS{base::checked_cast<DWORD>(extensions.size()),
                           extensions.data()},
-      authenticator_attachment,
+      WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY,
       ToWinUserVerificationRequirement(request.user_verification),
       /*dwFlags=*/0,
       opt_app_id16 ? base::as_wcstr(*opt_app_id16) : nullptr,

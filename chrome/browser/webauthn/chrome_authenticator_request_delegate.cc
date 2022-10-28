@@ -331,13 +331,6 @@ absl::optional<std::string>
 ChromeWebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin) {
-  // Don't override cryptotoken processing.
-  constexpr char kCryptotokenOrigin[] =
-      "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
-  if (caller_origin == url::Origin::Create(GURL(kCryptotokenOrigin))) {
-    return absl::nullopt;
-  }
-
   // Otherwise, allow extensions to use WebAuthn and map their origins
   // directly to RP IDs.
   if (caller_origin.scheme() == extensions::kExtensionScheme) {
@@ -355,14 +348,7 @@ bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
     content::BrowserContext* browser_context,
     const url::Origin& caller_origin,
     const std::string& relying_party_id) {
-  constexpr char kGoogleCorpAppId[] =
-      "https://www.gstatic.com/securitykey/a/google.com/origins.json";
-
-  // If the RP ID is actually the Google corp App ID (because the request is
-  // actually a U2F request originating from cryptotoken), or is listed in the
-  // enterprise policy, signal that individual attestation is permitted.
-  return relying_party_id == kGoogleCorpAppId ||
-         IsOriginListedInEnterpriseAttestationSwitch(caller_origin) ||
+  return IsOriginListedInEnterpriseAttestationSwitch(caller_origin) ||
          IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
              browser_context, relying_party_id);
 }
@@ -614,9 +600,8 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     return;
   }
 
-  // Cryptotoken displays its own attestation consent prompt.
-  // AuthenticatorCommon does not invoke ShouldReturnAttestation() for those
-  // requests.
+  // AuthenticatorCommon can't evaluate attestation decisions with the UI
+  // disabled.
   if (disable_ui_) {
     NOTREACHED();
     std::move(callback).Run(false);
@@ -786,7 +771,7 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
         callback) {
   if (disable_ui_) {
-    // Cryptotoken requests should never reach account selection.
+    // Requests with UI disabled should never reach account selection.
     DCHECK(IsVirtualEnvironmentEnabled());
 
     // The browser is being automated. Select the first credential to support
@@ -812,12 +797,11 @@ void ChromeAuthenticatorRequestDelegate::DisableUI() {
 
 bool ChromeAuthenticatorRequestDelegate::IsWebAuthnUIEnabled() {
   // The UI is fully disabled for the entire request duration if either:
-  // 1) The request originates from cryptotoken. The UI may be hidden in other
-  // circumstances (e.g. while showing the native Windows WebAuthn UI). But in
-  // those cases the UI is still enabled and can be shown e.g. for an
-  // attestation consent prompt.
-  // 2) A specialized UI is replacing the default WebAuthn UI, such as
-  // Secure Payment Confirmation or Autofill.
+  // 1) The UI was temporarily hidden, e.g. while showing the native Windows
+  // WebAuthn UI. But in those cases the UI is still enabled and can be shown
+  // e.g. for an attestation consent prompt.
+  // 2) A specialized UI is replacing the default WebAuthn UI, such as Secure
+  // Payment Confirmation or Autofill.
   return !disable_ui_;
 }
 
