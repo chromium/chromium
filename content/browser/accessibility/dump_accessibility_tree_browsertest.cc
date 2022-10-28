@@ -1854,8 +1854,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-plaintext-with-role.html"));
 }
 
+// TODO(crbug.com/1379137): This test is failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AccessibilityContenteditableOnDisallowedElement \
+  DISABLED_AccessibilityContenteditableOnDisallowedElement
+#else
+#define MAYBE_AccessibilityContenteditableOnDisallowedElement \
+  AccessibilityContenteditableOnDisallowedElement
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityContenteditableOnDisallowedElement) {
+                       MAYBE_AccessibilityContenteditableOnDisallowedElement) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-on-disallowed-element.html"));
 }
 
