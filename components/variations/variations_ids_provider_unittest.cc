@@ -212,12 +212,7 @@ TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
 
   // 3320983 is the offset value of kLowEntropySourceVariationIdRangeMin + 5.
   EXPECT_TRUE(base::Contains(variation_ids_first_party, 3320983));
-
-  // The value will be omitted from third-party contexts under
-  // kRestrictGoogleWebVisibility.
-  bool value_omitted =
-      base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
-  EXPECT_EQ(value_omitted, !base::Contains(variation_ids_any_context, 3320983));
+  EXPECT_TRUE(base::Contains(variation_ids_any_context, 3320983));
 }
 
 TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
