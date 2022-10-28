@@ -109,25 +109,20 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
                            Vector<Color>* animated_colors,
                            const Element* element) {
   if (model->IsStringKeyframeEffectModel()) {
-    DCHECK(frame->IsCSSPropertySpecificKeyframe());
     const CSSValue* value = To<CSSPropertySpecificKeyframe>(frame)->Value();
     const CSSPropertyName property_name =
         CSSPropertyName(CSSPropertyID::kBackgroundColor);
     const CSSValue* computed_value = StyleResolver::ComputeValue(
         const_cast<Element*>(element), property_name, *value);
-    DCHECK(computed_value->IsColorValue());
-    const cssvalue::CSSColor* color_value =
-        static_cast<const cssvalue::CSSColor*>(computed_value);
-    animated_colors->push_back(color_value->Value());
+    auto& color_value = To<cssvalue::CSSColor>(*computed_value);
+    animated_colors->push_back(color_value.Value());
   } else {
-    DCHECK(frame->IsTransitionPropertySpecificKeyframe());
-    const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
+    const auto* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
         keyframe->GetValue()->Value().interpolable_value.get();
-    DCHECK(value->IsList());
 
-    const InterpolableList& list = To<InterpolableList>(*value);
+    const auto& list = To<InterpolableList>(*value);
     DCHECK(CSSColorInterpolationType::IsRGBA(*(list.Get(0))));
 
     Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
@@ -144,9 +139,7 @@ bool GetBGColorPaintWorkletParamsInternal(
     const Animation* compositable_animation) {
   element->GetLayoutObject()->GetMutableForPainting().EnsureId();
   const AnimationEffect* effect = compositable_animation->effect();
-  DCHECK(effect->IsKeyframeEffect());
-  const KeyframeEffectModelBase* model =
-      static_cast<const KeyframeEffect*>(effect)->Model();
+  const KeyframeEffectModelBase* model = To<KeyframeEffect>(effect)->Model();
   DCHECK_EQ(model->Composite(), EffectModel::kCompositeReplace);
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(
@@ -239,8 +232,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  const BackgroundColorPaintWorkletInput* input =
-      static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
+  const auto* input = To<BackgroundColorPaintWorkletInput>(compositor_input);
   gfx::SizeF container_size = input->ContainerSize();
   Vector<Color> animated_colors = input->AnimatedColors();
   Vector<double> offsets = input->Offsets();
@@ -333,8 +325,7 @@ bool BackgroundColorPaintDefinition::GetBGColorPaintWorkletParams(
     Vector<Color>* animated_colors,
     Vector<double>* offsets,
     absl::optional<double>* progress) {
-  DCHECK(node->IsElementNode());
-  Element* element = static_cast<Element*>(node);
+  Element* element = To<Element>(node);
   Animation* compositable_animation = GetAnimationIfCompositable(element);
   if (!compositable_animation)
     return false;

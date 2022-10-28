@@ -36,8 +36,7 @@ String AccessibilityMediaElement::TextAlternative(
     return String();
 
   if (IsUnplayable()) {
-    HTMLMediaElement* element =
-        static_cast<HTMLMediaElement*>(layout_object_->GetNode());
+    auto* element = To<HTMLMediaElement>(layout_object_->GetNode());
     return element->GetLocale().QueryString(IDS_MEDIA_PLAYBACK_ERROR);
   }
   return AXLayoutObject::TextAlternative(
@@ -64,8 +63,7 @@ AXRestriction AccessibilityMediaElement::Restriction() const {
 bool AccessibilityMediaElement::IsUnplayable() const {
   if (IsDetached())
     return true;
-  HTMLMediaElement* element =
-      static_cast<HTMLMediaElement*>(layout_object_->GetNode());
+  auto* element = To<HTMLMediaElement>(layout_object_->GetNode());
   HTMLMediaElement::NetworkState network_state = element->getNetworkState();
   return (element->error() ||
           network_state == HTMLMediaElement::kNetworkEmpty ||

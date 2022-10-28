@@ -439,7 +439,7 @@ bool AXLayoutObject::IsPlaceholder() const {
       To<TextControlElement>(parent_layout_object->GetNode());
   HTMLElement* placeholder_element = text_control_element->PlaceholderElement();
 
-  return GetElement() == static_cast<Element*>(placeholder_element);
+  return GetElement() == placeholder_element;
 }
 
 bool AXLayoutObject::ComputeAccessibilityIsIgnored(

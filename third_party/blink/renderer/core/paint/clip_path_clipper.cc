@@ -70,22 +70,21 @@ static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
 }
 
 CompositedPaintStatus CompositeClipPathStatus(Node* node) {
-  if (!node || !node->IsElementNode())
+  Element* element = DynamicTo<Element>(node);
+  if (!element)
     return CompositedPaintStatus::kNotComposited;
 
-  ElementAnimations* element_animations =
-      static_cast<Element*>(node)->GetElementAnimations();
+  ElementAnimations* element_animations = element->GetElementAnimations();
   DCHECK(element_animations);
-
   return element_animations->CompositedClipPathStatus();
 }
 
 void SetCompositeClipPathStatus(Node* node, bool is_compositable) {
-  if (!node || !node->IsElementNode())
+  Element* element = DynamicTo<Element>(node);
+  if (!element)
     return;
 
-  ElementAnimations* element_animations =
-      static_cast<Element*>(node)->GetElementAnimations();
+  ElementAnimations* element_animations = element->GetElementAnimations();
   DCHECK(element_animations || !is_compositable);
   if (element_animations) {
     element_animations->SetCompositedClipPathStatus(

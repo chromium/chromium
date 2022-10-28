@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/mathml/mathml_row_element.h"
 
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -24,12 +25,9 @@ LayoutObject* MathMLRowElement::CreateLayoutObject(const ComputedStyle& style,
 
 void MathMLRowElement::ChildrenChanged(const ChildrenChange& change) {
   if (change.by_parser == ChildrenChangeSource::kAPI) {
-    for (auto* child = firstChild(); child; child = child->nextSibling()) {
-      if (child->HasTagName(mathml_names::kMoTag)) {
-        // TODO(crbug.com/1124298): make this work for embellished operators.
-        static_cast<MathMLOperatorElement*>(child)
-            ->CheckFormAfterSiblingChange();
-      }
+    for (auto& child : Traversal<MathMLOperatorElement>::ChildrenOf(*this)) {
+      // TODO(crbug.com/1124298): make this work for embellished operators.
+      child.CheckFormAfterSiblingChange();
     }
   }
 

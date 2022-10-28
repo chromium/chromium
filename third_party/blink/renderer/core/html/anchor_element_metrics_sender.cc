@@ -145,9 +145,8 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
       continue;
     }
     //  The anchor is visible.
-    HTMLAnchorElement* anchor_element =
-        static_cast<HTMLAnchorElement*>(element);
-    EnqueueEnteredViewport(*anchor_element);
+    const auto& anchor_element = To<HTMLAnchorElement>(*element);
+    EnqueueEnteredViewport(anchor_element);
     intersection_observer_->unobserve(element);
   }
 }
