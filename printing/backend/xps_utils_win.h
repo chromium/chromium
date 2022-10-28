@@ -6,6 +6,7 @@
 #define PRINTING_BACKEND_XPS_UTILS_WIN_H_
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 #include "printing/mojom/print.mojom-forward.h"
 
 namespace base {
@@ -15,15 +16,21 @@ class Value;
 namespace printing {
 
 struct PrinterSemanticCapsAndDefaults;
+struct XpsCapabilities;
 
-// Since parsing XML data to `PrinterSemanticCapsAndDefaults` can not be done
-// in the print_backend level, parse base::Value into
-// `PrinterSemanticCapsAndDefaults` data structure instead. Parsing XML data
-// to base::Value will be processed by data_decoder service.
+// Since parsing XML data to XpsCapabilities can not be done in the
+// //printing/backend level, parse base::Value into XpsCapabilities data
+// structure instead. Returns an XPS capabilities object on success with valid
+// relevant features as fields, ignoring invalid relevant features, or
+// mojom::ResultCode on failure.
 COMPONENT_EXPORT(PRINT_BACKEND)
-mojom::ResultCode ParseValueForXpsPrinterCapabilities(
-    const base::Value& capabilities,
-    PrinterSemanticCapsAndDefaults* printer_info);
+base::expected<XpsCapabilities, mojom::ResultCode>
+ParseValueForXpsPrinterCapabilities(const base::Value& capabilities);
+
+// Moves all data from `xps_capabilities` into `printer_capabilities`.
+COMPONENT_EXPORT(PRINT_BACKEND)
+void MergeXpsCapabilities(XpsCapabilities xps_capabilities,
+                          PrinterSemanticCapsAndDefaults& printer_capabilities);
 
 }  // namespace printing
 

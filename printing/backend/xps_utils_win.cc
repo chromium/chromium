@@ -4,6 +4,9 @@
 
 #include "printing/backend/xps_utils_win.h"
 
+#include <utility>
+
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
@@ -24,16 +27,15 @@ constexpr char kProperty[] = "psf:Property";
 constexpr char kValue[] = "psf:Value";
 constexpr char kName[] = "name";
 
-mojom::ResultCode LoadPageOutputQuality(
-    const base::Value& page_output_quality,
-    PrinterSemanticCapsAndDefaults* printer_info) {
+base::expected<PageOutputQuality, mojom::ResultCode> LoadPageOutputQuality(
+    const base::Value& page_output_quality) {
   PageOutputQuality printer_page_output_quality;
   std::vector<const base::Value*> options;
   data_decoder::GetAllXmlElementChildrenWithTag(page_output_quality, kOption,
                                                 &options);
   if (options.empty()) {
     LOG(WARNING) << "Incorrect XML format";
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
   for (const auto* option : options) {
     PageOutputQualityAttribute quality;
@@ -54,7 +56,7 @@ mojom::ResultCode LoadPageOutputQuality(
     // and does not have `display_name`.
     if (property_count > 1) {
       LOG(WARNING) << "Incorrect XML format";
-      return mojom::ResultCode::kFailed;
+      return base::unexpected(mojom::ResultCode::kFailed);
     }
     if (property_count == 1) {
       const base::Value* property_element = data_decoder::FindXmlElementPath(
@@ -63,7 +65,7 @@ mojom::ResultCode LoadPageOutputQuality(
           data_decoder::GetXmlElementChildrenCount(*property_element, kValue);
       if (value_count != 1) {
         LOG(WARNING) << "Incorrect XML format";
-        return mojom::ResultCode::kFailed;
+        return base::unexpected(mojom::ResultCode::kFailed);
       }
       const base::Value* value_element = data_decoder::FindXmlElementPath(
           *option, {kOption, kProperty, kValue}, /*unique_path=*/nullptr);
@@ -73,41 +75,49 @@ mojom::ResultCode LoadPageOutputQuality(
     }
     printer_page_output_quality.qualities.push_back(std::move(quality));
   }
-  printer_info->page_output_quality = std::move(printer_page_output_quality);
-  return mojom::ResultCode::kSuccess;
+  return printer_page_output_quality;
 }
 
 }  // namespace
 
-mojom::ResultCode ParseValueForXpsPrinterCapabilities(
-    const base::Value& capabilities,
-    PrinterSemanticCapsAndDefaults* printer_info) {
+base::expected<XpsCapabilities, mojom::ResultCode>
+ParseValueForXpsPrinterCapabilities(const base::Value& capabilities) {
   if (!data_decoder::IsXmlElementNamed(capabilities, kPrintCapabilities)) {
     LOG(WARNING) << "Incorrect XML format";
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
   std::vector<const base::Value*> features;
   data_decoder::GetAllXmlElementChildrenWithTag(capabilities, kFeature,
                                                 &features);
   if (features.empty()) {
     LOG(WARNING) << "Incorrect XML format";
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
+  XpsCapabilities xps_capabilities;
   for (auto* feature : features) {
     std::string feature_name =
         data_decoder::GetXmlElementAttribute(*feature, kName);
     DVLOG(2) << feature_name;
-    mojom::ResultCode result_code;
     if (feature_name == kPageOutputQuality) {
-      result_code = LoadPageOutputQuality(*feature, printer_info);
-      if (result_code == mojom::ResultCode::kFailed)
-        return result_code;
+      base::expected<PageOutputQuality, mojom::ResultCode> page_output_quality =
+          LoadPageOutputQuality(*feature);
+      if (!page_output_quality.has_value())
+        return base::unexpected(page_output_quality.error());
+      xps_capabilities.page_output_quality =
+          std::move(page_output_quality.value());
     }
 
     // TODO(crbug.com/1291257): Each feature needs to be parsed. More work is
     // expected here.
   }
-  return mojom::ResultCode::kSuccess;
+  return xps_capabilities;
+}
+
+void MergeXpsCapabilities(
+    XpsCapabilities xps_capabilities,
+    PrinterSemanticCapsAndDefaults& printer_capabilities) {
+  printer_capabilities.page_output_quality =
+      std::move(xps_capabilities.page_output_quality);
 }
 
 }  // namespace printing

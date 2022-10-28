@@ -153,6 +153,17 @@ bool operator==(const PageOutputQuality& quality1,
 
 #endif  // defined(UNIT_TEST)
 
+struct COMPONENT_EXPORT(PRINT_BACKEND) XpsCapabilities {
+  XpsCapabilities();
+  XpsCapabilities(const XpsCapabilities&) = delete;
+  XpsCapabilities& operator=(const XpsCapabilities&) = delete;
+  XpsCapabilities(XpsCapabilities&& other) noexcept;
+  XpsCapabilities& operator=(XpsCapabilities&& other) noexcept;
+  ~XpsCapabilities();
+
+  absl::optional<PageOutputQuality> page_output_quality;
+};
+
 #endif  // BUILDFLAG(IS_WIN)
 
 struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {

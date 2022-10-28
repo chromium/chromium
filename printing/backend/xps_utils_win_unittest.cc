@@ -4,15 +4,18 @@
 
 #include "printing/backend/xps_utils_win.h"
 
+#include <utility>
+
 #include "base/test/values_test_util.h"
+#include "base/types/expected.h"
 #include "printing/backend/print_backend.h"
+#include "printing/backend/print_backend_test_constants.h"
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 
 namespace {
-
 // The correct format of XPS "PageOutputQuality" and "PageOutputColor"
 // capabilities.
 constexpr char kCorrectCapabilities[] = R"({
@@ -256,22 +259,45 @@ const PageOutputQualityAttributes kPageOutputQualities = {
 }  // namespace
 
 TEST(XpsUtilTest, ParseCorrectPageOutputQualityForXpsPrinterCapabilities) {
-  PrinterSemanticCapsAndDefaults printer_info;
-
-  // Expect that parsing XPS Printer Capabilities is successful.
-  // After parsing, `printer_info` will have 2 capabilities: "PageOutputQuality"
-  // and "PageOutputColor".
-  EXPECT_EQ(ParseValueForXpsPrinterCapabilities(
-                base::test::ParseJson(kCorrectCapabilities), &printer_info),
-            mojom::ResultCode::kSuccess);
-  ASSERT_EQ(printer_info.page_output_quality->qualities, kPageOutputQualities);
+  // Assert that parsing XPS printer capabilities is successful.
+  base::expected<XpsCapabilities, mojom::ResultCode> result =
+      ParseValueForXpsPrinterCapabilities(
+          base::test::ParseJson(kCorrectCapabilities));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value().page_output_quality);
+  ASSERT_EQ(result.value().page_output_quality->qualities,
+            kPageOutputQualities);
 }
 
 TEST(XpsUtilTest, ParseIncorrectPageOutputQualityForXpsPrinterCapabilities) {
-  PrinterSemanticCapsAndDefaults printer_info;
-  EXPECT_EQ(ParseValueForXpsPrinterCapabilities(
-                base::test::ParseJson(kIncorrectCapabilities), &printer_info),
-            mojom::ResultCode::kFailed);
+  // The property inside option ns0000:Draft does not have any value,
+  // so parsing XPS printer capabilities should fail.
+  base::expected<XpsCapabilities, mojom::ResultCode> result =
+      ParseValueForXpsPrinterCapabilities(
+          base::test::ParseJson(kIncorrectCapabilities));
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error(), mojom::ResultCode::kFailed);
+}
+
+TEST(XpsUtilTest, MergeXpsCapabilitiesPageOutputQuality) {
+  PrinterSemanticCapsAndDefaults printer_capabilities =
+      GenerateSamplePrinterSemanticCapsAndDefaults({});
+
+  XpsCapabilities xps_capabilities;
+  xps_capabilities.page_output_quality = kPageOutputQuality;
+
+  MergeXpsCapabilities(std::move(xps_capabilities), printer_capabilities);
+
+  // Expect that XPS capability PageOutputQuality was successfully merged into a
+  // PrinterSemanticCapsAndDefaults object.
+  ASSERT_TRUE(printer_capabilities.page_output_quality.has_value());
+  EXPECT_EQ(printer_capabilities.page_output_quality.value(),
+            kPageOutputQuality);
+
+  // Expect that non-XPS capabilities remain unmodified.
+  printer_capabilities.page_output_quality = absl::nullopt;
+  EXPECT_EQ(printer_capabilities,
+            GenerateSamplePrinterSemanticCapsAndDefaults({}));
 }
 
 }  // namespace printing

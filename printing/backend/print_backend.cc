@@ -143,6 +143,15 @@ bool operator==(const PageOutputQuality& quality1,
          quality1.default_quality == quality2.default_quality;
 }
 
+XpsCapabilities::XpsCapabilities() = default;
+
+XpsCapabilities::XpsCapabilities(XpsCapabilities&& other) noexcept = default;
+
+XpsCapabilities& XpsCapabilities::operator=(XpsCapabilities&& other) noexcept =
+    default;
+
+XpsCapabilities::~XpsCapabilities() = default;
+
 #endif  // BUILDFLAG(IS_WIN)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
