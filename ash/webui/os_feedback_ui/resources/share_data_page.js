@@ -168,6 +168,10 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         this.feedbackContext !== null && this.feedbackContext.traceId !== 0);
   }
 
+  /** Focus on the screenshot checkbox when entering the page. */
+  focusScreenshotCheckbox() {
+    this.$.screenshotCheckbox.focus();
+  }
 
   /**
    * @return {boolean}

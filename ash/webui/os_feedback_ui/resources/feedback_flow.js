@@ -375,6 +375,8 @@ export class FeedbackFlowElement extends PolymerElement {
             this.feedbackContext_.isInternalAccount &&
             this.isDescriptionRelatedToBluetooth(this.description_);
         this.fetchScreenshot_();
+        this.shadowRoot.querySelector('share-data-page')
+            .focusScreenshotCheckbox();
 
         if (!this.helpContentOutcomeMetricEmitted_) {
           this.recordHelpContentOutcome_(
