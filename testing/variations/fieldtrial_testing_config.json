@@ -10313,7 +10313,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "SuppressToolbarCaptures"
+                        "SuppressToolbarCaptures",
+                        "UpdateBrowserControlsWithoutProxy"
                     ]
                 }
             ]
