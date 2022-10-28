@@ -51,7 +51,15 @@ void HTMLDialogElement::SetFocusForDialog(HTMLDialogElement* dialog) {
   if (!dialog->isConnected())
     return;
 
+  // Showing a <dialog> should hide all open popups, immediately.
   auto& document = dialog->GetDocument();
+  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          document.GetExecutionContext())) {
+    HTMLElement::HideAllPopupsUntil(nullptr, document,
+                                    HidePopupFocusBehavior::kNone,
+                                    HidePopupForcingLevel::kHideImmediately);
+  }
+
   dialog->previously_focused_element_ = document.FocusedElement();
 
   // TODO(kochi): How to find focusable element inside Shadow DOM is not
@@ -184,14 +192,6 @@ void HTMLDialogElement::show() {
     return;
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
-  // Showing a <dialog> should hide all open popups, immediately.
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
-    HTMLElement::HideAllPopupsUntil(nullptr, GetDocument(),
-                                    HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately);
-  }
-
   // The layout must be updated here because setFocusForDialog calls
   // Element::isFocusable, which requires an up-to-date layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
@@ -243,14 +243,6 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   if (Fullscreen::IsInFullscreenElementStack(*this)) {
     UseCounter::Count(document,
                       WebFeature::kShowModalForElementInFullscreenStack);
-  }
-
-  // Showing a <dialog> should hide all open popups, immediately.
-  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
-          document.GetExecutionContext())) {
-    HTMLElement::HideAllPopupsUntil(nullptr, document,
-                                    HidePopupFocusBehavior::kNone,
-                                    HidePopupForcingLevel::kHideImmediately);
   }
 
   document.AddToTopLayer(this);
