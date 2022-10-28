@@ -7749,6 +7749,3 @@ crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackP
 crbug.com/1377082 [ Linux ] http/tests/lazyload/attribute.html [ Skip ]
 
 crbug.com/1378359 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure ]
-
-# Sheriff 2022-10-28
-crbug.com/1379131 crbug.com/1379155 http/tests/inspector-protocol/terminate-execution-with-fetch-callbacks.js [ Crash Failure Pass ]
