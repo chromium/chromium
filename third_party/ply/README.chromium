@@ -19,6 +19,7 @@ Sources           ply-3.11/ply/__init__.py
 
 The license is in LICENSE.
 
-Modifications made with initial commit:
+Modifications made:
 - Added the file README.chromium (this file)
 - Applies license.patch
+- Added ply.gni to list sources

@@ -1,0 +1,5 @@
+ply_sources = [
+  "//third_party/ply/__init__.py",
+  "//third_party/ply/lex.py",
+  "//third_party/ply/yacc.py",
+]

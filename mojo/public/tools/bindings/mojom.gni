@@ -20,6 +20,7 @@ import("//build/config/nacl/config.gni")
 import("//build/toolchain/kythe.gni")
 import("//components/nacl/features.gni")
 import("//third_party/jinja2/jinja2.gni")
+import("//third_party/ply/ply.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 declare_args() {
   # Indicates whether typemapping should be supported in this build
@@ -700,7 +701,7 @@ template("mojom") {
 
     action(parser_target_name) {
       script = mojom_parser_script
-      inputs = mojom_parser_sources + [ build_metadata_filename ]
+      inputs = mojom_parser_sources + ply_sources + [ build_metadata_filename ]
       sources = sources_list
       public_deps = parser_deps
       outputs = []
