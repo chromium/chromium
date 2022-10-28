@@ -62,7 +62,7 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
     auto provider = std::make_unique<HelpAppZeroStateProvider>(
         profile(), app_list_notifier_.get());
     provider_ = provider.get();
-    search_controller_.AddProvider(0, std::move(provider));
+    search_controller_.AddProvider(std::move(provider));
   }
 
   void StartZeroStateSearch() {

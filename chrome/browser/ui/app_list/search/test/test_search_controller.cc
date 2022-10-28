@@ -41,12 +41,7 @@ AppSearchDataSource* TestSearchController::GetAppSearchDataSource() {
   return nullptr;
 }
 
-size_t TestSearchController::AddGroup(size_t max_results) {
-  return 0u;
-}
-
 void TestSearchController::AddProvider(
-    size_t group_id,
     std::unique_ptr<SearchProvider> provider) {
   DCHECK(!provider_);
   provider_ = std::move(provider);

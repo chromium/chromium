@@ -200,13 +200,7 @@ AppSearchDataSource* SearchControllerImplNew::GetAppSearchDataSource() {
   return app_search_data_source_.get();
 }
 
-size_t SearchControllerImplNew::AddGroup(size_t max_results) {
-  // Unused.
-  return 0ul;
-}
-
 void SearchControllerImplNew::AddProvider(
-    size_t group_id,
     std::unique_ptr<SearchProvider> provider) {
   if (ash::IsZeroStateResultType(provider->ResultType()))
     ++total_zero_state_blockers_;
@@ -233,8 +227,7 @@ size_t SearchControllerImplNew::ReplaceProvidersForResultTypeForTest(
   if (ash::IsZeroStateResultType(result_type))
     total_zero_state_blockers_ -= removed_providers;
 
-  // Note that `group_id` is not used by this search controller implementation.
-  AddProvider(/*group_id=*/-1, std::move(new_provider));
+  AddProvider(std::move(new_provider));
   return removed_providers;
 }
 

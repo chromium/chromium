@@ -28,7 +28,7 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
   AssistantTextSearchProviderTest() {
     auto search_provider = std::make_unique<AssistantTextSearchProvider>();
     search_provider_ = search_provider.get();
-    search_controller_.AddProvider(0, std::move(search_provider));
+    search_controller_.AddProvider(std::move(search_provider));
   }
   AssistantTextSearchProviderTest(const AssistantTextSearchProviderTest&) =
       delete;

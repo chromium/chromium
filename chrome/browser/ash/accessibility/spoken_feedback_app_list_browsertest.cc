@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
@@ -137,8 +136,7 @@ void InitializeTestSearchProviders(
           ChromeSearchResult::Category::kApps,
           ChromeSearchResult::ResultType::kInstalledApp);
   *apps_provider_ptr = apps_provider.get();
-  size_t apps_group_id = search_controller->AddGroup(10);
-  search_controller->AddProvider(apps_group_id, std::move(apps_provider));
+  search_controller->AddProvider(std::move(apps_provider));
 
   std::unique_ptr<TestSearchProvider> web_provider =
       std::make_unique<TestSearchProvider>(
@@ -146,8 +144,7 @@ void InitializeTestSearchProviders(
           ChromeSearchResult::Category::kWeb,
           ChromeSearchResult::ResultType::kOmnibox);
   *web_provider_ptr = web_provider.get();
-  size_t omnibox_group_id = search_controller->AddGroup(10);
-  search_controller->AddProvider(omnibox_group_id, std::move(web_provider));
+  search_controller->AddProvider(std::move(web_provider));
 }
 
 }  // namespace

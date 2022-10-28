@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ui/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
@@ -159,7 +160,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
 
     app_search_ = app_search.get();
 
-    search_controller_->AddProvider(0, std::move(app_search));
+    search_controller_->AddProvider(std::move(app_search));
   }
 
   std::string RunQuery(const std::string& query) {
