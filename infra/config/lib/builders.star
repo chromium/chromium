@@ -311,6 +311,30 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
 
     return reclient
 
+def _resultdb_settings(*, resultdb_enable, resultdb_bigquery_exports, resultdb_index_by_timestamp):
+    resultdb_enable = defaults.get_value("resultdb_enable", resultdb_enable)
+    if not resultdb_enable:
+        return None
+
+    history_options = None
+    resultdb_index_by_timestamp = defaults.get_value(
+        "resultdb_index_by_timestamp",
+        resultdb_index_by_timestamp,
+    )
+    if resultdb_index_by_timestamp:
+        history_options = resultdb.history_options(
+            by_timestamp = resultdb_index_by_timestamp,
+        )
+
+    return resultdb.settings(
+        enable = True,
+        bq_exports = defaults.get_value(
+            "resultdb_bigquery_exports",
+            resultdb_bigquery_exports,
+        ),
+        history_options = history_options,
+    )
+
 ################################################################################
 # Builder defaults and function                                                #
 ################################################################################
@@ -344,6 +368,7 @@ defaults = args.defaults(
     coverage_exclude_sources = None,
     coverage_test_types = None,
     export_coverage_to_zoss = False,
+    resultdb_enable = True,
     resultdb_bigquery_exports = [],
     resultdb_index_by_timestamp = False,
     reclient_instance = None,
@@ -406,6 +431,7 @@ def builder(
         coverage_exclude_sources = args.DEFAULT,
         coverage_test_types = args.DEFAULT,
         export_coverage_to_zoss = args.DEFAULT,
+        resultdb_enable = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         resultdb_index_by_timestamp = args.DEFAULT,
         reclient_instance = args.DEFAULT,
@@ -757,16 +783,6 @@ def builder(
         )]
         properties.setdefault("xcode_build_version", xcode.version)
 
-    history_options = None
-    resultdb_index_by_timestamp = defaults.get_value(
-        "resultdb_index_by_timestamp",
-        resultdb_index_by_timestamp,
-    )
-    if resultdb_index_by_timestamp:
-        history_options = resultdb.history_options(
-            by_timestamp = resultdb_index_by_timestamp,
-        )
-
     kwargs["notifies"] = defaults.get_value("notifies", notifies, merge = args.MERGE_LIST)
 
     triggered_by = defaults.get_value("triggered_by", triggered_by)
@@ -785,13 +801,10 @@ def builder(
         branch_selector = branch_selector,
         dimensions = dimensions,
         properties = properties,
-        resultdb_settings = resultdb.settings(
-            enable = True,
-            bq_exports = defaults.get_value(
-                "resultdb_bigquery_exports",
-                resultdb_bigquery_exports,
-            ),
-            history_options = history_options,
+        resultdb_settings = _resultdb_settings(
+            resultdb_enable = resultdb_enable,
+            resultdb_bigquery_exports = resultdb_bigquery_exports,
+            resultdb_index_by_timestamp = resultdb_index_by_timestamp,
         ),
         experiments = experiments,
         **kwargs

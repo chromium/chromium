@@ -68,6 +68,7 @@ def launcher(
     })
 
     kwargs.setdefault("executable", "recipe:chromium_polymorphic/launcher")
+    kwargs.setdefault("resultdb_enable", False)
 
     return builder(
         name = name,
