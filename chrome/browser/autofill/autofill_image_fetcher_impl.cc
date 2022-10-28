@@ -129,10 +129,26 @@ void AutofillImageFetcherImpl::FetchImageForURL(
     return;
   }
 
+  GURL url;
+  // TODO(crbug.com/1313616): There is only one gstatic card art image we are
+  // using currently. Remove this logic and append FIFE URL suffix by default
+  // when the static image is deprecated.
+  // Check if the image is stored in Static Content Service. If not append the
+  // FIFE URL option to fetch the correct image.
+  if (card_art_url ==
+      GURL(
+          "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")) {
+    url = card_art_url;
+  } else {
+    // A FIFE image fetching param suffix is appended to the URL. This means the
+    // image should be of Size(32, 20), and should be center cropped.
+    url = GURL(card_art_url.spec() + "=w32-h20-n");
+  }
+
   image_fetcher::ImageFetcherParams params(kCardArtImageTrafficAnnotation,
                                            kUmaClientName);
   image_fetcher_->FetchImage(
-      card_art_url,
+      url,
       base::BindOnce(&AutofillImageFetcherImpl::OnCardArtImageFetched,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(barrier_callback), card_art_url,

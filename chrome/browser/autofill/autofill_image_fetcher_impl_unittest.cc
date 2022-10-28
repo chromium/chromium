@@ -93,9 +93,10 @@ TEST_F(AutofillImageFetcherImplTest, FetchImage_Success) {
   // The credit card network images cannot be found in the tests, but it should
   // be okay since we don't care what the images are.
   gfx::Image fake_image1 = GetTestImage(IDR_DEFAULT_FAVICON);
-  gfx::Image fake_image2 = GetTestImage(IDR_DEFAULT_FAVICON_DARK);
-  GURL fake_url1 = GURL("http://www.example.com/fake_image1");
-  GURL fake_url2 = GURL("http://www.example.com/fake_image2");
+  gfx::Image fake_image2 = GetTestImage(IDR_DEFAULT_FAVICON);
+  GURL fake_url1 = GURL("https://www.example.com/fake_image1");
+  GURL fake_url2 =
+      GURL("https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png");
 
   std::map<GURL, gfx::Image> expected_images = {
       {fake_url1, AutofillImageFetcherImpl::ApplyGreyOverlay(fake_image1)},
@@ -114,7 +115,12 @@ TEST_F(AutofillImageFetcherImplTest, FetchImage_Success) {
 
   base::HistogramTester histogram_tester;
   // Expect to be called twice.
-  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(2);
+  EXPECT_CALL(
+      *mock_image_fetcher(),
+      FetchImageAndData_(GURL(fake_url1.spec() + "=w32-h20-n"), _, _, _))
+      .Times(1);
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url2, _, _, _))
+      .Times(1);
   std::vector<GURL> urls = {fake_url1, fake_url2};
   autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
 
@@ -177,7 +183,7 @@ TEST_F(AutofillImageFetcherImplTest, FetchImage_ServerFailure) {
   TestAutofillTickClock test_clock;
   test_clock.SetNowTicks(now);
 
-  GURL fake_url1 = GURL("http://www.example.com/fake_image1");
+  GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   std::map<GURL, gfx::Image> expected_images = {{fake_url1, gfx::Image()}};
 
   // Expect callback to be called with some received images.
