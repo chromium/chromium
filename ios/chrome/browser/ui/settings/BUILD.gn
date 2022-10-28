@@ -351,6 +351,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
     "//net",
     "//net:test_support",

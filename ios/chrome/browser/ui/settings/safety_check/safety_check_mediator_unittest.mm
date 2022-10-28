@@ -30,8 +30,9 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
@@ -138,13 +139,15 @@ class SafetyCheckMediatorTest : public PlatformTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
+        AuthenticationServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         SyncSetupServiceFactory::GetInstance(),
         base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
     browser_state_ = test_cbs_builder.Build();
-    auth_service_ = static_cast<AuthenticationServiceFake*>(
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
+    auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
 
@@ -216,7 +219,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
-  AuthenticationServiceFake* auth_service_;
+  AuthenticationService* auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   SafetyCheckMediator* mediator_;
   PrefService* pref_service_;
