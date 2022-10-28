@@ -208,6 +208,7 @@ crbug.com/1354678 paint/invalidation/reflection/reflection-with-rotation.html [ 
 crbug.com/1354678 css3/filters/effect-reference-zoom-hw.html [ Failure Pass ]
 crbug.com/1354678 css3/filters/effect-reference-zoom.html [ Failure Pass ]
 crbug.com/1354678 svg/filters/feOffset.svg [ Failure Pass ]
+crbug.com/1354678 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-boundary.html [ Failure Pass ]
 
 crbug.com/1376647 [ Linux ] compositing/masks/mask-with-added-filters.html [ Failure Pass ]
 crbug.com/1376647 [ Linux ] compositing/overflow/border-radius-above-composited-subframe.html [ Failure Pass ]
