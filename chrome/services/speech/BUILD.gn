@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/services/speech/buildflags/buildflags.gni")
+
+assert(enable_speech_service)
 
 source_set("lib") {
   sources = [

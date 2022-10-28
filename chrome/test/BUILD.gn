@@ -18,6 +18,7 @@ import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
 import(
     "//chrome/browser/sync/test/integration/sync_integration_tests_sources.gni")
 import("//chrome/common/features.gni")
+import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
@@ -2658,6 +2659,7 @@ if (!is_android) {
     }
 
     if (enable_soda) {
+      assert(enable_speech_service)
       sources +=
           [ "../browser/speech/speech_recognition_service_browsertest.cc" ]
       deps += [
