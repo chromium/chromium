@@ -122,19 +122,14 @@ crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance
 crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 
 # Flakey/slow tests using clang_rt.
-crbug.com/1261260 [ android android-nexus-5x ] GpuProcess_webgpu_iframe_removed [ Failure ]
-crbug.com/1261260 [ android android-shield-android-tv ] GpuProcess_webgpu_iframe_removed [ Failure ]
 
 # Flaky Vulkan Loader Timeout
-crbug.com/1275738 [ linux angle-swiftshader ] GpuProcess_disable_gpu [ RetryOnFailure ]
 
 # Flakey on Lacros FYI bot
-crbug.com/1311719 [ linux display-server-wayland ] GpuProcess_disabling_workarounds_works [ RetryOnFailure ]
 
 crbug.com/1321145 [ fuchsia fuchsia-board-qemu-x64 ] * [ Failure ]
 
 # Flaking on Linux FYI Release
-crbug.com/1340081 [ linux release intel-0x5912 ] GpuProcess_canvas2d [ RetryOnFailure ]
 
 
 
