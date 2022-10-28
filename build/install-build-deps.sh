@@ -98,7 +98,7 @@ fi
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
 # TODO(crbug.com/1199405): Remove 14.04 (trusty) and 16.04 (xenial).
-supported_codenames="(trusty|xenial|bionic|disco|eoan|focal|groovy)"
+supported_codenames="(trusty|xenial|bionic|disco|eoan|focal|groovy|jammy)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
   if [[ ! $distro_codename =~ $supported_codenames &&
@@ -109,6 +109,7 @@ if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
       "\tUbuntu 20.04 LTS (focal with Eol April 2030)\n" \
       "\tUbuntu 20.10 (groovy)\n" \
+      "\tUbuntu 22.04 LTS (jammy with Eol April 2032)\n" \
       "\tDebian 10 (buster) or later" >&2
     exit 1
   fi
@@ -271,7 +272,9 @@ common_lib_list="\
   zlib1g
 "
 
-if package_exists libffi7; then
+if package_exists libffi8; then
+  common_lib_list="${common_lib_list} libffi8"
+elif package_exists libffi7; then
   common_lib_list="${common_lib_list} libffi7"
 elif package_exists libffi6; then
   common_lib_list="${common_lib_list} libffi6"
@@ -408,7 +411,11 @@ if package_exists apache2.2-bin; then
 else
   backwards_compatible_list="${backwards_compatible_list} apache2-bin"
 fi
-if package_exists php7.4-cgi; then
+if package_exists php8.1-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php8.1-cgi libapache2-mod-php8.1"
+elif package_exists php8.0-cgi; then
+  backwards_compatible_list="${backwards_compatible_list} php8.0-cgi libapache2-mod-php8.0"
+elif package_exists php7.4-cgi; then
   backwards_compatible_list="${backwards_compatible_list} php7.4-cgi libapache2-mod-php7.4"
 elif package_exists php7.3-cgi; then
   backwards_compatible_list="${backwards_compatible_list} php7.3-cgi libapache2-mod-php7.3"
@@ -476,6 +483,11 @@ case $distro_codename in
                 g++-10-arm-linux-gnueabihf
                 gcc-10-arm-linux-gnueabihf"
     ;;
+  jammy)
+    arm_list+=" gcc-arm-linux-gnueabihf
+                g++-11-arm-linux-gnueabihf
+                gcc-11-arm-linux-gnueabihf"
+    ;;
 esac
 
 # Packages to build NaCl, its toolchains, and its ports.
@@ -511,7 +523,9 @@ nacl_list="\
 "
 
 # Some package names have changed over time
-if package_exists libssl1.1; then
+if package_exists libssl-dev; then
+  nacl_list="${nacl_list} libssl-dev:i386"
+elif package_exists libssl1.1; then
   nacl_list="${nacl_list} libssl1.1:i386"
 elif package_exists libssl1.0.2; then
   nacl_list="${nacl_list} libssl1.0.2:i386"
