@@ -296,8 +296,10 @@ public class PlatformSensor implements SensorEventListener {
      */
     @GuardedBy("mLock")
     protected void sensorError() {
-        PlatformSensorJni.get().notifyPlatformSensorError(
-                mNativePlatformSensorAndroid, PlatformSensor.this);
+        if (mNativePlatformSensorAndroid != 0) {
+            PlatformSensorJni.get().notifyPlatformSensorError(
+                    mNativePlatformSensorAndroid, PlatformSensor.this);
+        }
     }
 
     /**
