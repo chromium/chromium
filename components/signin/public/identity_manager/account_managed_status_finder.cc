@@ -94,4 +94,93 @@ void AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
   g_non_managed_domain_for_testing = domain;
 }
 
+AccountManagedStatusFinder::AccountManagedStatusFinder(
+    signin::IdentityManager* identity_manager,
+    const CoreAccountInfo& account,
+    base::OnceClosure async_callback)
+    : identity_manager_(identity_manager), account_(account) {
+  // First make sure that the account actually exists in the IdentityManager,
+  // then check the easy cases: For most accounts, it's possible to statically
+  // tell the account type from the email.
+  if (!identity_manager_->HasAccountWithRefreshToken(account_.account_id)) {
+    outcome_ = Outcome::kError;
+  } else if (IsNonEnterpriseUser(account_.email)) {
+    outcome_ = Outcome::kNonEnterprise;
+  } else if (gaia::IsGoogleInternalAccountEmail(
+                 gaia::CanonicalizeEmail(account_.email))) {
+    // Special case: @google.com accounts are a particular sub-type of
+    // enterprise accounts.
+    outcome_ = Outcome::kEnterpriseGoogleDotCom;
+  } else {
+    // The easy cases didn't apply, so actually get the canonical info from
+    // IdentityManager. This may or may not be available immediately.
+    AccountInfo info = identity_manager_->FindExtendedAccountInfo(account);
+    if (info.IsValid()) {
+      outcome_ =
+          info.IsManaged() ? Outcome::kEnterprise : Outcome::kNonEnterprise;
+    } else {
+      // Extended account info isn't (fully) available yet. Observe the
+      // IdentityManager to get notified once it is.
+      identity_manager_observation_.Observe(identity_manager_);
+      callback_ = std::move(async_callback);
+      // TODO(crbug.com/1378553): Add a timeout mechanism.
+    }
+  }
+}
+
+AccountManagedStatusFinder::~AccountManagedStatusFinder() = default;
+
+void AccountManagedStatusFinder::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+
+  // Don't care about other accounts.
+  if (info.account_id != account_.account_id) {
+    return;
+  }
+
+  // Keep waiting if `info` isn't complete yet.
+  if (!info.IsValid()) {
+    return;
+  }
+
+  // This is the relevant account! Determine its type.
+  OutcomeDetermined(info.IsManaged() ? Outcome::kEnterprise
+                                     : Outcome::kNonEnterprise);
+}
+
+void AccountManagedStatusFinder::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+
+  // Don't care about other accounts.
+  if (account_id != account_.account_id) {
+    return;
+  }
+
+  // The interesting account was removed, we're done here.
+  OutcomeDetermined(Outcome::kError);
+}
+
+void AccountManagedStatusFinder::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+
+  OutcomeDetermined(Outcome::kError);
+}
+
+void AccountManagedStatusFinder::OutcomeDetermined(Outcome type) {
+  DCHECK_EQ(outcome_, Outcome::kPending);
+  DCHECK_NE(type, Outcome::kPending);
+
+  outcome_ = type;
+
+  // The type of an account can't change, so no need to observe any longer.
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
+
+  // Let the client know the type was determined.
+  std::move(callback_).Run();
+}
+
 }  // namespace signin
