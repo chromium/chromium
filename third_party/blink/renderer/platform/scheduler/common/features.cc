@@ -98,6 +98,10 @@ BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
              "ThreadedScrollPreventRenderingStarvation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrioritizeCompositingAfterDelayTrials,
+             "PrioritizeCompositingAfterDelayTrials",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<CompositorTQPolicyDuringThreadedScroll>::Option
     kCompositorTQPolicyDuringThreadedScrollOptions[] = {
         {CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation,

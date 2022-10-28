@@ -326,6 +326,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkSchedulerFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
                     "Enable rendering starvation-prevention during threaded scrolling."
                             + " See https://crbug.com/1315279."),
+            Flag.baseFeature(BlinkSchedulerFeatures.PRIORITIZE_COMPOSITING_AFTER_DELAY_TRIALS,
+                    "Controls the delay after which main thread compositing tasks "
+                            + "are prioritized over other non-input tasks."),
             Flag.baseFeature(BaseFeatures.NO_WAKE_UPS_FOR_CANCELED_TASKS,
                     "Controls whether wake ups are possible for canceled tasks."),
             Flag.baseFeature(BaseFeatures.REMOVE_CANCELED_TASKS_IN_TASK_QUEUE,

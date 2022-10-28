@@ -381,6 +381,10 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
       std::move(on_microtask_checkpoint_).Run();
   }
 
+  void SetCurrentUseCase(UseCase use_case) {
+    SetCurrentUseCaseForTest(use_case);
+  }
+
   int update_policy_count_;
   Vector<String> use_cases_;
   base::OnceClosure on_microtask_checkpoint_;
@@ -3681,6 +3685,59 @@ TEST_F(MainThreadSchedulerImplTest, ThrottleHandleThrottlesQueue) {
     EXPECT_TRUE(throttleable_task_queue()->IsThrottled());
   }
   EXPECT_FALSE(throttleable_task_queue()->IsThrottled());
+}
+
+class PrioritizeCompositingAfterDelayTest : public MainThreadSchedulerImplTest {
+ public:
+  PrioritizeCompositingAfterDelayTest()
+      : MainThreadSchedulerImplTest({::base::test::FeatureRefAndParams(
+            kPrioritizeCompositingAfterDelayTrials,
+            {{"PreFCP", "120"}, {"PostFCP", "80"}})}) {}
+};
+
+TEST_F(PrioritizeCompositingAfterDelayTest, PreFCP) {
+  scheduler_->SetCurrentUseCase(UseCase::kEarlyLoading);
+  AdvanceTimeWithTask(base::Milliseconds(119));
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1 CM1 P1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "D1", "CM1"));
+
+  AdvanceTimeWithTask(base::Milliseconds(121));
+  run_order.clear();
+  PostTestTasks(&run_order, "D1 CM1 P1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "CM1", "D1"));
+}
+
+TEST_F(PrioritizeCompositingAfterDelayTest, PostFCP) {
+  scheduler_->SetCurrentUseCase(UseCase::kNone);
+  AdvanceTimeWithTask(base::Milliseconds(79));
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1 CM1 P1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "D1", "CM1"));
+
+  AdvanceTimeWithTask(base::Milliseconds(81));
+  run_order.clear();
+  PostTestTasks(&run_order, "D1 CM1 P1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "CM1", "D1"));
+}
+
+TEST_F(PrioritizeCompositingAfterDelayTest, DuringCompositorGesture) {
+  scheduler_->SetCurrentUseCase(UseCase::kCompositorGesture);
+  AdvanceTimeWithTask(base::Milliseconds(99));
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1 CM1 P1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "D1", "CM1"));
+
+  AdvanceTimeWithTask(base::Milliseconds(101));
+  run_order.clear();
+  PostTestTasks(&run_order, "P1 D1 CM1");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("P1", "CM1", "D1"));
 }
 
 struct CompositorTQPolicyDuringThreadedScrollTestParam {

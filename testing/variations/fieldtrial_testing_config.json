@@ -8685,6 +8685,32 @@
             ]
         }
     ],
+    "PrioritizeCompositingAfterDelayTrials": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "PostFCP": "80",
+                        "PreFCP": "120"
+                    },
+                    "enable_features": [
+                        "PrioritizeCompositingAfterDelayTrials"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyBudgetClockSkewMetrics": [
         {
             "platforms": [

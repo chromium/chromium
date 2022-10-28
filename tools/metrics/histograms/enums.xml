@@ -59251,6 +59251,8 @@ from previous Chrome versions.
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
+  <int value="-983087919"
+      label="PrioritizeCompositingAfterDelayTrials:enabled"/>
   <int value="-982588611" label="ShimlessRMAOsUpdate:disabled"/>
   <int value="-981993135"
       label="DesktopPWAsAdditionalWindowingControls:enabled"/>

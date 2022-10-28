@@ -79,7 +79,7 @@ const double kShortIdlePeriodDurationPercentile = 50;
 const double kFastCompositingIdleTimeThreshold = .2;
 const int64_t kSecondsPerMinute = 60;
 
-constexpr base::TimeDelta kPrioritizeCompositingAfterDelay =
+constexpr base::TimeDelta kDefaultPrioritizeCompositingAfterDelay =
     base::Milliseconds(100);
 
 constexpr TaskQueue::QueuePriority kPrioritizeCompositingAfterDelayPriority =
@@ -565,6 +565,13 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
       base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)
           ? kCompositorTQPolicyDuringThreadedScroll.Get()
           : CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways;
+
+  prioritize_compositing_after_delay_pre_fcp =
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          kPrioritizeCompositingAfterDelayTrials, "PreFCP", 100));
+  prioritize_compositing_after_delay_post_fcp =
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+          kPrioritizeCompositingAfterDelayTrials, "PostFCP", 100));
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -2653,10 +2660,28 @@ void MainThreadSchedulerImpl::
              main_thread_only().did_handle_discrete_input_event) {
     // Assume this input will result in a frame, which we want to show ASAP.
     main_thread_only().prioritize_compositing_after_input = true;
-  } else if (task_timing.end_time() - main_thread_only().last_frame_time >=
-             kPrioritizeCompositingAfterDelay) {
-    main_thread_only().should_prioritize_compositor_task_queue_after_delay =
-        true;
+  } else {
+    base::TimeDelta threshold;
+    switch (current_use_case()) {
+      case UseCase::kCompositorGesture:
+        // Don't use experimental values if we're processing a gesture, so as
+        // not to interfere with kThreadedScrollPreventRenderingStarvation.
+        threshold = kDefaultPrioritizeCompositingAfterDelay;
+        break;
+      case UseCase::kEarlyLoading:
+        threshold =
+            scheduling_settings_.prioritize_compositing_after_delay_pre_fcp;
+        break;
+      default:
+        threshold =
+            scheduling_settings_.prioritize_compositing_after_delay_post_fcp;
+        break;
+    }
+    if (task_timing.end_time() - main_thread_only().last_frame_time >=
+        threshold) {
+      main_thread_only().should_prioritize_compositor_task_queue_after_delay =
+          true;
+    }
   }
 
   main_thread_only().did_handle_discrete_input_event = false;

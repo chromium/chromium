@@ -142,6 +142,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // equivalent to the existing behavior.
     CompositorTQPolicyDuringThreadedScroll
         compositor_tq_policy_during_threaded_scroll;
+
+    // If we haven't run BeginMainFrame in this many milliseconds, give the next
+    // BeginMainFrame task elevated priority.
+    base::TimeDelta prioritize_compositing_after_delay_pre_fcp;
+    base::TimeDelta prioritize_compositing_after_delay_post_fcp;
   };
 
   static const char* UseCaseToString(UseCase use_case);
