@@ -84,6 +84,7 @@
 <translation id="753732157349120914">टैब बदलने की सुविधा</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google से मिली <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{Google से मिली <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{Google से मिली <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7559245342362162951">समूह के टैब फ़ुलस्क्रीन ग्रिड में दिखाएं</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> टैब शेयर करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> टैब शेयर करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब शेयर करें}}</translation>
 <translation id="7792771145871471484">सुझावों की समीक्षा करें.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब का ग्रुप बनाएं}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
