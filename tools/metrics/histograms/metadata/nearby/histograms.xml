@@ -950,7 +950,9 @@ chromium-metrics-reviews@google.com.
 <histogram name="Nearby.Share.Payload.FuseBox.Open.Success"
     enum="BooleanSuccess" expires_after="2023-04-18">
   <obsolete>
-    Removed in 10/2022. Now using Nearby.Share.Payload.Open.Success{FilePath}.
+    Removed in 10/2022. Now using
+    Nearby.Share.Payload{Operation}.Success{FilePath} to support different
+    operation and file path types.
   </obsolete>
   <owner>alanding@google.com</owner>
   <owner>cros-sharesheet@google.com</owner>
@@ -1000,23 +1002,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".File" summary="file"/>
     <variant name=".Text" summary="text"/>
     <variant name=".WiFiCredentials" summary="Wi-Fi credentials"/>
-  </token>
-</histogram>
-
-<histogram name="Nearby.Share.Payload.Open.Success{FilePath}"
-    enum="BooleanSuccess" expires_after="2023-04-24">
-  <owner>alanding@google.com</owner>
-  <owner>cros-sharesheet@google.com</owner>
-  <summary>
-    Records the success/failure of a Nearby Share file open where the file path
-    is created within a mount point owned by file manager. Emitted when the open
-    on file(s) from {FilePath} are completed successfully or with failure.
-  </summary>
-  <token key="FilePath">
-    <variant name="" summary="any file path"/>
-    <variant name=".FuseBox" summary="file path for FuseBox media mount point"/>
-    <variant name=".ShareCache" summary="file path for ShareCache mount point"/>
-    <variant name=".UnknownPath" summary="file path for unknown mount point"/>
   </token>
 </histogram>
 
@@ -1083,6 +1068,28 @@ chromium-metrics-reviews@google.com.
         summary="when using an upgraded WebRTC medium"/>
     <variant name=".WifiLanUpgrade"
         summary="when using an upgraded WifiLan medium"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.Payload{Operation}.Success{FilePath}"
+    enum="BooleanSuccess" expires_after="2023-04-24">
+  <owner>alanding@google.com</owner>
+  <owner>cros-sharesheet@google.com</owner>
+  <summary>
+    Records the success/failure of a Nearby Share file {Operation} where the
+    file path is created within a mount point owned by file manager. Emitted
+    when the {Operation} on file(s) from {FilePath} are completed successfully
+    or with failure.
+  </summary>
+  <token key="FilePath">
+    <variant name="" summary="any file path"/>
+    <variant name=".FuseBox" summary="file path for FuseBox media mount point"/>
+    <variant name=".ShareCache" summary="file path for ShareCache mount point"/>
+    <variant name=".UnknownPath" summary="file path for unknown mount point"/>
+  </token>
+  <token key="Operation">
+    <variant name="Open" summary="opening of file for adding to payload"/>
+    <variant name="Read" summary="reading of file from payload"/>
   </token>
 </histogram>
 

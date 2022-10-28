@@ -4,8 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
@@ -367,6 +370,28 @@ void RecordNearbySharePayloadAttachmentTypeMetric(
       prefix + GetPayloadStatusSubcategoryName(status), type);
 }
 
+// FuseBox (go/fuse-box) makes virtual file systems (e.g. ARC ContentProvider)
+// visible on the Linux native file system through a FUSE (Filesystem in
+// USErspace) abstraction layer.
+bool IsFuseBoxFilePath(const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    return false;
+  }
+  return base::StartsWith(file_path.value(),
+                          file_manager::util::kFuseBoxMediaPath);
+}
+
+// Share Cache is used to store temporary files being shared between app
+// platforms (used by ARC and WebAPK) and is owned by file manager.
+bool IsShareCacheFilePath(Profile* profile, const base::FilePath& file_path) {
+  if (!profile || file_path.empty()) {
+    return false;
+  }
+  return base::StartsWith(
+      file_path.value(),
+      file_manager::util::GetShareCacheFilePath(profile).value());
+}
+
 }  // namespace
 
 void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state) {
@@ -429,6 +454,40 @@ void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     location::nearby::connections::mojom::PayloadStatus status) {
   RecordNearbySharePayloadAttachmentTypeMetric(AttachmentType::kWifiCredentials,
                                                is_incoming, status);
+}
+
+void RecordNearbySharePayloadFileOperationMetrics(
+    Profile* profile,
+    const ShareTarget& share_target,
+    PayloadFileOperation operation,
+    const bool success) {
+  DCHECK(profile);
+
+  if (!share_target.has_attachments()) {
+    return;
+  }
+
+  const absl::optional<base::FilePath>& path =
+      share_target.file_attachments[0].file_path();
+  if (path) {
+    // To determine the file path type, only first attachment file is checked as
+    // it is expected that all file attachments from the volume location will be
+    // using the same path (e.g. MTP, Downloads, Fusebox, ShareCache, etc.).
+    // Only FuseBox and ShareCache are highlighted here as they are paths for
+    // virtual file systems, but other specific path metrics can be added.
+    const std::string metric_str = (operation == PayloadFileOperation::kOpen)
+                                       ? "Nearby.Share.Payload.Open.Success"
+                                       : "Nearby.Share.Payload.Read.Success";
+    if (IsFuseBoxFilePath(*path)) {
+      base::UmaHistogramBoolean(metric_str + ".FuseBox", success);
+    } else if (IsShareCacheFilePath(profile, *path)) {
+      base::UmaHistogramBoolean(metric_str + ".ShareCache", success);
+    } else {
+      base::UmaHistogramBoolean(metric_str + ".UnknownPath", success);
+    }
+    // Overall success/failure independent of the file path.
+    base::UmaHistogramBoolean(metric_str, success);
+  }
 }
 
 void RecordNearbySharePayloadFinalStatusMetric(

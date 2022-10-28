@@ -8,7 +8,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
+#include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
@@ -39,6 +41,11 @@ enum class NearbyShareBackgroundScanningSetupNotificationFlowEvent {
   kExit = 14,
 };
 
+enum class PayloadFileOperation {
+  kOpen,
+  kRead,
+};
+
 void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state);
 
 void RecordNearbyShareEstablishConnectionMetrics(
@@ -65,6 +72,12 @@ void RecordNearbySharePayloadTextAttachmentTypeMetric(
 void RecordNearbySharePayloadWifiCredentialsAttachmentTypeMetric(
     bool is_incoming,
     location::nearby::connections::mojom::PayloadStatus status);
+
+void RecordNearbySharePayloadFileOperationMetrics(
+    Profile* profile,
+    const ShareTarget& share_target,
+    PayloadFileOperation operation,
+    const bool success);
 
 void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,

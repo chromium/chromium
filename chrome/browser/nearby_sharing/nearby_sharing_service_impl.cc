@@ -12,21 +12,18 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
@@ -45,6 +42,7 @@
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
+#include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
@@ -237,28 +235,6 @@ int64_t GeneratePayloadId() {
   int64_t payload_id = 0;
   crypto::RandBytes(&payload_id, sizeof(payload_id));
   return payload_id;
-}
-
-// FuseBox (go/fuse-box) makes virtual file systems (e.g. ARC ContentProvider)
-// visible on the Linux native file system through a FUSE (Filesystem in
-// USErspace) abstraction layer.
-bool IsFuseBoxFilePath(const base::FilePath& file_path) {
-  if (file_path.empty()) {
-    return false;
-  }
-  return base::StartsWith(file_path.value(),
-                          file_manager::util::kFuseBoxMediaPath);
-}
-
-// Share Cache is used to store temporary files being shared between app
-// platforms (used by ARC and WebAPK) and is owned by file manager.
-bool IsShareCacheFilePath(Profile* profile, const base::FilePath& file_path) {
-  if (!profile || file_path.empty()) {
-    return false;
-  }
-  return base::StartsWith(
-      file_path.value(),
-      file_manager::util::GetShareCacheFilePath(profile).value());
 }
 
 // Wraps a call to OnTransferUpdate() to filter any updates after receiving a
@@ -2844,28 +2820,8 @@ void NearbySharingServiceImpl::OnOpenFiles(
   OutgoingShareTargetInfo* info = GetOutgoingShareTargetInfo(share_target);
   const bool files_open_success =
       (files.size() == share_target.file_attachments.size());
-
-  const absl::optional<base::FilePath>& share_path =
-      share_target.file_attachments[0].file_path();
-  if (share_path) {
-    // To determine the file path type, only first attachment file is checked as
-    // it is expected that all file attachments from the volume location will be
-    // using the same path (e.g. MTP, Downloads, Fusebox, ShareCache, etc.).
-    // Only FuseBox and ShareCache are highlighted here as they are paths for
-    // virtual file systems, but other specific path metrics can be added.
-    if (IsFuseBoxFilePath(*share_path)) {
-      base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success.FuseBox",
-                                files_open_success);
-    } else if (IsShareCacheFilePath(profile_, *share_path)) {
-      base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success.ShareCache",
-                                files_open_success);
-    } else {
-      base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success.UnknownPath",
-                                files_open_success);
-    }
-    base::UmaHistogramBoolean("Nearby.Share.Payload.Open.Success",
-                              files_open_success);
-  }
+  RecordNearbySharePayloadFileOperationMetrics(
+      profile_, share_target, PayloadFileOperation::kOpen, files_open_success);
   if (!info || !files_open_success) {
     std::move(callback).Run(std::move(share_target), /*success=*/false);
     return;
@@ -3896,6 +3852,17 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
   // cancellation.
   if (TransferMetadata::IsFinalStatus(metadata.status()) &&
       metadata.status() != TransferMetadata::Status::kCancelled) {
+    if (share_target.has_attachments() &&
+        share_target.file_attachments.size()) {
+      // For file payloads, the |PayloadTracker| callback for updates is
+      // |OnTransferUpdate| which will set status |kComplete| if payload reading
+      // is successful and otherwise not |kCancelled| or |kFailed|.
+      const bool files_read_success =
+          (metadata.status() == TransferMetadata::Status::kComplete);
+      RecordNearbySharePayloadFileOperationMetrics(profile_, share_target,
+                                                   PayloadFileOperation::kRead,
+                                                   files_read_success);
+    }
     Disconnect(share_target, metadata);
   }
 }
