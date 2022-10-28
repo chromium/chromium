@@ -26,8 +26,8 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
 void LargestContentfulPaintCalculator::UpdateLargestContentfulPaintIfNeeded(
     const TextRecord* largest_text,
     const ImageRecord* largest_image) {
-  uint64_t text_size = largest_text ? largest_text->first_size : 0u;
-  uint64_t image_size = largest_image ? largest_image->first_size : 0u;
+  uint64_t text_size = largest_text ? largest_text->recorded_size : 0u;
+  uint64_t image_size = largest_image ? largest_image->recorded_size : 0u;
   if (image_size > text_size) {
     if (image_size > largest_reported_size_ &&
         largest_image->paint_time > base::TimeTicks()) {
@@ -58,7 +58,7 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
   if (!media_timing || !image_node)
     return;
 
-  uint64_t size = largest_image->first_size;
+  uint64_t size = largest_image->recorded_size;
   double bpp = largest_image->EntropyForLCP();
 
   if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
@@ -83,7 +83,7 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
 
   window_performance_->OnLargestContentfulPaintUpdated(
       expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks(),
-      largest_image->first_size, largest_image->load_time,
+      largest_image->recorded_size, largest_image->load_time,
       expose_paint_time_to_api ? largest_image->first_animated_frame_time
                                : base::TimeTicks(),
       image_id, image_url, image_element);
@@ -111,14 +111,14 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulText(
   if (!largest_text.node_)
     return;
   Node* text_node = largest_text.node_;
-  largest_reported_size_ = largest_text.first_size;
+  largest_reported_size_ = largest_text.recorded_size;
   // Do not expose element attribution from shadow trees.
   Element* text_element =
       text_node->IsInShadowTree() ? nullptr : To<Element>(text_node);
   const AtomicString& text_id =
       text_element ? text_element->GetIdAttribute() : AtomicString();
   window_performance_->OnLargestContentfulPaintUpdated(
-      largest_text.paint_time, largest_text.first_size, base::TimeTicks(),
+      largest_text.paint_time, largest_text.recorded_size, base::TimeTicks(),
       base::TimeTicks(), text_id, g_empty_string, text_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
@@ -140,7 +140,7 @@ LargestContentfulPaintCalculator::TextCandidateTraceData(
   value->SetString("type", "text");
   value->SetInteger(
       "nodeId", static_cast<int>(DOMNodeIds::IdForNode(largest_text.node_)));
-  value->SetInteger("size", static_cast<int>(largest_text.first_size));
+  value->SetInteger("size", static_cast<int>(largest_text.recorded_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
   auto* window = window_performance_->DomWindow();
   value->SetBoolean("isOutermostMainFrame",
@@ -157,7 +157,7 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   auto value = std::make_unique<TracedValue>();
   value->SetString("type", "image");
   value->SetInteger("nodeId", static_cast<int>(largest_image->node_id));
-  value->SetInteger("size", static_cast<int>(largest_image->first_size));
+  value->SetInteger("size", static_cast<int>(largest_image->recorded_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
   auto* window = window_performance_->DomWindow();
   value->SetBoolean("isOutermostMainFrame",

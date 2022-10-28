@@ -36,12 +36,12 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
  public:
   ImageRecord(DOMNodeId new_node_id,
               const MediaTiming* new_media_timing,
-              uint64_t new_first_size,
+              uint64_t new_recorded_size,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect)
       : node_id(new_node_id),
         media_timing(new_media_timing),
-        first_size(new_first_size) {
+        recorded_size(new_recorded_size) {
     static unsigned next_insertion_index_ = 1;
     insertion_index = next_insertion_index_++;
     if (PaintTimingVisualizer::IsTracingEnabled()) {
@@ -59,9 +59,9 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
 
   DOMNodeId node_id = kInvalidDOMNodeId;
   WeakPersistent<const MediaTiming> media_timing;
-  // Mind that |first_size| has to be assigned before pusing to
+  // Mind that |recorded_size| has to be assigned before pusing to
   // |size_ordered_set_| since it's the sorting key.
-  uint64_t first_size = 0;
+  uint64_t recorded_size = 0;
   unsigned frame_index = 0;
   unsigned insertion_index;
   // The time of the first paint after fully loaded. 0 means not painted yet.

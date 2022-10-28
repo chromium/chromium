@@ -1045,6 +1045,16 @@
     "args": ["--enable-features=LowPriorityScriptLoading"]
   },
   {
+    "prefix": "lcp-multiple-updates-per-element",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/largest-contentful-paint/update-on-style-change.tentative.html"
+    ],
+    "args": [
+      "--enable-features=LCPMultipleUpdatesPerElement"
+    ]
+  },
+  {
     "prefix": "initially-invisible-images-lcp",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/largest-contentful-paint/initially-invisible-images.html"],

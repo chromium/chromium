@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -37,7 +38,7 @@ void LargestTextPaintManager::PopulateTraceValue(
   value.SetInteger(
       "DOMNodeId",
       static_cast<int>(DOMNodeIds::IdForNode(first_text_paint.node_)));
-  value.SetInteger("size", static_cast<int>(first_text_paint.first_size));
+  value.SetInteger("size", static_cast<int>(first_text_paint.recorded_size));
   value.SetInteger("candidateIndex", ++count_candidates_);
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
   value.SetBoolean("isOutermostMainFrame",
@@ -67,7 +68,7 @@ TextRecord* LargestTextPaintManager::UpdateCandidate() {
     return nullptr;
   }
   const base::TimeTicks time = largest_text_->paint_time;
-  const uint64_t size = largest_text_->first_size;
+  const uint64_t size = largest_text_->recorded_size;
   DCHECK(paint_timing_detector_);
   bool changed =
       paint_timing_detector_->NotifyIfChangedLargestTextPaint(time, size);
@@ -137,6 +138,10 @@ bool TextPaintTimingDetector::ShouldWalkObject(
   if (!IsRecordingLargestTextPaint() &&
       !TextElementTiming::NeededForElementTiming(*node)) {
     return false;
+  }
+
+  if (RuntimeEnabledFeatures::LCPMultipleUpdatesPerElementEnabled()) {
+    return true;
   }
 
   // This metric defines the size of a text block by its first size, so we
@@ -209,8 +214,8 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
 void TextPaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(callback_manager_);
   visitor->Trace(frame_view_);
-  visitor->Trace(text_element_timing_);
   visitor->Trace(recorded_set_);
+  visitor->Trace(text_element_timing_);
   visitor->Trace(texts_queued_for_paint_time_);
   visitor->Trace(ltp_manager_);
 }
@@ -221,7 +226,7 @@ LargestTextPaintManager::LargestTextPaintManager(
     : frame_view_(frame_view), paint_timing_detector_(paint_timing_detector) {}
 
 void LargestTextPaintManager::MaybeUpdateLargestText(TextRecord* record) {
-  if (!largest_text_ || largest_text_->first_size < record->first_size) {
+  if (!largest_text_ || largest_text_->recorded_size < record->recorded_size) {
     largest_text_ = record;
   }
 }
@@ -232,7 +237,7 @@ void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect) {
   if (size &&
-      (!largest_ignored_text_ || size > largest_ignored_text_->first_size)) {
+      (!largest_ignored_text_ || size > largest_ignored_text_->recorded_size)) {
     // Create the largest ignored text with a |frame_index_| of 0. When it is
     // queued for paint, we'll set the appropriate |frame_index_|.
     largest_ignored_text_ = MakeGarbageCollected<TextRecord>(
@@ -262,7 +267,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
     record->paint_time = timestamp;
     if (can_report_element_timing)
       text_element_timing_->OnTextObjectPainted(*record);
-    if (ltp_manager_ && record->first_size > 0u) {
+    if (ltp_manager_ && record->recorded_size > 0u) {
       ltp_manager_->MaybeUpdateLargestText(record);
     }
     keys_to_be_removed.push_back(it.key);

@@ -168,6 +168,19 @@ class TextPaintTimingDetectorTest : public testing::Test {
       InvokeCallback();
   }
 
+  void SimulatePresentationTime() {
+    AdvanceClock(kQuantumOfTime);
+    while (mock_callback_manager_->CountCallbacks() > 0)
+      InvokeCallback();
+  }
+
+  void CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(
+      wtf_size_t size) {
+    UpdateAllLifecyclePhases();
+    EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), size);
+    SimulatePresentationTime();
+  }
+
   Element* AppendFontBlockToBody(String content) {
     Element* font = GetDocument().CreateRawElement(html_names::kFontTag);
     font->setAttribute(html_names::kSizeAttr, AtomicString("5"));
@@ -277,6 +290,17 @@ TEST_F(TextPaintTimingDetectorTest, LaterSameSizeCandidate) {
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, first);
+}
+
+TEST_F(TextPaintTimingDetectorTest,
+       LargestTextPaint_FontSizeChange_MultipleUpdates) {
+  ScopedLCPMultipleUpdatesPerElementForTest scoped_lcp_multiple_updates(true);
+  SetBodyInnerHTML(R"HTML()HTML");
+  Element* text = AppendDivElementToBody("text");
+  SetElementStyle(text, "font-size: 200px");
+  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+  SetElementStyle(text, "font-size: 300px");
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(1u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
@@ -572,7 +596,8 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
-TEST_F(TextPaintTimingDetectorTest, StopRecordingLCPAfterUserInput) {
+TEST_F(TextPaintTimingDetectorTest,
+       DestroyLargestTextPaintMangerAfterUserInput) {
   SetBodyInnerHTML(R"HTML(
   )HTML");
   AppendDivElementToBody("text");
@@ -672,9 +697,9 @@ TEST_P(ParameterizedTextPaintTimingDetectorTest, CapturingListMarkers) {
       <li>Another list item</li>
     </ol>
   )HTML");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
 
-  EXPECT_EQ(CountRecordedSize(), LayoutNGEnabled() ? 3u : 2u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(
+      LayoutNGEnabled() ? 3u : 2u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {
@@ -686,7 +711,6 @@ TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {
 
   auto* elem = To<SVGTextContentElement>(GetDocument().QuerySelector("text"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-
   EXPECT_EQ(CountRecordedSize(), 1u);
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, elem);
 }
@@ -697,7 +721,6 @@ TEST_F(TextPaintTimingDetectorTest, NormalTextUnclipped) {
     <div id='d'>text</div>
   )HTML");
   EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1u);
-  EXPECT_EQ(CountRecordedSize(), 1u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, ClippedByViewport) {
@@ -739,7 +762,7 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
 
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, div1);
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->first_size, 1u);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->recorded_size, 1u);
 
   Element* div2 = GetDocument().CreateRawElement(html_names::kDivTag);
   Text* text2 = GetDocument().createTextNode(
@@ -754,7 +777,7 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
   // This size is larger than the size of the first object . But the exact size
   // depends on different platforms. We only need to ensure this size is larger
   // than the first size.
-  EXPECT_GT(TextRecordOfLargestTextPaint()->first_size, 1u);
+  EXPECT_GT(TextRecordOfLargestTextPaint()->recorded_size, 1u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, Iframe) {
@@ -791,8 +814,7 @@ TEST_F(TextPaintTimingDetectorTest, SameSizeShouldNotBeIgnored) {
     <div>text</div>
     <div>text</div>
   )HTML");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(CountRecordedSize(), 4u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(4u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, VisibleTextAfterUserInput) {
@@ -831,8 +853,7 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML) {
     </style>
     <div>Text</div>
   )HTML");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(CountRecordedSize(), 0u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 
   // Change the opacity of documentElement, now the img should be a candidate.
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
@@ -851,18 +872,15 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
     </style>
     <div id="target">Text</div>
   )HTML");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(CountRecordedSize(), 0u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
                                                 "opacity: 0");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(CountRecordedSize(), 0u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
                                                 "opacity: 1");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(CountRecordedSize(), 0u);
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
 }
 
 }  // namespace blink

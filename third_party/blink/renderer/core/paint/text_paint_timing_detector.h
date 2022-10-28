@@ -6,15 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_PAINT_TIMING_DETECTOR_H_
 
 #include <memory>
-#include <queue>
-#include <set>
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/text_element_timing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -27,14 +25,14 @@ class TracedValue;
 class TextRecord final : public GarbageCollected<TextRecord> {
  public:
   TextRecord(Node& node,
-             uint64_t new_first_size,
+             uint64_t new_recorded_size,
              const gfx::RectF& element_timing_rect,
              const gfx::Rect& frame_visual_rect,
              const gfx::RectF& root_visual_rect,
              uint32_t frame_index)
       : node_(&node),
+        recorded_size(new_recorded_size),
         frame_index_(frame_index),
-        first_size(new_first_size),
         element_timing_rect_(element_timing_rect) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
@@ -47,8 +45,8 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   void Trace(Visitor*) const;
 
   WeakMember<Node> node_;
+  uint64_t recorded_size = 0;
   uint32_t frame_index_ = 0;
-  uint64_t first_size = 0;
   gfx::RectF element_timing_rect_;
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.

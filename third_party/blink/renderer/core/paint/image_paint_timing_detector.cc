@@ -65,19 +65,19 @@ static bool LargeImageFirst(const base::WeakPtr<ImageRecord>& a,
                             const base::WeakPtr<ImageRecord>& b) {
   DCHECK(a);
   DCHECK(b);
-  if (a->first_size != b->first_size)
-    return a->first_size > b->first_size;
-  // This make sure that two different |ImageRecord|s with the same |first_size|
-  // wouldn't be merged in the |size_ordered_set_|.
+  if (a->recorded_size != b->recorded_size)
+    return a->recorded_size > b->recorded_size;
+  // This make sure that two different |ImageRecord|s with the same
+  // |recorded_size| wouldn't be merged in the |size_ordered_set_|.
   return a->insertion_index < b->insertion_index;
 }
 
 }  // namespace
 
 double ImageRecord::EntropyForLCP() const {
-  if (first_size == 0 || !media_timing)
+  if (recorded_size == 0 || !media_timing)
     return 0.0;
-  return media_timing->ContentSizeForEntropy() * 8.0 / first_size;
+  return media_timing->ContentSizeForEntropy() * 8.0 / recorded_size;
 }
 
 ImagePaintTimingDetector::ImagePaintTimingDetector(
@@ -97,7 +97,7 @@ ImageRecord* ImageRecordsManager::LargestImage() const {
     return largest_pending;
   }
   if (!largest_pending ||
-      largest_painted_image_->first_size >= largest_pending->first_size) {
+      largest_painted_image_->recorded_size >= largest_pending->recorded_size) {
     return largest_painted_image_.get();
   }
   return largest_pending;
@@ -112,7 +112,7 @@ void ImagePaintTimingDetector::PopulateTraceValue(
                   first_image_paint.media_timing
                       ? String(first_image_paint.media_timing->Url())
                       : "(deleted)");
-  value.SetInteger("size", static_cast<int>(first_image_paint.first_size));
+  value.SetInteger("size", static_cast<int>(first_image_paint.recorded_size));
   value.SetInteger("candidateIndex", ++count_candidates_);
   value.SetBoolean("isMainFrame", frame_view_->GetFrame().IsMainFrame());
   value.SetBoolean("isOutermostMainFrame",
@@ -169,7 +169,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
   }
 
   const uint64_t size =
-      largest_image_record ? largest_image_record->first_size : 0;
+      largest_image_record ? largest_image_record->recorded_size : 0;
 
   double bpp =
       largest_image_record ? largest_image_record->EntropyForLCP() : 0.0;
@@ -271,7 +271,7 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     record->paint_time = timestamp;
     size_ordered_set_.erase(it->value->AsWeakPtr());
     if (!largest_painted_image_ ||
-        largest_painted_image_->first_size < record->first_size) {
+        largest_painted_image_->recorded_size < record->recorded_size) {
       largest_painted_image_ = std::move(it->value);
     }
     pending_images_.erase(it);
@@ -514,7 +514,7 @@ void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect) {
   if (visual_size && (!largest_ignored_image_ ||
-                      visual_size > largest_ignored_image_->first_size)) {
+                      visual_size > largest_ignored_image_->recorded_size)) {
     largest_ignored_image_ =
         CreateImageRecord(*record_id.first, record_id.second, visual_size,
                           frame_visual_rect, root_visual_rect);
@@ -539,8 +539,9 @@ bool ImageRecordsManager::RecordFirstPaintAndReturnIsPending(
   }
   recorded_images_.insert(record_id);
   // If this cannot become an LCP candidate, no need to do anything else.
-  if (visual_size == 0u || (largest_painted_image_ &&
-                            largest_painted_image_->first_size > visual_size)) {
+  if (visual_size == 0u ||
+      (largest_painted_image_ &&
+       largest_painted_image_->recorded_size > visual_size)) {
     return false;
   }
   if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP) &&
