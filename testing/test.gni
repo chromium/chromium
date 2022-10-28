@@ -107,9 +107,12 @@ template("mixed_test") {
 #      android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   test_runner_shard: (Fuchsia, optional): for CFv2 tests, use the given test
-#      runner shard rather than the default shard for the ELF runner. This is
-#      useful, for example, to use the elf_test_ambient_exec_runner for tests
-#      that require job_policy_ambient_mark_vmo_exec.
+#      runner shard rather than the default shard for the ELF runner when
+#      assembling the test component. This is useful, for example, to use the
+#      elf_test_ambient_exec_runner for tests that require
+#      job_policy_ambient_mark_vmo_exec.
+#   fuchsia_package_deps: (Fuchsia, optional) List of fuchsia_component()
+#      targets that this test package contains.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -531,6 +534,9 @@ template("test") {
       package_name = _output_name
       deps = _test_component_targets
 
+      if (defined(invoker.fuchsia_package_deps)) {
+        deps += invoker.fuchsia_package_deps
+      }
       if (!defined(excluded_dirs)) {
         excluded_dirs = []
       }

@@ -225,7 +225,6 @@ test("cast_runner_integration_tests") {
   ]
   data = [ "cast/testdata" ]
   deps = [
-    ":cast_runner_component",
     ":cast_runner_core",
     ":cast_runner_test_core",
     "//base/test:test_support",
@@ -244,6 +243,7 @@ test("cast_runner_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
+  fuchsia_package_deps = [ ":cast_runner_component" ]
   package_deps = [
     [
       ":cast_runner_pkg",

@@ -694,7 +694,6 @@ test("web_engine_integration_tests") {
   data = [ "test/data" ]
   deps = [
     ":browsertest_core",
-    ":context_provider_component",
     "//base",
     "//base:test_log_listener_safe",
     "//base/test:test_support",
@@ -716,6 +715,7 @@ test("web_engine_integration_tests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
+  fuchsia_package_deps = [ ":context_provider_component" ]
   package_deps = [ [
         ":web_engine",
         "web_engine",
