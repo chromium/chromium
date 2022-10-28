@@ -151,30 +151,18 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Flaking on Windows / Intel
-crbug.com/1282821 [ win10 intel ] ContextLost_WebGPUBlockedAfterJSNavigation [ RetryOnFailure ]
 
 # Flaking on Mac / Linux
 crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
-crbug.com/1284424 [ linux ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
 # Flaking on Nexus 5X
-crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
-crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
-crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
-crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
-crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
-crbug.com/1275180 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 
 # Flaky for LaCrOS
-crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
-crbug.com/1337793 [ linux display-server-wayland ] ContextLost_WebGLContextLostOverlyLargeUniform [ Failure ]
 
 # Flaky on Fuchsia
-crbug.com/1302749 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ RetryOnFailure ]
 
 # Failing on android N5
 crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
@@ -183,10 +171,6 @@ crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2U
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLContextLostFromGPUProcessExit [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ RetryOnFailure ]
-crbug.com/1340081 [ linux release amd-0x7340 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ RetryOnFailure ]
-crbug.com/1340081 [ linux release intel ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
-crbug.com/1340081 [ linux release intel ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
-crbug.com/1340081 [ linux release intel-0x5912 ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
