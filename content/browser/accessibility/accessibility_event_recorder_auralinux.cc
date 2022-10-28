@@ -10,6 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
@@ -393,8 +394,7 @@ void AccessibilityEventRecorderAuraLinux::ProcessATSPIEvent(
   g_array_free(state_array, TRUE);
   g_object_unref(atspi_states);
   output << " ";
-  std::copy(states.begin(), states.end(),
-            std::ostream_iterator<std::string>(output, ", "));
+  base::ranges::copy(states, std::ostream_iterator<std::string>(output, ", "));
 
   OnEvent(output.str());
 }
