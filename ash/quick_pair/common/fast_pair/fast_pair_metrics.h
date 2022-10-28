@@ -88,6 +88,18 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairVersion {
   kMaxValue = kVersion2,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the FastPairHandshakeSteps enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairHandshakeSteps {
+  kHandshakeStarted = 0,
+  kGattInitalized = 1,
+  kKeyBasedPairingResponseReceived = 2,
+  kHandshakeComplete = 3,
+  kMaxValue = kHandshakeComplete,
+};
+
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event);
@@ -224,6 +236,10 @@ void RecordHandshakeResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordHandshakeStep(FastPairHandshakeSteps handshake_step,
+                         const Device& device);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordBluetoothLowEnergyScannerStartSessionResult(bool success);

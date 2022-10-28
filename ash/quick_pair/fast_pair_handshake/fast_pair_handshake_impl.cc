@@ -31,11 +31,14 @@ FastPairHandshakeImpl::FastPairHandshakeImpl(
                         std::move(on_complete),
                         nullptr,
                         nullptr) {
+  RecordHandshakeStep(FastPairHandshakeSteps::kHandshakeStarted, *device_);
+
   device::BluetoothDevice* bluetooth_device =
       adapter_->GetDevice(device_->ble_address);
 
   if (!bluetooth_device) {
-    QP_LOG(INFO) << __func__ << ": Lost device before starting handshake.";
+    QP_LOG(INFO) << __func__
+                 << ": Lost device before starting GATT connection.";
     std::move(on_complete_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
     return;
@@ -63,6 +66,9 @@ void FastPairHandshakeImpl::OnGattClientInitializedCallback(
     return;
   }
 
+  QP_LOG(INFO) << __func__
+               << ": Fast Pair GATT service client initialization successful.";
+  RecordHandshakeStep(FastPairHandshakeSteps::kGattInitalized, *device_);
   FastPairDataEncryptorImpl::Factory::CreateAsync(
       device_,
       base::BindOnce(&FastPairHandshakeImpl::OnDataEncryptorCreateAsync,
@@ -87,8 +93,7 @@ void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
   }
 
   fast_pair_data_encryptor_ = std::move(fast_pair_data_encryptor);
-  QP_LOG(INFO) << __func__
-               << ": Fast Pair GATT service client initialization successful.";
+  QP_LOG(INFO) << __func__ << ": beginning key-based pairing protocol";
   RecordTotalDataEncryptorCreateTime(base::TimeTicks::Now() -
                                      encryptor_create_start_time);
 
@@ -110,8 +115,10 @@ void FastPairHandshakeImpl::OnWriteResponse(
   RecordWriteKeyBasedCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
-    QP_LOG(WARNING) << __func__
-                    << ": Failed to write request: " << failure.value();
+    QP_LOG(WARNING)
+        << __func__
+        << ": Failed during key-based pairing protocol due to failure: "
+        << failure.value();
     RecordWriteKeyBasedCharacteristicPairFailure(failure.value());
     RecordHandshakeResult(/*success=*/false);
     RecordHandshakeFailureReason(HandshakeFailureReason::kFailedWriteResponse);
@@ -120,6 +127,8 @@ void FastPairHandshakeImpl::OnWriteResponse(
   }
 
   QP_LOG(INFO) << __func__ << ": Successfully wrote response.";
+  RecordHandshakeStep(FastPairHandshakeSteps::kKeyBasedPairingResponseReceived,
+                      *device_);
 
   fast_pair_data_encryptor_->ParseDecryptedResponse(
       response_bytes,
@@ -162,6 +171,7 @@ void FastPairHandshakeImpl::OnParseDecryptedResponse(
 
   completed_successfully_ = true;
   RecordHandshakeResult(/*success=*/true);
+  RecordHandshakeStep(FastPairHandshakeSteps::kHandshakeComplete, *device_);
   std::move(on_complete_callback_).Run(device_, absl::nullopt);
 }
 

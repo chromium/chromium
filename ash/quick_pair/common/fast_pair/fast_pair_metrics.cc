@@ -212,6 +212,12 @@ const char kFootprintsFetcherGetHttpResponseError[] =
 const char kFastPairRepositoryCacheResult[] =
     "Bluetooth.ChromeOS.FastPair.FastPairRepository.Cache.Result";
 const char kHandshakeResult[] = "Bluetooth.ChromeOS.FastPair.Handshake.Result";
+const char kFastPairHandshakeStepInitial[] =
+    "Bluetooth.ChromeOS.FastPair.Handshake.Steps.InitialPairingProtocol";
+const char kFastPairHandshakeStepSubsequent[] =
+    "Bluetooth.ChromeOS.FastPair.Handshake.Steps.SubsequentPairingProtocol";
+const char kFastPairHandshakeStepRetroactive[] =
+    "Bluetooth.ChromeOS.FastPair.Handshake.Steps.RetroactivePairingProtocol";
 const char kHandshakeFailureReason[] =
     "Bluetooth.ChromeOS.FastPair.Handshake.FailureReason";
 const char kBleScanSessionResult[] =
@@ -596,8 +602,27 @@ void RecordFastPairRepositoryCacheResult(bool success) {
 void RecordHandshakeResult(bool success) {
   base::UmaHistogramBoolean(kHandshakeResult, success);
 }
+
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason) {
   base::UmaHistogramEnumeration(kHandshakeFailureReason, failure_reason);
+}
+
+void RecordHandshakeStep(FastPairHandshakeSteps handshake_step,
+                         const Device& device) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramEnumeration(kFastPairHandshakeStepInitial,
+                                    handshake_step);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramEnumeration(kFastPairHandshakeStepRetroactive,
+                                    handshake_step);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramEnumeration(kFastPairHandshakeStepSubsequent,
+                                    handshake_step);
+      break;
+  }
 }
 
 void RecordBluetoothLowEnergyScannerStartSessionResult(bool success) {

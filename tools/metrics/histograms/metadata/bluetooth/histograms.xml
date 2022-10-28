@@ -553,6 +553,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.Handshake.Steps.{FastPairPairingProtocol}"
+    enum="FastPairHandshakeSteps" expires_after="2023-02-26">
+  <owner>jackshira@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Fast Pair Handshake flow: emitted when we start the
+    Handshake procedure, when we have a successful GATT initialization, when we
+    receive bytes from the Key-based pairing characteristic, and when the
+    Handshake is completed successfully. Helps us identify drop-off points of
+    failures in our flow, and effective success metrics by comparing the
+    difference between starting the procedure and completing the procedure
+    successfully.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="retroactive pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult"
     enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>shanefitz@google.com</owner>

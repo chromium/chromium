@@ -37315,6 +37315,14 @@ Called by update_extension_permission.py.-->
       label="Incorrect Key-based Pairing Characteristic response type"/>
 </enum>
 
+<enum name="FastPairHandshakeSteps">
+  <int value="0" label="Handshake started"/>
+  <int value="1" label="GATT initialized successfully"/>
+  <int value="2"
+      label="Recieved response bytes from Key-based pairing characteristic"/>
+  <int value="3" label="Handshake completed successfully"/>
+</enum>
+
 <enum name="FastPairPairFailure">
   <int value="0" label="Failed to create a GATT connection to the device"/>
   <int value="1" label="Failed to find the expected GATT service"/>
