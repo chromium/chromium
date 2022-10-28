@@ -33,12 +33,11 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpServerApiTest, SocketTCPCreateGood) {
   std::unique_ptr<base::Value> result(
       api_test_utils::RunFunctionAndReturnSingleResult(
           socket_create_function.get(), "[]", browser_context()));
-  ASSERT_EQ(base::Value::Type::DICTIONARY, result->type());
-  std::unique_ptr<base::DictionaryValue> value =
-      base::DictionaryValue::From(std::move(result));
-  absl::optional<int> socketId = value->FindIntKey("socketId");
-  ASSERT_TRUE(socketId);
-  ASSERT_TRUE(*socketId > 0);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  absl::optional<int> socket_id = result->GetDict().FindInt("socketId");
+  ASSERT_TRUE(socket_id);
+  ASSERT_GT(*socket_id, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(SocketsTcpServerApiTest, SocketTCPServerExtension) {
