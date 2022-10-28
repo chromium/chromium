@@ -351870,6 +351870,10 @@
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
     ],
+    "videoFrame-serialization.crossAgentCluster.helper.html": [
+     "8e751632a1f285b6c0dd50d4fb14cdb10d451816",
+     []
+    ],
     "videoFrame-utils.js": [
      "a4c761306c05d58880e408b30ef2b28f6d6f0cb6",
      []
@@ -580313,6 +580317,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "videoFrame-serialization.crossAgentCluster.html": [
+     "c2ab29850e88e08cfae56465255c7cf06ed1bb00",
+     [
+      null,
+      {}
      ]
     ],
     "videoFrame-texImage.any.js": [
