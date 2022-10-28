@@ -42,11 +42,6 @@ using base::FilePath;
 
 namespace storage {
 
-// static
-BASE_FEATURE(kInhibitBlobMemoryControllerMemoryPressureResponse,
-             "InhibitBlobMemoryControllerMemoryPressureResponse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 constexpr int64_t kUnknownDiskAvailability = -1ll;
 const int64_t kMinSecondsForPressureEvictions = 30;
@@ -996,14 +991,6 @@ void BlobMemoryController::OnMemoryPressure(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
   }
-
-  if (base::FeatureList::IsEnabled(
-          kInhibitBlobMemoryControllerMemoryPressureResponse)) {
-    return;
-  }
-
-  // TODO(crbug.com/1087530): Run trial to see if we should get rid of this
-  // whole intervention or leave it on for MEMORY_PRESSURE_LEVEL_MODERATE.
 
   auto time_from_last_evicion = base::TimeTicks::Now() - last_eviction_time_;
   if (last_eviction_time_ != base::TimeTicks() &&
