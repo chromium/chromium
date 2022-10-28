@@ -4,6 +4,7 @@
 
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 
 namespace mojo {
@@ -57,8 +58,7 @@ bool CreateSkBitmapForPixelData(SkBitmap* b,
   // it provides the recipient of the SkBitmap with a stable copy of the data.
   // The sender could otherwise continue modifying the shared memory buffer
   // underlying the BigBuffer instance.
-  std::copy(pixel_data.begin(), pixel_data.end(),
-            static_cast<uint8_t*>(b->getPixels()));
+  base::ranges::copy(pixel_data, static_cast<uint8_t*>(b->getPixels()));
   b->notifyPixelsChanged();
   return true;
 }

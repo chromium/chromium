@@ -4,10 +4,9 @@
 
 #include "chromecast/metrics/cast_event_builder_impl.h"
 
-#include <algorithm>
-
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromecast/base/hash_util.h"
 #include "chromecast/metrics/cast_event_builder.h"
@@ -223,7 +222,7 @@ CastEventBuilder& CastEventBuilderImpl::SetFeatureVector(
     const std::vector<float>& features) {
   event_proto_->mutable_feature_vector()->Resize(features.size(), 0);
   float* mutable_data = event_proto_->mutable_feature_vector()->mutable_data();
-  std::copy(features.data(), features.data() + features.size(), mutable_data);
+  base::ranges::copy(features, mutable_data);
   return *this;
 }
 

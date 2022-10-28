@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
@@ -341,7 +342,7 @@ ChannelNacl::ReadState ChannelNacl::ReadData(
     size_t bytes_to_read = buffer_len - *bytes_read;
     if (vec->size() <= bytes_to_read) {
       // We can read and discard the entire vector.
-      std::copy(vec->begin(), vec->end(), buffer + *bytes_read);
+      base::ranges::copy(*vec, buffer + *bytes_read);
       *bytes_read += vec->size();
       read_queue_.pop_front();
     } else {

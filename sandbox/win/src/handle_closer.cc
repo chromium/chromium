@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/free_deleter.h"
+#include "base/ranges/algorithm.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -148,7 +149,7 @@ bool HandleCloser::SetupHandleList(void* buffer, size_t buffer_bytes) {
     // Copy the handle names.
     for (HandleMap::mapped_type::iterator j = i->second.begin();
          j != i->second.end(); ++j) {
-      output = std::copy((*j).begin(), (*j).end(), output) + 1;
+      output = base::ranges::copy(*j, output) + 1;
     }
 
     // Round up to the nearest multiple of sizeof(size_t).
