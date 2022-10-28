@@ -483,10 +483,6 @@ const char kMediaPermissionsControlDescription[] =
     "Enables user control for camera and/or microphone access for a specific "
     "site through site settings during its lifespan.";
 
-const char kMetrickitCrashReportName[] = "Metrickit crash reports";
-const char kMetrickitCrashReportDescription[] =
-    "Enables sending Metrickit crash reports";
-
 const char kMetrickitNonCrashReportName[] = "Metrickit non-crash reports";
 const char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "

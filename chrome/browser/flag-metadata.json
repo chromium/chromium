@@ -4644,11 +4644,6 @@
     "expiry_milestone": 83
   },
   {
-    "name": "metrickit-crash-reports",
-    "owners": [ "olivierrobin", "justincohen", "bling-flags@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "metrickit-non-crash-reports",
     "owners": [ "olivierrobin", "justincohen", "bling-flags@google.com" ],
     "expiry_milestone": 130

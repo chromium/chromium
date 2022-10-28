@@ -9,8 +9,6 @@
 
 BASE_DECLARE_FEATURE(kCrashpadIOS);
 
-BASE_DECLARE_FEATURE(kMetrickitCrashReport);
-
 BASE_DECLARE_FEATURE(kMetrickitNonCrashReport);
 
 BASE_DECLARE_FEATURE(kSyntheticCrashReportsForUte);

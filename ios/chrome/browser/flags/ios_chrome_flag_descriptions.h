@@ -433,11 +433,6 @@ extern const char kLogBreadcrumbsDescription[];
 extern const char kMediaPermissionsControlName[];
 extern const char kMediaPermissionsControlDescription[];
 
-// Title and description for the flag that controls sending metrickit crash
-// reports.
-extern const char kMetrickitCrashReportName[];
-extern const char kMetrickitCrashReportDescription[];
-
 // Title and description for the flag that controls sending metrickit non-crash
 // reports.
 extern const char kMetrickitNonCrashReportName[];

@@ -8,8 +8,6 @@
 #import <Foundation/Foundation.h>
 #import <MetricKit/MetricKit.h>
 
-extern NSString* const kChromeMetricKitPayloadsDirectory;
-
 // A subscriber that save MetricKit reports to the application document
 // directory.
 @interface MetricKitSubscriber : NSObject <MXMetricManagerSubscriber>
