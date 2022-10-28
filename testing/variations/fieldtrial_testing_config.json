@@ -7396,8 +7396,7 @@
                     },
                     "enable_features": [
                         "LocalHistorySuggestRevamp",
-                        "OmniboxLocalZeroSuggestAgeThreshold",
-                        "ZeroSuggestPrefetching"
+                        "OmniboxLocalZeroSuggestAgeThreshold"
                     ]
                 }
             ]

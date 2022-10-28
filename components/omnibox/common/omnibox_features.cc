@@ -226,7 +226,7 @@ BASE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers,
 // Enables prefetching of the zero prefix suggestions for eligible users on NTP.
 BASE_FEATURE(kZeroSuggestPrefetching,
              "ZeroSuggestPrefetching",
-             enabled_by_default_desktop_android);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables prefetching of the zero prefix suggestions for eligible users on SRP.
 BASE_FEATURE(kZeroSuggestPrefetchingOnSRP,
