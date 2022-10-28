@@ -15,8 +15,8 @@
 # for correct re-flowing of the text.
 # [1] https://www.chromium.org/developers/tools-we-use-in-chromium/grit/grit-users-guide.
 #
-# See documentation in docs/enterprise/components/policy/resources/description_guidelines.md
-# for how product names should appear in <ph> tags to ensure consistency.
+# See documentation in docs/enterprise/description_guidelines.md for how product
+# names should appear in <ph> tags to ensure consistency.
 #
 #
 # Generated grd names:
@@ -60,8 +60,8 @@ label: A short one line summary that may
 caption: A short one line summary that may
   wrap to the next line
 
-# See docs/enterprise/components/policy/resources/description_guidelines.md
-# for how product names should appear in <ph> tags to ensure consistency.
+# See docs/enterprise/description_guidelines.md for how product names should
+# appear in <ph> tags to ensure consistency.
 # Placeholders:
 #   The following placeholder strings are automatically substituted:
 #     $1 -> Google Chrome / Chromium
