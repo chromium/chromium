@@ -13,7 +13,7 @@
 struct UrlLoadParams;
 
 // Window activity origins.  Please add new origins at the end, to keep
-// numeric values of existing origins.
+// numeric values of existing origins, and update kMaxValue.
 // If new values are added, they must also be added to the WindowActivityOrigin
 // histogram definition in //tools/metrics/histograms/enums.xml
 typedef NS_ENUM(NSInteger, WindowActivityOrigin) {
@@ -40,8 +40,10 @@ typedef NS_ENUM(NSInteger, WindowActivityOrigin) {
   WindowActivityContentSuggestionsOrigin,
   // The command origin comes from dragging a tab to create a new window.
   WindowActivityTabDragOrigin,
+  // The command origin comes from a keyboard shortcut.
+  WindowActivityKeyCommandOrigin,
   // Size of enum.
-  kMaxValue = WindowActivityTabDragOrigin
+  kMaxValue = WindowActivityKeyCommandOrigin
 };
 
 // Helper functions to create NSUserActivity instances that encode specific

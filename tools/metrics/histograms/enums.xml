@@ -106262,6 +106262,7 @@ Called by update_scheduler_enums.py.-->
   <int value="9" label="WindowActivityLocationBarSteadyViewOrigin"/>
   <int value="10" label="WindowActivityContentSuggestionsOrigin"/>
   <int value="11" label="WindowActivityTabDragOrigin"/>
+  <int value="12" label="WindowActivityKeyCommandOrigin"/>
 </enum>
 
 <enum name="WindowDragEndEventType">
