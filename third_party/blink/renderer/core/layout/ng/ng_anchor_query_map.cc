@@ -96,9 +96,9 @@ struct NGStitchedAnchorQuery : public GarbageCollected<NGStitchedAnchorQuery> {
     kOverwriteIfBefore,
   };
 
-  void AddChild(const NGPhysicalFragment& fragment,
-                const PhysicalOffset& offset_from_fragmentainer,
-                const FragmentainerContext& fragmentainer) {
+  void AddAnchorQuery(const NGPhysicalFragment& fragment,
+                      const PhysicalOffset& offset_from_fragmentainer,
+                      const FragmentainerContext& fragmentainer) {
     const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
     if (!anchor_query)
       return;
@@ -243,7 +243,7 @@ struct NGStitchedAnchorQueries {
       if (layout_object->CanContainAbsolutePositionObjects() ||
           layout_object->CanContainFixedPositionObjects()) {
         EnsureStitchedAnchorQuery(*layout_object)
-            .AddChild(fragment, offset_from_fragmentainer, fragmentainer);
+            .AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
       }
     }
 
@@ -330,7 +330,7 @@ struct NGStitchedAnchorQueries {
             anchor_name, fragment, {offset_from_fragmentainer, fragment.Size()},
             fragmentainer, NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
       }
-      query.AddChild(fragment, offset_from_fragmentainer, fragmentainer);
+      query.AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
       containing_block = containing_block->Container(&skip_info);
     }
   }
