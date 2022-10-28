@@ -65,6 +65,12 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
       int* weight_out,
       gfx::FontRenderParams* params_out) const override;
   bool AnimationsEnabled() const override;
+  void AddWindowButtonOrderObserver(
+      ui::WindowButtonOrderObserver* observer) override;
+  void RemoveWindowButtonOrderObserver(
+      ui::WindowButtonOrderObserver* observer) override;
+  WindowFrameAction GetWindowFrameAction(
+      WindowFrameActionSource source) override;
 
   // ui::LinuxUiTheme:
   ui::NativeTheme* GetNativeTheme() const override;
@@ -75,11 +81,10 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   SkColor GetActiveSelectionFgColor() const override;
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
-  WindowFrameAction GetWindowFrameAction(
-      WindowFrameActionSource source) override;
   bool PreferDarkTheme() const override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
+
   // QtInterface::Delegate:
   void FontChanged() override;
   void ThemeChanged() override;

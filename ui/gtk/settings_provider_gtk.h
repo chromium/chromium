@@ -33,11 +33,10 @@ class SettingsProviderGtk : public SettingsProvider {
  private:
   class FrameActionSettingWatcher {
    public:
-    FrameActionSettingWatcher(
-        SettingsProviderGtk* settings_provider,
-        const std::string& setting_name,
-        ui::LinuxUiTheme::WindowFrameActionSource action_type,
-        ui::LinuxUiTheme::WindowFrameAction default_action);
+    FrameActionSettingWatcher(SettingsProviderGtk* settings_provider,
+                              const std::string& setting_name,
+                              ui::LinuxUi::WindowFrameActionSource action_type,
+                              ui::LinuxUi::WindowFrameAction default_action);
 
     FrameActionSettingWatcher(const FrameActionSettingWatcher&) = delete;
     FrameActionSettingWatcher& operator=(const FrameActionSettingWatcher&) =
@@ -54,8 +53,8 @@ class SettingsProviderGtk : public SettingsProvider {
    private:
     raw_ptr<SettingsProviderGtk> settings_provider_;
     std::string setting_name_;
-    ui::LinuxUiTheme::WindowFrameActionSource action_type_;
-    ui::LinuxUiTheme::WindowFrameAction default_action_;
+    ui::LinuxUi::WindowFrameActionSource action_type_;
+    ui::LinuxUi::WindowFrameAction default_action_;
     unsigned long signal_id_;
   };
 

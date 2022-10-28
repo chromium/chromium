@@ -116,22 +116,22 @@ void SettingsProviderGSettings::ParseAndStoreMiddleClickValue(
   GtkUi::WindowFrameAction action;
 
   if (click_action == "none") {
-    action = ui::LinuxUiTheme::WindowFrameAction::kNone;
+    action = ui::LinuxUi::WindowFrameAction::kNone;
   } else if (click_action == "lower") {
-    action = ui::LinuxUiTheme::WindowFrameAction::kLower;
+    action = ui::LinuxUi::WindowFrameAction::kLower;
   } else if (click_action == "minimize") {
-    action = ui::LinuxUiTheme::WindowFrameAction::kMinimize;
+    action = ui::LinuxUi::WindowFrameAction::kMinimize;
   } else if (click_action == "toggle-maximize") {
-    action = ui::LinuxUiTheme::WindowFrameAction::kToggleMaximize;
+    action = ui::LinuxUi::WindowFrameAction::kToggleMaximize;
   } else {
     // While we want to have the default state be lower if there isn't a
     // value, we want to default to no action if the user has explicitly
     // chose an action that we don't implement.
-    action = ui::LinuxUiTheme::WindowFrameAction::kNone;
+    action = ui::LinuxUi::WindowFrameAction::kNone;
   }
 
   delegate_->SetWindowFrameAction(
-      ui::LinuxUiTheme::WindowFrameActionSource::kMiddleClick, action);
+      ui::LinuxUi::WindowFrameActionSource::kMiddleClick, action);
 }
 
 }  // namespace gtk

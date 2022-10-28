@@ -63,6 +63,23 @@ class WindowFrameProvider;
 // project that wants to do linux desktop native rendering.
 class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
  public:
+  // Describes the window management actions that could be taken in response to
+  // a middle click in the non client area.
+  enum class WindowFrameAction {
+    kNone,
+    kLower,
+    kMinimize,
+    kToggleMaximize,
+    kMenu,
+  };
+
+  // The types of clicks that might invoke a WindowFrameAction.
+  enum class WindowFrameActionSource {
+    kDoubleClick,
+    kMiddleClick,
+    kRightClick,
+  };
+
   LinuxUi(const LinuxUi&) = delete;
   LinuxUi& operator=(const LinuxUi&) = delete;
   virtual ~LinuxUi();
@@ -161,6 +178,20 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // Indicates if animations are enabled by the toolkit.
   virtual bool AnimationsEnabled() const = 0;
 
+  // Notifies the observer about changes about how window buttons should be
+  // laid out.
+  virtual void AddWindowButtonOrderObserver(
+      WindowButtonOrderObserver* observer) = 0;
+
+  // Removes the observer from the LinuxUI's list.
+  virtual void RemoveWindowButtonOrderObserver(
+      WindowButtonOrderObserver* observer) = 0;
+
+  // What action we should take when the user clicks on the non-client area.
+  // |source| describes the type of click.
+  virtual WindowFrameAction GetWindowFrameAction(
+      WindowFrameActionSource source) = 0;
+
  protected:
   struct CmdLineArgs {
     CmdLineArgs();
@@ -203,23 +234,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
 class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
  public:
-  // Describes the window management actions that could be taken in response to
-  // a middle click in the non client area.
-  enum class WindowFrameAction {
-    kNone,
-    kLower,
-    kMinimize,
-    kToggleMaximize,
-    kMenu,
-  };
-
-  // The types of clicks that might invoke a WindowFrameAction.
-  enum class WindowFrameActionSource {
-    kDoubleClick,
-    kMiddleClick,
-    kRightClick,
-  };
-
   LinuxUiTheme(const LinuxUiTheme&) = delete;
   LinuxUiTheme& operator=(const LinuxUiTheme&) = delete;
   virtual ~LinuxUiTheme();
@@ -229,13 +243,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
 
   // Returns the LinuxUi instance for the given profile.
   static LinuxUiTheme* GetForProfile(Profile* profile);
-
-  // Notifies the observer about changes about how window buttons should be
-  // laid out.
-  void AddWindowButtonOrderObserver(WindowButtonOrderObserver* observer);
-
-  // Removes the observer from the LinuxUI's list.
-  void RemoveWindowButtonOrderObserver(WindowButtonOrderObserver* observer);
 
   // Returns the native theme for this toolkit.
   virtual ui::NativeTheme* GetNativeTheme() const = 0;
@@ -252,11 +259,6 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   virtual SkColor GetInactiveSelectionBgColor() const = 0;
   virtual SkColor GetInactiveSelectionFgColor() const = 0;
 
-  // What action we should take when the user clicks on the non-client area.
-  // |source| describes the type of click.
-  virtual WindowFrameAction GetWindowFrameAction(
-      WindowFrameActionSource source) = 0;
-
   // Only used on GTK to indicate if the dark GTK theme variant is
   // preferred.
   virtual bool PreferDarkTheme() const = 0;
@@ -272,23 +274,13 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   // the process ends.
   virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) = 0;
 
-  const base::ObserverList<WindowButtonOrderObserver>::Unchecked&
-  window_button_order_observer_list() const {
-    return window_button_order_observer_list_;
-  }
-
  protected:
   LinuxUiTheme();
-
- private:
-  // Objects to notify when the window frame button order changes.
-  base::ObserverList<WindowButtonOrderObserver>::Unchecked
-      window_button_order_observer_list_;
 };
 
-// This is used internally by LinuxUi implementations and linux_ui_factory to allow
-// converting a LinuxUi to a LinuxUiTheme.  Users should not use (and have no way of
-// obtaining) an instance of this class.
+// This is used internally by LinuxUi implementations and linux_ui_factory to
+// allow converting a LinuxUi to a LinuxUiTheme.  Users should not use (and have
+// no way of obtaining) an instance of this class.
 class LinuxUiAndTheme : public LinuxUi, public LinuxUiTheme {
  public:
   ~LinuxUiAndTheme() override = default;

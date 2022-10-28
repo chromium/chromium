@@ -293,6 +293,18 @@ bool QtUi::AnimationsEnabled() const {
   return shim_->GetAnimationDurationMs() > 0;
 }
 
+void QtUi::AddWindowButtonOrderObserver(
+    ui::WindowButtonOrderObserver* observer) {
+  if (fallback_linux_ui_)
+    fallback_linux_ui_->AddWindowButtonOrderObserver(observer);
+}
+
+void QtUi::RemoveWindowButtonOrderObserver(
+    ui::WindowButtonOrderObserver* observer) {
+  if (fallback_linux_ui_)
+    fallback_linux_ui_->RemoveWindowButtonOrderObserver(observer);
+}
+
 std::unique_ptr<ui::NavButtonProvider> QtUi::CreateNavButtonProvider() {
   // QT prefers server-side decorations.
   return nullptr;

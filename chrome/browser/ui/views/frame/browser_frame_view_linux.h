@@ -56,10 +56,10 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
  private:
   const raw_ptr<BrowserFrameViewLayoutLinux> layout_;
 
-  base::ScopedObservation<ui::LinuxUiTheme,
+  base::ScopedObservation<ui::LinuxUi,
                           ui::WindowButtonOrderObserver,
-                          &ui::LinuxUiTheme::AddWindowButtonOrderObserver,
-                          &ui::LinuxUiTheme::RemoveWindowButtonOrderObserver>
+                          &ui::LinuxUi::AddWindowButtonOrderObserver,
+                          &ui::LinuxUi::RemoveWindowButtonOrderObserver>
       window_button_order_observation_{this};
 };
 

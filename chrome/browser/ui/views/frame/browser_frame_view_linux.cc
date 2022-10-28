@@ -22,9 +22,8 @@ BrowserFrameViewLinux::BrowserFrameViewLinux(
     BrowserFrameViewLayoutLinux* layout)
     : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {
   layout->set_view(this);
-  if (auto* linux_ui_theme =
-          ui::LinuxUiTheme::GetForProfile(browser_view->browser()->profile())) {
-    window_button_order_observation_.Observe(linux_ui_theme);
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    window_button_order_observation_.Observe(linux_ui);
     OnWindowButtonOrderingChange();
   }
 }

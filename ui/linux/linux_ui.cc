@@ -106,14 +106,4 @@ LinuxUiTheme* LinuxUiTheme::GetForProfile(Profile* profile) {
   return nullptr;
 }
 
-void LinuxUiTheme::AddWindowButtonOrderObserver(
-    WindowButtonOrderObserver* observer) {
-  window_button_order_observer_list_.AddObserver(observer);
-}
-
-void LinuxUiTheme::RemoveWindowButtonOrderObserver(
-    WindowButtonOrderObserver* observer) {
-  window_button_order_observer_list_.RemoveObserver(observer);
-}
-
 }  // namespace ui

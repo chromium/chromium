@@ -84,7 +84,7 @@ gfx::Image FakeLinuxUi::GetIconForContentType(const std::string& content_type,
   return gfx::Image();
 }
 
-LinuxUiTheme::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
+LinuxUi::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
   return WindowFrameAction::kNone;
 }
@@ -100,6 +100,12 @@ bool FakeLinuxUi::PreferDarkTheme() const {
 bool FakeLinuxUi::AnimationsEnabled() const {
   return true;
 }
+
+void FakeLinuxUi::AddWindowButtonOrderObserver(
+    ui::WindowButtonOrderObserver* observer) {}
+
+void FakeLinuxUi::RemoveWindowButtonOrderObserver(
+    ui::WindowButtonOrderObserver* observer) {}
 
 std::unique_ptr<ui::NavButtonProvider> FakeLinuxUi::CreateNavButtonProvider() {
   return nullptr;

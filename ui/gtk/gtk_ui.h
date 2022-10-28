@@ -88,6 +88,12 @@ class GtkUi : public ui::LinuxUiAndTheme {
       int* weight_out,
       gfx::FontRenderParams* params_out) const override;
   bool AnimationsEnabled() const override;
+  void AddWindowButtonOrderObserver(
+      ui::WindowButtonOrderObserver* observer) override;
+  void RemoveWindowButtonOrderObserver(
+      ui::WindowButtonOrderObserver* observer) override;
+  WindowFrameAction GetWindowFrameAction(
+      WindowFrameActionSource source) override;
 
   // ui::LinuxUiTheme:
   ui::NativeTheme* GetNativeTheme() const override;
@@ -98,8 +104,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
   SkColor GetActiveSelectionFgColor() const override;
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
-  WindowFrameAction GetWindowFrameAction(
-      WindowFrameActionSource source) override;
   bool PreferDarkTheme() const override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
@@ -191,6 +195,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // while Chrome is running.
   std::unique_ptr<ui::WindowFrameProvider> solid_frame_provider_;
   std::unique_ptr<ui::WindowFrameProvider> transparent_frame_provider_;
+
+  // Objects to notify when the window frame button order changes.
+  base::ObserverList<ui::WindowButtonOrderObserver>::Unchecked
+      window_button_order_observer_list_;
 };
 
 }  // namespace gtk
