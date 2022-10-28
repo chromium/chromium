@@ -6,6 +6,7 @@
 #define REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -37,6 +38,9 @@ namespace remoting {
 class MojoIpcServerBase : public IpcServer,
                           public MojoServerEndpointConnector::Delegate {
  public:
+  using IsTrustedMojoEndpointCallback =
+      base::RepeatingCallback<bool(base::ProcessId)>;
+
   // Internal use only.
   struct PendingConnection;
 
@@ -56,8 +60,8 @@ class MojoIpcServerBase : public IpcServer,
   }
 
  protected:
-  explicit MojoIpcServerBase(
-      const mojo::NamedPlatformChannel::ServerName& server_name);
+  MojoIpcServerBase(const mojo::NamedPlatformChannel::ServerName& server_name,
+                    IsTrustedMojoEndpointCallback is_trusted_endpoint_callback);
   ~MojoIpcServerBase() override;
 
   void SendInvitation();
@@ -91,6 +95,7 @@ class MojoIpcServerBase : public IpcServer,
                      std::unique_ptr<mojo::IsolatedConnection>>;
 
   mojo::NamedPlatformChannel::ServerName server_name_;
+  IsTrustedMojoEndpointCallback is_trusted_endpoint_callback_;
 
   bool server_started_ = false;
 
@@ -132,17 +137,25 @@ class MojoIpcServerBase : public IpcServer,
 //       server_.Close(server_.current_receiver());
 //     }
 
-//     MojoIpcServer<mojom::MyInterface> server_{"my_server_name", this};
+//     static bool IsTrustedMojoEndpoint(base::ProcessId caller_pid) {
+//       // Verify the calling process...
+//       return true;
+//     }
+
+//     MojoIpcServer<mojom::MyInterface> server_{"my_server_name", this,
+//         base::BindRepeating(&MyInterfaceImpl::IsTrustedMojoEndpoint)};
 //   };
 template <typename Interface>
 class MojoIpcServer final : public MojoIpcServerBase {
  public:
   // server_name: The server name to start the NamedPlatformChannel.
-  // message_pipe_id: The message pipe ID. The client must call
-  // ExtractMessagePipe() with the same ID.
+  // is_trusted_endpoint_callback: A predicate which returns true if the process
+  // referred to by the caller PID is a trusted mojo endpoint.
   MojoIpcServer(const mojo::NamedPlatformChannel::ServerName& server_name,
-                Interface* interface_impl)
-      : MojoIpcServerBase(server_name), interface_impl_(interface_impl) {
+                Interface* interface_impl,
+                IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
+      : MojoIpcServerBase(server_name, std::move(is_trusted_endpoint_callback)),
+        interface_impl_(interface_impl) {
     receiver_set_.set_disconnect_handler(base::BindRepeating(
         &MojoIpcServer::OnIpcDisconnected, base::Unretained(this)));
   }

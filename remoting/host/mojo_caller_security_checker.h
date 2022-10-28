@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_MOJO_CALLER_SECURITY_CHECKER_H_
-#define REMOTING_HOST_MOJO_IPC_MOJO_CALLER_SECURITY_CHECKER_H_
+#ifndef REMOTING_HOST_MOJO_CALLER_SECURITY_CHECKER_H_
+#define REMOTING_HOST_MOJO_CALLER_SECURITY_CHECKER_H_
 
 #include "base/process/process_handle.h"
 
@@ -15,4 +15,4 @@ bool IsTrustedMojoEndpoint(base::ProcessId caller_pid);
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_MOJO_IPC_MOJO_CALLER_SECURITY_CHECKER_H_
+#endif  // REMOTING_HOST_MOJO_CALLER_SECURITY_CHECKER_H_

@@ -10,11 +10,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/environment.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
@@ -64,7 +66,8 @@ ChromotingHostServicesClientTest::ChromotingHostServicesClientTest() {
   client_ = base::WrapUnique(new ChromotingHostServicesClient(
       std::move(environment), test_server_name));
   ipc_server_ = std::make_unique<MojoIpcServer<mojom::ChromotingHostServices>>(
-      test_server_name, this);
+      test_server_name, this,
+      base::BindRepeating(&IsTrustedMojoEndpoint));
   ipc_server_->set_on_invitation_sent_callback_for_testing(
       base::BindRepeating(&ChromotingHostServicesClientTest::OnInvitationSent,
                           base::Unretained(this)));

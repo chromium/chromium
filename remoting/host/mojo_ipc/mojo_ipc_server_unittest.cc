@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -93,7 +94,8 @@ class MojoIpcServerTest : public testing::Test, public test::mojom::Echo {
 MojoIpcServerTest::MojoIpcServerTest() {
   test_server_name_ = test::GenerateRandomServerName();
   ipc_server_ = std::make_unique<MojoIpcServer<test::mojom::Echo>>(
-      test_server_name_, this);
+      test_server_name_, this,
+      base::BindRepeating([](base::ProcessId) { return true; }));
   ipc_server_->set_on_invitation_sent_callback_for_testing(base::BindRepeating(
       &MojoIpcServerTest::OnInvitationSent, base::Unretained(this)));
   on_invitation_sent_run_loop_ = std::make_unique<base::RunLoop>();

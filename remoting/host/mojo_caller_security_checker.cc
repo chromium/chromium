@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc/mojo_caller_security_checker.h"
+#include "remoting/host/mojo_caller_security_checker.h"
 
 #include <array>
 
@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"

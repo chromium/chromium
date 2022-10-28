@@ -5,8 +5,6 @@
 static_library("mojo_ipc") {
   sources = [
     "ipc_server.h",
-    "mojo_caller_security_checker.cc",
-    "mojo_caller_security_checker.h",
     "mojo_ipc_server.cc",
     "mojo_ipc_server.h",
     "mojo_ipc_util.cc",
@@ -18,7 +16,6 @@ static_library("mojo_ipc") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
-    "//remoting/host/base",
   ]
   if (is_linux) {
     sources += [
@@ -30,7 +27,6 @@ static_library("mojo_ipc") {
       "mojo_server_endpoint_connector_win.cc",
       "mojo_server_endpoint_connector_win.h",
     ]
-    deps += [ "//remoting/host/win:trust_util" ]
   } else {
     sources += [ "mojo_server_endpoint_connector_unsupported.cc" ]
   }

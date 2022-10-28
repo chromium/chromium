@@ -350,6 +350,8 @@ static_library("common") {
     "it2me_desktop_environment.h",
     "keyboard_layout_monitor.cc",
     "keyboard_layout_monitor.h",
+    "mojo_caller_security_checker.h",
+    "mojo_caller_security_checker.cc",
     "mouse_cursor_monitor_proxy.cc",
     "mouse_cursor_monitor_proxy.h",
     "mouse_shape_pump.cc",

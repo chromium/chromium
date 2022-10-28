@@ -14,7 +14,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "remoting/host/mojo_ipc/mojo_caller_security_checker.h"
 #include "remoting/host/mojo_ipc/mojo_server_endpoint_connector.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -57,8 +56,10 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpointOnIoSequence(
 }  // namespace
 
 MojoIpcServerBase::MojoIpcServerBase(
-    const mojo::NamedPlatformChannel::ServerName& server_name)
-    : server_name_(server_name) {
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    IsTrustedMojoEndpointCallback is_trusted_endpoint_callback)
+    : server_name_(server_name),
+      is_trusted_endpoint_callback_(std::move(is_trusted_endpoint_callback)) {
   io_sequence_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 }
@@ -136,7 +137,7 @@ void MojoIpcServerBase::OnServerEndpointConnected(
     std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::ScopedMessagePipeHandle message_pipe,
     base::ProcessId peer_pid) {
-  if (IsTrustedMojoEndpoint(peer_pid)) {
+  if (is_trusted_endpoint_callback_.Run(peer_pid)) {
     auto receiver_id = TrackMessagePipe(std::move(message_pipe), peer_pid);
     active_connections_[receiver_id] = std::move(connection);
   } else {

@@ -23,6 +23,7 @@
 #include "remoting/host/host_config.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/ipc_constants.h"
+#include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/host_stub.h"
@@ -126,7 +127,8 @@ void ChromotingHost::StartChromotingHostServices() {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   ipc_server_ = std::make_unique<MojoIpcServer<mojom::ChromotingHostServices>>(
-      GetChromotingHostServicesServerName(), this);
+      GetChromotingHostServicesServerName(), this,
+      base::BindRepeating(&IsTrustedMojoEndpoint));
   ipc_server_->StartServer();
   HOST_LOG << "ChromotingHostServices IPC server has been started.";
 #else
