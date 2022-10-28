@@ -163,7 +163,10 @@ template("google_apis_tmpl") {
 
     configs += [ ":key_defines" ]
 
-    public_deps = [ ":buildflags" ]
+    public_deps = [
+      ":buildflags",
+      "//build:chromeos_buildflags",
+    ]
 
     deps = [
       ":oauth2_mint_token_consent_result_proto",

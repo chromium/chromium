@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
 #include "build/branding_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -67,17 +68,21 @@
 #define GOOGLE_CLIENT_SECRET_REMOTING_HOST DUMMY_API_TOKEN
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 #if !defined(GOOGLE_API_KEY_ANDROID_NON_STABLE)
 #define GOOGLE_API_KEY_ANDROID_NON_STABLE DUMMY_API_TOKEN
+#endif
 #endif
 
 #if !defined(GOOGLE_API_KEY_REMOTING)
 #define GOOGLE_API_KEY_REMOTING DUMMY_API_TOKEN
 #endif
 
-// API key for SharingService.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// API key for the Nearby Sharing Service.
 #if !defined(GOOGLE_API_KEY_SHARING)
 #define GOOGLE_API_KEY_SHARING DUMMY_API_TOKEN
+#endif
 #endif
 
 // API key for the Speech On-Device API (SODA).
@@ -139,9 +144,11 @@ class APIKeyCache {
         STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING), nullptr, std::string(),
         environment.get(), command_line, gaia_config);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     api_key_sharing_ = CalculateKeyValue(
         GOOGLE_API_KEY_SHARING, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SHARING),
         nullptr, std::string(), environment.get(), command_line, gaia_config);
+#endif
 
     api_key_soda_ = CalculateKeyValue(
         GOOGLE_API_KEY_SODA, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_SODA),
@@ -211,7 +218,9 @@ class APIKeyCache {
 #endif
   std::string api_key_non_stable() const { return api_key_non_stable_; }
   std::string api_key_remoting() const { return api_key_remoting_; }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string api_key_sharing() const { return api_key_sharing_; }
+#endif
   std::string api_key_soda() const { return api_key_soda_; }
   std::string api_key_read_aloud() const { return api_key_read_aloud_; }
   std::string api_key_fresnel() const { return api_key_fresnel_; }
@@ -318,7 +327,9 @@ class APIKeyCache {
   std::string api_key_;
   std::string api_key_non_stable_;
   std::string api_key_remoting_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string api_key_sharing_;
+#endif
   std::string api_key_soda_;
   std::string api_key_read_aloud_;
   std::string api_key_fresnel_;
@@ -346,9 +357,11 @@ std::string GetRemotingAPIKey() {
   return g_api_key_cache.Get().api_key_remoting();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetSharingAPIKey() {
   return g_api_key_cache.Get().api_key_sharing();
 }
+#endif
 
 std::string GetSodaAPIKey() {
   return g_api_key_cache.Get().api_key_soda();

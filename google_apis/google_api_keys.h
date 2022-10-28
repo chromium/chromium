@@ -10,6 +10,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 
 // These functions enable you to retrieve keys to use for Google APIs
@@ -78,8 +79,10 @@ std::string GetNonStableAPIKey();
 // Retrieves the Chrome Remote Desktop API key.
 std::string GetRemotingAPIKey();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Retrieves the Sharing API Key.
 std::string GetSharingAPIKey();
+#endif
 
 // Retrieves the Speech On-Device API (SODA) API Key.
 std::string GetSodaAPIKey();
