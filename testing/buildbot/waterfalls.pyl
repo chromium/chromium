@@ -347,7 +347,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'win10',
+          'win10-any',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_isolated_script_tests',
@@ -364,7 +364,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'win10',
+          'win10-any',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
