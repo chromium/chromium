@@ -8,7 +8,6 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include <algorithm>
 #include <limits>
 #include <memory>
 #include <string>
@@ -20,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_list.h"
@@ -321,7 +321,7 @@ class FuzzedMdnsSocket : public DatagramServerSocket {
     if (data_provider_->ConsumeBool()) {
       std::string data =
           data_provider_->ConsumeRandomLengthString(buffer_length);
-      std::copy(data.begin(), data.end(), buffer->data());
+      base::ranges::copy(data, buffer->data());
       *out_address =
           IPEndPoint(FuzzIPAddress(data_provider_), FuzzPort(data_provider_));
       return data.size();

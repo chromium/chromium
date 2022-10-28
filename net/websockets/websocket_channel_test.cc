@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <string>
@@ -22,6 +21,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
@@ -778,7 +778,7 @@ std::vector<char> AsVector(base::StringPiece s) {
 // WebSocketEventInterface requires the IOBuffer type.
 scoped_refptr<IOBuffer> AsIOBuffer(base::StringPiece s) {
   auto buffer = base::MakeRefCounted<IOBuffer>(s.size());
-  std::copy(s.begin(), s.end(), buffer->data());
+  base::ranges::copy(s, buffer->data());
   return buffer;
 }
 

@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <vector>
 
 #include "base/memory/aligned_memory.h"
+#include "base/ranges/algorithm.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,10 +48,9 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
 }
 
 TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
-  static const char kMaskingKey[] = "\xDE\xAD\xBE\xEF";
-  static_assert(
-      std::size(kMaskingKey) - 1 == WebSocketFrameHeader::kMaskingKeyLength,
-      "incorrect masking key size");
+  static constexpr base::StringPiece kMaskingKey = "\xDE\xAD\xBE\xEF";
+  static_assert(kMaskingKey.size() == WebSocketFrameHeader::kMaskingKeyLength,
+                "incorrect masking key size");
 
   struct TestCase {
     const char* frame_header;
@@ -69,9 +68,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
        UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
   WebSocketMaskingKey masking_key;
-  std::copy(kMaskingKey,
-            kMaskingKey + WebSocketFrameHeader::kMaskingKeyLength,
-            masking_key.key);
+  base::ranges::copy(kMaskingKey, masking_key.key);
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -200,7 +197,7 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
 
 TEST(WebSocketFrameTest, MaskPayload) {
   struct TestCase {
-    const char* masking_key;
+    const base::StringPiece masking_key;
     uint64_t frame_offset;
     const char* input;
     const char* output;
@@ -216,15 +213,14 @@ TEST(WebSocketFrameTest, MaskPayload) {
       {"\xDE\xAD\xBE\xEF", 0, "", "", 0},
       {"\xDE\xAD\xBE\xEF", 0, "\xDE\xAD\xBE\xEF", "\x00\x00\x00\x00", 4},
       {"\xDE\xAD\xBE\xEF", 0, "\x00\x00\x00\x00", "\xDE\xAD\xBE\xEF", 4},
-      {"\x00\x00\x00\x00", 0, "FooBar", "FooBar", 6},
+      {{"\x00\x00\x00\x00", WebSocketFrameHeader::kMaskingKeyLength}, 0,
+       "FooBar", "FooBar", 6},
       {"\xFF\xFF\xFF\xFF", 0, "FooBar", "\xB9\x90\x90\xBD\x9E\x8D", 6},
   };
 
   for (const auto& test : kTests) {
     WebSocketMaskingKey masking_key;
-    std::copy(test.masking_key,
-              test.masking_key + WebSocketFrameHeader::kMaskingKeyLength,
-              masking_key.key);
+    base::ranges::copy(test.masking_key, masking_key.key);
     std::vector<char> frame_data(test.input, test.input + test.data_length);
     std::vector<char> expected_output(test.output,
                                       test.output + test.data_length);
@@ -256,7 +252,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
       WebSocketFrameHeader::kMaskingKeyLength;
   static const size_t kScratchBufferSize =
       kMaxVectorAlignment + kMaxVectorSize * 2;
-  static const char kTestMask[] = "\xd2\xba\x5a\xbe";
+  static constexpr base::StringPiece kTestMask = "\xd2\xba\x5a\xbe";
   // We use 786 bits of random input to reduce the risk of correlated errors.
   static const char kTestInput[] = {
     "\x3d\x77\x1d\x1b\x19\x8c\x48\xa3\x19\x6d\xf7\xcc\x39\xe7\x57\x0b"
@@ -280,7 +276,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
   std::unique_ptr<char, base::AlignedFreeDeleter> scratch(static_cast<char*>(
       base::AlignedAlloc(kScratchBufferSize, kMaxVectorAlignment)));
   WebSocketMaskingKey masking_key;
-  std::copy(kTestMask, kTestMask + kMaskingKeyLength, masking_key.key);
+  base::ranges::copy(kTestMask, masking_key.key);
   for (size_t frame_offset = 0; frame_offset < kMaskingKeyLength;
        ++frame_offset) {
     for (size_t alignment = 0; alignment < kMaxVectorAlignment; ++alignment) {

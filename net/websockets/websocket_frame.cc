@@ -7,11 +7,10 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <algorithm>
-
 #include "base/big_endian.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 
@@ -158,9 +157,7 @@ int WriteWebSocketFrameHeader(const WebSocketFrameHeader& header,
   // Writes "masking key" field, if needed.
   if (header.masked) {
     DCHECK(masking_key);
-    std::copy(masking_key->key,
-              masking_key->key + WebSocketFrameHeader::kMaskingKeyLength,
-              buffer + buffer_index);
+    base::ranges::copy(masking_key->key, buffer + buffer_index);
     buffer_index += WebSocketFrameHeader::kMaskingKeyLength;
   } else {
     DCHECK(!masking_key);

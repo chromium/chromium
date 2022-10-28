@@ -7,7 +7,6 @@
 #include <limits.h>  // for INT_MAX
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -18,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -936,8 +936,7 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     base::WriteBigEndian(body->data(), code);
     static_assert(sizeof(code) == kWebSocketCloseCodeLength,
                   "they should both be two");
-    std::copy(
-        reason.begin(), reason.end(), body->data() + kWebSocketCloseCodeLength);
+    base::ranges::copy(reason, body->data() + kWebSocketCloseCodeLength);
   }
 
   return SendFrameInternal(true, WebSocketFrameHeader::kOpCodeClose,

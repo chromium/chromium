@@ -6,12 +6,11 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/log/net_log_source_type.h"
@@ -69,8 +68,8 @@ int FuzzedSocket::Read(IOBuffer* buf,
     std::string data = data_provider_->ConsumeRandomLengthString(buf_len);
     result = data.size();
 
-    if (result > 0) {
-      std::copy(data.data(), data.data() + result, buf->data());
+    if (!data.empty()) {
+      base::ranges::copy(data, buf->data());
     } else {
       result = ConsumeReadWriteErrorFromData();
       net_error_ = result;

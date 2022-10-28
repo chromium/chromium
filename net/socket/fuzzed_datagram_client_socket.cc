@@ -6,12 +6,12 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
@@ -147,10 +147,10 @@ int FuzzedDatagramClientSocket::Read(IOBuffer* buf,
       data_provider_->ConsumeIntegralInRange(0, buf_len));
 
   int result;
-  if (data.size() > 0) {
+  if (!data.empty()) {
     // If the response is not empty, consider it a successful read.
     result = data.size();
-    std::copy(data.begin(), data.end(), buf->data());
+    base::ranges::copy(data, buf->data());
   } else {
     // If the response is empty, pick a random read error.
     result = data_provider_->PickValueInArray(kReadErrors);
