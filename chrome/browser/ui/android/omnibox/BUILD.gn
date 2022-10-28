@@ -360,6 +360,7 @@ proto_java_library("partner_location_descriptor_proto_java") {
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/omnibox/UrlBarUiUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewRenderTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/status/StatusViewTest.java",
   ]
