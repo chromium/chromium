@@ -1302,7 +1302,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Lacros.OSChannel" enum="ChromeOSChannel"
-    expires_after="2022-10-01">
+    expires_after="2023-10-01">
   <owner>erikchen@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
@@ -1313,7 +1313,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Lacros.StartTime" units="ms"
-    expires_after="2022-10-01">
+    expires_after="2023-10-01">
   <owner>erikchen@chromium.org</owner>
   <owner>lacros-team@google.com</owner>
   <summary>
