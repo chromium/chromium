@@ -114,6 +114,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
 
     @Override
     public void closeTab() {
+        if (mTab.isClosing()) return;
         mTab.getActivity().getTabModelSelector().closeTab(mTab);
     }
 
