@@ -4,7 +4,11 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -33,13 +37,32 @@ class FirstPartySetsNavigationThrottleTest
         ->InitializeRenderFrameIfNeeded();
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
+
+    content::FirstPartySetsHandler::GetInstance()->SetInstanceForTesting(
+        &first_party_sets_handler_);
+    service_ =
+        FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile());
+    ASSERT_NE(service_, nullptr);
+
+    // We can't avoid eagerly initializing the service, due to
+    // indirection/caching in the factory infrastructure. So we wait for the
+    // initialization to complete, and then reset the instance so that we can
+    // call InitForTesting.
+    base::RunLoop run_loop;
+    service_->WaitForFirstInitCompleteForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+    service_->ResetForTesting();
   }
 
   content::RenderFrameHost* subframe() { return subframe_; }
 
+  FirstPartySetsPolicyService* service() { return service_; }
+
  private:
   base::test::ScopedFeatureList features_;
   raw_ptr<content::RenderFrameHost> subframe_;
+  ScopedMockFirstPartySetsHandler first_party_sets_handler_;
+  FirstPartySetsPolicyService* service_;
 };
 
 TEST_F(FirstPartySetsNavigationThrottleTest,
@@ -89,6 +112,18 @@ TEST_F(FirstPartySetsNavigationThrottleTest,
       FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
 }
 
+TEST_F(FirstPartySetsNavigationThrottleTest,
+       MaybeCreateNavigationThrottle_ServiceReady) {
+  // Create throttle for main frames.
+  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
+  ASSERT_TRUE(handle.IsInOutermostMainFrame());
+
+  // Never create if service is ready.
+  service()->InitForTesting();
+  EXPECT_FALSE(
+      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle));
+}
+
 TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Defer) {
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
@@ -96,7 +131,48 @@ TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Defer) {
   auto throttle =
       FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
   EXPECT_TRUE(throttle);
+  ASSERT_FALSE(
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile())
+          ->is_ready());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillStartRequest().action());
+}
+
+TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
+  // Create throttle for main frames.
+  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
+  ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  auto throttle =
+      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
+  EXPECT_TRUE(throttle);
+
+  // Service is ready after the throttle is created.
+  service()->InitForTesting();
+  ASSERT_TRUE(
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile())
+          ->is_ready());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillStartRequest().action());
+}
+
+TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnReady) {
+  // Create throttle for main frames.
+  content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
+  ASSERT_TRUE(handle.IsInOutermostMainFrame());
+  auto throttle =
+      FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(&handle);
+  EXPECT_TRUE(throttle);
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillStartRequest().action());
+
+  // Verify that the throttle will be resumed once ready.
+  base::RunLoop run_loop;
+  throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
+  service()->InitForTesting();
+
+  run_loop.Run();
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
 }
 
