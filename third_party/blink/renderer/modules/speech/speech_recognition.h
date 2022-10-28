@@ -125,6 +125,7 @@ class MODULES_EXPORT SpeechRecognition final
 
  private:
   void OnConnectionError();
+  void StartInternal(ExceptionState* exception_state);
 
   Member<SpeechGrammarList> grammars_;
   String lang_;
