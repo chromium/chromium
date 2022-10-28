@@ -1229,12 +1229,12 @@ const FeatureEntry::FeatureVariation
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysJaccardSimilarityParams[] = {
-    {"collections_blocklist", "/collection/software"},
+    {"collections_blocklist", "/collection/it_glossary,/collection/software"},
     {"exclude_entities_that_have_no_collections", "true"},
     {"use_content_clustering_cosine_similarity", "false"},
 };
 const FeatureEntry::FeatureParam kJourneysCosineSimilarityParams[] = {
-    {"collections_blocklist", "/collection/software"},
+    {"collections_blocklist", "/collection/it_glosssary,/collection/software"},
     {"exclude_entities_that_have_no_collections", "true"},
     {"use_content_clustering_cosine_similarity", "true"},
 };
