@@ -11,6 +11,11 @@ class UserDefinedType(WithIdentifier):
     UserDefinedType is a common base class of spec-author-defined types.
 
     Spec-author-defined types are top-level IDL definitions given an identifier.
+
+    Despite that sync iterators are not top-level IDL definitions nor have an
+    identifier, SyncIterator inherits from UserDefinedType just in order to
+    make bind_gen.interface.generate_class_like work nicely with using
+    is_interface, is_namespace, etc.
     """
 
     def __init__(self, identifier):
@@ -44,6 +49,11 @@ class UserDefinedType(WithIdentifier):
     @property
     def is_namespace(self):
         """Returns True if this is an IDL namespace."""
+        return False
+
+    @property
+    def is_sync_iterator(self):
+        """Returns True if this is a sync iterator."""
         return False
 
 
