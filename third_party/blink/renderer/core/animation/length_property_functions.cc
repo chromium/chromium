@@ -330,7 +330,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetBaselineShift(value);
       return true;
     case CSSPropertyID::kBottom:
-      style.SetBottom(value);
+      builder.SetBottom(value);
       return true;
     case CSSPropertyID::kCx:
       builder.SetCx(value);
@@ -345,7 +345,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetHeight(value);
       return true;
     case CSSPropertyID::kLeft:
-      style.SetLeft(value);
+      builder.SetLeft(value);
       return true;
     case CSSPropertyID::kMarginBottom:
       style.SetMarginBottom(value);
@@ -396,7 +396,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetRy(value);
       return true;
     case CSSPropertyID::kRight:
-      style.SetRight(value);
+      builder.SetRight(value);
       return true;
     case CSSPropertyID::kShapeMargin:
       style.SetShapeMargin(value);
@@ -405,7 +405,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetStrokeDashOffset(value);
       return true;
     case CSSPropertyID::kTop:
-      style.SetTop(value);
+      builder.SetTop(value);
       return true;
     case CSSPropertyID::kWidth:
       style.SetWidth(value);

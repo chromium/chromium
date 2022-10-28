@@ -135,34 +135,34 @@ void AdjustStyleForSvgElement(const SVGElement& element, ComputedStyle& style) {
 }
 
 // Adjust style for anchor() and anchor-size() queries.
-void AdjustAnchorQueryStyles(ComputedStyle& style) {
+void AdjustAnchorQueryStyles(ComputedStyleBuilder& builder) {
   if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled())
     return;
 
   // anchor() and anchor-size() can only be used on absolutely positioned
   // elements.
-  if (style.GetPosition() != EPosition::kAbsolute &&
-      style.GetPosition() != EPosition::kFixed) {
-    if (style.Left().HasAnchorQueries())
-      style.SetLeft(Length::Auto());
-    if (style.Right().HasAnchorQueries())
-      style.SetRight(Length::Auto());
-    if (style.Top().HasAnchorQueries())
-      style.SetTop(Length::Auto());
-    if (style.Bottom().HasAnchorQueries())
-      style.SetBottom(Length::Auto());
-    if (style.Width().HasAnchorQueries())
-      style.SetWidth(Length::Auto());
-    if (style.MinWidth().HasAnchorQueries())
-      style.SetMinWidth(Length::Auto());
-    if (style.MaxWidth().HasAnchorQueries())
-      style.SetMaxWidth(Length::Auto());
-    if (style.Height().HasAnchorQueries())
-      style.SetHeight(Length::Auto());
-    if (style.MinHeight().HasAnchorQueries())
-      style.SetMinHeight(Length::Auto());
-    if (style.MaxHeight().HasAnchorQueries())
-      style.SetMaxHeight(Length::Auto());
+  EPosition position = builder.InternalStyle()->GetPosition();
+  if (position != EPosition::kAbsolute && position != EPosition::kFixed) {
+    if (builder.Left().HasAnchorQueries())
+      builder.SetLeft(Length::Auto());
+    if (builder.Right().HasAnchorQueries())
+      builder.SetRight(Length::Auto());
+    if (builder.Top().HasAnchorQueries())
+      builder.SetTop(Length::Auto());
+    if (builder.Bottom().HasAnchorQueries())
+      builder.SetBottom(Length::Auto());
+    if (builder.Width().HasAnchorQueries())
+      builder.SetWidth(Length::Auto());
+    if (builder.MinWidth().HasAnchorQueries())
+      builder.SetMinWidth(Length::Auto());
+    if (builder.MaxWidth().HasAnchorQueries())
+      builder.SetMaxWidth(Length::Auto());
+    if (builder.Height().HasAnchorQueries())
+      builder.SetHeight(Length::Auto());
+    if (builder.MinHeight().HasAnchorQueries())
+      builder.SetMinHeight(Length::Auto());
+    if (builder.MaxHeight().HasAnchorQueries())
+      builder.SetMaxHeight(Length::Auto());
   }
 }
 
@@ -1074,7 +1074,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     }
   }
 
-  AdjustAnchorQueryStyles(style);
+  AdjustAnchorQueryStyles(builder);
 
   if (!HasFullNGFragmentationSupport()) {
     // When establishing a block fragmentation context for LayoutNG, we require

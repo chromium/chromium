@@ -242,7 +242,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // anchored positioning scheme.
   void SetNeedsRepositioningForSelectMenu(bool flag);
   void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
-  void AdjustPopupPositionForSelectMenu(ComputedStyle& style);
+  scoped_refptr<ComputedStyle> StyleForSelectMenuPopupstyle(
+      const StyleRecalcContext&);
 
   bool DispatchFocusEvent(
       Element* old_focused_element,

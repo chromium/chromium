@@ -1816,16 +1816,22 @@ void HTMLElement::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
 
 // TODO(crbug.com/1197720): The popup position should be provided by the new
 // anchored positioning scheme.
-void HTMLElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
+scoped_refptr<ComputedStyle> HTMLElement::StyleForSelectMenuPopupstyle(
+    const StyleRecalcContext& style_recalc_context) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(HasPopupAttribute());
   DCHECK(GetPopupData()->needsRepositioningForSelectMenu());
   auto* owner_select = GetPopupData()->ownerSelectMenuElement();
   DCHECK(owner_select);
 
+  scoped_refptr<ComputedStyle> original_style =
+      OriginalStyleForLayoutObject(style_recalc_context);
+
   LocalDOMWindow* window = GetDocument().domWindow();
   if (!window)
-    return;
+    return original_style;
+
+  ComputedStyleBuilder style_builder(*original_style);
 
   gfx::RectF anchor_rect_in_screen =
       owner_select->GetBoundingClientRectNoLifecycleUpdate();
@@ -1841,10 +1847,11 @@ void HTMLElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
 
   // Remove any margins on the listbox part, so we can position it correctly.
-  style.SetMarginTop(Length::Fixed(0));
-  style.SetMarginLeft(Length::Fixed(0));
-  style.SetMarginRight(Length::Fixed(0));
-  style.SetMarginBottom(Length::Fixed(0));
+  ComputedStyle* style = style_builder.MutableInternalStyle();
+  style->SetMarginTop(Length::Fixed(0));
+  style->SetMarginLeft(Length::Fixed(0));
+  style->SetMarginRight(Length::Fixed(0));
+  style->SetMarginBottom(Length::Fixed(0));
 
   // Position the listbox part where is more space available.
   const float available_space_above =
@@ -1852,30 +1859,32 @@ void HTMLElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   const float available_space_below =
       avail_rect.bottom() - anchor_rect_in_screen.bottom();
   if (available_space_below < available_space_above) {
-    style.SetMaxHeight(Length::Fixed(available_space_above));
-    style.SetBottom(
+    style_builder.SetMaxHeight(Length::Fixed(available_space_above));
+    style_builder.SetBottom(
         Length::Fixed(avail_rect.bottom() - anchor_rect_in_screen.y()));
-    style.SetTop(Length::Auto());
+    style_builder.SetTop(Length::Auto());
   } else {
-    style.SetMaxHeight(Length::Fixed(available_space_below));
-    style.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
+    style_builder.SetMaxHeight(Length::Fixed(available_space_below));
+    style_builder.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
   }
 
   const float available_space_if_left_anchored =
       avail_rect.right() - anchor_rect_in_screen.x();
   const float available_space_if_right_anchored =
       anchor_rect_in_screen.right() - avail_rect.x();
-  style.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
+  style_builder.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
   if (available_space_if_left_anchored > anchor_rect_in_screen.width() ||
       available_space_if_left_anchored > available_space_if_right_anchored) {
-    style.SetLeft(Length::Fixed(anchor_rect_in_screen.x()));
-    style.SetMaxWidth(Length::Fixed(available_space_if_left_anchored));
+    style_builder.SetLeft(Length::Fixed(anchor_rect_in_screen.x()));
+    style_builder.SetMaxWidth(Length::Fixed(available_space_if_left_anchored));
   } else {
-    style.SetRight(
+    style_builder.SetRight(
         Length::Fixed(avail_rect.right() - anchor_rect_in_screen.right()));
-    style.SetLeft(Length::Auto());
-    style.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
+    style_builder.SetLeft(Length::Auto());
+    style_builder.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
   }
+
+  return style_builder.TakeStyle();
 }
 
 scoped_refptr<ComputedStyle> HTMLElement::CustomStyleForLayoutObject(
@@ -1888,10 +1897,7 @@ scoped_refptr<ComputedStyle> HTMLElement::CustomStyleForLayoutObject(
     DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
         GetDocument().GetExecutionContext()));
-    scoped_refptr<ComputedStyle> style =
-        OriginalStyleForLayoutObject(style_recalc_context);
-    AdjustPopupPositionForSelectMenu(*style);
-    return style;
+    return StyleForSelectMenuPopupstyle(style_recalc_context);
   }
   return Element::CustomStyleForLayoutObject(style_recalc_context);
 }

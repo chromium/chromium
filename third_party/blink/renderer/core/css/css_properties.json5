@@ -2158,6 +2158,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "box-shadow",
@@ -3028,6 +3029,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "letter-spacing",
@@ -3992,6 +3994,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "r",
@@ -4942,6 +4945,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "touch-action",
