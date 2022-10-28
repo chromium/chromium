@@ -87,6 +87,7 @@ source_set("eg_test_support+eg2") {
     "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test:element_selector",
     "//ios/web/shell:shell_interfaces",
+    "//net:test_support",
     "//url",
   ]
 }
@@ -100,6 +101,7 @@ source_set("eg2_tests") {
 
   sources = [
     "context_menu_egtest.mm",
+    "page_load_egtest.mm",
     "page_state_egtest.mm",
   ]
 

@@ -20,9 +20,8 @@
 
 namespace {
 
-const char kLongPage1[] = "/ios/testing/data/http_server_files/tall_page.html";
-const char kLongPage2[] =
-    "/ios/testing/data/http_server_files/tall_page.html?2";
+const char kLongPage1[] = "/tall_page.html";
+const char kLongPage2[] = "/tall_page.html?2";
 
 // Test scroll offsets.
 const CGFloat kOffset1 = 20.0f;
@@ -65,21 +64,10 @@ void ScrollLongPageToTop(const GURL& url) {
 }  // namespace
 
 // Page state test cases for the web shell.
-@interface PageStateTestCase : WebShellTestCase {
-  net::EmbeddedTestServer _server;
-}
+@interface PageStateTestCase : WebShellTestCase
 @end
 
 @implementation PageStateTestCase
-
-- (void)setUp {
-  [super setUp];
-
-  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
-  _server.ServeFilesFromDirectory(
-      base::FilePath(base::SysNSStringToUTF8(bundlePath)));
-  GREYAssert(_server.Start(), @"EmbeddedTestServer failed to start.");
-}
 
 // Tests that page scroll position of a page is restored upon returning to the
 // page via the back/forward buttons.
@@ -88,14 +76,14 @@ void ScrollLongPageToTop(const GURL& url) {
 
 - (void)DISABLED_testScrollPositionRestoring {
   // Scroll the first page and verify the offset.
-  ScrollLongPageToTop(_server.GetURL(kLongPage1));
+  ScrollLongPageToTop(self.testServer->GetURL(kLongPage1));
   [[EarlGrey selectElementWithMatcher:web::WebViewScrollView()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, kOffset1)];
   [[EarlGrey selectElementWithMatcher:web::WebViewScrollView()]
       assertWithMatcher:grey_scrollViewContentOffset(CGPointMake(0, kOffset1))];
 
   // Scroll the second page and verify the offset.
-  ScrollLongPageToTop(_server.GetURL(kLongPage2));
+  ScrollLongPageToTop(self.testServer->GetURL(kLongPage2));
   [[EarlGrey selectElementWithMatcher:web::WebViewScrollView()]
       performAction:grey_scrollInDirection(kGREYDirectionDown, kOffset2)];
   [[EarlGrey selectElementWithMatcher:web::WebViewScrollView()]
@@ -118,7 +106,7 @@ void ScrollLongPageToTop(const GURL& url) {
 // ios-simulator-full-config bots.
 - (void)DISABLED_testZeroContentOffsetAfterLoad {
   // Set up the file-based server to load the tall page.
-  const GURL baseURL = _server.GetURL(kLongPage1);
+  const GURL baseURL = self.testServer->GetURL(kLongPage1);
   [ShellEarlGrey loadURL:baseURL];
 
   // Scroll the page and load again to verify that the new page's scroll offset

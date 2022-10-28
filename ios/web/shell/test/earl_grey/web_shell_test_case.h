@@ -7,8 +7,17 @@
 
 #import "ios/testing/earl_grey/base_earl_grey_test_case.h"
 
+namespace net {
+namespace test_server {
+class EmbeddedTestServer;
+}  // namespace test_server
+}  // namespace net
+
 // Base class for all web shell Earl Grey tests.
 @interface WebShellTestCase : BaseEarlGreyTestCase
+
+// The EmbeddedTestServer instance that hosts HTTP requests for tests.
+@property(nonatomic, readonly) net::test_server::EmbeddedTestServer* testServer;
 
 @end
 
