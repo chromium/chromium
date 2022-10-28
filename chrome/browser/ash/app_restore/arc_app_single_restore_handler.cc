@@ -7,6 +7,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
@@ -33,6 +34,11 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
     int event_flags,
     arc::GhostWindowType window_type,
     arc::mojom::WindowInfoPtr window_info) {
+  // Activate ARC in case still not active. ArcSessionManager may null in test
+  // env.
+  if (arc::ArcSessionManager::Get())
+    arc::ArcSessionManager::Get()->AllowActivation();
+
   // The ghost window and corresponding shelf item need to be added after ash
   // shelf ready.
   if (!is_shelf_ready_) {
