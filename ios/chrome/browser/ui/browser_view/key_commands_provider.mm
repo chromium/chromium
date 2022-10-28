@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/keyboard/features.h"
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
@@ -33,7 +32,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface KeyCommandsProvider () <KeyCommandActions>
+@interface KeyCommandsProvider ()
 
 // The current browser object.
 @property(nonatomic, assign) Browser* browser;

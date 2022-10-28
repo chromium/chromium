@@ -12,13 +12,14 @@
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
+#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
 @protocol BookmarksCommands;
 class Browser;
 
 // Handles the keyboard commands registration and handling for the
 // BrowserViewController.
-@interface KeyCommandsProvider : UIResponder
+@interface KeyCommandsProvider : UIResponder <KeyCommandActions>
 
 // Key command actions are converted to Chrome commands and sent to these
 // handlers.
