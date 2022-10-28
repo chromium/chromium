@@ -10,33 +10,30 @@
 
 const limit = 10;
 
-promise_test(function(t) {
+promise_test(async t => {
   const baseline = internals.peerConnectionCount();
   let pc;
   for (let count = 0; count < limit; count++) {
     pc = new RTCPeerConnection();
     pc.close();
   }
-  return asyncGC().then(function() {
-    // All the non-referenced PCs should now be collected.
-    assert_equals(internals.peerConnectionCount(), baseline + 1);
-    pc = null;
-    return asyncGC();
-  }).then(function() {
-    assert_equals(internals.peerConnectionCount(), baseline);
-  });
+  await asyncGC();
+  // All the non-referenced PCs should now be collected.
+  assert_equals(internals.peerConnectionCount(), baseline + 1, "Failed at Check 1, baseline was " + baseline);
+  pc = null;
+  await asyncGC();
+  assert_equals(internals.peerConnectionCount(), baseline, "Failed at Check 2, baseline was " + baseline);
 }, 'Closed Peerconnections are garbage collected');
 
 
-promise_test(function(t) {
+promise_test(async t => {
   const baseline = internals.peerConnectionCount();
   for (let count = 0; count < limit; count++) {
     pc = new RTCPeerConnection();
   }
   pc = null;
-  return asyncGC().then(function() {
-    assert_equals(baseline + limit, internals.peerConnectionCount());
-  });
+  await asyncGC();
+  assert_equals(internals.peerConnectionCount(), baseline + limit, "Failed - Baseline was " + baseline);
 }, 'Non-closed Peerconnections are NOT garbage collected');
 
 </script>
