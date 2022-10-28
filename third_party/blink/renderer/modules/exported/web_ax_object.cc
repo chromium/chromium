@@ -1317,7 +1317,6 @@ WebAXObject WebAXObject::FromWebDocument(const WebDocument& web_document) {
   const Document* document = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
   DCHECK(cache);
-  cache->UpdateAXForAllDocuments();
   return WebAXObject(cache->GetOrCreate(document));
 }
 

@@ -257,6 +257,7 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
     if (settings) {
       if (mode.has_mode(ui::AXMode::kInlineTextBoxes)) {
         settings->SetInlineTextBoxAccessibilityEnabled(true);
+        ax_context_->UpdateAXForAllDocuments();
         ComputeRoot().LoadInlineTextBoxes();
       } else {
         settings->SetInlineTextBoxAccessibilityEnabled(false);
@@ -371,7 +372,7 @@ void RenderAccessibilityImpl::HitTest(
 }
 
 void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
-  const WebDocument& document = GetMainDocument();
+  WebDocument document = GetMainDocument();
   if (document.IsNull())
     return;
 
@@ -1147,16 +1148,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
 #if DCHECK_IS_ON()
   // Protect against lifecycle changes in the popup document, if any.
-  // If no popup document, use the main document -- it's harmless to protect it
-  // twice, and some document is needed because this cannot be done in an if
-  // statement because it's scoped.
   WebDocument popup_document = GetPopupDocument();
-  WebDocument popup_or_main_document =
-      popup_document.IsNull() ? document : GetPopupDocument();
   std::unique_ptr<blink::WebDisallowTransitionScope> disallow2;
-  if (!image_annotation_debugging_) {
-    disallow = std::make_unique<blink::WebDisallowTransitionScope>(
-        &popup_or_main_document);
+  if (!image_annotation_debugging_ && !popup_document.IsNull()) {
+    disallow2 =
+        std::make_unique<blink::WebDisallowTransitionScope>(&popup_document);
   }
 #endif
 

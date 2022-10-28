@@ -30,7 +30,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
     virtual ~Factory() {}
     virtual v8::Local<v8::Object> GetOrCreate(
         const blink::WebAXObject& object) = 0;
-    virtual void SetAXContext(blink::WebAXContext* ax_context) = 0;
     virtual blink::WebAXContext* GetAXContext() = 0;
   };
 
@@ -257,30 +256,18 @@ class RootWebAXObjectProxy : public WebAXObjectProxy {
   bool IsRoot() const override;
 };
 
-// Provides simple lifetime management of the WebAXObjectProxy instances: all
-// WebAXObjectProxys ever created from the controller are stored in a list and
-// cleared explicitly.
-// TODO(aleventhal) Don't store  ax_context_ as a non-const raw pointer.
-// Refactor as the following:
-// - The constructor takes a blink::WebAXContext& argument.
-// - ax_context_ is declared as 'blink::WebAXContext* const ax_context_;'
-// - Get rid of SetAXContext()
-// - std::unique_ptr<WebAXObjectProxyList> AccessibilityController::elements_;
-// - AccessibilityController::elements_ is populated from
-// AccessibilityController::Install().
 class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
  public:
-  WebAXObjectProxyList();
+  explicit WebAXObjectProxyList(blink::WebAXContext&);
   ~WebAXObjectProxyList() override;
 
   void Clear();
   v8::Local<v8::Object> GetOrCreate(const blink::WebAXObject&) override;
-  void SetAXContext(blink::WebAXContext* ax_context) override;
   blink::WebAXContext* GetAXContext() override;
 
  private:
   std::vector<v8::Global<v8::Object>> elements_;
-  blink::WebAXContext* ax_context_ = nullptr;
+  blink::WebAXContext* const ax_context_;
 };
 
 }  // namespace content

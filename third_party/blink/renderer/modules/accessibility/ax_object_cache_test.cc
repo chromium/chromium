@@ -113,7 +113,6 @@ TEST_F(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued) {
     ax_object_cache->DeferTreeUpdate(
         &AXObjectCacheImpl::ChildrenChangedWithCleanLayout, ax_obj);
   }
-  document.Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);
   ax_object_cache->ProcessCleanLayoutCallbacks(document);
 
   ASSERT_EQ(0u, MockAXObject::num_children_changed_calls_);

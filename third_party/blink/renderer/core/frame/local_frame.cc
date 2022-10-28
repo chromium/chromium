@@ -2646,7 +2646,7 @@ void LocalFrame::DidResume() {
 
   // TODO(yuzus): Figure out where these calls should really belong.
   GetDocument()->DispatchHandleLoadStart();
-  GetDocument()->DispatchHandleLoadOrLayoutComplete();
+  GetDocument()->DispatchHandleLoadComplete();
 }
 
 void LocalFrame::MaybeLogAdClickNavigation() {

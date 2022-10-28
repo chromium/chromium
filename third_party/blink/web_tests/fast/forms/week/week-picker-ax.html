@@ -20,7 +20,7 @@ promise_test(() => {
 
     let promise = new Promise((resolve, reject) => {
       accessibilityController.setNotificationListener(function(axnode, type) {
-        if (type == 'MarkDirty' && ++ markDirtyCounter >= 6) {
+        if (type == 'MarkDirty' && ++ markDirtyCounter >= 2) {
           assert_equals(week1.value, "2000-W14", "Arrow key in week picker should have changed value");
           resolve();
         }
