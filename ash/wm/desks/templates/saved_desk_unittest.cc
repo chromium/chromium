@@ -1520,10 +1520,10 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   // as its identifier, and have a count of 2 because its representing both
   // urls.
   EXPECT_EQ(kTabs[0].spec(), icon_views[0]->icon_identifier());
-  EXPECT_EQ(2, icon_views[0]->count());
+  EXPECT_EQ(2, icon_views[0]->GetCount());
   // The second icon view should have a count of 0, because there are no
   // overflow windows.
-  EXPECT_EQ(0, icon_views[1]->count());
+  EXPECT_EQ(0, icon_views[1]->GetCount());
 }
 
 // Tests that the overflow count view is visible, in bounds, displays the right

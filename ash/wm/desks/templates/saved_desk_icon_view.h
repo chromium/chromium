@@ -22,12 +22,13 @@ class Label;
 }  // namespace views
 
 namespace ash {
-
 class RoundedImageView;
 
+// The base class of SavedDeskRegularIconView and SavedDeskOverflowIconView.
 // A class for loading and displaying the icon of apps/urls used in a
 // SavedDeskItemView. Depending on the `count_` and `icon_identifier_`,
-// this View may have only an icon, only a count label, or both.
+// the SavedDeskRegularIconView may have only an icon, or an icon with a count
+// label; while the SavedDeskOverflowIconView has only a count label.
 class SavedDeskIconView : public views::View {
  public:
   METADATA_HEADER(SavedDeskIconView);
@@ -35,43 +36,21 @@ class SavedDeskIconView : public views::View {
   // Create an icon view for an app. Sets `icon_identifier_` to
   // `icon_identifier` and `count_` to `count` then based on their values
   // determines what views need to be created and starts loading the icon
-  // specified by `icon_identifier`. `show_plus` indicates whether to show "+"
-  // before the count for normal overflow icons, or none for all unavailable
-  // icons. `sorting_key` is the key that is used for sorting by the icon
-  // container. `on_icon_loaded` is the callback for updating the icon
-  // container.
-  SavedDeskIconView(const ui::ColorProvider* incognito_window_color_provider,
-                    const std::string& icon_identifier,
-                    const std::string& app_title,
+  // specified by `icon_identifier`. `sorting_key` is the key that is used for
+  // sorting by the icon container.
+  SavedDeskIconView(const std::string& icon_identifier,
                     int count,
-                    bool show_plus,
-                    size_t sorting_key,
-                    base::OnceCallback<void(views::View*)> on_icon_loaded);
-
-  // Create an icon view that only has a count and an optional plus.
-  SavedDeskIconView(int count, bool show_plus);
+                    size_t sorting_key);
 
   SavedDeskIconView(const SavedDeskIconView&) = delete;
   SavedDeskIconView& operator=(const SavedDeskIconView&) = delete;
   ~SavedDeskIconView() override;
 
+  // TODO(b/256224473): Remove this function and `icon_identifier_`. It seems
+  // that we just use it for unit tests. We could be passing icon_identifier
+  // directly from `SavedDeskRegularIconView` constructor to
+  // `CreateChildViews()` and then we wouldn't need to hold on to this string.
   const std::string& icon_identifier() const { return icon_identifier_; }
-
-  int count() const {
-    DCHECK((is_overflow_icon() && count_ >= 0) ||
-           (!is_overflow_icon() && count_ >= 1));
-    return count_;
-  }
-
-  // Visible count. For overflow icon, this will be `count_`, for non-overflow
-  // icon, this will be `count_` - 1.
-  int visible_count() const {
-    int visible_count = is_overflow_icon() ? count_ : count_ - 1;
-    DCHECK(visible_count >= 0);
-    return visible_count;
-  }
-
-  bool is_showing_default_icon() const { return is_showing_default_icon_; }
 
   bool is_overflow_icon() const { return icon_identifier_.empty(); }
 
@@ -80,27 +59,84 @@ class SavedDeskIconView : public views::View {
   void Layout() override;
   void OnThemeChanged() override;
 
+  // Sets `count_` to `count` and updates the `count_label_`. Please note,
+  // currently it does not support update on regular icon.
+  virtual void UpdateCount(int count);
+
   // Sorting key that is used by the container for sorting all icons. Icon with
   // higher keys will be displayed at the end in the icon container.
   // Values are designed as follows:
   //   - Non-default icon: index from its original order, starting from 0
   //   - Default icon:  `kDefaultIconSortingKey`
   //   - Overflow icon: `kOverflowIconSortingKey`
-  size_t GetSortingKey() const;
+  virtual size_t GetSortingKey() const = 0;
 
-  // Sets `count_` to `count` and updates the `count_label_`. Please note,
-  // currently it does not support update on non-overflow icon.
-  void UpdateCount(int count);
+  virtual int GetCount() const = 0;
+
+  // The count number will be shown on a label view. For the regular icon view,
+  // with or without default icon image, this should be `count_` - 1; while for
+  // the overflow icon view, this should be `count_`.
+  virtual int GetCountToShow() const = 0;
+
+ protected:
+  // Creates the child view for the count label.
+  void CreateCountLabelChildView(bool show_plus, int inset_size);
+
+  // The identifier for an icon. For a favicon, this will be a url. For an app,
+  // this will be an app id. For an overflow icon, it'll be an empty string.
+  std::string icon_identifier_;
+
+  // The number of instances of this icon's respective app/url stored in this's
+  // respective SavedDesk.
+  int count_ = 0;
+
+  // Sorting key that is used for sorting icons in the container.
+  size_t sorting_key_;
+
+  // Owned by the views hierarchy.
+  views::Label* count_label_ = nullptr;
+
+  // TODO(b/256224473): It seems like we can make `icon_view_` private in
+  // `SavedDeskRegularIconView`, because only regular icons have this view.
+  RoundedImageView* icon_view_ = nullptr;
 
  private:
   friend class SavedDeskIconViewTestApi;
 
+  base::WeakPtrFactory<SavedDeskIconView> weak_ptr_factory_{this};
+};
+
+class SavedDeskRegularIconView : public SavedDeskIconView {
+ public:
+  METADATA_HEADER(SavedDeskRegularIconView);
+
+  // `on_icon_loaded` is the callback for updating the icon container.
+  SavedDeskRegularIconView(
+      const ui::ColorProvider* incognito_window_color_provider,
+      const std::string& icon_identifier,
+      const std::string& app_title,
+      int count,
+      size_t sorting_key,
+      base::OnceCallback<void(views::View*)> on_icon_loaded);
+
+  SavedDeskRegularIconView(const SavedDeskRegularIconView&) = delete;
+  SavedDeskRegularIconView& operator=(const SavedDeskRegularIconView&) = delete;
+  ~SavedDeskRegularIconView() override;
+
+  bool is_showing_default_icon() const { return is_showing_default_icon_; }
+
+  // SavedDeskIconView:
+  void OnThemeChanged() override;
+  size_t GetSortingKey() const override;
+  int GetCount() const override;
+  int GetCountToShow() const override;
+
+ private:
   // Creates the child views for this icon view. Will start the asynchronous
   // task of loading icons if necessary.
   void CreateChildViews(
       const ui::ColorProvider* incognito_window_color_provider,
-      const std::string& app_title,
-      bool show_plus);
+      const std::string& app_title);
 
   // Callbacks for when the app icon/favicon has been fetched. If the result is
   // non-null/empty then we'll set this's image to the result. Otherwise, we'll
@@ -111,39 +147,38 @@ class SavedDeskIconView : public views::View {
   // load an icon.
   void LoadDefaultIcon();
 
-  // The identifier for an icon. For a favicon, this will be a url. For an app,
-  // this will be an app id.
-  std::string icon_identifier_;
-
-  // The number of instances of this icon's respective app/url stored in this's
-  // respective SavedDesk.
-  int count_ = 0;
-
   // True if this icon view is showing the default (fallback) icon.
   bool is_showing_default_icon_ = false;
-
-  // Sorting key that is used for sorting icons in the container.
-  size_t sorting_key_;
 
   // Callback from the icon container that updates the icon order and overflow
   // icon.
   base::OnceCallback<void(views::View*)> on_icon_loaded_;
 
-  // Owned by the views hierarchy.
-  views::Label* count_label_ = nullptr;
-  RoundedImageView* icon_view_ = nullptr;
-
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  base::WeakPtrFactory<SavedDeskIconView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SavedDeskRegularIconView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, SavedDeskIconView, views::View)
-END_VIEW_BUILDER
+class SavedDeskOverflowIconView : public SavedDeskIconView {
+ public:
+  METADATA_HEADER(SavedDeskOverflowIconView);
+
+  // Create an icon view that only has a count and an optional plus.
+  SavedDeskOverflowIconView(int count, bool show_plus);
+
+  SavedDeskOverflowIconView(const SavedDeskOverflowIconView&) = delete;
+  SavedDeskOverflowIconView& operator=(const SavedDeskOverflowIconView&) =
+      delete;
+  ~SavedDeskOverflowIconView() override;
+
+  // SavedDeskIconView:
+  void UpdateCount(int count) override;
+  size_t GetSortingKey() const override;
+  int GetCount() const override;
+  int GetCountToShow() const override;
+};
 
 }  // namespace ash
-
-DEFINE_VIEW_BUILDER(/* no export */, ash::SavedDeskIconView)
 
 #endif  // ASH_WM_DESKS_TEMPLATES_SAVED_DESK_ICON_VIEW_H_

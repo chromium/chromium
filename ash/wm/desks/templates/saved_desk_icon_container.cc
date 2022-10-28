@@ -288,7 +288,7 @@ void SavedDeskIconContainer::UpdateOverflowIcon() {
   // count, and visibility of all icons will be reset.
   for (int i = static_cast<int>(icon_views.size()) - 2; i >= 0; i--) {
     int needed_overflow_icon_width = 0;
-    if (overflow_icon_view->count()) {
+    if (overflow_icon_view->GetCount()) {
       needed_overflow_icon_width =
           overflow_icon_view_->GetPreferredSize().width() + kIconSpacingDp;
     }
@@ -297,7 +297,7 @@ void SavedDeskIconContainer::UpdateOverflowIcon() {
       if (icon_views[i]->GetVisible())
         icon_views[i]->SetVisible(false);
       used_width -= icon_views[i]->GetPreferredSize().width() + kIconSpacingDp;
-      num_hidden_apps += icon_views[i]->count();
+      num_hidden_apps += icon_views[i]->GetCount();
       num_shown_icons--;
       overflow_icon_view->UpdateCount(num_hidden_apps);
     } else {
@@ -332,12 +332,11 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
     // like to preserve the original order.
     if (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
         delegate->IsAppAvailable(icon_info.app_id)) {
-      AddChildView(std::make_unique<SavedDeskIconView>(
+      AddChildView(std::make_unique<SavedDeskRegularIconView>(
           /*incognito_window_color_provider=*/incognito_window_color_provider_,
           /*icon_identifier=*/icon_identifier,
           /*app_title=*/icon_info.app_title,
           /*count=*/icon_info.count,
-          /*show_plus=*/true,
           /*sorting_key=*/i,
           /*on_icon_loaded=*/
           base::BindOnce(&SavedDeskIconContainer::OnViewLoaded,
@@ -351,9 +350,10 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
   // of the view changes. It will be hidden if not needed. For `show_plus`, If
   // no child views were added, the icon container contains only unavailable
   // apps so we should *not* show plus.
-  overflow_icon_view_ = AddChildView(std::make_unique<SavedDeskIconView>(
-      /*count=*/uncreated_app_count_,
-      /*show_plus=*/!children().empty()));
+  overflow_icon_view_ =
+      AddChildView(std::make_unique<SavedDeskOverflowIconView>(
+          /*count=*/uncreated_app_count_,
+          /*show_plus=*/!children().empty()));
 }
 
 BEGIN_METADATA(SavedDeskIconContainer, views::BoxLayoutView)
