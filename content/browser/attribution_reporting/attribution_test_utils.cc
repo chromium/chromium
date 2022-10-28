@@ -346,6 +346,10 @@ AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
   return data_host_manager_.get();
 }
 
+OsLevelAttributionManager* MockAttributionManager::GetOsLevelManager() {
+  return nullptr;
+}
+
 void MockAttributionManager::NotifySourcesChanged() {
   for (auto& observer : observers_)
     observer.OnSourcesChanged();

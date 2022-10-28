@@ -50,6 +50,7 @@ class AttributionDataHostManager;
 class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
+class OsLevelAttributionManager;
 class StoragePartitionImpl;
 class StoredSource;
 
@@ -110,6 +111,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void AddObserver(AttributionObserver* observer) override;
   void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;
+  OsLevelAttributionManager* GetOsLevelManager() override;
   void HandleSource(StorableSource source) override;
   void HandleTrigger(AttributionTrigger trigger) override;
   void GetActiveSourcesForWebUI(
@@ -146,7 +148,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
-      std::unique_ptr<AttributionDataHostManager> data_host_manager);
+      std::unique_ptr<AttributionDataHostManager> data_host_manager,
+      std::unique_ptr<OsLevelAttributionManager> os_level_manager);
 
   void MaybeEnqueueEvent(SourceOrTrigger event);
   void ProcessEvents();
@@ -223,6 +226,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   ReportSchedulerTimer scheduler_timer_;
 
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
+
+  std::unique_ptr<OsLevelAttributionManager> os_level_manager_;
 
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
