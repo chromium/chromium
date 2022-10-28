@@ -131,9 +131,7 @@ public class TabListCoordinator
             @Nullable TabSwitcherMediator
                     .PriceWelcomeMessageController priceWelcomeMessageController,
             @NonNull ViewGroup parentView, boolean attachToParent, String componentName,
-            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange,
-            @Nullable TabGridItemTouchHelperCallback
-                    .OnLongPressEventListener onLongPressEventListener) {
+            @NonNull ViewGroup rootView, @Nullable Callback<Object> onModelTokenChange) {
         mMode = mode;
         mItemType = itemType;
         mContext = context;
@@ -235,7 +233,7 @@ public class TabListCoordinator
         mMediator = new TabListMediator(context, mModel, mMode, tabModelSelector, thumbnailProvider,
                 titleProvider, tabListFaviconProvider, actionOnRelatedTabs,
                 selectionDelegateProvider, gridCardOnClickListenerProvider, dialogHandler,
-                priceWelcomeMessageController, componentName, itemType, onLongPressEventListener);
+                priceWelcomeMessageController, componentName, itemType);
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.setupRecyclerView")) {
             if (!attachToParent) {

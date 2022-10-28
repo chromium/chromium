@@ -75,8 +75,7 @@ import java.util.List;
 public class TabSwitcherCoordinator
         implements DestroyObserver, TabSwitcher, TabSwitcher.TabListDelegate,
                    TabSwitcherMediator.ResetHandler, TabSwitcherMediator.MessageItemsController,
-                   TabSwitcherMediator.PriceWelcomeMessageController,
-                   TabGridItemTouchHelperCallback.OnLongPressEventListener {
+                   TabSwitcherMediator.PriceWelcomeMessageController {
     /**
      * Interface to control the IPH dialog.
      */
@@ -185,7 +184,6 @@ public class TabSwitcherCoordinator
                         return true;
                     } else if (id == R.id.menu_select_tabs) {
                         showTabSelectionEditorV2();
-                        RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
                         RecordUserAction.record("MobileMenuSelectTabs");
                         return true;
                     } else if (id == R.id.track_prices_row_menu_id) {
@@ -258,7 +256,7 @@ public class TabSwitcherCoordinator
             mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
                     mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
                     TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
-                    mRootView, null, this);
+                    mRootView, null);
             mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                     mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
 
@@ -553,6 +551,7 @@ public class TabSwitcherCoordinator
             tabs.add(list.getTabAt(i));
         }
         mTabSelectionEditorCoordinator.getController().show(tabs);
+        RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {
@@ -781,13 +780,6 @@ public class TabSwitcherCoordinator
                                           .getCurrentTabModelFilter()
                                           .index());
         }
-    }
-
-    // OnLongPressEventListener implementation
-    @Override
-    public void onLongPressEvent(int tabId) {
-        showTabSelectionEditorV2();
-        RecordUserAction.record("TabMultiSelectV2.OpenLongPressInGrid");
     }
 
     private void appendMessagesTo(int index) {

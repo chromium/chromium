@@ -3562,21 +3562,9 @@ const FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabSelectionEditorV2_share_enabled[] = {
     {"enable_share", "true"}};
-const FeatureEntry::FeatureParam kTabSelectionEditorV2_longpress_enabled[] = {
-    {"enable_longpress_entry", "true"}};
-const FeatureEntry::FeatureParam
-    kTabSelectionEditorV2_longpress_and_share_enabled[] = {
-        {"enable_share", "true"},
-        {"enable_longpress_entry", "true"},
-};
 const FeatureEntry::FeatureVariation kTabSelectionEditorV2Variations[] = {
     {"- with share", kTabSelectionEditorV2_share_enabled,
      std::size(kTabSelectionEditorV2_share_enabled), nullptr},
-    {"- with longpress", kTabSelectionEditorV2_longpress_enabled,
-     std::size(kTabSelectionEditorV2_longpress_enabled), nullptr},
-    {"- with share and longpress",
-     kTabSelectionEditorV2_longpress_and_share_enabled,
-     std::size(kTabSelectionEditorV2_longpress_and_share_enabled), nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
