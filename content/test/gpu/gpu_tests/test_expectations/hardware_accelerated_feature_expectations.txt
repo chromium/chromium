@@ -82,7 +82,6 @@
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Flakes on Linux Release
-crbug.com/1340081 [ linux release intel-0x5912 ] HardwareAcceleratedFeature_canvas_accelerated [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
