@@ -7,13 +7,12 @@
 #include "chrome/browser/extensions/external_install_error.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/mock_external_provider.h"
-#include "extensions/browser/notification_types.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 
 namespace extensions {
 
@@ -25,27 +24,30 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest, TestShutdown) {
   FeatureSwitch::ScopedOverride feature_override(
       FeatureSwitch::prompt_for_external_extensions(), true);
 
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+
   const char kId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
   {
     // Wait for an external extension to be installed and a global error about
     // it added.
     test::GlobalErrorWaiter waiter(profile());
-    content::WindowedNotificationObserver install_observer(
-        NOTIFICATION_CRX_INSTALLER_DONE,
-        content::NotificationService::AllSources());
+    TestExtensionRegistryObserver observer(registry);
+
     auto provider = std::make_unique<MockExternalProvider>(
         extension_service(), mojom::ManifestLocation::kExternalPref);
     provider->UpdateOrAddExtension(kId, "1.0.0.0",
                                    test_data_dir_.AppendASCII("good.crx"));
     extension_service()->AddProviderForTesting(std::move(provider));
     extension_service()->CheckForExternalUpdates();
-    install_observer.Wait();
+
+    auto extension = observer.WaitForExtensionInstalled();
+    EXPECT_EQ(extension->id(), kId);
+
     waiter.Wait();
   }
 
   // Verify the extension is in the expected state (disabled for being
   // unacknowledged).
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   EXPECT_FALSE(registry->enabled_extensions().Contains(kId));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_FALSE(prefs->IsExternalExtensionAcknowledged(kId));
