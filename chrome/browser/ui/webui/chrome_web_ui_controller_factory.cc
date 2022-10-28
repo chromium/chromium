@@ -999,8 +999,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::AccountManagerErrorUI>;
   if (url.host_piece() == chrome::kChromeUIAccountMigrationWelcomeHost)
     return &NewWebUI<ash::AccountMigrationWelcomeUI>;
-  if (url.host_piece() == chrome::kChromeUIAddSupervisionHost)
-    return &NewWebUI<ash::AddSupervisionUI>;
   if (url.host_piece() == chrome::kChromeUIParentAccessHost)
     return &NewWebUI<ash::ParentAccessUI>;
   if (url.host_piece() == chrome::kChromeUIAudioHost &&

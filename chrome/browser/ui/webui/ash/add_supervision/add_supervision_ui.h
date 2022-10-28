@@ -10,6 +10,9 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -60,6 +63,17 @@ class AddSupervisionDialog : public SystemWebDialogDelegate {
 
  private:
   bool should_close_on_escape_ = true;
+};
+
+class AddSupervisionUI;
+
+// WebUIConfig for chrome://add-supervision
+class AddSupervisionUIConfig
+    : public content::DefaultWebUIConfig<AddSupervisionUI> {
+ public:
+  AddSupervisionUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIAddSupervisionHost) {}
 };
 
 // Controller for chrome://add-supervision
