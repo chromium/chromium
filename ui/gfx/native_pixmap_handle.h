@@ -10,9 +10,7 @@
 
 #include <vector>
 
-#include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -20,6 +18,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
+#include <lib/zx/eventpair.h>
 #include <lib/zx/vmo.h>
 #endif
 
@@ -61,12 +60,6 @@ struct GFX_EXPORT NativePixmapPlane {
 #endif
 };
 
-#if BUILDFLAG(IS_FUCHSIA)
-// Buffer collection ID is used to identify sysmem buffer collections across
-// processes.
-using SysmemBufferCollectionId = base::UnguessableToken;
-#endif
-
 struct GFX_EXPORT NativePixmapHandle {
   // This is the same value as DRM_FORMAT_MOD_INVALID, which is not a valid
   // modifier. We use this to indicate that layout information
@@ -93,7 +86,11 @@ struct GFX_EXPORT NativePixmapHandle {
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  absl::optional<SysmemBufferCollectionId> buffer_collection_id;
+  // Sysmem buffer collection handle. The other end of the eventpair is owned
+  // by the SysmemBufferCollection instance in the GPU process. It will destroy
+  // itself when all handles for the collection are dropped. Eventpair is used
+  // here because they are dupable, nun-fungible and unique.
+  zx::eventpair buffer_collection_handle;
   uint32_t buffer_index = 0;
 
   // Set to true for sysmem buffers which are initialized with RAM coherency

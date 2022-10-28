@@ -7,15 +7,13 @@
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
+#include <lib/zx/eventpair.h>
 #include <vulkan/vulkan.h>
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -35,13 +33,13 @@ class FlatlandSurfaceFactory;
 // be called on the same thread (because it may be be safe to use
 // VkBufferCollectionFUCHSIA concurrently on different threads).
 class FlatlandSysmemBufferCollection
-    : public base::RefCountedThreadSafe<FlatlandSysmemBufferCollection> {
+    : public base::RefCountedThreadSafe<FlatlandSysmemBufferCollection>,
+      public base::MessagePumpForIO::ZxHandleWatcher {
  public:
   static bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                             gfx::BufferUsage usage);
 
   FlatlandSysmemBufferCollection();
-  explicit FlatlandSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
   FlatlandSysmemBufferCollection(const FlatlandSysmemBufferCollection&) =
       delete;
   FlatlandSysmemBufferCollection& operator=(
@@ -57,7 +55,8 @@ class FlatlandSysmemBufferCollection
   bool Initialize(fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
                   fuchsia::ui::composition::Allocator* flatland_allocator,
                   FlatlandSurfaceFactory* flatland_surface_factory,
-                  zx::channel token_handle,
+                  zx::eventpair handle,
+                  zx::channel sysmem_token,
                   gfx::Size size,
                   gfx::BufferFormat format,
                   gfx::BufferUsage usage,
@@ -65,13 +64,13 @@ class FlatlandSysmemBufferCollection
                   size_t min_buffer_count);
 
   // Does minimum initialization needed for tests based on |usage|.
-  void InitializeForTesting(gfx::BufferUsage usage);
+  void InitializeForTesting(zx::eventpair handle, gfx::BufferUsage usage);
 
-  // Creates a NativePixmap with the specified index. The returned
-  // NativePixmap holds a reference to the collection, so that the collection
-  // is not deleted until all NativePixmaps are destroyed.
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(size_t buffer_index,
-                                                      gfx::Size size);
+  // Creates a NativePixmap with the specified handle. The handle must reference
+  // a buffer in this collection.
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::NativePixmapHandle handle,
+      gfx::Size size);
 
   // Creates a new Vulkan image for the buffer with the specified index.
   bool CreateVkImage(size_t buffer_index,
@@ -82,7 +81,7 @@ class FlatlandSysmemBufferCollection
                      VkDeviceMemory* vk_device_memory,
                      VkDeviceSize* mem_allocation_size);
 
-  gfx::SysmemBufferCollectionId id() const { return id_; }
+  zx_koid_t id() const { return id_; }
   size_t num_buffers() const { return buffers_info_.buffer_count; }
   gfx::BufferFormat format() const { return format_; }
   size_t buffer_size() const {
@@ -94,12 +93,12 @@ class FlatlandSysmemBufferCollection
       const;
   bool HasFlatlandImportToken() const;
 
-  void AddOnDeletedCallback(base::OnceClosure on_deleted);
+  void AddOnReleasedCallback(base::OnceClosure on_released);
 
  private:
   friend class base::RefCountedThreadSafe<FlatlandSysmemBufferCollection>;
 
-  ~FlatlandSysmemBufferCollection();
+  ~FlatlandSysmemBufferCollection() override;
 
   bool InitializeInternal(
       fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
@@ -116,7 +115,14 @@ class FlatlandSysmemBufferCollection
            usage_ == gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
   }
 
-  const gfx::SysmemBufferCollectionId id_;
+  // base::MessagePumpForIO::ZxHandleWatcher implementation.
+  void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
+
+  zx::eventpair handle_;
+  zx_koid_t id_ = 0;
+
+  std::unique_ptr<base::MessagePumpForIO::ZxHandleWatchController>
+      handle_watch_;
 
   // Image size passed to vkSetBufferCollectionConstraintsFUCHSIA(). The actual
   // buffers size may be larger depending on constraints set by other
@@ -145,7 +151,7 @@ class FlatlandSysmemBufferCollection
   size_t buffer_size_ = 0;
   bool is_protected_ = false;
 
-  std::vector<base::OnceClosure> on_deleted_;
+  std::vector<base::OnceClosure> on_released_;
 };
 
 }  // namespace ui

@@ -70,13 +70,11 @@ class MockGpuChannel : public mojom::GpuChannel {
                     WaitForGetOffsetInRangeCallback));
 #if BUILDFLAG(IS_FUCHSIA)
   MOCK_METHOD5(RegisterSysmemBufferCollection,
-               void(const base::UnguessableToken&,
+               void(mojo::PlatformHandle,
                     mojo::PlatformHandle,
                     gfx::BufferFormat,
                     gfx::BufferUsage,
                     bool));
-  MOCK_METHOD1(ReleaseSysmemBufferCollection,
-               void(const base::UnguessableToken&));
 #endif  // BUILDFLAG(IS_FUCHSIA)
 };
 

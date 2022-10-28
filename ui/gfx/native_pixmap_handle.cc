@@ -110,7 +110,14 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle) {
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  clone.buffer_collection_id = handle.buffer_collection_id;
+  if (handle.buffer_collection_handle) {
+    zx_status_t status = handle.buffer_collection_handle.duplicate(
+        ZX_RIGHT_SAME_RIGHTS, &clone.buffer_collection_handle);
+    if (status != ZX_OK) {
+      ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
+      return NativePixmapHandle();
+    }
+  }
   clone.buffer_index = handle.buffer_index;
   clone.ram_coherency = handle.ram_coherency;
 #endif

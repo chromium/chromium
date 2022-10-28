@@ -92,7 +92,7 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
       return buffer_collection_id < other_id.buffer_collection_id;
     }
 
-    base::UnguessableToken buffer_collection_id;
+    zx_koid_t buffer_collection_id;
     uint32_t buffer_index;
   };
 

@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
 #include "base/process/process_handle.h"
 #include "base/test/bind.h"
@@ -37,7 +38,8 @@ namespace {
 
 class TestBufferCollection {
  public:
-  explicit TestBufferCollection(zx::channel collection_token) {
+  TestBufferCollection(zx::eventpair handle, zx::channel collection_token)
+      : handle_(std::move(handle)) {
     sysmem_allocator_ = base::ComponentContextForProcess()
                             ->svc()
                             ->Connect<fuchsia::sysmem::Allocator>();
@@ -81,6 +83,8 @@ class TestBufferCollection {
   }
 
  private:
+  zx::eventpair handle_;
+
   fuchsia::sysmem::AllocatorPtr sysmem_allocator_;
   fuchsia::sysmem::BufferCollectionSyncPtr buffers_collection_;
 
@@ -127,8 +131,10 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
     CHECK_EQ(handle.type, gfx::GpuMemoryBufferType::NATIVE_PIXMAP);
 
-    auto collection_it = sysmem_buffer_collections_.find(
-        handle.native_pixmap_handle.buffer_collection_id);
+    zx_koid_t id = base::GetRelatedKoid(
+                       handle.native_pixmap_handle.buffer_collection_handle)
+                       .value();
+    auto collection_it = sysmem_buffer_collections_.find(id);
     CHECK(collection_it != sysmem_buffer_collections_.end());
     CHECK_LT(handle.native_pixmap_handle.buffer_index,
              collection_it->second->GetNumBuffers());
@@ -167,22 +173,19 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     ADD_FAILURE();
   }
 
-  void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
+  void RegisterSysmemBufferCollection(zx::eventpair handle,
                                       zx::channel token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override {
     EXPECT_EQ(format, gfx::BufferFormat::YUV_420_BIPLANAR);
     EXPECT_EQ(usage, gfx::BufferUsage::GPU_READ);
+    zx_koid_t id = base::GetKoid(handle).value();
     std::unique_ptr<TestBufferCollection>& collection =
         sysmem_buffer_collections_[id];
     EXPECT_FALSE(collection);
-    collection = std::make_unique<TestBufferCollection>(std::move(token));
-  }
-
-  void ReleaseSysmemBufferCollection(
-      gfx::SysmemBufferCollectionId id) override {
-    EXPECT_EQ(sysmem_buffer_collections_.erase(id), 1U);
+    collection = std::make_unique<TestBufferCollection>(std::move(handle),
+                                                        std::move(token));
   }
 
   gpu::SyncToken GenVerifiedSyncToken() override {
@@ -209,8 +212,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
 
  private:
-  base::flat_map<gfx::SysmemBufferCollectionId,
-                 std::unique_ptr<TestBufferCollection>>
+  base::flat_map<zx_koid_t, std::unique_ptr<TestBufferCollection>>
       sysmem_buffer_collections_;
 
   base::flat_set<gpu::Mailbox> mailboxes_;

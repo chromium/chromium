@@ -85,12 +85,11 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                         const gpu::Mailbox& mailbox) override;
 
 #if BUILDFLAG(IS_FUCHSIA)
-  void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
-                                      zx::channel token,
+  void RegisterSysmemBufferCollection(zx::eventpair service_handle,
+                                      zx::channel sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override;
-  void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   gpu::SyncToken GenVerifiedSyncToken() override;

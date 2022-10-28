@@ -41,6 +41,15 @@ bool StructTraits<
   return true;
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+PlatformHandle
+StructTraits<gfx::mojom::NativePixmapHandleDataView, gfx::NativePixmapHandle>::
+    buffer_collection_handle(gfx::NativePixmapHandle& pixmap_handle) {
+  return mojo::PlatformHandle(
+      std::move(pixmap_handle.buffer_collection_handle));
+}
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
 bool StructTraits<
     gfx::mojom::NativePixmapHandleDataView,
     gfx::NativePixmapHandle>::Read(gfx::mojom::NativePixmapHandleDataView data,
@@ -52,8 +61,10 @@ bool StructTraits<
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  if (!data.ReadBufferCollectionId(&out->buffer_collection_id))
+  mojo::PlatformHandle handle = data.TakeBufferCollectionHandle();
+  if (!handle.is_handle())
     return false;
+  out->buffer_collection_handle = zx::eventpair(handle.TakeHandle());
   out->buffer_index = data.buffer_index();
   out->ram_coherency = data.ram_coherency();
 #endif

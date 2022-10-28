@@ -5,18 +5,17 @@
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
+#include <lib/zx/eventpair.h>
 #include <vulkan/vulkan.h>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/process/process_metrics.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -591,8 +590,10 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
   if (!output_mailboxes_[buffer_index]) {
     gfx::GpuMemoryBufferHandle gmb_handle;
     gmb_handle.type = gfx::NATIVE_PIXMAP;
-    gmb_handle.native_pixmap_handle.buffer_collection_id =
-        output_buffer_collection_id_;
+    auto status = output_buffer_collection_handle_.duplicate(
+        ZX_RIGHT_SAME_RIGHTS,
+        &gmb_handle.native_pixmap_handle.buffer_collection_handle);
+    ZX_DCHECK(status == ZX_OK, status);
     gmb_handle.native_pixmap_handle.buffer_index = buffer_index;
 
     auto gmb = gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
@@ -725,11 +726,15 @@ void FuchsiaVideoDecoder::OnError() {
 void FuchsiaVideoDecoder::SetBufferCollectionTokenForGpu(
     fuchsia::sysmem::BufferCollectionTokenPtr token) {
   // Register the new collection with the GPU process.
-  DCHECK(!output_buffer_collection_id_);
-  output_buffer_collection_id_ = gfx::SysmemBufferCollectionId::Create();
+  DCHECK(!output_buffer_collection_handle_);
+
+  zx::eventpair service_handle;
+  auto status = zx::eventpair::create(0, &output_buffer_collection_handle_,
+                                      &service_handle);
+  ZX_DCHECK(status == ZX_OK, status);
   raster_context_provider_->SharedImageInterface()
       ->RegisterSysmemBufferCollection(
-          output_buffer_collection_id_, token.Unbind().TakeChannel(),
+          std::move(service_handle), token.Unbind().TakeChannel(),
           gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
           use_overlays_for_video_ /*register_with_image_pipe*/);
 
@@ -753,11 +758,7 @@ void FuchsiaVideoDecoder::ReleaseOutputBuffers() {
   output_mailboxes_.clear();
 
   // Tell the GPU process to drop the buffer collection.
-  if (output_buffer_collection_id_) {
-    raster_context_provider_->SharedImageInterface()
-        ->ReleaseSysmemBufferCollection(output_buffer_collection_id_);
-    output_buffer_collection_id_ = {};
-  }
+  output_buffer_collection_handle_.reset();
 }
 
 void FuchsiaVideoDecoder::ReleaseOutputPacket(

@@ -12,17 +12,13 @@
 #include <memory>
 #include <tuple>
 
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/fuchsia/fuchsia_logging.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/ozone/platform/scenic/scenic_surface.h"
@@ -198,13 +194,13 @@ VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
   if (gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
-  if (!gmb_handle.native_pixmap_handle.buffer_collection_id) {
-    DLOG(ERROR) << "NativePixmapHandle.buffer_collection_id is not set.";
+  if (!gmb_handle.native_pixmap_handle.buffer_collection_handle) {
+    DLOG(ERROR) << "NativePixmapHandle.buffer_collection_handle is not set.";
     return nullptr;
   }
 
-  auto collection = sysmem_buffer_manager_->GetCollectionById(
-      gmb_handle.native_pixmap_handle.buffer_collection_id.value());
+  auto collection = sysmem_buffer_manager_->GetCollectionByHandle(
+      gmb_handle.native_pixmap_handle.buffer_collection_handle);
   if (!collection) {
     DLOG(ERROR) << "Tried to use an unknown buffer collection ID.";
     return nullptr;
@@ -253,45 +249,23 @@ VulkanImplementationScenic::CreateImageFromGpuMemoryHandle(
 
   image->set_queue_family_index(VK_QUEUE_FAMILY_EXTERNAL);
   image->set_native_pixmap(collection->CreateNativePixmap(
-      gmb_handle.native_pixmap_handle.buffer_index, size));
+      std::move(gmb_handle.native_pixmap_handle), size));
   return image;
 }
 
-class SysmemBufferCollectionImpl : public gpu::SysmemBufferCollection {
- public:
-  explicit SysmemBufferCollectionImpl(
-      scoped_refptr<ui::SysmemBufferCollection> collection)
-      : collection_(std::move(collection)) {}
-
-  SysmemBufferCollectionImpl(const SysmemBufferCollectionImpl&) = delete;
-  SysmemBufferCollectionImpl& operator=(const SysmemBufferCollectionImpl&) =
-      delete;
-
-  ~SysmemBufferCollectionImpl() override = default;
-
- private:
-  scoped_refptr<ui::SysmemBufferCollection> collection_;
-};
-
-std::unique_ptr<gpu::SysmemBufferCollection>
-VulkanImplementationScenic::RegisterSysmemBufferCollection(
+void VulkanImplementationScenic::RegisterSysmemBufferCollection(
     VkDevice device,
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::Size size,
     size_t min_buffer_count,
     bool register_with_image_pipe) {
   fuchsia::images::ImagePipe2Ptr image_pipe = nullptr;
-  auto buffer_collection = sysmem_buffer_manager_->ImportSysmemBufferCollection(
-      device, id, std::move(token), size, format, usage, min_buffer_count,
-      register_with_image_pipe);
-  if (!buffer_collection)
-    return nullptr;
-
-  return std::make_unique<SysmemBufferCollectionImpl>(
-      std::move(buffer_collection));
+  sysmem_buffer_manager_->ImportSysmemBufferCollection(
+      device, std::move(service_handle), std::move(sysmem_token), size, format,
+      usage, min_buffer_count, register_with_image_pipe);
 }
 
 }  // namespace ui

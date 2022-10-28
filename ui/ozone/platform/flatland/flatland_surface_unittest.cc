@@ -100,13 +100,12 @@ TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
   FlatlandSurface* surface = CreateFlatlandSurface();
   SetLayoutInfo();
 
-  auto buffer_collection_id = gfx::SysmemBufferCollectionId::Create();
   gfx::NativePixmapHandle handle;
-  handle.buffer_collection_id = buffer_collection_id;
-  handle.buffer_index = 0;
-  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>(
-      buffer_collection_id);
-  collection->InitializeForTesting(gfx::BufferUsage::SCANOUT);
+  zx::eventpair service_handle;
+  zx::eventpair::create(0, &service_handle, &handle.buffer_collection_handle);
+  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
+  collection->InitializeForTesting(std::move(service_handle),
+                                   gfx::BufferUsage::SCANOUT);
   auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
       collection, std::move(handle), gfx::Size(1, 1));
   surface->Present(
@@ -127,13 +126,12 @@ TEST_F(FlatlandSurfaceTest, PresentBeforeLayoutInfo) {
 
   FlatlandSurface* surface = CreateFlatlandSurface();
 
-  auto buffer_collection_id = gfx::SysmemBufferCollectionId::Create();
   gfx::NativePixmapHandle handle;
-  handle.buffer_collection_id = buffer_collection_id;
-  handle.buffer_index = 0;
-  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>(
-      buffer_collection_id);
-  collection->InitializeForTesting(gfx::BufferUsage::SCANOUT);
+  zx::eventpair service_handle;
+  zx::eventpair::create(0, &service_handle, &handle.buffer_collection_handle);
+  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
+  collection->InitializeForTesting(std::move(service_handle),
+                                   gfx::BufferUsage::SCANOUT);
   auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
       collection, std::move(handle), gfx::Size(1, 1));
   surface->Present(

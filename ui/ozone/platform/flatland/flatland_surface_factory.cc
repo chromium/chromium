@@ -168,12 +168,8 @@ scoped_refptr<gfx::NativePixmap> FlatlandSurfaceFactory::CreateNativePixmap(
     absl::optional<gfx::Size> framebuffer_size) {
   DCHECK(!framebuffer_size || framebuffer_size == size);
 
-  auto collection = flatland_sysmem_buffer_manager_.CreateCollection(
-      vk_device, size, format, usage, 1);
-  if (!collection)
-    return nullptr;
-
-  return collection->CreateNativePixmap(0, size);
+  return flatland_sysmem_buffer_manager_.CreateNativePixmap(vk_device, size,
+                                                            format, usage);
 }
 
 void FlatlandSurfaceFactory::CreateNativePixmapAsync(
@@ -193,12 +189,12 @@ FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
-  auto collection = flatland_sysmem_buffer_manager_.GetCollectionById(
-      handle.buffer_collection_id.value());
+  auto collection = flatland_sysmem_buffer_manager_.GetCollectionByHandle(
+      handle.buffer_collection_handle);
   if (!collection)
     return nullptr;
 
-  return collection->CreateNativePixmap(handle.buffer_index, size);
+  return collection->CreateNativePixmap(std::move(handle), size);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

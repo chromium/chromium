@@ -214,12 +214,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   void DestroyCommandBuffer(int32_t routing_id);
 
 #if BUILDFLAG(IS_FUCHSIA)
-  void RegisterSysmemBufferCollection(const base::UnguessableToken& id,
-                                      mojo::PlatformHandle token,
+  void RegisterSysmemBufferCollection(mojo::PlatformHandle service_handle,
+                                      mojo::PlatformHandle sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
-  void ReleaseSysmemBufferCollection(const base::UnguessableToken& id);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
  private:

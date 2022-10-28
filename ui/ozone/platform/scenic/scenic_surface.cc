@@ -8,8 +8,10 @@
 #include <lib/ui/scenic/cpp/commands.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 #include <lib/zx/eventpair.h>
+#include <zircon/types.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
 #include "base/fuchsia/process_context.h"
 #include "base/numerics/math_constants.h"
 #include "base/process/process_handle.h"
@@ -177,9 +179,10 @@ void ScenicSurface::Present(
   auto& handle = static_cast<SysmemNativePixmap*>(primary_plane_pixmap.get())
                      ->PeekHandle();
   DCHECK_EQ(handle.buffer_index, 0u);
-  DCHECK(buffer_collection_to_image_id_.contains(handle.buffer_collection_id));
-  uint32_t image_id =
-      buffer_collection_to_image_id_.at(handle.buffer_collection_id);
+  zx_koid_t buffer_collection_id =
+      base::GetKoid(handle.buffer_collection_handle).value();
+  DCHECK(buffer_collection_to_image_id_.contains(buffer_collection_id));
+  uint32_t image_id = buffer_collection_to_image_id_.at(buffer_collection_id);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("viz", "ScenicSurface::PresentFrame",
                                     TRACE_ID_LOCAL(this), "image_id", image_id);
@@ -198,8 +201,8 @@ void ScenicSurface::Present(
 
     auto* pixmap = static_cast<SysmemNativePixmap*>(overlay.pixmap.get());
     auto& overlay_handle = pixmap->PeekHandle();
-    gfx::SysmemBufferCollectionId overlay_id =
-        overlay_handle.buffer_collection_id.value();
+    zx_koid_t overlay_id =
+        base::GetKoid(overlay_handle.buffer_collection_handle).value();
     auto it = overlay_views_.find(overlay_id);
 
     // If this is a new overlay then attach it.
@@ -317,27 +320,27 @@ scoped_refptr<gfx::NativePixmap> ScenicSurface::AllocatePrimaryPlanePixmap(
                               token_for_scenic.NewRequest());
   token_for_scenic->SetDebugClientInfo("scenic", 0u);
 
-  status = collection_token->Sync();
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fuchsia.sysmem.BufferCollection.Sync()";
-    return {};
-  }
-
   // Register the new buffer collection with the ImagePipe. Since there will
   // only be a single buffer in the buffer collection we use the same value for
   // both buffer collection id and image ids.
   const uint32_t image_id = ++next_unique_id_;
   image_pipe_->AddBufferCollection(image_id, std::move(token_for_scenic));
 
-  // Register the new buffer collection with Vulkan.
-  gfx::SysmemBufferCollectionId buffer_collection_id =
-      gfx::SysmemBufferCollectionId::Create();
+  // Register the new buffer collection with sysmem.
+  gfx::NativePixmapHandle pixmap_handle;
+  zx::eventpair service_handle;
+  status = zx::eventpair::create(0, &pixmap_handle.buffer_collection_handle,
+                                 &service_handle);
+  ZX_DCHECK(status == ZX_OK, status);
 
+  zx_koid_t buffer_collection_id =
+      base::GetKoid(pixmap_handle.buffer_collection_handle).value();
   buffer_collection_to_image_id_[buffer_collection_id] = image_id;
 
   auto buffer_collection = sysmem_buffer_manager_->ImportSysmemBufferCollection(
-      vk_device, buffer_collection_id, collection_token.Unbind().TakeChannel(),
-      size, buffer_format, gfx::BufferUsage::SCANOUT, 1,
+      vk_device, std::move(service_handle),
+      collection_token.Unbind().TakeChannel(), size, buffer_format,
+      gfx::BufferUsage::SCANOUT, 1,
       /*register_with_image_pipe=*/false);
 
   if (!buffer_collection) {
@@ -345,7 +348,7 @@ scoped_refptr<gfx::NativePixmap> ScenicSurface::AllocatePrimaryPlanePixmap(
     return {};
   }
 
-  buffer_collection->AddOnDeletedCallback(
+  buffer_collection->AddOnReleasedCallback(
       base::BindOnce(&ScenicSurface::RemoveBufferCollection,
                      weak_ptr_factory_.GetWeakPtr(), buffer_collection_id));
 
@@ -354,7 +357,7 @@ scoped_refptr<gfx::NativePixmap> ScenicSurface::AllocatePrimaryPlanePixmap(
   image_format.coded_height = size.height();
   image_pipe_->AddImage(image_id, image_id, 0, image_format);
 
-  return buffer_collection->CreateNativePixmap(0, size);
+  return buffer_collection->CreateNativePixmap(std::move(pixmap_handle), size);
 }
 
 void ScenicSurface::SetTextureToNewImagePipe(
@@ -406,8 +409,7 @@ void ScenicSurface::InitializeImagePipe() {
   });
 }
 
-void ScenicSurface::RemoveBufferCollection(
-    gfx::SysmemBufferCollectionId buffer_collection_id) {
+void ScenicSurface::RemoveBufferCollection(zx_koid_t buffer_collection_id) {
   DCHECK(image_pipe_);
 
   auto iter = buffer_collection_to_image_id_.find(buffer_collection_id);

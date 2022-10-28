@@ -190,13 +190,6 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
                                                        params->format));
 
   bool requires_sync_token =
-#if BUILDFLAG(IS_FUCHSIA)
-      // Synchronization is not required if the image is being created by
-      // FuchsiaVideoDecoder. |gpu_memory_buffer_manager| is nullptr in that
-      // case.
-      (gpu_memory_buffer_manager &&
-       params->buffer_handle.type == gfx::NATIVE_PIXMAP) ||
-#endif
       params->buffer_handle.type == gfx::IO_SURFACE_BUFFER;
   {
     base::AutoLock lock(lock_);
@@ -448,19 +441,15 @@ void SharedImageInterfaceProxy::PresentSwapChain(const SyncToken& sync_token,
 
 #if BUILDFLAG(IS_FUCHSIA)
 void SharedImageInterfaceProxy::RegisterSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   host_->GetGpuChannel().RegisterSysmemBufferCollection(
-      id, mojo::PlatformHandle(std::move(token)), format, usage,
+      mojo::PlatformHandle(std::move(service_handle)),
+      mojo::PlatformHandle(std::move(sysmem_token)), format, usage,
       register_with_image_pipe);
-}
-
-void SharedImageInterfaceProxy::ReleaseSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id) {
-  host_->GetGpuChannel().ReleaseSysmemBufferCollection(id);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

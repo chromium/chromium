@@ -7,18 +7,17 @@
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/session.h>
-#include <vulkan/vulkan.h>
+#include <lib/zx/eventpair.h>
 
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
-#include "base/unguessable_token.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_pixmap_handle.h"
+#include "ui/gfx/native_pixmap.h"
 
 namespace ui {
 
@@ -45,36 +44,37 @@ class SysmemBufferManager {
   // before `Shutdown()`.
   fuchsia::sysmem::Allocator_Sync* GetAllocator();
 
-  scoped_refptr<SysmemBufferCollection> CreateCollection(
-      VkDevice vk_device,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      size_t num_buffers);
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(VkDevice vk_device,
+                                                      gfx::Size size,
+                                                      gfx::BufferFormat format,
+                                                      gfx::BufferUsage usage);
 
   scoped_refptr<SysmemBufferCollection> ImportSysmemBufferCollection(
       VkDevice vk_device,
-      gfx::SysmemBufferCollectionId id,
-      zx::channel token,
+      zx::eventpair service_handle,
+      zx::channel sysmem_token,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       size_t min_buffer_count,
       bool register_with_image_pipe);
 
-  scoped_refptr<SysmemBufferCollection> GetCollectionById(
-      gfx::SysmemBufferCollectionId id);
+  // Returns `SysmemBufferCollection` that corresnponds to the specified
+  // buffer collection `handle`, which should be the other end of the eventpair
+  // passed to `ImportSysmemBufferCollection()`.
+  scoped_refptr<SysmemBufferCollection> GetCollectionByHandle(
+      const zx::eventpair& handle);
 
  private:
-  void RegisterCollection(SysmemBufferCollection* collection);
-  void OnCollectionDestroyed(gfx::SysmemBufferCollectionId id);
+  void RegisterCollection(scoped_refptr<SysmemBufferCollection> collection);
+
+  void OnCollectionReleased(zx_koid_t id);
 
   ScenicSurfaceFactory* const scenic_surface_factory_;
   fuchsia::sysmem::AllocatorSyncPtr allocator_;
 
-  base::small_map<std::unordered_map<gfx::SysmemBufferCollectionId,
-                                     SysmemBufferCollection*,
-                                     base::UnguessableTokenHash>>
+  base::small_map<
+      std::unordered_map<zx_koid_t, scoped_refptr<SysmemBufferCollection>>>
       collections_ GUARDED_BY(collections_lock_);
   base::Lock collections_lock_;
 };

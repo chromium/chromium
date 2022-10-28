@@ -6,6 +6,7 @@
 
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/eventpair.h>
+#include <zircon/types.h>
 
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -295,10 +296,12 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
   const auto& handle =
       static_cast<FlatlandSysmemNativePixmap*>(pixmap)->PeekHandle();
   DCHECK_EQ(handle.buffer_index, 0u);
-  DCHECK(handle.buffer_collection_id.has_value());
-  const FlatlandPixmapId ids = {
-      .buffer_collection_id = handle.buffer_collection_id.value(),
-      .buffer_index = handle.buffer_index};
+  FlatlandSysmemBufferCollection* collection =
+      static_cast<FlatlandSysmemNativePixmap*>(pixmap)
+          ->sysmem_buffer_collection();
+  zx_koid_t buffer_collection_id = collection->id();
+  const FlatlandPixmapId ids = {.buffer_collection_id = buffer_collection_id,
+                                .buffer_index = handle.buffer_index};
 
   const auto ids_itr = pixmap_ids_to_flatland_ids_.find(ids);
   if (ids_itr != pixmap_ids_to_flatland_ids_.end()) {
@@ -306,10 +309,6 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
   }
 
   // Create Flatland Image.
-  FlatlandSysmemBufferCollection* collection =
-      static_cast<FlatlandSysmemNativePixmap*>(pixmap)
-          ->sysmem_buffer_collection();
-  DCHECK_EQ(collection->id(), ids.buffer_collection_id);
   fuchsia::ui::composition::ImageProperties image_properties;
   image_properties.set_size(GfxSizeToFuchsiaSize(pixmap->GetBufferSize()));
   const fuchsia::ui::composition::ContentId image_id =
@@ -329,7 +328,7 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
   FlatlandSurface::FlatlandIds flatland_ids = {.image_id = image_id,
                                                .transform_id = transform_id};
   pixmap_ids_to_flatland_ids_[ids] = flatland_ids;
-  collection->AddOnDeletedCallback(
+  collection->AddOnReleasedCallback(
       base::BindOnce(&FlatlandSurface::RemoveBufferCollection,
                      weak_ptr_factory_.GetWeakPtr(), ids));
 

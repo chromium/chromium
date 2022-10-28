@@ -38,10 +38,6 @@ class D3DImageBackingFactory;
 struct GpuFeatureInfo;
 struct GpuPreferences;
 
-#if BUILDFLAG(IS_FUCHSIA)
-class SysmemBufferCollection;
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 // TODO(ericrk): Make this a very thin wrapper around SharedImageManager like
 // SharedImageRepresentationFactory.
 class GPU_GLES2_EXPORT SharedImageFactory {
@@ -104,12 +100,11 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_FUCHSIA)
-  bool RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
-                                      zx::channel token,
+  void RegisterSysmemBufferCollection(zx::eventpair service_handle,
+                                      zx::channel sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
-  bool ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool RegisterBacking(std::unique_ptr<SharedImageBacking> backing);
@@ -167,9 +162,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
 #if BUILDFLAG(IS_FUCHSIA)
   viz::VulkanContextProvider* vulkan_context_provider_;
-  base::flat_map<gfx::SysmemBufferCollectionId,
-                 std::unique_ptr<gpu::SysmemBufferCollection>>
-      buffer_collections_;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   raw_ptr<SharedImageBackingFactory> backing_factory_for_testing_ = nullptr;

@@ -128,8 +128,7 @@ class ScenicSurface : public PlatformWindowSurface {
 
   // Removes a buffer collection registered with |image_pipe_| when it's no
   // longer needed.
-  void RemoveBufferCollection(
-      gfx::SysmemBufferCollectionId buffer_collection_id);
+  void RemoveBufferCollection(zx_koid_t buffer_collection_id);
   void OnPresentComplete(fuchsia::images::PresentationInfo presentation_info);
   void UpdateViewHolderScene();
 
@@ -148,8 +147,7 @@ class ScenicSurface : public PlatformWindowSurface {
 
   // Mapping between the SysmemBufferCollectionId stored in NativePixmapHandles
   // and uint32_t id registered with image pipe.
-  base::flat_map<gfx::SysmemBufferCollectionId, uint32_t>
-      buffer_collection_to_image_id_;
+  base::flat_map<zx_koid_t, uint32_t> buffer_collection_to_image_id_;
 
   // Ordinal that will be assigned to the next frame. Ordinals are used to
   // calculate frame position relative to the current frame stored in
@@ -191,10 +189,10 @@ class ScenicSurface : public PlatformWindowSurface {
     // Used only in `Present()` in order to update `visible`.
     bool should_be_visible = false;
   };
-  std::unordered_map<gfx::SysmemBufferCollectionId,
-                     OverlayViewInfo,
-                     base::UnguessableTokenHash>
-      overlay_views_;
+
+  // Current set of overlays. Identified by koid of the buffer collection
+  // handle.
+  std::unordered_map<zx_koid_t, OverlayViewInfo> overlay_views_;
 
   THREAD_CHECKER(thread_checker_);
 

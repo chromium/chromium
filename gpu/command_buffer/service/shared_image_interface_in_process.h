@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -144,14 +144,11 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. Not reached in this implementation.
-  void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
-                                      zx::channel token,
+  void RegisterSysmemBufferCollection(zx::eventpair service_handle,
+                                      zx::channel sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override;
-
-  // Not reached in this implementation.
-  void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Generates an unverified SyncToken that is released after all previous

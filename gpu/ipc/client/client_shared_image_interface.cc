@@ -43,18 +43,14 @@ void ClientSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
 
 #if BUILDFLAG(IS_FUCHSIA)
 void ClientSharedImageInterface::RegisterSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  proxy_->RegisterSysmemBufferCollection(id, std::move(token), format, usage,
+  proxy_->RegisterSysmemBufferCollection(std::move(service_handle),
+                                         std::move(sysmem_token), format, usage,
                                          register_with_image_pipe);
-}
-
-void ClientSharedImageInterface::ReleaseSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id) {
-  proxy_->ReleaseSysmemBufferCollection(id);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

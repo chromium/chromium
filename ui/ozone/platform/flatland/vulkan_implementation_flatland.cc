@@ -147,13 +147,13 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
   if (gmb_handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
 
-  if (!gmb_handle.native_pixmap_handle.buffer_collection_id) {
-    DLOG(ERROR) << "NativePixmapHandle.buffer_collection_id is not set.";
+  if (!gmb_handle.native_pixmap_handle.buffer_collection_handle) {
+    DLOG(ERROR) << "NativePixmapHandle.buffer_collection_handle is not set.";
     return nullptr;
   }
 
-  auto collection = flatland_sysmem_buffer_manager_->GetCollectionById(
-      gmb_handle.native_pixmap_handle.buffer_collection_id.value());
+  auto collection = flatland_sysmem_buffer_manager_->GetCollectionByHandle(
+      gmb_handle.native_pixmap_handle.buffer_collection_handle);
   if (!collection) {
     DLOG(ERROR) << "Tried to use an unknown buffer collection ID.";
     return nullptr;
@@ -202,43 +202,22 @@ VulkanImplementationFlatland::CreateImageFromGpuMemoryHandle(
 
   image->set_queue_family_index(VK_QUEUE_FAMILY_EXTERNAL);
   image->set_native_pixmap(collection->CreateNativePixmap(
-      gmb_handle.native_pixmap_handle.buffer_index, size));
+      std::move(gmb_handle.native_pixmap_handle), size));
   return image;
 }
 
-class FlatlandSysmemBufferCollectionImpl : public gpu::SysmemBufferCollection {
- public:
-  FlatlandSysmemBufferCollectionImpl(
-      scoped_refptr<ui::FlatlandSysmemBufferCollection> collection)
-      : collection_(std::move(collection)) {}
-  ~FlatlandSysmemBufferCollectionImpl() override = default;
-  FlatlandSysmemBufferCollectionImpl(
-      const FlatlandSysmemBufferCollectionImpl&) = delete;
-  FlatlandSysmemBufferCollectionImpl& operator=(
-      const FlatlandSysmemBufferCollectionImpl&) = delete;
-
- private:
-  scoped_refptr<ui::FlatlandSysmemBufferCollection> collection_;
-};
-
-std::unique_ptr<gpu::SysmemBufferCollection>
-VulkanImplementationFlatland::RegisterSysmemBufferCollection(
+void VulkanImplementationFlatland::RegisterSysmemBufferCollection(
     VkDevice device,
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::Size size,
     size_t min_buffer_count,
     bool register_with_image_pipe) {
-  auto buffer_collection =
-      flatland_sysmem_buffer_manager_->ImportFlatlandSysmemBufferCollection(
-          device, id, std::move(token), size, format, usage, min_buffer_count);
-  if (!buffer_collection)
-    return nullptr;
-
-  return std::make_unique<FlatlandSysmemBufferCollectionImpl>(
-      std::move(buffer_collection));
+  flatland_sysmem_buffer_manager_->ImportSysmemBufferCollection(
+      device, std::move(service_handle), std::move(sysmem_token), size, format,
+      usage, min_buffer_count);
 }
 
 }  // namespace ui

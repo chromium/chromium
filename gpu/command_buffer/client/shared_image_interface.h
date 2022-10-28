@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
+#include <lib/zx/eventpair.h>
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace gfx {
@@ -166,25 +167,22 @@ class GPU_EXPORT SharedImageInterface {
                                 const Mailbox& mailbox) = 0;
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Registers a sysmem buffer collection. While the collection exists (i.e.
-  // between RegisterSysmemBufferCollection() and
-  // ReleaseSysmemBufferCollection()) the caller can use CreateSharedImage() to
-  // create shared images from the buffer in the collection by setting
-  // |buffer_collection_id| and |buffer_index| fields in NativePixmapHandle,
-  // wrapping it in GpuMemoryBufferHandle and then creating GpuMemoryBuffer from
-  // that handle.
-  // If |register_with_image_pipe| field is set, a new ImagePipe is created and
-  // |token| is duped to collect ImagePipe constraints. SysmemBufferCollection
-  // is then available for direct presentation.
+  // Registers a sysmem buffer collection. `service_handle` contains a handle
+  // for the eventpair that controls the lifetime of the collection. The
+  // collection will be destroyed when all peer handles for that eventpair are
+  // destroyed (i.e. when `ZX_EVENTPAIR_PEER_CLOSED` is signaled on that
+  // handle). The caller can use CreateSharedImage() to create shared images
+  // from the buffer in the collection by setting `buffer_collection_handle` and
+  // `buffer_index` fields in NativePixmapHandle, wrapping it in
+  // GpuMemoryBufferHandle and then creating a GpuMemoryBuffer from that handle.
+  // If `register_with_image_pipe` field is set, the collection is shared with a
+  // new ImagePipe, which allows it to display these images as overlays.
   virtual void RegisterSysmemBufferCollection(
-      gfx::SysmemBufferCollectionId id,
-      zx::channel token,
+      zx::eventpair service_handle,
+      zx::channel sysmem_token,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       bool register_with_image_pipe) = 0;
-
-  virtual void ReleaseSysmemBufferCollection(
-      gfx::SysmemBufferCollectionId id) = 0;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Generates an unverified SyncToken that is released after all previous

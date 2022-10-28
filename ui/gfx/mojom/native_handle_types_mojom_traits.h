@@ -67,10 +67,8 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  static const absl::optional<base::UnguessableToken>& buffer_collection_id(
-      const gfx::NativePixmapHandle& pixmap_handle) {
-    return pixmap_handle.buffer_collection_id;
-  }
+  static PlatformHandle buffer_collection_handle(
+      gfx::NativePixmapHandle& pixmap_handle);
 
   static uint32_t buffer_index(gfx::NativePixmapHandle& pixmap_handle) {
     return pixmap_handle.buffer_index;

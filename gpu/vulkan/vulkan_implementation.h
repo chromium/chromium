@@ -35,13 +35,6 @@ class VulkanInstance;
 struct GPUInfo;
 struct VulkanYCbCrInfo;
 
-#if BUILDFLAG(IS_FUCHSIA)
-class SysmemBufferCollection {
- public:
-  virtual ~SysmemBufferCollection() {}
-};
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 // Base class which provides functions for creating vulkan objects for different
 // platforms that use platform-specific extensions (e.g. for creation of
 // VkSurfaceKHR objects). It also provides helper/utility functions.
@@ -126,20 +119,23 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Registers as sysmem buffer collection. The collection can be released by
-  // destroying the returned SysmemBufferCollection object. Once a collection is
-  // registered the individual buffers in the collection can be referenced by
-  // using the |id| as |buffer_collection_id| in |gmb_handle| passed to
+  // Registers a sysmem buffer collection. `service_handle` contains a handle
+  // for the eventpair that controls the lifetime of the collection. The
+  // implementation must drop the collection when all peer handles for
+  // that eventpair are destroyed (i.e. when `ZX_EVENTPAIR_PEER_CLOSED` is
+  // signaled on that handle). Once a collection is registered the individual
+  // buffers in the collection can be referenced by using the peer of
+  // `service_handle` as `buffer_collection_handle` in `gmb_handle` passed to
   // CreateImageFromGpuMemoryHandle().
-  virtual std::unique_ptr<SysmemBufferCollection>
-  RegisterSysmemBufferCollection(VkDevice device,
-                                 gfx::SysmemBufferCollectionId id,
-                                 zx::channel token,
-                                 gfx::BufferFormat format,
-                                 gfx::BufferUsage usage,
-                                 gfx::Size size,
-                                 size_t min_buffer_count,
-                                 bool register_with_image_pipe) = 0;
+  virtual void RegisterSysmemBufferCollection(
+      VkDevice device,
+      zx::eventpair service_handle,
+      zx::channel sysmem_token,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      gfx::Size size,
+      size_t min_buffer_count,
+      bool register_with_image_pipe) = 0;
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   bool use_swiftshader() const { return use_swiftshader_; }

@@ -10,7 +10,6 @@
 
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
-#include "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom.h"
 
 namespace ui {
 
@@ -60,15 +59,14 @@ class VulkanImplementationScenic : public gpu::VulkanImplementation {
       gfx::Size size,
       VkFormat vk_format,
       const gfx::ColorSpace& color_space) override;
-  std::unique_ptr<gpu::SysmemBufferCollection> RegisterSysmemBufferCollection(
-      VkDevice device,
-      gfx::SysmemBufferCollectionId id,
-      zx::channel token,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      gfx::Size size,
-      size_t min_buffer_count,
-      bool register_with_image_pipe) override;
+  void RegisterSysmemBufferCollection(VkDevice device,
+                                      zx::eventpair service_handle,
+                                      zx::channel sysmem_token,
+                                      gfx::BufferFormat format,
+                                      gfx::BufferUsage usage,
+                                      gfx::Size size,
+                                      size_t min_buffer_count,
+                                      bool register_with_image_pipe) override;
 
  private:
   ScenicSurfaceFactory* const scenic_surface_factory_;

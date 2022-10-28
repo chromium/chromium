@@ -471,44 +471,19 @@ bool SharedImageFactory::PresentSwapChain(const Mailbox& mailbox) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_FUCHSIA)
-bool SharedImageFactory::RegisterSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+void SharedImageFactory::RegisterSysmemBufferCollection(
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  decltype(buffer_collections_)::iterator it;
-  bool inserted;
-  std::tie(it, inserted) =
-      buffer_collections_.insert(std::make_pair(id, nullptr));
-
-  if (!inserted) {
-    DLOG(ERROR) << "RegisterSysmemBufferCollection: Could not register the "
-                   "same buffer collection twice.";
-    return false;
-  }
-
-  // If we don't have Vulkan then just drop the token. Sysmem will inform the
-  // caller about the issue. The empty entry is kept in buffer_collections_, so
-  // the caller can still call ReleaseSysmemBufferCollection().
-  if (!vulkan_context_provider_)
-    return true;
-
   VkDevice device =
       vulkan_context_provider_->GetDeviceQueue()->GetVulkanDevice();
   DCHECK(device != VK_NULL_HANDLE);
-  it->second = vulkan_context_provider_->GetVulkanImplementation()
-                   ->RegisterSysmemBufferCollection(
-                       device, id, std::move(token), format, usage, gfx::Size(),
-                       0, register_with_image_pipe);
-
-  return true;
-}
-
-bool SharedImageFactory::ReleaseSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id) {
-  auto removed = buffer_collections_.erase(id);
-  return removed > 0;
+  vulkan_context_provider_->GetVulkanImplementation()
+      ->RegisterSysmemBufferCollection(
+          device, std::move(service_handle), std::move(sysmem_token), format,
+          usage, gfx::Size(), 0, register_with_image_pipe);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

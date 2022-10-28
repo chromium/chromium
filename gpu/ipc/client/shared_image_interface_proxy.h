@@ -73,12 +73,11 @@ class SharedImageInterfaceProxy {
   void PresentSwapChain(const SyncToken& sync_token, const Mailbox& mailbox);
 
 #if BUILDFLAG(IS_FUCHSIA)
-  void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
-                                      zx::channel token,
+  void RegisterSysmemBufferCollection(zx::eventpair service_handle,
+                                      zx::channel sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
-  void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);

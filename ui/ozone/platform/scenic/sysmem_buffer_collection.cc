@@ -10,6 +10,8 @@
 
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
+#include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -241,16 +243,13 @@ bool SysmemBufferCollection::IsNativePixmapConfigSupported(
   return true;
 }
 
-SysmemBufferCollection::SysmemBufferCollection()
-    : SysmemBufferCollection(gfx::SysmemBufferCollectionId::Create()) {}
-
-SysmemBufferCollection::SysmemBufferCollection(gfx::SysmemBufferCollectionId id)
-    : id_(id) {}
+SysmemBufferCollection::SysmemBufferCollection() = default;
 
 bool SysmemBufferCollection::Initialize(
     fuchsia::sysmem::Allocator_Sync* allocator,
     ScenicSurfaceFactory* scenic_surface_factory,
-    zx::channel token_handle,
+    zx::eventpair handle,
+    zx::channel sysmem_token,
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
@@ -261,6 +260,12 @@ bool SysmemBufferCollection::Initialize(
   DCHECK(!collection_);
   DCHECK(!vk_buffer_collection_);
 
+  handle_ = std::move(handle);
+  auto koid = base::GetKoid(handle_);
+  if (!koid)
+    return false;
+  id_ = koid.value();
+
   // Currently all supported |usage| values require GPU access, which requires
   // a valid VkDevice.
   if (vk_device == VK_NULL_HANDLE)
@@ -269,7 +274,7 @@ bool SysmemBufferCollection::Initialize(
   if (size.IsEmpty()) {
     // Buffer collection that doesn't have explicit size is expected to be
     // shared with other participants, who will determine the actual image size.
-    DCHECK(token_handle);
+    DCHECK(sysmem_token);
 
     // Set nominal size of 1x1, which will be used only for
     // vkSetBufferCollectionConstraintsFUCHSIA(). The actual size of the
@@ -293,8 +298,8 @@ bool SysmemBufferCollection::Initialize(
   }
 
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
-  if (token_handle) {
-    collection_token.Bind(std::move(token_handle));
+  if (sysmem_token) {
+    collection_token.Bind(std::move(sysmem_token));
   } else {
     zx_status_t status =
         allocator->AllocateSharedCollection(collection_token.NewRequest());
@@ -310,22 +315,21 @@ bool SysmemBufferCollection::Initialize(
 }
 
 scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
-    size_t buffer_index,
+    gfx::NativePixmapHandle handle,
     gfx::Size size) {
-  CHECK_LT(buffer_index, num_buffers());
+  CHECK_LT(handle.buffer_index, num_buffers());
 
-  gfx::NativePixmapHandle handle;
-  handle.buffer_collection_id = id();
-  handle.buffer_index = buffer_index;
+  DCHECK_EQ(base::GetRelatedKoid(handle.buffer_collection_handle).value(), id_);
   handle.ram_coherency =
       buffers_info_.settings.buffer_settings.coherency_domain ==
       fuchsia::sysmem::CoherencyDomain::RAM;
 
   zx::vmo main_plane_vmo;
   if (is_mappable()) {
-    DCHECK(buffers_info_.buffers[buffer_index].vmo.is_valid());
-    zx_status_t status = buffers_info_.buffers[buffer_index].vmo.duplicate(
-        ZX_RIGHT_SAME_RIGHTS, &main_plane_vmo);
+    DCHECK(buffers_info_.buffers[handle.buffer_index].vmo.is_valid());
+    zx_status_t status =
+        buffers_info_.buffers[handle.buffer_index].vmo.duplicate(
+            ZX_RIGHT_SAME_RIGHTS, &main_plane_vmo);
     if (status != ZX_OK) {
       ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
       return nullptr;
@@ -340,7 +344,8 @@ scoped_refptr<gfx::NativePixmap> SysmemBufferCollection::CreateNativePixmap(
       RoundUp(std::max(static_cast<size_t>(format.min_bytes_per_row),
                        size.width() * GetBytesPerPixel(format_)),
               format.bytes_per_row_divisor);
-  size_t plane_offset = buffers_info_.buffers[buffer_index].vmo_usable_start;
+  size_t plane_offset =
+      buffers_info_.buffers[handle.buffer_index].vmo_usable_start;
   size_t plane_size = stride * size.height();
   handle.planes.emplace_back(stride, plane_offset, plane_size,
                              std::move(main_plane_vmo));
@@ -441,9 +446,9 @@ bool SysmemBufferCollection::CreateVkImage(size_t buffer_index,
   return true;
 }
 
-void SysmemBufferCollection::AddOnDeletedCallback(
-    base::OnceClosure on_deleted) {
-  on_deleted_.push_back(std::move(on_deleted));
+void SysmemBufferCollection::AddOnReleasedCallback(
+    base::OnceClosure on_released) {
+  on_released_.push_back(std::move(on_released));
 }
 
 SysmemBufferCollection::~SysmemBufferCollection() {
@@ -454,9 +459,6 @@ SysmemBufferCollection::~SysmemBufferCollection() {
 
   if (collection_)
     collection_->Close();
-
-  for (auto& callback : on_deleted_)
-    std::move(callback).Run();
 
   if (scenic_overlay_view_ &&
       !overlay_view_task_runner_->BelongsToCurrentThread()) {
@@ -573,6 +575,18 @@ bool SysmemBufferCollection::InitializeInternal(
   buffer_size_ = buffers_info_.settings.buffer_settings.size_bytes;
   is_protected_ = buffers_info_.settings.buffer_settings.is_secure;
 
+  handle_watch_ =
+      std::make_unique<base::MessagePumpForIO::ZxHandleWatchController>(
+          FROM_HERE);
+  bool watch_result = base::CurrentIOThread::Get()->WatchZxHandle(
+      handle_.get(), true /* persistent */, ZX_EVENTPAIR_PEER_CLOSED,
+      handle_watch_.get(), this);
+
+  if (!watch_result) {
+    DLOG(ERROR) << "Failed to add a watcher for sysmem buffer token";
+    return false;
+  }
+
   // CreateVkImage() should always be called on the same thread, but it may be
   // different from the thread that called Initialize().
   DETACH_FROM_THREAD(vulkan_thread_checker_);
@@ -604,6 +618,20 @@ void SysmemBufferCollection::InitializeImageCreateInfo(
 
   vk_image_info->sharingMode = VK_SHARING_MODE_EXCLUSIVE;
   vk_image_info->initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+}
+
+void SysmemBufferCollection::OnZxHandleSignalled(zx_handle_t handle,
+                                                 zx_signals_t signals) {
+  DCHECK_EQ(handle, handle_.get());
+  DCHECK_EQ(signals, ZX_EVENTPAIR_PEER_CLOSED);
+
+  // Keep a reference to `this` to ensure it's not destroyed while calling the
+  // callbacks.
+  scoped_refptr<SysmemBufferCollection> self(this);
+
+  for (auto& callback : on_released_) {
+    std::move(callback).Run();
+  }
 }
 
 }  // namespace ui

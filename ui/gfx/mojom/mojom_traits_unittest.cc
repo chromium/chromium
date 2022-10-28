@@ -20,6 +20,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/selection_bound.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/koid.h"
+#endif
+
 namespace gfx {
 
 namespace {
@@ -183,8 +187,12 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   handle2.native_pixmap_handle.modifier = kModifier;
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo buffer_handle;
-  handle2.native_pixmap_handle.buffer_collection_id =
-      gfx::SysmemBufferCollectionId::Create();
+  zx::eventpair client_handle, service_handle;
+  auto status = zx::eventpair::create(0, &client_handle, &service_handle);
+  DCHECK_EQ(status, ZX_OK);
+  zx_koid_t handle_koid = base::GetKoid(client_handle).value();
+  handle2.native_pixmap_handle.buffer_collection_handle =
+      std::move(client_handle);
   handle2.native_pixmap_handle.buffer_index = 4;
   handle2.native_pixmap_handle.ram_coherency = true;
 #endif
@@ -195,12 +203,11 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kModifier, output.native_pixmap_handle.modifier);
 #elif BUILDFLAG(IS_FUCHSIA)
-  EXPECT_EQ(handle2.native_pixmap_handle.buffer_collection_id,
-            output.native_pixmap_handle.buffer_collection_id);
-  EXPECT_EQ(handle2.native_pixmap_handle.buffer_index,
-            output.native_pixmap_handle.buffer_index);
-  EXPECT_EQ(handle2.native_pixmap_handle.ram_coherency,
-            output.native_pixmap_handle.ram_coherency);
+  EXPECT_EQ(handle_koid,
+            base::GetKoid(output.native_pixmap_handle.buffer_collection_handle)
+                .value());
+  EXPECT_EQ(4U, output.native_pixmap_handle.buffer_index);
+  EXPECT_EQ(true, output.native_pixmap_handle.ram_coherency);
 #endif
   ASSERT_EQ(1u, output.native_pixmap_handle.planes.size());
   EXPECT_EQ(kSize, output.native_pixmap_handle.planes.back().size);

@@ -7,6 +7,8 @@
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
+#include <lib/zx/channel.h>
+#include <lib/zx/eventpair.h>
 #include <vulkan/vulkan_core.h>
 
 #include <unordered_map>
@@ -18,7 +20,7 @@
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_pixmap_handle.h"
+#include "ui/gfx/native_pixmap.h"
 
 namespace ui {
 
@@ -43,36 +45,39 @@ class FlatlandSysmemBufferManager {
   // Initialize() again.
   void Shutdown();
 
-  scoped_refptr<FlatlandSysmemBufferCollection> CreateCollection(
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(VkDevice vk_device,
+                                                      gfx::Size size,
+                                                      gfx::BufferFormat format,
+                                                      gfx::BufferUsage usage);
+
+  scoped_refptr<FlatlandSysmemBufferCollection> ImportSysmemBufferCollection(
       VkDevice vk_device,
+      zx::eventpair service_handle,
+      zx::channel sysmem_token,
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      size_t num_buffers);
+      size_t min_buffer_count);
 
-  scoped_refptr<FlatlandSysmemBufferCollection>
-  ImportFlatlandSysmemBufferCollection(VkDevice vk_device,
-                                       gfx::SysmemBufferCollectionId id,
-                                       zx::channel token,
-                                       gfx::Size size,
-                                       gfx::BufferFormat format,
-                                       gfx::BufferUsage usage,
-                                       size_t min_buffer_count);
-
-  scoped_refptr<FlatlandSysmemBufferCollection> GetCollectionById(
-      gfx::SysmemBufferCollectionId id);
+  // Returns `SysmemBufferCollection` that corresponds to the specified
+  // buffer collection `handle`, which should be the other end of the eventpair
+  // passed to `ImportSysmemBufferCollection()`.
+  scoped_refptr<FlatlandSysmemBufferCollection> GetCollectionByHandle(
+      const zx::eventpair& handle);
 
  private:
-  void RegisterCollection(FlatlandSysmemBufferCollection* collection);
-  void OnCollectionDestroyed(gfx::SysmemBufferCollectionId id);
+  void RegisterCollection(
+      scoped_refptr<FlatlandSysmemBufferCollection> collection);
+
+  void OnCollectionReleased(zx_koid_t id);
 
   FlatlandSurfaceFactory* const flatland_surface_factory_;
   fuchsia::sysmem::AllocatorSyncPtr sysmem_allocator_;
   fuchsia::ui::composition::AllocatorPtr flatland_allocator_;
 
-  base::small_map<std::unordered_map<gfx::SysmemBufferCollectionId,
-                                     FlatlandSysmemBufferCollection*,
-                                     base::UnguessableTokenHash>>
+  base::small_map<
+      std::unordered_map<zx_koid_t,
+                         scoped_refptr<FlatlandSysmemBufferCollection>>>
       collections_ GUARDED_BY(collections_lock_);
   base::Lock collections_lock_;
 };

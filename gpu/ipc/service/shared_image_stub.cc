@@ -386,30 +386,19 @@ void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,
 
 #if BUILDFLAG(IS_FUCHSIA)
 void SharedImageStub::RegisterSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  if (!id || !token) {
+  if (!service_handle || !sysmem_token) {
     OnError();
     return;
   }
 
-  if (!factory_->RegisterSysmemBufferCollection(
-          id, std::move(token), format, usage, register_with_image_pipe)) {
-    OnError();
-  }
-}
-
-void SharedImageStub::ReleaseSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id) {
-  if (!factory_->ReleaseSysmemBufferCollection(id)) {
-    DLOG(ERROR) << "SharedImageStub: Trying to release unknown "
-                   "SysmemBufferCollectionId.";
-    OnError();
-    return;
-  }
+  factory_->RegisterSysmemBufferCollection(std::move(service_handle),
+                                           std::move(sysmem_token), format,
+                                           usage, register_with_image_pipe);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

@@ -385,15 +385,11 @@ void SharedImageInterfaceInProcess::PresentSwapChain(
 
 #if BUILDFLAG(IS_FUCHSIA)
 void SharedImageInterfaceInProcess::RegisterSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  NOTREACHED();
-}
-void SharedImageInterfaceInProcess::ReleaseSysmemBufferCollection(
-    gfx::SysmemBufferCollectionId id) {
   NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)

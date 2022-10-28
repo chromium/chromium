@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <fuchsia/media/cpp/fidl.h>
+#include <lib/zx/eventpair.h>
 
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
@@ -19,7 +20,6 @@
 #include "media/fuchsia/common/sysmem_client.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "ui/gfx/native_pixmap_handle.h"
 
 namespace gfx {
 class ClientNativePixmapFactory;
@@ -141,7 +141,7 @@ class MEDIA_EXPORT FuchsiaVideoDecoder : public VideoDecoder,
   // Output buffers for |decoder_|.
   fuchsia::media::VideoUncompressedFormat output_format_;
   std::unique_ptr<SysmemCollectionClient> output_buffer_collection_;
-  gfx::SysmemBufferCollectionId output_buffer_collection_id_;
+  zx::eventpair output_buffer_collection_handle_;
   std::vector<OutputMailbox*> output_mailboxes_;
 
   size_t num_used_output_buffers_ = 0;

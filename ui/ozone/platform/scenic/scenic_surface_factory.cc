@@ -185,12 +185,8 @@ scoped_refptr<gfx::NativePixmap> ScenicSurfaceFactory::CreateNativePixmap(
     return surface->AllocatePrimaryPlanePixmap(vk_device, size, format);
   }
 
-  auto collection = sysmem_buffer_manager_.CreateCollection(vk_device, size,
-                                                            format, usage, 1);
-  if (!collection)
-    return nullptr;
-
-  return collection->CreateNativePixmap(0, size);
+  return sysmem_buffer_manager_.CreateNativePixmap(vk_device, size, format,
+                                                   usage);
 }
 
 void ScenicSurfaceFactory::CreateNativePixmapAsync(
@@ -210,12 +206,12 @@ ScenicSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
-  auto collection = sysmem_buffer_manager_.GetCollectionById(
-      handle.buffer_collection_id.value());
+  auto collection = sysmem_buffer_manager_.GetCollectionByHandle(
+      handle.buffer_collection_handle);
   if (!collection)
     return nullptr;
 
-  return collection->CreateNativePixmap(handle.buffer_index, size);
+  return collection->CreateNativePixmap(std::move(handle), size);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

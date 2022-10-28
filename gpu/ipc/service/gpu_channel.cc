@@ -191,8 +191,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
       int32_t end,
       WaitForGetOffsetInRangeCallback callback) override;
 #if BUILDFLAG(IS_FUCHSIA)
-  void RegisterSysmemBufferCollection(const base::UnguessableToken& id,
-                                      mojo::PlatformHandle token,
+  void RegisterSysmemBufferCollection(mojo::PlatformHandle service_handle,
+                                      mojo::PlatformHandle sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override {
@@ -203,21 +203,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
     scheduler_->ScheduleTask(Scheduler::Task(
         gpu_channel_->shared_image_stub()->sequence(),
         base::BindOnce(&gpu::GpuChannel::RegisterSysmemBufferCollection,
-                       gpu_channel_->AsWeakPtr(), id, std::move(token), format,
-                       usage, register_with_image_pipe),
-        std::vector<SyncToken>()));
-  }
-
-  void ReleaseSysmemBufferCollection(
-      const base::UnguessableToken& id) override {
-    base::AutoLock lock(gpu_channel_lock_);
-    if (!gpu_channel_)
-      return;
-
-    scheduler_->ScheduleTask(Scheduler::Task(
-        gpu_channel_->shared_image_stub()->sequence(),
-        base::BindOnce(&gpu::GpuChannel::ReleaseSysmemBufferCollection,
-                       gpu_channel_->AsWeakPtr(), id),
+                       gpu_channel_->AsWeakPtr(), std::move(service_handle),
+                       std::move(sysmem_token), format, usage,
+                       register_with_image_pipe),
         std::vector<SyncToken>()));
   }
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -1010,19 +998,15 @@ bool GpuChannel::RegisterOverlayStateObserver(
 
 #if BUILDFLAG(IS_FUCHSIA)
 void GpuChannel::RegisterSysmemBufferCollection(
-    const base::UnguessableToken& id,
-    mojo::PlatformHandle token,
+    mojo::PlatformHandle service_handle,
+    mojo::PlatformHandle sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   shared_image_stub_->RegisterSysmemBufferCollection(
-      id, zx::channel(token.TakeHandle()), format, usage,
+      zx::eventpair(service_handle.TakeHandle()),
+      zx::channel(sysmem_token.TakeHandle()), format, usage,
       register_with_image_pipe);
-}
-
-void GpuChannel::ReleaseSysmemBufferCollection(
-    const base::UnguessableToken& id) {
-  shared_image_stub_->ReleaseSysmemBufferCollection(id);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

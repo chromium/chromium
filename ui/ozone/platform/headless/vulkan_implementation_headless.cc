@@ -167,18 +167,16 @@ VulkanImplementationHeadless::CreateImageFromGpuMemoryHandle(
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-std::unique_ptr<gpu::SysmemBufferCollection>
-VulkanImplementationHeadless::RegisterSysmemBufferCollection(
+void VulkanImplementationHeadless::RegisterSysmemBufferCollection(
     VkDevice device,
-    gfx::SysmemBufferCollectionId id,
-    zx::channel token,
+    zx::eventpair service_handle,
+    zx::channel sysmem_token,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::Size size,
     size_t min_buffer_count,
     bool register_with_image_pipe) {
   NOTIMPLEMENTED();
-  return nullptr;
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

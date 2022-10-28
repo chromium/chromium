@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/buffer_types.h"

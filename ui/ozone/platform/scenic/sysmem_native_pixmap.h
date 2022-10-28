@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_SCENIC_SYSMEM_NATIVE_PIXMAP_H_
 #define UI_OZONE_PLATFORM_SCENIC_SYSMEM_NATIVE_PIXMAP_H_
 
+#include <lib/zx/eventpair.h>
+
 #include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
 
@@ -51,7 +53,6 @@ class SysmemNativePixmap : public gfx::NativePixmap {
  private:
   ~SysmemNativePixmap() override;
 
-  // Keep reference to the collection to make sure it outlives the pixmap.
   scoped_refptr<SysmemBufferCollection> collection_;
   gfx::NativePixmapHandle handle_;
   gfx::Size size_;

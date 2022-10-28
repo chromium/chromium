@@ -30,7 +30,7 @@ struct NativePixmapHandle {
   bool supports_zero_copy_webgpu_import;
 
   [EnableIf=is_fuchsia]
-  mojo_base.mojom.UnguessableToken? buffer_collection_id;
+  handle<platform> buffer_collection_handle;
   [EnableIf=is_fuchsia]
   uint32 buffer_index;
   [EnableIf=is_fuchsia]
