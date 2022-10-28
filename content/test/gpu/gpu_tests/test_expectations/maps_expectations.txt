@@ -86,7 +86,6 @@
 crbug.com/1288217 [ fuchsia ] Maps_maps [ Failure ]
 
 # Flaking frequently on Mac Nvidia.
-crbug.com/1376519 [ mac nvidia ] Maps_maps [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
