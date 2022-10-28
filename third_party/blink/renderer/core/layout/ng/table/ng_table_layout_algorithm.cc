@@ -1077,17 +1077,40 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       if (child != grouped_children.header && child != grouped_children.footer)
         continue;
 
-      // Headers and footers may be repeated if their block-size is one quarter
-      // or less than that of the fragmentainer, AND 'break-inside' has an
-      // applicable avoid* value. Being repeated means that the section is
-      // monolithic, and nothing inside can break.
-      //
-      // See https://www.w3.org/TR/css-tables-3/#repeated-headers
-      LayoutUnit block_size = sections[entry.GetSectionIndex()].block_size;
-      if (block_size > max_section_block_size)
-        continue;
       if (!IsAvoidBreakValue(ConstraintSpace(), child.Style().BreakInside()))
         continue;
+
+      const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
+      // If we've already broken inside the section, it's not going to repeat,
+      // but rather perform regular fragmentation.
+      if (IsResumingLayout(child_break_token))
+        continue;
+
+      LayoutUnit block_size = sections[entry.GetSectionIndex()].block_size;
+
+      // Unless we have already decided to repeat in a previous fragment, check
+      // if the block-size of the section is acceptable.
+      if (!child_break_token || !child_break_token->IsRepeated()) {
+        DCHECK(!child_break_token || child_break_token->IsBreakBefore());
+
+        // If this isn't the first fragment for the table box, and the section
+        // didn't repeat in the previous fragment, it doesn't make sense to
+        // start repeating now. If this is a header, we may already have
+        // finished (non-repeated) layout. If this is a footer, we have already
+        // laid out at least one fragment without it.
+        if (incoming_table_break_data &&
+            incoming_table_break_data->has_entered_table_box)
+          continue;
+
+        // Headers and footers may be repeated if their block-size is one
+        // quarter or less than that of the fragmentainer, AND 'break-inside'
+        // has an applicable avoid* value. Being repeated means that the section
+        // is monolithic, and nothing inside can break.
+        //
+        // See https://www.w3.org/TR/css-tables-3/#repeated-headers
+        if (block_size > max_section_block_size)
+          continue;
+      }
 
       if (child == grouped_children.header) {
         has_repeated_header = true;
