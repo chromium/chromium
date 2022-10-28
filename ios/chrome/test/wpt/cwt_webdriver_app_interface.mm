@@ -22,6 +22,8 @@
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/wpt/cwt_stderr_logger.h"
 #import "ios/testing/nserror_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -237,7 +239,8 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
       return;
     webStateFound = YES;
     subscription = webState->AddScriptCommandCallback(callback, command);
-    webState->ExecuteJavaScript(
+    web::WebFrame* main_frame = web::GetMainFrame(webState);
+    main_frame->ExecuteJavaScript(
         base::UTF8ToUTF16(scriptFunctionWithCompletionHandler));
   });
 

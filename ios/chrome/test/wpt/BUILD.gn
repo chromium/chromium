@@ -95,6 +95,7 @@ source_set("app_support") {
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
     "//ios/third_party/edo",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ui/gfx",
   ]
