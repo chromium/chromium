@@ -794,4 +794,80 @@ TEST_F(LocalFrameUkmAggregatorSimTest, LocalFrameRootPrePostFCPMetrics) {
   EXPECT_FALSE(ukm_aggregator.IsBeforeFCPForTesting());
 }
 
+TEST_F(LocalFrameUkmAggregatorSimTest, DidReachFirstContentfulPaintMetric) {
+  base::HistogramTester histogram_tester;
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div id=target></div>
+  )HTML");
+
+  // Do a pre-FCP frame.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+
+  // Cause FCP on the next frame.
+  Element* target = GetDocument().getElementById("target");
+  target->setInnerHTML("hello world");
+
+  // Do a frame that will cause FCP, but the frame itself will still be pre-FCP.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+
+  GetDocument().Shutdown();
+
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
+              BucketsAre(base::Bucket(false, 0), base::Bucket(true, 1)));
+}
+
+TEST_F(LocalFrameUkmAggregatorSimTest, DidNotReachFirstContentfulPaintMetric) {
+  base::HistogramTester histogram_tester;
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div id=target></div>
+  )HTML");
+
+  // Do a pre-FCP frame.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+
+  // Make a change that does not result in FCP on the next frame.
+  Element* target = GetDocument().getElementById("target");
+  target->setAttribute(html_names::kStyleAttr, "background: blue;");
+
+  // Do another pre-FCP frame.
+  Compositor().BeginFrame();
+  GetDocument().View()->EnsureUkmAggregator().BeginMainFrame();
+  GetDocument().View()->EnsureUkmAggregator().RecordEndOfFrameMetrics(
+      base::TimeTicks(), base::TimeTicks() + base::Microseconds(10), 0);
+
+  GetDocument().Shutdown();
+
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PreFCP", 2);
+  histogram_tester.ExpectTotalCount("Blink.MainFrame.UpdateTime.PostFCP", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MainFrame.UpdateTime.AggregatedPreFCP", 0);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Blink.LocalFrameRoot.DidReachFirstContentfulPaint"),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 0)));
+}
+
 }  // namespace blink

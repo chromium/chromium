@@ -405,7 +405,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   unsigned mean_calls_between_forced_style_layout_uma_ = 500;
   unsigned calls_to_next_forced_style_layout_uma_ = 0;
 
-  // Set by BeginMainFrame() and cleared in RecordMEndOfFrameMetrics.
+  // Set by BeginMainFrame() and cleared in RecordEndOfFrameMetrics.
   // Main frame metrics are only recorded if this is true.
   bool in_main_frame_update_ = false;
 

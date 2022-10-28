@@ -8,6 +8,7 @@
 
 #include "base/cpu_reduction_experiment.h"
 #include "base/format_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
@@ -187,6 +188,9 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
 
 LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
   ReportUpdateTimeEvent();
+
+  base::UmaHistogramBoolean("Blink.LocalFrameRoot.DidReachFirstContentfulPaint",
+                            fcp_state_ != kBeforeFCPSignal);
 }
 
 bool LocalFrameUkmAggregator::ShouldMeasureMetric(int64_t metric_id) const {
