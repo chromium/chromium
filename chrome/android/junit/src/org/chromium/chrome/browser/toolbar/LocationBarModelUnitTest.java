@@ -315,11 +315,14 @@ public class LocationBarModelUnitTest {
 
         String url = "http://www.example.com/";
         doReturn(url).when(mMockGurl).getSpec();
-        doReturn(mMockGurl).when(mRegularTabMock).getUrl();
+        doReturn(mMockGurl)
+                .when(mLocationBarModelJni)
+                .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
         doReturn(url)
                 .when(mLocationBarModelJni)
                 .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
         doReturn(url).when(mLocationBarModelJni).getURLForDisplay(Mockito.anyLong(), Mockito.any());
+        regularLocationBarModel.updateVisibleGurl();
         doReturn(mMockGurl).when(mUrlFormatterJniMock).fixupUrl(url);
         doReturn(new int[] {0, 7, 7, 15})
                 .when(mOmniboxUrlEmphasizerJni)

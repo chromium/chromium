@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "ui/base/device_form_factor.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -45,6 +46,13 @@ ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetURLForDisplay(
     const JavaParamRef<jobject>& obj) {
   return base::android::ConvertUTF16ToJavaString(
       env, location_bar_model_->GetURLForDisplay());
+}
+
+ScopedJavaLocalRef<jobject>
+LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return url::GURLAndroid::FromNativeGURL(env, location_bar_model_->GetURL());
 }
 
 jint LocationBarModelAndroid::GetPageClassification(
