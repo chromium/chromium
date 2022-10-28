@@ -223,7 +223,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void ScanInBackground(const String& source);
 
   // Called on the background thread by |background_scanner_|.
-  void AddPreloadDataOnBackgroundThread(
+  static void AddPreloadDataOnBackgroundThread(
+      CrossThreadWeakPersistent<HTMLDocumentParser> weak_parser,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<PendingPreloadData> preload_data);
 
