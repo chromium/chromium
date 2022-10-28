@@ -20,6 +20,7 @@
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
@@ -1264,6 +1265,126 @@ TEST_F(AccessCodeCastSinkServiceTest, TestOfflineDiscoverSink) {
   access_code_cast_sink_service_->DiscoverSink("", mock_callback.Get());
 
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, RefreshStoredDeviceInfo) {
+  // If a device is already in the list, then its info changes. To store a
+  // device, we take its info from the entry in the media router, so checking
+  // the value of the stored device pref suffices
+  SetDeviceDurationPrefForTest(base::Seconds(100));
+
+  // Create fake sinks for test. Importantly, new_sink_1 has the same id as
+  // existing_sink_1, but they have different names.
+  MediaSinkInternal existing_sink_1 = CreateCastSink(1);
+  MediaSinkInternal existing_sink_2 = CreateCastSink(2);
+  MediaSinkInternal new_sink_1 = CreateCastSink(1);
+  const std::string fake_new_sink_name = "Fake new sink";
+  new_sink_1.sink().set_name(fake_new_sink_name);
+  EXPECT_EQ(existing_sink_1.id(), new_sink_1.id());
+  EXPECT_NE(existing_sink_1.sink().name(), new_sink_1.sink().name());
+
+  existing_sink_1.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+  existing_sink_2.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+  new_sink_1.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+
+  // Add existing sinks to the mock media router and stored prefs. Since the
+  // CastMediaSinkService is mocked out, just manually set everything instead.
+  mock_cast_media_sink_service_impl()->AddSinkForTest(existing_sink_1);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(existing_sink_2);
+
+  access_code_cast_sink_service_->StoreSinkInPrefs(&existing_sink_1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&existing_sink_2);
+
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  // Try to add new_sink_1, which has an id that matches an existing sink.
+  MockAddSinkResultCallback mock_callback;
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      new_sink_1, mock_callback.Get(), /*has_sink=*/true);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  // Now we expect that the name for the sink with the id of existing_sink_1
+  // should have changed.
+  auto* sink_1_dict =
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().Find(
+          existing_sink_1.id());
+  auto* sink_2_dict =
+      access_code_cast_sink_service_->pref_updater_->GetDevicesDict().Find(
+          existing_sink_2.id());
+  EXPECT_EQ(*sink_1_dict, CreateValueDictFromMediaSinkInternal(new_sink_1));
+  EXPECT_EQ(*sink_2_dict,
+            CreateValueDictFromMediaSinkInternal(existing_sink_2));
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, RefreshStoredDeviceTimer) {
+  // If a device is already stored, then its timer is reset.
+  SetDeviceDurationPrefForTest(base::Seconds(100));
+
+  // Init fake stored devices for test.
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  auto cast_data1 = cast_sink1.cast_data();
+  cast_data1.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+  cast_sink1.set_cast_data(cast_data1);
+
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+  auto cast_data2 = cast_sink2.cast_data();
+  cast_data2.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+  cast_sink2.set_cast_data(cast_data2);
+
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink2);
+
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink2);
+
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink2);
+
+  // Forward the time and trigger the timer to be refreshed for one of the
+  // devices.
+  mock_time_task_runner()->FastForwardBy(base::Seconds(50));
+  task_environment_.FastForwardBy(base::Seconds(50));
+
+  MockAddSinkResultCallback mock_callback;
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      cast_sink1, mock_callback.Get(), /*has_sink=*/true);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  // Check that both devices still have an expiration timer as expected.
+  EXPECT_EQ(
+      access_code_cast_sink_service_->current_session_expiration_timers_.size(),
+      2u);
+
+  // Forward the time again, so an un-refreshed device would expire.
+  mock_time_task_runner()->FastForwardBy(base::Seconds(75));
+  task_environment_.FastForwardBy(base::Seconds(75));
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  // Check that the proper device has expired by checking if its expiration
+  // timer is still running.
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+  EXPECT_FALSE(access_code_cast_sink_service_
+                   ->current_session_expiration_timers_[cast_sink2.id()]
+                   ->IsRunning());
+
+  // Forward the time again, so all devices expire.
+  mock_time_task_runner()->FastForwardBy(base::Seconds(50));
+  task_environment_.FastForwardBy(base::Seconds(50));
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  // Check that the proper device has expired by checking if its expiration
+  // timer is still running.
+  EXPECT_FALSE(access_code_cast_sink_service_
+                   ->current_session_expiration_timers_[cast_sink1.id()]
+                   ->IsRunning());
+  EXPECT_FALSE(access_code_cast_sink_service_
+                   ->current_session_expiration_timers_[cast_sink2.id()]
+                   ->IsRunning());
 }
 
 }  // namespace media_router

@@ -190,6 +190,10 @@ class AccessCodeCastSinkService : public KeyedService,
                            TestCheckMediaSinkForExpirationBeforeDelay);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestCheckMediaSinkForExpirationAfterDelay);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           RefreshStoredDeviceInfo);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           RefreshStoredDeviceTimer);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
