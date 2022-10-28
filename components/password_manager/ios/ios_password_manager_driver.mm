@@ -43,7 +43,9 @@ int IOSPasswordManagerDriver::GetId() const {
 
 void IOSPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
-  [bridge_ processPasswordFormFillData:form_data inFrame:web_frame_];
+  // No need to cache data if the frame is already destroyed.
+  if (web_frame_)
+    [bridge_ processPasswordFormFillData:form_data inFrame:web_frame_];
 }
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(
@@ -111,4 +113,8 @@ bool IOSPasswordManagerDriver::CanShowAutofillUi() const {
 
 const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
   return bridge_.lastCommittedURL;
+}
+
+void IOSPasswordManagerDriver::ProcessFrameDeletion() {
+  web_frame_ = nullptr;
 }

@@ -60,6 +60,7 @@ class IOSPasswordManagerDriver
   // still alive). So only use this getter when you are sure that the frame
   // still exists.
   web::WebFrame* web_frame() { return web_frame_; }
+  void ProcessFrameDeletion();
 
  private:
   // The constructor below is private so that no one uses it while trying to
