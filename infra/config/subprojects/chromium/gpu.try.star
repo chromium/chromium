@@ -339,11 +339,19 @@ gpu_mac_builder(
 gpu_mac_builder(
     name = "gpu-try-mac-amd-retina-dbg",
     pool = "luci.chromium.gpu.mac.retina.amd.try",
+    mirrors = [
+        "ci/GPU Mac Builder (dbg)",
+        "ci/Mac Retina Debug (AMD)",
+    ],
 )
 
 gpu_mac_builder(
     name = "gpu-try-mac-intel-dbg",
     pool = "luci.chromium.gpu.mac.mini.intel.try",
+    mirrors = [
+        "ci/GPU Mac Builder (dbg)",
+        "ci/Mac Debug (Intel)",
+    ],
 )
 
 def gpu_win_builder(*, name, **kwargs):

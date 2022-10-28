@@ -143,6 +143,21 @@ ci.gpu.mac_builder(
 
 ci.gpu.mac_builder(
     name = "GPU Mac Builder (dbg)",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -257,6 +272,22 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Debug (Intel)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
@@ -294,6 +325,22 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac Retina Debug (AMD)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+        build_gs_bucket = "chromium-gpu-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Mac",
     ),
