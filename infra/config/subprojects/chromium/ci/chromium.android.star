@@ -74,43 +74,6 @@ ci.builder(
 )
 
 ci.thin_tester(
-    name = "Android WebView M (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "download_vr_test_apks",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "main_builder_mb",
-            apply_configs = [
-                "remove_all_system_webviews",
-            ],
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|webview",
-        short_name = "M",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
-    sheriff_rotations = args.ignore_default(None),
-)
-
-ci.thin_tester(
     name = "Android WebView N (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(

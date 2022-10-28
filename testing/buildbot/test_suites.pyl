@@ -6358,14 +6358,6 @@
       'webview_ui_instrumentation_tests_no_field_trial',
     ],
 
-    'webview_bot_system_gtests': [
-      'system_webview_shell_instrumentation_tests',
-      'webview_cts_tests_gtest',
-      'webview_cts_tests_gtest_no_field_trial',
-      'webview_ui_instrumentation_tests',
-      'webview_ui_instrumentation_tests_no_field_trial',
-    ],
-
     'win_specific_isolated_scripts_and_sizes': [
       'chrome_sizes',
       'win_specific_isolated_scripts',

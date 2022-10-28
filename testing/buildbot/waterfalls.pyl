@@ -528,26 +528,6 @@
           'all',
         ],
       },
-      'Android WebView M (dbg)': {
-        'test_suites': {
-          'gtest_tests': 'webview_bot_system_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration'
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'MMB29Q',
-              'device_os_flavor': 'google',
-              'device_os_type': 'userdebug',
-              'device_type': 'bullhead',
-              'os': 'Android',
-            },
-          ],
-        },
-        'os_type': 'android',
-      },
       'Android WebView N (dbg)': {
         'test_suites': {
           'gtest_tests': 'webview_bot_all_gtests',
