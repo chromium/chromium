@@ -403,7 +403,7 @@
   {
     "name": "audio-settings-page",
     "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 118
   },
   {
     "name": "audio-url",
@@ -1296,13 +1296,13 @@
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "deprecate-assistant-stylus-features",
@@ -1483,7 +1483,7 @@
   {
     "name": "display-alignment-assistance",
     "owners": [ "cros-peripherals@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "display-sync-errors-refactor",
@@ -2251,7 +2251,7 @@
   {
     "name": "enable-experimental-rgb-keyboard-patterns",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "enable-experimental-web-platform-features",
@@ -2789,7 +2789,7 @@
   {
     "name": "enable-pci-guard-ui",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "enable-penetrating-image-selection",
@@ -2948,7 +2948,7 @@
   {
     "name": "enable-rgb-keyboard",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
-    "expiry_milestone": 108
+    "expiry_milestone": 118
   },
   {
     "name": "enable-save-session-tabs-in-separate-files",
@@ -4113,7 +4113,7 @@
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "in-product-help-demo-mode-choice",
@@ -4302,7 +4302,7 @@
   {
     "name": "keyboard-based-display-arrangement-in-settings",
     "owners": [ "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "keyboard-shortcuts-menu",
@@ -4785,7 +4785,7 @@
   {
     "name": "new-shortcut-mapping",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com", "cros-peripherals@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "new-window-app-menu",
@@ -5545,7 +5545,7 @@
   {
     "name": "pcie-billboard-notification",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com"],
-    "expiry_milestone": 106
+    "expiry_milestone": 118
   },
   {
     "name": "pdf-ocr",
@@ -6877,7 +6877,7 @@
   {
     "name": "use-search-click-for-right-click",
     "owners": [ "zentaro", "jimmyxgong", "cros-peripherals@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "use-sf-symbols",
