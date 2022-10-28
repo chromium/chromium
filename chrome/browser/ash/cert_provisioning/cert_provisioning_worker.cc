@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
 
+#include <stdint.h>
+
+#include <vector>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -145,10 +149,12 @@ void MarkKeyAsCorporate(CertScope scope,
                         const std::string& public_key_spki_der) {
   CHECK(profile || scope == CertScope::kDevice);
 
+  std::vector<uint8_t> public_key_blob(public_key_spki_der.begin(),
+                                       public_key_spki_der.end());
   GetKeyPermissionsManager(scope, profile)
       ->AllowKeyForUsage(base::BindOnce(&OnAllowKeyForUsageDone),
                          platform_keys::KeyUsage::kCorporate,
-                         public_key_spki_der);
+                         std::move(public_key_blob));
 }
 
 base::TimeDelta GetTryLaterDelayForRequestType(

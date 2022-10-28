@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_manager.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 MockKeyPermissionsManager::MockKeyPermissionsManager() = default;
 MockKeyPermissionsManager::~MockKeyPermissionsManager() = default;
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys

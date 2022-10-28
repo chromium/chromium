@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_
 
-#include <string>
+#include <stdint.h>
+
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 enum class KeyUsage { kArc, kCorporate };
 
@@ -75,12 +76,13 @@ class KeyPermissionsManager {
   // Note: currently, kArc usage allowance can't be granted using this function.
   virtual void AllowKeyForUsage(AllowKeyForUsageCallback callback,
                                 KeyUsage usage,
-                                const std::string& public_key_spki_der) = 0;
+                                std::vector<uint8_t> public_key_spki_der) = 0;
 
   // Returns true if |public_key_spki_der| is allowed for |key_usage|.
-  virtual void IsKeyAllowedForUsage(IsKeyAllowedForUsageCallback callback,
-                                    KeyUsage key_usage,
-                                    const std::string& public_key_spki_der) = 0;
+  virtual void IsKeyAllowedForUsage(
+      IsKeyAllowedForUsageCallback callback,
+      KeyUsage key_usage,
+      std::vector<uint8_t> public_key_spki_der) = 0;
 
   // Returns true if corporate keys are allowed for ARC usages. Currently,
   // either all corporate keys on a token are allowed for ARC usage or none of
@@ -96,7 +98,6 @@ class KeyPermissionsManager {
   virtual void Shutdown() = 0;
 };
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_MANAGER_H_

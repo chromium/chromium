@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 
+#include <stdint.h>
+
+#include <vector>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -671,7 +675,8 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
   key_permissions_manager->AllowKeyForUsage(
       base::BindOnce(&TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback,
                      weak_factory_.GetWeakPtr()),
-      platform_keys::KeyUsage::kCorporate, public_key_);
+      platform_keys::KeyUsage::kCorporate,
+      std::vector<uint8_t>(public_key_.begin(), public_key_.end()));
 }
 
 void TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback(

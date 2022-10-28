@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,8 +37,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 namespace {
 
@@ -136,7 +137,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
   }
 
   for (auto& public_key : public_key_spki_der_list) {
-    public_key_spki_der_queue_.push(std::move(public_key));
+    public_key_spki_der_queue_.emplace(public_key.begin(), public_key.end());
   }
 
   UpdateNextKey();
@@ -175,7 +176,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 }
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
-    UpdatePermissionsForKey(const std::string& public_key_spki_der) {
+    UpdatePermissionsForKey(std::vector<uint8_t> public_key_spki_der) {
   switch (mode_) {
     case Mode::kMigratePermissionsFromPrefs: {
       bool corporate_usage_allowed =
@@ -186,23 +187,23 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
       UpdatePermissionsForKeyWithCorporateFlag(
           std::move(public_key_spki_der), corporate_usage_allowed,
           /*corporate_usage_retrieval_status=*/Status::kSuccess);
-      break;
+      return;
     }
     case Mode::kUpdateArcUsageFlag: {
-      key_permissions_manager_->IsKeyAllowedForUsage(
+      auto cb =
           base::BindOnce(&KeyPermissionsInChapsUpdater::
                              UpdatePermissionsForKeyWithCorporateFlag,
-                         weak_ptr_factory_.GetWeakPtr(), public_key_spki_der),
-          KeyUsage::kCorporate, public_key_spki_der);
-
-      break;
+                         weak_ptr_factory_.GetWeakPtr(), public_key_spki_der);
+      key_permissions_manager_->IsKeyAllowedForUsage(
+          std::move(cb), KeyUsage::kCorporate, std::move(public_key_spki_der));
+      return;
     }
   }
 }
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     UpdatePermissionsForKeyWithCorporateFlag(
-        const std::string& public_key_spki_der,
+        std::vector<uint8_t> public_key_spki_der,
         absl::optional<bool> corporate_usage_allowed,
         Status corporate_usage_retrieval_status) {
   if (corporate_usage_retrieval_status != Status::kSuccess) {
@@ -220,8 +221,10 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
   chaps::KeyPermissions key_permissions =
       CreateKeyPermissions(corporate_usage_allowed.value(), arc_usage_allowed);
 
+  std::string public_key_str(public_key_spki_der.begin(),
+                             public_key_spki_der.end());
   key_permissions_manager_->platform_keys_service_->SetAttributeForKey(
-      key_permissions_manager_->token_id_, public_key_spki_der,
+      key_permissions_manager_->token_id_, std::move(public_key_str),
       KeyAttributeType::kKeyPermissions, key_permissions.SerializeAsString(),
       base::BindOnce(&KeyPermissionsInChapsUpdater::OnKeyPermissionsUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -357,7 +360,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
 void KeyPermissionsManagerImpl::AllowKeyForUsage(
     AllowKeyForUsageCallback callback,
     KeyUsage usage,
-    const std::string& public_key_spki_der) {
+    std::vector<uint8_t> public_key_spki_der) {
   if (!ready_for_queries_) {
     queries_waiting_list_.push_back(
         base::BindOnce(&KeyPermissionsManagerImpl::AllowKeyForUsage,
@@ -373,7 +376,8 @@ void KeyPermissionsManagerImpl::AllowKeyForUsage(
       std::move(callback).Run(Status::kErrorInternal);
       break;
     case KeyUsage::kCorporate: {
-      AllowKeyForCorporateUsage(std::move(callback), public_key_spki_der);
+      AllowKeyForCorporateUsage(std::move(callback),
+                                std::move(public_key_spki_der));
       break;
     }
   }
@@ -382,7 +386,7 @@ void KeyPermissionsManagerImpl::AllowKeyForUsage(
 void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
     IsKeyAllowedForUsageCallback callback,
     KeyUsage usage,
-    const std::string& public_key_spki_der) {
+    std::vector<uint8_t> public_key_spki_der) {
   if (!ready_for_queries_) {
     queries_waiting_list_.push_back(
         base::BindOnce(&KeyPermissionsManagerImpl::IsKeyAllowedForUsage,
@@ -397,8 +401,10 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
     return;
   }
 
+  std::string public_key_str(public_key_spki_der.begin(),
+                             public_key_spki_der.end());
   platform_keys_service_->GetAttributeForKey(
-      token_id_, public_key_spki_der, KeyAttributeType::kKeyPermissions,
+      token_id_, std::move(public_key_str), KeyAttributeType::kKeyPermissions,
       base::BindOnce(
           &KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), usage));
@@ -406,12 +412,14 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
 
 void KeyPermissionsManagerImpl::AllowKeyForCorporateUsage(
     AllowKeyForUsageCallback callback,
-    const std::string& public_key_spki_der) {
+    std::vector<uint8_t> public_key_spki_der) {
   chaps::KeyPermissions key_permissions = CreateKeyPermissions(
       /*corporate_usage_allowed=*/true, AreCorporateKeysAllowedForArcUsage());
 
+  std::string public_key_str(public_key_spki_der.begin(),
+                             public_key_spki_der.end());
   platform_keys_service_->SetAttributeForKey(
-      token_id_, public_key_spki_der, KeyAttributeType::kKeyPermissions,
+      token_id_, std::move(public_key_str), KeyAttributeType::kKeyPermissions,
       key_permissions.SerializeAsString(), std::move(callback));
 }
 
@@ -566,5 +574,4 @@ void KeyPermissionsManagerImpl::OnReadyForQueries() {
   }
 }
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys

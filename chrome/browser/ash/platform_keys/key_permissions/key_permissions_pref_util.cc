@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/values.h"
@@ -12,9 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-namespace ash {
-namespace platform_keys {
-namespace internal {
+namespace ash::platform_keys::internal {
 
 namespace {
 // The profile pref prefs::kPlatformKeys stores a dictionary mapping from
@@ -47,13 +48,11 @@ const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
 
 }  // namespace
 
-bool IsUserKeyMarkedCorporateInPref(const std::string& public_key_spki_der,
-                                    PrefService* profile_prefs) {
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
+bool IsUserKeyMarkedCorporateInPref(
+    const std::vector<uint8_t>& public_key_spki_der,
+    PrefService* profile_prefs) {
   const base::Value* prefs_entry =
-      GetPrefsEntry(public_key_spki_der_b64, profile_prefs);
+      GetPrefsEntry(base::Base64Encode(public_key_spki_der), profile_prefs);
   if (prefs_entry) {
     const base::Value* key_usage = prefs_entry->FindKey(kPrefKeyUsage);
     if (!key_usage || !key_usage->is_string())
@@ -63,19 +62,15 @@ bool IsUserKeyMarkedCorporateInPref(const std::string& public_key_spki_der,
   return false;
 }
 
-void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
+void MarkUserKeyCorporateInPref(const std::vector<uint8_t>& public_key_spki_der,
                                 PrefService* profile_prefs) {
-  std::string public_key_spki_der_b64;
-  base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
-
   ScopedDictPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
 
   base::Value::Dict new_pref_entry;
   new_pref_entry.Set(kPrefKeyUsage, kPrefKeyUsageCorporate);
 
-  update->Set(public_key_spki_der_b64, std::move(new_pref_entry));
+  update->Set(base::Base64Encode(public_key_spki_der),
+              std::move(new_pref_entry));
 }
 
-}  // namespace internal
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys::internal

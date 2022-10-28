@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -106,13 +109,12 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
   }
 
   void SetCorporateKey(const std::vector<uint8_t>& public_key) {
-    std::string public_key_str(public_key.begin(), public_key.end());
     EXPECT_CALL(*user_token_key_permissions_manager_,
-                AllowKeyForUsage(_, KeyUsage::kCorporate, public_key_str))
+                AllowKeyForUsage(_, KeyUsage::kCorporate, public_key))
         .Times(1)
         .WillOnce(base::test::RunOnceCallback<0>(Status::kSuccess));
     EXPECT_CALL(*user_token_key_permissions_manager_,
-                IsKeyAllowedForUsage(_, KeyUsage::kCorporate, public_key_str))
+                IsKeyAllowedForUsage(_, KeyUsage::kCorporate, public_key))
         .WillOnce(
             base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
     test_util::StatusWaiter set_corporate_key_waiter;

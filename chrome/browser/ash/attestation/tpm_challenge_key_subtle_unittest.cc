@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 
+#include <stdint.h>
+
+#include <vector>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -74,6 +78,12 @@ std::string GetPublicKey() {
   constexpr uint8_t kBuffer[] = {0x0, 0x1, 0x2,  'p',  'u',
                                  'b', 'k', 0xfd, 0xfe, 0xff};
   return std::string(reinterpret_cast<const char*>(kBuffer), sizeof(kBuffer));
+}
+
+std::vector<uint8_t> GetPublicKeyBin() {
+  constexpr uint8_t kBuffer[] = {0x0, 0x1, 0x2,  'p',  'u',
+                                 'b', 'k', 0xfd, 0xfe, 0xff};
+  return std::vector<uint8_t>(std::begin(kBuffer), std::end(kBuffer));
 }
 
 class CallbackObserver {
@@ -625,7 +635,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
   EXPECT_CALL(
       *system_token_key_permissions_manager_,
       AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
-                       GetPublicKey()))
+                       GetPublicKeyBin()))
       .WillOnce(RunOnceCallback<0>(chromeos::platform_keys::Status::kSuccess));
 
   RunThreeStepsAndExpect(key_type, /*will_register_key=*/true, key_name,
@@ -701,7 +711,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
   EXPECT_CALL(
       *user_private_token_key_permissions_manager_,
       AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
-                       GetPublicKey()))
+                       GetPublicKeyBin()))
       .WillOnce(RunOnceCallback<0>(chromeos::platform_keys::Status::kSuccess));
 
   RunThreeStepsAndExpect(key_type, /*will_register_key=*/true, key_name,
@@ -761,7 +771,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
   EXPECT_CALL(
       *user_private_token_key_permissions_manager_,
       AllowKeyForUsage(/*callback=*/_, platform_keys::KeyUsage::kCorporate,
-                       GetPublicKey()))
+                       GetPublicKeyBin()))
       .WillOnce(RunOnceCallback<0>(chromeos::platform_keys::Status::kSuccess));
 
   {

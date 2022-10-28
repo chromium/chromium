@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -138,9 +140,6 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     return;
   }
 
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
-
   bool key_on_user_token_only = false;
   for (const auto key_location : key_locations) {
     switch (key_location) {
@@ -153,7 +152,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
                 base::BindOnce(
                     &KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse,
                     weak_factory_.GetWeakPtr(), std::move(callback)),
-                KeyUsage::kCorporate, std::move(public_key_str));
+                KeyUsage::kCorporate, std::move(public_key_spki_der));
         return;
     }
   }
@@ -164,7 +163,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
         base::BindOnce(
             &KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse,
             weak_factory_.GetWeakPtr(), std::move(callback)),
-        KeyUsage::kCorporate, std::move(public_key_str));
+        KeyUsage::kCorporate, std::move(public_key_spki_der));
     return;
   }
 
@@ -216,20 +215,18 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
   // key generation / import, when exactly one location is relevant.
   DCHECK_EQ(key_locations.size(), 1U);
 
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
-
   switch (key_locations[0]) {
     case TokenId::kSystem:
       KeyPermissionsManagerImpl::GetSystemTokenKeyPermissionsManager()
           ->AllowKeyForUsage(std::move(callback), KeyUsage::kCorporate,
-                             std::move(public_key_str));
+                             std::move(public_key_spki_der));
       return;
     case TokenId::kUser: {
       DCHECK(is_regular_user_profile_);
 
       profile_key_permissions_manager_->AllowKeyForUsage(
-          std::move(callback), KeyUsage::kCorporate, std::move(public_key_str));
+          std::move(callback), KeyUsage::kCorporate,
+          std::move(public_key_spki_der));
       return;
     }
   }

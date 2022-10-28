@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/callback.h"
@@ -113,6 +116,15 @@ const std::string& GetPublicKey() {
     base::Base64Decode(kPublicKeyBase64, &public_key);
   }
   return public_key;
+}
+
+const std::vector<uint8_t>& GetPublicKeyBin() {
+  static absl::optional<std::vector<uint8_t>> public_key;
+  if (!public_key.has_value()) {
+    public_key = base::Base64Decode(kPublicKeyBase64);
+    CHECK(public_key.has_value());
+  }
+  return public_key.value();
 }
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
@@ -557,9 +569,9 @@ TEST_F(CertProvisioningWorkerTest, Success) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -642,9 +654,9 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
                                        /*callback=*/_),
         em::HashingAlgorithm::SHA256);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -718,9 +730,9 @@ TEST_F(CertProvisioningWorkerTest, NoHashInStartCsr) {
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -809,9 +821,9 @@ TEST_F(CertProvisioningWorkerTest, TryLaterManualRetry) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kSystem, GetPublicKey(),
@@ -926,9 +938,9 @@ TEST_F(CertProvisioningWorkerTest, TryLaterWait) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -1051,9 +1063,9 @@ TEST_F(CertProvisioningWorkerTest, ServiceActivationPendingResponse) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -1180,9 +1192,9 @@ TEST_F(CertProvisioningWorkerTest, InvalidationRespected) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -1579,9 +1591,9 @@ TEST_F(CertProvisioningWorkerTest, RemoveRegisteredKey) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_FAIL(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),
@@ -1741,9 +1753,9 @@ TEST_F(CertProvisioningWorkerTest, SerializationSuccess) {
 
     EXPECT_REGISTER_KEY_OK(*mock_tpm_challenge_key, StartRegisterKeyStep);
 
-    EXPECT_CALL(
-        *key_permissions_manager_,
-        AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate, GetPublicKey()));
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
 
     EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(SetAttributeForKey(
         TokenId::kUser, GetPublicKey(),

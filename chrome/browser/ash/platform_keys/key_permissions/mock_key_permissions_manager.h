@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_MANAGER_H_
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_MANAGER_H_
 
+#include <stdint.h>
+
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 class MockKeyPermissionsManager : public KeyPermissionsManager {
  public:
@@ -26,14 +28,14 @@ class MockKeyPermissionsManager : public KeyPermissionsManager {
               AllowKeyForUsage,
               (AllowKeyForUsageCallback callback,
                KeyUsage usage,
-               const std::string& public_key_spki_der),
+               std::vector<uint8_t> public_key_spki_der),
               (override));
 
   MOCK_METHOD(void,
               IsKeyAllowedForUsage,
               (IsKeyAllowedForUsageCallback callback,
                KeyUsage key_usage,
-               const std::string& public_key_spki_der),
+               std::vector<uint8_t> public_key_spki_der),
               (override));
 
   MOCK_METHOD(bool, AreCorporateKeysAllowedForArcUsage, (), (const, override));
@@ -41,7 +43,6 @@ class MockKeyPermissionsManager : public KeyPermissionsManager {
   MOCK_METHOD(void, Shutdown, (), (override));
 };
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_MOCK_KEY_PERMISSIONS_MANAGER_H_
