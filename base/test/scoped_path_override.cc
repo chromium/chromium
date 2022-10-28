@@ -4,6 +4,8 @@
 
 #include "base/test/scoped_path_override.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/path_service.h"
 

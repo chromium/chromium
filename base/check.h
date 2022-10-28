@@ -41,16 +41,6 @@
 
 namespace logging {
 
-// Class used to explicitly ignore an ostream, and optionally a boolean value.
-class VoidifyStream {
- public:
-  VoidifyStream() = default;
-  explicit VoidifyStream(bool ignored) {}
-
-  // This operator has lower precedence than << but higher than ?:
-  void operator&(std::ostream&) {}
-};
-
 // Helper macro which avoids evaluating the arguents to a stream if the
 // condition is false.
 #define LAZY_CHECK_STREAM(stream, condition) \
@@ -93,14 +83,30 @@ class BASE_EXPORT CheckError {
   CheckError(const CheckError&) = delete;
   CheckError& operator=(const CheckError&) = delete;
 
+  template <typename T>
+  std::ostream& operator<<(T&& streamed_type) {
+    return stream() << streamed_type;
+  }
+
  private:
   explicit CheckError(LogMessage* log_message);
 
   LogMessage* const log_message_;
 };
 
-#define CHECK_FUNCTION_IMPL(check_function, condition)                       \
-  LAZY_CHECK_STREAM(check_function(__FILE__, __LINE__, #condition).stream(), \
+// Class used to explicitly ignore an ostream, and optionally a boolean value.
+class VoidifyStream {
+ public:
+  VoidifyStream() = default;
+  explicit VoidifyStream(bool ignored) {}
+
+  // These operators have lower precedence than << but higher than ?:
+  void operator&(std::ostream&) {}
+  void operator&(CheckError&&) {}
+};
+
+#define CHECK_FUNCTION_IMPL(check_function, condition)              \
+  LAZY_CHECK_STREAM(check_function(__FILE__, __LINE__, #condition), \
                     !ANALYZER_ASSUME_TRUE(condition))
 
 #if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
@@ -122,10 +128,9 @@ class BASE_EXPORT CheckError {
 
 #define CHECK_WILL_STREAM() false
 
-#define PCHECK(condition)                                         \
-  LAZY_CHECK_STREAM(                                              \
-      ::logging::CheckError::PCheck(__FILE__, __LINE__).stream(), \
-      UNLIKELY(!(condition)))
+#define PCHECK(condition)                                              \
+  LAZY_CHECK_STREAM(::logging::CheckError::PCheck(__FILE__, __LINE__), \
+                    UNLIKELY(!(condition)))
 
 #else
 

@@ -155,7 +155,7 @@ class CheckOpResult {
                                          #val1 " " #op " " #val2))   \
       ;                                                              \
     else                                                             \
-      check_function(__FILE__, __LINE__, &true_if_passed).stream()
+      check_function(__FILE__, __LINE__, &true_if_passed)
 
 #if !CHECK_WILL_STREAM()
 

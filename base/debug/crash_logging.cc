@@ -4,6 +4,8 @@
 
 #include "base/debug/crash_logging.h"
 
+#include <ostream>
+
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 

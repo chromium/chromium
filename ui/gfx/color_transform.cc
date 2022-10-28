@@ -1158,7 +1158,7 @@ sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
   auto result = SkRuntimeEffect::MakeForColorFilter(
       SkString(sksl_source.c_str(), sksl_source.size()),
       /*options=*/{});
-  DCHECK(result.effect) << std::endl
+  DCHECK(result.effect) << '\n'
                         << result.errorText.c_str() << "\n\nShader Source:\n"
                         << sksl_source;
   return result.effect;

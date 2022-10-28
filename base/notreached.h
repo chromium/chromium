@@ -15,8 +15,7 @@ namespace logging {
 // Under these conditions NOTREACHED() will effectively either log or DCHECK.
 #if BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED) || DCHECK_IS_ON()
 #define NOTREACHED() \
-  LAZY_CHECK_STREAM( \
-      ::logging::CheckError::NotReached(__FILE__, __LINE__).stream(), true)
+  LAZY_CHECK_STREAM(::logging::CheckError::NotReached(__FILE__, __LINE__), true)
 #else
 #define NOTREACHED() EAT_CHECK_STREAM_PARAMS()
 #endif  // BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED) || DCHECK_IS_ON()
@@ -25,10 +24,8 @@ namespace logging {
 // implemented yet. If output spam is a serious concern,
 // NOTIMPLEMENTED_LOG_ONCE can be used.
 #if DCHECK_IS_ON()
-#define NOTIMPLEMENTED()                                     \
-  ::logging::CheckError::NotImplemented(__FILE__, __LINE__,  \
-                                        __PRETTY_FUNCTION__) \
-      .stream()
+#define NOTIMPLEMENTED() \
+  ::logging::CheckError::NotImplemented(__FILE__, __LINE__, __PRETTY_FUNCTION__)
 #else
 #define NOTIMPLEMENTED() EAT_CHECK_STREAM_PARAMS()
 #endif

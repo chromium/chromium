@@ -7,6 +7,8 @@
 #include <roapi.h>
 #include <windows.h>
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/com_init_util.h"
