@@ -5,15 +5,10 @@
 #ifndef CHROME_SERVICES_SPEECH_AUDIO_SOURCE_FETCHER_IMPL_H_
 #define CHROME_SERVICES_SPEECH_AUDIO_SOURCE_FETCHER_IMPL_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "chrome/services/speech/audio_source_consumer.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
-#include "media/base/converting_audio_fifo.h"
 #include "media/mojo/common/audio_data_s16_converter.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -35,18 +30,14 @@ class AudioSourceFetcherImpl
       public media::mojom::AudioLog {
  public:
   AudioSourceFetcherImpl(
-      std::unique_ptr<AudioSourceConsumer> recognition_recognizer,
-      bool is_multi_channel_supported,
-      bool is_server_based);
+      std::unique_ptr<AudioSourceConsumer> recognition_recognizer);
   ~AudioSourceFetcherImpl() override;
   AudioSourceFetcherImpl(const AudioSourceFetcherImpl&) = delete;
   AudioSourceFetcherImpl& operator=(const AudioSourceFetcherImpl&) = delete;
 
   static void Create(
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> receiver,
-      std::unique_ptr<AudioSourceConsumer> recognition_recognizer,
-      bool is_multi_channel_supported,
-      bool is_server_based);
+      std::unique_ptr<AudioSourceConsumer> recognition_recognizer);
 
   // media::mojom::AudioSourceFetcher:
   void Start(
@@ -75,9 +66,6 @@ class AudioSourceFetcherImpl
   void OnLogMessage(const std::string& message) override;
   void OnProcessingStateChanged(const std::string& message) override;
 
-  // The output callback for ConvertingAudioFifo.
-  void OnAudioFinishedConvert(media::AudioBus* output_bus);
-
   void set_audio_capturer_source_for_tests(
       media::AudioCapturerSource* audio_capturer_source_for_tests) {
     audio_capturer_source_for_tests_ = audio_capturer_source_for_tests;
@@ -86,13 +74,9 @@ class AudioSourceFetcherImpl
  private:
   using SendAudioToSpeechRecognitionServiceCallback =
       base::RepeatingCallback<void(media::mojom::AudioDataS16Ptr audio_data)>;
-  using SendAudioToResampleCallback = base::RepeatingCallback<void(
-      std::unique_ptr<media::AudioBus> audio_data)>;
 
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr buffer);
-
-  void SendAudioToResample(std::unique_ptr<media::AudioBus> audio_data);
 
   media::AudioCapturerSource* GetAudioCapturerSource();
 
@@ -117,21 +101,6 @@ class AudioSourceFetcherImpl
   bool is_started_;
 
   mojo::Receiver<media::mojom::AudioLog> audio_log_receiver_{this};
-
-  // Used to resample the audio when using server based speech recognition. Null
-  // when using SODA.
-  std::unique_ptr<media::ConvertingAudioFifo> converter_;
-
-  // The output params for resampling for the server based speech recognition.
-  absl::optional<media::AudioParameters> server_based_recognition_params_ =
-      absl::nullopt;
-  bool is_multi_channel_supported_;
-  bool is_server_based_;
-
-  // A callback to push audio data into `converter_`.
-  SendAudioToResampleCallback resample_callback_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<AudioSourceFetcherImpl> weak_factory_{this};
 };

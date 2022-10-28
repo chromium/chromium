@@ -84,12 +84,11 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  const bool is_server_based = options->is_server_based;
   // TODO(b/249867435): Remove SpeechRecognitionServiceImpl's implementation of
   // AudioSourceSpeechRecognitionContext should be removed. AudioSourceFetcher
   // is only ever used from ChromeOS and it should be accessed
   // from CrosSpeechRecognitionService.
-  if (is_server_based) {
+  if (options->is_server_based) {
     mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
     return;
   }
@@ -101,14 +100,12 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     receiver_.reset();
     return;
   }
-  const bool is_multi_channel_supported =
-      SpeechRecognitionRecognizerImpl::IsMultichannelSupported();
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(client), std::move(options), binary_path_, config_path_),
-      is_multi_channel_supported, is_server_based);
-  std::move(callback).Run(is_multi_channel_supported);
+          std::move(client), std::move(options), binary_path_, config_path_));
+  std::move(callback).Run(
+      SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
 
 }  // namespace speech
