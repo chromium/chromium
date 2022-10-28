@@ -353,11 +353,9 @@ TEST_F(CheckTest, ConfigurableDCheckFeature) {
 struct StructWithOstream {
   bool operator==(const StructWithOstream& o) const { return &o == this; }
 };
-#if CHECK_WILL_STREAM()
 std::ostream& operator<<(std::ostream& out, const StructWithOstream&) {
   return out << "ostream";
 }
-#endif  // CHECK_WILL_STREAM()
 
 struct StructWithToString {
   bool operator==(const StructWithToString& o) const { return &o == this; }
@@ -370,12 +368,10 @@ struct StructWithToStringAndOstream {
   }
   std::string ToString() const { return "ToString"; }
 };
-#if CHECK_WILL_STREAM()
 std::ostream& operator<<(std::ostream& out,
                          const StructWithToStringAndOstream&) {
   return out << "ostream";
 }
-#endif  // CHECK_WILL_STREAM()
 
 struct StructWithToStringNotStdString {
   struct PseudoString {};
@@ -385,12 +381,10 @@ struct StructWithToStringNotStdString {
   }
   PseudoString ToString() const { return PseudoString(); }
 };
-#if CHECK_WILL_STREAM()
 std::ostream& operator<<(std::ostream& out,
                          const StructWithToStringNotStdString::PseudoString&) {
   return out << "ToString+ostream";
 }
-#endif  // CHECK_WILL_STREAM()
 
 TEST_F(CheckTest, OstreamVsToString) {
   StructWithOstream a, b;
