@@ -5,7 +5,8 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {Accelerator, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {areAcceleratorsEqual, isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('shortcutUtilsTest', function() {
@@ -17,5 +18,38 @@ suite('shortcutUtilsTest', function() {
   test('CustomizationEnabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     assertFalse(isCustomizationDisabled());
+  });
+
+  test('AreAcceleratorsEqual', async () => {
+    const accelShiftC: Accelerator = {
+      modifiers: Modifier.SHIFT,
+      key: 67,
+      keyDisplay: 'c',
+    };
+    const accelShiftCCopy: Accelerator = {
+      ...accelShiftC,
+    };
+    const accelAltC: Accelerator = {
+      modifiers: Modifier.ALT,
+      key: 67,
+      keyDisplay: 'c',
+    };
+    const accelShiftD: Accelerator = {
+      modifiers: Modifier.SHIFT,
+      key: 68,
+      keyDisplay: 'd',
+    };
+
+    // Compare the same accelerator.
+    assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftC));
+
+    // Compare accelerators with the same properties.
+    assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftCCopy));
+
+    // Compare accelerators with different modifiers.
+    assertFalse(areAcceleratorsEqual(accelShiftC, accelAltC));
+
+    // Compare accelerators with different key and keyDisplay.
+    assertFalse(areAcceleratorsEqual(accelShiftC, accelShiftD));
   });
 });

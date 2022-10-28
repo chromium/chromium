@@ -12,6 +12,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
+import {areAcceleratorsEqual} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -242,8 +243,8 @@ export class AcceleratorViewElement extends PolymerElement {
 
     const pendingAccelerator = this.pendingAcceleratorInfo_.accelerator;
     // New shortcut matches the current shortcut, end capture.
-    if (JSON.stringify(pendingAccelerator) ===
-        JSON.stringify(this.acceleratorInfo.accelerator)) {
+    if (areAcceleratorsEqual(
+            pendingAccelerator, this.acceleratorInfo.accelerator)) {
       this.endCapture_();
       return;
     }

@@ -6,6 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 import {fakeActionNames} from './fake_data.js';
 import {Accelerator, AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
+import {areAcceleratorsEqual} from './shortcut_utils.js';
 
 type AcceleratorLookupMap = Map<string, AcceleratorInfo[]>;
 type AcceleratorLayoutLookupMap = Map<number, Map<number, LayoutInfo[]>>;
@@ -154,7 +155,7 @@ export class AcceleratorLookupManager {
       assertNotReached();
     }
 
-    if (JSON.stringify(oldAccelerator) === JSON.stringify(newAccelerator)) {
+    if (areAcceleratorsEqual(oldAccelerator, newAccelerator)) {
       // Attempted to replace with the same accelerator.
       return;
     }
@@ -257,9 +258,9 @@ export class AcceleratorLookupManager {
   maybeReenableDefaultAccelerator(
       accelInfos: AcceleratorInfo[], accelerator: Accelerator): boolean {
     // Check if `accelerator` matches a default accelerator.
-    const defaultIdx = accelInfos.findIndex(accel => {
-      return accel.type === AcceleratorType.kDefault &&
-          JSON.stringify(accel.accelerator) === JSON.stringify(accelerator);
+    const defaultIdx = accelInfos.findIndex(accelInfo => {
+      return accelInfo.type === AcceleratorType.kDefault &&
+          areAcceleratorsEqual(accelInfo.accelerator, accelerator);
     });
 
     if (defaultIdx === -1) {
@@ -325,12 +326,9 @@ export class AcceleratorLookupManager {
   private getAcceleratorInfoIndex_(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): number {
-    // Stingify the Object so that it compared to other objects.
-    const accelKey = JSON.stringify(accelerator);
     const accelInfos = this.getAccelerators(source, action);
     for (let i = 0; i < accelInfos.length; ++i) {
-      const accelCompare = JSON.stringify(accelInfos[i].accelerator);
-      if (accelKey === accelCompare) {
+      if (areAcceleratorsEqual(accelerator, accelInfos[i].accelerator)) {
         return i;
       }
     }
