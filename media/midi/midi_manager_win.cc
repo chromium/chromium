@@ -218,7 +218,7 @@ ScopedMIDIHDR CreateMIDIHDR(size_t size) {
 
 ScopedMIDIHDR CreateMIDIHDR(const std::vector<uint8_t>& data) {
   ScopedMIDIHDR hdr(CreateMIDIHDR(data.size()));
-  std::copy(data.begin(), data.end(), hdr->lpData);
+  base::ranges::copy(data, hdr->lpData);
   return hdr;
 }
 

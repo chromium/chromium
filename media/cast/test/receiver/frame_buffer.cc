@@ -4,6 +4,8 @@
 
 #include "media/cast/test/receiver/frame_buffer.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "media/cast/common/encoded_frame.h"
 #include "third_party/openscreen/src/cast/streaming/encoded_frame.h"

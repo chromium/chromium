@@ -4,11 +4,11 @@
 
 #include "media/formats/mp4/avc.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "media/base/decrypt_config.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
@@ -34,8 +34,7 @@ static bool ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
       return false;
     }
 
-    std::copy(kAnnexBStartCode, kAnnexBStartCode + kAnnexBStartCodeSize,
-              buf->begin() + pos);
+    base::ranges::copy(kAnnexBStartCode, buf->begin() + pos);
     pos += kLengthSize + nal_length;
   }
   return pos == buf->size();

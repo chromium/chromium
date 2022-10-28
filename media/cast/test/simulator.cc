@@ -56,6 +56,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -390,9 +391,7 @@ void RunSimulation(const base::FilePath& source_path,
     LOG(INFO) << "Running Poisson based network simulation.";
     const IPPModel& ipp_model = model.ipp();
     std::vector<double> average_rates(ipp_model.average_rate_size());
-    std::copy(ipp_model.average_rate().begin(),
-              ipp_model.average_rate().end(),
-              average_rates.begin());
+    base::ranges::copy(ipp_model.average_rate(), average_rates.begin());
     ipp = std::make_unique<test::InterruptedPoissonProcess>(
         average_rates, ipp_model.coef_burstiness(), ipp_model.coef_variance(),
         0);

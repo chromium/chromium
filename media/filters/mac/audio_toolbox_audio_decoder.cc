@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_buffer.h"
@@ -83,8 +84,7 @@ std::vector<uint8_t> GenerateEsdsMagicCookie(
   EncodeDescriptorSize(aac_extra_data.size(),
                        esds->decoder_config.extra_data.size);
 
-  std::copy(aac_extra_data.begin(), aac_extra_data.end(),
-            esds_data.begin() + sizeof(ESDescriptor));
+  base::ranges::copy(aac_extra_data, esds_data.begin() + sizeof(ESDescriptor));
 
   DCHECK(mp4::ESDescriptor().Parse(esds_data));
   return esds_data;

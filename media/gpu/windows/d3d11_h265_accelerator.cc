@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <map>
 
 #include "base/memory/ptr_util.h"

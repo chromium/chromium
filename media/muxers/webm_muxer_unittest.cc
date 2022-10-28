@@ -6,12 +6,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
@@ -534,7 +536,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
 
   void SaveChunkAndInvokeWriteCallback(base::StringPiece chunk) {
     OnWrite();
-    std::copy(chunk.begin(), chunk.end(), std::back_inserter(muxed_data_));
+    base::ranges::copy(chunk, std::back_inserter(muxed_data_));
   }
 
   // Muxed data gets saved here. The content is guaranteed to be finalized first
