@@ -717,8 +717,16 @@ const char kPrivacySandboxApisEnabledV2Init[] =
     "privacy_sandbox.apis_enabled_v2_init";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+// Deprecated 06/2022.
+const char kU2fSecurityKeyApiEnabled[] =
+    "extensions.u2f_security_key_api_enabled";
+
 // Deprecated 07/2022.
 const char kExtensionToolbar[] = "extensions.toolbar";
+
+// Deprecated 10/2022.
+const char kLoadCryptoTokenExtension[] =
+    "extensions.load_cryptotoken_extension";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -956,6 +964,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterIntegerPref(kDownloadLaterPromptStatus, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // Deprecated 06/2022
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  registry->RegisterBooleanPref(kU2fSecurityKeyApiEnabled, false);
+#endif
+
   // Deprecated 07/2022
   registry->RegisterBooleanPref(kPrivacySandboxFlocEnabled, true);
   registry->RegisterBooleanPref(kPrivacySandboxFlocDataAccessibleSince, false);
@@ -996,6 +1009,11 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 09/2022.
   registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Deprecated 10/2022.
+  registry->RegisterBooleanPref(kLoadCryptoTokenExtension, false);
+#endif
 }
 
 }  // namespace
@@ -1911,7 +1929,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 06/2022.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  profile_prefs->ClearPref(extensions::pref_names::kU2fSecurityKeyApiEnabled);
+  profile_prefs->ClearPref(kU2fSecurityKeyApiEnabled);
 #endif
   profile_prefs->ClearPref(prefs::kCloudPrintSubmitEnabled);
 
@@ -2012,6 +2030,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
     if (!is_email && !account_id.empty())
       profile_prefs->SetString(prefs::kGoogleServicesLastGaiaId, account_id);
   }
+
+  // Added 10/2022.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  profile_prefs->ClearPref(kLoadCryptoTokenExtension);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

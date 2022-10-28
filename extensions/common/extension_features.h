@@ -22,10 +22,6 @@ BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
 
 BASE_DECLARE_FEATURE(kAllowSharedArrayBuffersUnconditionally);
 
-BASE_DECLARE_FEATURE(kLoadCryptoTokenExtension);
-
-BASE_DECLARE_FEATURE(kU2FSecurityKeyAPI);
-
 BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 
 BASE_DECLARE_FEATURE(kRestrictDeveloperModeAPIs);

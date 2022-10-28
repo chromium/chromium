@@ -296,10 +296,6 @@
       "chrome-untrusted://media-app/*"
     ]
   }],
-  "cryptotokenPrivate": {
-    "dependencies": ["permission:cryptotokenPrivate"],
-    "contexts": ["blessed_extension"]
-  },
   "dashboardPrivate": {
     "channel": "stable",
     "contexts": ["blessed_extension"],

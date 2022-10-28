@@ -2143,9 +2143,7 @@
     },
     'webauthn': {
         'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/webauth/'\
-                    '|chrome/android/javatests/src/org/chromium/chrome/browser/webauth/'\
-                    '|chrome/browser/extensions/api/cryptotoken_private/'\
-                    '|chrome/browser/resources/cryptotoken/'\
+      '|chrome/android/javatests/src/org/chromium/chrome/browser/webauth/'\
                     '|chrome/browser/ui/webauthn/'\
                     '|chrome/browser/ui/views/webauthn/'\
                     '|chrome/browser/webauthn/'\

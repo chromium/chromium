@@ -1,5 +1,6 @@
 caption: Load the CryptoToken component extension at startup
 default: false
+deprecated: true
 desc: If set to Enabled, the built-in CryptoToken component extension is loaded at
   startup. If set to Disabled or not set, CryptoToken is not loaded at browser startup.
   This policy is meant as a temporary workaround for sites broken by `chrome.runtime`

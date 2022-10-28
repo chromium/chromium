@@ -84,37 +84,6 @@
       <include name="IDS_READ_ANYTHING_LIGHT_PNG" file="side_panel/images/read_anything_light.png" type="BINDATA" />
       <include name="IDS_READ_ANYTHING_DARK_PNG" file="side_panel/images/read_anything_dark.png" type="BINDATA" />
       <include name="IDS_READ_ANYTHING_YELLOW_PNG" file="side_panel/images/read_anything_yellow.png" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_UTIL_JS" file="cryptotoken/util.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_B64_JS" file="cryptotoken/b64.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_COUNTDOWN_JS" file="cryptotoken/countdown.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_COUNTDOWNTIMER_JS" file="cryptotoken/countdowntimer.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_SHA256_JS" file="cryptotoken/sha256.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_TIMER_JS" file="cryptotoken/timer.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_DEVICESTATUSCODES_JS" file="cryptotoken/devicestatuscodes.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_ASN1_JS" file="cryptotoken/asn1.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_CBOR_JS" file="cryptotoken/cbor.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_ENROLLER_JS" file="cryptotoken/enroller.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_REQUESTQUEUE_JS" file="cryptotoken/requestqueue.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_SIGNER_JS" file="cryptotoken/signer.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_WEBREQUEST_JS" file="cryptotoken/webrequest.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_APPID_JS" file="cryptotoken/appid.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_TEXTFETCHER_JS" file="cryptotoken/textfetcher.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_REQUESTHELPER_JS" file="cryptotoken/requesthelper.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_MESSAGETYPES_JS" file="cryptotoken/messagetypes.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_INHERITS_JS" file="cryptotoken/inherits.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_FACTORYREGISTRY_JS" file="cryptotoken/factoryregistry.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_ERRORCODES_JS" file="cryptotoken/errorcodes.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_ORIGINCHECK_JS" file="cryptotoken/origincheck.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_INDIVIDUALATTEST_JS" file="cryptotoken/individualattest.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_GOOGLECORPINDIVIDUALATTEST_JS" file="cryptotoken/googlecorpindividualattest.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_APPROVEDORIGINS_JS" file="cryptotoken/approvedorigins.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_WEBREQUESTSENDER_JS" file="cryptotoken/webrequestsender.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_WINDOW_TIMER_JS" file="cryptotoken/window-timer.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_WATCHDOG_JS" file="cryptotoken/watchdog.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_LOGGING_JS" file="cryptotoken/logging.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_CRYPTOTOKENAPPROVEDORIGIN_JS" file="cryptotoken/cryptotokenapprovedorigins.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_CRYPTOTOKENORIGINCHECK_JS" file="cryptotoken/cryptotokenorigincheck.js" type="BINDATA" />
-      <include name="IDR_CRYPTOTOKEN_CRYPTOTOKENBACKGROUND_JS" file="cryptotoken/cryptotokenbackground.js" type="BINDATA" />
     </includes>
   </release>
 </grit>

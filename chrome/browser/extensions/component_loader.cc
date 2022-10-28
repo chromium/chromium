@@ -537,14 +537,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #endif
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kLoadCryptoTokenExtension) ||
-      ExtensionPrefs::Get(profile_)->pref_service()->GetBoolean(
-          pref_names::kLoadCryptoTokenExtension)) {
-    Add(IDR_CRYPTOTOKEN_MANIFEST,
-        base::FilePath(FILE_PATH_LITERAL("cryptotoken")));
-  }
 }
 
 void ComponentLoader::

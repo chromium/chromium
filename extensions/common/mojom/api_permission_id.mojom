@@ -60,7 +60,7 @@ enum APIPermissionID {
   kCookie = 34,
   kDeleted_Copresence = 35,
   kDeleted_CopresencePrivate = 36,
-  kCryptotokenPrivate = 37,
+  kDeleted_CryptotokenPrivate = 37,
   kDeleted_DataReductionProxy = 38,
   kDiagnostics = 39,
   kDeleted_Dial = 40,

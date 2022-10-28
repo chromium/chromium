@@ -8947,15 +8947,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"u2f-security-key-api", flag_descriptions::kU2FSecurityKeyAPIName,
-     flag_descriptions::kU2FSecurityKeyAPIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(extensions_features::kU2FSecurityKeyAPI)},
-    {"load-cryptotoken-extension",
-     flag_descriptions::kLoadCryptoTokenExtensionName,
-     flag_descriptions ::kLoadCryptoTokenExtensionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(extensions_features::kLoadCryptoTokenExtension)},
-#endif  // ENABLE_EXTENSIONS
     {"force-major-version-to-minor",
      flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentName,
      flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentDescription,
@@ -8970,9 +8961,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableOfferNotificationForPromoCodes)},
 
-    {"u2f-permission-prompt", flag_descriptions::kU2FPermissionPromptName,
-     flag_descriptions::kU2FPermissionPromptDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(device::kU2fPermissionPrompt)},
     {"upcoming-sharing-features",
      flag_descriptions::kUpcomingSharingFeaturesName,
      flag_descriptions::kUpcomingSharingFeaturesDescription, kOsAll,

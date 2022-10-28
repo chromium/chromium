@@ -43,9 +43,9 @@ Reasons to use a component extension include:
 ## Examples of component extensions
 
 Over the years, there have been numerous component extensions.  Today, some
-examples include the built-in PDF reader and the CryptoToken extension (used
-for enabling security key U2F on websites).  In the past, the bookmark manager
-and the "cast" functionality were also implemented as extensions.
+examples include the built-in PDF reader.  In the past, the bookmark manager,
+"cast" functionality, and the U2F security key API (CryptoToken) were also
+implemented as extensions.
 
 There are also component platform apps; ChromeOS historically had many of
 these.  Now, the general guidance is to instead implement these features as

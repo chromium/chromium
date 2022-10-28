@@ -52,20 +52,6 @@ BASE_FEATURE(kAllowSharedArrayBuffersUnconditionally,
              "AllowSharedArrayBuffersUnconditionally",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Loads the CryptoToken component extension, which implements the deprecated
-// U2F Security Key API.
-// TODO(1224886): Delete together with CryptoToken code.
-BASE_FEATURE(kLoadCryptoTokenExtension,
-             "LoadCryptoTokenExtension",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the CryptoToken component extension to receive messages. This flag
-// has no effect unless `kLoadCryptoTokenExtension` is also enabled.
-// TODO(1224886): Delete together with CryptoToken code.
-BASE_FEATURE(kU2FSecurityKeyAPI,
-             "U2FSecurityKeyAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, causes Manifest V3 (and greater) extensions to use structured
 // cloning (instead of JSON serialization) for extension messaging, except when
 // communicating with native messaging hosts.

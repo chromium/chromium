@@ -195,14 +195,6 @@
       "06BE211D5F014BAB34BC22D9DDA09C63A81D828E"   // http://crbug.com/946241
     ]
   },
-  "cryptotokenPrivate": {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "location": "component",
-    "allowlist": [
-      "E24F1786D842E91E74C27929B0B3715A4689A473"  // Cryptotoken
-    ]
-  },
   "debugger": [
     {
       "channel": "stable",

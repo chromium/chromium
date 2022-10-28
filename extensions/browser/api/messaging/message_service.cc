@@ -50,16 +50,12 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "net/http/http_response_headers.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
 using content::BrowserContext;
@@ -291,32 +287,9 @@ void MessageService::OpenChannelToExtension(
 
         is_web_connection = true;
 
-        // Sites can only connect to the CryptoToken component extension if it
-        // has been enabled via feature flag or deprecation trial.
-        // TODO(1224886): Delete together with CryptoToken code.
-        if (target_extension_id == extension_misc::kCryptotokenExtensionId) {
-          blink::TrialTokenValidator validator;
-          const net::HttpResponseHeaders* response_headers =
-              source_render_frame_host->GetLastResponseHeaders();
-          const bool u2f_api_enabled =
-              base::FeatureList::IsEnabled(
-                  extensions_features::kU2FSecurityKeyAPI) ||
-              (response_headers &&
-               validator.RequestEnablesFeature(
-                   source_render_frame_host->GetLastCommittedURL(),
-                   response_headers,
-                   extension_misc::kCryptotokenDeprecationTrialName,
-                   base::Time::Now()));
-          is_externally_connectable =
-              u2f_api_enabled &&
-              externally_connectable->matches.MatchesURL(
-                  source_render_frame_host->GetLastCommittedURL());
-        } else {
-          // Check that the web page URL matches.
-          is_externally_connectable =
-              externally_connectable->matches.MatchesURL(
-                  source_render_frame_host->GetLastCommittedURL());
-        }
+        // Check that the web page URL matches.
+        is_externally_connectable = externally_connectable->matches.MatchesURL(
+            source_render_frame_host->GetLastCommittedURL());
       }
     } else {
       // Default behaviour. Any extension or content script, no webpages.

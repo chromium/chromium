@@ -208,15 +208,6 @@ const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
     "will speak the audio descriptions aloud as the video plays.";
 
-const char kU2FPermissionPromptName[] =
-    "Enable a permission prompt for the U2F Security Key API";
-const char kU2FPermissionPromptDescription[] =
-    "Show a permission prompt when making requests to the legacy U2F Security "
-    "Key API (CryptoToken). The U2F Security "
-    "Key API has been deprecated and will be removed soon. For more "
-    "information, refer to the deprecation announcement at "
-    "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
-
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 const char kWebFilterInterstitialRefreshName[] =
     "Web filter interstitial refresh.";
@@ -224,21 +215,6 @@ const char kWebFilterInterstitialRefreshDescription[] =
     "Enable web filter interstitial refresh for Family Link users on Chrome "
     "OS.";
 #endif  // ENABLE_SUPERVISED_USERS
-
-const char kU2FSecurityKeyAPIName[] = "Enable the U2F Security Key API";
-const char kU2FSecurityKeyAPIDescription[] =
-    "Enable the legacy U2F Security Key API (CryptoToken). The U2F Security "
-    "Key API has been deprecated and will be removed soon. For more "
-    "information, refer to the deprecation announcement at "
-    "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
-
-const char kLoadCryptoTokenExtensionName[] =
-    "Load the CryptoToken component extension ";
-const char kLoadCryptoTokenExtensionDescription[] =
-    "Enable this flag to temporarily work around issues with `chrome.runtime` "
-    "being undefined as a side effect of U2F API removal. This workaround "
-    "will go away with Chrome 107. Websites should not depend on "
-    "`chrome.runtime` or `chrome.app` being defined unconditionally.";
 
 const char kUpcomingSharingFeaturesName[] = "Enable upcoming sharing features.";
 const char kUpcomingSharingFeaturesDescription[] =

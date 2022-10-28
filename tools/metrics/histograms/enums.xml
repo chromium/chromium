@@ -35472,7 +35472,7 @@ Called by update_extension_histograms.py.-->
   <int value="955" label="DELETED_NETWORKING_CONFIG_SETNETWORKFILTER"/>
   <int value="956" label="DELETED_NETWORKING_CONFIG_FINISHAUTHENTICATION"/>
   <int value="957" label="PLATFORMKEYSINTERNAL_SELECTCLIENTCERTIFICATES"/>
-  <int value="958" label="CRYPTOTOKENPRIVATE_CANORIGINASSERTAPPID"/>
+  <int value="958" label="DELETED_CRYPTOTOKENPRIVATE_CANORIGINASSERTAPPID"/>
   <int value="959" label="DELETED_EASYUNLOCKPRIVATE_SETAUTOPAIRINGRESULT"/>
   <int value="960" label="DELETED_FILEMANAGERPRIVATE_ISUMAENABLED"/>
   <int value="961" label="WEBVIEWINTERNAL_SETALLOWSCALING"/>
@@ -35736,8 +35736,9 @@ Called by update_extension_histograms.py.-->
   <int value="1206" label="DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS"/>
   <int value="1207" label="AUTOTESTPRIVATE_GETPRINTERLIST"/>
   <int value="1208" label="DEVELOPERPRIVATE_GETEXTENSIONSIZE"/>
-  <int value="1209" label="CRYPTOTOKENPRIVATE_ISAPPIDHASHINENTERPRISECONTEXT"/>
-  <int value="1210" label="CRYPTOTOKENPRIVATE_CANAPPIDGETATTESTATION"/>
+  <int value="1209"
+      label="DELETED_CRYPTOTOKENPRIVATE_ISAPPIDHASHINENTERPRISECONTEXT"/>
+  <int value="1210" label="DELETED_CRYPTOTOKENPRIVATE_CANAPPIDGETATTESTATION"/>
   <int value="1211" label="SYSTEM_DISPLAY_SETMIRRORMODE"/>
   <int value="1212" label="TTSENGINE_UPDATEVOICES"/>
   <int value="1213" label="PASSWORDSPRIVATE_REQUESTEXPORTPROGRESSSTATUS"/>
@@ -35826,7 +35827,7 @@ Called by update_extension_histograms.py.-->
       label="BRAILLEDISPLAYPRIVATE_UPDATEBLUETOOTHBRAILLEDISPLAYADDRESS"/>
   <int value="1292" label="AUTOTESTPRIVATE_SETASSISTANTENABLED"/>
   <int value="1293" label="AUTOTESTPRIVATE_ISARCPROVISIONED"/>
-  <int value="1294" label="CRYPTOTOKENPRIVATE_CANPROXYTOWEBAUTHN"/>
+  <int value="1294" label="DELETED_CRYPTOTOKENPRIVATE_CANPROXYTOWEBAUTHN"/>
   <int value="1295" label="INPUTMETHODPRIVATE_GETSETTINGS"/>
   <int value="1296" label="INPUTMETHODPRIVATE_SETSETTINGS"/>
   <int value="1297" label="FILEMANAGERPRIVATEINTERNAL_UNSHAREPATHWITHCROSTINI"/>
@@ -36000,8 +36001,8 @@ Called by update_extension_histograms.py.-->
   <int value="1460" label="PASSWORDSPRIVATE_GETPASSWORDCHECKSTATUS"/>
   <int value="1461" label="TERMINALPRIVATE_OPENVMSHELLPROCESS"/>
   <int value="1462" label="PASSWORDSPRIVATE_OPTINFORACCOUNTSTORAGE"/>
-  <int value="1463" label="CRYPTOTOKENPRIVATE_RECORDREGISTERREQUEST"/>
-  <int value="1464" label="CRYPTOTOKENPRIVATE_RECORDSIGNREQUEST"/>
+  <int value="1463" label="DELETED_CRYPTOTOKENPRIVATE_RECORDREGISTERREQUEST"/>
+  <int value="1464" label="DELETED_CRYPTOTOKENPRIVATE_RECORDSIGNREQUEST"/>
   <int value="1465" label="VIRTUALKEYBOARDPRIVATE_SETWINDOWBOUNDSINSCREEN"/>
   <int value="1466" label="AUTOTESTPRIVATE_SETWINDOWBOUNDS"/>
   <int value="1467" label="AUTOTESTPRIVATE_STARTSMOOTHNESSTRACKING"/>
@@ -36117,7 +36118,7 @@ Called by update_extension_histograms.py.-->
   <int value="1568" label="OS_TELEMETRY_GETOEMDATA"/>
   <int value="1569" label="SCRIPTING_UNREGISTERCONTENTSCRIPTS"/>
   <int value="1570" label="FILEMANAGERPRIVATE_GETZIPPROGRESS"/>
-  <int value="1571" label="CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST"/>
+  <int value="1571" label="DELETED_CRYPTOTOKENPRIVATE_CANMAKEU2FAPIREQUEST"/>
   <int value="1572" label="OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE"/>
   <int value="1573" label="WEB_AUTHENTICATION_PROXY_COMPLETE_ISUVPAA_REQUEST"/>
   <int value="1574" label="LOGIN_LAUNCHSHAREDMANAGEDGUESTSESSION"/>
@@ -36705,7 +36706,7 @@ Called by update_extension_permission.py.-->
   <int value="34" label="kCookie"/>
   <int value="35" label="kDeleted_Copresence"/>
   <int value="36" label="kDeleted_CopresencePrivate"/>
-  <int value="37" label="kCryptotokenPrivate"/>
+  <int value="37" label="kDeleted_CryptotokenPrivate"/>
   <int value="38" label="kDeleted_DataReductionProxy"/>
   <int value="39" label="kDiagnostics"/>
   <int value="40" label="kDeleted_Dial"/>
@@ -40515,8 +40516,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2809" label="OBSOLETE_CSSValueAppearanceMenulistTextfield"/>
   <int value="2810" label="OBSOLETE_CSSValueAppearanceMenulistText"/>
   <int value="2811" label="OBSOLETE_CSSValueAppearanceProgressBarValue"/>
-  <int value="2812" label="U2FCryptotokenRegister"/>
-  <int value="2813" label="U2FCryptotokenSign"/>
+  <int value="2812" label="OBSOLETE_U2FCryptotokenRegister"/>
+  <int value="2813" label="OBSOLETE_U2FCryptotokenSign"/>
   <int value="2814" label="CSSValueAppearanceInnerSpinButton"/>
   <int value="2815" label="CSSValueAppearanceMeter"/>
   <int value="2816" label="CSSValueAppearanceProgressBar"/>

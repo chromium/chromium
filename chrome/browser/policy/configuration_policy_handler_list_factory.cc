@@ -576,11 +576,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSecurityKeyPermitAttestation,
     prefs::kSecurityKeyPermitAttestation,
     base::Value::Type::LIST },
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  { key::kLoadCryptoTokenExtension,
-    extensions::pref_names::kLoadCryptoTokenExtension,
-    base::Value::Type::BOOLEAN },
-#endif // BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kSerialAllowAllPortsForUrls,
     prefs::kManagedSerialAllowAllPortsForUrls,
     base::Value::Type::LIST },

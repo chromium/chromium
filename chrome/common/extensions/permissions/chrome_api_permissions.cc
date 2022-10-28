@@ -73,7 +73,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kContextMenus, "contextMenus",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kCookie, "cookies"},
-    {APIPermissionID::kCryptotokenPrivate, "cryptotokenPrivate"},
     {APIPermissionID::kEnterpriseDeviceAttributes,
      "enterprise.deviceAttributes",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},

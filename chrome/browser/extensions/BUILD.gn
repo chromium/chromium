@@ -92,8 +92,6 @@ static_library("extensions") {
     "api/cookies/cookies_api_constants.h",
     "api/cookies/cookies_helpers.cc",
     "api/cookies/cookies_helpers.h",
-    "api/cryptotoken_private/cryptotoken_private_api.cc",
-    "api/cryptotoken_private/cryptotoken_private_api.h",
     "api/dashboard_private/dashboard_private_api.cc",
     "api/dashboard_private/dashboard_private_api.h",
     "api/debugger/debugger_api.cc",

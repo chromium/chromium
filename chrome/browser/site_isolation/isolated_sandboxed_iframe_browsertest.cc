@@ -578,8 +578,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
                        CspSandboxedMainframeWithSameSiteOpener) {
   GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL popup_url(
-      embedded_test_server()->GetURL("a.com", "/cryptotoken/csp-sandbox.html"));
+  GURL popup_url(embedded_test_server()->GetURL("a.com", "/csp-sandbox.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -612,8 +611,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
 // when when visited directly.
 IN_PROC_BROWSER_TEST_F(IsolatedSandboxedIframeBrowserTest,
                        CspSandboxedMainframeVisitedDirectly) {
-  GURL main_url(
-      embedded_test_server()->GetURL("a.com", "/cryptotoken/csp-sandbox.html"));
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/csp-sandbox.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Verify histograms are updated.

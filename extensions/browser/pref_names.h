@@ -105,20 +105,6 @@ extern const char kDeletedComponentExtensions[];
 extern const char kChromeAppsEnabled[];
 #endif
 
-// A boolean indicating whether the deprecated U2F Security Key API, implemented
-// in the CryptoToken component extension, should be forcibly enabled, even if
-// it has been disabled via the `extensions_features::U2FSecurityKeyAPI` feature
-// flag.
-//
-// TODO(1224886): Delete together with CryptoToken code.
-extern const char kU2fSecurityKeyApiEnabled[];
-
-// A boolean indicating whether the CryptoToken component extension should be
-// loaded at startup.
-//
-// TODO(1224886): Delete together with CryptoToken code.
-extern const char kLoadCryptoTokenExtension[];
-
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.

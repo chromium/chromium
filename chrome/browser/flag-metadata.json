@@ -4478,11 +4478,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "load-cryptotoken-extension",
-    "owners": [ "martinkr", "chrome-webauthn" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "location-bar-model-optimizations",
     "owners": [ "pnoland@google.com"],
     "expiry_milestone": 105
@@ -6719,16 +6714,6 @@
     "name": "turn-off-streaming-media-caching-on-battery",
     "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
     "expiry_milestone": 99
-  },
-  {
-    "name": "u2f-permission-prompt",
-    "owners": [ "//device/fido/OWNERS" ],
-    "expiry_milestone": 104
-  },
-  {
-    "name": "u2f-security-key-api",
-    "owners": [ "//device/fido/OWNERS" ],
-    "expiry_milestone": 104
   },
   {
     "name": "ui-debug-tools",

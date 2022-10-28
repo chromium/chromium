@@ -2290,8 +2290,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
     BUILDFLAG(IS_FUCHSIA)
   registry->RegisterBooleanPref(pref_names::kChromeAppsEnabled, false);
 #endif
-  registry->RegisterBooleanPref(pref_names::kU2fSecurityKeyApiEnabled, false);
-  registry->RegisterBooleanPref(pref_names::kLoadCryptoTokenExtension, false);
 
   registry->RegisterListPref(pref_names::kNativeMessagingBlocklist);
   registry->RegisterListPref(pref_names::kNativeMessagingAllowlist);
