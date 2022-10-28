@@ -21,7 +21,7 @@ PASS Testing 'flood-opacity'.
 FAIL Testing 'font-family'. assert_equals: Default value. expected "Times New Roman" but got "Times"
 PASS Testing 'font-size'.
 PASS Testing 'font-size-adjust'.
-FAIL Testing 'font-stretch'. assert_equals: Default value. expected "normal" but got "100%"
+PASS Testing 'font-stretch'.
 PASS Testing 'font-style'.
 PASS Testing 'font-weight'.
 FAIL Testing 'glyph-orientation-horizontal'. assert_equals: Default value. expected "0deg" but got ""

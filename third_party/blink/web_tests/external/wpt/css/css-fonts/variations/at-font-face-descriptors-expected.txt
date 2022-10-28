@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 87 tests; 67 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 87 tests; 69 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS font-weight(valid): 'normal' keyword: normal
 PASS font-weight(valid): 'bold' keyword: bold
 PASS font-weight(valid): 'auto' keyword inside @font-face: auto
@@ -68,7 +68,7 @@ PASS font-style(valid): 'auto' keyword inside @font-face: auto
 PASS font-style(invalid): 'italic' followed by angle: italic 20deg
 PASS font-style(invalid): Extra content after keyword: italic a
 PASS font-style(valid): 'oblique' followed by zero degrees: oblique 0deg
-FAIL font-style(valid): 'oblique' followed by default 20deg angle: oblique 20deg assert_equals: Unexpected resulting value. expected "oblique" but got "oblique 20deg"
+PASS font-style(valid): 'oblique' followed by former default 20deg angle: oblique 20deg
 PASS font-style(valid): 'oblique' followed by maxumum 90 degree angle: oblique 90deg
 PASS font-style(valid): 'oblique' followed by minimum -90 degree angle: oblique -90deg
 FAIL font-style(valid): 'oblique' followed by calc with out of range value (should be clamped): oblique calc(91deg) assert_equals: Unexpected resulting value. expected "oblique calc(91deg)" but got "oblique 90deg"
@@ -82,7 +82,7 @@ PASS font-style(invalid): 'oblique' followed by minus and angle separated by spa
 PASS font-style(invalid): 'oblique' followed by minus and non-number: oblique -a
 PASS font-style(valid): Simple range: oblique 10deg 20deg
 FAIL font-style(valid): Simple range with equal upper and lower bounds: oblique 10deg 10deg assert_equals: Unexpected resulting value. expected "oblique 10deg" but got "oblique 10deg 10deg"
-FAIL font-style(valid): Simple range with  default angle for both bounds: oblique 20deg 20deg assert_equals: Unexpected resulting value. expected "oblique" but got "oblique 20deg 20deg"
+PASS font-style(valid): Simple range with former default angle for both bounds: oblique 20deg 20deg
 PASS font-style(valid): Bounds out of order: oblique 20deg 10deg
 PASS font-style(invalid): Lower bound out of range: oblique -100deg 20deg
 PASS font-style(invalid): Upper bound out of range: oblique 20deg 100deg

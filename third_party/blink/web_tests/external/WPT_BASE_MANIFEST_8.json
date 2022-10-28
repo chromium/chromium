@@ -277127,10 +277127,6 @@
       "font-size-adjust-interpolation-expected.txt": [
        "05d041d5fcc95aafb4cc8efb23f98619692b3f58",
        []
-      ],
-      "font-stretch-interpolation-expected.txt": [
-       "58896db21f6fc5aae1b974758d57009479337334",
-       []
       ]
      },
      "ascent-descent-override-ref.html": [
@@ -284335,7 +284331,7 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "f573fe612d5a2c1e11444ba4b6c71f322d9a84b6",
+       "d4cf0835007ac17ec8207057ec5c3ea47df81de5",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
@@ -398835,7 +398831,7 @@
        ]
       ],
       "font-stretch-interpolation.html": [
-       "c6642ffd0a9dc22f4fdf2d03fb92de669e8e282f",
+       "e62788f82f222d67e5b10d629e3ca03451d9d689",
        [
         null,
         {}
@@ -399592,7 +399588,7 @@
      ],
      "variations": {
       "at-font-face-descriptors.html": [
-       "92b746900e9b11f0d88135ba616bcf1327499edd",
+       "1935422d7c29df467a1c44bb4327e8fd79772508",
        [
         null,
         {}
@@ -418821,7 +418817,7 @@
       ]
      ],
      "variable-presentation-attribute.html": [
-      "6c8a4430bc7bcffcb6b85c018cc92c0d25320fe6",
+      "1674f3ffdbcca5428dd20f5f5cb3f799a9974fe2",
       [
        null,
        {}
@@ -555826,7 +555822,7 @@
       ]
      ],
      "referrer-policy.https.html": [
-      "6d942fad0ddee198ab5dedbd61c67248de6e5316",
+      "aaeae161e3ce0797ac5f2dde3d5ce9015d69cab6",
       [
        "speculation-rules/prefetch/referrer-policy.https.html?1-1",
        {}
@@ -583792,11 +583788,12 @@
      ]
     ],
     "hardware-capability-stats.https.html": [
-     "f081787bdfabd6bcc540b4f0c65ee9328f67a4dc",
+     "eb56344e5947a7eae63162a185c0bae3821e14be",
      [
       null,
       {
-       "testdriver": true
+       "testdriver": true,
+       "timeout": "long"
       }
      ]
     ],
