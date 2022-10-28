@@ -1637,17 +1637,6 @@ fyi_mac_builder(
 )
 
 ci.builder(
-    name = "chromeos-amd64-generic-rel (goma cache silo)",
-    console_view_entry = consoles.console_view_entry(
-        category = "cros x64",
-        short_name = "cgc",
-    ),
-    os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
-)
-
-ci.builder(
     name = "chromeos-amd64-generic-rel (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "cros x64",
@@ -1673,17 +1662,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "lacros-amd64-generic-rel (goma cache silo)",
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros x64",
-        short_name = "cgc",
-    ),
-    os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
-)
-
-ci.builder(
     name = "lacros-amd64-generic-rel (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "lacros x64",
@@ -1691,17 +1669,6 @@ ci.builder(
     os = os.LINUX_DEFAULT,
     reclient_rewrapper_env = {"RBE_cache_silo": "lacros-amd64-generic-rel (reclient)"},
     reclient_jobs = None,
-)
-
-ci.builder(
-    name = "linux-lacros-builder-rel (goma cache silo)",
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros rel",
-        short_name = "cgc",
-    ),
-    os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
