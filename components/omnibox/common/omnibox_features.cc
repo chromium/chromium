@@ -405,6 +405,11 @@ BASE_FEATURE(kOmniboxHeaderPaddingUpdate,
              "OmniboxHeaderPaddingUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature used to synchronize the toolbar's and status bar's color.
+BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
+             "OmniboxMatchToolbarAndStatusBarColor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature used to remove the capitalization of the suggestion header text.
 BASE_FEATURE(kOmniboxRemoveSuggestionHeaderCapitalization,
              "OmniboxRemoveSuggestionHeaderCapitalization",

@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -72,6 +74,7 @@ public abstract class ToolbarLayout
         extends FrameLayout implements Destroyable, TintObserver, ThemeColorObserver,
                                        OmniboxSuggestionsDropdownScrollListener {
     private Callback<Runnable> mInvalidator;
+    private @Nullable ToolbarColorObserver mToolbarColorObserver;
 
     protected final ObserverList<UrlExpansionObserver> mUrlExpansionObservers =
             new ObserverList<>();
@@ -183,6 +186,10 @@ public abstract class ToolbarLayout
             mThemeColorProvider.removeThemeColorObserver(this);
             mThemeColorProvider = null;
         }
+
+        if (mToolbarColorObserver != null) {
+            mToolbarColorObserver = null;
+        }
     }
 
     /**
@@ -197,6 +204,13 @@ public abstract class ToolbarLayout
      */
     void removeUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
         mUrlExpansionObservers.removeObserver(urlExpansionObserver);
+    }
+
+    /**
+     * @param toolbarColorObserver The observer that observes toolbar color change.
+     */
+    void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+        mToolbarColorObserver = toolbarColorObserver;
     }
 
     /**
@@ -892,4 +906,14 @@ public abstract class ToolbarLayout
      */
     public void setBrowserControlsVisibilityDelegate(
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate) {}
+
+    /**
+     * Notify the observer that the toolbar color is changed and pass the toolbar color to the
+     * observer.
+     */
+    protected void notifyToolbarColorChanged(int color) {
+        if (mToolbarColorObserver != null) {
+            mToolbarColorObserver.onToolbarColorChanged(color);
+        }
+    }
 }

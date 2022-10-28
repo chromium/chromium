@@ -784,6 +784,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mToolbarBackground.setColor(color);
         setToolbarHairlineColor(color);
         invalidate();
+
+        // We will set status bar's color same as the toolbar's color on phone form factor.
+        notifyToolbarColorChanged(color);
     }
 
     private void updateToolbarBackgroundFromState(@VisualState int visualState) {
@@ -2689,6 +2692,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public boolean isAnimationRunningForTesting() {
         return mUrlFocusChangeInProgress || mBrandColorTransitionActive
                 || mOptionalButtonAnimationRunning;
+    }
+
+    /**
+     * Returns the toolbar's background color.
+     */
+    @VisibleForTesting
+    public int getToolbarBackgroundColorForTesting(Activity activity) {
+        return mToolbarBackground.getColor();
     }
 
     @Override

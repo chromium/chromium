@@ -71,6 +71,14 @@ public class TopToolbarCoordinator implements Toolbar {
         void onUrlExpansionProgressChanged(float fraction);
     }
 
+    /**
+     * Observes toolbar color change.
+     */
+    public interface ToolbarColorObserver {
+        /** @param color The toolbar color value. */
+        void onToolbarColorChanged(int color);
+    }
+
     public static final int TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS = 200;
     public static final int TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS = 150;
 
@@ -304,6 +312,13 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void removeUrlExpansionObserver(UrlExpansionObserver urlExpansionObserver) {
         mToolbarLayout.removeUrlExpansionObserver(urlExpansionObserver);
+    }
+
+    /**
+     * @param toolbarColorObserver The observer that observes toolbar color change.
+     */
+    public void setToolbarColorObserver(@NonNull ToolbarColorObserver toolbarColorObserver) {
+        mToolbarLayout.setToolbarColorObserver(toolbarColorObserver);
     }
 
     /**

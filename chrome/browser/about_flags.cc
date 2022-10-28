@@ -5529,6 +5529,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxHeaderPaddingUpdateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxHeaderPaddingUpdate)},
 
+    {"omnibox-match-toolbar-and-status-bar-color",
+     flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorName,
+     flag_descriptions::kOmniboxMatchToolbarAndStatusBarColorDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxMatchToolbarAndStatusBarColor)},
+
     {"omnibox-modernize-visual-update",
      flag_descriptions::kOmniboxModernizeVisualUpdateName,
      flag_descriptions::kOmniboxModernizeVisualUpdateDescription, kOsAndroid,

@@ -1115,6 +1115,9 @@ extern const char
 extern const char kOmniboxModernizeVisualUpdateName[];
 extern const char kOmniboxModernizeVisualUpdateDescription[];
 
+extern const char kOmniboxMatchToolbarAndStatusBarColorName[];
+extern const char kOmniboxMatchToolbarAndStatusBarColorDescription[];
+
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 

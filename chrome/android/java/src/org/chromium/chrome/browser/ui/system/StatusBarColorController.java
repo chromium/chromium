@@ -12,12 +12,14 @@ import android.view.Window;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -47,7 +49,8 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class StatusBarColorController
         implements DestroyObserver, TopToolbarCoordinator.UrlExpansionObserver,
-                   StatusIndicatorCoordinator.StatusIndicatorObserver, UrlFocusChangeListener {
+                   StatusIndicatorCoordinator.StatusIndicatorObserver, UrlFocusChangeListener,
+                   TopToolbarCoordinator.ToolbarColorObserver {
     public static final @ColorInt int UNDEFINED_STATUS_BAR_COLOR = Color.TRANSPARENT;
     public static final @ColorInt int DEFAULT_STATUS_BAR_COLOR = Color.argb(0x01, 0, 0, 0);
 
@@ -246,12 +249,34 @@ public class StatusBarColorController
         if (mShouldUpdateStatusBarColorForNTP) updateStatusBarColor();
     }
 
+    // TopToolbarCoordinator.ToolbarColorObserver implementation.
+    @Override
+    public void onToolbarColorChanged(int color) {
+        if (!ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+            return;
+        }
+
+        // Status bar on tablets should not change at all times.
+        if (mIsTablet) {
+            return;
+        }
+
+        // The status indicator will override the toolbar color match if available.
+        updateStatusBarColor(color);
+    }
+
     // StatusIndicatorCoordinator.StatusIndicatorObserver implementation.
 
     @Override
     public void onStatusIndicatorColorChanged(@ColorInt int newColor) {
         mStatusIndicatorColor = newColor;
-        updateStatusBarColor();
+        if (!ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+            updateStatusBarColor();
+        } else {
+            // The status indicator color assignment will override the feature flag which matches
+            // the toolbar and the status bar color.
+            updateStatusBarColor(calculateBaseStatusBarColor());
+        }
     }
 
     @Override
@@ -266,7 +291,13 @@ public class StatusBarColorController
      */
     public void setStatusBarScrimFraction(float fraction) {
         mStatusBarScrimFraction = fraction;
-        updateStatusBarColor();
+        if (!ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+            updateStatusBarColor();
+        } else {
+            // The scrim fraction color assignment will override the feature flag which matches
+            // the toolbar and the status bar color.
+            updateStatusBarColor(calculateBaseStatusBarColor());
+        }
     }
 
     /**
@@ -279,8 +310,25 @@ public class StatusBarColorController
         if (mTabModelSelector != null) mTabModelSelector.addObserver(mTabModelSelectorObserver);
     }
 
+    /**
+     * Calculate and update the status bar's color.
+     */
     public void updateStatusBarColor() {
-        mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
+        // We will synchronize the status bar's color with toolbar's color if the feature flag is
+        // toggled, so we skip the original color assignment here.
+        if (ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor.isEnabled()) {
+            return;
+        }
+        updateStatusBarColor(calculateBaseStatusBarColor());
+    }
+
+    /**
+     * Update the status bar's color with provided color.
+     * @param color The color to be applied to status bar.
+     */
+    @VisibleForTesting
+    public void updateStatusBarColor(@ColorInt int color) {
+        mStatusBarColorWithoutStatusIndicator = color;
         if (shouldDarkenStatusBarColor()) {
             mStatusBarColorWithoutStatusIndicator =
                     ColorUtils.getDarkenedColorForStatusBar(mStatusBarColorWithoutStatusIndicator);

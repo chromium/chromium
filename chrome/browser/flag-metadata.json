@@ -5073,6 +5073,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-match-toolbar-and-status-bar-color",
+    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110

@@ -61530,6 +61530,7 @@ from previous Chrome versions.
   <int value="391632490" label="NtpDriveModule:enabled"/>
   <int value="392107748" label="PwaUpdateDialogForIcon:disabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
+  <int value="393569083" label="OmniboxMatchToolbarAndStatusBarColor:enabled"/>
   <int value="393704200" label="account-consistency"/>
   <int value="394384982" label="GaiaIdCacheInAccountManagerFacade:enabled"/>
   <int value="395148768" label="AutofillFillIbanFields:disabled"/>
@@ -64026,6 +64027,8 @@ from previous Chrome versions.
   <int value="1915178511" label="disable-blink-features"/>
   <int value="1916637435" label="TranslateSubFrames:enabled"/>
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
+  <int value="1918229773"
+      label="OmniboxMatchToolbarAndStatusBarColor:disabled"/>
   <int value="1918984253"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:disabled"/>
   <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>

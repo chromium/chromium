@@ -716,6 +716,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mProgressBarCoordinator = new LoadProgressCoordinator(
                 mActivityTabProvider, mToolbar.getProgressBar(), mIsStartSurfaceEnabled);
         mToolbar.addUrlExpansionObserver(statusBarColorController);
+        mToolbar.setToolbarColorObserver(statusBarColorController);
 
         mActivityTabTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
                 mActivityTabProvider) {
