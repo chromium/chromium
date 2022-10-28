@@ -3964,6 +3964,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   const ComputedStyle* SlowStyleForContinuationOutline() const;
 
+  // It's unclear why Clang doesn't inline this.
+  ALWAYS_INLINE
   StyleDifference AdjustStyleDifference(StyleDifference) const;
 
 #if DCHECK_IS_ON()
