@@ -1140,6 +1140,33 @@ TEST_F(TabletWindowFloatTest, TuckWindowRight) {
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomRight);
 }
 
+TEST_F(TabletWindowFloatTest, UntuckExtendedHitBounds) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Tuck the floated window in the bottom right.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+
+  const int padding = chromeos::wm::kFloatedWindowPaddingDp;
+  const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                                  ->user_work_area_bounds();
+  EXPECT_EQ(gfx::Point(work_area.right(), work_area.bottom() - padding),
+            window->bounds().bottom_left());
+
+  views::Widget* tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(window.get());
+
+  // Tap slightly outside the tap handle. Expect the window to untuck.
+  gfx::Point point =
+      tuck_handle_widget->GetWindowBoundsInScreen().left_center();
+  point.Offset(-4, 4);
+  GetEventGenerator()->GestureTapAt(point);
+
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+}
+
 using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;
 
 // Tests the expected behaviour when a window is floated when there are snapped
