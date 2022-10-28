@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -18,11 +17,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
@@ -698,8 +697,7 @@ TEST(MoveMigratorTest, RecordPosixErrnoUMA) {
 
 class MoveMigratorMigrateTest : public ::testing::Test {
  public:
-  MoveMigratorMigrateTest()
-      : run_loop_(std::make_unique<base::RunLoop>()), user_id_hash_("abcd") {}
+  MoveMigratorMigrateTest() : user_id_hash_("abcd") {}
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -714,22 +712,9 @@ class MoveMigratorMigrateTest : public ::testing::Test {
     scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag =
         base::MakeRefCounted<browser_data_migrator_util::CancelFlag>();
 
-    base::OnceCallback<void(BrowserDataMigratorImpl::MigrationResult)>
-        finished_callback = base::BindOnce(
-            [](BrowserDataMigratorImpl::DataWipeResult* data_wipe_result,
-               BrowserDataMigrator::Result* data_migration_result,
-               base::OnceClosure cb,
-               BrowserDataMigratorImpl::MigrationResult result) {
-              *data_wipe_result = result.data_wipe_result;
-              *data_migration_result = result.data_migration_result;
-              std::move(cb).Run();
-            },
-            &data_wipe_result_, &data_migration_result_,
-            run_loop_->QuitClosure());
-
     migrator_ = std::make_unique<MoveMigrator>(
         original_profile_dir_, user_id_hash_, std::move(progress_tracker),
-        cancel_flag, &pref_service_, std::move(finished_callback));
+        cancel_flag, &pref_service_, migrate_result_.GetCallback());
 
     MoveMigrator::RegisterLocalStatePrefs(pref_service_.registry());
   }
@@ -921,26 +906,21 @@ class MoveMigratorMigrateTest : public ::testing::Test {
   void TearDown() override { EXPECT_TRUE(scoped_temp_dir_.Delete()); }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<base::RunLoop> run_loop_;
+  base::test::TestFuture<BrowserDataMigratorImpl::MigrationResult>
+      migrate_result_;
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath original_profile_dir_;
   TestingPrefServiceSimple pref_service_;
   std::string user_id_hash_;
   std::unique_ptr<MoveMigrator> migrator_;
-
-  // Updated from `finished_callback` with the corresponding value on
-  // `BrowserDataMigratorImpl::MigrationResult`.
-  BrowserDataMigratorImpl::DataWipeResult data_wipe_result_;
-  BrowserDataMigrator::Result data_migration_result_;
 };
 
 TEST_F(MoveMigratorMigrateTest, Migrate) {
   migrator_->Migrate();
-  run_loop_->Run();
 
-  EXPECT_EQ(data_wipe_result_,
+  EXPECT_EQ(migrate_result_.Get().data_wipe_result,
             BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
-  EXPECT_EQ(data_migration_result_.kind,
+  EXPECT_EQ(migrate_result_.Get().data_migration_result.kind,
             BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
@@ -1047,11 +1027,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveLacrosItems) {
   SetUpSyncDataLevelDB(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
-  run_loop_->Run();
 
-  EXPECT_EQ(data_wipe_result_,
+  EXPECT_EQ(migrate_result_.Get().data_wipe_result,
             BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
-  EXPECT_EQ(data_migration_result_.kind,
+  EXPECT_EQ(migrate_result_.Get().data_migration_result.kind,
             BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
@@ -1163,11 +1142,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveSplitItems) {
   SetUpSyncDataLevelDB(tmp_split_dir, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
-  run_loop_->Run();
 
-  EXPECT_EQ(data_wipe_result_,
+  EXPECT_EQ(migrate_result_.Get().data_wipe_result,
             BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
-  EXPECT_EQ(data_migration_result_.kind,
+  EXPECT_EQ(migrate_result_.Get().data_migration_result.kind,
             BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
@@ -1259,11 +1237,10 @@ TEST_F(MoveMigratorMigrateTest, MigrateResumeFromMoveTmpDir) {
   SetUpSyncDataLevelDB(original_profile_dir_, /*ash=*/true, /*lacros=*/false);
 
   migrator_->Migrate();
-  run_loop_->Run();
 
-  EXPECT_EQ(data_wipe_result_,
+  EXPECT_EQ(migrate_result_.Get().data_wipe_result,
             BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
-  EXPECT_EQ(data_migration_result_.kind,
+  EXPECT_EQ(migrate_result_.Get().data_migration_result.kind,
             BrowserDataMigrator::ResultKind::kSucceeded);
 
   CheckProfileDirFinalState();
@@ -1275,13 +1252,12 @@ TEST_F(MoveMigratorMigrateTest, MigrateOutOfDisk) {
       scoped_extra_bytes(100);
 
   migrator_->Migrate();
-  run_loop_->Run();
 
-  EXPECT_EQ(data_wipe_result_,
+  EXPECT_EQ(migrate_result_.Get().data_wipe_result,
             BrowserDataMigratorImpl::DataWipeResult::kSucceeded);
-  EXPECT_EQ(data_migration_result_.kind,
+  EXPECT_EQ(migrate_result_.Get().data_migration_result.kind,
             BrowserDataMigrator::ResultKind::kFailed);
-  EXPECT_EQ(100u, data_migration_result_.required_size);
+  EXPECT_EQ(100u, migrate_result_.Get().data_migration_result.required_size);
 }
 
 }  // namespace ash
