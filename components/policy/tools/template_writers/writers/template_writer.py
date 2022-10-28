@@ -290,18 +290,24 @@ class TemplateWriter(object):
         child_policies = list(self._GetPoliciesForWriter(policy))
         child_recommended_policies = list(
             filter(self.CanBeRecommended, child_policies))
+        # Only write nonempty groups.
         if child_policies:
-          # Only write nonempty groups.
-          self.BeginPolicyGroup(policy)
+          # Miscellaneous should not be considered a group.
+          treat_as_group = policy['name'] != 'Miscellaneous'
+          if treat_as_group:
+            self.BeginPolicyGroup(policy)
           for child_policy in child_policies:
             # Nesting of groups is currently not supported.
             self.WritePolicy(child_policy)
-          self.EndPolicyGroup()
+          if treat_as_group:
+            self.EndPolicyGroup()
         if child_recommended_policies:
-          self.BeginRecommendedPolicyGroup(policy)
+          if treat_as_group:
+            self.BeginRecommendedPolicyGroup(policy)
           for child_policy in child_recommended_policies:
             self.WriteRecommendedPolicy(child_policy)
-          self.EndRecommendedPolicyGroup()
+          if treat_as_group:
+            self.EndRecommendedPolicyGroup()
       elif self.IsPolicySupported(policy):
         self.WritePolicy(policy)
         if self.CanBeRecommended(policy):
