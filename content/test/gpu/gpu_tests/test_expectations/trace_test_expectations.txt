@@ -197,9 +197,6 @@ crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 crbug.com/1216377 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 
 # New flakes seen on Nexus 5X bot.
-crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
-crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_VP9 [ RetryOnFailure ]
-crbug.com/1278028 [ android android-nexus-5x ] TraceTest_Video_VP9_DXVA [ RetryOnFailure ]
 
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
