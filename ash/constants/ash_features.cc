@@ -933,6 +933,11 @@ BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Floating Workspace V2 feature on ChromeOS
+BASE_FEATURE(kFloatingWorkspaceV2,
+             "FloatingWorkspaceV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to allow keeping full screen mode after unlock.
 BASE_FEATURE(kFullscreenAfterUnlockAllowed,
              "FullscreenAfterUnlockAllowed",
@@ -2489,6 +2494,10 @@ bool IsFirmwareUpdaterAppEnabled() {
 
 bool IsFloatingWorkspaceEnabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspace);
+}
+
+bool IsFloatingWorkspaceV2Enabled() {
+  return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
 }
 
 bool IsFullscreenAfterUnlockAllowed() {
