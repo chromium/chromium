@@ -136,8 +136,6 @@ void SetOAuth2ClientID(OAuth2Client client, const std::string& client_id);
 void SetOAuth2ClientSecret(OAuth2Client client,
                            const std::string& client_secret);
 #endif
-// Returns the auth token for the data reduction proxy.
-std::string GetSpdyProxyAuthValue();
 
 // Returns if the API key using in the current build is the one for official
 // Google Chrome.
