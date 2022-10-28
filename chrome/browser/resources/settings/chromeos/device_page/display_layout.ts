@@ -19,8 +19,7 @@ import {castExists} from '../assert_extras.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {getTemplate} from './display_layout.html.js';
-import {DragMixin, DragMixinInterface, DragPosition} from './drag_mixin.js';
-import {LayoutBehavior, LayoutBehaviorInterface} from './layout_behavior.js';
+import {LayoutMixin, LayoutMixinInterface, Position} from './layout_mixin.js';
 
 type DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 type DisplayLayout = chrome.system.display.DisplayLayout;
@@ -51,9 +50,8 @@ interface DisplayLayoutElement {
 }
 
 const DisplayLayoutElementBase =
-    mixinBehaviors(
-        [IronResizableBehavior, LayoutBehavior], DragMixin(PolymerElement)) as {
-      new (): PolymerElement & DragMixinInterface & LayoutBehaviorInterface,
+    mixinBehaviors([IronResizableBehavior], LayoutMixin(PolymerElement)) as {
+      new (): PolymerElement & LayoutMixinInterface,
     };
 
 class DisplayLayoutElement extends DisplayLayoutElementBase {
@@ -278,10 +276,10 @@ class DisplayLayoutElement extends DisplayLayoutElementBase {
     e.target.focus();
   }
 
-  private onDrag_(id: string, amount: DragPosition|null) {
+  private onDrag_(id: string, amount: Position|null) {
     id = id.substr(1);  // Skip prefix
 
-    let newBounds;
+    let newBounds: Bounds;
     if (!amount) {
       this.finishUpdateDisplayBounds(id);
       newBounds = this.getCalculatedDisplayBounds(id);

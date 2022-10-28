@@ -12,7 +12,7 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 import {cast} from '../assert_extras.js';
 
-export interface DragPosition {
+export interface Position {
   x: number;
   y: number;
 }
@@ -26,11 +26,12 @@ enum DragType {
   KEYBOARD = 2,
 }
 
-type DragCallback = (id: string, amount: DragPosition|null) => void;
+type DragCallback = (id: string, amount: Position|null) => void;
 
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface DragMixinInterface {
+  dragId: string;
   dragEnabled: boolean;
   keyboardDragEnabled: boolean;
   keyboardDragStepSize: number;
@@ -67,6 +68,10 @@ export const DragMixin = dedupingMixin(
         }
 
         dragEnabled: boolean;
+        /**
+         * The id of the element being dragged, or empty if not dragging.
+         */
+        dragId: string = '';
         keyboardDragEnabled: boolean;
         keyboardDragStepSize: number;
 
@@ -77,18 +82,14 @@ export const DragMixin = dedupingMixin(
          * onging, keyboard dragging should be ignored.
          */
         private dragType_: DragType = DragType.NONE;
-        /**
-         * The id of the element being dragged, or empty if not dragging.
-         */
-        private dragId: string = '';
-        private dragOffset_: DragPosition;
+        private dragOffset_: Position;
         private container_: HTMLElement|undefined;
         private callback_: DragCallback|null;
-        private dragStartLocation_: DragPosition = {x: 0, y: 0};
+        private dragStartLocation_: Position = {x: 0, y: 0};
         /**
          * Used to ignore unnecessary drag events.
          */
-        private lastTouchLocation_: DragPosition|null = null;
+        private lastTouchLocation_: Position|null = null;
         private mouseDownListener_ = this.onMouseDown_.bind(this);
         private mouseMoveListener_ = this.onMouseMove_.bind(this);
         private touchStartListener_ = this.onTouchStart_.bind(this);
@@ -211,7 +212,7 @@ export const DragMixin = dedupingMixin(
             return true;
           }
 
-          let delta: DragPosition;
+          let delta: Position;
           switch (e.key) {
             case 'ArrowUp':
               delta = {x: 0, y: -this.keyboardDragStepSize};
@@ -248,8 +249,8 @@ export const DragMixin = dedupingMixin(
           return false;
         }
 
-        private startCursorDrag_(
-            target: HTMLElement, eventLocation: DragPosition): boolean {
+        private startCursorDrag_(target: HTMLElement, eventLocation: Position):
+            boolean {
           assert(this.dragEnabled);
           if (this.dragType_ === DragType.KEYBOARD) {
             this.endKeyboardDrag_();
@@ -269,7 +270,7 @@ export const DragMixin = dedupingMixin(
           return false;
         }
 
-        private processCursorDrag_(eventLocation: DragPosition): boolean {
+        private processCursorDrag_(eventLocation: Position): boolean {
           assert(this.dragEnabled);
           if (this.dragType_ !== DragType.CURSOR) {
             return true;
@@ -297,7 +298,7 @@ export const DragMixin = dedupingMixin(
           this.cleanupDrag_();
         }
 
-        private processKeyboardDrag_(dragPosition: DragPosition): boolean {
+        private processKeyboardDrag_(dragPosition: Position): boolean {
           assert(this.dragEnabled);
           if (this.dragType_ !== DragType.KEYBOARD) {
             return true;
@@ -316,7 +317,7 @@ export const DragMixin = dedupingMixin(
           this.dragType_ = DragType.NONE;
         }
 
-        private executeCallback_(dragPosition: DragPosition): void {
+        private executeCallback_(dragPosition: Position): void {
           if (this.callback_) {
             const delta = {
               x: dragPosition.x - this.dragStartLocation_.x,

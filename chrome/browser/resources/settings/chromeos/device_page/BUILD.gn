@@ -10,10 +10,7 @@ import("../os_settings.gni")
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
-  deps = [
-    ":device_page_browser_proxy",
-    ":layout_behavior",
-  ]
+  deps = [ ":device_page_browser_proxy" ]
 }
 
 js_library("device_page_browser_proxy") {
@@ -22,12 +19,4 @@ js_library("device_page_browser_proxy") {
     "$externs_path/chrome_send.js",
     "$externs_path/system_display.js",
   ]
-}
-
-js_library("layout_behavior") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = chrome_extension_public_externs
 }
