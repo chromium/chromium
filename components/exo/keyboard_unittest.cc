@@ -50,7 +50,12 @@ constexpr uint32_t kAltMask = 1 << 3;
 constexpr uint32_t kNumLockMask = 1 << 4;
 constexpr uint32_t kCommandMask = 1 << 6;
 
-using KeyboardTest = test::ExoTestBase;
+class KeyboardTest : public test::ExoTestBase {
+ public:
+  KeyboardTest()
+      : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~KeyboardTest() override = default;
+};
 
 class MockKeyboardDelegate : public KeyboardDelegate {
  public:
@@ -131,13 +136,7 @@ TEST_F(KeyboardTest, CorrectSeatPressedKeysOnSwitchingDesks) {
 
   // Desk 2 has an exo surface window.
   ash::ActivateDesk(desk_2);
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
 
   // Go back to desk 1, and trigger an alt-tab (releasing alt first). This would
   // trigger activating the exo surface window on desk 2, which would lead to a
@@ -171,13 +170,8 @@ TEST_F(KeyboardTest, CorrectSeatPressedKeysOnSwitchingDesks) {
 }
 
 TEST_F(KeyboardTest, OnKeyboardEnter) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   Seat seat;
   // Pressing key before Keyboard instance is created and surface has
@@ -194,20 +188,19 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
   // Keyboard should try to set initial focus to surface.
   auto delegate = std::make_unique<NiceMockKeyboardDelegate>();
   auto* delegate_ptr = delegate.get();
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(false));
   Keyboard keyboard(std::move(delegate), &seat);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   // Set up expectation for the key release.
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(
-          surface.get(),
-          base::flat_map<ui::DomCode, KeyState>(
-              {{ui::DomCode::US_A, KeyState{ui::DomCode::US_A, false}}})));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>(
+                                   {{ui::DomCode::US_A,
+                                     KeyState{ui::DomCode::US_A, false}}})));
   focus_client->FocusWindow(nullptr);
   focus_client->FocusWindow(surface->window());
   // Surface should maintain keyboard focus when moved to top-level window.
@@ -219,25 +212,20 @@ TEST_F(KeyboardTest, OnKeyboardEnter) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   // Key should no longer be pressed when focus returns.
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
                                  kShiftMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window()->GetToplevelWindow());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
 TEST_F(KeyboardTest, OnKeyboardLeave) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -247,18 +235,18 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
   auto* delegate_ptr = delegate.get();
   Seat seat;
   auto keyboard = std::make_unique<Keyboard>(std::move(delegate), &seat);
-  ON_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  ON_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillByDefault(testing::Return(true));
 
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
-  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface.get()));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface));
   focus_client->FocusWindow(nullptr);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -266,26 +254,20 @@ TEST_F(KeyboardTest, OnKeyboardLeave) {
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
-  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface.get()));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface));
   shell_surface.reset();
-  surface.reset();
   // Verify before destroying keyboard to make sure the expected call
   // is made on the methods above, rather than in the destructor.
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 }
 
 TEST_F(KeyboardTest, OnKeyboardKey) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -298,13 +280,13 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   Keyboard keyboard(std::move(delegate), &seat);
   keyboard.AddObserver(&observer);
 
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -369,7 +351,7 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   // Press accelerator after surface lost focus.
-  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface.get()));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface));
   focus_client->FocusWindow(nullptr);
   seat.set_physical_code_for_currently_processing_event_for_testing(
       ui::DomCode::US_W);
@@ -377,16 +359,15 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   // Key should be pressed when focus returns.
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr, OnKeyboardModifiers(KeyboardModifiers{
                                  kControlMask | kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(
-          surface.get(),
-          base::flat_map<ui::DomCode, KeyState>(
-              {{ui::DomCode::US_W, KeyState{ui::DomCode::US_W, false}}})));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>(
+                                   {{ui::DomCode::US_W,
+                                     KeyState{ui::DomCode::US_W, false}}})));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -405,10 +386,10 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
   // exo::Surface.
   std::unique_ptr<aura::Window> window =
       ash::ChildTestWindowBuilder(shell_surface->GetWidget()->GetNativeWindow(),
-                                  gfx::Rect(buffer_size))
+                                  surface->window()->bounds())
           .Build();
   // Moving the focus away will reset the focused surface.
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .Times(0);
   focus_client->FocusWindow(window.get());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
@@ -441,13 +422,8 @@ TEST_F(KeyboardTest, OnKeyboardKey) {
 }
 
 TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -460,13 +436,13 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
   Keyboard keyboard(std::move(delegate), &seat);
   keyboard.AddObserver(&observer);
 
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -525,13 +501,9 @@ TEST_F(KeyboardTest, OnKeyboardKey_NotSendKeyIfConsumedByIme) {
 }
 
 TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
-  std::unique_ptr<Surface> surface(new Surface());
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
+
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
   surface->window()->SetProperty(aura::client::kAppType,
@@ -559,13 +531,13 @@ TEST_F(KeyboardTest, OnKeyboardKey_KeyboardInhibit) {
   keyboard.AddObserver(&observer);
   keyboard.SetNeedKeyboardKeyAcks(true);
 
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -641,8 +613,8 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
   auto hold = arc_overlay_manager_.RegisterHostWindow(
       "test", widget1->GetNativeWindow());
 
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
   gfx::Size buffer_size(10, 10);
   std::unique_ptr<Buffer> buffer(
       new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
@@ -678,13 +650,8 @@ TEST_F(KeyboardTest, FocusWithArcOverlay) {
 }
 
 TEST_F(KeyboardTest, OnKeyboardModifiers) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -695,13 +662,13 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
 
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -739,13 +706,7 @@ TEST_F(KeyboardTest, OnKeyboardModifiers) {
 }
 
 TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -797,13 +758,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
 }
 
 TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -994,13 +949,7 @@ TEST_F(KeyboardTest, KeyboardObserver) {
 }
 
 TEST_F(KeyboardTest, NeedKeyboardKeyAcks) {
-  std::unique_ptr<Surface> surface(new Surface);
-  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -1017,7 +966,7 @@ TEST_F(KeyboardTest, NeedKeyboardKeyAcks) {
 }
 
 TEST_F(KeyboardTest, AckKeyboardKey) {
-  std::unique_ptr<Surface> surface(new Surface);
+  auto surface = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<TestShellSurface>(surface.get());
   gfx::Size buffer_size(10, 10);
   std::unique_ptr<Buffer> buffer(
@@ -1130,13 +1079,8 @@ TEST_F(KeyboardTest, AckKeyboardKey) {
 }
 
 TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
-  std::unique_ptr<Surface> surface(new Surface);
-  auto shell_surface = std::make_unique<TestShellSurface>(surface.get());
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   aura::client::FocusClient* focus_client =
       aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow());
@@ -1147,13 +1091,13 @@ TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
 
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1172,7 +1116,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyMoveFocus) {
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
   // Move focus from the window
-  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface.get()));
+  EXPECT_CALL(*delegate_ptr, OnKeyboardLeave(surface));
   focus_client->FocusWindow(nullptr);
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1229,11 +1173,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
       .Times(0);
 
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
-  run_loop.Run();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
 
   // Send ack for the key press as if it was not handled. In the normal case,
   // |AcceleratorPressed()| should be called, but since the timeout passed, the
@@ -1254,13 +1194,8 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpired) {
 }
 
 TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
-  std::unique_ptr<Surface> surface(new Surface());
-  auto shell_surface = std::make_unique<TestShellSurface>(surface.get());
-  gfx::Size buffer_size(10, 10);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
-  surface->Attach(buffer.get());
-  surface->Commit();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+  auto* surface = shell_surface->surface_for_testing();
 
   // Set lacros attribute now for testing. This can be removed, when
   // all clients are migrated into this model.
@@ -1286,13 +1221,13 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
   Seat seat;
   Keyboard keyboard(std::move(delegate), &seat);
 
-  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface.get()))
+  EXPECT_CALL(*delegate_ptr, CanAcceptKeyboardEventsForSurface(surface))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*delegate_ptr,
               OnKeyboardModifiers(KeyboardModifiers{kNumLockMask, 0, 0, 0}));
   EXPECT_CALL(
       *delegate_ptr,
-      OnKeyboardEnter(surface.get(), base::flat_map<ui::DomCode, KeyState>()));
+      OnKeyboardEnter(surface, base::flat_map<ui::DomCode, KeyState>()));
   focus_client->FocusWindow(surface->window());
   testing::Mock::VerifyAndClearExpectations(delegate_ptr);
 
@@ -1318,11 +1253,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyAcceleratorOnRelease) {
   keyboard.AckKeyboardKey(1, false /* handled */);
 
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
-  run_loop.Run();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
 
   // Release the key and reset modifier_flags.
   EXPECT_CALL(*delegate_ptr,
@@ -1412,11 +1343,7 @@ TEST_F(KeyboardTest, AckKeyboardKeyExpiredWithMovingFocusAccelerator) {
   keyboard.AckKeyboardKey(1, false /* handled */);
 
   // Wait until |ProcessExpiredPendingKeyAcks| is fired.
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
-  run_loop.Run();
-  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
 
   // Verify before destroying keyboard to make sure the expected call
   // is made on the methods above, rather than in the destructor.
