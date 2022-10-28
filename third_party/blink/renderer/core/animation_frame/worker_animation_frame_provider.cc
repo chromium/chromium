@@ -67,8 +67,12 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
           auto* global_scope =
               DynamicTo<WorkerGlobalScope>(provider->context_.Get());
           DCHECK(global_scope);
+          base::TimeDelta relative_time =
+              args.frame_time.is_null()
+                  ? base::TimeDelta()
+                  : args.frame_time - global_scope->TimeOrigin();
           double time = Performance::ClampTimeResolution(
-              base::TimeTicks::Now() - global_scope->TimeOrigin(),
+              relative_time,
               provider->context_->CrossOriginIsolatedCapability());
           provider->callback_collection_.ExecuteFrameCallbacks(time, time);
         }
