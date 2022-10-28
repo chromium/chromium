@@ -700,8 +700,6 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
                        PersistedAcceptLanguageNotAvailable) {
-  base::HistogramTester histograms;
-
   SetTestOptions({.content_language_in_parent = "es",
                   .variants_in_parent = "accept-language=(es ja en-US)",
                   .vary_in_parent = "accept-language"},
@@ -714,10 +712,15 @@ IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
   SetPrefsAcceptLanguage({"zh", "en-US"});
   // The second request should send out with the new negotiated language en-us.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "en-US");
+
+  base::HistogramTester histograms;
   SetPrefsAcceptLanguage({"zh"});
   // The third request should send out with the first accept-language since the
   // persisted language not available in latest user's accept-language list.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(), "zh");
+  // The previous persisted language `en-US` is not in the user's preference
+  // list. Verify that a language clear operation occurred.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.ClearLatency", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginReduceAcceptLanguageBrowserTest,
@@ -1192,8 +1195,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
   // Total two different URL requests:
   // * cross_region_fenced_frame_url(2):one fetch for initially adding
   // header and another one for the restart request adding header.
-  // * simple_3p_request_url(1): one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // * simple_3p_request_url: no fetch for initially adding header since a
+  // fenced frame but not a main frame will result in a nullopt origin value
+  // when getting top-level main frame origin. In this case, we set the
+  // Accept-Language header with the first user’s accept-language.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
@@ -1228,8 +1234,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReduceAcceptLanguageBrowserTest,
   // Total two different URL requests:
   // * same_origin_fenced_frame_url(2):one fetch for initially adding
   // header and another one for the restart request adding header.
-  // * simple_request_url(1): one fetch for initially adding header.
-  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 3);
+  // * simple_request_url: no fetch for initially adding header since a fenced
+  // frame but not a main frame will result in a nullopt origin value when
+  // getting top-level main frame origin. In this case, we set the
+  // Accept-Language header with the first user’s accept-language.
+  histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatency", 2);
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 

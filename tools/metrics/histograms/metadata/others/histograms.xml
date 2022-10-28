@@ -11292,6 +11292,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReduceAcceptLanguage.ClearLatency" units="ms"
+    expires_after="2023-06-01">
+  <owner>awillia@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <owner>victortan@chromium.org</owner>
+  <summary>
+    The latency (in milliseconds) to clear the reduce accept language for a
+    given origin in the language negotiation cache. This histogram is recorded
+    when clearing persisted value from PrefService.
+  </summary>
+</histogram>
+
 <histogram name="ReduceAcceptLanguage.FetchLatency" units="ms"
     expires_after="2023-06-01">
   <owner>awillia@chromium.org</owner>

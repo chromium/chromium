@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -61,6 +62,10 @@ absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
   // Only reduce accept-language in http and https scheme.
   if (!url.SchemeIsHTTPOrHTTPS())
     return absl::nullopt;
+
+  // Record the time spent getting the reduced accept language to better
+  // understand whether this prefs read can introduce any large latency.
+  SCOPED_UMA_HISTOGRAM_TIMER("ReduceAcceptLanguage.FetchLatency");
 
   ContentSettingsForOneType accept_language_rules;
   settings_map_->GetSettingsForOneType(
@@ -131,6 +136,8 @@ void ReduceAcceptLanguageService::ClearReducedLanguage(
   // Only reduce accept-language in http and https scheme.
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
+
+  SCOPED_UMA_HISTOGRAM_TIMER("ReduceAcceptLanguage.ClearLatency");
 
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, base::Value());

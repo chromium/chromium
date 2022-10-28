@@ -166,65 +166,52 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     return absl::nullopt;
   }
 
-  const absl::optional<std::string>& preferred_language =
-      GetTopLevelDocumentOriginReducedAcceptLanguage(request_origin,
-                                                     frame_tree_node);
+  const absl::optional<url::Origin>& origin_for_lookup =
+      GetOriginForLanguageLookup(request_origin, frame_tree_node);
+
+  const absl::optional<std::string>& persisted_language =
+      origin_for_lookup
+          ? delegate_->GetReducedLanguage(origin_for_lookup.value())
+          : absl::nullopt;
 
   const std::vector<std::string>& user_accept_languages =
       delegate_->GetUserAcceptLanguages();
-  if (!preferred_language) {
+  if (!persisted_language) {
     return GetFirstUserAcceptLanguage(user_accept_languages);
+  }
+
+  // Use the preferred language stored by the delegate if it matches any of the
+  // user's current preferences.
+  auto iter = base::ranges::find_if(
+      user_accept_languages, [&](const std::string& language) {
+        return DoesAcceptLanguageMatchContentLanguage(
+            language, persisted_language.value());
+      });
+  if (iter != user_accept_languages.end()) {
+    return persisted_language;
   }
 
   // If the preferred language stored by the delegate doesn't match any of the
   // user's currently preferred Accept-Languages, then the user might have
-  // changed their preferences since the result was stored. In this case, use
-  // the first Accept-Language instead.
-  //
-  // TODO(crbug.com/1323776) make sure the delegate clears its cache if the
-  // user's preferences changed.
-  return base::ranges::any_of(user_accept_languages,
-                              [&](const std::string& language) {
-                                return DoesAcceptLanguageMatchContentLanguage(
-                                    language, preferred_language.value());
-                              })
-             ? preferred_language
-             : GetFirstUserAcceptLanguage(user_accept_languages);
+  // changed their preferences since the result was stored. In this case, clear
+  // the persisted value and use the first Accept-Language instead.
+  delegate_->ClearReducedLanguage(origin_for_lookup.value());
+  return GetFirstUserAcceptLanguage(user_accept_languages);
 }
 
-absl::optional<std::string>
-ReduceAcceptLanguageUtils::GetTopLevelDocumentOriginReducedAcceptLanguage(
+absl::optional<url::Origin>
+ReduceAcceptLanguageUtils::GetOriginForLanguageLookup(
     const url::Origin& request_origin,
     FrameTreeNode* frame_tree_node) {
-  // The reduced accept language should be based on the outermost main
-  // document's origin in most cases. An empty or opaque origin will result in a
-  // nullopt return value. If this call is being made for the outermost main
-  // document, then the NavigationRequest has not yet committed and we must use
-  // the origin from the in-flight NavigationRequest. Otherwise, subframes and
-  // sub-pages (except Fenced Frames) can use the outermost main document's last
-  // committed origin.
-  //
-  // TODO(https://github.com/WICG/fenced-frame/issues/39) decide whether
-  // Fenced Frames should be treated as an internally-consistent Page, with
-  // language negotiation for the inner main document and/or subframes
-  // that match the main document.
-  url::Origin outermost_main_rfh_origin;
+  // See explanation in header file.
   if (frame_tree_node->IsOutermostMainFrame()) {
-    outermost_main_rfh_origin = request_origin;
+    return request_origin;
   } else if (!frame_tree_node->IsInFencedFrameTree()) {
     RenderFrameHostImpl* outermost_main_rfh =
         frame_tree_node->frame_tree()->GetMainFrame()->GetOutermostMainFrame();
-    outermost_main_rfh_origin = outermost_main_rfh->GetLastCommittedOrigin();
+    return outermost_main_rfh->GetLastCommittedOrigin();
   }
-
-  // Record the time spent getting the reduced accept language to better
-  // understand whether this prefs read can introduce any large latency.
-  const base::TimeTicks start_time = base::TimeTicks::Now();
-  const absl::optional<std::string>& preferred_language =
-      delegate_->GetReducedLanguage(outermost_main_rfh_origin);
-  base::TimeDelta duration = base::TimeTicks::Now() - start_time;
-  base::UmaHistogramTimes("ReduceAcceptLanguage.FetchLatency", duration);
-  return preferred_language;
+  return absl::nullopt;
 }
 
 ReduceAcceptLanguageUtils::PersistLanguageResult

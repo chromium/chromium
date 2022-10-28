@@ -84,6 +84,10 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
 
   // Looks up which reduced accept language should be used.
   //
+  // Warning: This could potentially clear the persisted language in pref
+  // storage if the persisted language can't be found in the user's
+  // Accept-Language.
+  //
   // This is based on the top-level document's origin.
   // - For main frame navigation, this is the origin of the new document to
   //   commit, given by `request_origin`.
@@ -117,8 +121,20 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
       const std::vector<std::string>& preferred_languages,
       const std::vector<std::string>& available_languages);
 
-  // Return the reduced accept language of the top-level document origin.
-  absl::optional<std::string> GetTopLevelDocumentOriginReducedAcceptLanguage(
+  // Return the origin to look up the persisted language.
+  //
+  // The reduced accept language should be based on the outermost main
+  // document's origin in most cases. If this call is being made for the
+  // outermost main document, then the NavigationRequest has not yet committed
+  // and we must use the origin from the in-flight NavigationRequest. Subframes
+  // and sub-pages (except Fenced Frames) can use the outermost main document's
+  // last committed origin. Otherwise, it will result in a nullopt return value.
+  //
+  // TODO(https://github.com/WICG/fenced-frame/issues/39) decide whether
+  // Fenced Frames should be treated as an internally-consistent Page, with
+  // language negotiation for the inner main document and/or subframes
+  // that match the main document.
+  absl::optional<url::Origin> GetOriginForLanguageLookup(
       const url::Origin& request_origin,
       FrameTreeNode* frame_tree_node);
 

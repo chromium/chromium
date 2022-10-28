@@ -28,15 +28,16 @@ class MockReduceAcceptLanguageControllerDelegate
 
   ~MockReduceAcceptLanguageControllerDelegate() override;
 
+  // ReduceAcceptLanguageControllerDelegate overrides.
   absl::optional<std::string> GetReducedLanguage(
       const url::Origin& origin) override;
-
   std::vector<std::string> GetUserAcceptLanguages() const override;
-
   void PersistReducedLanguage(const url::Origin& origin,
                               const std::string& language) override;
-
   void ClearReducedLanguage(const url::Origin& origin) override;
+
+  // Change the user's accept-language list for testing purpose.
+  void SetUserAcceptLanguages(const std::string& languages);
 
  private:
   std::vector<std::string> user_accept_languages_;

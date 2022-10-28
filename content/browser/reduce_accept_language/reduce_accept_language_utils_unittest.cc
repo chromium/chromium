@@ -436,6 +436,48 @@ TEST_F(AcceptLanguageUtilsTests, ParseAndPersistAcceptLanguageForNavigation) {
   }
 }
 
+TEST_F(AcceptLanguageUtilsTests, VerifyClearAcceptLanguage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {network::features::kReduceAcceptLanguage}, {});
+
+  GURL url = GURL("https://example.com");
+  contents()->NavigateAndCommit(url);
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+
+  MockReduceAcceptLanguageControllerDelegate delegate =
+      MockReduceAcceptLanguageControllerDelegate("zh,ja,en-US");
+  ReduceAcceptLanguageUtils reduce_language_utils(delegate);
+
+  ParseAndPersist(url, reduce_language_utils,
+                  /*accept_language=*/"zh",
+                  /*content_language=*/"es",
+                  /*variants_accept_language=*/"(es ja en-US)");
+
+  // Verify persisted reduce accept-language is "ja".
+  url::Origin origin = url::Origin::Create(url);
+  absl::optional<std::string> actual_persisted_language =
+      delegate.GetReducedLanguage(origin);
+  EXPECT_EQ("ja", actual_persisted_language.value());
+
+  absl::optional<std::string> actual_commit_language =
+      reduce_language_utils.LookupReducedAcceptLanguage(origin, root);
+  EXPECT_EQ("ja", actual_commit_language);
+
+  // Update user language preference list to not include "ja".
+  delegate.SetUserAcceptLanguages("zh,en-US");
+  // Verify commit language is the first language in user's preference list.
+  absl::optional<std::string> new_commit_language =
+      reduce_language_utils.LookupReducedAcceptLanguage(origin, root);
+  EXPECT_EQ("zh", new_commit_language);
+  // Verify persist language has been cleared once user accept language list
+  // updates.
+  absl::optional<std::string> new_persisted_language =
+      delegate.GetReducedLanguage(origin);
+  EXPECT_FALSE(new_persisted_language.has_value());
+}
+
 class CreateAcceptLanguageUtilsTest : public ::testing::Test {
  public:
   CreateAcceptLanguageUtilsTest() = default;
