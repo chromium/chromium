@@ -850,7 +850,7 @@ void NearbySharingServiceImpl::Reject(
 void NearbySharingServiceImpl::Cancel(
     const ShareTarget& share_target,
     StatusCodesCallback status_codes_callback) {
-  NS_LOG(INFO) << __func__ << ": User canceled transfer";
+  NS_LOG(INFO) << __func__ << ": User cancelled transfer";
   locally_cancelled_share_target_ids_.insert(share_target.id);
   DoCancel(share_target, std::move(status_codes_callback),
            /*is_initiator_of_cancellation=*/true);
@@ -1723,7 +1723,7 @@ void NearbySharingServiceImpl::InvalidateSurfaceState() {
           << __func__
           << ": Scheduling process shutdown if not needed in 15 seconds";
       // NOTE: Using base::Unretained is safe because if shutdown_pending_timer_
-      // goes out of scope the timer will be canceled.
+      // goes out of scope the timer will be cancelled.
       process_shutdown_pending_timer_.Start(
           FROM_HERE, kProcessShutdownPendingTimerDelay,
           base::BindOnce(&NearbySharingServiceImpl::OnProcessShutdownTimerFired,
@@ -3855,10 +3855,11 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     if (share_target.has_attachments() &&
         share_target.file_attachments.size()) {
       // For file payloads, the |PayloadTracker| callback for updates is
-      // |OnTransferUpdate| which will set status |kComplete| if payload reading
-      // is successful and otherwise not |kCancelled| or |kFailed|.
+      // |OnTransferUpdate| which will set status |kComplete| and progress at
+      // 100% if payload reading is successful.
       const bool files_read_success =
-          (metadata.status() == TransferMetadata::Status::kComplete);
+          ((metadata.status() == TransferMetadata::Status::kComplete) &&
+           metadata.progress() == 100.0);
       RecordNearbySharePayloadFileOperationMetrics(profile_, share_target,
                                                    PayloadFileOperation::kRead,
                                                    files_read_success);
@@ -3972,18 +3973,18 @@ bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
     sharing::nearby::WifiCredentials credentials_proto;
     if (!credentials_proto.ParseFromArray(bytes.data(), bytes.size())) {
       NS_LOG(WARNING) << __func__
-                      << ": Failed to parse Wi-Fi credentials proto";
+                      << ": Failed to parse Wi-Fi credentials proto.";
       return false;
     }
 
     if (credentials_proto.password().empty()) {
-      NS_LOG(WARNING) << __func__ << ": No Wi-Fi password found";
+      NS_LOG(WARNING) << __func__ << ": No Wi-Fi password found.";
       return false;
     }
 
     if (credentials_proto.has_hidden_ssid() &&
         credentials_proto.hidden_ssid()) {
-      NS_LOG(WARNING) << __func__ << ": Network is hidden";
+      NS_LOG(WARNING) << __func__ << ": Network is hidden.";
       return false;
     }
 
@@ -4002,7 +4003,9 @@ void NearbySharingServiceImpl::RemoveIncomingPayloads(
   if (!share_target.is_incoming)
     return;
 
-  NS_LOG(INFO) << __func__ << ": Cleaning up payloads due to transfer failure";
+  NS_LOG(INFO)
+      << __func__
+      << ": Cleaning up payloads due to transfer cancelled or failure.";
 
   nearby_connections_manager_->ClearIncomingPayloads();
   std::vector<base::FilePath> files_for_deletion;

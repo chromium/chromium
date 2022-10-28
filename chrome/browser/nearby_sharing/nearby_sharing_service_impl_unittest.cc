@@ -1171,7 +1171,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   // This method sets up an incoming connection and performs the steps required
-  // to simulate a successful incoming transfter.
+  // to simulate a successful incoming transfer.
   void SuccessfullyReceiveTransfer() {
     for (int64_t payload_id : kValidIntroductionFramePayloadIds) {
       fake_nearby_connections_manager_->SetPayloadPathStatus(
@@ -1251,6 +1251,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         .WillOnce(testing::Invoke([&](const ShareTarget& share_target,
                                       TransferMetadata metadata) {
           EXPECT_TRUE(metadata.is_final_status());
+          EXPECT_EQ(metadata.progress(), 100);
           EXPECT_EQ(TransferMetadata::Status::kComplete, metadata.status());
 
           ASSERT_TRUE(share_target.has_attachments());
@@ -1391,6 +1392,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         .WillOnce(testing::Invoke([&](const ShareTarget& share_target,
                                       TransferMetadata metadata) {
           EXPECT_TRUE(metadata.is_final_status());
+          EXPECT_LT(metadata.progress(), 100);
           EXPECT_EQ(TransferMetadata::Status::kIncompletePayloads,
                     metadata.status());
 
@@ -3443,6 +3445,7 @@ TEST_P(NearbySharingServiceImplTest,
       .WillOnce(testing::Invoke(
           [&](const ShareTarget& share_target, TransferMetadata metadata) {
             EXPECT_TRUE(metadata.is_final_status());
+            EXPECT_LT(metadata.progress(), 100);
             EXPECT_EQ(TransferMetadata::Status::kIncompletePayloads,
                       metadata.status());
 

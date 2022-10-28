@@ -9,6 +9,7 @@
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
+#include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chromeos/constants/chromeos_features.h"
 
@@ -102,15 +103,32 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update,
 }
 
 void PayloadTracker::OnTransferUpdate() {
+  const double percent = CalculateProgressPercent();
   if (IsComplete()) {
-    NS_LOG(VERBOSE) << __func__ << ": All payloads are complete.";
+    const bool is_transfer_complete =
+        (GetTotalTransferred() >= total_transfer_size_) ? true : false;
+    if (is_transfer_complete) {
+      NS_LOG(VERBOSE) << __func__ << ": All payloads are complete.";
+      EmitFinalMetrics(
+          location::nearby::connections::mojom::PayloadStatus::kSuccess);
+      update_callback_.Run(share_target_,
+                           TransferMetadataBuilder()
+                               .set_status(TransferMetadata::Status::kComplete)
+                               .set_progress(100)
+                               .build());
+      return;
+    }
+
+    NS_LOG(VERBOSE) << __func__ << ": Payloads incomplete.";
     EmitFinalMetrics(
-        location::nearby::connections::mojom::PayloadStatus::kSuccess);
-    update_callback_.Run(share_target_,
-                         TransferMetadataBuilder()
-                             .set_status(TransferMetadata::Status::kComplete)
-                             .set_progress(100)
-                             .build());
+        location::nearby::connections::mojom::PayloadStatus::kFailure);
+    update_callback_.Run(
+        share_target_,
+        TransferMetadataBuilder()
+            .set_status(TransferMetadata::Status::kIncompletePayloads)
+            .set_progress(percent)
+            .build());
+
     return;
   }
 
@@ -136,8 +154,7 @@ void PayloadTracker::OnTransferUpdate() {
     return;
   }
 
-  double percent = CalculateProgressPercent();
-  int current_progress = static_cast<int>(percent * 100);
+  const int current_progress = static_cast<int>(percent * 100);
   base::Time current_time = base::Time::Now();
 
   if (current_progress == last_update_progress_ ||
