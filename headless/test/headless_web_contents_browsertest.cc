@@ -35,6 +35,7 @@
 #include "headless/public/headless_devtools_client.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
+#include "headless/test/headless_browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -127,9 +128,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest,
           .Build();
   WaitForLoadAndGainFocus(web_contents);
 
-  std::unique_ptr<runtime::EvaluateResult> has_focus =
-      EvaluateScript(web_contents, "document.hasFocus()");
-  EXPECT_TRUE(has_focus->GetResult()->GetValue()->GetBool());
+  EXPECT_TRUE(ResultBool(EvaluateScript(web_contents, "document.hasFocus()"),
+                         "result.value"));
 
   HeadlessWebContents* web_contents2 =
       browser_context->CreateWebContentsBuilder()
@@ -138,11 +138,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest,
   WaitForLoadAndGainFocus(web_contents2);
 
   // Focus of different WebContents is independent.
-  has_focus = EvaluateScript(web_contents, "document.hasFocus()");
-  EXPECT_TRUE(has_focus->GetResult()->GetValue()->GetBool());
-
-  has_focus = EvaluateScript(web_contents2, "document.hasFocus()");
-  EXPECT_TRUE(has_focus->GetResult()->GetValue()->GetBool());
+  EXPECT_TRUE(ResultBool(EvaluateScript(web_contents, "document.hasFocus()"),
+                         "result.value"));
+  EXPECT_TRUE(ResultBool(EvaluateScript(web_contents2, "document.hasFocus()"),
+                         "result.value"));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, HandleSSLError) {
@@ -325,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, BrowserTabChangeContent) {
   std::string script = "window.location = '" +
                        embedded_test_server()->GetURL("/hello.html").spec() +
                        "';";
-  EXPECT_FALSE(EvaluateScript(web_contents, script)->HasExceptionDetails());
+  EXPECT_FALSE(
+      ResultHas(EvaluateScript(web_contents, script), "exceptionDetails"));
 
   // This will time out if the previous script did not work.
   EXPECT_TRUE(WaitForLoad(web_contents));
@@ -349,8 +349,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessWebContentsTest, BrowserOpenInTab) {
   std::string script =
       "var event = new MouseEvent('click', {'button': 1});"
       "document.getElementsByTagName('a')[0].dispatchEvent(event);";
-  EXPECT_FALSE(EvaluateScript(web_contents, script)->HasExceptionDetails());
-
+  EXPECT_FALSE(
+      ResultHas(EvaluateScript(web_contents, script), "exceptionDetails"));
   // Check that we have a new tab.
   EXPECT_EQ(2u, browser_context->GetAllWebContents().size());
 }

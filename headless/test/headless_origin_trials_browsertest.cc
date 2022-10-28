@@ -12,6 +12,7 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
+#include "headless/test/headless_browser_test_utils.h"
 
 using content::URLLoaderInterceptor;
 
@@ -74,12 +75,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,
   // enable the WebComponents V0 origin trial.
   // TODO(crbug.com/1050190): Implement a permanent, sample trial so this test
   // doesn't rely on WebComponents V0, which will eventually go away.
-  EXPECT_FALSE(
+  EXPECT_FALSE(ResultBool(
       EvaluateScript(web_contents,
-                     "'createShadowRoot' in document.createElement('div')")
-          ->GetResult()
-          ->GetValue()
-          ->GetBool());
+                     "'createShadowRoot' in document.createElement('div')"),
+      "result.value"));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessOriginTrialsBrowserTest,

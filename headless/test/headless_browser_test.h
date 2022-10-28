@@ -11,8 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_test_base.h"
-#include "headless/public/devtools/domains/network.h"
-#include "headless/public/devtools/domains/page.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/test_network_interceptor.h"
@@ -22,37 +20,7 @@ class RunLoop;
 }
 
 namespace headless {
-namespace runtime {
-class EvaluateResult;
-}
 class HeadlessDevToolsClient;
-
-// A utility class for asynchronously observing load events.
-class LoadObserver : public page::Observer, public network::Observer {
- public:
-  LoadObserver(HeadlessDevToolsClient* devtools_client,
-               base::OnceClosure callback);
-
-  LoadObserver(const LoadObserver&) = delete;
-  LoadObserver& operator=(const LoadObserver&) = delete;
-
-  ~LoadObserver() override;
-
-  // page::Observer implementation:
-  void OnLoadEventFired(const page::LoadEventFiredParams& params) override;
-
-  // network::Observer implementation:
-  void OnResponseReceived(
-      const network::ResponseReceivedParams& params) override;
-
-  bool navigation_succeeded() const { return navigation_succeeded_; }
-
- private:
-  base::OnceClosure callback_;
-  raw_ptr<HeadlessDevToolsClient> devtools_client_;  // Not owned.
-
-  bool navigation_succeeded_;
-};
 
 // Base class for tests which require a full instance of the headless browser.
 class HeadlessBrowserTest : public content::BrowserTestBase {
@@ -79,19 +47,6 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   // Run an asynchronous test in a nested run loop. The caller should call
   // FinishAsynchronousTest() to notify that the test should finish.
   void RunAsynchronousTest();
-
-  // Synchronously waits for a tab to finish loading and optionally retrieves
-  // an error.
-  bool WaitForLoad(HeadlessWebContents* web_contents,
-                   net::Error* error = nullptr);
-
-  // Synchronously waits for a tab to finish loading and to gain focus.
-  void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents);
-
-  // Synchronously evaluates a script and returns the result.
-  std::unique_ptr<runtime::EvaluateResult> EvaluateScript(
-      HeadlessWebContents* web_contents,
-      const std::string& script);
 
  protected:
   // Call this instead of SetUp() to run tests without GPU rendering (i.e.,

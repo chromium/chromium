@@ -41,6 +41,7 @@
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/test/headless_browser_test.h"
+#include "headless/test/headless_browser_test_utils.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/ssl/ssl_server_config.h"
@@ -269,13 +270,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder().Build();
 
-  EXPECT_TRUE(
+  EXPECT_TRUE(ResultBool(
       EvaluateScript(web_contents,
                      "(document.createElement('canvas').getContext('webgl')"
-                     "    instanceof WebGLRenderingContext)")
-          ->GetResult()
-          ->GetValue()
-          ->GetBool());
+                     "    instanceof WebGLRenderingContext)"),
+      "result.value"));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
@@ -311,27 +310,19 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
 #if !BUILDFLAG(IS_MAC)
   // On Mac headless does not override the screen dimensions, so they are
   // left with the actual screen values.
-  EXPECT_EQ(kDefaultOptions.window_size.width(),
-            EvaluateScript(web_contents, "screen.width")
-                ->GetResult()
-                ->GetValue()
-                ->GetInt());
-  EXPECT_EQ(kDefaultOptions.window_size.height(),
-            EvaluateScript(web_contents, "screen.height")
-                ->GetResult()
-                ->GetValue()
-                ->GetInt());
+  EXPECT_EQ(
+      kDefaultOptions.window_size.width(),
+      ResultInt(EvaluateScript(web_contents, "screen.width"), "result.value"));
+  EXPECT_EQ(
+      kDefaultOptions.window_size.height(),
+      ResultInt(EvaluateScript(web_contents, "screen.height"), "result.value"));
 #endif  // !BUILDFLAG(IS_MAC)
   EXPECT_EQ(kDefaultOptions.window_size.width(),
-            EvaluateScript(web_contents, "window.innerWidth")
-                ->GetResult()
-                ->GetValue()
-                ->GetInt());
+            ResultInt(EvaluateScript(web_contents, "window.innerWidth"),
+                      "result.value"));
   EXPECT_EQ(kDefaultOptions.window_size.height(),
-            EvaluateScript(web_contents, "window.innerHeight")
-                ->GetResult()
-                ->GetValue()
-                ->GetInt());
+            ResultInt(EvaluateScript(web_contents, "window.innerHeight"),
+                      "result.value"));
 }
 
 namespace {
@@ -637,8 +628,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WindowPrint) {
           .SetInitialURL(embedded_test_server()->GetURL("/hello.html"))
           .Build();
   EXPECT_TRUE(WaitForLoad(web_contents));
-  EXPECT_FALSE(
-      EvaluateScript(web_contents, "window.print()")->HasExceptionDetails());
+  EXPECT_FALSE(ResultHas(EvaluateScript(web_contents, "window.print()"),
+                         "exceptionDetails"));
 }
 
 class HeadlessBrowserAllowInsecureLocalhostTest : public HeadlessBrowserTest {

@@ -9,12 +9,15 @@
 
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "net/base/net_errors.h"
 
 namespace simple_devtools_protocol_client {
 class SimpleDevToolsProtocolClient;
 }
 
 namespace headless {
+
+class HeadlessWebContents;
 
 // Send DevTools command and wait for response by running local
 // message loop. This is typically used as a quick and dirty way
@@ -29,7 +32,17 @@ base::Value::Dict SendCommandSync(
     const std::string& command,
     base::Value::Dict params);
 
-// TODO(kvitekp): Consider moving these to Simple CDP client header.
+// Synchronously evaluates a script and returns the result.
+base::Value::Dict EvaluateScript(HeadlessWebContents* web_contents,
+                                 const std::string& script);
+
+// Synchronously waits for a tab to finish loading and optionally retrieves
+// an error.
+bool WaitForLoad(HeadlessWebContents* web_contents,
+                 net::Error* error = nullptr);
+
+// Synchronously waits for a tab to finish loading and to gain focus.
+void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents);
 
 // Convenience function to create a single key/value Dict.
 template <typename T>

@@ -9,6 +9,11 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/public/headless_web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
@@ -40,6 +45,47 @@ base::Value::Dict SendCommandSync(
   run_loop.Run();
 
   return command_result;
+}
+
+base::Value::Dict EvaluateScript(HeadlessWebContents* web_contents,
+                                 const std::string& script) {
+  SimpleDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(
+      HeadlessWebContentsImpl::From(web_contents)->web_contents());
+
+  base::Value::Dict result = SendCommandSync(
+      devtools_client, "Runtime.evaluate", Param("expression", script));
+
+  devtools_client.DetachClient();
+
+  return result;
+}
+
+bool WaitForLoad(HeadlessWebContents* web_contents, net::Error* error) {
+  content::WebContents* content_web_contents =
+      HeadlessWebContentsImpl::From(web_contents)->web_contents();
+
+  content::TestNavigationObserver observer(content_web_contents, 1);
+  observer.Wait();
+
+  if (error)
+    *error = observer.last_net_error_code();
+
+  return observer.last_navigation_succeeded();
+}
+
+void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents) {
+  content::WebContents* content_web_contents =
+      HeadlessWebContentsImpl::From(web_contents)->web_contents();
+
+  // To finish loading and to gain focus are two independent events. Which one
+  // is issued first is undefined. The following code is waiting on both, in any
+  // order.
+  content::TestNavigationObserver load_observer(content_web_contents, 1);
+  content::FrameFocusedObserver focus_observer(
+      content_web_contents->GetPrimaryMainFrame());
+  load_observer.Wait();
+  focus_observer.Wait();
 }
 
 namespace {

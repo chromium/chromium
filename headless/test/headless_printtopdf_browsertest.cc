@@ -16,6 +16,7 @@
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/devtools/domains/io.h"
+#include "headless/public/devtools/domains/page.h"
 #include "headless/public/devtools/domains/runtime.h"
 #include "headless/test/headless_browser_test.h"
 #include "pdf/pdf.h"
