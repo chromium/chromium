@@ -134,7 +134,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 modelSelectorButton.getResourceId(), modelSelectorButton.getX() * mDpToPx,
                 modelSelectorButton.getY() * mDpToPx, modelSelectorButton.getWidth() * mDpToPx,
                 modelSelectorButton.getHeight() * mDpToPx, modelSelectorButton.isIncognito(),
-                modelSelectorButtonVisible, resourceManager);
+                modelSelectorButtonVisible, modelSelectorButton.getOpacity(), resourceManager);
 
         boolean tabStripImprovementsEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
         boolean showLeftTabStripFade =
@@ -208,7 +208,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 ResourceManager resourceManager);
         void updateModelSelectorButton(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float x, float y, float width, float height, boolean incognito,
-                boolean visible, ResourceManager resourceManager);
+                boolean visible, float buttonAlpha, ResourceManager resourceManager);
         void updateTabStripLeftFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,
                 int resourceId, float opacity, ResourceManager resourceManager);
         void updateTabStripRightFade(long nativeTabStripSceneLayer, TabStripSceneLayer caller,

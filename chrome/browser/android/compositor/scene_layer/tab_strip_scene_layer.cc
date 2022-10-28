@@ -205,6 +205,7 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
     jfloat height,
     jboolean incognito,
     jboolean visible,
+    jfloat button_alpha,
     const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
@@ -218,6 +219,7 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
       gfx::PointF(x + left_offset, y + top_offset));
   model_selector_button_->SetBounds(button_resource->size());
   model_selector_button_->SetHideLayerAndSubtree(!visible);
+  model_selector_button_->SetOpacity(button_alpha);
 }
 
 void TabStripSceneLayer::UpdateTabStripLeftFade(

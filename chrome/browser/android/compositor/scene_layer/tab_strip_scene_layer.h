@@ -88,6 +88,7 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat height,
       jboolean incognito,
       jboolean visible,
+      jfloat button_alpha,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateTabStripLeftFade(
