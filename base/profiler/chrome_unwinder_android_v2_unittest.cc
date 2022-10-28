@@ -7,6 +7,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/profiler/chrome_unwind_info_android.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1009,7 +1010,7 @@ class AlignedStackMemory {
         stack_memory_(static_cast<uintptr_t*>(
             AlignedAlloc(size_ * sizeof(uintptr_t), 2 * sizeof(uintptr_t)))) {
     DCHECK_EQ(size_ % 2, 0u);
-    std::copy(values.begin(), values.end(), stack_memory_.get());
+    ranges::copy(values, stack_memory_.get());
   }
 
   uintptr_t stack_start_address() const {

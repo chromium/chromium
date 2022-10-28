@@ -4,6 +4,7 @@
 
 #include "base/task/common/task_annotator.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/check_op.h"

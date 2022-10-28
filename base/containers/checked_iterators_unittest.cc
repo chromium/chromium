@@ -4,6 +4,7 @@
 
 #include "base/containers/checked_iterators.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/check_op.h"
