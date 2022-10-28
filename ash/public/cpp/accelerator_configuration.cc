@@ -34,8 +34,7 @@ void AcceleratorConfiguration::RemoveAcceleratorsUpdatedCallback(
 }
 
 void AcceleratorConfiguration::UpdateAccelerators(
-    const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
-        accelerators) {
+    const ActionIdToAcceleratorsMap& accelerators) {
   // Update local cache everything an observable event is fired.
   accelerator_mapping_cache_ = accelerators;
 

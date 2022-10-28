@@ -47,16 +47,22 @@ AshAcceleratorConfiguration::GetAcceleratorLayoutInfos() {
   return layout_infos_;
 }
 
-const std::vector<AcceleratorInfo>&
-AshAcceleratorConfiguration::GetConfigForAction(AcceleratorActionId action_id) {
-  const auto accelerator_iter = id_to_accelerator_infos_.find(action_id);
-  DCHECK(accelerator_iter != id_to_accelerator_infos_.end());
+const std::vector<ui::Accelerator>&
+AshAcceleratorConfiguration::GetAcceleratorsForAction(
+    AcceleratorActionId action_id) {
+  const auto accelerator_iter = id_to_accelerators_.find(action_id);
+  DCHECK(accelerator_iter != id_to_accelerators_.end());
 
   return accelerator_iter->second;
 }
 
 bool AshAcceleratorConfiguration::IsMutable() const {
   return false;
+}
+
+bool AshAcceleratorConfiguration::IsDeprecated(
+    const ui::Accelerator& accelerator) const {
+  return deprecated_accelerators_.contains(accelerator);
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
@@ -136,11 +142,12 @@ void AshAcceleratorConfiguration::Initialize() {
 
 void AshAcceleratorConfiguration::Initialize(
     base::span<const AcceleratorData> accelerators) {
-  accelerator_infos_.clear();
-  id_to_accelerator_infos_.clear();
+  accelerators_.clear();
+  deprecated_accelerators_.clear();
+  id_to_accelerators_.clear();
   accelerator_to_id_.Clear();
 
-  AddAccelerators(accelerators, mojom::AcceleratorType::kDefault);
+  AddAccelerators(accelerators);
 }
 
 void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators() {
@@ -153,6 +160,7 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators() {
                                    std::move(deprecated_accelerators));
 }
 
+// This function must only be called after Initialize().
 void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
     base::span<const DeprecatedAcceleratorData> deprecated_data,
     base::span<const AcceleratorData> deprecated_accelerators) {
@@ -160,28 +168,28 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
     actions_with_deprecations_[data.action] = &data;
   }
 
-  AddAccelerators(deprecated_accelerators, mojom::AcceleratorType::kDeprecated);
+  for (const auto& data : deprecated_accelerators) {
+    deprecated_accelerators_.emplace(data.keycode, data.modifiers);
+  }
+
+  AddAccelerators(deprecated_accelerators);
 }
 
 void AshAcceleratorConfiguration::AddAccelerators(
-    base::span<const AcceleratorData> accelerators,
-    mojom::AcceleratorType type) {
+    base::span<const AcceleratorData> accelerators) {
+  accelerators_.reserve(accelerators_.size() + accelerators.size());
   for (const auto& data : accelerators) {
     ui::Accelerator accelerator(data.keycode, data.modifiers);
     accelerator.set_key_state(data.trigger_on_press
                                   ? ui::Accelerator::KeyState::PRESSED
                                   : ui::Accelerator::KeyState::RELEASED);
-    // TODO(jimmyxgong): Ash accelerators should not be locked when
-    // customization is allowed.
-    AcceleratorInfo info(type, accelerator, KeycodeToKeyString(data.keycode),
-                         /*locked=*/true);
     accelerator_to_id_.InsertNew(std::make_pair(accelerator, data.action));
-    id_to_accelerator_infos_[static_cast<uint32_t>(data.action)].push_back(
-        info);
-    accelerator_infos_.push_back(info);
+    id_to_accelerators_[static_cast<uint32_t>(data.action)].push_back(
+        accelerator);
+    accelerators_.push_back(accelerator);
     AddLayoutInfo(data);
   }
-  UpdateAccelerators(id_to_accelerator_infos_);
+  UpdateAccelerators(id_to_accelerators_);
 }
 
 const DeprecatedAcceleratorData*
@@ -192,26 +200,6 @@ AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
     return nullptr;
   }
   return it->second;
-}
-
-bool AshAcceleratorConfiguration::IsDeprecated(
-    const ui::Accelerator& accelerator) {
-  const auto* action_id = FindAcceleratorAction(accelerator);
-  // Not a registered accelerator, return false.
-  if (!action_id) {
-    return false;
-  }
-
-  const auto accelerators_iter = id_to_accelerator_infos_.find(*action_id);
-  DCHECK(accelerators_iter != id_to_accelerator_infos_.end());
-
-  for (auto const& info : accelerators_iter->second) {
-    if (info.type == mojom::AcceleratorType::kDeprecated &&
-        info.accelerator == accelerator) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void AshAcceleratorConfiguration::AddLayoutInfo(const AcceleratorData& data) {

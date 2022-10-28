@@ -32,9 +32,10 @@ class ASH_EXPORT BrowserAcceleratorConfiguration
   // AcceleratorConfiguration:
   const std::vector<mojom::AcceleratorLayoutInfoPtr>&
   GetAcceleratorLayoutInfos() override;
-  const std::vector<AcceleratorInfo>& GetConfigForAction(
+  const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
       AcceleratorActionId action_id) override;
   bool IsMutable() const override;
+  bool IsDeprecated(const ui::Accelerator& accelerator) const override;
   AcceleratorConfigResult AddUserAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
@@ -50,7 +51,7 @@ class ASH_EXPORT BrowserAcceleratorConfiguration
   AcceleratorConfigResult RestoreAllDefaults() override;
 
  private:
-  std::vector<AcceleratorInfo> accelerator_infos_;
+  std::vector<ui::Accelerator> accelerators_;
   std::vector<mojom::AcceleratorLayoutInfoPtr> layout_infos_;
 };
 

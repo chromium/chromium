@@ -171,8 +171,8 @@ class ASH_EXPORT AcceleratorControllerImpl
   // Registers the specified accelerators.
   void RegisterAccelerators(base::span<const AcceleratorData> accelerators);
 
-  // Registers accelerators from AcceleratorInfo's.
-  void RegisterAccelerators(std::vector<AcceleratorInfo> accelerator_infos);
+  // Registers the specified accelerators from a list of accelerators.
+  void RegisterAccelerators(std::vector<ui::Accelerator> accelerators);
 
   // Returns true if there is an action for |accelerator| and it is enabled.
   bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator) const;

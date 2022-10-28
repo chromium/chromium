@@ -45,15 +45,17 @@ struct ASH_PUBLIC_EXPORT AcceleratorInfo {
 };
 
 using AcceleratorActionId = uint32_t;
+using ActionIdToAcceleratorsMap =
+    std::map<AcceleratorActionId, std::vector<ui::Accelerator>>;
 
 // The public-facing interface for shortcut providers, this should be
 // implemented by sources, e.g. Browser, Ash, that want their shortcuts to be
 // exposed to separate clients.
 class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
  public:
-  using AcceleratorsUpdatedCallback = base::RepeatingCallback<void(
-      ash::mojom::AcceleratorSource,
-      const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&)>;
+  using AcceleratorsUpdatedCallback =
+      base::RepeatingCallback<void(ash::mojom::AcceleratorSource,
+                                   const ActionIdToAcceleratorsMap&)>;
 
   explicit AcceleratorConfiguration(ash::mojom::AcceleratorSource source);
   virtual ~AcceleratorConfiguration();
@@ -68,13 +70,16 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
   GetAcceleratorLayoutInfos() = 0;
 
   // Get the accelerators for a single action.
-  virtual const std::vector<AcceleratorInfo>& GetConfigForAction(
+  virtual const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
       AcceleratorActionId action_id) = 0;
 
   // Whether this source of shortcuts can be modified. If this returns false
   // then any of the Add/Remove/Replace class will DCHECK. The two Restore
   // methods will be no-ops.
   virtual bool IsMutable() const = 0;
+
+  // Return true if the accelerator is deprecated.
+  virtual bool IsDeprecated(const ui::Accelerator& accelerator) const = 0;
 
   // Add a new user defined accelerator.
   virtual AcceleratorConfigResult AddUserAccelerator(
@@ -102,9 +107,7 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
 
  protected:
   // Updates the local cache and notifies observers of the updated accelerators.
-  void UpdateAccelerators(
-      const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
-          accelerators);
+  void UpdateAccelerators(const ActionIdToAcceleratorsMap& accelerators);
 
  private:
   void NotifyAcceleratorsUpdated();
@@ -121,8 +124,7 @@ class ASH_PUBLIC_EXPORT AcceleratorConfiguration {
   // Keep a cache of the accelerator map, it's possible that adding a new
   // observer is done after initializing the accelerator mapping. This lets
   // new observers to get the immediate cached mapping.
-  std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
-      accelerator_mapping_cache_;
+  ActionIdToAcceleratorsMap accelerator_mapping_cache_;
 };
 
 }  // namespace ash

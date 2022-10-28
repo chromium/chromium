@@ -13,6 +13,7 @@
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/accelerators/accelerator_map.h"
@@ -33,9 +34,11 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   // AcceleratorConfiguration::
   const std::vector<mojom::AcceleratorLayoutInfoPtr>&
   GetAcceleratorLayoutInfos() override;
-  const std::vector<AcceleratorInfo>& GetConfigForAction(
+  const std::vector<ui::Accelerator>& GetAcceleratorsForAction(
       AcceleratorActionId action_id) override;
   bool IsMutable() const override;
+  // Return true if the accelerator is deprecated.
+  bool IsDeprecated(const ui::Accelerator& accelerator) const override;
   AcceleratorConfigResult AddUserAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
@@ -74,8 +77,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
     return accelerator_to_id_.Get(accelerator);
   }
 
-  const std::vector<AcceleratorInfo>& GetAllAcceleratorInfos() {
-    return accelerator_infos_;
+  const std::vector<ui::Accelerator>& GetAllAccelerators() {
+    return accelerators_;
   }
 
   void SetUsePositionalLookup(bool use_positional_lookup) {
@@ -87,9 +90,6 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   const DeprecatedAcceleratorData* GetDeprecatedAcceleratorData(
       AcceleratorActionId action);
 
-  // Return true if the accelerator is deprecated.
-  bool IsDeprecated(const ui::Accelerator& accelerator);
-
  private:
   // A map for looking up actions from accelerators.
   using AcceleratorActionMap = ui::AcceleratorMap<AcceleratorAction>;
@@ -98,10 +98,11 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
 
   void AddLayoutInfo(const AcceleratorData& data);
 
-  void AddAccelerators(base::span<const AcceleratorData> accelerators,
-                       mojom::AcceleratorType type);
+  void AddAccelerators(base::span<const AcceleratorData> accelerators);
 
-  std::vector<AcceleratorInfo> accelerator_infos_;
+  std::vector<ui::Accelerator> accelerators_;
+
+  base::flat_set<ui::Accelerator> deprecated_accelerators_;
 
   // A map of accelerator ID's that are deprecated.
   std::map<AcceleratorActionId, const DeprecatedAcceleratorData*>
@@ -109,8 +110,7 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
 
   // One accelerator action ID can potentially have multiple accelerators
   // associated with it.
-  std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
-      id_to_accelerator_infos_;
+  ActionIdToAcceleratorsMap id_to_accelerators_;
   // A map from accelerators to the AcceleratorAction values, which are used in
   // the implementation.
   AcceleratorActionMap accelerator_to_id_;

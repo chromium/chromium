@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/accelerators/accelerator_layout_table.h"
+#include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,50 +23,28 @@
 namespace {
 
 bool CompareAccelerators(const ash::AcceleratorData& expected_data,
-                         const ash::AcceleratorInfo& actual_info) {
+                         const ui::Accelerator& actual_accelerator) {
   ui::Accelerator expected_accel(expected_data.keycode,
                                  expected_data.modifiers);
-  ash::AcceleratorInfo expected_info(
-      actual_info.type, expected_accel,
-      ash::KeycodeToKeyString(expected_data.keycode),
-      /*locked=*/true);
-
-  const bool type_equals = expected_info.type == actual_info.type;
-  const bool accelerator_equals =
-      expected_info.accelerator == actual_info.accelerator;
-  const bool key_display_equals =
-      expected_info.key_display == actual_info.key_display;
-  const bool locked_equals = expected_info.locked == actual_info.locked;
-  return type_equals && accelerator_equals && key_display_equals &&
-         locked_equals;
+  return expected_accel.key_code() == actual_accelerator.key_code() &&
+         expected_accel.modifiers() == actual_accelerator.modifiers();
 }
 
 void ExpectAllAcceleratorsEqual(
     const base::span<const ash::AcceleratorData> expected,
-    const std::vector<ash::AcceleratorInfo>& actual) {
+    const std::vector<ui::Accelerator>& actual) {
   EXPECT_EQ(std::size(expected), actual.size());
 
-  for (const auto& actual_info : actual) {
+  for (const auto& actual_accelerator : actual) {
     bool found_match = false;
     for (const auto& expected_data : expected) {
-      found_match = CompareAccelerators(expected_data, actual_info);
+      found_match = CompareAccelerators(expected_data, actual_accelerator);
       if (found_match) {
         break;
       }
     }
     EXPECT_TRUE(found_match);
   }
-}
-
-std::vector<ash::AcceleratorInfo> GetDeprecatedAcceleratorInfos(
-    const std::vector<ash::AcceleratorInfo>& infos) {
-  std::vector<ash::AcceleratorInfo> deprecated_infos;
-  for (const auto& info : infos) {
-    if (info.type == ash::mojom::AcceleratorType::kDeprecated) {
-      deprecated_infos.push_back(info);
-    }
-  }
-  return deprecated_infos;
 }
 
 // Validates that the passed in layouts have matching accelerator layouts in
@@ -116,9 +95,10 @@ TEST_F(AshAcceleratorConfigurationTest, VerifyAcceleratorMappingPopulated) {
   };
 
   config_->Initialize(test_data);
-  const std::vector<AcceleratorInfo> infos = config_->GetAllAcceleratorInfos();
+  const std::vector<ui::Accelerator>& accelerators =
+      config_->GetAllAccelerators();
 
-  ExpectAllAcceleratorsEqual(test_data, infos);
+  ExpectAllAcceleratorsEqual(test_data, accelerators);
 }
 
 TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
@@ -160,15 +140,22 @@ TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
   config_->InitializeDeprecatedAccelerators(deprecated_data,
                                             test_deprecated_accelerators);
 
-  const std::vector<AcceleratorInfo> infos = config_->GetAllAcceleratorInfos();
+  const std::vector<ui::Accelerator>& accelerators =
+      config_->GetAllAccelerators();
+
   // When initializing deprecated accelerators, expect them to be added to the
   // overall accelerators list too.
-  ExpectAllAcceleratorsEqual(expected_test_data, infos);
+  ExpectAllAcceleratorsEqual(expected_test_data, accelerators);
 
-  // Verify that the fetch deprecated infos are correct.
-  const std::vector<AcceleratorInfo>& deprecated_infos =
-      GetDeprecatedAcceleratorInfos(infos);
-  ExpectAllAcceleratorsEqual(test_deprecated_accelerators, deprecated_infos);
+  // Verify that the fetch deprecated accelerators are correct.
+  std::vector<ui::Accelerator> deprecated_accelerators;
+  for (const auto& accel : accelerators) {
+    if (config_->IsDeprecated(accel)) {
+      deprecated_accelerators.push_back(accel);
+    }
+  }
+  ExpectAllAcceleratorsEqual(test_deprecated_accelerators,
+                             deprecated_accelerators);
 
   // Verify ESCAPE + SHIFT is deprecated.
   const ui::Accelerator deprecated_accelerator(ui::VKEY_ESCAPE,

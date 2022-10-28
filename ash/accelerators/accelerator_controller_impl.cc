@@ -505,7 +505,7 @@ void AcceleratorControllerImpl::Init() {
   for (size_t i = 0; i < kActionsKeepingMenuOpenLength; ++i)
     actions_keeping_menu_open_.insert(kActionsKeepingMenuOpen[i]);
 
-  RegisterAccelerators(accelerator_configuration_->GetAllAcceleratorInfos());
+  RegisterAccelerators(accelerator_configuration_->GetAllAccelerators());
 
   if (debug::DebugAcceleratorsEnabled()) {
     // All debug accelerators are reserved.
@@ -535,11 +535,7 @@ void AcceleratorControllerImpl::RegisterAccelerators(
 }
 
 void AcceleratorControllerImpl::RegisterAccelerators(
-    std::vector<AcceleratorInfo> accelerator_infos) {
-  std::vector<ui::Accelerator> accelerators;
-  for (const auto& info : accelerator_infos) {
-    accelerators.push_back(info.accelerator);
-  }
+    std::vector<ui::Accelerator> accelerators) {
   Register(std::move(accelerators), this);
 }
 

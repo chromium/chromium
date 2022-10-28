@@ -31,6 +31,10 @@ class AcceleratorConfigurationProvider
       const AcceleratorConfigurationProvider&) = delete;
   ~AcceleratorConfigurationProvider() override;
 
+  const std::vector<AcceleratorInfo>& GetAllAcceleratorInfos() {
+    return accelerator_infos_;
+  }
+
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
                  IsMutableCallback callback) override;
@@ -44,13 +48,15 @@ class AcceleratorConfigurationProvider
  private:
   friend class AcceleratorConfigurationProviderTest;
 
-  void OnAshAcceleratorsUpdated(
-      mojom::AcceleratorSource source,
-      const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
-          mapping);
+  void OnAcceleratorsUpdated(mojom::AcceleratorSource source,
+                             const ActionIdToAcceleratorsMap& mapping);
+
+  mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator);
+
+  std::vector<AcceleratorInfo> accelerator_infos_;
 
   std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
-      ash_accelerator_mapping_;
+      id_to_accelerator_info_;
 
   mojo::Receiver<
       shortcut_customization::mojom::AcceleratorConfigurationProvider>
