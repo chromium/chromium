@@ -95,11 +95,6 @@ fedcm_test(async t => {
 }, "Get after abort should work");
 
 fedcm_test(async t => {
-  const cred = await navigator.credentials.get(default_request_options());
-  assert_equals(cred.token, 'token');
-}, 'Test that COEP policy do not apply to FedCM requests');
-
-fedcm_test(async t => {
   let test_options = default_request_options('manifest-not-in-list.json');
   const cred = navigator.credentials.get(test_options);
   return promise_rejects_dom(t, 'NetworkError', cred);
