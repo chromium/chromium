@@ -260,8 +260,10 @@ void SiteDataRowView::OnDeleteIconClicked() {
   // created when dialog is shown and are deleted when the dialog is destroyed.
   SetVisible(false);
 
-  // The row is hidden, advance focus to the next row.
-  GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+  // The row is hidden, advance focus to the next row if the delete button was
+  // focused.
+  if (delete_button_->HasFocus())
+    GetFocusManager()->AdvanceFocus(/*reverse=*/false);
 }
 
 void SiteDataRowView::OnBlockMenuItemClicked(int event_flags) {
