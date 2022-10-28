@@ -182,6 +182,9 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.RemoveOk.bullseye_stable",
   "crostini.RemoveOk.buster_stable",
 
+  # https://crbug.com/1377781
+  "crostini.ResizeInstallation.stable",
+
   # b/241122961
   "policy.BlockThirdPartyCookies",
 
