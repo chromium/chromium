@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/wm/desks/templates/saved_desk_animations.h"
+
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/view.h"
 
 namespace ash {
 

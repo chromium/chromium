@@ -9,12 +9,10 @@
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -54,9 +52,9 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/guid.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -71,11 +69,8 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
-#include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
-#include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -93,7 +88,7 @@ namespace ash {
 
 class SavedDeskTest : public OverviewTestBase {
  public:
-  SavedDeskTest() {}
+  SavedDeskTest() = default;
   SavedDeskTest(const SavedDeskTest&) = delete;
   SavedDeskTest& operator=(const SavedDeskTest&) = delete;
   ~SavedDeskTest() override = default;

@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/pill_button.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
-#include "base/callback.h"
+#include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {

@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
-#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 
 namespace ash {
 

@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 
-#include "base/cxx17_backports.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/focus_ring.h"
 

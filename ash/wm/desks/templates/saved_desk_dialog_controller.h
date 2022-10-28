@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "base/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"

@@ -6,7 +6,8 @@
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_CONTAINER_H_
 
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
-#include "base/callback.h"
+
+#include "base/functional/callback.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
