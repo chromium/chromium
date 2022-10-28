@@ -191,9 +191,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   DemoSession();
   ~DemoSession() override;
 
-  void OnDemoAppComponentLoaded(
-      component_updater::CrOSComponentManager::Error error,
-      const base::FilePath& path);
+  void OnDemoAppComponentLoaded();
 
   // Get country code and full name in current language pair sorted by their
   // full name in currently selected language.
@@ -264,8 +262,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   bool splash_screen_removed_ = false;
   bool screensaver_activated_ = false;
-
-  base::FilePath default_demo_app_component_path_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

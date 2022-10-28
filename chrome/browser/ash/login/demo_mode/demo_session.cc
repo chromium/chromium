@@ -409,7 +409,7 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!components_)
     components_ = std::make_unique<DemoComponents>(GetDemoConfig());
-  components_->EnsureResourcesLoaded(std::move(load_callback));
+  components_->LoadResourcesComponent(std::move(load_callback));
 }
 
 // static
@@ -614,10 +614,7 @@ void DemoSession::OnSessionStateChanged() {
 
       // Download/update the Demo app component during session startup
       if (features::IsDemoModeSWAEnabled()) {
-        g_browser_process->platform_part()->cros_component_manager()->Load(
-            "demo-mode-app",
-            component_updater::CrOSComponentManager::MountPolicy::kMount,
-            component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+        components_->LoadAppComponent(
             base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
                            weak_ptr_factory_.GetWeakPtr()));
       }
@@ -631,10 +628,11 @@ void DemoSession::OnSessionStateChanged() {
 }
 
 base::FilePath DemoSession::GetDemoAppComponentPath() {
-  DCHECK(!DemoSession::default_demo_app_component_path_.empty());
-  return base::FilePath(GetSwitchOrDefault(
-      switches::kDemoModeSwaContentDirectory,
-      DemoSession::default_demo_app_component_path_.value()));
+  DCHECK(components_);
+  DCHECK(!components_->default_app_component_path().empty());
+  return base::FilePath(
+      GetSwitchOrDefault(switches::kDemoModeSwaContentDirectory,
+                         components_->default_app_component_path().value()));
 }
 
 void LaunchDemoSystemWebApp() {
@@ -644,15 +642,14 @@ void LaunchDemoSystemWebApp() {
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::DEMO_MODE);
 }
 
-void DemoSession::OnDemoAppComponentLoaded(
-    component_updater::CrOSComponentManager::Error error,
-    const base::FilePath& path) {
+void DemoSession::OnDemoAppComponentLoaded() {
+  auto error = components_->app_component_error().value_or(
+      component_updater::CrOSComponentManager::Error::NOT_FOUND);
   if (error != component_updater::CrOSComponentManager::Error::NONE) {
     LOG(WARNING) << "Error loading demo mode app component: "
                  << static_cast<int>(error);
     return;
   }
-  default_demo_app_component_path_ = path;
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
       FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));

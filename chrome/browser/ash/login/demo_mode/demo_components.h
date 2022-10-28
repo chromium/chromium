@@ -16,14 +16,23 @@
 
 namespace ash {
 
-// Loads Demo Mode Resources depending on the configuration:
-// - online demo mode: loads or installs the Demo Mode resources CrOS Component
-// - offline demo mode: loads the pre-installed Offline Demo Mode Resources
-//   image
+// Loads Demo Mode ChromeOS components and exposes component-related data such
+// as install paths.
+// Components:
+// - demo-mode-resources: Contains Android APKs, sample photos for Google
+//     Photos, and splash screen images.
+// - demo-mode-app: Contains app content (html/css/js/assets) to render in the
+//     Demo Mode System Web App.
+//
+// TODO(b/255679902): Consider removing this class entirely and returning
+//  component loading responsibilities to callers.
 class DemoComponents {
  public:
-  // The name of the demo mode resources CrOS component.
+  // The name of the demo mode resources ChromeOS component.
   static const char kDemoModeResourcesComponentName[];
+
+  // The name of the demo mode app ChromeOS component.
+  static const char kDemoModeAppComponentName[];
 
   // The name of the preinstalled offline demo mode resources CrOS component.
   static const char kOfflineDemoModeResourcesComponentName[];
@@ -54,9 +63,13 @@ class DemoComponents {
   // to the associated CRX path and version).
   base::FilePath GetExternalExtensionsPrefsPath() const;
 
-  // Ensures that the load of demo-mode-resources component is requested.
-  // `load_callback` will be run once the resources finish loading.
-  void EnsureResourcesLoaded(base::OnceClosure load_callback);
+  // Requests the load of the demo-mode-resources component.
+  // |load_callback| will be run once the component finishes loading.
+  void LoadResourcesComponent(base::OnceClosure load_callback);
+
+  // Requests the load of the demo-mode-app component.
+  // |load_callback| will be run once the component finishes loading.
+  void LoadAppComponent(base::OnceClosure load_callback);
 
   // Fakes the demo mode resources CrOS component having been requested and
   // mounted at the given path (or not mounted if `path` is empty).
@@ -73,6 +86,9 @@ class DemoComponents {
   const base::FilePath& resources_component_path() const {
     return resources_component_path_;
   }
+  const base::FilePath& default_app_component_path() const {
+    return default_app_component_path_;
+  }
 
   // The error from trying to load the demo mode resources CrOS component from
   // the CrOSComponentManager.
@@ -81,7 +97,19 @@ class DemoComponents {
     return resources_component_error_;
   }
 
+  // The error from trying to load the demo mode app CrOS component from
+  // the CrOSComponentManager.
+  const absl::optional<component_updater::CrOSComponentManager::Error>&
+  app_component_error() const {
+    return app_component_error_;
+  }
+
  private:
+  void OnAppComponentLoaded(
+      base::OnceClosure load_callback,
+      component_updater::CrOSComponentManager::Error error,
+      const base::FilePath& path);
+
   // Called after attempting to load the installed demo mode resources CrOS
   // component has finished.
   // On success, `path` is expected to contain the path as which the component
@@ -105,8 +133,18 @@ class DemoComponents {
   absl::optional<component_updater::CrOSComponentManager::Error>
       resources_component_error_;
 
+  // Last error (or NONE) seen when trying to load the demo-mode-app CrOS
+  // component. Has no value until the load attempt has completed.
+  absl::optional<component_updater::CrOSComponentManager::Error>
+      app_component_error_;
+
   // Path at which the demo-mode-resources component was loaded.
   base::FilePath resources_component_path_;
+
+  // Path at which the demo-mode-app component was loaded.
+  // This path can be overridden for local testing of component content with the
+  // demo-mode-swa-content-directory switch.
+  base::FilePath default_app_component_path_;
 
   // List of pending callbacks passed to EnsureLoaded().
   std::list<base::OnceClosure> load_callbacks_;

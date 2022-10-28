@@ -32,6 +32,8 @@ constexpr base::FilePath::CharType kExternalExtensionsPrefsPath[] =
 const char DemoComponents::kDemoModeResourcesComponentName[] =
     "demo-mode-resources";
 
+const char DemoComponents::kDemoModeAppComponentName[] = "demo-mode-app";
+
 // static
 const char DemoComponents::kOfflineDemoModeResourcesComponentName[] =
     "offline-demo-mode-resources";
@@ -73,7 +75,27 @@ base::FilePath DemoComponents::GetExternalExtensionsPrefsPath() const {
   return resources_component_path_.Append(kExternalExtensionsPrefsPath);
 }
 
-void DemoComponents::EnsureResourcesLoaded(base::OnceClosure load_callback) {
+void DemoComponents::LoadAppComponent(base::OnceClosure load_callback) {
+  g_browser_process->platform_part()->cros_component_manager()->Load(
+      kDemoModeAppComponentName,
+      component_updater::CrOSComponentManager::MountPolicy::kMount,
+      component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
+      base::BindOnce(&DemoComponents::OnAppComponentLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(load_callback)));
+}
+
+void DemoComponents::OnAppComponentLoaded(
+    base::OnceClosure load_callback,
+    component_updater::CrOSComponentManager::Error error,
+    const base::FilePath& app_component_path) {
+  app_component_error_ = error;
+  default_app_component_path_ = app_component_path;
+  std::move(load_callback).Run();
+}
+
+void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
+  // TODO(b/254735031): Consider removing this callback queuing logic, since
+  // it's already supported internally by CrOSComponentManager::Load
   if (resources_loaded_) {
     if (load_callback)
       std::move(load_callback).Run();
