@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/callback_helpers.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"

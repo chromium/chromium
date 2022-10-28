@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/system/message_pipe.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "base/numerics/safe_math.h"

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
@@ -160,7 +160,7 @@ class SimpleMessage : public TestMessageBase {
   }
 
   void SerializePayload(void* buffer) override {
-    std::copy(contents_.begin(), contents_.end(), static_cast<char*>(buffer));
+    base::ranges::copy(contents_, static_cast<char*>(buffer));
   }
 
   const std::string contents_;

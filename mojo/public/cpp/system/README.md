@@ -71,8 +71,8 @@ mojo::AllocMessage(6, nullptr, 0, MOJO_ALLOC_MESSAGE_FLAG_NONE, &message);
 void *buffer;
 mojo::GetMessageBuffer(message.get(), &buffer);
 
-const std::string kMessage = "hello";
-std::copy(kMessage.begin(), kMessage.end(), static_cast<char*>(buffer));
+constexpr base::StringPiece kMessage = "hello";
+base::ranges::copy(kMessage, static_cast<char*>(buffer));
 
 mojo::WriteMessageNew(client.get(), std::move(message),
                       MOJO_WRITE_MESSAGE_FLAG_NONE);

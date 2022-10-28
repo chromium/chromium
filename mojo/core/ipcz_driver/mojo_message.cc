@@ -4,13 +4,13 @@
 
 #include "mojo/core/ipcz_driver/mojo_message.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <utility>
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
@@ -48,7 +48,7 @@ bool MojoMessage::SetContents(std::vector<uint8_t> data,
     data_storage_ = std::move(data);
   } else {
     data_storage_.resize(kMinBufferSize);
-    std::copy(data.begin(), data.end(), data_storage_.begin());
+    base::ranges::copy(data, data_storage_.begin());
   }
 
   validator_ = validator;
@@ -156,7 +156,7 @@ IpczResult MojoMessage::GetData(void** buffer,
     return MOJO_RESULT_RESOURCE_EXHAUSTED;
   }
 
-  std::copy(handles_.begin(), handles_.end(), handles);
+  base::ranges::copy(handles_, handles);
   handles_.clear();
   handles_consumed_ = true;
   return MOJO_RESULT_OK;

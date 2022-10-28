@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <algorithm>
 #include <limits>
 #include <utility>
 
@@ -19,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_handle.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "mojo/core/configuration.h"
@@ -293,7 +293,7 @@ Channel::MessagePtr Channel::Message::CreateRawForFuzzing(
   message->size_ = data.size();
   if (data.size()) {
     message->data_ = MakeAlignedBuffer(data.size());
-    std::copy(data.begin(), data.end(), message->data_.get());
+    base::ranges::copy(data, message->data_.get());
   }
   return base::WrapUnique<Channel::Message>(message.release());
 }

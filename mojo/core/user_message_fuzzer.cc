@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "mojo/core/entrypoints.h"
 #include "mojo/core/node_controller.h"

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -43,7 +44,7 @@ bool ReadTextMessage(const MessagePipeHandle& handle, std::string* text) {
 
   assert(handles.empty());
   text->resize(bytes.size());
-  std::copy(bytes.begin(), bytes.end(), text->begin());
+  base::ranges::copy(bytes, text->begin());
   return true;
 }
 
