@@ -1379,8 +1379,6 @@ void DesksController::OnWindowActivating(ActivationReason reason,
   if (!gaining_active)
     return;
 
-  // TODO(crbug.com/1358761): Implement logic to activate an inactive desk when
-  // a floated window belonging to that desk gets activated.
   const Desk* window_desk = FindDeskOfWindow(gaining_active);
   if (!window_desk || window_desk == active_desk_)
     return;
@@ -1945,6 +1943,13 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
 
 const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {
   DCHECK(window);
+
+  // Floating windows are stored in float container, their relationship with
+  // desks can be found in `FloatedWindowInfo`.
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      WindowState::Get(window)->IsFloated()) {
+    return Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window);
+  }
 
   for (const auto& desk : desks_) {
     if (base::Contains(desk->windows(), window))

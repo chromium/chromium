@@ -587,6 +587,29 @@ TEST_F(WindowFloatTest, FloatWindowShouldNotBlockKeyboardEvents) {
   ASSERT_TRUE(overview_controller->InOverviewSession());
 }
 
+// Test that activate a floated window on an inactive desk will activate that
+// desk.
+TEST_F(WindowFloatTest, FloatWindowActivationActivatesBelongingDesk) {
+  auto* desks_controller = DesksController::Get();
+  // Float `window_1` at `desk_1`.
+  auto* desk_1 = desks_controller->desks()[0].get();
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
+  // Verify `window_1` belongs to `desk_1`.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_1);
+  NewDesk();
+  auto* desk_2 = desks_controller->desks()[1].get();
+  // Move to `desk_2`.
+  ActivateDesk(desk_2);
+  DeskSwitchAnimationWaiter waiter;
+  // Activate `window_1` that belongs to `desk_1`.
+  wm::ActivateWindow(window_1.get());
+  EXPECT_TRUE(wm::IsActiveWindow(window_1.get()));
+  waiter.Wait();
+  // Verify `desk_1` is now activated.
+  EXPECT_TRUE(desk_1->is_active());
+}
+
 class TabletWindowFloatTest : public WindowFloatTest {
  public:
   TabletWindowFloatTest() = default;

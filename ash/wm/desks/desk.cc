@@ -10,6 +10,7 @@
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
@@ -392,6 +393,18 @@ void Desk::SetName(std::u16string new_name, bool set_by_user) {
 
 void Desk::PrepareForActivationAnimation() {
   DCHECK(!is_active_);
+
+  // Floated window doesn't belong to desk container and needed to be handled
+  // separately.
+  aura::Window* floated_window = nullptr;
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      (floated_window =
+           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(this))) {
+    // Ensure the floated window remain hidden during activation animation.
+    // The floated window will be shown when desk is activated.
+    ScopedAnimationDisabler disabler(floated_window);
+    floated_window->Hide();
+  }
 
   for (aura::Window* root : Shell::GetAllRootWindows()) {
     auto* container = root->GetChildById(container_id_);
