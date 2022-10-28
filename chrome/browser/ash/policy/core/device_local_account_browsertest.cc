@@ -35,6 +35,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -129,7 +130,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/extension.h"
@@ -150,6 +150,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+using base::test::TestFuture;
+using extensions::CrxInstallError;
 
 namespace policy {
 
@@ -1466,17 +1469,20 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   installer->set_allow_silent_install(true);
   installer->set_install_cause(extension_misc::INSTALL_CAUSE_USER_DOWNLOAD);
   installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);
-  content::WindowedNotificationObserver app_install_observer(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources());
-  base::FilePath test_dir;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
-  installer->InstallCrx(test_dir.Append(kPackagedAppCRXPath));
-  app_install_observer.Wait();
-  const extensions::Extension* app =
-      content::Details<const extensions::Extension>(
-          app_install_observer.details())
-          .ptr();
+
+  {
+    TestFuture<const absl::optional<CrxInstallError>&> installer_done_future;
+    installer->AddInstallerCallback(installer_done_future.GetCallback());
+
+    base::FilePath test_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+    installer->InstallCrx(test_dir.Append(kPackagedAppCRXPath));
+
+    const absl::optional<CrxInstallError>& error = installer_done_future.Get();
+    EXPECT_THAT(error, testing::Eq(absl::nullopt));
+  }
+
+  const extensions::Extension* app = installer->extension();
 
   // Start the platform app, causing it to open a window.
   run_loop_ = std::make_unique<base::RunLoop>();
