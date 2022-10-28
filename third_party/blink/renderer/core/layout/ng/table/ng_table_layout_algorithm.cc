@@ -1064,8 +1064,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   // crbug.com/1352931 for more details. Furthermore, we cannot repeat content
   // if side-effects are disabled, as that machinery depends on updating and
   // reading the physical fragments vector of the LayoutBox.
-  if (ConstraintSpace().HasKnownFragmentainerBlockSize() &&
-      !ConstraintSpace().IsInsideRepeatableContent() &&
+  if (!ConstraintSpace().IsInsideRepeatableContent() &&
       !NGDisableSideEffectsScope::IsDisabled() &&
       (grouped_children.header || grouped_children.footer)) {
     LayoutUnit max_section_block_size =
@@ -1108,7 +1107,14 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // is monolithic, and nothing inside can break.
         //
         // See https://www.w3.org/TR/css-tables-3/#repeated-headers
-        if (block_size > max_section_block_size)
+        //
+        // We will never make the decision to start repeating if we're in an
+        // initial column balancing pass (we have no idea about the block-size
+        // of the fragmentainer, so that would be impossible), but we will
+        // continue repeating if we previously decided to do so in a previous
+        // layout pass, for a previous fragment.
+        if (!ConstraintSpace().HasKnownFragmentainerBlockSize() ||
+            block_size > max_section_block_size)
           continue;
       }
 
