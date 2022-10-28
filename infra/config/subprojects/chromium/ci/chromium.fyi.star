@@ -56,18 +56,6 @@ consoles.console_view(
     },
 )
 
-def fyi_celab_builder(*, name, **kwargs):
-    kwargs.setdefault("executable", "recipe:celab")
-    kwargs.setdefault("execution_timeout", ci.DEFAULT_EXECUTION_TIMEOUT)
-    kwargs.setdefault("os", os.WINDOWS_ANY)
-    kwargs.setdefault("properties", {
-        "exclude": "chrome_only",
-        "pool_name": "celab-chromium-ci",
-        "pool_size": 20,
-        "tests": "*",
-    })
-    return ci.builder(name = name, **kwargs)
-
 def fyi_coverage_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 32)
     kwargs.setdefault("execution_timeout", 20 * time.hour)
@@ -1681,24 +1669,23 @@ ci.builder(
     reclient_jobs = None,
 )
 
-fyi_celab_builder(
+ci.builder(
     name = "win-celab-builder-rel",
+    executable = "recipe:celab",
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     console_view_entry = consoles.console_view_entry(
         category = "celab",
     ),
+    os = os.WINDOWS_ANY,
+    properties = {
+        "exclude": "chrome_only",
+        "pool_name": "celab-chromium-ci",
+        "pool_size": 20,
+        "tests": "*",
+    },
     schedule = "0 0,6,12,18 * * *",
     triggered_by = [],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-)
-
-fyi_celab_builder(
-    name = "win-celab-tester-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "celab",
-    ),
-    triggered_by = ["win-celab-builder-rel"],
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_coverage_builder(
