@@ -169,17 +169,12 @@ source_set("blink_heap_unittests_sources") {
     "//base/test:test_support",
     "//gin:gin",
     "//mojo/core/embedder:embedder",
+    "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
   ]
-
-  if (is_fuchsia) {
-    deps += [ "//skia:test_fonts_cfv2" ]
-  } else {
-    deps += [ "//skia:test_fonts" ]
-  }
 }
 
 test("blink_heap_perftests") {

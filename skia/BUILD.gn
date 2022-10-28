@@ -819,45 +819,10 @@ group("test_fonts_resources") {
   }
 }
 
-source_set("test_fonts") {
-  testonly = true
-
-  deps = [ ":test_fonts_resources" ]
-
-  if (is_fuchsia) {
-    public = [
-      "ext/test_fonts.h",
-      "ext/test_fonts_fuchsia.h",
-    ]
-    sources = [
-      "ext/test_fonts_fuchsia.cc",
-      "ext/test_fonts_fuchsia_cfv1.cc",
-    ]
-    public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts" ]
-    deps += [
-      "//base",
-      "//skia",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
-      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    ]
-  }
-  if (is_mac) {
-    public = [ "ext/test_fonts.h" ]
-    sources = [ "ext/test_fonts_mac.mm" ]
-    deps += [ "//base" ]
-  }
-}
-
 # Fuchsia components that use the test fonts must include
 # "//build/config/fuchsia/test/test_fonts.shard.test-cml" in their
 # `additional_manifest_fragments`.
-# TODO(https://crbug.com/1287051): Once all consumers are migrated to CFv2,
-# move the `is_fuchsia` section below up into `test_fonts` above and remove this
-# target.
-source_set("test_fonts_cfv2") {
+source_set("test_fonts") {
   testonly = true
 
   deps = [ ":test_fonts_resources" ]
@@ -877,6 +842,11 @@ source_set("test_fonts_cfv2") {
       "//skia",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
+  }
+  if (is_mac) {
+    public = [ "ext/test_fonts.h" ]
+    sources = [ "ext/test_fonts_mac.mm" ]
+    deps += [ "//base" ]
   }
 }
 
@@ -903,6 +873,7 @@ test("skia_unittests") {
 
   deps = [
     ":skia",
+    ":test_fonts",
     "//base",
     "//base/test:test_support",
     "//mojo/core/test:run_all_unittests",
@@ -924,14 +895,9 @@ test("skia_unittests") {
 
   if (is_fuchsia) {
     sources += [ "ext/fontmgr_fuchsia_unittest.cc" ]
-    deps += [
-      ":test_fonts_cfv2",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
-    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts" ]
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
-  } else {
-    deps += [ ":test_fonts" ]
   }
 
   if (skia_support_skottie) {

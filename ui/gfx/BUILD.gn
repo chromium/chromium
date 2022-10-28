@@ -908,7 +908,7 @@ test("gfx_unittests") {
   }
 
   if (is_fuchsia) {
-    deps += [ "//skia:test_fonts_cfv2" ]
+    deps += [ "//skia:test_fonts" ]
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/test_fonts.shard.test-cml" ]
   }

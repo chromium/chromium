@@ -335,6 +335,7 @@ static_library("web_test_renderer") {
     "//printing/mojom",
     "//services/service_manager/public/cpp",
     "//skia",
+    "//skia:test_fonts",
     "//ui/base/ime:ime_types",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
@@ -354,11 +355,5 @@ static_library("web_test_renderer") {
       "renderer/pixel_dump.h",
     ]
     deps += [ "//printing" ]
-  }
-
-  if (is_fuchsia) {
-    deps += [ "//skia:test_fonts_cfv2" ]
-  } else {
-    deps += [ "//skia:test_fonts" ]
   }
 }
