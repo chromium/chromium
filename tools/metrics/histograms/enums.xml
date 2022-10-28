@@ -78612,6 +78612,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="GMS Core version is not supported."/>
   <int value="7" label="API was successfully called, but returned an error."/>
   <int value="8" label="API was successfully called, but result is unknown."/>
+  <int value="9" label="Downstream implementation not available."/>
 </enum>
 
 <enum name="PasswordStoreAndroidBackendRequestStatus">

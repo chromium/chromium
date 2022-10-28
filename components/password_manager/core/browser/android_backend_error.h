@@ -10,7 +10,11 @@
 namespace password_manager {
 
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused." before the enum and update enums.xml
+// numeric values should never be reused.
+//
+// NOTE: This needs to be manually kept in sync with
+// PasswordStoreAndroidBackendError in enums.xml!
+//
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
 enum class AndroidBackendErrorType {
   kUncategorized = 0,
