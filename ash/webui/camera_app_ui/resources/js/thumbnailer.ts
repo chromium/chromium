@@ -216,7 +216,7 @@ async function getImageFromPdf(blob: Blob): Promise<Blob> {
     }
     if (isImage) {
       i += ' stream\n'.length;
-      return new Blob([buf.slice(i, i + length)]);
+      return new Blob([buf.slice(i, i + length)], {type: 'image/jpeg'});
     }
   }
   throw new NoImageInPdfError();
