@@ -8,12 +8,15 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/sync/mock_sync_service_utils.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_consumer.h"
@@ -77,12 +80,15 @@ class LegacySigninScreenMediatorTest : public PlatformTest {
     identity_service_ =
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &AuthenticationServiceFake::CreateAuthenticationService));
-
+        AuthenticationServiceFactory::GetDefaultFactory());
     browser_state_ = builder.Build();
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<AuthenticationServiceDelegateFake>());
     mediator_ = [[LegacySigninScreenMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(
@@ -91,9 +97,7 @@ class LegacySigninScreenMediatorTest : public PlatformTest {
                                           GetForBrowserState(
                                               browser_state_.get())];
     consumer_ = [[FakeLegacySigninScreenConsumer alloc] init];
-    identity_ = [FakeSystemIdentity identityWithEmail:@"test@email.com"
-                                               gaiaID:@"gaiaID"
-                                                 name:@"Test Name"];
+    identity_ = [FakeSystemIdentity fakeIdentity1];
   }
 
   void TearDown() override {
@@ -209,12 +213,10 @@ TEST_F(LegacySigninScreenMediatorTest, TestProfileUpdate) {
   ASSERT_EQ(identity_.userEmail, consumer_.email);
   ASSERT_EQ(identity_.userFullName, consumer_.userName);
 
-  NSString* email = @"second@email.com";
-  NSString* name = @"Second identity";
-  FakeSystemIdentity* second_identity =
-      [FakeSystemIdentity identityWithEmail:email
-                                     gaiaID:@"second gaiaID"
-                                       name:name];
+  FakeSystemIdentity* const second_identity =
+      [FakeSystemIdentity fakeIdentity2];
+  NSString* const email = second_identity.userEmail;
+  NSString* const name = second_identity.userFullName;
   std::unique_ptr<ios::FakeChromeIdentityService> second_service_unique =
       std::make_unique<ios::FakeChromeIdentityService>();
   ios::FakeChromeIdentityService* second_service = second_service_unique.get();
@@ -231,8 +233,8 @@ TEST_F(LegacySigninScreenMediatorTest, TestProfileUpdate) {
   // Wait for the avatar to be fetched.
   second_service->WaitForServiceCallbacksToComplete();
 
-  NSString* updated_email = @"updated@email.com";
-  NSString* updated_name = @"Second - Updated";
+  NSString* const updated_email = @"updated@email.com";
+  NSString* const updated_name = @"Second - Updated";
 
   second_identity.userEmail = updated_email;
   second_identity.userFullName = updated_name;
