@@ -125,6 +125,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
     GENERATE_CRASH_DUMP,
   };
 
+  enum class NotificationServiceCreatorType {
+    kDocument,
+    kDedicatedWorker,
+    kSharedWorker,
+    kServiceWorker
+  };
+
   // General functions ---------------------------------------------------------
 
   ~RenderProcessHost() override {}
@@ -608,10 +615,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void CreatePaymentManagerForOrigin(
       const url::Origin& origin,
       mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) = 0;
-  // |render_frame_id| is the frame associated with |receiver|, or
-  // MSG_ROUTING_NONE if |receiver| is associated with a worker.
+  // `rfh` is the document associated with the `receiver` if the notification
+  // service is created by a document, or the ancestor document of the worker if
+  // the notification service is created by a dedicated worker, or `nullptr`
+  // otherwise.
   virtual void CreateNotificationService(
-      int render_frame_id,
+      RenderFrameHost* rfh,
+      NotificationServiceCreatorType creator_type,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver) = 0;
   virtual void CreateWebSocketConnector(

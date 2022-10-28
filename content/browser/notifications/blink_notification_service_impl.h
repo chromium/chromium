@@ -13,6 +13,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,6 +47,7 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       const url::Origin& origin,
       const GURL& document_url,
       const WeakDocumentPtr& weak_document_ptr,
+      RenderProcessHost::NotificationServiceCreatorType creator_type,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
 
   BlinkNotificationServiceImpl(const BlinkNotificationServiceImpl&) = delete;
@@ -101,6 +103,12 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       bool success,
       const std::vector<NotificationDatabaseData>& notifications);
 
+  // Returns if the current notification service is valid for displaying and
+  // handling non persistent notifications.
+  // This may report bad message to the receiver and raise connection error if
+  // the checks fail.
+  bool IsValidForNonPersistentNotification();
+
   // The notification context that owns this service instance.
   raw_ptr<PlatformNotificationContextImpl> notification_context_;
 
@@ -113,11 +121,17 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
   // The origin that this notification service is communicating with.
   url::Origin origin_;
   // The document url that this notification service is communicating with.
-  // This is empty when used for a worker.
+  // This is empty when the notification service is created by a worker
+  // (including dedicated workers, thus the URL might not be the same as
+  // document that `weak_document_ptr_` is pointing at).
   const GURL document_url_;
   // The weak document pointer that this notification service is communicating
-  // with. This is valid only for a document.
+  // with. This is either the document that created the notification or the
+  // ancestor document of the dedicated worker that created the notification.
   const WeakDocumentPtr weak_document_ptr_;
+  // The type of the notification service's creator.
+  // See RenderProcessHost::NotificationServiceCreatorType.
+  const RenderProcessHost::NotificationServiceCreatorType creator_type_;
 
   mojo::Receiver<blink::mojom::NotificationService> receiver_;
 

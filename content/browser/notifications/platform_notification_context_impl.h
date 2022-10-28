@@ -22,6 +22,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/platform_notification_context.h"
+#include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
@@ -75,12 +76,16 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   void Shutdown();
 
   // Creates a BlinkNotificationServiceImpl that is owned by this context.
-  // |document_url| is empty when originating from a worker.
+  // The `document_url` will be empty if the service is created by a worker.
+  // The `weak_document_ptr` points to the document if it's the creator of the
+  // notification service, or the worker's ancestor document if the notification
+  // service is created by a dedicated worker, or is `nullptr` otherwise.
   void CreateService(
       RenderProcessHost* render_process_host,
       const url::Origin& origin,
       const GURL& document_url,
       const WeakDocumentPtr& weak_document_ptr,
+      const RenderProcessHost::NotificationServiceCreatorType creator_type,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
 
   // Removes |service| from the list of owned services, for example because the

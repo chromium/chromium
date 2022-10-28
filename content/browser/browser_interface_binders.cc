@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -67,6 +68,9 @@
 #include "content/common/input/input_injector.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/browser/shared_worker_instance.h"
@@ -339,6 +343,54 @@ void BindFileUtilitiesHost(
                      std::move(receiver)));
 }
 
+// Binds the `RenderFrameHost` pointer and the notification service creator type
+// to the notification service creator.
+template <typename WorkerHost>
+base::RepeatingCallback<
+    void(const url::Origin&,
+         mojo::PendingReceiver<blink::mojom::NotificationService>)>
+BindNotificationService(
+    RenderFrameHost* rfh,
+    RenderProcessHost::NotificationServiceCreatorType creator_type,
+    WorkerHost* host) {
+  DCHECK_NE(creator_type,
+            RenderProcessHost::NotificationServiceCreatorType::kServiceWorker);
+  return base::BindRepeating(
+      [](WorkerHost* host, RenderFrameHost* rfh,
+         RenderProcessHost::NotificationServiceCreatorType creator_type,
+         const url::Origin& origin,
+         mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
+        auto* process_host =
+            static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
+        CHECK(process_host);
+        process_host->CreateNotificationService(rfh, creator_type, origin,
+                                                std::move(receiver));
+      },
+      base::Unretained(host), rfh, creator_type);
+}
+
+// Binds the `RenderFrameHost` pointer and the `kServiceWorker` creator type
+// to the notification service creator.
+base::RepeatingCallback<
+    void(const ServiceWorkerVersionBaseInfo&,
+         mojo::PendingReceiver<blink::mojom::NotificationService>)>
+BindNotificationService(ServiceWorkerHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return base::BindRepeating(
+      [](ServiceWorkerHost* host, const ServiceWorkerVersionBaseInfo& info,
+         mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        auto origin = info.storage_key.origin();
+        auto* process_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(host->worker_process_id()));
+        process_host->CreateNotificationService(
+            /*rfh=*/nullptr,
+            RenderProcessHost::NotificationServiceCreatorType::kServiceWorker,
+            origin, std::move(receiver));
+      },
+      base::Unretained(host));
+}
+
 template <typename WorkerHost, typename Interface>
 base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
 BindWorkerReceiver(
@@ -373,28 +425,6 @@ BindWorkerReceiverForOrigin(
             static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
         if (process_host)
           (process_host->*method)(origin, std::move(receiver));
-      },
-      base::Unretained(host), method);
-}
-
-template <typename WorkerHost, typename Interface>
-base::RepeatingCallback<void(const url::Origin&,
-                             mojo::PendingReceiver<Interface>)>
-BindWorkerReceiverForOriginAndFrameId(
-    void (RenderProcessHostImpl::*method)(int,
-                                          const url::Origin&,
-                                          mojo::PendingReceiver<Interface>),
-    WorkerHost* host) {
-  return base::BindRepeating(
-      [](WorkerHost* host,
-         void (RenderProcessHostImpl::*method)(
-             int, const url::Origin&, mojo::PendingReceiver<Interface>),
-         const url::Origin& origin, mojo::PendingReceiver<Interface> receiver) {
-        auto* process_host =
-            static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
-        if (process_host)
-          (process_host->*method)(MSG_ROUTING_NONE, origin,
-                                  std::move(receiver));
       },
       base::Unretained(host), method);
 }
@@ -460,32 +490,6 @@ BindServiceWorkerReceiverForOrigin(
         if (!process_host)
           return;
         (process_host->*method)(origin, std::move(receiver));
-      },
-      base::Unretained(host), method);
-}
-
-template <typename Interface>
-base::RepeatingCallback<void(const ServiceWorkerVersionBaseInfo&,
-                             mojo::PendingReceiver<Interface>)>
-BindServiceWorkerReceiverForOriginAndFrameId(
-    void (RenderProcessHostImpl::*method)(int,
-                                          const url::Origin&,
-                                          mojo::PendingReceiver<Interface>),
-    ServiceWorkerHost* host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return base::BindRepeating(
-      [](ServiceWorkerHost* host,
-         void (RenderProcessHostImpl::*method)(
-             int, const url::Origin&, mojo::PendingReceiver<Interface>),
-         const ServiceWorkerVersionBaseInfo& info,
-         mojo::PendingReceiver<Interface> receiver) {
-        DCHECK_CURRENTLY_ON(BrowserThread::UI);
-        auto origin = info.storage_key.origin();
-        auto* process_host = static_cast<RenderProcessHostImpl*>(
-            RenderProcessHost::FromID(host->worker_process_id()));
-        if (!process_host)
-          return;
-        (process_host->*method)(MSG_ROUTING_NONE, origin, std::move(receiver));
       },
       base::Unretained(host), method);
 }
@@ -1210,10 +1214,12 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
 
-  // RenderProcessHost binders taking a frame id and an origin
-  map->Add<blink::mojom::NotificationService>(
-      BindWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::CreateNotificationService, host));
+  RenderFrameHost* rfh =
+      RenderFrameHost::FromID(host->GetAncestorRenderFrameHostId());
+  CHECK(rfh);
+  map->Add<blink::mojom::NotificationService>(BindNotificationService(
+      rfh, RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
+      host));
 }
 
 void PopulateBinderMap(DedicatedWorkerHost* host, mojo::BinderMap* map) {
@@ -1306,10 +1312,9 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
 
-  // RenderProcessHost binders taking a frame id and an origin
-  map->Add<blink::mojom::NotificationService>(
-      BindWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::CreateNotificationService, host));
+  map->Add<blink::mojom::NotificationService>(BindNotificationService(
+      /*rfh=*/nullptr,
+      RenderProcessHost::NotificationServiceCreatorType::kSharedWorker, host));
 }
 
 void PopulateBinderMap(SharedWorkerHost* host, mojo::BinderMap* map) {
@@ -1432,10 +1437,7 @@ void PopulateBinderMapWithContext(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindQuotaManagerHost, host));
 
-  // RenderProcessHost binders taking a frame id and an origin
-  map->Add<blink::mojom::NotificationService>(
-      BindServiceWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::CreateNotificationService, host));
+  map->Add<blink::mojom::NotificationService>(BindNotificationService(host));
 
   // This is called when `host` is constructed. ServiceWorkerVersion, which
   // constructs `host`, checks that context() is not null and also uses

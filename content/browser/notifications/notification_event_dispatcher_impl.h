@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/notification_event_dispatcher.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -65,13 +66,15 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
       const std::string& notification_id,
       mojo::PendingRemote<blink::mojom::NonPersistentNotificationListener>
           event_listener_remote,
-      const WeakDocumentPtr& event_document_ptr);
+      const WeakDocumentPtr& event_document_ptr,
+      RenderProcessHost::NotificationServiceCreatorType creator_type);
 
  private:
   struct NonPersistentNotificationListenerInfo {
     NonPersistentNotificationListenerInfo(
         mojo::Remote<blink::mojom::NonPersistentNotificationListener> remote,
-        WeakDocumentPtr document);
+        WeakDocumentPtr document,
+        RenderProcessHost::NotificationServiceCreatorType creator_type);
     NonPersistentNotificationListenerInfo(
         NonPersistentNotificationListenerInfo&&);
     NonPersistentNotificationListenerInfo(
@@ -83,7 +86,11 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
     mojo::Remote<blink::mojom::NonPersistentNotificationListener> remote;
     // This is used to determine if the associated document that registers the
     // listeners is in back/forward cache when the event is dispatched.
+    // See weak_document_ptr_ in BlinkNotificationServiceImpl.
     WeakDocumentPtr document;
+    // This is used to determine if the notification service is created by
+    // document, shared worker, dedicated worker or service worker.
+    RenderProcessHost::NotificationServiceCreatorType creator_type;
   };
 
   friend class NotificationEventDispatcherImplTest;

@@ -10825,7 +10825,8 @@ void RenderFrameHostImpl::CreateWebTransportConnector(
 void RenderFrameHostImpl::CreateNotificationService(
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   GetProcess()->CreateNotificationService(
-      GetRoutingID(), GetLastCommittedOrigin(), std::move(receiver));
+      this, RenderProcessHost::NotificationServiceCreatorType::kDocument,
+      GetLastCommittedOrigin(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateInstalledAppProvider(
