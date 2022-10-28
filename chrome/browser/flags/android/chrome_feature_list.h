@@ -54,6 +54,7 @@ BASE_DECLARE_FEATURE(kCCTResizableForFirstParties);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingState);
+BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTShowAboutBlankUrl);
 BASE_DECLARE_FEATURE(kCCTToolbarCustomizations);
 BASE_DECLARE_FEATURE(kDiscardOccludedBitmaps);

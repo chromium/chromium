@@ -6646,6 +6646,10 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kCCTResizableForThirdParties,
          kCCTResizableThirdPartiesDefaultPolicyVariations,
          "CCTResizableThirdPartiesDefaultPolicy")},
+    {"cct-retaining-state-in-memory",
+     flag_descriptions::kCCTRetainingStateInMemoryName,
+     flag_descriptions::kCCTRetainingStateInMemoryDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTRetainingStateInMemory)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

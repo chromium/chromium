@@ -3489,6 +3489,10 @@ const char kCCTResizableAlwaysShowNavBarButtonsName[] =
 const char kCCTResizableAlwaysShowNavBarButtonsDescription[] =
     "The navigation bar buttons will remain visible while a Partial Chrome "
     "Custom Tab is being resized.";
+const char kCCTRetainingStateInMemoryName[] =
+    "Enable restoring of previous Custom Tab session";
+const char kCCTRetainingStateInMemoryDescription[] =
+    "Enables ability to fully restore a recently engaged with Custom Tab.";
 const char kCCTRealTimeEngagementSignalsName[] =
     "Enable CCT real-time engagement signals.";
 const char kCCTRealTimeEngagementSignalsDescription[] =

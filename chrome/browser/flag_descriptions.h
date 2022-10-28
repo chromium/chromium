@@ -1979,6 +1979,9 @@ extern const char kCCTResizableForFirstPartiesDescription[];
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 
+extern const char kCCTRetainingStateInMemoryName[];
+extern const char kCCTRetainingStateInMemoryDescription[];
+
 extern const char kCCTRealTimeEngagementSignalsName[];
 extern const char kCCTRealTimeEngagementSignalsDescription[];
 

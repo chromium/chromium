@@ -904,6 +904,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cct-retaining-state-in-memory",
+    "owners": ["katzz", "wenyufu"],
+    "expiry_milestone": 116
+  },
+  {
     "name": "cellular-bypass-esim-installation-connectivity-check",
     "owners": [ "azeemarshad", "khorimoto", "jiajunz", "cros-connectivity@google.com" ],
     // This flag does not expire because it allows some test cases that host a local SM-DP+ server
