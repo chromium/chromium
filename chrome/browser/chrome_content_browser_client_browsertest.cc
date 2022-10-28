@@ -37,6 +37,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -67,6 +68,16 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/test/base/launchservices_utils_mac.h"
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #endif
 
 namespace {
@@ -619,5 +630,189 @@ IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+
+class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
+ public:
+  IsClipboardPasteContentAllowedTest() {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    // Make sure enterprise policies are set to turn on content analysis.
+    safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                        enterprise_connectors::BULK_DATA_ENTRY,
+                                        kBulkDataEntryPolicyValue);
+    safe_browsing::SetAnalysisConnector(browser()->profile()->GetPrefs(),
+                                        enterprise_connectors::FILE_ATTACHED,
+                                        kFileAttachedPolicyValue);
+
+    enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::FakeContentAnalysisDelegate::Create,
+            base::DoNothing(),
+            base::BindRepeating([](const std::string& contents,
+                                   const base::FilePath& path) {
+              bool success = false;
+              if (!contents.empty()) {
+                success = contents.substr(0, 5) == "allow";
+              } else {
+                success =
+                    path.BaseName().AsUTF8Unsafe().substr(0, 5) == "allow";
+              }
+              return success
+                         ? enterprise_connectors::FakeContentAnalysisDelegate::
+                               SuccessfulResponse({"dlp"})
+                         : enterprise_connectors::FakeContentAnalysisDelegate::
+                               DlpResponse(
+                                   enterprise_connectors::
+                                       ContentAnalysisResponse::Result::SUCCESS,
+                                   "rule-name",
+                                   enterprise_connectors::
+                                       ContentAnalysisResponse::Result::
+                                           TriggeredRule::BLOCK);
+            }),
+            /*dm_token=*/std::string()));
+
+    client_ = static_cast<ChromeContentBrowserClient*>(
+        content::SetBrowserClientForTesting(nullptr));
+    content::SetBrowserClientForTesting(client_);
+  }
+
+  void TearDownOnMainThread() override {
+    client_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  ChromeContentBrowserClient* client() const { return client_; }
+
+  std::string CreateTestFile(const base::FilePath::StringType& filename,
+                             const std::string& content) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath path = temp_dir_.GetPath().Append(filename);
+    base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    file.WriteAtCurrentPos(content.data(), content.size());
+    return path.AsUTF8Unsafe();
+  }
+
+ private:
+  static constexpr char kBulkDataEntryPolicyValue[] = R"(
+  {
+    "service_provider": "local_system_agent",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "minimum_data_size": 1
+  })";
+
+  static constexpr char kFileAttachedPolicyValue[] = R"(
+  {
+    "service_provider": "local_system_agent",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1
+  })";
+
+  base::ScopedTempDir temp_dir_;
+  raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, BitmapAllowed) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::BitmapType(),
+      "bitmap", base::BindOnce([](const absl::optional<std::string>& data) {
+        EXPECT_TRUE(data.has_value());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, TextAllowed) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::PlainTextType(),
+      "allowed", base::BindOnce([](const absl::optional<std::string>& data) {
+        EXPECT_TRUE(data.has_value());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, TextBlocked) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::PlainTextType(),
+      "blocked", base::BindOnce([](const absl::optional<std::string>& data) {
+        EXPECT_FALSE(data.has_value());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, AllFilesAllowed) {
+  std::vector<std::string> paths;
+  paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow0"), "data"));
+  paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow1"), "data"));
+  const std::string string_paths = base::JoinString(paths, "\n");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::FilenamesType(),
+      string_paths,
+      base::BindLambdaForTesting(
+          [string_paths](const absl::optional<std::string>& data) {
+            EXPECT_TRUE(data.has_value());
+            EXPECT_EQ(string_paths, data.value());
+          }));
+}
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, AllFilesBlocked) {
+  std::vector<std::string> paths;
+  paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block0"), "data"));
+  paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block1"), "data"));
+  const std::string string_paths = base::JoinString(paths, "\n");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::FilenamesType(),
+      string_paths,
+      base::BindLambdaForTesting([](const absl::optional<std::string>& data) {
+        EXPECT_FALSE(data.has_value());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, SomeFilesBlocked) {
+  std::vector<std::string> paths;
+  paths.push_back(CreateTestFile(FILE_PATH_LITERAL("allow0"), "data"));
+  paths.push_back(CreateTestFile(FILE_PATH_LITERAL("block1"), "data"));
+  const std::string string_paths = base::JoinString(paths, "\n");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  client()->IsClipboardPasteContentAllowed(
+      contents, GURL("google.com"), ui::ClipboardFormatType::FilenamesType(),
+      string_paths,
+      base::BindLambdaForTesting(
+          [paths](const absl::optional<std::string>& data) {
+            EXPECT_TRUE(data.has_value());
+            EXPECT_EQ(data.value(), paths[0]);
+          }));
+}
+#endif
 
 }  // namespace

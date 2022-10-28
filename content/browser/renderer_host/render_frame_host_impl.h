@@ -302,8 +302,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       content::JavaScriptDialogManager::DialogClosedCallback;
 
   // Callback used with IsClipboardPasteContentAllowed() method.
-  using ClipboardPasteContentAllowed =
-      ContentBrowserClient::ClipboardPasteContentAllowed;
   using IsClipboardPasteContentAllowedCallback =
       ContentBrowserClient::IsClipboardPasteContentAllowedCallback;
 

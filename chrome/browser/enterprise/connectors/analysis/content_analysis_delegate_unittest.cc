@@ -650,7 +650,8 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
         kDmToken));
   }
 
-  ContentAnalysisResponse ConnectorStatusCallback(const base::FilePath& path) {
+  ContentAnalysisResponse ConnectorStatusCallback(const std::string& contents,
+                                                  const base::FilePath& path) {
     // The path succeeds if it is not in the |failures_| maps.
     auto it = failures_.find(path);
     ContentAnalysisResponse response =
@@ -1413,7 +1414,8 @@ class ContentAnalysisDelegateResultHandlingTest
 
   bool is_cloud() const { return std::get<1>(GetParam()); }
 
-  ContentAnalysisResponse ConnectorStatusCallback(const base::FilePath& path) {
+  ContentAnalysisResponse ConnectorStatusCallback(const std::string& contents,
+                                                  const base::FilePath& path) {
     return FakeContentAnalysisDelegate::SuccessfulResponse({"dlp", "malware"});
   }
 

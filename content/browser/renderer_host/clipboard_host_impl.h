@@ -46,10 +46,13 @@ class CONTENT_EXPORT ClipboardHostImpl
  protected:
   // These types and methods are protected for testing.
 
-  using ClipboardPasteContentAllowed =
-      RenderFrameHostImpl::ClipboardPasteContentAllowed;
   using IsClipboardPasteContentAllowedCallback =
       RenderFrameHostImpl::IsClipboardPasteContentAllowedCallback;
+
+  // Represents the underlying type of the argument passed to
+  // IsClipboardPasteContentAllowedCallback without the const& part.
+  using IsClipboardPasteContentAllowedCallbackArgType =
+      absl::optional<std::string>;
 
   // Keeps track of a request to see if some clipboard content, identified by
   // its sequence number, is allowed to be pasted into the RenderFrameHost
@@ -70,7 +73,7 @@ class CONTENT_EXPORT ClipboardHostImpl
 
     // Mark this request as completed with the specified result.
     // Invoke all callbacks now.
-    void Complete(ClipboardPasteContentAllowed allowed);
+    void Complete(IsClipboardPasteContentAllowedCallbackArgType data);
 
     // Returns true if this request is obsolete.  An obsolete request
     // is one that is completed, all registered callbacks have been
@@ -88,7 +91,10 @@ class CONTENT_EXPORT ClipboardHostImpl
     void InvokeCallbacks();
 
     base::Time time_{base::Time::Now()};
-    absl::optional<ClipboardPasteContentAllowed> allowed_;
+
+    // The data argument to pass to the IsClipboardPasteContentAllowedCallback.
+    // This member is null until Complete() is called.
+    absl::optional<IsClipboardPasteContentAllowedCallbackArgType> data_;
     std::vector<IsClipboardPasteContentAllowedCallback> callbacks_;
   };
 
@@ -129,7 +135,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // status for the clipboard data corresponding to sequence number |seqno|.
   void FinishPasteIfContentAllowed(
       const ui::ClipboardSequenceNumberToken& seqno,
-      ClipboardPasteContentAllowed allowed);
+      const absl::optional<std::string>& data);
 
   const std::map<ui::ClipboardSequenceNumberToken,
                  IsPasteContentAllowedRequest>&

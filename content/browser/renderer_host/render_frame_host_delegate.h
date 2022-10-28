@@ -123,8 +123,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Callback used with HandleClipboardPaste() method.  If the clipboard paste
   // is allowed to proceed, the callback is called with true.  Otherwise the
   // callback is called with false.
-  using ClipboardPasteContentAllowed =
-      RenderFrameHostImpl::ClipboardPasteContentAllowed;
   using IsClipboardPasteContentAllowedCallback =
       RenderFrameHostImpl::IsClipboardPasteContentAllowedCallback;
 

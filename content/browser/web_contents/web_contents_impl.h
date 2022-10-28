@@ -750,7 +750,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       IsClipboardPasteContentAllowedCallback callback) override;
   void IsClipboardPasteContentAllowedWrapperCallback(
       IsClipboardPasteContentAllowedCallback callback,
-      ClipboardPasteContentAllowed allowed);
+      const absl::optional<std::string>& data);
   void OnPageScaleFactorChanged(PageImpl& source) override;
   void BindScreenOrientation(
       RenderFrameHost* rfh,

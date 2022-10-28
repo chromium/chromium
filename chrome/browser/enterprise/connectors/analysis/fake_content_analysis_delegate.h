@@ -30,8 +30,12 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   // as the value returned by SuccessfulResponse().  To simulate a file that
   // does not pass a scan return a failed response, such as the value returned
   // by MalwareResponse() or DlpResponse().
+  //
+  // For text requests, contents is not empty and path is empty.
+  // For print requests, both contents and path are empty.
   using StatusCallback =
       base::RepeatingCallback<enterprise_connectors::ContentAnalysisResponse(
+          const std::string& contents,
           const base::FilePath&)>;
 
   FakeContentAnalysisDelegate(base::RepeatingClosure delete_closure,
@@ -92,6 +96,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   // is used to call |status_callback_| to determine if the path should succeed
   // or fail.
   void Response(
+      std::string contents,
       base::FilePath path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
@@ -106,6 +111,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       override;
   bool ShowFinalResultInDialog() override;
   bool CancelDialog() override;
+  safe_browsing::BinaryUploadService* GetBinaryUploadService() override;
 
   // Fake upload callback for deep scanning. Virtual to be overridden by other
   // fakes.

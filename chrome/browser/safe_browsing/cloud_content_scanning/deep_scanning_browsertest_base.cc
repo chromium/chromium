@@ -156,7 +156,8 @@ void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
 }
 
 enterprise_connectors::ContentAnalysisResponse
-DeepScanningBrowserTestBase::StatusCallback(const base::FilePath& path) {
+DeepScanningBrowserTestBase::StatusCallback(const std::string& contents,
+                                            const base::FilePath& path) {
   return connector_status_callback_response_;
 }
 

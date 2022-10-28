@@ -261,11 +261,11 @@ class TtsControllerDelegate;
 // the observer interfaces.)
 class CONTENT_EXPORT ContentBrowserClient {
  public:
-  // Callback used with IsClipboardPasteContentAllowed() method.
-  using ClipboardPasteContentAllowed =
-      base::StrongAlias<class ClipboardPasteContentAllowedTag, bool>;
+  // Callback used with IsClipboardPasteContentAllowed() method.  If the paste
+  // is not allowed, nullopt is passed to the callback.  Otherwise, the data
+  // that should be pasted is passed in.
   using IsClipboardPasteContentAllowedCallback =
-      base::OnceCallback<void(ClipboardPasteContentAllowed)>;
+      base::OnceCallback<void(const absl::optional<std::string>& data)>;
 
   virtual ~ContentBrowserClient() = default;
 
@@ -2166,7 +2166,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // shown, the UX should be associated with the specific WebContents.
   //
   // The callback is called, possibly asynchronously, with a status indicating
-  // whether the operation is allowed or not.
+  // whether the operation is allowed or not.  If the operation is allowed,
+  // the callback is passed the data the can be pasted.
   virtual void IsClipboardPasteContentAllowed(
       content::WebContents* web_contents,
       const GURL& url,

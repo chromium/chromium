@@ -1261,7 +1261,7 @@ void ContentBrowserClient::IsClipboardPasteContentAllowed(
     const ui::ClipboardFormatType& data_type,
     const std::string& data,
     IsClipboardPasteContentAllowedCallback callback) {
-  std::move(callback).Run(ClipboardPasteContentAllowed(true));
+  std::move(callback).Run(data);
 }
 
 bool ContentBrowserClient::IsClipboardCopyAllowed(

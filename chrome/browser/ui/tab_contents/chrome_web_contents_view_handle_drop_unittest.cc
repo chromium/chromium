@@ -84,7 +84,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidTokenForTesting("dm_token"));
     auto callback = base::BindLambdaForTesting(
-        [this](const base::FilePath& path)
+        [this](const std::string& contents, const base::FilePath& path)
             -> enterprise_connectors::ContentAnalysisResponse {
           std::set<std::string> dlp_tag = {"dlp"};
           current_requests_count_++;

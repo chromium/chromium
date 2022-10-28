@@ -9047,8 +9047,8 @@ void WebContentsImpl::IsClipboardPasteContentAllowed(
 
 void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
     IsClipboardPasteContentAllowedCallback callback,
-    ClipboardPasteContentAllowed allowed) {
-  std::move(callback).Run(allowed);
+    const absl::optional<std::string>& data) {
+  std::move(callback).Run(data);
   --suppress_unresponsive_renderer_count_;
 }
 

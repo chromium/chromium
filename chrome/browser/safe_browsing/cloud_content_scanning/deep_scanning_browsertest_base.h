@@ -38,6 +38,7 @@ class DeepScanningBrowserTestBase : public InProcessBrowserTest {
 
   // Callbacks used to set up the fake delegate factory.
   enterprise_connectors::ContentAnalysisResponse StatusCallback(
+      const std::string& contents,
       const base::FilePath& path);
 
   // Creates temporary files for testing in |temp_dir_|, and add them to |data|.

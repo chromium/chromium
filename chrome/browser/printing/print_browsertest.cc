@@ -3634,6 +3634,7 @@ class ContentAnalysisPrintBrowserTest
   bool content_analysis_allows_print() const { return GetParam(); }
 
   enterprise_connectors::ContentAnalysisResponse ScanningResponse(
+      const std::string& contents,
       const base::FilePath& path) {
     enterprise_connectors::ContentAnalysisResponse response;
 

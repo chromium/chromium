@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -172,6 +173,7 @@ FakeContentAnalysisDelegate::MalwareAndDlpResponse(
 }
 
 void FakeContentAnalysisDelegate::Response(
+    std::string contents,
     base::FilePath path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
     absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
@@ -180,7 +182,7 @@ void FakeContentAnalysisDelegate::Response(
       (status_callback_.is_null() ||
        result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
           ? enterprise_connectors::ContentAnalysisResponse()
-          : status_callback_.Run(path);
+          : status_callback_.Run(contents, path);
   if (request->IsAuthRequest()) {
     StringRequestCallback(result_, response);
     return;
@@ -206,14 +208,25 @@ void FakeContentAnalysisDelegate::Response(
 
 void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
-  DCHECK_EQ(dm_token_, request->device_token());
+  if (GetDataForTesting()
+          .settings.cloud_or_local_settings.is_cloud_analysis()) {
+    DCHECK_EQ(dm_token_, request->device_token());
+  }
+
+  // For text requests, GetRequestData() is synchronous.
+  safe_browsing::BinaryUploadService::Request::Data data;
+  request->GetRequestData(base::BindLambdaForTesting(
+      [&data](safe_browsing::BinaryUploadService::Result,
+              safe_browsing::BinaryUploadService::Request::Data data_arg) {
+        data = std::move(data_arg);
+      }));
 
   // Simulate a response.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
-                     weakptr_factory_.GetWeakPtr(), base::FilePath(),
-                     std::move(request), absl::nullopt),
+                     weakptr_factory_.GetWeakPtr(), data.contents,
+                     base::FilePath(), std::move(request), absl::nullopt),
       response_delay);
 }
 
@@ -232,21 +245,24 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
-                     weakptr_factory_.GetWeakPtr(), path, std::move(request),
-                     std::move(callback)),
+                     weakptr_factory_.GetWeakPtr(), std::string(), path,
+                     std::move(request), std::move(callback)),
       response_delay);
 }
 
 void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
-  DCHECK_EQ(dm_token_, request->device_token());
+  if (GetDataForTesting()
+          .settings.cloud_or_local_settings.is_cloud_analysis()) {
+    DCHECK_EQ(dm_token_, request->device_token());
+  }
 
   // Simulate a response.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
-                     weakptr_factory_.GetWeakPtr(), base::FilePath(),
-                     std::move(request), absl::nullopt),
+                     weakptr_factory_.GetWeakPtr(), std::string(),
+                     base::FilePath(), std::move(request), absl::nullopt),
       response_delay);
 }
 
@@ -258,6 +274,12 @@ bool FakeContentAnalysisDelegate::ShowFinalResultInDialog() {
 bool FakeContentAnalysisDelegate::CancelDialog() {
   dialog_canceled_ = true;
   return ContentAnalysisDelegate::CancelDialog();
+}
+
+safe_browsing::BinaryUploadService*
+FakeContentAnalysisDelegate::GetBinaryUploadService() {
+  // This class overrides the upload service, so just return null here.
+  return nullptr;
 }
 
 }  // namespace enterprise_connectors
