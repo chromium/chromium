@@ -2678,11 +2678,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   bool context_was_lost_;
   bool reset_by_robustness_extension_;
-  bool supports_post_sub_buffer_;
-  bool supports_swap_buffers_with_bounds_;
-  bool supports_commit_overlay_planes_;
   bool supports_async_swap_;
-  bool supports_dc_layers_ = false;
 
   // These flags are used to override the state of the shared feature_info_
   // member.  Because the same FeatureInfo instance may be shared among many
@@ -3457,9 +3453,6 @@ GLES2DecoderImpl::GLES2DecoderImpl(
       frame_number_(0),
       context_was_lost_(false),
       reset_by_robustness_extension_(false),
-      supports_post_sub_buffer_(false),
-      supports_swap_buffers_with_bounds_(false),
-      supports_commit_overlay_planes_(false),
       supports_async_swap_(false),
       derivatives_explicitly_enabled_(false),
       fbo_render_mipmap_explicitly_enabled_(false),
@@ -4045,19 +4038,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
     }
   }
 
-  supports_post_sub_buffer_ = surface->SupportsPostSubBuffer();
-  if (workarounds()
-          .disable_post_sub_buffers_for_onscreen_surfaces &&
-      !surface->IsOffscreen())
-    supports_post_sub_buffer_ = false;
-
-  supports_swap_buffers_with_bounds_ = surface->SupportsSwapBuffersWithBounds();
-
-  supports_commit_overlay_planes_ = surface->SupportsCommitOverlayPlanes();
-
   supports_async_swap_ = surface->SupportsAsyncSwap();
-
-  supports_dc_layers_ = !offscreen && surface->SupportsDCLayers();
 
   if (workarounds().unbind_fbo_on_context_switch) {
     context_->SetUnbindFboOnMakeCurrent();
@@ -4219,20 +4200,11 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->feature_flags().oes_egl_image_external;
   caps.egl_image_external_essl3 =
       feature_info_->feature_flags().oes_egl_image_external_essl3;
-  caps.texture_format_astc =
-      feature_info_->feature_flags().ext_texture_format_astc;
-  caps.texture_format_atc =
-      feature_info_->feature_flags().ext_texture_format_atc;
   caps.texture_format_bgra8888 =
       feature_info_->feature_flags().ext_texture_format_bgra8888;
-  caps.texture_format_dxt1 =
-      feature_info_->feature_flags().ext_texture_format_dxt1;
-  caps.texture_format_dxt5 =
-      feature_info_->feature_flags().ext_texture_format_dxt5;
-  caps.texture_format_etc1 =
-      feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.texture_format_etc1_npot =
-      caps.texture_format_etc1 && !workarounds().etc1_power_of_two_only;
+      feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture &&
+      !workarounds().etc1_power_of_two_only;
   // Vulkan currently doesn't support single-component cross-thread shared
   // images.
   caps.disable_one_component_textures =
@@ -4240,24 +4212,8 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       group_->shared_image_manager()->display_context_on_another_thread() &&
       (workarounds().avoid_one_component_egl_images ||
        features::IsUsingVulkan());
-  caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
-  caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
-  caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;
-  caps.discard_framebuffer =
-      feature_info_->feature_flags().ext_discard_framebuffer;
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
-  caps.chromium_image_rgb_emulation = ChromiumImageNeedsRGBEmulation();
-#if BUILDFLAG(IS_MAC)
-  // This is unconditionally true on mac, no need to test for it at runtime.
-  caps.iosurface = true;
-#endif
-  caps.use_gpu_fences_for_overlay_planes = surface_->SupportsPlaneGpuFences();
-
-  caps.post_sub_buffer = supports_post_sub_buffer_;
-  caps.swap_buffers_with_bounds = supports_swap_buffers_with_bounds_;
-  caps.commit_overlay_planes = supports_commit_overlay_planes_;
-  caps.surfaceless = surfaceless_;
   bool is_offscreen = !!offscreen_target_frame_buffer_.get();
   caps.surface_origin =
       !is_offscreen ? surface_->GetOrigin() : gfx::SurfaceOrigin::kBottomLeft;
@@ -4268,20 +4224,10 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.avoid_stencil_buffers = workarounds().avoid_stencil_buffers;
   caps.multisample_compatibility =
       feature_info_->feature_flags().ext_multisample_compatibility;
-  caps.dc_layers = supports_dc_layers_;
-  caps.protected_video_swap_chain = surface_->SupportsProtectedVideo();
-  caps.gpu_vsync = surface_->SupportsGpuVSync();
-  caps.blend_equation_advanced =
-      feature_info_->feature_flags().blend_equation_advanced;
-  caps.blend_equation_advanced_coherent =
-      feature_info_->feature_flags().blend_equation_advanced_coherent;
   caps.texture_rg = feature_info_->feature_flags().ext_texture_rg;
   caps.texture_norm16 = feature_info_->feature_flags().ext_texture_norm16;
   caps.texture_half_float_linear =
       feature_info_->oes_texture_half_float_linear_available();
-  caps.color_buffer_half_float_rgba =
-      feature_info_->ext_color_buffer_float_available() ||
-      feature_info_->ext_color_buffer_half_float_available();
   caps.image_ycbcr_422 =
       feature_info_->feature_flags().chromium_image_ycbcr_422;
   caps.image_ycbcr_420v =
@@ -4314,11 +4260,8 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->feature_flags().texture_storage_image;
   caps.supports_oop_raster = false;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
-  caps.separate_stencil_ref_mask_writemask =
-      feature_info_->feature_flags().separate_stencil_ref_mask_writemask;
   caps.chromium_nonblocking_readback =
       feature_info_->context_type() == CONTEXT_TYPE_WEBGL2;
-  caps.num_surface_buffers = surface_->GetBufferCount();
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
   caps.disable_legacy_mailbox =
@@ -6399,21 +6342,6 @@ void GLES2DecoderImpl::OnUseFramebuffer() const {
   if (!state_.fbo_binding_for_scissor_workaround_dirty)
     return;
   state_.fbo_binding_for_scissor_workaround_dirty = false;
-
-  if (supports_dc_layers_) {
-    gfx::Vector2d draw_offset = GetBoundFramebufferDrawOffset();
-    api()->glViewportFn(state_.viewport_x + draw_offset.x(),
-                        state_.viewport_y + draw_offset.y(),
-                        state_.viewport_width, state_.viewport_height);
-  }
-
-  if (supports_dc_layers_) {
-    // The driver forgets the correct scissor when modifying the FBO binding.
-    gfx::Vector2d scissor_offset = GetBoundFramebufferDrawOffset();
-    api()->glScissorFn(state_.scissor_x + scissor_offset.x(),
-                       state_.scissor_y + scissor_offset.y(),
-                       state_.scissor_width, state_.scissor_height);
-  }
 
   if (workarounds().force_update_scissor_state_when_binding_fbo0 &&
       GetBoundDrawFramebufferServiceId() == 0) {

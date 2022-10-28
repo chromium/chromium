@@ -127,34 +127,14 @@ struct GPU_EXPORT Capabilities {
   int num_extensions = 0;
   int num_program_binary_formats = 0;
   int uniform_buffer_offset_alignment = 1;
-  // Describes how many buffers a surface uses in the swap chain. Default to 2
-  // since double buffering is the default in most cases.
-  int num_surface_buffers = 2;
-
-  bool post_sub_buffer = false;
-  bool swap_buffers_with_bounds = false;
-  bool commit_overlay_planes = false;
   bool egl_image_external = false;
   bool egl_image_external_essl3 = false;
-  bool texture_format_astc = false;
-  bool texture_format_atc = false;
   bool texture_format_bgra8888 = false;
-  bool texture_format_dxt1 = false;
-  bool texture_format_dxt5 = false;
-  bool texture_format_etc1 = false;
   bool texture_format_etc1_npot = false;
-  bool texture_rectangle = false;
-  bool iosurface = false;
-  bool texture_usage = false;
-  bool texture_storage = false;
-  bool discard_framebuffer = false;
   bool sync_query = false;
-  bool blend_equation_advanced = false;
-  bool blend_equation_advanced_coherent = false;
   bool texture_rg = false;
   bool texture_norm16 = false;
   bool texture_half_float_linear = false;
-  bool color_buffer_half_float_rgba = false;
   bool image_ycbcr_422 = false;
   bool image_ycbcr_420v = false;
   bool image_ycbcr_420v_disabled_for_video_frames = false;
@@ -165,27 +145,15 @@ struct GPU_EXPORT Capabilities {
   bool occlusion_query = false;
   bool occlusion_query_boolean = false;
   bool timer_queries = false;
-  bool surfaceless = false;
   gfx::SurfaceOrigin surface_origin = gfx::SurfaceOrigin::kBottomLeft;
   bool msaa_is_slow = false;
   bool disable_one_component_textures = false;
   bool gpu_rasterization = false;
   bool avoid_stencil_buffers = false;
   bool multisample_compatibility = false;
-  // True if DirectComposition layers are enabled.
-  bool dc_layers = false;
-  bool protected_video_swap_chain = false;
-  bool gpu_vsync = false;
   bool shared_image_d3d = false;
   bool shared_image_swap_chain = false;
   bool angle_rgbx_internal_format = false;
-
-  // When this parameter is true, a CHROMIUM image created with RGB format will
-  // actually have RGBA format. The client is responsible for handling most of
-  // the complexities associated with this. See
-  // gpu/GLES2/extensions/CHROMIUM/CHROMIUM_image.txt for more
-  // details.
-  bool chromium_image_rgb_emulation = false;
 
   bool disable_2d_canvas_copy_on_write = false;
 
@@ -196,10 +164,6 @@ struct GPU_EXPORT Capabilities {
   bool supports_oop_raster = false;
 
   bool chromium_gpu_fence = false;
-
-  bool separate_stencil_ref_mask_writemask = false;
-
-  bool use_gpu_fences_for_overlay_planes = false;
 
   bool chromium_nonblocking_readback = false;
 

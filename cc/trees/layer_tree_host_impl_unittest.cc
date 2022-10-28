@@ -11268,7 +11268,6 @@ class FakeDrawableLayerImpl : public LayerImpl {
 // the sub-buffer that is damaged.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
   auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
-  gl_owned->set_have_post_sub_buffer(true);
   scoped_refptr<viz::TestContextProvider> context_provider(
       viz::TestContextProvider::Create(std::move(gl_owned)));
   context_provider->BindToCurrentSequence();

@@ -1179,7 +1179,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
   caps.texture_storage_image = texture_storage_image_enabled_;
-  caps.texture_storage = feature_info()->feature_flags().ext_texture_storage;
   // TODO(piman): have a consistent limit in shared image backings.
   // https://crbug.com/960588
   if (shared_context_state_->GrContextIsGL()) {

@@ -1641,20 +1641,11 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->feature_flags().oes_egl_image_external;
   caps.egl_image_external_essl3 =
       feature_info_->feature_flags().oes_egl_image_external_essl3;
-  caps.texture_format_astc =
-      feature_info_->feature_flags().ext_texture_format_astc;
-  caps.texture_format_atc =
-      feature_info_->feature_flags().ext_texture_format_atc;
   caps.texture_format_bgra8888 =
       feature_info_->feature_flags().ext_texture_format_bgra8888;
-  caps.texture_format_dxt1 =
-      feature_info_->feature_flags().ext_texture_format_dxt1;
-  caps.texture_format_dxt5 =
-      feature_info_->feature_flags().ext_texture_format_dxt5;
-  caps.texture_format_etc1 =
-      feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
+
   caps.texture_format_etc1_npot =
-      caps.texture_format_etc1 &&
+      feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture &&
       !feature_info_->workarounds().etc1_power_of_two_only;
   // Vulkan currently doesn't support single-component cross-thread shared
   // images.
@@ -1662,27 +1653,11 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       group_->shared_image_manager() &&
       group_->shared_image_manager()->display_context_on_another_thread() &&
       features::IsUsingVulkan();
-  caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
-  caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
-  caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;
-  caps.discard_framebuffer =
-      feature_info_->feature_flags().ext_discard_framebuffer;
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
-#if BUILDFLAG(IS_MAC)
-  // This is unconditionally true on mac, no need to test for it at runtime.
-  caps.iosurface = true;
-#endif
-  caps.blend_equation_advanced =
-      feature_info_->feature_flags().blend_equation_advanced;
-  caps.blend_equation_advanced_coherent =
-      feature_info_->feature_flags().blend_equation_advanced_coherent;
   caps.texture_rg = feature_info_->feature_flags().ext_texture_rg;
   caps.texture_norm16 = feature_info_->feature_flags().ext_texture_norm16;
   caps.texture_half_float_linear =
       feature_info_->feature_flags().enable_texture_half_float_linear;
-  caps.color_buffer_half_float_rgba =
-      feature_info_->ext_color_buffer_float_available() ||
-      feature_info_->ext_color_buffer_half_float_available();
   caps.image_ycbcr_422 =
       feature_info_->feature_flags().chromium_image_ycbcr_422;
   caps.image_ycbcr_420v =
@@ -1710,11 +1685,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       group_->gpu_feature_info()
           .status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
       kGpuFeatureStatusEnabled;
-  caps.post_sub_buffer = surface_->SupportsPostSubBuffer();
-  caps.swap_buffers_with_bounds = surface_->SupportsSwapBuffersWithBounds();
-  caps.surfaceless = !offscreen_ && surface_->IsSurfaceless();
-  caps.surface_origin =
-      !offscreen_ ? surface_->GetOrigin() : gfx::SurfaceOrigin::kBottomLeft;
   caps.msaa_is_slow =
       base::FeatureList::IsEnabled(features::kEnableMSAAOnNewIntelGPUs)
           ? feature_info_->workarounds().msaa_is_slow_2
@@ -1723,11 +1693,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->workarounds().avoid_stencil_buffers;
   caps.multisample_compatibility =
       feature_info_->feature_flags().ext_multisample_compatibility;
-  caps.dc_layers = !offscreen_ && surface_->SupportsDCLayers();
-  caps.use_gpu_fences_for_overlay_planes = surface_->SupportsPlaneGpuFences();
-  caps.commit_overlay_planes = surface_->SupportsCommitOverlayPlanes();
-  caps.protected_video_swap_chain = surface_->SupportsProtectedVideo();
-  caps.gpu_vsync = surface_->SupportsGpuVSync();
 #if BUILDFLAG(IS_WIN)
   caps.shared_image_d3d = D3DImageBackingFactory::IsD3DSharedImageSupported(
       group_->gpu_preferences());
@@ -1739,7 +1704,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->feature_flags().texture_storage_image;
   caps.chromium_gpu_fence = feature_info_->feature_flags().chromium_gpu_fence;
   caps.chromium_nonblocking_readback = true;
-  caps.num_surface_buffers = surface_->GetBufferCount();
   caps.gpu_memory_buffer_formats =
       feature_info_->feature_flags().gpu_memory_buffer_formats;
   caps.texture_target_exception_list =

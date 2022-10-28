@@ -94,7 +94,6 @@ class LayerTreeHostContextTest : public LayerTreeTest {
 
     auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
     if (context_should_support_io_surface_) {
-      gl_owned->set_have_extension_io_surface(true);
       gl_owned->set_have_extension_egl_image(true);
     }
 

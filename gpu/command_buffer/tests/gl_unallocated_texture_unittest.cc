@@ -93,28 +93,4 @@ TEST_F(GLUnallocatedTextureTest, RenderUnallocatedTextureExternal) {
   glDeleteProgram(program);
 }
 
-// Test that we can render with GL_TEXTURE_RECTANGLE_ARB textures that are
-// unallocated. This should not generate errors or assert.
-TEST_F(GLUnallocatedTextureTest, RenderUnallocatedTextureRectange) {
-  if (!gl_.GetCapabilities().texture_rectangle) {
-    LOG(INFO) << "GL_ARB_texture_rectangle not supported, skipping test";
-    return;
-  }
-  constexpr const char kFragmentShader[] =
-      "#extension GL_ARB_texture_rectangle : enable\n"
-      "uniform sampler2DRect sampler;\n"
-      "void main() {\n"
-      "  gl_FragColor = texture2DRect(sampler, vec2(0.0, 0.0));\n"
-      "}\n";
-  GLuint program = MakeProgram(kFragmentShader);
-  ASSERT_TRUE(program);
-  GLuint texture = MakeUninitializedTexture(GL_TEXTURE_RECTANGLE_ARB);
-
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
-
-  glDeleteTextures(1, &texture);
-  glDeleteProgram(program);
-}
-
 }  // namespace gpu

@@ -109,15 +109,7 @@ TEST_F(GLTest, FeatureFlagsMatchCapabilities) {
   const auto& flags = features->feature_flags();
   EXPECT_EQ(caps.egl_image_external, flags.oes_egl_image_external);
   EXPECT_EQ(caps.texture_format_bgra8888, flags.ext_texture_format_bgra8888);
-  EXPECT_EQ(caps.texture_format_etc1, flags.oes_compressed_etc1_rgb8_texture);
-  EXPECT_EQ(caps.texture_rectangle, flags.arb_texture_rectangle);
-  EXPECT_EQ(caps.texture_usage, flags.angle_texture_usage);
-  EXPECT_EQ(caps.texture_storage, flags.ext_texture_storage);
-  EXPECT_EQ(caps.discard_framebuffer, flags.ext_discard_framebuffer);
   EXPECT_EQ(caps.sync_query, flags.chromium_sync_query);
-  EXPECT_EQ(caps.blend_equation_advanced, flags.blend_equation_advanced);
-  EXPECT_EQ(caps.blend_equation_advanced_coherent,
-            flags.blend_equation_advanced_coherent);
   EXPECT_EQ(caps.texture_rg, flags.ext_texture_rg);
   EXPECT_EQ(caps.image_ycbcr_422, flags.chromium_image_ycbcr_422);
   EXPECT_EQ(caps.image_ycbcr_420v, flags.chromium_image_ycbcr_420v);

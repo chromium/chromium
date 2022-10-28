@@ -435,53 +435,16 @@ void TestGLES2Interface::set_times_bind_texture_succeeds(int times) {
   times_bind_texture_succeeds_ = times;
 }
 
-void TestGLES2Interface::set_have_extension_io_surface(bool have) {
-  test_capabilities_.iosurface = have;
-  test_capabilities_.texture_rectangle = have;
-}
-
 void TestGLES2Interface::set_have_extension_egl_image(bool have) {
   test_capabilities_.egl_image_external = have;
-}
-
-void TestGLES2Interface::set_have_post_sub_buffer(bool have) {
-  test_capabilities_.post_sub_buffer = have;
-}
-
-void TestGLES2Interface::set_have_swap_buffers_with_bounds(bool have) {
-  test_capabilities_.swap_buffers_with_bounds = have;
-}
-
-void TestGLES2Interface::set_have_commit_overlay_planes(bool have) {
-  test_capabilities_.commit_overlay_planes = have;
-}
-
-void TestGLES2Interface::set_have_discard_framebuffer(bool have) {
-  test_capabilities_.discard_framebuffer = have;
-}
-
-void TestGLES2Interface::set_support_compressed_texture_etc1(bool support) {
-  test_capabilities_.texture_format_etc1 = support;
 }
 
 void TestGLES2Interface::set_support_texture_format_bgra8888(bool support) {
   test_capabilities_.texture_format_bgra8888 = support;
 }
 
-void TestGLES2Interface::set_support_texture_storage(bool support) {
-  test_capabilities_.texture_storage = support;
-}
-
-void TestGLES2Interface::set_support_texture_usage(bool support) {
-  test_capabilities_.texture_usage = support;
-}
-
 void TestGLES2Interface::set_support_sync_query(bool support) {
   test_capabilities_.sync_query = support;
-}
-
-void TestGLES2Interface::set_support_texture_rectangle(bool support) {
-  test_capabilities_.texture_rectangle = support;
 }
 
 void TestGLES2Interface::set_support_texture_half_float_linear(bool support) {
