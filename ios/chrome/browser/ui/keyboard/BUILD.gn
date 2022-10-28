@@ -33,7 +33,10 @@ source_set("features") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "UIKeyCommand+ChromeTest.mm" ]
+  sources = [
+    "UIKeyCommand+ChromeTest.mm",
+    "menu_builder_unittest.mm",
+  ]
   deps = [
     ":keyboard",
     "//base",
