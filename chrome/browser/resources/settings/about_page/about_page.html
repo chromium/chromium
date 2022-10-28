@@ -81,14 +81,16 @@
             </div>
             <a hidden$="[[!shouldShowLearnMoreLink_(
                 currentUpdateStatusEvent_)]]" target="_blank"
-                href="https://support.google.com/chrome?p=update_error">
+                href="https://support.google.com/chrome?p=update_error"
+                aria-label="$i18nPolymer{aboutLearnMoreUpdatingErrors}">
               $i18n{learnMore}
             </a>
           </div>
           <span id="deprecationWarning"
               hidden="[[!obsoleteSystemInfo_.obsolete]]">
             $i18n{aboutObsoleteSystem}
-            <a href="$i18n{aboutObsoleteSystemURL}" target="_blank">
+            <a href="$i18n{aboutObsoleteSystemURL}" target="_blank"
+                aria-label="$i18nPolymer{aboutLearnMoreSystemRequirements}">
               $i18n{learnMore}
             </a>
           </span>
@@ -115,7 +117,8 @@
             [[promoteUpdaterStatus_.text]]
             <a href="https://support.google.com/chrome/answer/95414"
                 target="_blank" id="updaterLearnMore"
-                on-click="onLearnMoreTap_">
+                on-click="onLearnMoreTap_"
+                aria-label="$i18nPolymer{aboutLearnMoreUpdating}">
               $i18n{learnMore}
             </a>
           </div>

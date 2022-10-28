@@ -292,6 +292,13 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
     {"aboutGetHelpUsingChrome", IDS_SETTINGS_GET_HELP_USING_CHROME},
     {"aboutPageTitle", IDS_SETTINGS_ABOUT_PROGRAM},
     {"aboutProductTitle", IDS_PRODUCT_NAME},
+    {"aboutLearnMoreUpdatingErrors",
+     IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_UPDATE_ERRORS},
+    {"aboutLearnMoreSystemRequirements",
+     IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_SYSTEM_REQUIREMENTS},
+#if BUILDFLAG(IS_MAC)
+    {"aboutLearnMoreUpdating", IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_UPDATING},
+#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

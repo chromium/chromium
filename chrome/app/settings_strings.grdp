@@ -23,6 +23,12 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION" desc="The text label describing the version of the browser, example: Version 57.0.2937.0 (Developer Build) unknown (64-bit)">
     Version <ph name="PRODUCT_VERSION">$1<ex>15.0.865.0</ex></ph> (<ph name="PRODUCT_CHANNEL">$2<ex>Developer Build</ex></ph>) <ph name="PRODUCT_MODIFIER">$3</ph> <ph name="PRODUCT_VERSION_BITS">$4</ph>
   </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_UPDATE_ERRORS" desc="The accessibility label for a 'Learn more' link next to an error message about how an update has failed.">
+    Learn more about fixing update errors
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_SYSTEM_REQUIREMENTS" desc="The accessibility label for a 'Learn more' link next to an error message about how the user's operating system is not supported.">
+    Learn more about system requirements
+  </message>
   <if expr="not chromeos_ash">
     <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
       Relaunch
@@ -41,7 +47,10 @@
       Automatically update Chrome for all users
     </message>
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL_IS_ON" desc="The text in About Page to indicate automatic update is turned on.  Mac-only.">
-      Automatic updates are turned on
+      Automatic updates are turned on.
+    </message>
+    <message name="IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_UPDATING" desc="The accessibility label for a 'Learn more' link next to a message saying automatic updates are turned on.  Mac-only">
+      Learn more about updating
     </message>
   </if>
 
