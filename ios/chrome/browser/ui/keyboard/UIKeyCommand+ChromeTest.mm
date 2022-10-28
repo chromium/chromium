@@ -40,7 +40,15 @@ void Verify(UIKeyCommand* command,
   EXPECT_NSEQ(command.discoverabilityTitle, command.title);
 }
 
-// Tests that UIKeyCommand-s are correctly created.
+// Returns a UIKeyCommand with the given input, no modifiers, and a no-op
+// action.
+UIKeyCommand* KeyCommand(NSString* input) {
+  return [UIKeyCommand keyCommandWithInput:input
+                             modifierFlags:0
+                                    action:@selector(self)];
+}
+
+// Checks that UIKeyCommand-s are correctly created.
 TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_openNewTab, @"⌘T", @"keyCommand_openNewTab",
          IDS_IOS_TOOLS_MENU_NEW_TAB);
@@ -49,6 +57,8 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_openNewIncognitoTab, @"⇧⌘N",
          @"keyCommand_openNewIncognitoTab",
          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+  Verify(UIKeyCommand.cr_openNewWindow, @"⌥⌘N", @"keyCommand_openNewWindow",
+         IDS_IOS_KEYBOARD_NEW_WINDOW);
   Verify(UIKeyCommand.cr_reopenLastClosedTab, @"⇧⌘T",
          @"keyCommand_reopenLastClosedTab", IDS_IOS_KEYBOARD_REOPEN_CLOSED_TAB);
   Verify(UIKeyCommand.cr_openFindInPage, @"⌘F", @"keyCommand_openFindInPage",
@@ -134,6 +144,34 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
     Verify(UIKeyCommand.cr_goBack_2, @"⌘→", @"keyCommand_goBack");
     Verify(UIKeyCommand.cr_goForward_2, @"⌘←", @"keyCommand_goForward");
   }
+}
+
+// Checks that modifiers in the symbolic description are correct (correct symbol
+// and correct order).
+TEST_F(UIKeyCommandChromeTest, SymbolicDescription_Modifiers) {
+  UIKeyCommand* fullModifiers = [UIKeyCommand
+      keyCommandWithInput:@"a"
+            modifierFlags:UIKeyModifierNumericPad | UIKeyModifierControl |
+                          UIKeyModifierAlternate | UIKeyModifierShift |
+                          UIKeyModifierAlphaShift | UIKeyModifierCommand
+                   action:@selector(self)];
+
+  EXPECT_NSEQ(@"Num lock ⌃⌥⇧⇪⌘A", fullModifiers.cr_symbolicDescription);
+}
+
+// Checks that inputs in the symbolic description are correct (correct
+// capitalization and symbolization).
+TEST_F(UIKeyCommandChromeTest, SymbolicDescription_Inputs) {
+  EXPECT_NSEQ(@"A", KeyCommand(@"a").cr_symbolicDescription);
+  EXPECT_NSEQ(@"⌫", KeyCommand(@"\b").cr_symbolicDescription);
+  EXPECT_NSEQ(@"↵", KeyCommand(@"\r").cr_symbolicDescription);
+  EXPECT_NSEQ(@"⇥", KeyCommand(@"\t").cr_symbolicDescription);
+  EXPECT_NSEQ(@"↑", KeyCommand(@"UIKeyInputUpArrow").cr_symbolicDescription);
+  EXPECT_NSEQ(@"↓", KeyCommand(@"UIKeyInputDownArrow").cr_symbolicDescription);
+  EXPECT_NSEQ(@"←", KeyCommand(@"UIKeyInputLeftArrow").cr_symbolicDescription);
+  EXPECT_NSEQ(@"→", KeyCommand(@"UIKeyInputRightArrow").cr_symbolicDescription);
+  EXPECT_NSEQ(@"⎋", KeyCommand(@"UIKeyInputEscape").cr_symbolicDescription);
+  EXPECT_NSEQ(@"␣", KeyCommand(@" ").cr_symbolicDescription);
 }
 
 }  // namespace
