@@ -891,6 +891,13 @@ void LocalFrame::HookBackForwardCacheEviction() {
             if (frame) {
               frame->EvictFromBackForwardCache(
                   mojom::blink::RendererEvictionReason::kJavaScriptExecution);
+              if (base::FeatureList::IsEnabled(
+                      features::
+                          kBackForwardCacheNotReachedOnJavaScriptExecution)) {
+                // Adding |NOTREACHED()| here to make sure this is not happening
+                // in any tests, except for when this is expected.
+                NOTREACHED();
+              }
             }
           });
 }

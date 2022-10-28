@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -80,6 +81,9 @@ class LocalFrameBackForwardCacheTest : public testing::Test,
 // frame state is immutable when the frame is in the bfcache.
 // (https://www.chromestatus.com/feature/5815270035685376).
 TEST_F(LocalFrameBackForwardCacheTest, EvictionOnV8ExecutionAtMicrotask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kBackForwardCacheNotReachedOnJavaScriptExecution);
   frame_test_helpers::TestWebFrameClient web_frame_client;
   TestLocalFrameBackForwardCacheClient frame_host(
       web_frame_client.GetRemoteNavigationAssociatedInterfaces());

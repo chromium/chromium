@@ -176,6 +176,9 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
                             "grace_period_to_finish_loading_in_seconds",
                             base::NumberToString(INT_MAX));
+  // Do not trigger NotReached() for JavaScript execution.
+  DisableFeature(
+      blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution);
 #if BUILDFLAG(IS_ANDROID)
   EnableFeatureAndSetParams(features::kBackForwardCache,
                             "process_binding_strength", "NORMAL");
