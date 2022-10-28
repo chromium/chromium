@@ -11,10 +11,12 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_metrics.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
@@ -76,15 +78,25 @@ void NativeTheme::RemoveObserver(NativeThemeObserver* observer) {
 }
 
 void NativeTheme::NotifyOnNativeThemeUpdated() {
+  base::ElapsedTimer timer;
+  auto& color_provider_manager = ui::ColorProviderManager::Get();
+  const size_t initial_providers_initialized =
+      color_provider_manager.num_providers_initialized();
+
   // This specific method is prone to being mistakenly called on the wrong
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Reset the ColorProviderManager's cache so that ColorProviders requested
   // from this point onwards incorporate the changes to the system theme.
-  ui::ColorProviderManager::Get().ResetColorProviderCache();
+  color_provider_manager.ResetColorProviderCache();
   for (NativeThemeObserver& observer : native_theme_observers_)
     observer.OnNativeThemeUpdated(this);
+
+  RecordNumColorProvidersInitializedDuringOnNativeThemeUpdated(
+      color_provider_manager.num_providers_initialized() -
+      initial_providers_initialized);
+  RecordTimeSpentProcessingOnNativeThemeUpdatedEvent(timer.Elapsed());
 }
 
 void NativeTheme::NotifyOnCaptionStyleUpdated() {

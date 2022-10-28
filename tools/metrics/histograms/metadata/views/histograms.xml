@@ -36,6 +36,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
+    units="providers" expires_after="2023-04-16">
+  <owner>pksasting@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <summary>
+    Records the number of ColorProvider instances constructed and initialized by
+    the ColorProviderManager following a NativeTheme update in a {Process}
+    process. Emitted after the NotifyOnNativeThemeUpdated() event has been
+    processed.
+  </summary>
+  <token key="Process">
+    <variant name="Browser"/>
+    <variant name="NonBrowser"/>
+  </token>
+</histogram>
+
+<histogram name="Views.{Process}.TimeSpentInitializingColorProvider" units="ms"
+    expires_after="2023-04-16">
+  <owner>pksasting@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <summary>
+    Records the time spent initializing a newly constructed ColorProvider
+    instance in a {Process} process. The timer starts immediately before the
+    ColorProvider is constructed and emitted immediately after initialization
+    (i.e. all mixers are run and the ColorMap is created).
+  </summary>
+  <token key="Process">
+    <variant name="Browser"/>
+    <variant name="NonBrowser"/>
+  </token>
+</histogram>
+
+<histogram name="Views.{Process}.TimeSpentProcessingOnNativeThemeUpdatedEvent"
+    units="ms" expires_after="2023-04-16">
+  <owner>pksasting@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <summary>
+    Records the time spent synchronously processing the the
+    NotifyOnNativeThemeUpdated() event in a {Process} process. The timer starts
+    as soon as the event handler is entered and emitted when code returns from
+    the event handler.
+  </summary>
+  <token key="Process">
+    <variant name="Browser"/>
+    <variant name="NonBrowser"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
