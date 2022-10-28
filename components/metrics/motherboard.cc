@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_bstr.h"
-#include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/wmi.h"
 #endif
@@ -140,7 +139,6 @@ void ReadWin32Bios(const ComPtr<IWbemServices>& services,
 }
 
 MotherboardDetails ReadMotherboardDetails() {
-  base::win::ScopedCOMInitializer scoped_com_initializer;
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   ComPtr<IWbemServices> services;
