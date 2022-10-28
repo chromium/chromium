@@ -203,6 +203,7 @@ public class ReadingListTest {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/true"})
+    @DisabledTest(message = "https://crbug.com/1370757")
     public void testOpenBookmarkManagerWhenDefaultToRootEnabled()
             throws InterruptedException, ExecutionException {
         openBookmarkManager();
