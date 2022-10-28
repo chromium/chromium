@@ -132,17 +132,6 @@ LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
 scoped_refptr<ComputedStyle>
 TextControlInnerEditorElement::CustomStyleForLayoutObject(
     const StyleRecalcContext&) {
-  scoped_refptr<ComputedStyle> inner_editor_style = CreateInnerEditorStyle();
-  // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
-  // to apply only editing-related and alignment-related.
-  StyleAdjuster::AdjustStyleForEditing(*inner_editor_style);
-  if (!is_visible_)
-    inner_editor_style->SetOpacity(0);
-  return inner_editor_style;
-}
-
-scoped_refptr<ComputedStyle>
-TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
@@ -176,7 +165,7 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     int computed_line_height = start_style.ComputedLineHeight();
     // Do not allow line-height to be smaller than our default.
     if (text_block_style->FontSize() >= computed_line_height) {
-      text_block_style->SetLineHeight(
+      text_block_style_builder.SetLineHeight(
           ComputedStyleInitialValues::InitialLineHeight());
     }
 
@@ -192,7 +181,7 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     if (logical_height.IsPercentOrCalc() ||
         (logical_height.IsFixed() &&
          logical_height.GetFloatValue() > computed_line_height)) {
-      text_block_style->SetLineHeight(
+      text_block_style_builder.SetLineHeight(
           ComputedStyleInitialValues::InitialLineHeight());
     }
 
@@ -214,6 +203,12 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     if (parentNode()->IsShadowRoot())
       text_block_style_builder.SetAlignSelfBlockCenter(true);
   }
+
+  // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
+  // to apply only editing-related and alignment-related.
+  StyleAdjuster::AdjustStyleForEditing(*text_block_style);
+  if (!is_visible_)
+    text_block_style_builder.SetOpacity(0);
 
   return text_block_style_builder.TakeStyle();
 }

@@ -62,7 +62,7 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   void AdjustSliderThumbSize(ComputedStyle&) const override;
 
   void AdjustInnerSpinButtonStyle(ComputedStyle&) const override;
-  void AdjustButtonStyle(ComputedStyle&) const override;
+  void AdjustButtonStyle(ComputedStyleBuilder&) const override;
 
   Color PlatformTapHighlightColor() const override {
     return kDefaultTapHighlightColor;

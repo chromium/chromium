@@ -52,7 +52,6 @@ class TextControlInnerEditorElement final : public HTMLDivElement {
 
   void SetVisibility(bool is_visible);
   void FocusChanged();
-  scoped_refptr<ComputedStyle> CreateInnerEditorStyle() const;
 
  private:
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;

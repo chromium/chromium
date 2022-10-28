@@ -42,9 +42,9 @@ class StyleAdjuster {
 
  public:
   CORE_EXPORT static void AdjustComputedStyle(StyleResolverState&, Element*);
-  static void AdjustStyleForCombinedText(ComputedStyle&);
+  static void AdjustStyleForCombinedText(ComputedStyleBuilder&);
   static void AdjustStyleForEditing(ComputedStyle&);
-  static void AdjustStyleForTextCombine(ComputedStyle&);
+  static void AdjustStyleForTextCombine(ComputedStyleBuilder&);
 
  private:
   static bool IsEditableElement(Element*, const ComputedStyle&);

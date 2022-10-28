@@ -191,11 +191,11 @@ Color LayoutThemeDefault::PlatformFocusRingColor() const {
   return focus_ring_color;
 }
 
-void LayoutThemeDefault::AdjustButtonStyle(ComputedStyle& style) const {
-  if (style.EffectiveAppearance() == kPushButtonPart) {
-    // Ignore line-height.
-    style.SetLineHeight(ComputedStyleInitialValues::InitialLineHeight());
-  }
+void LayoutThemeDefault::AdjustButtonStyle(
+    ComputedStyleBuilder& builder) const {
+  // Ignore line-height.
+  if (builder.EffectiveAppearance() == kPushButtonPart)
+    builder.SetLineHeight(ComputedStyleInitialValues::InitialLineHeight());
 }
 
 void LayoutThemeDefault::AdjustSearchFieldCancelButtonStyle(

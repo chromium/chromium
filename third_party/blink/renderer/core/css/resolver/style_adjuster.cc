@@ -320,7 +320,8 @@ void StyleAdjuster::AdjustStyleForEditing(ComputedStyle& style) {
     style.SetWhiteSpace(EWhiteSpace::kPreWrap);
 }
 
-void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
+void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
+  ComputedStyle& style = *builder.MutableInternalStyle();
   DCHECK_EQ(style.Display(), EDisplay::kInlineBlock);
   // Set box sizes
   const Font& font = style.GetFont();
@@ -332,16 +333,17 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
   style.SetContainIntrinsicWidth(StyleIntrinsicLength(false, size.Width()));
   style.SetContainIntrinsicHeight(StyleIntrinsicLength(false, size.Height()));
   style.SetHeight(size.Height());
-  style.SetLineHeight(size.Height());
+  builder.SetLineHeight(size.Height());
   style.SetMaxHeight(size.Height());
   style.SetMaxWidth(size.Width());
   style.SetMinHeight(size.Height());
   style.SetMinWidth(size.Width());
   style.SetWidth(size.Width());
-  AdjustStyleForCombinedText(style);
+  AdjustStyleForCombinedText(builder);
 }
 
-void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyle& style) {
+void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
+  ComputedStyle& style = *builder.MutableInternalStyle();
   style.ResetTextCombine();
   style.SetLetterSpacing(0.0f);
   style.SetTextAlign(ETextAlign::kCenter);

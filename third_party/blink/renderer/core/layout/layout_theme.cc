@@ -441,7 +441,7 @@ void LayoutTheme::AdjustRadioStyle(ComputedStyle& style,
   ResetBorder(builder);
 }
 
-void LayoutTheme::AdjustButtonStyle(ComputedStyle& style) const {}
+void LayoutTheme::AdjustButtonStyle(ComputedStyleBuilder&) const {}
 
 void LayoutTheme::AdjustInnerSpinButtonStyle(ComputedStyle&) const {}
 
@@ -819,7 +819,7 @@ void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style,
     case kPushButtonPart:
     case kSquareButtonPart:
     case kButtonPart:
-      return AdjustButtonStyle(style);
+      return AdjustButtonStyle(builder);
     case kInnerSpinButtonPart:
       return AdjustInnerSpinButtonStyle(style);
     default:

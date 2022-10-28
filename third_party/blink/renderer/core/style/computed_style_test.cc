@@ -265,7 +265,7 @@ TEST_F(ComputedStyleTest,
 
   builder = ComputedStyleBuilder(*style);
   // This induces a flat used transform style.
-  builder.MutableInternalStyle()->SetOpacity(0.5);
+  builder.SetOpacity(0.5);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
 
   StyleDifference diff;

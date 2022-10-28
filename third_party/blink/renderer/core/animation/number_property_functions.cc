@@ -128,7 +128,6 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
 }
 
 bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
-                                        ComputedStyle& style,
                                         ComputedStyleBuilder& builder,
                                         double value) {
   DCHECK_EQ(value, ClampNumber(property, value));
@@ -146,22 +145,22 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       builder.SetFloodOpacity(value);
       return true;
     case CSSPropertyID::kLineHeight:
-      style.SetLineHeight(Length::Percent(value * 100));
+      builder.SetLineHeight(Length::Percent(value * 100));
       return true;
     case CSSPropertyID::kTabSize:
-      style.SetTabSize(TabSize(value));
+      builder.SetTabSize(TabSize(value));
       return true;
     case CSSPropertyID::kOpacity:
-      style.SetOpacity(value);
+      builder.SetOpacity(value);
       return true;
     case CSSPropertyID::kOrder:
-      style.SetOrder(value);
+      builder.SetOrder(value);
       return true;
     case CSSPropertyID::kOrphans:
-      style.SetOrphans(value);
+      builder.SetOrphans(value);
       return true;
     case CSSPropertyID::kShapeImageThreshold:
-      style.SetShapeImageThreshold(value);
+      builder.SetShapeImageThreshold(value);
       return true;
     case CSSPropertyID::kStopOpacity:
       builder.SetStopOpacity(value);
@@ -176,7 +175,7 @@ bool NumberPropertyFunctions::SetNumber(const CSSProperty& property,
       builder.SetColumnCount(value);
       return true;
     case CSSPropertyID::kTextSizeAdjust:
-      style.SetTextSizeAdjust(value / 100.);
+      builder.SetTextSizeAdjust(value / 100.);
       return true;
     case CSSPropertyID::kWidows:
       builder.SetWidows(value);

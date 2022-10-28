@@ -214,7 +214,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustCheckboxStyle(ComputedStyle&, ComputedStyleBuilder&) const;
   virtual void AdjustRadioStyle(ComputedStyle&, ComputedStyleBuilder&) const;
 
-  virtual void AdjustButtonStyle(ComputedStyle&) const;
+  virtual void AdjustButtonStyle(ComputedStyleBuilder&) const;
   virtual void AdjustInnerSpinButtonStyle(ComputedStyle&) const;
 
   virtual void AdjustMenuListStyle(ComputedStyleBuilder&) const;

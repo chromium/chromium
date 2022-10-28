@@ -663,12 +663,6 @@ class ComputedStyle : public ComputedStyleBase,
   // -webkit-line-clamp
   bool HasLineClamp() const { return LineClamp() > 0; }
 
-  // opacity (aka -webkit-opacity)
-  void SetOpacity(float f) {
-    float v = ClampTo<float>(f, 0, 1);
-    SetOpacityInternal(v);
-  }
-
   bool OpacityChangedStackingContext(const ComputedStyle& other) const {
     // We only need do layout for opacity changes if adding or losing opacity
     // could trigger a change
@@ -686,13 +680,6 @@ class ComputedStyle : public ComputedStyleBase,
       return true;
     }
     return false;
-  }
-
-  // order (aka -webkit-order)
-  // We restrict the smallest value to int min + 2 because we use int min and
-  // int min + 1 as special values in a hash set.
-  void SetOrder(int o) {
-    SetOrderInternal(max(std::numeric_limits<int>::min() + 2, o));
   }
 
   // Outline properties.
@@ -771,13 +758,6 @@ class ComputedStyle : public ComputedStyleBase,
   bool HasCustomScrollbarStyle() const {
     return HasPseudoElementStyle(kPseudoIdScrollbar) &&
            ScrollbarWidth() == EScrollbarWidth::kAuto;
-  }
-
-  // shape-image-threshold (aka -webkit-shape-image-threshold)
-  void SetShapeImageThreshold(float shape_image_threshold) {
-    float clamped_shape_image_threshold =
-        ClampTo<float>(shape_image_threshold, 0, 1);
-    SetShapeImageThresholdInternal(clamped_shape_image_threshold);
   }
 
   // shape-outside (aka -webkit-shape-outside)
@@ -962,24 +942,9 @@ class ComputedStyle : public ComputedStyleBase,
   float LetterSpacing() const { return GetFontDescription().LetterSpacing(); }
   void SetLetterSpacing(float);
 
-  // tab-size
-  void SetTabSize(const TabSize& t) {
-    if (t.GetPixelSize(1) < 0) {
-      if (t.IsSpaces())
-        SetTabSizeInternal(TabSize(0, TabSizeValueType::kSpace));
-      else
-        SetTabSizeInternal(TabSize(0, TabSizeValueType::kLength));
-    } else {
-      SetTabSizeInternal(t);
-    }
-  }
-
   // word-spacing
   float WordSpacing() const { return GetFontDescription().WordSpacing(); }
   void SetWordSpacing(float);
-
-  // orphans
-  void SetOrphans(int16_t o) { SetOrphansInternal(ClampTo<int16_t>(o, 1)); }
 
   // fill helpers
   bool HasFill() const { return !FillPaint().IsNone(); }
@@ -2981,12 +2946,48 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetColumnWidthInternal(0);
   }
 
+  // opacity
+  void SetOpacity(float f) {
+    float v = ClampTo<float>(f, 0, 1);
+    SetOpacityInternal(v);
+  }
+
+  // order
+  void SetOrder(int o) {
+    // TODO(ikilpatrick): Remove this setter once OrderIterator is removed.
+    // We restrict the smallest value to int min + 2 because we use int min and
+    // int min + 1 as special values in a hash set.
+    SetOrderInternal(max(std::numeric_limits<int>::min() + 2, o));
+  }
+
+  // orphans
+  void SetOrphans(int16_t o) { SetOrphansInternal(ClampTo<int16_t>(o, 1)); }
+
   // perspective-origin
   void SetPerspectiveOriginX(const Length& v) {
     SetPerspectiveOrigin(LengthPoint(v, PerspectiveOrigin().Y()));
   }
   void SetPerspectiveOriginY(const Length& v) {
     SetPerspectiveOrigin(LengthPoint(PerspectiveOrigin().X(), v));
+  }
+
+  // shape-image-threshold
+  void SetShapeImageThreshold(float shape_image_threshold) {
+    float clamped_shape_image_threshold =
+        ClampTo<float>(shape_image_threshold, 0, 1);
+    SetShapeImageThresholdInternal(clamped_shape_image_threshold);
+  }
+
+  // tab-size
+  void SetTabSize(const TabSize& t) {
+    if (t.GetPixelSize(1) < 0) {
+      if (t.IsSpaces())
+        SetTabSizeInternal(TabSize(0, TabSizeValueType::kSpace));
+      else
+        SetTabSizeInternal(TabSize(0, TabSizeValueType::kLength));
+    } else {
+      SetTabSizeInternal(t);
+    }
   }
 
   // transform-origin

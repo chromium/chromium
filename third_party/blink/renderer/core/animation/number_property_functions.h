@@ -25,10 +25,7 @@ class NumberPropertyFunctions {
   static absl::optional<double> GetNumber(const CSSProperty&,
                                           const ComputedStyle&);
   static double ClampNumber(const CSSProperty&, double);
-  static bool SetNumber(const CSSProperty&,
-                        ComputedStyle&,
-                        ComputedStyleBuilder&,
-                        double);
+  static bool SetNumber(const CSSProperty&, ComputedStyleBuilder&, double);
 };
 
 }  // namespace blink

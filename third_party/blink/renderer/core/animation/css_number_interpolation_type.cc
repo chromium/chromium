@@ -108,8 +108,7 @@ void CSSNumberInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   double clamped_number = NumberPropertyFunctions::ClampNumber(
       CssProperty(), To<InterpolableNumber>(interpolable_value).Value());
-  if (!NumberPropertyFunctions::SetNumber(CssProperty(), *state.Style(),
-                                          state.StyleBuilder(),
+  if (!NumberPropertyFunctions::SetNumber(CssProperty(), state.StyleBuilder(),
                                           clamped_number)) {
     StyleBuilder::ApplyProperty(GetProperty().GetCSSProperty(), state,
                                 ScopedCSSValue(*CSSNumericLiteralValue::Create(

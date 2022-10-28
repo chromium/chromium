@@ -1087,7 +1087,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
     state.StyleBuilder().SetForcedColorAdjust(
         style_request.originating_element_style->ForcedColorAdjust());
     state.Style()->SetFont(style_request.originating_element_style->GetFont());
-    state.Style()->SetLineHeight(
+    state.StyleBuilder().SetLineHeight(
         style_request.originating_element_style->LineHeight());
   }
 
@@ -2634,15 +2634,17 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForInitialLetterText(
     const ComputedStyle& paragraph_style) {
   DCHECK(paragraph_style.InitialLetter().IsNormal());
   DCHECK(!initial_letter_box_style.InitialLetter().IsNormal());
-  scoped_refptr<ComputedStyle> initial_letter_text_style =
-      CreateComputedStyle();
+  ComputedStyleBuilder initial_letter_text_style_builder =
+      CreateComputedStyleBuilder();
+  ComputedStyle* initial_letter_text_style =
+      initial_letter_text_style_builder.MutableInternalStyle();
   initial_letter_text_style->InheritFrom(initial_letter_box_style);
   initial_letter_text_style->SetFont(
       ComputeInitialLetterFont(initial_letter_box_style, paragraph_style));
-  initial_letter_text_style->SetLineHeight(
+  initial_letter_text_style_builder.SetLineHeight(
       Length::Fixed(initial_letter_text_style->GetFontHeight().LineHeight()));
   initial_letter_text_style->SetVerticalAlign(EVerticalAlign::kBaseline);
-  return initial_letter_text_style;
+  return initial_letter_text_style_builder.TakeStyle();
 }
 
 Element& StyleResolver::EnsureElementForFormattedText() {

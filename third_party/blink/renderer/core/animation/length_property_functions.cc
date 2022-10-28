@@ -433,7 +433,7 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       // Percent Lengths are used to represent numbers on line-height.
       if (value.IsPercentOrCalc())
         return false;
-      style.SetLineHeight(value);
+      builder.SetLineHeight(value);
       return true;
 
     // TODO(alancutter): Support setters that take a numeric value (need to

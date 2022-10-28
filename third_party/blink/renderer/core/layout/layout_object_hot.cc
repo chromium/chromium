@@ -168,8 +168,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
                child->SlowFirstChild()->GetNode()->NeedsReattachLayoutTree());
       } else {
         // "text-combine-width-after-style-change.html" reaches here.
-        StyleAdjuster::AdjustStyleForTextCombine(
-            *new_style_builder.MutableInternalStyle());
+        StyleAdjuster::AdjustStyleForTextCombine(new_style_builder);
       }
     }
 

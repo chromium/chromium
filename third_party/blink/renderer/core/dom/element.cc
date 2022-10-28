@@ -3668,7 +3668,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
         UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->Parent()))) {
       // Adjust style for <br> and <wbr> in combined text.
       // See http://crbug.com/1228058
-      StyleAdjuster::AdjustStyleForCombinedText(*new_style);
+      ComputedStyleBuilder adjust_builder(*new_style);
+      StyleAdjuster::AdjustStyleForCombinedText(adjust_builder);
+      new_style = adjust_builder.TakeStyle();
     }
     // kEqual means that the computed style didn't change, but there are
     // additional flags in ComputedStyle which may have changed. For instance,
