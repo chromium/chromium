@@ -58,6 +58,10 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   float GetValue() const;
   void SetValue(float value);
 
+  // Getter and Setter of `value_indicator_radius_`.
+  float GetValueIndicatorRadius() const;
+  void SetValueIndicatorRadius(float radius);
+
   bool GetEnableAccessibilityEvents() const;
   void SetEnableAccessibilityEvents(bool enabled);
 
@@ -81,6 +85,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   const base::flat_set<float>& allowed_values() const {
     return allowed_values_;
   }
+
+  // The radius of the thumb.
+  static constexpr float kThumbRadius = 4.f;
 
  protected:
   // Returns the current position of the thumb on the slider.
@@ -156,6 +163,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // Relative position of the mouse cursor (or the touch point) on the slider's
   // button.
   int initial_button_offset_ = 0;
+
+  // The radius of the value indicator.
+  float value_indicator_radius_ = kThumbRadius;
 
   RenderingStyle style_ = RenderingStyle::kDefaultStyle;
 
