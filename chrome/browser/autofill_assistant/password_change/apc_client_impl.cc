@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
@@ -111,11 +110,7 @@ void ApcClientImpl::Stop(bool success) {
   GetRuntimeManager()->SetUIState(autofill_assistant::UIState::kNotShown);
   onboarding_coordinator_.reset();
   external_script_controller_.reset();
-
-  if (scrim_manager_) {
-    scrim_manager_->ShutDown();
-  }
-
+  scrim_manager_.reset();
   is_running_ = false;
   if (result_callback_)
     std::move(result_callback_).Run(success);

@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -25,17 +23,7 @@ class ApcScrimManager {
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  // Shuts down a scrim manager. Called at the end an APC run, it hides the
-  // currently shown scrim and marks it as disabled. After shutdown, the scrim
-  // will no longer be shown, unless `SetIsDisabled` is called to enable it
-  // again.
-  virtual void ShutDown() = 0;
-  virtual bool GetVisible() const = 0;
-  // Sets a scrim manager as disabled.
-  // When set the scrim will always be hidden regardless of whether `Show` is
-  // called or not. A disabled scrim can only be hidden but not shown again.
-  virtual void SetIsDisabled(bool is_disabled) = 0;
-  virtual bool GetIsDisabled() const = 0;
+  virtual bool GetVisible() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_SCRIM_MANAGER_H_
