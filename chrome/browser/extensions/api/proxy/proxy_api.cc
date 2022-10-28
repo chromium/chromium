@@ -91,11 +91,9 @@ void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
   }
 }
 
-ProxyPrefTransformer::ProxyPrefTransformer() {
-}
+ProxyPrefTransformer::ProxyPrefTransformer() = default;
 
-ProxyPrefTransformer::~ProxyPrefTransformer() {
-}
+ProxyPrefTransformer::~ProxyPrefTransformer() = default;
 
 std::unique_ptr<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
     const base::Value* extension_pref,
@@ -105,9 +103,7 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
   // has been verified already by the extension API to match the schema
   // defined in the extension API JSON.
   CHECK(extension_pref->is_dict());
-  const base::DictionaryValue* config =
-      static_cast<const base::DictionaryValue*>(extension_pref);
-
+  const base::Value::Dict& config = extension_pref->GetDict();
   // Extract the various pieces of information passed to
   // chrome.proxy.settings.set(). Several of these strings will
   // remain blank no respective values have been passed to set().
@@ -155,11 +151,10 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
   }
 
   // Build a new ProxyConfig instance as defined in the extension API.
-  std::unique_ptr<base::DictionaryValue> extension_pref(
-      new base::DictionaryValue);
+  base::Value::Dict extension_pref;
 
-  extension_pref->SetStringKey(proxy_api_constants::kProxyConfigMode,
-                               ProxyPrefs::ProxyModeToString(mode));
+  extension_pref.Set(proxy_api_constants::kProxyConfigMode,
+                     ProxyPrefs::ProxyModeToString(mode));
 
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT:
@@ -175,8 +170,8 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
           proxy_api_helpers::CreatePacScriptDict(config);
       if (!pac_dict)
         return nullptr;
-      extension_pref->SetKey(proxy_api_constants::kProxyConfigPacScript,
-                             base::Value(std::move(*pac_dict)));
+      extension_pref.Set(proxy_api_constants::kProxyConfigPacScript,
+                         std::move(*pac_dict));
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
@@ -185,14 +180,14 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
           proxy_api_helpers::CreateProxyRulesDict(config);
       if (!proxy_rules_dict)
         return nullptr;
-      extension_pref->SetKey(proxy_api_constants::kProxyConfigRules,
-                             base::Value(std::move(*proxy_rules_dict)));
+      extension_pref.Set(proxy_api_constants::kProxyConfigRules,
+                         std::move(*proxy_rules_dict));
       break;
     }
     case ProxyPrefs::kModeCount:
       NOTREACHED();
   }
-  return extension_pref;
+  return base::Value::ToUniquePtrValue(base::Value(std::move(extension_pref)));
 }
 
 }  // namespace extensions

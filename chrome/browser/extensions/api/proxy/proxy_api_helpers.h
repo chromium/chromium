@@ -49,28 +49,27 @@ bool CreatePACScriptFromDataURL(
 //
 // The parameter |bad_message| is passed to simulate the behavior of
 // EXTENSION_FUNCTION_VALIDATE. It is never NULL.
-bool GetProxyModeFromExtensionPref(const base::DictionaryValue* proxy_config,
+bool GetProxyModeFromExtensionPref(const base::Value::Dict& proxy_config,
                                    ProxyPrefs::ProxyMode* out,
                                    std::string* error,
                                    bool* bad_message);
-bool GetPacMandatoryFromExtensionPref(const base::DictionaryValue* proxy_config,
+bool GetPacMandatoryFromExtensionPref(const base::Value::Dict& proxy_config,
                                       bool* out,
                                       std::string* error,
                                       bool* bad_message);
-bool GetPacUrlFromExtensionPref(const base::DictionaryValue* proxy_config,
+bool GetPacUrlFromExtensionPref(const base::Value::Dict& proxy_config,
                                 std::string* out,
                                 std::string* error,
                                 bool* bad_message);
-bool GetPacDataFromExtensionPref(const base::DictionaryValue* proxy_config,
+bool GetPacDataFromExtensionPref(const base::Value::Dict& proxy_config,
                                  std::string* out,
                                  std::string* error,
                                  bool* bad_message);
-bool GetProxyRulesStringFromExtensionPref(
-    const base::DictionaryValue* proxy_config,
-    std::string* out,
-    std::string* error,
-    bool* bad_message);
-bool GetBypassListFromExtensionPref(const base::DictionaryValue* proxy_config,
+bool GetProxyRulesStringFromExtensionPref(const base::Value::Dict& proxy_config,
+                                          std::string* out,
+                                          std::string* error,
+                                          bool* bad_message);
+bool GetBypassListFromExtensionPref(const base::Value::Dict& proxy_config,
                                     std::string* out,
                                     std::string* error,
                                     bool* bad_message);
@@ -92,7 +91,7 @@ std::unique_ptr<base::Value> CreateProxyConfigDict(
 // |default_scheme| is the default scheme that is filled in, in case the
 // caller did not pass one.
 // Returns true if successful and sets |error| otherwise.
-bool GetProxyServer(const base::DictionaryValue* proxy_server,
+bool GetProxyServer(const base::Value::Dict& proxy_server,
                     net::ProxyServer::Scheme default_scheme,
                     net::ProxyServer* out,
                     std::string* error,
