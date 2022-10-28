@@ -4610,14 +4610,8 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
 // BrowserAccessibilityManager would not be updated due to how we were updating
 // the AXTreeData.
 // The test was disabled. See crbug.com/1141313.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || !defined(NDEBUG)
-#define MAYBE_FocusAccessibilityNestedFrame \
-  DISABLED_FocusAccessibilityNestedFrame
-#else
-#define MAYBE_FocusAccessibilityNestedFrame FocusAccessibilityNestedFrame
-#endif
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest,
-                       MAYBE_FocusAccessibilityNestedFrame) {
+                       DISABLED_FocusAccessibilityNestedFrame) {
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   content::EnableAccessibilityForWebContents(web_contents);
