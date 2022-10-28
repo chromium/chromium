@@ -7,6 +7,7 @@
 #include <climits>
 #include <cstddef>
 #include <string>
+#include <thread>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -25,9 +26,11 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
 #include "base/memory/raw_ref.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1845,9 +1848,14 @@ const char kAsanBrpMaybeProtected_Extraction[] = ASAN_BRP_MANUAL_ANALYSIS(
 const char kAsanBrpNotProtected_Instantiation[] = ASAN_BRP_NOT_PROTECTED(
     "pointer to an already freed region was assigned to a raw_ptr<T>");
 const char kAsanBrpNotProtected_EarlyAllocation[] = ASAN_BRP_NOT_PROTECTED(
-    "region was allocated before MiraclePtr was activated");
+    "crash occurred while accessing a region that was allocated before "
+    "MiraclePtr was activated");
 const char kAsanBrpNotProtected_NoRawPtrAccess[] =
     ASAN_BRP_NOT_PROTECTED("No raw_ptr<T> access to this region was detected");
+const char kAsanBrpMaybeProtected_Race[] =
+    ASAN_BRP_MANUAL_ANALYSIS("\\nThe \"use\" and \"free\" threads don't match");
+const char kAsanBrpMaybeProtected_ThreadPool[] =
+    ASAN_BRP_MANUAL_ANALYSIS("\\nThis crash occurred in the thread pool");
 
 #undef ASAN_BRP_PROTECTED
 #undef ASAN_BRP_MANUAL_ANALYSIS
@@ -2203,6 +2211,33 @@ TEST_F(AsanBackupRefPtrTest, BoundReferences) {
 
   EXPECT_DEATH_IF_SUPPORTED(std::move(callback).Run(),
                             kAsanBrpProtected_Callback);
+}
+
+TEST_F(AsanBackupRefPtrTest, FreeOnAnotherThread) {
+  auto ptr = ::std::make_unique<AsanStruct>();
+  raw_ptr<AsanStruct> protected_ptr = ptr.get();
+
+  std::thread thread([&ptr] { ptr.reset(); });
+  thread.join();
+
+  EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(), kAsanBrpMaybeProtected_Race);
+}
+
+TEST_F(AsanBackupRefPtrTest, AccessOnThreadPoolThread) {
+  auto ptr = ::std::make_unique<AsanStruct>();
+  raw_ptr<AsanStruct> protected_ptr = ptr.get();
+
+  test::TaskEnvironment env;
+  RunLoop run_loop;
+
+  ThreadPool::PostTaskAndReply(
+      FROM_HERE, {}, base::BindLambdaForTesting([&ptr, &protected_ptr] {
+        ptr.reset();
+        EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(),
+                                  kAsanBrpMaybeProtected_ThreadPool);
+      }),
+      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
 }
 
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

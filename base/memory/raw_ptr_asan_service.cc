@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr_asan_bound_arg_tracker.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool/thread_group.h"
 #include "base/threading/thread_local.h"
 
 namespace base {
@@ -127,12 +128,45 @@ void RawPtrAsanService::SetPendingReport(ReportType type,
                         region_size};
 }
 
+namespace {
+enum class ProtectionStatus {
+  kNotProtected,
+  kManualAnalysisRequired,
+  kProtected,
+};
+
+const char* ProtectionStatusToString(ProtectionStatus status) {
+  switch (status) {
+    case ProtectionStatus::kNotProtected:
+      return "NOT PROTECTED";
+    case ProtectionStatus::kManualAnalysisRequired:
+      return "MANUAL ANALYSIS REQUIRED";
+    case ProtectionStatus::kProtected:
+      return "PROTECTED";
+  }
+}
+
+// ASan doesn't have an API to get the current thread's identifier.
+// We have to create a dummy allocation to determine it.
+int GetCurrentThreadId() {
+  int* dummy = new int;
+  int id = -1;
+  __asan_get_alloc_stack(dummy, nullptr, 0, &id);
+  delete dummy;
+  return id;
+}
+}  // namespace
+
 // static
 void RawPtrAsanService::ErrorReportCallback(const char* report) {
   if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0)
     return;
 
-  const char* status_body;
+  struct {
+    ProtectionStatus protection_status;
+    const char* crash_details;
+    const char* protection_details;
+  } crash_info;
 
   auto& pending_report = GetPendingReport();
   uintptr_t ptr = reinterpret_cast<uintptr_t>(__asan_get_report_address());
@@ -145,50 +179,48 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
     switch (pending_report.type) {
       case ReportType::kDereference: {
         if (is_supported_allocation) {
-          status_body =
-              "PROTECTED\n"
-              "The crash occurred while a raw_ptr<T> object containing a "
-              "dangling pointer was being dereferenced.\n"
-              "MiraclePtr should make this crash non-exploitable in regular "
-              "builds.";
+          crash_info = {ProtectionStatus::kProtected,
+                        "This crash occurred while a raw_ptr<T> object "
+                        "containing a dangling pointer was being dereferenced.",
+                        "MiraclePtr is expected to make this crash "
+                        "non-exploitable once fully enabled."};
         } else {
-          status_body =
-              "NOT PROTECTED\n"
-              "The region was allocated before MiraclePtr was activated.";
+          crash_info = {ProtectionStatus::kNotProtected,
+                        "This crash occurred while accessing a region that was "
+                        "allocated before MiraclePtr was activated.",
+                        "This crash is still exploitable with MiraclePtr."};
         }
         break;
       }
       case ReportType::kExtraction: {
         if (is_supported_allocation && bound_arg_ptr) {
-          status_body =
-              "PROTECTED\n"
-              "The crash occurred inside a callback where a raw_ptr<T> "
-              "pointing to the same region was\n"
-              "bound to one of the arguments.\n"
-              "MiraclePtr should make this crash non-exploitable in regular "
-              "builds.";
+          crash_info = {
+              ProtectionStatus::kProtected,
+              "This crash occurred inside a callback where a raw_ptr<T> "
+              "pointing to the same region was bound to one of the arguments.",
+              "MiraclePtr is expected to make this crash non-exploitable once "
+              "fully enabled."};
         } else if (is_supported_allocation) {
-          status_body =
-              "MANUAL ANALYSIS REQUIRED\n"
+          crash_info = {
+              ProtectionStatus::kManualAnalysisRequired,
               "A pointer to the same region was extracted from a raw_ptr<T> "
-              "object prior to the crash.\n"
+              "object prior to this crash.",
               "To determine the protection status, enable extraction warnings "
-              "and check whether the raw_ptr<T>\n"
-              "object can be destroyed or overwritten between the extraction "
-              "and use.";
+              "and check whether the raw_ptr<T> object can be destroyed or "
+              "overwritten between the extraction and use."};
         } else {
-          status_body =
-              "NOT PROTECTED\n"
-              "The region was allocated before MiraclePtr was activated.";
+          crash_info = {ProtectionStatus::kNotProtected,
+                        "This crash occurred while accessing a region that was "
+                        "allocated before MiraclePtr was activated.",
+                        "This crash is still exploitable with MiraclePtr."};
         }
         break;
       }
       case ReportType::kInstantiation: {
-        status_body =
-            "NOT PROTECTED\n"
-            "A pointer to an already freed region was assigned to a raw_ptr<T> "
-            "object, which may lead to memory\n"
-            "corruption.";
+        crash_info = {ProtectionStatus::kNotProtected,
+                      "A pointer to an already freed region was assigned to a "
+                      "raw_ptr<T> object, which may lead to memory corruption.",
+                      "This crash is still exploitable with MiraclePtr."};
       }
     }
   } else if (bound_arg_ptr) {
@@ -199,25 +231,61 @@ void RawPtrAsanService::ErrorReportCallback(const char* report) {
         RawPtrAsanService::GetInstance().IsSupportedAllocation(
             reinterpret_cast<void*>(bound_arg_ptr));
     if (is_supported_allocation) {
-      status_body =
-          "PROTECTED\n"
-          "The crash occurred inside a callback where a raw_ptr<T> "
-          "pointing to the same region was\n"
-          "bound to one of the arguments.\n"
-          "MiraclePtr should make this crash non-exploitable in regular "
-          "builds.";
+      crash_info = {
+          ProtectionStatus::kProtected,
+          "This crash occurred inside a callback where a raw_ptr<T> pointing "
+          "to the same region was bound to one of the arguments.",
+          "MiraclePtr is expected to make this crash non-exploitable once "
+          "fully enabled."};
+    } else {
+      crash_info = {ProtectionStatus::kNotProtected,
+                    "This crash occurred while accessing a region that was "
+                    "allocated before MiraclePtr was activated.",
+                    "This crash is still exploitable with MiraclePtr."};
     }
   } else {
-    status_body =
-        "NOT PROTECTED\n"
-        "No raw_ptr<T> access to this region was detected prior to the crash.";
+    crash_info = {
+        ProtectionStatus::kNotProtected,
+        "No raw_ptr<T> access to this region was detected prior to this crash.",
+        "This crash is still exploitable with MiraclePtr."};
   }
 
-  Log("\nMiraclePtr Status: %s\n"
+  // The race condition check below may override the protection status.
+  if (crash_info.protection_status != ProtectionStatus::kNotProtected) {
+    int free_thread_id = -1;
+    __asan_get_free_stack(reinterpret_cast<void*>(ptr), nullptr, 0,
+                          &free_thread_id);
+    if (free_thread_id != GetCurrentThreadId()) {
+      crash_info.protection_status = ProtectionStatus::kManualAnalysisRequired;
+      crash_info.protection_details =
+          "The \"use\" and \"free\" threads don't match. This crash is likely "
+          "to have been caused by a race condition that is mislabeled as a "
+          "use-after-free. Make sure that the \"free\" is sequenced after the "
+          "\"use\" (e.g. both are on the same sequence, or the \"free\" is in "
+          "a task posted after the \"use\"). Otherwise, the crash is still "
+          "exploitable with MiraclePtr.";
+    } else if (internal::ThreadGroup::CurrentThreadHasGroup()) {
+      // We need to be especially careful with ThreadPool threads. Otherwise,
+      // we might miss false-positives where the "use" and "free" happen on
+      // different sequences but the same thread by chance.
+      crash_info.protection_status = ProtectionStatus::kManualAnalysisRequired;
+      crash_info.protection_details =
+          "This crash occurred in the thread pool. The sequence which invoked "
+          "the \"free\" is unknown, so the crash may have been caused by a "
+          "race condition that is mislabeled as a use-after-free. Make sure "
+          "that the \"free\" is sequenced after the \"use\" (e.g. both are on "
+          "the same sequence, or the \"free\" is in a task posted after the "
+          "\"use\"). Otherwise, the crash is still exploitable with "
+          "MiraclePtr.";
+    }
+  }
+
+  Log("\nMiraclePtr Status: %s\n%s\n%s\n"
       "Refer to "
       "https://chromium.googlesource.com/chromium/src/+/main/base/memory/"
       "raw_ptr.md for details.",
-      status_body);
+      ProtectionStatusToString(crash_info.protection_status),
+      crash_info.crash_details, crash_info.protection_details);
 }
 
 // static

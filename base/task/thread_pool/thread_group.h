@@ -123,6 +123,10 @@ class BASE_EXPORT ThreadGroup {
 
   virtual void OnShutdownStarted() = 0;
 
+  // Returns true if a thread group is registered in TLS. Used by diagnostic
+  // code to check whether it's inside a ThreadPool task.
+  static bool CurrentThreadHasGroup();
+
  protected:
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
