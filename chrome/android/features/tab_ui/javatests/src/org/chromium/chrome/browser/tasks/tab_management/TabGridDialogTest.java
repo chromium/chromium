@@ -488,6 +488,7 @@ public class TabGridDialogTest {
     @MediumTest
     // clang-format off
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void testDialogToolbarSelectionEditorV2() throws ExecutionException {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -532,6 +533,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void testDialogSelectionEditorV2_UndoClose() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -564,6 +566,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void testDialogSelectionEditorV2_UndoCloseAll() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -812,6 +815,7 @@ public class TabGridDialogTest {
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "crbug/1374370")
     public void
     testTabGroupNaming_afterMergeWithSelectionEditorV2() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
