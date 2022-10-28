@@ -72,6 +72,32 @@ class ASH_EXPORT AccessibilityDetailedView
   // Add the accessibility feature list.
   void AppendAccessibilityList();
 
+  // Adds the enabled accessibility features to the `container`.
+  // Only used with QsRevamp.
+  void AddEnabledFeatures(views::View* container);
+
+  // Adds all accessibility features to the `container`.
+  void AddAllFeatures(views::View* container);
+
+  // Adds a HoverHighlightView to `container` for the appropriate accessibility
+  // feature and returns it.
+  HoverHighlightView* AddSpokenFeedbackView(views::View* container);
+  HoverHighlightView* AddSelectToSpeakView(views::View* container);
+  HoverHighlightView* AddDictationView(views::View* container);
+  HoverHighlightView* AddHighContrastView(views::View* container);
+  HoverHighlightView* AddScreenMagnifierView(views::View* container);
+  HoverHighlightView* AddDockedMagnifierView(views::View* container);
+  HoverHighlightView* AddLargeCursorView(views::View* container);
+  HoverHighlightView* AddAutoclickView(views::View* container);
+  HoverHighlightView* AddVirtualKeyboardView(views::View* container);
+  HoverHighlightView* AddSwitchAccessView(views::View* container);
+  HoverHighlightView* AddLiveCaptionView(views::View* container);
+  HoverHighlightView* AddMonoAudioView(views::View* container);
+  HoverHighlightView* AddCaretHighlightView(views::View* container);
+  HoverHighlightView* AddHighlightMouseCursorView(views::View* container);
+  HoverHighlightView* AddHighlightKeyboardFocusView(views::View* container);
+  HoverHighlightView* AddStickyKeysView(views::View* container);
+
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaInstallError(speech::LanguageCode language_code,
@@ -103,6 +129,7 @@ class ASH_EXPORT AccessibilityDetailedView
   HoverHighlightView* highlight_mouse_cursor_view_ = nullptr;
   HoverHighlightView* highlight_keyboard_focus_view_ = nullptr;
   HoverHighlightView* sticky_keys_view_ = nullptr;
+
   views::Button* help_view_ = nullptr;
   views::Button* settings_view_ = nullptr;
 
