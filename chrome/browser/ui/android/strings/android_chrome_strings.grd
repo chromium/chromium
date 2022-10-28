@@ -5671,7 +5671,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PASSWORD_EDIT_DIALOG_UNSYNCED_FOOTER" desc="Footer for a dialog which allows users to see and edit passwords while saving/updating a new credential. Displayed for users who are not syncing passwords.">
         Passwords are saved to Password Manager on this device
       </message>
-
+      <message name="IDS_PASSWORD_MANAGER_DROPDOWN_BUTTON_DESCRIPTION" desc="This is a description that will be used for the TalkBack to describe the button with the down arrow that opens a dropdown with a list of items.">
+        Select from the dropdown list
+      </message>
       <!-- Price tracking strings -->
       <message name="IDS_PRICE_DROP_SPOTTED_IPH" desc="This text appears in the IPH when a user opens a new tab page and an item in any of their open tabs has a price drop.">
         Price drop spotted
