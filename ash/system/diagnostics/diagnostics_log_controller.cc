@@ -12,6 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
+#include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
@@ -38,6 +39,7 @@ const char kDiaganosticsDirName[] = "diagnostics";
 const char kRoutineLogSubsectionHeader[] = "--- Test Routines --- \n";
 const char kSystemLogSectionHeader[] = "=== System === \n";
 const char kNetworkingLogSectionHeader[] = "=== Networking === \n";
+const char kKeyboardLogSectionHeader[] = "=== Keyboard === \n";
 const char kNoRoutinesRun[] =
     "No routines of this type were run in the session.\n";
 
@@ -164,6 +166,14 @@ bool DiagnosticsLogController::GenerateSessionLogOnBlockingPool(
     log_pieces.push_back(networking_log_->GetNetworkEvents());
   }
 
+  if (features::IsInputInDiagnosticsAppEnabled()) {
+    std::string input_log_contents = keyboard_input_log_->GetLogContents();
+    if (!input_log_contents.empty()) {
+      log_pieces.push_back(kKeyboardLogSectionHeader);
+      log_pieces.push_back(std::move(input_log_contents));
+    }
+  }
+
   return base::WriteFile(save_file_path, base::JoinString(log_pieces, "\n"));
 }
 
@@ -173,10 +183,14 @@ void DiagnosticsLogController::ResetAndInitializeLogWriters() {
   }
 
   ResetLogBasePath();
-
+  keyboard_input_log_ = std::make_unique<KeyboardInputLog>(log_base_path_);
   networking_log_ = std::make_unique<NetworkingLog>(log_base_path_);
   routine_log_ = std::make_unique<RoutineLog>(log_base_path_);
   telemetry_log_ = std::make_unique<TelemetryLog>();
+}
+
+KeyboardInputLog* DiagnosticsLogController::GetKeyboardInputLog() {
+  return keyboard_input_log_.get();
 }
 
 NetworkingLog* DiagnosticsLogController::GetNetworkingLog() {

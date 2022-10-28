@@ -18,6 +18,7 @@
 namespace ash {
 namespace diagnostics {
 
+class KeyboardInputLog;
 class NetworkingLog;
 class RoutineLog;
 class TelemetryLog;
@@ -58,6 +59,7 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   // description of LoginStatus types.
   void OnLoginStatusChanged(LoginStatus login_status) override;
 
+  KeyboardInputLog* GetKeyboardInputLog();
   NetworkingLog* GetNetworkingLog();
   RoutineLog* GetRoutineLog();
   TelemetryLog* GetTelemetryLog();
@@ -74,6 +76,7 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   LoginStatus previous_status_;
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;
   base::FilePath log_base_path_;
+  std::unique_ptr<KeyboardInputLog> keyboard_input_log_;
   std::unique_ptr<NetworkingLog> networking_log_;
   std::unique_ptr<RoutineLog> routine_log_;
   std::unique_ptr<TelemetryLog> telemetry_log_;

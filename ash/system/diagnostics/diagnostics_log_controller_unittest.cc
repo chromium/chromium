@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
+#include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
@@ -45,6 +46,7 @@ const char kSystemLogSectionHeader[] = "=== System ===";
 const char kNetworkingLogSectionHeader[] = "=== Networking ===";
 const char kNetworkingLogNetworkInfoHeader[] = "--- Network Info ---";
 const char kNetworkingLogNetworkEventsHeader[] = "--- Network Events ---";
+const char kKeyboardLogSectionHeader[] = "=== Keyboard ===";
 
 // Fake delegate used to set the expected user directory path.
 class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
@@ -71,8 +73,11 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
   ~DiagnosticsLogControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kEnableLogControllerForDiagnosticsApp);
+    feature_list_.InitWithFeatures(
+        /* enabled_features=*/{ash::features::
+                                   kEnableLogControllerForDiagnosticsApp,
+                               ash::features::kEnableInputInDiagnosticsApp},
+        /* disabled_features=*/{});
 
     NoSessionAshTestBase::SetUp();
   }
@@ -162,6 +167,13 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
       std::make_unique<FakeDiagnosticsBrowserDelegate>(
           expected_path_regular_user));
 
+  // Create keyboard input log.
+  KeyboardInputLog* keyboard_input_log =
+      DiagnosticsLogController::Get()->GetKeyboardInputLog();
+  keyboard_input_log->AddKeyboard(/*id=*/1, "internal keyboard");
+  keyboard_input_log->CreateLogAndRemoveKeyboard(/*id=*/1);
+  task_environment()->RunUntilIdle();
+
   const base::FilePath save_file_path = GetSessionLogPath();
   EXPECT_TRUE(DiagnosticsLogController::Get()->GenerateSessionLogOnBlockingPool(
       save_file_path));
@@ -170,7 +182,7 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(save_file_path, &contents));
   const std::vector<std::string> log_lines = GetLogLines(contents);
-  EXPECT_EQ(8u, log_lines.size());
+  EXPECT_EQ(10u, log_lines.size());
 
   EXPECT_EQ(kSystemLogSectionHeader, log_lines[0]);
   EXPECT_EQ(kRoutineLogSubsectionHeader, log_lines[1]);
@@ -182,6 +194,7 @@ TEST_F(DiagnosticsLogControllerTest, GenerateSessionLogOnBlockingPoolFile) {
   EXPECT_EQ(kRoutineLogSubsectionHeader, log_lines[5]);
   EXPECT_EQ(expected_no_routine_msg, log_lines[6]);
   EXPECT_EQ(kNetworkingLogNetworkEventsHeader, log_lines[7]);
+  EXPECT_EQ(kKeyboardLogSectionHeader, log_lines[8]);
 }
 
 TEST_F(DiagnosticsLogControllerTest,
@@ -202,6 +215,13 @@ TEST_F(DiagnosticsLogControllerTest,
   routine_log->LogRoutineCancelled(mojom::RoutineType::kBatteryCharge);
   task_environment()->RunUntilIdle();
 
+  // Create keyboard input log.
+  KeyboardInputLog* keyboard_input_log =
+      DiagnosticsLogController::Get()->GetKeyboardInputLog();
+  keyboard_input_log->AddKeyboard(/*id=*/1, "internal keyboard");
+  keyboard_input_log->CreateLogAndRemoveKeyboard(/*id=*/1);
+  task_environment()->RunUntilIdle();
+
   // Generate log file at test path.
   const base::FilePath save_file_path = GetSessionLogPath();
   EXPECT_TRUE(DiagnosticsLogController::Get()->GenerateSessionLogOnBlockingPool(
@@ -210,7 +230,7 @@ TEST_F(DiagnosticsLogControllerTest,
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(save_file_path, &contents));
   const std::vector<std::string> log_lines = GetLogLines(contents);
-  EXPECT_EQ(8u, log_lines.size());
+  EXPECT_EQ(10u, log_lines.size());
 
   // System state and routine data.
   EXPECT_EQ(kSystemLogSectionHeader, log_lines[0]);
@@ -229,6 +249,7 @@ TEST_F(DiagnosticsLogControllerTest,
   EXPECT_EQ(2u, network_routine_line.size());
   EXPECT_EQ(expected_canceled_routine_msg, network_routine_line[1]);
   EXPECT_EQ(kNetworkingLogNetworkEventsHeader, log_lines[7]);
+  EXPECT_EQ(kKeyboardLogSectionHeader, log_lines[8]);
 }
 
 TEST_F(DiagnosticsLogControllerTest,

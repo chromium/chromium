@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input_device_information.h"
@@ -46,8 +47,10 @@ bool IsTouchInputDevice(InputDeviceInformation* device_info) {
 
 }  // namespace
 
-InputDataProvider::InputDataProvider(aura::Window* window)
-    : device_manager_(ui::CreateDeviceManager()),
+InputDataProvider::InputDataProvider(aura::Window* window,
+                                     KeyboardInputLog* keyboard_input_log_ptr)
+    : keyboard_input_log_ptr_(keyboard_input_log_ptr),
+      device_manager_(ui::CreateDeviceManager()),
       watcher_factory_(std::make_unique<EventWatcherFactoryImpl>()) {
   Initialize(window);
 }
@@ -55,8 +58,10 @@ InputDataProvider::InputDataProvider(aura::Window* window)
 InputDataProvider::InputDataProvider(
     aura::Window* window,
     std::unique_ptr<ui::DeviceManager> device_manager_for_test,
-    std::unique_ptr<EventWatcherFactory> watcher_factory)
-    : device_manager_(std::move(device_manager_for_test)),
+    std::unique_ptr<EventWatcherFactory> watcher_factory,
+    KeyboardInputLog* keyboard_input_log_ptr)
+    : keyboard_input_log_ptr_(keyboard_input_log_ptr),
+      device_manager_(std::move(device_manager_for_test)),
       watcher_factory_(std::move(watcher_factory)) {
   Initialize(window);
 }
@@ -238,10 +243,24 @@ void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
     LOG(ERROR) << "Couldn't find keyboard watcher with ID " << id
                << " when trying to unforward input.";
   }
+
+  if (IsLoggingEnabled()) {
+    keyboard_input_log_ptr_->CreateLogAndRemoveKeyboard(id);
+  }
+
   // If there are no more watchers, unblock shortcuts
   if (keyboard_watchers_.empty()) {
     BlockShortcuts(/*should_block=*/false);
   }
+}
+
+const std::string InputDataProvider::GetKeyboardName(uint32_t id) {
+  auto iter = keyboards_.find(id);
+  return iter == keyboards_.end() ? "" : iter->second->name;
+}
+
+bool InputDataProvider::IsLoggingEnabled() const {
+  return keyboard_input_log_ptr_ != nullptr;
 }
 
 void InputDataProvider::OnObservedKeyboardInputDisconnect(
@@ -272,6 +291,10 @@ void InputDataProvider::ObserveKeyEvents(
     LOG(ERROR) << "Couldn't find keyboard with ID " << id
                << " when trying to receive input.";
     return;
+  }
+
+  if (IsLoggingEnabled()) {
+    keyboard_input_log_ptr_->AddKeyboard(id, GetKeyboardName(id));
   }
 
   // When keyboard observer remote set is constructed, establish the disconnect
@@ -342,7 +365,7 @@ void InputDataProvider::OnDeviceEvent(const ui::DeviceEvent& event) {
         // OnObservedKeyboardInputDisconnect handlers (which would normally
         // clean up any watchers), so we must explicitly release the watchers
         // here.
-        keyboard_watchers_.erase(id);
+        UnforwardKeyboardInput(id);
       }
       keyboards_.erase(id);
       keyboard_aux_data_.erase(id);
@@ -450,6 +473,10 @@ void InputDataProvider::SendInputKeyEvent(uint32_t id,
 
   mojom::KeyEventPtr event = keyboard_helper_.ConstructInputKeyEvent(
       keyboards_[id], keyboard_aux_data_[id].get(), key_code, scan_code, down);
+
+  if (IsLoggingEnabled()) {
+    keyboard_input_log_ptr_->RecordKeyPressForKeyboard(id, event.Clone());
+  }
 
   const auto& observers = *keyboard_observers_[id];
   for (const auto& observer : observers) {

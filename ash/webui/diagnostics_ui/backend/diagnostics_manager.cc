@@ -69,7 +69,8 @@ InputDataProvider* DiagnosticsManager::GetInputDataProvider() {
   // window will not be available.
   if (features::IsInputInDiagnosticsAppEnabled() && !input_data_provider_) {
     input_data_provider_ = std::make_unique<InputDataProvider>(
-        webui_->GetWebContents()->GetTopLevelNativeWindow());
+        webui_->GetWebContents()->GetTopLevelNativeWindow(),
+        DiagnosticsLogController::Get()->GetKeyboardInputLog());
   }
   return input_data_provider_.get();
 }

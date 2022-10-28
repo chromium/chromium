@@ -35,6 +35,8 @@
 
 namespace ash::diagnostics {
 
+class KeyboardInputLog;
+
 // Provides information about input devices connected to the system. Implemented
 // in the browser process, constructed within the Diagnostics_UI in the browser
 // process, and eventually called by the Diagnostics SWA (a renderer process).
@@ -45,11 +47,13 @@ class InputDataProvider : public mojom::InputDataProvider,
                           public TabletModeObserver,
                           public display::DisplayConfigurator::Observer {
  public:
-  explicit InputDataProvider(aura::Window* window);
+  explicit InputDataProvider(aura::Window* window,
+                             KeyboardInputLog* keyboard_input_log_ptr);
   explicit InputDataProvider(
       aura::Window* window,
       std::unique_ptr<ui::DeviceManager> device_manager,
-      std::unique_ptr<EventWatcherFactory> watcher_factory);
+      std::unique_ptr<EventWatcherFactory> watcher_factory,
+      KeyboardInputLog* keyboard_input_log_ptr);
   InputDataProvider(const InputDataProvider&) = delete;
   InputDataProvider& operator=(const InputDataProvider&) = delete;
   ~InputDataProvider() override;
@@ -101,6 +105,10 @@ class InputDataProvider : public mojom::InputDataProvider,
   // Get the value of is_internal_display_on_ for testing purpose.
   bool is_internal_display_on() { return is_internal_display_on_; }
 
+  void SetLogForTesting(KeyboardInputLog* keyboard_input_log_ptr) {
+    keyboard_input_log_ptr_ = keyboard_input_log_ptr;
+  }
+
  protected:
   base::SequenceBound<InputDeviceInfoHelper> info_helper_{
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
@@ -134,6 +142,12 @@ class InputDataProvider : public mojom::InputDataProvider,
   // Manage watchers that read an evdev and process events for observers.
   void ForwardKeyboardInput(uint32_t id);
   void UnforwardKeyboardInput(uint32_t id);
+
+  const std::string GetKeyboardName(uint32_t id);
+
+  bool IsLoggingEnabled() const;
+
+  KeyboardInputLog* keyboard_input_log_ptr_ = nullptr;  // Not Owned.
 
   // Whether a tablet mode switch is present (which we use as a hint for the
   // top-right key glyph).

@@ -11,6 +11,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/keyboard_input_log.h"
+#include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_event_watcher.h"
@@ -18,6 +20,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -513,7 +519,8 @@ class TestInputDataProvider : public InputDataProvider {
       : InputDataProvider(
             widget->GetNativeWindow(),
             std::make_unique<FakeDeviceManager>(),
-            std::make_unique<FakeInputDataEventWatcherFactory>(watchers)),
+            std::make_unique<FakeInputDataEventWatcherFactory>(watchers),
+            /*keyboard_input_log_ptr=*/nullptr),
         attached_widget_(widget),
         watchers_(watchers) {
     info_helper_ = base::SequenceBound<FakeInputDeviceInfoHelper>(
@@ -2101,6 +2108,55 @@ TEST_F(InputDataProviderTest, KeyObservationTopRowExternalUSB) {
                      {kKeyF10, 9},
                      {kKeyF11, 10},
                      {kKeyF12, 11}});
+}
+
+TEST_F(InputDataProviderTest, KeyboardInputLog) {
+  base::ScopedTempDir temp_dir;
+  base::FilePath log_path;
+  EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
+  log_path = temp_dir.GetPath();
+  KeyboardInputLog log(log_path);
+  const auto full_log_path = log_path.AppendASCII("keyboard_input.log");
+  provider_->SetLogForTesting(&log);
+  std::unique_ptr<FakeKeyboardObserver> fake_observer =
+      std::make_unique<FakeKeyboardObserver>();
+
+  // Widget must be active and visible.
+  provider_->attached_widget_->Show();
+  provider_->attached_widget_->Activate();
+
+  // Construct a keyboard.
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(event0);
+  base::RunLoop().RunUntilIdle();
+
+  // Attach a key observer.
+  provider_->ObserveKeyEvents(
+      6u, fake_observer->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(provider_->watchers_[6]);
+
+  // Test a key event.
+  EXPECT_KEY_EVENTS(fake_observer.get(), 6u, {{kKeyA, -1}});
+
+  // Disconnect keyboard while it is being observed.
+  ui::DeviceEvent remove_kbd_event(ui::DeviceEvent::DeviceType::INPUT,
+                                   ui::DeviceEvent::ActionType::REMOVE,
+                                   base::FilePath("/dev/input/event6"));
+  provider_->OnDeviceEvent(remove_kbd_event);
+  base::RunLoop().RunUntilIdle();
+
+  // Watcher should have been shut down, and receiver disconnected.
+  EXPECT_FALSE(provider_->watchers_[6]);
+  task_environment()->RunUntilIdle();
+  std::string contents;
+  EXPECT_TRUE(base::ReadFileToString(full_log_path, &contents));
+  std::vector<std::string> lines = GetLogLines(contents);
+  EXPECT_EQ("Key press test - AT Translated Set 2 keyboard", lines[0]);
+  EXPECT_EQ("Key code: 30, Scan code: 30", lines[1]);
 }
 
 // TODO(b/211780758): Test all Fx scancodes using
