@@ -6,7 +6,8 @@ import 'chrome://cloud-upload/cloud_upload_dialog.js';
 
 import {PageHandlerRemote, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {CloudUploadElement, UploadType} from 'chrome://cloud-upload/cloud_upload_dialog.js';
+import {CloudUploadElement} from 'chrome://cloud-upload/cloud_upload_dialog.js';
+import {UploadType} from 'chrome://cloud-upload/upload_page.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -52,6 +53,9 @@ suite('<cloud-upload>', () => {
     cloudUploadApp =
         document.createElement('cloud-upload') as CloudUploadElement;
     container.appendChild(cloudUploadApp);
+
+    // Click the 'next' button on the welcome page.
+    cloudUploadApp.$('.action-button').click();
   };
 
   /**
@@ -77,8 +81,8 @@ suite('<cloud-upload>', () => {
    */
   test('Upload to OneDrive - title', async () => {
     setupForUploadType(UploadType.ONE_DRIVE);
-    const titleElement = cloudUploadApp.$('div[slot="title"]');
-    const uploadButton = cloudUploadApp.$('#upload-button');
+    const titleElement = cloudUploadApp.$('div#title');
+    const uploadButton = cloudUploadApp.$('.action-button');
     assertEquals(`Upload to OneDrive`, titleElement.innerText);
     assertEquals(`Upload to OneDrive`, uploadButton.innerText);
   });
@@ -88,8 +92,8 @@ suite('<cloud-upload>', () => {
    */
   test('Upload to Drive - title', async () => {
     setupForUploadType(UploadType.DRIVE);
-    const titleElement = cloudUploadApp.$('div[slot="title"]');
-    const uploadButton = cloudUploadApp.$('#upload-button');
+    const titleElement = cloudUploadApp.$('div#title');
+    const uploadButton = cloudUploadApp.$('.action-button');
     assertEquals(`Upload to Drive`, titleElement.innerText);
     assertEquals(`Upload to Drive`, uploadButton.innerText);
   });
@@ -100,7 +104,7 @@ suite('<cloud-upload>', () => {
    */
   test('Upload button', async () => {
     setupForUploadType(UploadType.DRIVE);
-    cloudUploadApp.$('#upload-button').click();
+    cloudUploadApp.$('.action-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
     assertDeepEquals(
@@ -113,7 +117,7 @@ suite('<cloud-upload>', () => {
    */
   test('Cancel button', async () => {
     setupForUploadType(UploadType.DRIVE);
-    cloudUploadApp.$('#cancel-button').click();
+    cloudUploadApp.$('.cancel-button').click();
     await testProxy.handler.whenCalled('respondAndClose');
     assertEquals(1, testProxy.handler.getCallCount('respondAndClose'));
     assertDeepEquals(

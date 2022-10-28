@@ -8,8 +8,15 @@ build_webui("build") {
   grd_prefix = "cloud_upload"
 
   static_files = [ "main.html" ]
-  web_component_files = [ "cloud_upload_dialog.ts" ]
-  non_web_component_files = [ "cloud_upload_browser_proxy.ts" ]
+  web_component_files = [
+    "base_setup_page.ts",
+    "welcome_page.ts",
+    "upload_page.ts",
+  ]
+  non_web_component_files = [
+    "cloud_upload_browser_proxy.ts",
+    "cloud_upload_dialog.ts",
+  ]
   mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-webui.js" ]
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_webui_js" ]

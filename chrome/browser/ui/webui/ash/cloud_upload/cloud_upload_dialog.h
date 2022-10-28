@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/gfx/geometry/size.h"
 
 class Profile;
 
@@ -54,6 +55,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   std::string GetDialogArgs() const override;
   ~CloudUploadDialog() override;
   bool ShouldShowCloseButton() const override;
+  void GetDialogSize(gfx::Size* size) const override;
 
  private:
   const storage::FileSystemURL file_url_;

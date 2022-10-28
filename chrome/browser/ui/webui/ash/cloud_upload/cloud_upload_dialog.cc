@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash::cloud_upload {
 namespace {
@@ -24,6 +25,9 @@ using file_manager::file_tasks::kDriveTaskResultMetricName;
 using file_manager::file_tasks::OfficeTaskResult;
 
 const char kOpenWebActionId[] = "OPEN_WEB";
+
+const int kCloudUploadDialogWidth = 512;
+const int kCloudUploadDialogHeight = 532;
 
 void OpenDriveUrl(const GURL& url) {
   if (url.is_empty()) {
@@ -160,6 +164,11 @@ std::string CloudUploadDialog::GetDialogArgs() const {
 
 bool CloudUploadDialog::ShouldShowCloseButton() const {
   return false;
+}
+
+void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
+  size->set_width(kCloudUploadDialogWidth);
+  size->set_height(kCloudUploadDialogHeight);
 }
 
 }  // namespace ash::cloud_upload

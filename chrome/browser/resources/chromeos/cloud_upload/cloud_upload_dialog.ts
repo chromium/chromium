@@ -2,119 +2,81 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-
+import {CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
-import {getTemplate} from './cloud_upload_dialog.html.js';
-
-export enum UploadType {
-  ONE_DRIVE = 0,
-  DRIVE = 1,
-}
+import {UploadPageElement} from './upload_page.js';
+import {WelcomePageElement} from './welcome_page.js';
 
 /**
- * @fileoverview
- * 'cloud-upload' defines the UI for the "Upload to cloud" workflow.
+ * The CloudUploadElement is the main dialog controller that aggregates all the
+ * individual setup pages and determines which one to show.
  */
-
 export class CloudUploadElement extends HTMLElement {
-  uploadType: UploadType|undefined;
-  fileName: string;
+  /** List of pages to show. */
+  pages: HTMLElement[];
+  /** The current page index into `pages`. */
+  private currentPageIdx: number = 0;
 
   constructor() {
     super();
-    this.fileName = '';
-    this.processDialogArgs();
-    const template = this.createTemplate();
-    const fragment = template.content.cloneNode(true);
-    this.attachShadow({mode: 'open'}).appendChild(fragment);
-  }
+    this.attachShadow({mode: 'open'});
 
-  $<T extends HTMLElement>(query: string): T {
-    return this.shadowRoot!.querySelector(query)!;
-  }
-
-  get dialog(): CrDialogElement {
-    return this.$('cr-dialog') as CrDialogElement;
+    // TODO(b/251046341): Adjust this once the rest of the pages are in place.
+    this.pages = [
+      new WelcomePageElement(),
+      new UploadPageElement(),
+    ];
+    for (let i = 0; i < this.pages.length; i++) {
+      this.pages[i]?.setAttribute(
+          'total-pages', (this.pages.length).toString());
+      this.pages[i]?.setAttribute('page-number', i.toString());
+      this.pages[i]?.addEventListener(NEXT_PAGE_EVENT, () => this.goNextPage());
+      this.pages[i]?.addEventListener(
+          CANCEL_SETUP_EVENT, () => this.cancelSetup());
+    }
+    this.switchPage(0);
   }
 
   get proxy() {
     return CloudUploadBrowserProxy.getInstance();
   }
 
-  async connectedCallback() {
-    const cancelButton = this.$('#cancel-button')! as HTMLElement;
-    const uploadButton = this.$('#upload-button')! as HTMLElement;
-    cancelButton.addEventListener('click', () => this.onCancelButtonClick());
-    uploadButton.addEventListener('click', () => this.onUploadButtonClick());
+  $<T extends HTMLElement>(query: string): T {
+    return this.shadowRoot!.querySelector(query)!;
   }
 
-  processDialogArgs() {
-    try {
-      const dialogArgs = this.proxy.getDialogArguments();
-      assert(dialogArgs);
-      const args = JSON.parse(dialogArgs);
-      assert(args);
-      assert(args.fileName);
-      assert(args.uploadType);
-      this.fileName = args.fileName;
-      switch (args.uploadType) {
-        case 'OneDrive':
-          this.uploadType = UploadType.ONE_DRIVE;
-          break;
-        case 'Drive':
-          this.uploadType = UploadType.DRIVE;
-          break;
-      }
-    } catch (e) {
-      // TODO(b/243095484) Define expected behavior.
-      console.error(`Unable to get dialog arguments . Error: ${e}.`);
-    }
+  /**
+   * Gets the element corresponding to the currently shown page.
+   */
+  get currentPage(): HTMLElement|undefined {
+    return this.pages[this.currentPageIdx];
   }
 
-  createTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
-    template.innerHTML = getTemplate() as string;
-    const fragment = template.content;
-    const titleElement =
-        fragment.querySelector('div[slot="title"]')! as HTMLElement;
-    const uploadMessageElement =
-        fragment.querySelector('#upload-message')! as HTMLElement;
-    const fileNameElement =
-        fragment.querySelector('#file-name')! as HTMLElement;
-    const uploadButton =
-        fragment.querySelector('#upload-button')! as HTMLElement;
-
-    switch (this.uploadType) {
-      case UploadType.ONE_DRIVE:
-        titleElement.innerText = 'Upload to OneDrive';
-        uploadMessageElement.innerText =
-            'Upload your file to OneDrive to open with Office.';
-        uploadButton.innerText = 'Upload to OneDrive';
-        break;
-      case UploadType.DRIVE:
-        titleElement.innerText = 'Upload to Drive';
-        uploadMessageElement.innerText =
-            'Upload your file to Google Drive to open with Google Docs.';
-        uploadButton.innerText = 'Upload to Drive';
-        break;
-    }
-    fileNameElement.innerText = `File name: ${this.fileName}`;
-
-    return template;
+  /**
+   * Switches the currently shown page.
+   * @param page Page index to show.
+   */
+  private switchPage(page: number): void {
+    this.currentPage?.remove();
+    this.currentPageIdx = page;
+    this.shadowRoot?.appendChild(this.currentPage!);
   }
 
-  private onCancelButtonClick(): void {
+  /**
+   * Invoked when a page fires a `CANCEL_SETUP_EVENT` event.
+   */
+  private cancelSetup(): void {
     this.proxy.handler.respondAndClose(UserAction.kCancel);
   }
 
-  private onUploadButtonClick(): void {
-    this.proxy.handler.respondAndClose(UserAction.kUpload);
+  /**
+   * Invoked when a page fires a `NEXT_PAGE_EVENT` event.
+   */
+  private goNextPage(): void {
+    if (this.currentPageIdx < this.pages.length - 1) {
+      this.switchPage(this.currentPageIdx + 1);
+    }
   }
 }
 

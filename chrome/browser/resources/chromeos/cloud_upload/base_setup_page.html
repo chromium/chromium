@@ -1,0 +1,42 @@
+<style>
+  :host {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 532px;
+    padding: 32px;
+    width: 512px;
+  }
+
+  ::slotted([slot=content]) {
+    flex-grow: 1;
+  }
+
+  div#footer {
+    display: flex;
+  }
+
+  div#dots {
+    display: flex;
+    flex-grow: 1;
+    gap: 12px;
+  }
+
+  div#dots > div {
+    background-color: var(--cros-button-stroke-color-secondary);
+    border-radius: 50%;
+    height: 8px;
+    width: 8px;
+  }
+
+  div#dots > div.active {
+    background-color: var(--cros-icon-color-prominent);
+  }
+
+</style>
+
+<slot name="content"></slot>
+<div id="footer">
+  <div id="dots"></div>
+  <slot name="button-container"></slot>
+</div>
