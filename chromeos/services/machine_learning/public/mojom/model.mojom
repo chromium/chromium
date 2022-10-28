@@ -41,7 +41,7 @@ enum BuiltinModelId {
   // The Smart Dim (20190521) ML model.
   SMART_DIM_20190521 = 5,
   // The Search Ranker (20190923) ML model.
-  SEARCH_RANKER_20190923 = 6,
+  UNSUPPORTED_SEARCH_RANKER_20190923 = 6,
   // The Adaptive Charging (20211105) ML model.
   [MinVersion=1] ADAPTIVE_CHARGING_20211105 = 7,
 };
