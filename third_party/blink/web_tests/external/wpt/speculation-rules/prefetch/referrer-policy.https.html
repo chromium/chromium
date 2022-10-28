@@ -53,7 +53,6 @@ subsetTest(promise_test, async t => {
 
   const agent = await spawnWindow(t);
   await agent.setReferrerPolicy("no-referrer");
-  const expectedReferrer = agent.getExecutorURL().origin + "/";
 
   const nextURL = agent.getExecutorURL({ page: 2 });
   await agent.forceSinglePrefetch(nextURL);
