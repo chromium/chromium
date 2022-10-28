@@ -10,6 +10,7 @@
 #define DVLOGF(level) DVLOG(level) << __func__ << "(): "
 #define VLOGF(level) VLOG(level) << __func__ << "(): "
 #define VPLOGF(level) VPLOG(level) << __func__ << "(): "
+#define LOGF(severity) LOG(severity) << __func__ << "(): "
 
 namespace media {
 

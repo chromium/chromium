@@ -748,19 +748,27 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     return CroStatus::Codes::kFailedToChangeResolution;
   }
 
-  const v4l2_memory type =
-      client_->GetVideoFramePool() ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
-  const size_t v4l2_num_buffers =
-      (type == V4L2_MEMORY_DMABUF) ? VIDEO_MAX_FRAME : num_output_frames_;
+  // If our |client_| has a VideoFramePool to allocate buffers for us, we'll
+  // use it, otherwise we have to ask the driver.
+  const bool use_v4l2_allocated_buffers = !client_->GetVideoFramePool();
 
-  if (output_queue_->AllocateBuffers(v4l2_num_buffers, type, incoherent_) ==
-      0) {
-    VLOGF(1) << "Failed to request output buffers.";
-    SetState(State::kError);
-    return CroStatus::Codes::kFailedToChangeResolution;
-  }
-  if (output_queue_->AllocatedBuffersCount() < num_output_frames_) {
-    VLOGF(1) << "Could not allocate requested number of output buffers.";
+  const v4l2_memory type =
+      use_v4l2_allocated_buffers ? V4L2_MEMORY_MMAP : V4L2_MEMORY_DMABUF;
+  // If we don't use driver-allocated buffers, request as many as possible
+  // (VIDEO_MAX_FRAME) since they are shallow allocations.
+  const size_t v4l2_num_buffers =
+      use_v4l2_allocated_buffers ? num_output_frames_ : VIDEO_MAX_FRAME;
+
+  VLOGF(1) << "Requesting: " << v4l2_num_buffers << " CAPTURE buffers of type "
+           << (use_v4l2_allocated_buffers ? "V4L2_MEMORY_MMAP"
+                                          : "V4L2_MEMORY_DMABUF");
+
+  const auto allocated_buffers =
+      output_queue_->AllocateBuffers(v4l2_num_buffers, type, incoherent_);
+
+  if (allocated_buffers < v4l2_num_buffers) {
+    LOGF(ERROR) << "Failed to allocated enough CAPTURE buffers, requested: "
+                << v4l2_num_buffers << " and got: " << allocated_buffers;
     SetState(State::kError);
     return CroStatus::Codes::kFailedToChangeResolution;
   }
