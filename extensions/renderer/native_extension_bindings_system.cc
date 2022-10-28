@@ -38,6 +38,7 @@
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/extension_js_runner.h"
+#include "extensions/renderer/feedback_private_hooks_delegate.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/i18n_hooks_delegate.h"
 #include "extensions/renderer/ipc_message_sender.h"
@@ -433,6 +434,8 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
       std::make_unique<I18nHooksDelegate>());
   api_system_.GetHooksForAPI("runtime")->SetDelegate(
       std::make_unique<RuntimeHooksDelegate>(&messaging_service_));
+  api_system_.GetHooksForAPI("feedbackPrivate")
+      ->SetDelegate(std::make_unique<FeedbackPrivateHooksDelegate>());
 }
 
 NativeExtensionBindingsSystem::~NativeExtensionBindingsSystem() {}
