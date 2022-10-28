@@ -61,6 +61,16 @@ inline bool ApproximatelyOne(double x, double tolerance) {
   return std::abs(x - 1) <= tolerance;
 }
 
+template <typename T>
+void AxisTransform2dToColMajor(const AxisTransform2d& axis_2d, T a[16]) {
+  a[0] = axis_2d.scale().x();
+  a[5] = axis_2d.scale().y();
+  a[12] = axis_2d.translation().x();
+  a[13] = axis_2d.translation().y();
+  a[1] = a[2] = a[3] = a[4] = a[6] = a[7] = a[8] = a[9] = a[11] = a[14] = 0;
+  a[10] = a[15] = 1;
+}
+
 }  // namespace
 
 Transform::Transform() = default;
@@ -75,20 +85,12 @@ Transform::Transform(const AxisTransform2d& axis_2d) : axis_2d_(axis_2d) {}
 Transform::Transform(double r0c0, double r1c0, double r2c0, double r3c0,
                      double r0c1, double r1c1, double r2c1, double r3c1,
                      double r0c2, double r1c2, double r2c2, double r3c2,
-                     double r0c3, double r1c3, double r2c3, double r3c3) {
-  if (AllTrue(Double4{r1c0, r2c0, r3c0, r0c1} == Double4{0, 0, 0, 0} &
-              Double4{r2c1, r3c1, r0c2, r1c2} == Double4{0, 0, 0, 0} &
-              Double4{r2c2, r3c2, r2c3, r3c3} == Double4{1, 0, 0, 1})) {
-    axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
-        Vector2dF(r0c0, r1c1), Vector2dF(r0c3, r1c3));
-  } else {
-    // The parameters of Matrix44's constructor is also in col-major order.
-    matrix_ = std::make_unique<Matrix44>(r0c0, r1c0, r2c0, r3c0,   // col 0
-                                         r0c1, r1c1, r2c1, r3c1,   // col 1
-                                         r0c2, r1c2, r2c2, r3c2,   // col 2
-                                         r0c3, r1c3, r2c3, r3c3);  // col 3
-  }
-}
+                     double r0c3, double r1c3, double r2c3, double r3c3)
+    // The parameters of Matrix44's constructor are also in col-major order.
+    : matrix_(std::make_unique<Matrix44>(r0c0, r1c0, r2c0, r3c0,      // col 0
+                                         r0c1, r1c1, r2c1, r3c1,      // col 1
+                                         r0c2, r1c2, r2c2, r3c2,      // col 2
+                                         r0c3, r1c3, r2c3, r3c3)) {}  // col 3
 
 Transform::Transform(const Quaternion& q)
     : Transform(
@@ -162,19 +164,33 @@ Matrix44& Transform::EnsureFullMatrix() {
 }
 
 // static
-Transform Transform::ColMajorF(const float a[16]) {
+Transform Transform::ColMajor(const double a[16]) {
   return Transform(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9],
                    a[10], a[11], a[12], a[13], a[14], a[15]);
 }
 
+// static
+Transform Transform::ColMajorF(const float a[16]) {
+  if (AllTrue(Float4{a[1], a[2], a[3], a[4]} == Float4{0, 0, 0, 0} &
+              Float4{a[6], a[7], a[8], a[9]} == Float4{0, 0, 0, 0} &
+              Float4{a[10], a[11], a[14], a[15]} == Float4{1, 0, 0, 1})) {
+    return Transform(a[0], a[5], a[12], a[13]);
+  }
+  return Transform(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9],
+                   a[10], a[11], a[12], a[13], a[14], a[15]);
+}
+
+void Transform::GetColMajor(double a[16]) const {
+  if (LIKELY(!matrix_)) {
+    AxisTransform2dToColMajor(axis_2d_, a);
+  } else {
+    matrix_->GetColMajor(a);
+  }
+}
+
 void Transform::GetColMajorF(float a[16]) const {
   if (LIKELY(!matrix_)) {
-    a[0] = axis_2d_.scale().x();
-    a[5] = axis_2d_.scale().y();
-    a[12] = axis_2d_.translation().x();
-    a[13] = axis_2d_.translation().y();
-    a[1] = a[2] = a[3] = a[4] = a[6] = a[7] = a[8] = a[9] = a[11] = a[14] = 0;
-    a[10] = a[15] = 1;
+    AxisTransform2dToColMajor(axis_2d_, a);
   } else {
     matrix_->GetColMajorF(a);
   }
@@ -201,14 +217,11 @@ void Transform::RotateAboutZAxis(double degrees) {
   EnsureFullMatrix().RotateAboutZAxisSinCos(sin_cos.sin, sin_cos.cos);
 }
 
-void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
+void Transform::RotateAbout(double x, double y, double z, double degrees) {
   SinCos sin_cos = SinCosDegrees(degrees);
   if (sin_cos.IsZeroAngle())
     return;
 
-  double x = axis.x();
-  double y = axis.y();
-  double z = axis.z();
   double square_length = x * x + y * y + z * z;
   if (square_length == 0)
     return;
@@ -221,32 +234,36 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
   EnsureFullMatrix().RotateUnitSinCos(x, y, z, sin_cos.sin, sin_cos.cos);
 }
 
+void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
+  RotateAbout(axis.x(), axis.y(), axis.z(), degrees);
+}
+
 double Transform::Determinant() const {
   return LIKELY(!matrix_) ? axis_2d_.Determinant() : matrix_->Determinant();
 }
 
-void Transform::Scale(double x, double y) {
+void Transform::Scale(float x, float y) {
   if (LIKELY(!matrix_))
     axis_2d_.PreScale(Vector2dF(x, y));
   else
     matrix_->PreScale(x, y, 1);
 }
 
-void Transform::PostScale(double x, double y) {
+void Transform::PostScale(float x, float y) {
   if (LIKELY(!matrix_))
     axis_2d_.PostScale(Vector2dF(x, y));
   else
     matrix_->PostScale(x, y, 1);
 }
 
-void Transform::Scale3d(double x, double y, double z) {
+void Transform::Scale3d(float x, float y, float z) {
   if (z == 1)
     Scale(x, y);
   else
     EnsureFullMatrix().PreScale(x, y, z);
 }
 
-void Transform::PostScale3d(double x, double y, double z) {
+void Transform::PostScale3d(float x, float y, float z) {
   if (z == 1)
     PostScale(x, y);
   else
@@ -257,7 +274,7 @@ void Transform::Translate(const Vector2dF& offset) {
   Translate(offset.x(), offset.y());
 }
 
-void Transform::Translate(double x, double y) {
+void Transform::Translate(float x, float y) {
   if (LIKELY(!matrix_))
     axis_2d_.PreTranslate(Vector2dF(x, y));
   else
@@ -268,7 +285,7 @@ void Transform::PostTranslate(const Vector2dF& offset) {
   PostTranslate(offset.x(), offset.y());
 }
 
-void Transform::PostTranslate(double x, double y) {
+void Transform::PostTranslate(float x, float y) {
   if (LIKELY(!matrix_))
     axis_2d_.PostTranslate(Vector2dF(x, y));
   else
@@ -279,7 +296,7 @@ void Transform::PostTranslate3d(const Vector3dF& offset) {
   PostTranslate3d(offset.x(), offset.y(), offset.z());
 }
 
-void Transform::PostTranslate3d(double x, double y, double z) {
+void Transform::PostTranslate3d(float x, float y, float z) {
   if (z == 0)
     PostTranslate(x, y);
   else
@@ -290,7 +307,7 @@ void Transform::Translate3d(const Vector3dF& offset) {
   Translate3d(offset.x(), offset.y(), offset.z());
 }
 
-void Transform::Translate3d(double x, double y, double z) {
+void Transform::Translate3d(float x, float y, float z) {
   if (z == 0)
     Translate(x, y);
   else

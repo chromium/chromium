@@ -5,6 +5,8 @@
 #ifndef UI_GFX_GEOMETRY_DOUBLE4_H_
 #define UI_GFX_GEOMETRY_DOUBLE4_H_
 
+#include <type_traits>
+
 namespace gfx {
 
 // This header defines Double4 type for vectorized SIMD operations used in
@@ -46,6 +48,7 @@ namespace gfx {
 #endif
 
 typedef double __attribute__((vector_size(4 * sizeof(double)))) Double4;
+typedef float __attribute__((vector_size(4 * sizeof(float)))) Float4;
 
 ALWAYS_INLINE double Sum(Double4 v) {
   return v[0] + v[1] + v[2] + v[3];
@@ -62,17 +65,21 @@ ALWAYS_INLINE void StoreDouble4(Double4 v, double d[4]) {
   d[3] = v[3];
 }
 
-// DoubleBoolean4 is the result type of Double4 operations that would produce
-// bool results if they were original scalar operators, e.g.
-//   DoubleBoolean4 result = double4_a == double4_b;
-// A zero value of a component of |result| means false, otherwise true.
-// This function checks whether all 4 components in |result| are true.
+// The parameter should be the result of Double4/Float4 operations that would
+// produce bool results if they were original scalar operators, e.g.
+//   auto b4 = double4_a == double4_b;
+// A zero value of a component of |b4| means false, otherwise true.
+// This function checks whether all 4 components in |b4| are true.
 // |&| instead of |&&| is used to avoid branches, which results shorter and
-// faster code in most cases.
-typedef int64_t __attribute__((vector_size(4 * sizeof(int64_t))))
-DoubleBoolean4;
-ALWAYS_INLINE int64_t AllTrue(DoubleBoolean4 v) {
-  return v[0] & v[1] & v[2] & v[3];
+// faster code in most cases. It's used like:
+//   if (AllTrue(double4_a == double4_b))
+//     ...
+//   if (AllTrue((double4_a1 == double4_b1) & (double4_a2 == double4_b2)))
+//     ...
+template <typename T>
+ALWAYS_INLINE auto AllTrue(T __attribute__((vector_size(4 * sizeof(T)))) b4) {
+  static_assert(std::is_integral<T>::value);
+  return b4[0] & b4[1] & b4[2] & b4[3];
 }
 
 }  // namespace gfx

@@ -1531,6 +1531,14 @@ TEST(XFormTest, ColMajor) {
   EXPECT_ROW2_EQ(3.0, 7.0, 11.0, 15.0, transform);
   EXPECT_ROW3_EQ(4.0, 8.0, 12.0, 16.0, transform);
   EXPECT_ROW4_EQ(5.0, 9.0, 13.0, 17.0, transform);
+
+  double data[16];
+  transform.GetColMajor(data);
+  for (int i = 0; i < 16; i++) {
+    EXPECT_EQ(i + 2.0, data[i]);
+    EXPECT_EQ(data[i], transform.ColMajorData(i));
+  }
+  EXPECT_EQ(transform, Transform::ColMajor(data));
 }
 
 TEST(XFormTest, Affine) {
@@ -1553,6 +1561,8 @@ TEST(XFormTest, ColMajorF) {
 
   float data1[16];
   transform.GetColMajorF(data1);
+  for (int i = 0; i < 16; i++)
+    EXPECT_EQ(data1[i], data[i]);
   EXPECT_EQ(transform, Transform::ColMajorF(data1));
 }
 
