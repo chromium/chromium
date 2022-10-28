@@ -34,13 +34,13 @@ class MockKeyPermissionsService : public KeyPermissionsService {
 
   MOCK_METHOD(void,
               IsCorporateKey,
-              (const std::string& public_key_spki_der_b64,
+              (const std::string& public_key_spki_der,
                IsCorporateKeyCallback callback),
               (override));
 
   MOCK_METHOD(void,
               SetCorporateKey,
-              (const std::string& public_key_spki_der_b64,
+              (const std::string& public_key_spki_der,
                SetCorporateKeyCallback callback),
               (override));
 };
