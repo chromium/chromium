@@ -1033,9 +1033,8 @@ void KeystoreServiceAsh::GetKeyTags(const std::vector<uint8_t>& public_key,
                                     GetKeyTagsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string public_key_str(public_key.begin(), public_key.end());
   GetKeyPermissions()->IsCorporateKey(
-      std::move(public_key_str),
+      public_key,
       base::BindOnce(&KeystoreServiceAsh::DidGetKeyTags, std::move(callback)));
 }
 
@@ -1080,11 +1079,9 @@ void KeystoreServiceAsh::AddKeyTags(const std::vector<uint8_t>& public_key,
   }
 
   if (tags == static_cast<uint64_t>(mojom::KeyTag::kCorporate)) {
-    std::string public_key_str(public_key.begin(), public_key.end());
     GetKeyPermissions()->SetCorporateKey(
-        std::move(public_key_str),
-        base::BindOnce(&KeystoreServiceAsh::DidAddKeyTags,
-                       std::move(callback)));
+        public_key, base::BindOnce(&KeystoreServiceAsh::DidAddKeyTags,
+                                   std::move(callback)));
     return;
   }
 
@@ -1112,11 +1109,10 @@ void KeystoreServiceAsh::CanUserGrantPermissionForKey(
     CanUserGrantPermissionForKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::string public_key_str(public_key.begin(), public_key.end());
   // Strictly speaking, crosapi::CanUserGrantPermissionForKeyCallback is a
   // different type than platform_keys::CanUserGrantPermissionForKeyCallback.
   // But as long as signatures are the same, we can just pass `callback`.
-  GetKeyPermissions()->CanUserGrantPermissionForKey(std::move(public_key_str),
+  GetKeyPermissions()->CanUserGrantPermissionForKey(public_key,
                                                     std::move(callback));
 }
 

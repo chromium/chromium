@@ -16,8 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 class KeyPermissionsManager;
 class PlatformKeysService;
@@ -41,13 +40,13 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
       delete;
 
   void CanUserGrantPermissionForKey(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback) override;
 
-  void IsCorporateKey(const std::string& public_key_spki_der,
+  void IsCorporateKey(std::vector<uint8_t> public_key_spki_der,
                       IsCorporateKeyCallback callback) override;
 
-  void SetCorporateKey(const std::string& public_key_spki_der,
+  void SetCorporateKey(std::vector<uint8_t> public_key_spki_der,
                        SetCorporateKeyCallback callback) override;
 
   PlatformKeysService* platform_keys_service() {
@@ -60,19 +59,19 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   bool IsUserKeyCorporate(const std::string& public_key_spki_der_b64) const;
 
   void CanUserGrantPermissionForKeyWithLocations(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,
       const std::vector<chromeos::platform_keys::TokenId>& key_locations,
       chromeos::platform_keys::Status key_locations_retrieval_status);
   void CanUserGrantPermissionForKeyWithLocationsAndFlag(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback,
       const std::vector<chromeos::platform_keys::TokenId>& key_locations,
       absl::optional<bool> corporate_key,
       chromeos::platform_keys::Status status);
 
   void IsCorporateKeyWithLocations(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       IsCorporateKeyCallback callback,
       const std::vector<chromeos::platform_keys::TokenId>& key_locations,
       chromeos::platform_keys::Status key_locations_retrieval_status);
@@ -81,7 +80,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
                                      chromeos::platform_keys::Status status);
 
   void SetCorporateKeyWithLocations(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       SetCorporateKeyCallback callback,
       const std::vector<chromeos::platform_keys::TokenId>& key_locations,
       chromeos::platform_keys::Status key_locations_retrieval_status);
@@ -93,7 +92,6 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};
 };
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_IMPL_H_

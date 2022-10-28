@@ -401,7 +401,7 @@ TEST_F(KeystoreServiceAshTest, SelectClientCertificatesFail) {
 
 TEST_F(KeystoreServiceAshTest, GetKeyTagsSuccess) {
   EXPECT_CALL(key_permissions_service_,
-              IsCorporateKey(GetPublicKeyStr(), /*callback=*/_))
+              IsCorporateKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(
           RunOnceCallback<1>(absl::optional<bool>(true), Status::kSuccess));
 
@@ -431,7 +431,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsSuccess) {
   const uint64_t tags = static_cast<uint64_t>(mojom::KeyTag::kCorporate);
 
   EXPECT_CALL(key_permissions_service_,
-              SetCorporateKey(GetPublicKeyStr(), /*callback=*/_))
+              SetCorporateKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<1>(Status::kSuccess));
 
   StatusCallbackObserver observer;
@@ -445,7 +445,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
   const uint64_t tags = static_cast<uint64_t>(mojom::KeyTag::kCorporate);
 
   EXPECT_CALL(key_permissions_service_,
-              SetCorporateKey(GetPublicKeyStr(), /*callback=*/_))
+              SetCorporateKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<1>(Status::kErrorInternal));
 
   StatusCallbackObserver observer;
@@ -460,7 +460,7 @@ TEST_F(KeystoreServiceAshTest, AddKeyTagsFail) {
 
 TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
   EXPECT_CALL(key_permissions_service_,
-              CanUserGrantPermissionForKey(GetPublicKeyStr(), /*callback=*/_))
+              CanUserGrantPermissionForKey(GetPublicKeyBin(), /*callback=*/_))
       .WillOnce(RunOnceCallback<1>(false));
 
   CallbackObserver<bool> observer;

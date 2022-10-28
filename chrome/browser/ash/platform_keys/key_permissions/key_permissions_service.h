@@ -14,8 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace platform_keys {
+namespace ash::platform_keys {
 
 using CanUserGrantPermissionForKeyCallback =
     base::OnceCallback<void(bool allowed)>;
@@ -53,21 +52,20 @@ class KeyPermissionsService : public KeyedService {
   // |public_key_spki_der| to extensions. |callback| will be invoked with the
   // result.
   virtual void CanUserGrantPermissionForKey(
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       CanUserGrantPermissionForKeyCallback callback) = 0;
 
   // Determines if the key identified by |public_key_spki_der|is marked for
   // corporate usage. |callback| will be invoked with the result.
-  virtual void IsCorporateKey(const std::string& public_key_spki_der,
+  virtual void IsCorporateKey(std::vector<uint8_t> public_key_spki_der,
                               IsCorporateKeyCallback callback) = 0;
 
   // Marks the key identified by |public_key_spki_der| as corporate usage.
   // |callback| will be invoked with the resulting status.
-  virtual void SetCorporateKey(const std::string& public_key_spki_der,
+  virtual void SetCorporateKey(std::vector<uint8_t> public_key_spki_der,
                                SetCorporateKeyCallback callback) = 0;
 };
 
-}  // namespace platform_keys
-}  // namespace ash
+}  // namespace ash::platform_keys
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_H_

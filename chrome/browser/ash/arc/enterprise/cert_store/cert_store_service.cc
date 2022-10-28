@@ -248,14 +248,11 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(cert);
 
-  std::string public_key_spki_der =
-      chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
-
   // Check if the key is marked for corporate usage.
   ash::platform_keys::KeyPermissionsServiceFactory::GetForBrowserContext(
       context)
       ->IsCorporateKey(
-          public_key_spki_der,
+          chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert),
           base::BindOnce(&CheckCorporateFlag, std::move(callback)));
 }
 
