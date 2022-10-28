@@ -964,11 +964,11 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   // Report the error to UMA.
   ReportErrorReason(reason);
 
-  // HRESULT 0x8004CD12 is DRM_E_TEE_INVALID_HWDRM_STATE, which can happen
-  // during OS sleep/resume, or moving video to different graphics adapters.
-  // This is not an error, so special case it here.
+  // DRM_E_TEE_INVALID_HWDRM_STATE can happen during OS sleep/resume, or moving
+  // video to different graphics adapters. This is not an error, so special case
+  // it here.
   PipelineStatus new_status = status;
-  if (hresult == static_cast<HRESULT>(0x8004CD12)) {
+  if (hresult == DRM_E_TEE_INVALID_HWDRM_STATE) {
     // TODO(crbug.com/1370844): Remove these after the investigation is done.
     base::UmaHistogramBoolean(
         "Media.MediaFoundationRenderer.InvalidHwdrmState.HasReportedPlaying",
