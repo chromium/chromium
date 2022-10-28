@@ -59,6 +59,14 @@ void ConnectionInfoMetricsLogger::Init(
   }
 }
 
+void ConnectionInfoMetricsLogger::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ConnectionInfoMetricsLogger::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void ConnectionInfoMetricsLogger::NetworkListChanged() {
   NetworkStateHandler::NetworkStateList network_list;
   network_state_handler_->GetVisibleNetworkList(&network_list);
@@ -124,10 +132,33 @@ void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
   // and disconnection metrics. Otherwise, if a disconnect has been requested,
   // maintain the request until the status changes.
   if (!prev_info || prev_info->status != curr_info.status) {
-    AttemptLogAllConnectionResult(prev_info, curr_info);
+    ConnectionAttemptFinished(prev_info, curr_info);
     AttemptLogConnectionStateResult(prev_info, curr_info);
   }
   guid_to_connection_info_.insert_or_assign(network->guid(), curr_info);
+}
+
+void ConnectionInfoMetricsLogger::ConnectionAttemptFinished(
+    const absl::optional<ConnectionInfo>& prev_info,
+    const ConnectionInfo& curr_info) const {
+  DCHECK(!prev_info || prev_info && prev_info->guid == curr_info.guid);
+
+  if (curr_info.status == ConnectionInfo::Status::kConnected) {
+    NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid);
+    NotifyConnectionResult(curr_info.guid, /*shill_error=*/absl::nullopt);
+  }
+
+  // If the network goes from connecting or disconnecting state to the
+  // disconnected state, log the shill error if it's valid.
+  if (prev_info &&
+      (prev_info->status == ConnectionInfo::Status::kConnecting ||
+       prev_info->status == ConnectionInfo::Status::kDisconnecting) &&
+      curr_info.status == ConnectionInfo::Status::kDisconnected &&
+      NetworkState::ErrorIsValid(curr_info.shill_error)) {
+    NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid,
+                                                 curr_info.shill_error);
+    NotifyConnectionResult(curr_info.guid, curr_info.shill_error);
+  }
 }
 
 void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
@@ -152,32 +183,19 @@ void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
   }
 }
 
-void ConnectionInfoMetricsLogger::AttemptLogAllConnectionResult(
-    const absl::optional<ConnectionInfo>& prev_info,
-    const ConnectionInfo& curr_info) const {
-  DCHECK(!prev_info || prev_info && prev_info->guid == curr_info.guid);
-
-  if (curr_info.status == ConnectionInfo::Status::kConnected)
-    NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid);
-
-  // If the network goes from connecting or disconnecting state to the
-  // disconnected state, log the shill error if it's valid.
-  if (prev_info &&
-      (prev_info->status == ConnectionInfo::Status::kConnecting ||
-       prev_info->status == ConnectionInfo::Status::kDisconnecting) &&
-      curr_info.status == ConnectionInfo::Status::kDisconnected &&
-      NetworkState::ErrorIsValid(curr_info.shill_error)) {
-    NetworkMetricsHelper::LogAllConnectionResult(curr_info.guid,
-                                                 curr_info.shill_error);
-  }
-}
-
 absl::optional<ConnectionInfoMetricsLogger::ConnectionInfo>
 ConnectionInfoMetricsLogger::GetCachedInfo(const std::string& guid) const {
   const auto prev_info_it = guid_to_connection_info_.find(guid);
   if (prev_info_it == guid_to_connection_info_.end())
     return absl::nullopt;
   return prev_info_it->second;
+}
+
+void ConnectionInfoMetricsLogger::NotifyConnectionResult(
+    const std::string& guid,
+    const absl::optional<std::string>& shill_error) const {
+  for (auto& observer : observers_)
+    observer.OnConnectionResult(guid, shill_error);
 }
 
 }  // namespace ash

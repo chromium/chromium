@@ -8,6 +8,8 @@
 #include "base/component_export.h"
 
 #include "base/containers/flat_set.h"
+#include "base/scoped_observation.h"
+#include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
 namespace ash {
@@ -16,19 +18,27 @@ class NetworkMetadataStore;
 
 // Provides APIs for logging metrics related to cellular networks.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
-    : public NetworkStateHandlerObserver {
+    : public NetworkStateHandlerObserver,
+      public ConnectionInfoMetricsLogger::Observer {
  public:
-  CellularNetworkMetricsLogger(NetworkStateHandler* network_state_handler,
-                               NetworkMetadataStore* network_metadata_store);
+  CellularNetworkMetricsLogger(
+      NetworkStateHandler* network_state_handler,
+      NetworkMetadataStore* network_metadata_store,
+      ConnectionInfoMetricsLogger* connection_info_metrics_logger);
   CellularNetworkMetricsLogger(const CellularNetworkMetricsLogger&) = delete;
   CellularNetworkMetricsLogger& operator=(const CellularNetworkMetricsLogger&) =
       delete;
   ~CellularNetworkMetricsLogger() override;
 
  private:
-  // NetworkStateHandlerObserver::
+  // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
   void NetworkConnectionStateChanged(const NetworkState* network) override;
+
+  // ConnectionInfoMetricsLogger::Observer:
+  void OnConnectionResult(
+      const std::string& guid,
+      const absl::optional<std::string>& shill_error) override;
 
   // Logs the number of custom APNs saved for a network.
   void AttemptLogCustomApnsCount(const NetworkState* network);
@@ -38,6 +48,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   NetworkMetadataStore* network_metadata_store_ = nullptr;
+
+  base::ScopedObservation<ConnectionInfoMetricsLogger,
+                          ConnectionInfoMetricsLogger::Observer>
+      connection_info_metrics_logger_observation_{this};
 };
 
 }  // namespace ash

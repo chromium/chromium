@@ -16,6 +16,7 @@ source_set("metrics") {
     "//base",
     "//chromeos/login/login_state",
     "//chromeos/services/network_config/public/mojom",
+    "//components/device_event_log",
   ]
   sources = [
     "cellular_network_metrics_logger.cc",
