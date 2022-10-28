@@ -255,6 +255,10 @@ void CollectInlinesInternal(ItemsBuilder* builder,
         // block. This is an out-of-flow item whose position is computed
         // automatically.
         builder->AppendOpaque(NGInlineItem::kListMarker, node);
+      } else if (UNLIKELY(node->IsInitialLetterBox())) {
+        builder->AppendOpaque(NGInlineItem::kInitialLetterBox,
+                              kObjectReplacementCharacter, node);
+        builder->SetHasInititialLetterBox();
       } else {
         // For atomic inlines add a unicode "object replacement character" to
         // signal the presence of a non-text object to the unicode bidi
@@ -1805,7 +1809,9 @@ static LayoutUnit ComputeContentSize(
     }
   };
   FloatsMaxSize floats_max_size(float_input);
-  bool can_compute_max_size_from_min_size = true;
+  // Because `NGLineBreaker` has a special logic for initial letter text,
+  // `ComputeContentSize()` for `kMaxContent` doesn't work well.
+  bool can_compute_max_size_from_min_size = !node.IsInitialLetterBox();
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
                                             &floats_max_size);
 

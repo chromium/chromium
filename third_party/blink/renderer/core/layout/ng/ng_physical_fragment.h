@@ -153,6 +153,9 @@ class CORE_EXPORT NGPhysicalFragment
       return layout_object->IsPositioned();
     return false;
   }
+  bool IsInitialLetterBox() const {
+    return IsCSSBox() && layout_object_->IsInitialLetterBox();
+  }
   // Return true if this is the legend child of a fieldset that gets special
   // treatment (i.e. placed over the block-start border).
   bool IsRenderedLegend() const {

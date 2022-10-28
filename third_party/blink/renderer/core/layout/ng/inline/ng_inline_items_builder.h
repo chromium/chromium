@@ -139,6 +139,7 @@ class NGInlineItemsBuilderTemplate {
 
   OffsetMappingBuilder& GetOffsetMappingBuilder() { return mapping_builder_; }
 
+  void SetHasInititialLetterBox();
   void SetIsSymbolMarker();
 
   bool ShouldAbort() const { return false; }
@@ -194,6 +195,7 @@ class NGInlineItemsBuilderTemplate {
 
   const bool is_text_combine_;
   bool has_bidi_controls_ = false;
+  bool has_initial_letter_box_ = false;
   bool has_ruby_ = false;
   bool is_block_level_ = true;
   bool has_unicode_bidi_plain_text_ = false;

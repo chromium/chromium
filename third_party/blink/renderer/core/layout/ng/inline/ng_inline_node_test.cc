@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
@@ -1551,6 +1552,28 @@ TEST_F(NGInlineNodeTest, ReuseFirstNonSafeRtl) {
       StringView(data->text_content, item_v.StartOffset(), item_v.Length()),
       "V");
   EXPECT_TRUE(NGInlineNode::NeedsShapingForTesting(item_v));
+}
+
+TEST_F(NGInlineNodeTest, InitialLetter) {
+  ScopedCSSInitialLetterForTest enable_initial_letter_scope(true);
+  LoadAhem();
+  InsertStyleElement(
+      "p { font: 20px/24px Ahem; }"
+      "p::first-letter { initial-letter: 3 }");
+  SetBodyContent("<p id=sample>This paragraph has an initial letter.</p>");
+  auto& sample = *GetElementById("sample");
+  auto& block_flow = *To<LayoutBlockFlow>(sample.GetLayoutObject());
+  auto& initial_letter_box = *To<LayoutBlockFlow>(
+      sample.GetPseudoElement(kPseudoIdFirstLetter)->GetLayoutObject());
+
+  EXPECT_TRUE(NGInlineNode(&block_flow).HasInitialLetterBox());
+  EXPECT_TRUE(NGBlockNode(&initial_letter_box).IsInitialLetterBox());
+  EXPECT_TRUE(NGInlineNode(&initial_letter_box).IsInitialLetterBox());
+  EXPECT_TRUE(initial_letter_box.GetPhysicalFragment(0)->IsInitialLetterBox());
+
+  const NGInlineNodeData& data = *block_flow.GetNGInlineNodeData();
+  const NGInlineItem& initial_letter_item = data.items[0];
+  EXPECT_EQ(NGInlineItem::kInitialLetterBox, initial_letter_item.Type());
 }
 
 TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {

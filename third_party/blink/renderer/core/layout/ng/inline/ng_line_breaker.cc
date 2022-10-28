@@ -63,6 +63,7 @@ inline bool IsAllBreakableSpaces(const String& string,
 inline bool IsTrailableItemType(NGInlineItem::NGInlineItemType type) {
   return type != NGInlineItem::kAtomicInline &&
          type != NGInlineItem::kOutOfFlowPositioned &&
+         type != NGInlineItem::kInitialLetterBox &&
          type != NGInlineItem::kListMarker;
 }
 
@@ -653,6 +654,10 @@ void NGLineBreaker::BreakLine(NGLineInfo* line_info) {
       HandleAtomicInline(item, line_info);
       continue;
     }
+    if (UNLIKELY(item.Type() == NGInlineItem::kInitialLetterBox)) {
+      HandleInitialLetter(item, line_info);
+      continue;
+    }
     if (item.Type() == NGInlineItem::kOutOfFlowPositioned) {
       HandleOutOfFlowPositioned(item, line_info);
     } else if (item.Length()) {
@@ -693,7 +698,8 @@ void NGLineBreaker::ComputeLineLocation(NGLineInfo* line_info) const {
 // Note: We treat text combine as text content instead of atomic inline box[1].
 // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
 bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
-  DCHECK_EQ(item.Type(), NGInlineItem::kAtomicInline);
+  DCHECK(item.Type() == NGInlineItem::kAtomicInline ||
+         item.Type() == NGInlineItem::kInitialLetterBox);
   if (!auto_wrap_ || item.EndOffset() == Text().length())
     return false;
   // We can not break before sticky images quirk was applied.
@@ -1910,7 +1916,8 @@ void NGLineBreaker::HandleBidiControlItem(const NGInlineItem& item,
 
 void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
                                        NGLineInfo* line_info) {
-  DCHECK_EQ(item.Type(), NGInlineItem::kAtomicInline);
+  DCHECK(item.Type() == NGInlineItem::kAtomicInline ||
+         item.Type() == NGInlineItem::kInitialLetterBox);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();
 
@@ -2243,6 +2250,13 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
   available_width_ = ComputeAvailableWidth();
 
   DCHECK_GE(AvailableWidth(), LayoutUnit());
+}
+
+void NGLineBreaker::HandleInitialLetter(const NGInlineItem& item,
+                                        NGLineInfo* line_info) {
+  // TODO(yosin): We'll have something if needed. This is for
+  // `NGInlineNodeTest`.
+  HandleAtomicInline(item, line_info);
 }
 
 void NGLineBreaker::HandleOutOfFlowPositioned(const NGInlineItem& item,

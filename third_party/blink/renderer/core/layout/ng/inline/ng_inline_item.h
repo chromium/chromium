@@ -38,6 +38,7 @@ class CORE_EXPORT NGInlineItem {
     kCloseTag,
     kFloating,
     kOutOfFlowPositioned,
+    kInitialLetterBox,
     kListMarker,
     kBidiControl
   };

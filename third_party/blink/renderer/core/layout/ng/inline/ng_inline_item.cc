@@ -120,7 +120,7 @@ void NGInlineItem::ComputeBoxProperties() {
   DCHECK(!is_empty_item_);
 
   if (type_ == NGInlineItem::kText || type_ == NGInlineItem::kAtomicInline ||
-      type_ == NGInlineItem::kControl)
+      type_ == NGInlineItem::kControl || UNLIKELY(type_ == kInitialLetterBox))
     return;
 
   if (type_ == NGInlineItem::kOpenTag) {

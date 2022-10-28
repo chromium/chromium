@@ -23,6 +23,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
     return static_cast<TextDirection>(base_direction_);
   }
 
+  bool HasInitialLetterBox() const { return has_initial_letter_box_; }
   bool HasRuby() const { return has_ruby_; }
 
   bool IsBlockLevel() const { return is_block_level_; }
@@ -63,6 +64,16 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
 
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection
+
+  // True if this node contains initial letter box. This value is used for
+  // clearing. To control whether subsequent blocks overlap with initial
+  // letter[1].
+  //   ****** his node ends here.
+  //     *    This text from subsequent block one.
+  //     *    This text from subsequent block two.
+  //     *    This text from subsequent block three.
+  // [1] https://drafts.csswg.org/css-inline/#initial-letter-paragraphs
+  unsigned has_initial_letter_box_ : 1;
 
   // The node contains <ruby>.
   unsigned has_ruby_ : 1;

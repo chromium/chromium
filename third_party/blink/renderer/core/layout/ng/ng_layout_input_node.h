@@ -122,6 +122,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsFieldsetContainer() const {
     return IsBlock() && box_->IsLayoutNGFieldset();
   }
+  bool IsInitialLetterBox() const { return box_->IsInitialLetterBox(); }
   bool IsMedia() const { return box_->IsMedia(); }
   bool IsRubyRun() const { return IsBlock() && box_->IsRubyRun(); }
   bool IsRubyText() const { return box_->IsRubyText(); }
