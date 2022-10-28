@@ -138,7 +138,7 @@ class BASE_EXPORT CallbackBase {
   bool MaybeValid() const;
 
   // Returns the Callback into an uninitialized state.
-  void Reset();
+  REINITIALIZES_AFTER_MOVE void Reset();
 
  protected:
   friend class FinallyExecutorCommon;
