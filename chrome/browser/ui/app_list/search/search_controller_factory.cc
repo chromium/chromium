@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider.h"
-#include "chrome/browser/ui/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcuts_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_provider.h"
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
@@ -100,12 +99,10 @@ std::unique_ptr<SearchController> CreateSearchController(
       ash::SharedAppListConfig::instance().max_search_result_list_items());
 
   // Add search providers.
-  controller->AddProvider(apps_group_id,
-                          std::make_unique<AppSearchProvider>(
-                              controller->GetAppSearchDataSource()));
   controller->AddProvider(
-      apps_group_id, std::make_unique<AppZeroStateProvider>(
-                         controller->GetAppSearchDataSource(), model_updater));
+      apps_group_id, std::make_unique<AppSearchProvider>(
+                         profile, list_controller,
+                         base::DefaultClock::GetInstance(), model_updater));
 
   if (crosapi::browser_util::IsLacrosEnabled()) {
     controller->AddProvider(

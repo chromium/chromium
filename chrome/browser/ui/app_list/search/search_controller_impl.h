@@ -62,7 +62,6 @@ class SearchControllerImpl : public SearchController,
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
   void InvokeResultAction(ChromeSearchResult* result,
                           ash::SearchResultActionType action) override;
-  AppSearchDataSource* GetAppSearchDataSource() override;
   size_t AddGroup(size_t max_results) override;
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;
@@ -113,7 +112,6 @@ class SearchControllerImpl : public SearchController,
 
   std::unique_ptr<Mixer> mixer_;
   std::unique_ptr<SearchMetricsManager> metrics_observer_;
-  std::unique_ptr<AppSearchDataSource> app_search_data_source_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
   AppListControllerDelegate* list_controller_;

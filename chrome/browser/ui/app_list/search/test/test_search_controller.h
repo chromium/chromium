@@ -12,7 +12,6 @@ class ChromeSearchResult;
 
 namespace app_list {
 
-class AppSearchDataSource;
 class SearchProvider;
 
 class TestSearchController : public SearchController {
@@ -33,7 +32,6 @@ class TestSearchController : public SearchController {
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
   void InvokeResultAction(ChromeSearchResult* result,
                           ash::SearchResultActionType action) override;
-  AppSearchDataSource* GetAppSearchDataSource() override;
   size_t AddGroup(size_t max_results) override;
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;

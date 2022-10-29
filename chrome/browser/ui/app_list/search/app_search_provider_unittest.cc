@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_default_app_list.h"
-#include "chrome/browser/ui/app_list/search/app_search_data_source.h"
-#include "chrome/browser/ui/app_list/search/app_zero_state_provider.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
@@ -123,16 +121,14 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
 
 }  // namespace
 
-class AppSearchProviderTestBase : public AppListTestBase {
+class AppSearchProviderTest : public AppListTestBase {
  public:
-  explicit AppSearchProviderTestBase(bool zero_state_provider)
-      : zero_state_provider_(zero_state_provider) {}
+  AppSearchProviderTest() = default;
 
-  AppSearchProviderTestBase(const AppSearchProviderTestBase&) = delete;
-  AppSearchProviderTestBase& operator=(const AppSearchProviderTestBase&) =
-      delete;
+  AppSearchProviderTest(const AppSearchProviderTest&) = delete;
+  AppSearchProviderTest& operator=(const AppSearchProviderTest&) = delete;
 
-  ~AppSearchProviderTestBase() override = default;
+  ~AppSearchProviderTest() override {}
 
   // AppListTestBase overrides:
   void SetUp() override {
@@ -146,34 +142,19 @@ class AppSearchProviderTestBase : public AppListTestBase {
 
   void CreateSearch() {
     search_controller_ = std::make_unique<TestSearchController>();
-    data_source_ =
-        std::make_unique<AppSearchDataSource>(profile_.get(), nullptr, &clock_);
-
-    std::unique_ptr<SearchProvider> app_search;
-    if (zero_state_provider_) {
-      app_search = std::make_unique<AppZeroStateProvider>(data_source_.get(),
-                                                          model_updater_.get());
-    } else {
-      app_search = std::make_unique<AppSearchProvider>(data_source_.get());
-    }
-
+    auto app_search = std::make_unique<AppSearchProvider>(
+        profile_.get(), nullptr, &clock_, model_updater_.get());
     app_search_ = app_search.get();
-
     search_controller_->AddProvider(0, std::move(app_search));
   }
 
   std::string RunQuery(const std::string& query) {
-    EXPECT_FALSE(query.empty());
-    search_controller_->StartSearch(base::UTF8ToUTF16(query));
-    return GetSortedResultsString();
-  }
+    if (query.empty()) {
+      search_controller_->StartZeroState(base::DoNothing(), base::TimeDelta());
+    } else {
+      search_controller_->StartSearch(base::UTF8ToUTF16(query));
+    }
 
-  std::string RunZeroStateSearch() {
-    search_controller_->StartZeroState(base::DoNothing(), base::TimeDelta());
-    return GetSortedResultsString();
-  }
-
-  std::string GetSortedResultsString() {
     // Sort results by relevance.
     std::vector<ChromeSearchResult*> sorted_results;
     for (const auto& result : results())
@@ -250,35 +231,13 @@ class AppSearchProviderTestBase : public AppListTestBase {
   void CallViewClosing() { app_search_->ViewClosing(); }
 
  private:
-  // Whether the test is testing zero state, or queried apps search provider.
-  const bool zero_state_provider_;
-
   base::SimpleTestClock clock_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<TestSearchController> search_controller_;
-  std::unique_ptr<AppSearchDataSource> data_source_;
-  SearchProvider* app_search_ = nullptr;
+  AppSearchProvider* app_search_ = nullptr;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
-};
-
-class AppSearchProviderTest : public AppSearchProviderTestBase {
- public:
-  AppSearchProviderTest()
-      : AppSearchProviderTestBase(/*zero_state_provider=*/false) {}
-  AppSearchProviderTest(const AppSearchProviderTest&) = delete;
-  AppSearchProviderTest& operator=(const AppSearchProviderTest&) = delete;
-  ~AppSearchProviderTest() override = default;
-};
-
-class AppZeroStateProviderTest : public AppSearchProviderTestBase {
- public:
-  AppZeroStateProviderTest()
-      : AppSearchProviderTestBase(/*zero_state_provider=*/true) {}
-  AppZeroStateProviderTest(const AppZeroStateProviderTest&) = delete;
-  AppZeroStateProviderTest& operator=(const AppZeroStateProviderTest&) = delete;
-  ~AppZeroStateProviderTest() override = default;
 };
 
 TEST_F(AppSearchProviderTest, Basic) {
@@ -440,7 +399,7 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   arc_test().TearDown();
 }
 
-TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
+TEST_F(AppSearchProviderTest, FetchRecommendations) {
   CreateSearch();
 
   extensions::ExtensionPrefs* prefs =
@@ -451,14 +410,14 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(5));
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunZeroStateSearch());
+  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
 
   prefs->SetLastLaunchTime(kHostedAppId, MicrosecondsSinceEpoch(5));
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(20));
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("Packaged App 2,Packaged App 1,Hosted App", RunZeroStateSearch());
+  EXPECT_EQ("Packaged App 2,Packaged App 1,Hosted App", RunQuery(""));
 
   // Times in the future should just be handled as highest priority.
   prefs->SetLastLaunchTime(kHostedAppId, base::Time::Now() + base::Seconds(5));
@@ -466,15 +425,10 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(5));
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunZeroStateSearch());
-
-  // Validate that queried search does not clear out zero state results.
-  RunQuery("No matches");
-  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-            GetSortedResultsString());
+  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
 }
 
-TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
+TEST_F(AppSearchProviderTest, DefaultRecommendedAppRanking) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
   service_->UninstallExtension(
@@ -518,7 +472,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   base::RunLoop().RunUntilIdle();
   CreateSearch();
 
-  EXPECT_EQ("OsSettings,Help,Canvas,Camera", RunZeroStateSearch());
+  EXPECT_EQ("OsSettings,Help,Canvas,Camera", RunQuery(""));
 
   // Install a normal (non-default-installed) app.
   const std::string normal_app_id =
@@ -538,7 +492,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   CreateSearch();
   EXPECT_EQ(
       std::string(kRankingNormalAppName) + ",OsSettings,Help,Canvas,Camera",
-      RunZeroStateSearch());
+      RunQuery(""));
 
   // Simulate launching one of the default apps. Expect that this brings it to
   // higher precedence than all the others.
@@ -546,10 +500,10 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   CreateSearch();
   EXPECT_EQ("Canvas," + std::string(kRankingNormalAppName) +
                 ",OsSettings,Help,Camera",
-            RunZeroStateSearch());
+            RunQuery(""));
 }
 
-TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
+TEST_F(AppSearchProviderTest, FetchUnlaunchedRecommendations) {
   CreateSearch();
 
   extensions::ExtensionPrefs* prefs =
@@ -560,7 +514,7 @@ TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
   prefs->SetLastLaunchTime(kHostedAppId, base::Time::Now());
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(0));
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(0));
-  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunZeroStateSearch());
+  EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
 }
 
 TEST_F(AppSearchProviderTest, FilterDuplicate) {
@@ -769,23 +723,28 @@ TEST_F(AppSearchProviderTest, FuzzyAppSearchTest) {
   EXPECT_EQ(kKeyboardShortcutHelperInternalName, RunQuery("Helper"));
 }
 
-class AppSearchProviderOemAppTest
-    : public AppSearchProviderTestBase,
-      public ::testing::WithParamInterface</*test_zero_state_search=*/bool> {
- public:
-  AppSearchProviderOemAppTest()
-      : AppSearchProviderTestBase(test_zero_state_search()) {}
-
-  AppSearchProviderOemAppTest(const AppSearchProviderOemAppTest&) = delete;
-  AppSearchProviderOemAppTest& operator=(const AppSearchProviderOemAppTest&) =
-      delete;
-
-  ~AppSearchProviderOemAppTest() override = default;
-
-  bool test_zero_state_search() const { return GetParam(); }
+enum class TestExtensionInstallType {
+  CONTROLLED_BY_POLICY,
+  CHROME_COMPONENT,
+  INSTALLED_BY_DEFAULT,
+  INSTALLED_BY_OEM,
 };
 
-TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
+class AppSearchProviderWithExtensionInstallType
+    : public AppSearchProviderTest,
+      public ::testing::WithParamInterface<TestExtensionInstallType> {
+ public:
+  AppSearchProviderWithExtensionInstallType() = default;
+
+  AppSearchProviderWithExtensionInstallType(
+      const AppSearchProviderWithExtensionInstallType&) = delete;
+  AppSearchProviderWithExtensionInstallType& operator=(
+      const AppSearchProviderWithExtensionInstallType&) = delete;
+
+  ~AppSearchProviderWithExtensionInstallType() override = default;
+};
+
+TEST_P(AppSearchProviderWithExtensionInstallType, OemResultsOnFirstBoot) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
   service_->UninstallExtension(
@@ -825,10 +784,8 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
   base::RunLoop().RunUntilIdle();
   CreateSearch();
 
-  std::string results_string =
-      test_zero_state_search() ? RunZeroStateSearch() : RunQuery("Oem");
   std::vector<std::string> results = base::SplitString(
-      results_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      RunQuery(""), ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (auto* app : kOemAppNames) {
     EXPECT_TRUE(base::Contains(results, app));
@@ -922,7 +879,13 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   arc_test().TearDown();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, AppSearchProviderOemAppTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppSearchProviderWithExtensionInstallType,
+    ::testing::ValuesIn({TestExtensionInstallType::CONTROLLED_BY_POLICY,
+                         TestExtensionInstallType::CHROME_COMPONENT,
+                         TestExtensionInstallType::INSTALLED_BY_DEFAULT,
+                         TestExtensionInstallType::INSTALLED_BY_OEM}));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
