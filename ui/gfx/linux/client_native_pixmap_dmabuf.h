@@ -25,6 +25,10 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
   static GFX_EXPORT bool IsConfigurationSupported(gfx::BufferFormat format,
                                                   gfx::BufferUsage usage);
 
+  // Note: |handle| is expected to have been validated as in
+  // ClientNativePixmapFactoryDmabuf::ImportFromHandle().
+  // TODO(andrescj): consider not exposing this class outside of
+  // client_native_pixmap_factory_dmabuf.cc.
   static std::unique_ptr<gfx::ClientNativePixmap> ImportFromDmabuf(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,

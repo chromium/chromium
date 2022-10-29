@@ -11,6 +11,8 @@
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/koid.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/client_native_pixmap.h"
@@ -18,6 +20,23 @@
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace ui {
+
+namespace {
+
+bool AlignUpToPageSizeChecked(size_t size, size_t* aligned_size) {
+  static_assert(base::IsValueInRangeForNumericType<size_t>(ZX_PAGE_SIZE) &&
+                    base::bits::IsPowerOfTwo(ZX_PAGE_SIZE),
+                "The page size must fit in a size_t and be a power of 2.");
+  constexpr size_t kPageSizeMinusOne = ZX_PAGE_SIZE - 1;
+  base::CheckedNumeric<size_t> aligned_size_checked =
+      base::CheckAdd(size, kPageSizeMinusOne) & (~kPageSizeMinusOne);
+  if (!aligned_size_checked.IsValid())
+    return false;
+  *aligned_size = aligned_size_checked.ValueOrDie();
+  return true;
+}
+
+}  // namespace
 
 class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
  public:
@@ -40,20 +59,42 @@ class ClientNativePixmapFuchsia : public gfx::ClientNativePixmap {
     if (handle_.planes.empty() || !handle_.planes[0].vmo)
       return false;
 
-    uintptr_t addr;
+    // Assume that the last plane is at the end of the VMO. If this assumption
+    // is violated, we shouldn't get here because
+    // FlatlandClientNativePixmapFactory::ImportFromHandle() validates (through
+    // CanFitImageForSizeAndFormat()) that the (offset + size) for each plane is
+    // less than or equal to |last_plane_end|.
+    //
+    // Note: the |last_plane_end| computation has been determined to not
+    // overflow in FlatlandClientNativePixmapFactory::ImportFromHandle()
+    // (through CanFitImageForSizeAndFormat()).
+    const size_t last_plane_end =
+        base::CheckAdd(handle_.planes.back().offset, handle_.planes.back().size)
+            .ValueOrDie<size_t>();
 
-    // Assume that last plane is at the end of the VMO.
-    mapping_size_ = handle_.planes.back().offset + handle_.planes.back().size;
-
-    // Verify that all planes fall within the mapped range.
+#if DCHECK_IS_ON()
+    // All planes should fall within the range that ends with the last plane.
+    // This has been verified by
+    // FlatlandClientNativePixmapFactory::ImportFromHandle() (through
+    // CanFitImageForSizeAndFormat()).
     for (auto& plane : handle_.planes) {
-      DCHECK_LE(plane.offset + plane.size, mapping_size_);
+      DCHECK(base::CheckAdd(plane.offset, plane.size).ValueOrDie<size_t>() <=
+             last_plane_end);
     }
+#endif
 
-    // Round mapping size to align with the page size.
-    size_t page_size = base::SysInfo::VMAllocationGranularity();
-    mapping_size_ = base::bits::AlignUp(mapping_size_, page_size);
+    // Round mapping size to align with the page size. Mapping
+    // |aligned_mapping_size| bytes should be safe because
+    // FlatlandClientNativePixmapFactory::ImportFromHandle() ensures that
+    // |last_plane_end| <= <size of the VMO> where <size of the VMO> is
+    // page_aligned which implies that |aligned_mapping_size| <= <size of the
+    // VMO>.
+    size_t aligned_mapping_size;
+    if (!AlignUpToPageSizeChecked(last_plane_end, &aligned_mapping_size))
+      return false;
+    mapping_size_ = aligned_mapping_size;
 
+    zx_vaddr_t addr;
     zx_status_t status = zx::vmar::root_self()->map(
         ZX_VM_PERM_READ | ZX_VM_PERM_WRITE, 0, handle_.planes[0].vmo, 0,
         mapping_size_, &addr);
@@ -127,47 +168,50 @@ class FlatlandClientNativePixmapFactory
     if (handle.planes.empty())
       return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
 
-    size_t expected_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
-    if (handle.planes.size() != expected_planes)
+    // Validate that all planes refer to a single memory object.
+    const absl::optional<zx_koid_t> first_plane_koid =
+        base::GetKoid(handle.planes[0].vmo);
+    if (!first_plane_koid)
       return nullptr;
-
-    base::CheckedNumeric<size_t> vmo_size_checked =
-        base::CheckedNumeric<size_t>(handle.planes.back().offset) +
-        handle.planes.back().size;
-    if (!vmo_size_checked.IsValid()) {
-      return nullptr;
-    }
-    size_t vmo_size = vmo_size_checked.ValueOrDie();
-
-    // Validate plane layout and buffer size.
-    for (size_t i = 0; i < handle.planes.size(); ++i) {
-      size_t min_stride = 0;
-      size_t subsample_factor = SubsamplingFactorForBufferFormat(format, i);
-      base::CheckedNumeric<size_t> plane_height =
-          (base::CheckedNumeric<size_t>(size.height()) + subsample_factor - 1) /
-          subsample_factor;
-      if (!gfx::RowSizeForBufferFormatChecked(size.width(), format, i,
-                                              &min_stride) ||
-          handle.planes[i].stride < min_stride) {
-        return nullptr;
-      }
-
-      // The stride must be a valid integer in order to be consistent with the
-      // gfx::ClientNativePixmap::GetStride() API.
-      if (!base::IsValueInRangeForNumericType<int>(handle.planes[i].stride))
-        return nullptr;
-
-      base::CheckedNumeric<size_t> min_size =
-          base::CheckedNumeric<size_t>(handle.planes[i].stride) * plane_height;
-      if (!min_size.IsValid() || handle.planes[i].size < min_size.ValueOrDie())
-        return nullptr;
-
-      base::CheckedNumeric<size_t> end_pos =
-          base::CheckedNumeric<size_t>(handle.planes[i].offset) +
-          handle.planes[i].size;
-      if (!end_pos.IsValid() || end_pos.ValueOrDie() > vmo_size)
+    for (const auto& plane : handle.planes) {
+      const absl::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
+      DCHECK(plane.vmo.is_valid() || !plane_koid);
+      if (plane_koid != first_plane_koid)
         return nullptr;
     }
+
+    if (!CanFitImageForSizeAndFormat(handle, size, format,
+                                     /*assume_single_memory_object=*/true)) {
+      return nullptr;
+    }
+
+    // The |last_plane_end| computation should not overflow if the
+    // CanFitImageForSizeAndFormat() check passed.
+    const size_t last_plane_end =
+        base::CheckAdd(handle.planes.back().offset, handle.planes.back().size)
+            .ValueOrDie<size_t>();
+
+    uint64_t vmo_size;
+    if (handle.planes.back().vmo.get_size(&vmo_size) != ZX_OK ||
+        !base::IsValueInRangeForNumericType<size_t>(vmo_size) ||
+        base::checked_cast<size_t>(vmo_size) < last_plane_end) {
+      return nullptr;
+    }
+
+#if DCHECK_IS_ON()
+    // zx_vmo_get_size() should return a page-aligned size. This is important
+    // because we request a page-aligned size in
+    // ClientNativePixmapFuchsia::Map().
+    DCHECK_EQ(vmo_size % ZX_PAGE_SIZE, 0u);
+
+    // The CanFitImageForSizeAndFormat() call above should guarantee that the
+    // (offset + size) for each plane is <= |last_plane_end|, and since we now
+    // know that |last_plane_end| <= |vmo_size|, then (offset + size) for each
+    // plane <= |vmo_size|.
+    for (const auto& plane : handle.planes) {
+      DCHECK_LE(plane.offset + plane.size, vmo_size);
+    }
+#endif
 
     return std::make_unique<ClientNativePixmapFuchsia>(std::move(handle));
   }
