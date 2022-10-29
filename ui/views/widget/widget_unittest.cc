@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -11,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
@@ -4373,9 +4373,7 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   std::set<Widget*> child_widgets;
   Widget::GetAllChildWidgets(toplevel->GetNativeView(), &child_widgets);
 
-  EXPECT_EQ(expected.size(), child_widgets.size());
-  EXPECT_TRUE(
-      std::equal(expected.begin(), expected.end(), child_widgets.begin()));
+  EXPECT_TRUE(base::ranges::equal(expected, child_widgets));
 
   // Check GetAllOwnedWidgets(). On Aura, this includes "transient" children.
   // Otherwise (on all platforms), it should be the same as GetAllChildWidgets()
@@ -4385,9 +4383,7 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   std::set<Widget*> owned_widgets;
   Widget::GetAllOwnedWidgets(toplevel->GetNativeView(), &owned_widgets);
 
-  EXPECT_EQ(expected.size(), owned_widgets.size());
-  EXPECT_TRUE(
-      std::equal(expected.begin(), expected.end(), owned_widgets.begin()));
+  EXPECT_TRUE(base::ranges::equal(expected, owned_widgets));
 }
 
 // Used by DestroyChildWidgetsInOrder. On destruction adds the supplied name to

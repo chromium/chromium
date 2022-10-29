@@ -1,12 +1,14 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_ANIMATION_OBSERVER_HELPER_H_
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_ANIMATION_OBSERVER_HELPER_H_
 
 #include <algorithm>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"
 
@@ -135,10 +137,7 @@ class TestInkDropAnimationObserverHelper {
   testing::AssertionResult ContextsMatch(
       const std::vector<ContextType>& expected_contexts,
       const std::vector<ContextType>& actual_contexts) {
-    const bool match =
-        expected_contexts.size() == actual_contexts.size() &&
-        std::equal(expected_contexts.begin(), expected_contexts.end(),
-                   actual_contexts.begin());
+    const bool match = base::ranges::equal(expected_contexts, actual_contexts);
     testing::AssertionResult result =
         match ? (testing::AssertionSuccess() << "Expected == Actual: {")
               : (testing::AssertionFailure() << "Expected != Actual: {");

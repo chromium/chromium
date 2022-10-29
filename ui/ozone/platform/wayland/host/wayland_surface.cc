@@ -12,7 +12,7 @@
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
 #include <viewporter-client-protocol.h>
-#include <algorithm>
+
 #include <memory>
 #include <utility>
 
@@ -612,8 +612,7 @@ void WaylandSurface::ApplyPendingState() {
     src_to_set[3] = wl_fixed_from_double(viewport_src_dip.height());
   }
   // Apply crop (wp_viewport.set_source).
-  if (viewport() && !std::equal(std::begin(src_to_set), std::end(src_to_set),
-                                std::begin(src_set_))) {
+  if (viewport() && !base::ranges::equal(src_to_set, src_set_)) {
     wp_viewport_set_source(viewport(), src_to_set[0], src_to_set[1],
                            src_to_set[2], src_to_set[3]);
     memcpy(src_set_, src_to_set, 4 * sizeof(*src_to_set));
@@ -630,8 +629,7 @@ void WaylandSurface::ApplyPendingState() {
     dst_to_set[1] = viewport_dst_dip.height();
   }
   // Apply viewport scale (wp_viewport.set_destination).
-  if (!std::equal(std::begin(dst_to_set), std::end(dst_to_set),
-                  std::begin(dst_set_))) {
+  if (!base::ranges::equal(dst_to_set, dst_set_)) {
     auto* augmented_surface = get_augmented_surface();
     if (dst_to_set[0] > 0.f && augmented_surface &&
         connection_->surface_augmenter()->SupportsSubpixelAccuratePosition()) {

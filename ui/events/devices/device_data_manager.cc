@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"
@@ -170,11 +171,7 @@ int64_t DeviceDataManager::GetTargetDisplayForTouchDevice(
 
 void DeviceDataManager::OnTouchscreenDevicesUpdated(
     const std::vector<TouchscreenDevice>& devices) {
-  if (devices.size() == touchscreen_devices_.size() &&
-      std::equal(devices.begin(),
-                 devices.end(),
-                 touchscreen_devices_.begin(),
-                 InputDeviceEquals)) {
+  if (base::ranges::equal(devices, touchscreen_devices_, InputDeviceEquals)) {
     return;
   }
   are_touchscreen_target_displays_valid_ = false;
@@ -189,11 +186,7 @@ void DeviceDataManager::OnTouchscreenDevicesUpdated(
 
 void DeviceDataManager::OnKeyboardDevicesUpdated(
     const std::vector<InputDevice>& devices) {
-  if (devices.size() == keyboard_devices_.size() &&
-      std::equal(devices.begin(),
-                 devices.end(),
-                 keyboard_devices_.begin(),
-                 InputDeviceEquals)) {
+  if (base::ranges::equal(devices, keyboard_devices_, InputDeviceEquals)) {
     return;
   }
   keyboard_devices_ = devices;
@@ -202,11 +195,7 @@ void DeviceDataManager::OnKeyboardDevicesUpdated(
 
 void DeviceDataManager::OnMouseDevicesUpdated(
     const std::vector<InputDevice>& devices) {
-  if (devices.size() == mouse_devices_.size() &&
-      std::equal(devices.begin(),
-                 devices.end(),
-                 mouse_devices_.begin(),
-                 InputDeviceEquals)) {
+  if (base::ranges::equal(devices, mouse_devices_, InputDeviceEquals)) {
     return;
   }
   mouse_devices_ = devices;
@@ -215,11 +204,7 @@ void DeviceDataManager::OnMouseDevicesUpdated(
 
 void DeviceDataManager::OnTouchpadDevicesUpdated(
     const std::vector<InputDevice>& devices) {
-  if (devices.size() == touchpad_devices_.size() &&
-      std::equal(devices.begin(),
-                 devices.end(),
-                 touchpad_devices_.begin(),
-                 InputDeviceEquals)) {
+  if (base::ranges::equal(devices, touchpad_devices_, InputDeviceEquals)) {
     return;
   }
   touchpad_devices_ = devices;
@@ -228,9 +213,7 @@ void DeviceDataManager::OnTouchpadDevicesUpdated(
 
 void DeviceDataManager::OnUncategorizedDevicesUpdated(
     const std::vector<InputDevice>& devices) {
-  if (devices.size() == uncategorized_devices_.size() &&
-      std::equal(devices.begin(), devices.end(), uncategorized_devices_.begin(),
-                 InputDeviceEquals)) {
+  if (base::ranges::equal(devices, uncategorized_devices_, InputDeviceEquals)) {
     return;
   }
   uncategorized_devices_ = devices;
