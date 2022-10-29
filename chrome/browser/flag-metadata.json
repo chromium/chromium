@@ -1827,6 +1827,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-code-based-rbd",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "enable-command-line-on-non-rooted-devices",
     "owners": [ "clank-app-team@google.com" ],
     // This flag is used for debugging on Android; it causes Android Chromium

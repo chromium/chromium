@@ -414,6 +414,9 @@ extern const char kDoubleBufferCompositingDescription[];
 extern const char kMerchantWidePromotionsName[];
 extern const char kMerchantWidePromotionsDescription[];
 
+extern const char kCodeBasedRBDName[];
+extern const char kCodeBasedRBDDescription[];
+
 extern const char kUseDMSAAForTilesName[];
 extern const char kUseDMSAAForTilesDescription[];
 

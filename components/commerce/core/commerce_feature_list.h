@@ -85,6 +85,9 @@ BASE_DECLARE_FEATURE(kCommerceHintAndroid);
 // Feature flag for Merchant Wide promotion.
 BASE_DECLARE_FEATURE(kMerchantWidePromotion);
 
+// Feature flag for Code-based RBD.
+BASE_DECLARE_FEATURE(kCodeBasedRBD);
+
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>
     kShoppingListBookmarkpdateIntervalParam(

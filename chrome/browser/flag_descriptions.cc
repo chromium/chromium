@@ -766,6 +766,9 @@ const char kMerchantWidePromotionsDescription[] =
     "Enables the discount consent for all merchants, and show merchant wide "
     "promotions if they are available";
 
+const char kCodeBasedRBDName[] = "Code-based RBD";
+const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
+
 const char kFontAccessAPIName[] = "Font Access APIs";
 const char kFontAccessAPIDescription[] =
     "Enables the experimental Font Access APIs, giving websites access "

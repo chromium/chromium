@@ -415,7 +415,7 @@ TEST(CartDiscountFetcherTest, TestOverallDiscountTextWithRuleDiscounts) {
 TEST(CartDiscountFetcherTest, TestCodeBasedRuleDiscount) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{ntp_features::kNtpChromeCartModule,
+      {{commerce::kCodeBasedRBD,
         {{commerce::kCodeBasedRuleDiscountParam, "true"}}}},
       {});
 

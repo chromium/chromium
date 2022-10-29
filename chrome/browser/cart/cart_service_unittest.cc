@@ -463,10 +463,9 @@ TEST_F(CartServiceTest, TestUpdateDiscounts) {
 TEST_F(CartServiceTest, TestUpdateDiscounts_CodeBasedRBD) {
   base::test::ScopedFeatureList feature_list;
   std::vector<base::test::FeatureRefAndParams> enabled_features;
-  base::FieldTrialParams cart_params, coupon_params;
-  cart_params[commerce::kCodeBasedRuleDiscountParam] = "true";
-  enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
-                                cart_params);
+  base::FieldTrialParams code_based_rbd_param;
+  code_based_rbd_param[commerce::kCodeBasedRuleDiscountParam] = "true";
+  enabled_features.emplace_back(commerce::kCodeBasedRBD, code_based_rbd_param);
   feature_list.InitWithFeaturesAndParameters(enabled_features,
                                              /*disabled_features*/ {});
 
@@ -1479,16 +1478,21 @@ class CartServiceDiscountTest : public CartServiceTest {
   // order to avoid tsan data race error on FeatureList.
   CartServiceDiscountTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams cart_params, coupon_params;
+    base::FieldTrialParams cart_params, coupon_params, code_based_rbd_param;
     cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
         "true";
     cart_params
         [ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam] =
             "false";
-    cart_params[commerce::kCodeBasedRuleDiscountParam] = "true";
+
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
     enabled_features.emplace_back(commerce::kRetailCoupons, coupon_params);
+
+    code_based_rbd_param[commerce::kCodeBasedRuleDiscountParam] = "true";
+    enabled_features.emplace_back(commerce::kCodeBasedRBD,
+                                  code_based_rbd_param);
+
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             /*disabled_features*/ {});
   }

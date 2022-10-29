@@ -58093,6 +58093,7 @@ from previous Chrome versions.
   <int value="-1639631778"
       label="EnableWebHidOnExtensionServiceWorker:enabled"/>
   <int value="-1639534120" label="VaapiVp9kSVCHWEncoding:enabled"/>
+  <int value="-1639211162" label="CodeBasedRBD:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
@@ -63652,6 +63653,7 @@ from previous Chrome versions.
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
   <int value="1680855806" label="LacrosPrimary:disabled"/>
   <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
+  <int value="1681612611" label="CodeBasedRBD:disabled"/>
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
   <int value="1685280468" label="AppServiceShelf:enabled"/>

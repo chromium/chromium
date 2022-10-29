@@ -482,16 +482,20 @@ class FetchCodeBasedDiscountWorkerBrowserTest
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams cart_params, coupon_params;
+    base::FieldTrialParams cart_params, coupon_params, code_based_rbd_param;
     cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
         "true";
     cart_params["CartDiscountFetcherEndpointParam"] =
         embedded_test_server()
             ->GetURL("/coupons/codebased_discounts.json")
             .spec();
-    cart_params[commerce::kCodeBasedRuleDiscountParam] = "true";
     enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
                                   cart_params);
+
+    code_based_rbd_param[commerce::kCodeBasedRuleDiscountParam] = "true";
+    enabled_features.emplace_back(commerce::kCodeBasedRBD,
+                                  code_based_rbd_param);
+
     coupon_params["coupon-partner-merchant-pattern"] =
         BuildPartnerMerchantPattern(parter_merchant_list_);
     coupon_params[commerce::kRetailCouponsWithCodeParam] = "true";

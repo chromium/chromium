@@ -1738,15 +1738,6 @@ const FeatureEntry::FeatureParam kNtpChromeCartModuleRBDAndCouponDiscount[] = {
     {"partner-merchant-pattern",
      "(electronicexpress.com|zazzle.com|wish.com|homesquare.com)"},
     {ntp_features::kNtpChromeCartModuleCouponParam, "true"}};
-const FeatureEntry::FeatureParam kNtpChromeCartModuleCodeBasedRBD[] = {
-    {ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, "true"},
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"},
-    {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
-     "true"},
-    {"partner-merchant-pattern",
-     "(electronicexpress.com|zazzle.com|wish.com|homesquare.com)"},
-    {ntp_features::kNtpChromeCartModuleCouponParam, "true"},
-    {commerce::kCodeBasedRuleDiscountParam, "true"}};
 const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
     {"- Fake Data And Discount", kNtpChromeCartModuleFakeData,
      std::size(kNtpChromeCartModuleFakeData), nullptr},
@@ -1756,8 +1747,6 @@ const FeatureEntry::FeatureVariation kNtpChromeCartModuleVariations[] = {
      std::size(kNtpChromeCartModuleHeuristicsImprovement), nullptr},
     {"- RBD and Coupons", kNtpChromeCartModuleRBDAndCouponDiscount,
      std::size(kNtpChromeCartModuleRBDAndCouponDiscount), nullptr},
-    {"- Code-based RBD and Coupons", kNtpChromeCartModuleCodeBasedRBD,
-     std::size(kNtpChromeCartModuleCodeBasedRBD), nullptr},
 };
 
 // The following are consent v2 variations in the Chrome Cart module.
@@ -1771,6 +1760,15 @@ const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
      std::size(kDiscountConsentNtpDialog), nullptr},
     {"Native Dialog Consent", kDiscountConsentNtpNativeDialog,
      std::size(kDiscountConsentNtpNativeDialog), nullptr},
+};
+
+// The following is Code-based RBD variation.
+const flags_ui::FeatureEntry::FeatureParam kCodeBasedRBDEnabled[] = {
+    {commerce::kCodeBasedRuleDiscountParam, "true"}};
+
+const FeatureEntry::FeatureVariation kCodeBasedRBDVariations[] = {
+    {"code-based RBD", kCodeBasedRBDEnabled, std::size(kCodeBasedRBDEnabled),
+     nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
@@ -9227,6 +9225,12 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableSendingBcnInGetUploadDetails)},
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"enable-code-based-rbd", flag_descriptions::kCodeBasedRBDName,
+     flag_descriptions::kCodeBasedRBDDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kCodeBasedRBD,
+                                    kCodeBasedRBDVariations,
+                                    "CodeBasedRBD")},
+
     {"enable-discount-consent-v2", flag_descriptions::kDiscountConsentV2Name,
      flag_descriptions::kDiscountConsentV2Description, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kDiscountConsentV2,

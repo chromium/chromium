@@ -135,6 +135,8 @@ BASE_FEATURE(kMerchantWidePromotion,
              "MerchantWidePromotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
     "discount-consent-ntp-variation";
@@ -246,7 +248,7 @@ const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion{
 
 const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
 const base::FeatureParam<bool> kCodeBasedRuleDiscount{
-    &ntp_features::kNtpChromeCartModule, kCodeBasedRuleDiscountParam, false};
+    &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountParam, false};
 
 const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";
