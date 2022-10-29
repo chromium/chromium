@@ -86,7 +86,7 @@ class GameProviderTest : public testing::Test,
     provider_ = provider.get();
 
     search_controller_ = std::make_unique<TestSearchController>();
-    search_controller_->AddProvider(std::move(provider));
+    search_controller_->AddProvider(0, std::move(provider));
   }
 
   const SearchProvider::Results& LastResults() {

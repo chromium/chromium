@@ -1,0 +1,93 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// Fake predictor used for testing.
+message FakePredictorProto {
+  // Maps target IDs to scores.
+  map<uint32, float> counts = 1;
+}
+
+message FrecencyPredictorProto {
+  // Field 1 (targets) has been deleted.
+  reserved 1;
+
+  // Records all data relating to a particular stored target, corresponding
+  // exactly to the ZeroStateFrecencyPredictor::ValueData struct.
+  message TargetData {
+    required uint32 id = 1;
+    // The last calculated score associated with a value.
+    required float last_score = 2;
+    // The model's number of updates when the score was last calculated.
+    required uint32 last_num_updates = 3;
+  }
+
+  repeated TargetData targets = 4;
+
+  required uint32 num_updates = 5;
+}
+
+message HourBinPredictorProto {
+  // Records all data related to a single hour bin.
+  message FrequencyTable {
+    // Total number of training counts in a bin.
+    required uint32 total_counts = 1;
+    // A map from a particular app to it's frequency.
+    map<uint32, uint32> frequency = 2;
+  }
+  // A map from an hour bin to it's FrequencyTable;
+  map<uint32, FrequencyTable> binned_frequency_table = 3;
+  // Timestamp since last decay.
+  optional uint32 last_decay_timestamp = 4;
+}
+
+// Conditional frequency predictor.
+message ConditionalFrequencyPredictorProto {
+  message Event {
+    required fixed64 condition = 1;
+    required uint32 event = 2;
+    required float freq = 3;
+  }
+
+  repeated Event events = 1;
+}
+
+// First-order markov chain predictor
+message MarkovPredictorProto {
+  // Stores a conditional frequency predictor.
+  required RecurrencePredictorProto frequencies = 1;
+}
+
+// Simple ensemble predictor.
+message ExponentialWeightsEnsembleProto {
+  // The state of each component predictor.
+  repeated RecurrencePredictorProto predictors = 1;
+
+  // The weights assigned to each member predictor. The order of |weights|
+  // corresponds to the order of |predictors|.
+  repeated float weights = 2;
+}
+
+message FrequencyPredictorProto {
+  // Maps target IDs to frequencies.
+  map<uint32, int32> counts = 1;
+}
+
+// Represents the serialisation of one particular predictor.
+message RecurrencePredictorProto {
+  oneof predictor {
+    FakePredictorProto fake_predictor = 1;
+    FrecencyPredictorProto frecency_predictor = 2;
+    HourBinPredictorProto hour_bin_predictor = 3;
+    ConditionalFrequencyPredictorProto conditional_frequency_predictor = 4;
+    MarkovPredictorProto markov_predictor = 5;
+    ExponentialWeightsEnsembleProto exponential_weights_ensemble = 6;
+    FrequencyPredictorProto frequency_predictor = 7;
+  }
+}

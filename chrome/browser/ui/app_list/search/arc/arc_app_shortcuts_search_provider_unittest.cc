@@ -110,7 +110,7 @@ TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {
   TestSearchController search_controller;
   auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
       kMaxResults, profile(), controller_.get());
-  search_controller.AddProvider(std::move(provider));
+  search_controller.AddProvider(0, std::move(provider));
   EXPECT_TRUE(search_controller.last_results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 
@@ -138,7 +138,7 @@ TEST_P(ArcAppShortcutsSearchProviderTest, EmptyQuery) {
   TestSearchController search_controller;
   auto provider = std::make_unique<ArcAppShortcutsSearchProvider>(
       kMaxResults, profile(), controller_.get());
-  search_controller.AddProvider(std::move(provider));
+  search_controller.AddProvider(0, std::move(provider));
   EXPECT_TRUE(search_controller.last_results().empty());
   arc::IconDecodeRequest::DisableSafeDecodingForTesting();
 

@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/app_list/search/os_settings_provider.h"
 #include "chrome/browser/ui/app_list/search/personalization_provider.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_controller_impl.h"
 #include "chrome/browser/ui/app_list/search/search_controller_impl_new.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
@@ -51,8 +52,29 @@ namespace {
 
 // Maximum number of results to show in each mixer group.
 
+// A generic value for max results, which is large enough to not interfere with
+// the actual results displayed. This should be used by providers that configure
+// their maximum number of results within the provider itself.
+//
+// TODO(crbug.com/1028447): Use this value for other providers that don't really
+// need a max results limit. Eventually, make this an optional constraint on a
+// Group.
+constexpr size_t kGenericMaxResults = 10;
+
+// Some app results may be blocklisted (e.g. continue reading) for rendering
+// in some UI, so we need to allow returning more results than actual maximum
+// number of results to be displayed in UI. This also accounts for two results
+// (tile and chip) being created for each app.
+constexpr size_t kMaxAppsGroupResults = 14;
+constexpr size_t kMaxFileSearchResults = 6;
+constexpr size_t kMaxDriveSearchResults = 6;
+// We need twice as many ZeroState and Drive file results as we need
+// duplicates of these results for the suggestion chips.
+constexpr size_t kMaxZeroStateFileResults = 20;
+constexpr size_t kMaxZeroStateDriveResults = 10;
 constexpr size_t kMaxAppShortcutResults = 4;
 constexpr size_t kMaxPlayStoreResults = 12;
+constexpr size_t kMaxAssistantTextResults = 1;
 
 }  // namespace
 
@@ -61,6 +83,10 @@ std::unique_ptr<SearchController> CreateSearchController(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
     ash::AppListNotifier* notifier) {
+  // TODO(crbug.com/1199206): We are prototyping new ranking, which reimplements
+  // the SearchController. Once we migrate to this new ranking, the following
+  // check can be removed and replaced by just creating a
+  // SearchControllerImplNew.
   std::unique_ptr<SearchController> controller;
   controller = std::make_unique<SearchControllerImplNew>(
       model_updater, list_controller, notifier, profile);
@@ -68,75 +94,114 @@ std::unique_ptr<SearchController> CreateSearchController(
   // Set up rankers for search results.
   controller->InitializeRankers();
 
+  size_t apps_group_id = controller->AddGroup(kMaxAppsGroupResults);
+
+  size_t omnibox_group_id = controller->AddGroup(
+      ash::SharedAppListConfig::instance().max_search_result_list_items());
+
   // Add search providers.
-  controller->AddProvider(std::make_unique<AppSearchProvider>(
-      controller->GetAppSearchDataSource()));
-  controller->AddProvider(std::make_unique<AppZeroStateProvider>(
-      controller->GetAppSearchDataSource(), model_updater));
+  controller->AddProvider(apps_group_id,
+                          std::make_unique<AppSearchProvider>(
+                              controller->GetAppSearchDataSource()));
+  controller->AddProvider(
+      apps_group_id, std::make_unique<AppZeroStateProvider>(
+                         controller->GetAppSearchDataSource(), model_updater));
 
   if (crosapi::browser_util::IsLacrosEnabled()) {
-    controller->AddProvider(std::make_unique<OmniboxLacrosProvider>(
-        profile, list_controller, crosapi::CrosapiManager::Get()));
-  } else {
     controller->AddProvider(
-        std::make_unique<OmniboxProvider>(profile, list_controller));
+        omnibox_group_id,
+        std::make_unique<OmniboxLacrosProvider>(
+            profile, list_controller, crosapi::CrosapiManager::Get()));
+  } else {
+    controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
+                                                  profile, list_controller));
   }
 
-  controller->AddProvider(std::make_unique<AssistantTextSearchProvider>());
+  size_t assistant_group_id = controller->AddGroup(kMaxAssistantTextResults);
+  controller->AddProvider(assistant_group_id,
+                          std::make_unique<AssistantTextSearchProvider>());
 
   // File search providers are added only when not in guest session and running
   // on Chrome OS.
   if (!profile->IsGuestSession()) {
-    controller->AddProvider(std::make_unique<FileSearchProvider>(profile));
-    controller->AddProvider(std::make_unique<DriveSearchProvider>(profile));
+    size_t local_file_group_id = controller->AddGroup(kMaxFileSearchResults);
+    controller->AddProvider(local_file_group_id,
+                            std::make_unique<FileSearchProvider>(profile));
+    size_t drive_file_group_id = controller->AddGroup(kMaxDriveSearchResults);
+    controller->AddProvider(drive_file_group_id,
+                            std::make_unique<DriveSearchProvider>(profile));
   }
 
   if (app_list_features::IsLauncherPlayStoreSearchEnabled()) {
-    controller->AddProvider(std::make_unique<ArcPlayStoreSearchProvider>(
-        kMaxPlayStoreResults, profile, list_controller));
+    size_t playstore_api_group_id = controller->AddGroup(kMaxPlayStoreResults);
+    controller->AddProvider(
+        playstore_api_group_id,
+        std::make_unique<ArcPlayStoreSearchProvider>(kMaxPlayStoreResults,
+                                                     profile, list_controller));
   }
 
   if (arc::IsArcAllowedForProfile(profile)) {
-    controller->AddProvider(std::make_unique<ArcAppShortcutsSearchProvider>(
-        kMaxAppShortcutResults, profile, list_controller));
+    size_t app_shortcut_group_id = controller->AddGroup(kMaxAppShortcutResults);
+    controller->AddProvider(
+        app_shortcut_group_id,
+        std::make_unique<ArcAppShortcutsSearchProvider>(
+            kMaxAppShortcutResults, profile, list_controller));
   }
 
   if (ash::features::IsProductivityLauncherEnabled() &&
       base::GetFieldTrialParamByFeatureAsBool(
           ash::features::kProductivityLauncher, "enable_continue", false)) {
-    controller->AddProvider(std::make_unique<ZeroStateFileProvider>(profile));
+    size_t zero_state_files_group_id =
+        controller->AddGroup(kMaxZeroStateFileResults);
+    controller->AddProvider(zero_state_files_group_id,
+                            std::make_unique<ZeroStateFileProvider>(profile));
 
-    controller->AddProvider(std::make_unique<ZeroStateDriveProvider>(
-        profile, controller.get(),
-        drive::DriveIntegrationServiceFactory::GetForProfile(profile),
-        session_manager::SessionManager::Get()));
+    size_t drive_zero_state_group_id =
+        controller->AddGroup(kMaxZeroStateDriveResults);
+    controller->AddProvider(
+        drive_zero_state_group_id,
+        std::make_unique<ZeroStateDriveProvider>(
+            profile, controller.get(),
+            drive::DriveIntegrationServiceFactory::GetForProfile(profile),
+            session_manager::SessionManager::Get()));
   }
 
+  size_t os_settings_search_group_id = controller->AddGroup(kGenericMaxResults);
   auto* os_settings_manager =
       ash::settings::OsSettingsManagerFactory::GetForProfile(profile);
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (os_settings_manager && app_service_proxy) {
-    controller->AddProvider(std::make_unique<OsSettingsProvider>(
-        profile, os_settings_manager->search_handler(),
-        os_settings_manager->hierarchy(), app_service_proxy));
+    controller->AddProvider(
+        os_settings_search_group_id,
+        std::make_unique<OsSettingsProvider>(
+            profile, os_settings_manager->search_handler(),
+            os_settings_manager->hierarchy(), app_service_proxy));
   }
 
   if (ash::features::IsProductivityLauncherEnabled() &&
       base::GetFieldTrialParamByFeatureAsBool(
           ash::features::kProductivityLauncher, "enable_shortcuts", true)) {
+    size_t shortcut_search_group_id = controller->AddGroup(kGenericMaxResults);
     controller->AddProvider(
+        shortcut_search_group_id,
         std::make_unique<KeyboardShortcutProvider>(profile));
   }
 
-  controller->AddProvider(std::make_unique<HelpAppProvider>(profile));
+  size_t help_app_group_id = controller->AddGroup(kGenericMaxResults);
+  controller->AddProvider(help_app_group_id,
+                          std::make_unique<HelpAppProvider>(profile));
 
+  size_t help_app_zero_state_group_id =
+      controller->AddGroup(kGenericMaxResults);
   controller->AddProvider(
+      help_app_zero_state_group_id,
       std::make_unique<HelpAppZeroStateProvider>(profile, notifier));
 
   if (search_features::IsLauncherGameSearchEnabled()) {
-    controller->AddProvider(
-        std::make_unique<GameProvider>(profile, list_controller));
+    size_t games_group_id = controller->AddGroup(kGenericMaxResults);
+    controller->AddProvider(games_group_id, std::make_unique<GameProvider>(
+                                                profile, list_controller));
   }
 
   if (ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile)) {
@@ -145,8 +210,12 @@ std::unique_ptr<SearchController> CreateSearchController(
     DCHECK(personalization_app_manager);
 
     if (personalization_app_manager) {
-      controller->AddProvider(std::make_unique<PersonalizationProvider>(
-          profile, personalization_app_manager->search_handler()));
+      size_t personalization_app_group_id =
+          controller->AddGroup(kGenericMaxResults);
+      controller->AddProvider(
+          personalization_app_group_id,
+          std::make_unique<PersonalizationProvider>(
+              profile, personalization_app_manager->search_handler()));
     }
   }
 
