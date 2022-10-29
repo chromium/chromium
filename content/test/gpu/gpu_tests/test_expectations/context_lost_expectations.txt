@@ -168,7 +168,6 @@ crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAf
 crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
 # Flaking on Linux FYI Release
-crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLContextLostFromGPUProcessExit [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 crbug.com/1340081 [ linux release amd-0x7340 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ RetryOnFailure ]
 
