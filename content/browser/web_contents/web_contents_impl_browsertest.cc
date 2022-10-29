@@ -1309,7 +1309,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       "Not allowed to load local resource: view-source:*");
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
                      "window.open('" + kViewSourceURL.spec() + "');"));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   // Original page shouldn't navigate away, no new tab should be opened.
   EXPECT_EQ(kUrl, shell()->web_contents()->GetLastCommittedURL());
   EXPECT_EQ(1u, Shell::windows().size());
@@ -1329,7 +1329,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
                      "window.location = '" + kViewSourceURL.spec() + "';"));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   // Original page shouldn't navigate away.
   EXPECT_EQ(kUrl, shell()->web_contents()->GetLastCommittedURL());
   EXPECT_FALSE(shell()
@@ -5599,7 +5599,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplAllowInsecureLocalhostBrowserTest,
   observer.SetPattern("*SSL certificate*");
 
   ASSERT_TRUE(NavigateToURL(shell(), url));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 }
 
 class WebContentsPrerenderBrowserTest : public WebContentsImplBrowserTest {
