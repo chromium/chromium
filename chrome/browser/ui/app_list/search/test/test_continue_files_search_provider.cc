@@ -23,16 +23,13 @@ namespace {
 // Fake continue section search results.
 class TestContinueSectionSearchResult : public ChromeSearchResult {
  public:
-  explicit TestContinueSectionSearchResult(const std::string& id,
-                                           bool is_drive_result) {
+  explicit TestContinueSectionSearchResult(const std::string& id) {
     set_id(id);
     SetTitle(base::UTF8ToUTF16(id));
     SetDisplayType(DisplayType::kContinue);
     SetCategory(Category::kFiles);
-    SetResultType(is_drive_result ? ResultType::kZeroStateDrive
-                                  : ResultType::kZeroStateFile);
-    SetMetricsType(is_drive_result ? ash::ZERO_STATE_DRIVE
-                                   : ash::ZERO_STATE_FILE);
+    SetResultType(ResultType::kZeroStateFile);
+    SetMetricsType(ash::ZERO_STATE_FILE);
   }
 
   TestContinueSectionSearchResult(const TestContinueSectionSearchResult&) =
@@ -48,18 +45,14 @@ class TestContinueSectionSearchResult : public ChromeSearchResult {
 
 }  // namespace
 
-TestContinueFilesSearchProvider::TestContinueFilesSearchProvider(
-    bool for_drive_files)
-    : for_drive_files_(for_drive_files) {}
+TestContinueFilesSearchProvider::TestContinueFilesSearchProvider() = default;
 
 TestContinueFilesSearchProvider::~TestContinueFilesSearchProvider() = default;
 
 void TestContinueFilesSearchProvider::StartZeroState() {
-  auto create_result = [&](int index) -> std::unique_ptr<ChromeSearchResult> {
-    const std::string id =
-        base::StringPrintf("continue_task_%d_%d", for_drive_files_, index);
-    return std::make_unique<TestContinueSectionSearchResult>(id,
-                                                             for_drive_files_);
+  auto create_result = [](int index) -> std::unique_ptr<ChromeSearchResult> {
+    const std::string id = base::StringPrintf("continue_task_%d", index);
+    return std::make_unique<TestContinueSectionSearchResult>(id);
   };
 
   std::vector<std::unique_ptr<ChromeSearchResult>> results;
@@ -71,8 +64,7 @@ void TestContinueFilesSearchProvider::StartZeroState() {
 
 ash::AppListSearchResultType TestContinueFilesSearchProvider::ResultType()
     const {
-  return for_drive_files_ ? ResultType::kZeroStateDrive
-                          : ResultType::kZeroStateFile;
+  return ResultType::kUnknown;
 }
 
 }  // namespace app_list

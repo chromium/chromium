@@ -66,9 +66,6 @@ class SearchControllerImpl : public SearchController,
   size_t AddGroup(size_t max_results) override;
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;
-  size_t ReplaceProvidersForResultTypeForTest(
-      ash::AppListSearchResultType result_type,
-      std::unique_ptr<SearchProvider> provider) override;
   void SetResults(const SearchProvider* provider, Results results) override;
   void Publish() override;
   ChromeSearchResult* FindSearchResult(const std::string& result_id) override;

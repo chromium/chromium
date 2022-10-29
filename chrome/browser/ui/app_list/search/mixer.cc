@@ -59,6 +59,14 @@ Mixer::SortData::SortData(ChromeSearchResult* result, double score)
     : result(result), score(score) {}
 
 bool Mixer::SortData::operator<(const SortData& other) const {
+  // This data precedes (less than) |other| if it has specified display index or
+  // higher score.
+  ash::SearchResultDisplayIndex index1 = result->display_index();
+  ash::SearchResultDisplayIndex index2 = other.result->display_index();
+  // The |kUndefined| index is larger than other specified indexes.
+  if (index1 != index2)
+    return index1 < index2;
+
   return score > other.score;
 }
 

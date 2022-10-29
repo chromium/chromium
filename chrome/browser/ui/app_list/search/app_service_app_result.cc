@@ -270,6 +270,11 @@ void AppServiceAppResult::HandleSuggestionChip(Profile* profile) {
         LargeIconServiceFactory::GetForBrowserContext(profile);
     UpdateContinueReadingFavicon(/*continue_to_google_server=*/true);
   }
+
+  // Set these values to make sure that the chip will show up
+  // in the proper position.
+  SetDisplayIndex(ash::SearchResultDisplayIndex::kFirstIndex);
+  SetDisplayType(ash::SearchResultDisplayType::kChip);
 }
 
 void AppServiceAppResult::UpdateContinueReadingFavicon(

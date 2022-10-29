@@ -91,15 +91,6 @@ class SearchController {
   virtual void AddProvider(size_t group_id,
                            std::unique_ptr<SearchProvider> provider) = 0;
 
-  // Removes, and deletes registered search providers that provide results for
-  // `result_type` and adds a new "test" provider.
-  // No-op if no providers for `result_type` were previously registered.
-  // Expects that `provider` provides results for `result_type`.
-  // Returns number of providers removed from the provider list.
-  virtual size_t ReplaceProvidersForResultTypeForTest(
-      ash::AppListSearchResultType result_type,
-      std::unique_ptr<SearchProvider> provider) = 0;
-
   // Update the controller with the given results. Used only if the categorical
   // search feature flag is enabled.
   virtual void SetResults(const SearchProvider* provider, Results results) = 0;

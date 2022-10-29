@@ -429,6 +429,17 @@ enum class SearchResultDisplayType {
   kLast,  // Don't use over IPC
 };
 
+// Which index in the UI container should the result be placed in.
+enum SearchResultDisplayIndex {
+  kFirstIndex,
+  kSecondIndex,
+  kThirdIndex,
+  kFourthIndex,
+  kFifthIndex,
+  kSixthIndex,
+  kUndefined,
+};
+
 // Actions for search results. These map to the buttons beside some search
 // results, and do not include the launching of the result itself.
 // TODO(crbug.com/1263751): Currently these are only relevant to omnibox
@@ -668,6 +679,13 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // Which UI container(s) the result should be displayed in.
   SearchResultDisplayType display_type = SearchResultDisplayType::kList;
+
+  // Which index in the UI container should the result be placed in.
+  SearchResultDisplayIndex display_index = SearchResultDisplayIndex::kUndefined;
+
+  // A score to settle conflicts between two apps with the same requested
+  // |display_index|.
+  float position_priority = 0.0f;
 
   // A score to determine the result display order.
   double display_score = 0;

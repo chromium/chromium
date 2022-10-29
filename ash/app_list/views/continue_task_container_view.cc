@@ -45,6 +45,17 @@ constexpr int kColumnSpacingTablet = 16;
 constexpr int kRowSpacing = 8;
 constexpr size_t kMaxFilesForContinueSection = 4;
 
+struct CompareByDisplayIndexAndPositionPriority {
+  bool operator()(const SearchResult* result1,
+                  const SearchResult* result2) const {
+    SearchResultDisplayIndex index1 = result1->display_index();
+    SearchResultDisplayIndex index2 = result2->display_index();
+    if (index1 != index2)
+      return index1 < index2;
+    return result1->position_priority() > result2->position_priority();
+  }
+};
+
 std::vector<SearchResult*> GetTasksResultsForContinueSection(
     SearchModel::SearchResults* results) {
   auto continue_filter = [](const SearchResult& r) -> bool {
@@ -54,6 +65,9 @@ std::vector<SearchResult*> GetTasksResultsForContinueSection(
   continue_results = SearchModel::FilterSearchResultsByFunction(
       results, base::BindRepeating(continue_filter),
       /*max_results=*/4);
+
+  std::sort(continue_results.begin(), continue_results.end(),
+            CompareByDisplayIndexAndPositionPriority());
 
   return continue_results;
 }
