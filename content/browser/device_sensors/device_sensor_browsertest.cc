@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   EXPECT_TRUE(NavigateIframeToURL(shell()->web_contents(),
                                   "cross_origin_iframe", iframe_url));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(kWarningMessage, console_observer.GetMessageAt(0u));
 }
 
