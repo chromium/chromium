@@ -431,12 +431,11 @@ debugger permission.
 
 This depends on the extension.
 
-**Component Extensions:** Some extensions (called "component extensions") are
-bundled by the Chromium browser and implement core browser functionality. An
-example of this is the CryptoToken extension (used in security key
-authentication). If you find a security bug in a component extension, this _is_
-considered a security bug in Chromium. Please report any such bugs
-[here][new-security-bug].
+**Component Extensions:**
+[Component extensions](https://chromium.googlesource.com/chromium/src/+/main/extensions/docs/component_extensions.md)
+are bundled by the Chromium browser and implement core browser functionality. If
+you find a security bug in a component extension, this _is_ considered a
+security bug in Chromium. Please report any such bugs [here][new-security-bug].
 
 **Google Extensions:** A security bug in an extension developed by Google, but
 not distributed directly with the Chrome browser, would likely not be considered
