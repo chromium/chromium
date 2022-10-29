@@ -4,6 +4,8 @@
 
 #include "sandbox/policy/linux/bpf_speech_recognition_policy_linux.h"
 
+#include <sys/mman.h>
+
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
@@ -24,6 +26,17 @@ SpeechRecognitionProcessPolicy::~SpeechRecognitionProcessPolicy() = default;
 ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
     int system_call_number) const {
   switch (system_call_number) {
+#if defined(__NR_mmap)
+    case __NR_mmap: {
+      // The speech recognition sandbox requires the MAP_POPULATE flag in
+      // addition to the default flags.
+      const uint64_t kAllowedMask = MAP_POPULATE;
+      const bpf_dsl::Arg<int> flags(3);
+      return (flags & ~kAllowedMask) == 0
+                 ? Allow()
+                 : BPFBasePolicy::EvaluateSyscall(system_call_number);
+    }
+#endif
     // Required by the Speech On-Device API (SODA) binary to find the
     // appropriate configuration file to use within a language pack directory.
 #if defined(__NR_getdents64)
