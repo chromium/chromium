@@ -122,7 +122,7 @@ ResourcePool::~ResourcePool() {
 
   SetResourceUsageLimits(0, 0);
   DCHECK_EQ(0u, unused_resources_.size());
-  DCHECK_EQ(0u, in_use_memory_usage_bytes_);
+  DCHECK_EQ(0u, unused_memory_usage_bytes_);
   DCHECK_EQ(0u, total_memory_usage_bytes_);
   DCHECK_EQ(0u, total_resource_count_);
 }
@@ -150,7 +150,8 @@ ResourcePool::PoolResource* ResourcePool::ReuseResource(
     // Transfer resource to |in_use_resources_|.
     in_use_resources_[resource->unique_id()] = std::move(*it);
     unused_resources_.erase(it);
-    in_use_memory_usage_bytes_ += resource->memory_usage();
+    DCHECK_GE(unused_memory_usage_bytes_, resource->memory_usage());
+    unused_memory_usage_bytes_ -= resource->memory_usage();
     DCHECK_EQ(resource->state(), PoolResource::kUnused);
     resource->set_state(PoolResource::kInUse);
     return resource;
@@ -265,7 +266,8 @@ ResourcePool::TryAcquireResourceForPartialRaster(
     in_use_resources_[resource->unique_id()] =
         std::move(*iter_resource_to_return);
     unused_resources_.erase(iter_resource_to_return);
-    in_use_memory_usage_bytes_ += resource->memory_usage();
+    DCHECK_GE(unused_memory_usage_bytes_, resource->memory_usage());
+    unused_memory_usage_bytes_ -= resource->memory_usage();
     *total_invalidated_rect = resource->invalidated_rect();
 
     // Clear the invalidated rect and content ID on the resource being returned.
@@ -282,8 +284,8 @@ ResourcePool::TryAcquireResourceForPartialRaster(
 void ResourcePool::OnBackingAllocated(PoolResource* resource) {
   size_t size = resource->memory_usage();
   total_memory_usage_bytes_ += size;
-  if (resource->state() == PoolResource::kInUse)
-    in_use_memory_usage_bytes_ += size;
+  if (resource->state() == PoolResource::kUnused)
+    unused_memory_usage_bytes_ += size;
 }
 
 void ResourcePool::OnResourceReleased(size_t unique_id,
@@ -355,8 +357,14 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
 }
 
 void ResourcePool::InvalidateResources() {
-  while (!unused_resources_.empty())
+  while (!unused_resources_.empty()) {
+    DCHECK_GE(unused_memory_usage_bytes_,
+              unused_resources_.back()->memory_usage());
+    unused_memory_usage_bytes_ -= unused_resources_.back()->memory_usage();
     DeleteResource(PopBack(&unused_resources_));
+  }
+  DCHECK_EQ(unused_memory_usage_bytes_, 0U);
+
   for (auto& pool_resource : busy_resources_)
     pool_resource->mark_avoid_reuse();
   for (auto& pair : in_use_resources_)
@@ -398,7 +406,6 @@ void ResourcePool::ReleaseResource(InUsePoolResource in_use_resource) {
   CHECK(it->second.get());
 
   pool_resource->set_last_usage(clock_->NowTicks());
-  in_use_memory_usage_bytes_ -= pool_resource->memory_usage();
 
   // Save the ResourceId since the |pool_resource| can be deleted in the next
   // step.
@@ -459,6 +466,9 @@ void ResourcePool::ReduceResourceUsage() {
     // can't be locked for write might also not be truly free-able.
     // We can free the resource here but it doesn't mean that the
     // memory is necessarily returned to the OS.
+    DCHECK_GE(unused_memory_usage_bytes_,
+              unused_resources_.back()->memory_usage());
+    unused_memory_usage_bytes_ -= unused_resources_.back()->memory_usage();
     DeleteResource(PopBack(&unused_resources_));
   }
 }
@@ -472,8 +482,8 @@ bool ResourcePool::ResourceUsageTooHigh() {
 }
 
 void ResourcePool::DeleteResource(std::unique_ptr<PoolResource> resource) {
-  size_t resource_bytes = resource->memory_usage();
-  total_memory_usage_bytes_ -= resource_bytes;
+  DCHECK_GE(total_memory_usage_bytes_, resource->memory_usage());
+  total_memory_usage_bytes_ -= resource->memory_usage();
   --total_resource_count_;
   if (flush_evicted_resources_deadline_ == base::TimeTicks::Max()) {
     flush_evicted_resources_deadline_ =
@@ -495,6 +505,7 @@ void ResourcePool::UpdateResourceContentIdAndInvalidation(
 
 void ResourcePool::DidFinishUsingResource(
     std::unique_ptr<PoolResource> resource) {
+  unused_memory_usage_bytes_ += resource->memory_usage();
   unused_resources_.push_front(std::move(resource));
 }
 
@@ -546,6 +557,9 @@ void ResourcePool::EvictResourcesNotUsedSince(base::TimeTicks time_limit) {
     if (unused_resources_.back()->last_usage() > time_limit)
       return;
 
+    DCHECK_GE(unused_memory_usage_bytes_,
+              unused_resources_.back()->memory_usage());
+    unused_memory_usage_bytes_ -= unused_resources_.back()->memory_usage();
     DeleteResource(PopBack(&unused_resources_));
   }
 }
