@@ -118,6 +118,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   private sitesLoaded_: boolean = false;
   private modelUpdateDelayMsForTesting_: number|null = null;
   private toastText_: string|null;
+  private shouldRefocusExpandButton: boolean = false;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -281,6 +282,7 @@ export class SettingsReviewNotificationPermissionsElement extends
       default:
         assertNotReached();
     }
+    this.shouldRefocusExpandButton = true;
     this.$.undoToast.hide();
   }
 
@@ -331,6 +333,14 @@ export class SettingsReviewNotificationPermissionsElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckNotificationPermissionReviewPrimaryLabel',
             this.sites_!.length);
+    /**
+     * Focus on the expand button after the undo button is clicked and sites are
+     * loaded again.
+     */
+    if (this.sites_!.length !== 0 && this.shouldRefocusExpandButton) {
+      this.shouldRefocusExpandButton = false;
+      (this.shadowRoot!.querySelector('#expandButton') as HTMLElement).focus();
+    }
   }
 
   private getMoreActionsAriaLabel_(origin: string): string {
