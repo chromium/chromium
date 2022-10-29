@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(TooManyWebMediaPlayersIntervention,
   content::WebContentsConsoleObserver console(web_contents);
   console.SetPattern("Blocked attempt to create a WebMediaPlayer *");
   EXPECT_TRUE(content::ExecJs(web_contents, "CreateVideo();"));
-  console.Wait();
+  ASSERT_TRUE(console.Wait());
   EXPECT_EQ(1u, console.messages().size());
 }
 
