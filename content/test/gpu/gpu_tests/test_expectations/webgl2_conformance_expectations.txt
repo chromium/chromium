@@ -469,7 +469,6 @@ crbug.com/636648 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_01.html [ 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
 
-crbug.com/1350287 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/occlusionquery_strict.html [ RetryOnFailure ]
 
 
 
@@ -744,7 +743,6 @@ crbug.com/1285114 [ chromeos chromeos-board-kevin passthrough ] conformance2/tra
 crbug.com/1286099 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
 crbug.com/1374291 [ chromeos chromeos-board-kevin passthrough ] conformance2/textures/video/tex-3d-rgba8-rgba-unsigned_byte.html [ Failure ]
 
-crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 
 
