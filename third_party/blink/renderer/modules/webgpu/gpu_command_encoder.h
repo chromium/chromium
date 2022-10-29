@@ -40,7 +40,8 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
       const GPURenderPassDescriptor* descriptor,
       ExceptionState& exception_state);
   GPUComputePassEncoder* beginComputePass(
-      const GPUComputePassDescriptor* descriptor);
+      const GPUComputePassDescriptor* descriptor,
+      ExceptionState& exception_state);
   void copyBufferToBuffer(DawnObject<WGPUBuffer>* src,
                           uint64_t src_offset,
                           DawnObject<WGPUBuffer>* dst,

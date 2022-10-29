@@ -45,6 +45,9 @@ GPUSupportedFeatures* MakeFeatureNameSet(const DawnProcTable& procs,
       case WGPUFeatureName_TimestampQuery:
         features->AddFeatureName("timestamp-query");
         break;
+      case WGPUFeatureName_TimestampQueryInsidePasses:
+        features->AddFeatureName("timestamp-query-inside-passes");
+        break;
       case WGPUFeatureName_PipelineStatisticsQuery:
         features->AddFeatureName("pipeline-statistics-query");
         break;

@@ -21,7 +21,7 @@
     void executeBundles(sequence<GPURenderBundle> bundles);
     void beginOcclusionQuery(GPUSize32 queryIndex);
     void endOcclusionQuery();
-    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+    [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     void end();
     void endPass(); // TODO(dawn:1286): Remove after deprecation period.

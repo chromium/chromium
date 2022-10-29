@@ -9,7 +9,7 @@
     SecureContext
 ] interface GPUCommandEncoder {
     [RaisesException] GPURenderPassEncoder beginRenderPass(GPURenderPassDescriptor descriptor);
-    GPUComputePassEncoder beginComputePass(optional GPUComputePassDescriptor descriptor = {});
+    [RaisesException] GPUComputePassEncoder beginComputePass(optional GPUComputePassDescriptor descriptor = {});
 
     void copyBufferToBuffer(
         GPUBuffer src,

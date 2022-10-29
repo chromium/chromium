@@ -138,10 +138,8 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
     GetProcs().renderPassEncoderEndOcclusionQuery(GetHandle());
   }
   void writeTimestamp(const DawnObject<WGPUQuerySet>* querySet,
-                      uint32_t queryIndex) {
-    GetProcs().renderPassEncoderWriteTimestamp(
-        GetHandle(), querySet->GetHandle(), queryIndex);
-  }
+                      uint32_t queryIndex,
+                      ExceptionState& exception_state);
   void end() { GetProcs().renderPassEncoderEnd(GetHandle()); }
   void endPass();
 

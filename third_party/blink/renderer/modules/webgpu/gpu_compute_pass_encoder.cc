@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_query_set.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 
 namespace blink {
 
@@ -45,6 +46,25 @@ void GPUComputePassEncoder::setBindGroup(
   GetProcs().computePassEncoderSetBindGroup(GetHandle(), index,
                                             bind_group->GetHandle(),
                                             dynamic_offsets_data_length, data);
+}
+
+void GPUComputePassEncoder::writeTimestamp(
+    const DawnObject<WGPUQuerySet>* querySet,
+    uint32_t queryIndex,
+    ExceptionState& exception_state) {
+  // TODO(crbug.com/1379384): Avoid using string comparisons for checking
+  // features because of inefficiency, maybe we can use V8GPUFeatureName instead
+  // of string.
+  const char* requiredFeature = "timestamp-query-inside-passes";
+  if (!device_->features()->has(requiredFeature)) {
+    exception_state.ThrowTypeError(String::Format(
+        "Use of the writeTimestamp() method on compute pass requires the '%s' "
+        "feature to be enabled on %s.",
+        requiredFeature, device_->formattedLabel().c_str()));
+    return;
+  }
+  GetProcs().computePassEncoderWriteTimestamp(
+      GetHandle(), querySet->GetHandle(), queryIndex);
 }
 
 void GPUComputePassEncoder::endPass() {

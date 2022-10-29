@@ -533,9 +533,14 @@ GPURenderBundleEncoder* GPUDevice::createRenderBundleEncoder(
 
 GPUQuerySet* GPUDevice::createQuerySet(const GPUQuerySetDescriptor* descriptor,
                                        ExceptionState& exception_state) {
-  if (descriptor->type() == "timestamp" && !features_->has("timestamp-query")) {
+  // TODO(crbug.com/1379384): Avoid using string comparisons for checking type
+  // and features because of inefficiency, maybe we can use V8GPUQueryType and
+  // V8GPUFeatureName instead of string.
+  if (descriptor->type() == "timestamp" && !features_->has("timestamp-query") &&
+      !features_->has("timestamp-query-inside-passes")) {
     exception_state.ThrowTypeError(String::Format(
-        "Use of 'timestamp' queries requires the 'timestamp-query' feature to "
+        "Use of 'timestamp' queries requires the 'timestamp-query' or "
+        "'timestamp-query-inside-passes' feature to "
         "be enabled on %s.",
         formattedLabel().c_str()));
     return nullptr;

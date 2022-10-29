@@ -14,7 +14,7 @@
                             optional GPUSize32 workgroupCountZ = 1);
     void dispatchWorkgroupsIndirect(GPUBuffer indirectBuffer,
                                     GPUSize64 indirectOffset);
-    void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+    [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     void end();
     void endPass(); // TODO(dawn:1286): Remove after deprecation period.

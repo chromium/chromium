@@ -321,6 +321,19 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
   dawn_desc.timestampWriteCount = timestamp_writes_count;
   std::unique_ptr<WGPURenderPassTimestampWrite[]> timestamp_writes;
   if (timestamp_writes_count > 0) {
+    // TODO(crbug.com/1379384): Avoid using string comparisons for checking
+    // features because of inefficiency, maybe we can use V8GPUFeatureName
+    // instead of string.
+    const char* requiredFeature = "timestamp-query";
+    if (!device_->features()->has(requiredFeature)) {
+      exception_state.ThrowTypeError(
+          String::Format("Use of the timestampWrites member in render pass "
+                         "descriptor requires the '%s' "
+                         "feature to be enabled on %s.",
+                         requiredFeature, device_->formattedLabel().c_str()));
+      return nullptr;
+    }
+
     timestamp_writes = AsDawnType(descriptor->timestampWrites());
     dawn_desc.timestampWrites = timestamp_writes.get();
   } else {
@@ -346,7 +359,8 @@ GPURenderPassEncoder* GPUCommandEncoder::beginRenderPass(
 }
 
 GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
-    const GPUComputePassDescriptor* descriptor) {
+    const GPUComputePassDescriptor* descriptor,
+    ExceptionState& exception_state) {
   std::string label;
   WGPUComputePassDescriptor dawn_desc = {};
   if (descriptor->hasLabel()) {
@@ -359,6 +373,19 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
   dawn_desc.timestampWriteCount = timestamp_writes_count;
   std::unique_ptr<WGPUComputePassTimestampWrite[]> timestamp_writes;
   if (timestamp_writes_count > 0) {
+    // TODO(crbug.com/1379384): Avoid using string comparisons for checking
+    // features because of inefficiency, maybe we can use V8GPUFeatureName
+    // instead of string.
+    const char* requiredFeature = "timestamp-query";
+    if (!device_->features()->has(requiredFeature)) {
+      exception_state.ThrowTypeError(
+          String::Format("Use of the timestampWrites member in compute pass "
+                         "descriptor requires the '%s' "
+                         "feature to be enabled on %s.",
+                         requiredFeature, device_->formattedLabel().c_str()));
+      return nullptr;
+    }
+
     timestamp_writes = AsDawnType(descriptor->timestampWrites());
     dawn_desc.timestampWrites = timestamp_writes.get();
   } else {
@@ -423,11 +450,15 @@ void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
 void GPUCommandEncoder::writeTimestamp(DawnObject<WGPUQuerySet>* querySet,
                                        uint32_t queryIndex,
                                        ExceptionState& exception_state) {
-  if (!device_->features()->has("timestamp-query")) {
-    exception_state.ThrowTypeError(String::Format(
-        "Use of the writeTimestamp() method requires the 'timestamp-query' "
-        "feature to be enabled on %s.",
-        device_->formattedLabel().c_str()));
+  // TODO(crbug.com/1379384): Avoid using string comparisons for checking
+  // features because of inefficiency, maybe we can use V8GPUFeatureName instead
+  // of string.
+  const char* requiredFeature = "timestamp-query";
+  if (!device_->features()->has(requiredFeature)) {
+    exception_state.ThrowTypeError(
+        String::Format("Use of the writeTimestamp() method requires the '%s' "
+                       "feature to be enabled on %s.",
+                       requiredFeature, device_->formattedLabel().c_str()));
     return;
   }
   GetProcs().commandEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
