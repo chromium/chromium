@@ -635,6 +635,25 @@ ProxyHostObserver* GetProxyHostObserver() {
 
 }  // namespace
 
+bool WaiterHelper::WaitInternal() {
+  if (event_received_) {
+    return true;
+  }
+  run_loop_.Run();
+  return event_received_;
+}
+
+bool WaiterHelper::Wait() {
+  bool result = WaitInternal();
+  event_received_ = false;
+  return result;
+}
+
+void WaiterHelper::OnEvent() {
+  event_received_ = true;
+  run_loop_.Quit();
+}
+
 bool NavigateToURL(WebContents* web_contents, const GURL& url) {
   return NavigateToURL(web_contents, url, url);
 }
@@ -3609,8 +3628,8 @@ WebContentsConsoleObserver::WebContentsConsoleObserver(
     : WebContentsObserver(web_contents) {}
 WebContentsConsoleObserver::~WebContentsConsoleObserver() = default;
 
-void WebContentsConsoleObserver::Wait() {
-  run_loop_.Run();
+bool WebContentsConsoleObserver::Wait() {
+  return waiter_helper_.Wait();
 }
 
 void WebContentsConsoleObserver::SetFilter(Filter filter) {
@@ -3649,7 +3668,7 @@ void WebContentsConsoleObserver::OnDidAddMessageToConsole(
   }
 
   messages_.push_back(std::move(message));
-  run_loop_.Quit();
+  waiter_helper_.OnEvent();
 }
 
 namespace {

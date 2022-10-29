@@ -138,6 +138,23 @@ class ScopedAllowRendererCrashes;
 class ToRenderFrameHost;
 class WebContents;
 
+// This encapsulates the pattern of waiting for an event and returning whether
+// that event was received from `Wait`. This makes it easy to do the right thing
+// in Wait, i.e. return with `[[nodiscard]]`.
+class WaiterHelper {
+ public:
+  // Wait until OnEvent is called. Will return true if ended by OnEvent or false
+  // if ended for some other reason (e.g. timeout).
+  [[nodiscard]] bool Wait();
+  // Steps the waiting.
+  void OnEvent();
+
+ private:
+  [[nodiscard]] bool WaitInternal();
+  base::RunLoop run_loop_;
+  bool event_received_ = false;
+};
+
 // Navigates |web_contents| to |url|, blocking until the navigation finishes.
 // Returns true if the page was loaded successfully and the last committed URL
 // matches |url|.  This is a browser-initiated navigation that simulates a user
@@ -1897,7 +1914,7 @@ class WebContentsConsoleObserver : public WebContentsObserver {
 
   // Waits for a message to come in that matches the set filter, if any. If no
   // filter is set, waits for the first message that comes in.
-  void Wait();
+  bool Wait();
 
   // Sets a custom filter to be used while waiting for a message, allowing
   // more custom filtering (e.g. based on source).
@@ -1925,7 +1942,7 @@ class WebContentsConsoleObserver : public WebContentsObserver {
 
   Filter filter_;
   std::string pattern_;
-  base::RunLoop run_loop_;
+  WaiterHelper waiter_helper_;
   std::vector<Message> messages_;
 };
 
