@@ -109,9 +109,11 @@ class VoidifyStream {
   LAZY_CHECK_STREAM(check_function(__FILE__, __LINE__, #condition), \
                     !ANALYZER_ASSUME_TRUE(condition))
 
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
-    !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+#if defined(OFFICIAL_BUILD) && !defined(NDEBUG)
+#error "Debug builds are not expected to be optimized as official builds."
+#endif  // defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
 // Note that this uses IMMEDIATE_CRASH_ALWAYS_INLINE to force-inline in debug
 // mode as well. See LoggingTest.CheckCausesDistinctBreakpoints.
 [[noreturn]] IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
