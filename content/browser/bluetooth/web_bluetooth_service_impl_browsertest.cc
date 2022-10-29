@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
     })()
   )"));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   std::vector<WebContentsConsoleObserver::Message> messages =
       console_observer.messages();
   EXPECT_EQ(messages.size(), 1u);
