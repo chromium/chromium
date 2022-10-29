@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
     EXPECT_TRUE(ExecJs(shell(), JsReplace(kAddIframeScript, iframe_url),
                        EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents)
                               ->GetPrimaryFrameTree()
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
     EXPECT_TRUE(ExecJs(shell(), JsReplace(kAddIframeScript, iframe_url),
                        EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents)
                               ->GetPrimaryFrameTree()
@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
 
     EXPECT_TRUE(ExecJs(shell(), JsReplace(kAddIframeScript, iframe_url),
                        EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents)
                               ->GetPrimaryFrameTree()
@@ -714,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   // navigation was blocked.
   EXPECT_TRUE(ExecJs(shell(), JsReplace(kAddIframeScript, webui_url),
                      EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
