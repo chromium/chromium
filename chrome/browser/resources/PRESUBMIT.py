@@ -135,7 +135,6 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/apc_internals/',
     'chrome/browser/resources/bluetooth_internals/',
     'chrome/browser/resources/chromeos/',
-    'chrome/browser/resources/cryptotoken/',
     'chrome/browser/resources/device_log_ui/',
     'chrome/browser/resources/explore_sites_internals/',
     'chrome/browser/resources/family_link_user_internals/',
