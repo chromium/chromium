@@ -7,11 +7,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <random>
 #include <string>
 #include <vector>
 
+#include "base/ranges/algorithm.h"
 #include "components/zucchini/test_utils.h"
 #include "components/zucchini/type_elf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -148,7 +148,7 @@ TEST(DisassemblerElfTest, QuickDetect) {
     elf::Elf32_Ehdr header = {};
     auto e_ident =
         ParseHexString("7F 45 4C 46 01 01 01 00 00 00 00 00 00 00 00 00");
-    std::copy(e_ident.begin(), e_ident.end(), header.e_ident);
+    base::ranges::copy(e_ident, header.e_ident);
     header.e_type = elf::ET_EXEC;
     header.e_machine = elf::EM_386;
     header.e_version = 1;
@@ -163,7 +163,7 @@ TEST(DisassemblerElfTest, QuickDetect) {
     elf::Elf64_Ehdr header = {};
     auto e_ident =
         ParseHexString("7F 45 4C 46 02 01 01 00 00 00 00 00 00 00 00 00");
-    std::copy(e_ident.begin(), e_ident.end(), header.e_ident);
+    base::ranges::copy(e_ident, header.e_ident);
     header.e_type = elf::ET_EXEC;
     header.e_machine = elf::EM_X86_64;
     header.e_version = 1;

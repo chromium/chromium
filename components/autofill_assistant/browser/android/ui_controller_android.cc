@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -2282,13 +2283,11 @@ UiControllerAndroid::CreateJavaAdditionalSections(
       }
       case UserFormSectionProto::kPopupListSection: {
         std::vector<std::string> items;
-        std::copy(section.popup_list_section().item_names().begin(),
-                  section.popup_list_section().item_names().end(),
-                  std::back_inserter(items));
+        base::ranges::copy(section.popup_list_section().item_names(),
+                           std::back_inserter(items));
         std::vector<int> initial_selections;
-        std::copy(section.popup_list_section().initial_selection().begin(),
-                  section.popup_list_section().initial_selection().end(),
-                  std::back_inserter(initial_selections));
+        base::ranges::copy(section.popup_list_section().initial_selection(),
+                           std::back_inserter(initial_selections));
         Java_AssistantCollectUserDataModel_appendPopupListSection(
             env, jsection_list, ConvertUTF8ToJavaString(env, section.title()),
             ConvertUTF8ToJavaString(

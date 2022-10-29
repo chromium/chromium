@@ -4,13 +4,13 @@
 
 #include "components/services/print_compositor/print_compositor_impl.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -221,8 +221,8 @@ void PrintCompositorImpl::UpdateRequestsWithSubframeInfo(
     // update with this frame's pending list.
     auto& pending_list = request->pending_subframes;
     if (pending_list.erase(frame_guid)) {
-      std::copy(pending_subframes.begin(), pending_subframes.end(),
-                std::inserter(pending_list, pending_list.end()));
+      base::ranges::copy(pending_subframes,
+                         std::inserter(pending_list, pending_list.end()));
     }
 
     // If the request still has pending frames, or isn't at the front of the

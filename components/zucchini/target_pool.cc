@@ -4,11 +4,11 @@
 
 #include "components/zucchini/target_pool.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "components/zucchini/algorithm.h"
 #include "components/zucchini/equivalence_map.h"
 
@@ -27,7 +27,7 @@ TargetPool::TargetPool(const TargetPool&) = default;
 TargetPool::~TargetPool() = default;
 
 void TargetPool::InsertTargets(const std::vector<offset_t>& targets) {
-  std::copy(targets.begin(), targets.end(), std::back_inserter(targets_));
+  base::ranges::copy(targets, std::back_inserter(targets_));
   SortAndUniquify(&targets_);
 }
 

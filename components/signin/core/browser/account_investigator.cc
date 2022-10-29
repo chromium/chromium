@@ -171,8 +171,7 @@ std::string AccountInvestigator::HashAccounts(
       });
   std::sort(sorted_ids.begin(), sorted_ids.end());
   std::ostringstream stream;
-  std::copy(sorted_ids.begin(), sorted_ids.end(),
-            std::ostream_iterator<std::string>(stream));
+  base::ranges::copy(sorted_ids, std::ostream_iterator<std::string>(stream));
 
   // PrefService will slightly mangle some undisplayable characters, by encoding
   // in Base64 we are sure to have all safe characters that PrefService likes.

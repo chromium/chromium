@@ -4,10 +4,8 @@
 
 #include "components/browsing_topics/util.h"
 
-#include <algorithm>
-
-#include "base/lazy_instance.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 #include "third_party/blink/public/common/features.h"
@@ -44,8 +42,12 @@ uint64_t HmacHash(ReadOnlyHmacKey hmac_key,
   return result;
 }
 
-base::LazyInstance<browsing_topics::HmacKey>::Leaky
-    g_hmac_key_override_for_testing;
+bool g_hmac_key_overridden = false;
+  
+browsing_topics::HmacKey& GetHmacKeyOverrideForTesting() {
+  static browsing_topics::HmacKey key;
+  return key;
+}
 
 }  // namespace
 
@@ -60,8 +62,8 @@ absl::optional<size_t> GetTaxonomySize() {
 }
 
 HmacKey GenerateRandomHmacKey() {
-  if (g_hmac_key_override_for_testing.IsCreated())
-    return g_hmac_key_override_for_testing.Get();
+  if (g_hmac_key_overridden)
+    return GetHmacKeyOverrideForTesting();
 
   HmacKey result = {};
   base::RandBytes(result.data(), result.size());
@@ -131,8 +133,8 @@ HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host) {
 }
 
 void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key) {
-  std::copy(hmac_key.begin(), hmac_key.end(),
-            g_hmac_key_override_for_testing.Get().begin());
+  g_hmac_key_overridden = true;
+  base::ranges::copy(hmac_key, GetHmacKeyOverrideForTesting().begin());
 }
 
 }  // namespace browsing_topics

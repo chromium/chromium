@@ -128,9 +128,8 @@ class ScopedFeatureListWrapper {
       const std::vector<base::test::FeatureRef>& additional_enabled_features) {
     std::vector<base::test::FeatureRef> all_enabled_features(
         default_enabled_features);
-    std::copy(additional_enabled_features.begin(),
-              additional_enabled_features.end(),
-              std::back_inserter(all_enabled_features));
+    base::ranges::copy(additional_enabled_features,
+                       std::back_inserter(all_enabled_features));
     scoped_features_.InitWithFeatures(all_enabled_features,
                                       /*disabled_features=*/{});
   }

@@ -857,7 +857,7 @@ TEST_F(WebBundleParserTest,
 TEST_F(WebBundleParserTest, RandomAccessContextLengthSmallerThanWebBundle) {
   std::vector<uint8_t> bundle = CreateSmallBundle();
   std::vector<uint8_t> invalid_length = {0, 0, 0, 0, 0, 0, 0, 10};
-  std::copy(invalid_length.begin(), invalid_length.end(), bundle.end() - 8);
+  base::ranges::copy(invalid_length, bundle.end() - 8);
   TestDataSource data_source(bundle, /*is_random_access_context=*/true);
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));
@@ -873,7 +873,7 @@ TEST_F(WebBundleParserTest, RandomAccessContextFileSmallerThanLengthField) {
 TEST_F(WebBundleParserTest, RandomAccessContextLengthBiggerThanFile) {
   std::vector<uint8_t> bundle = CreateSmallBundle();
   std::vector<uint8_t> invalid_length = {0xff, 0, 0, 0, 0, 0, 0, 0};
-  std::copy(invalid_length.begin(), invalid_length.end(), bundle.end() - 8);
+  base::ranges::copy(invalid_length, bundle.end() - 8);
   TestDataSource data_source(bundle, /*is_random_access_context=*/true);
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));

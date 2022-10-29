@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/algorithm.h"
 #include "components/zucchini/disassembler_elf.h"
@@ -67,8 +67,8 @@ class FakeImageWithReloc {
     // Set up test image with reloc sections.
     for (const RelocSpec& reloc_spec : reloc_specs) {
       BufferRegion reloc_region = {reloc_spec.start, reloc_spec.data.size()};
-      std::copy(reloc_spec.data.begin(), reloc_spec.data.end(),
-                image_data_.begin() + reloc_region.lo());
+      base::ranges::copy(reloc_spec.data,
+                         image_data_.begin() + reloc_region.lo());
       section_dimensions_.emplace_back(
           MakeSectionDimensions<typename ElfIntelTraits::Elf_Shdr>(
               reloc_region, ElfIntelTraits::kVAWidth));

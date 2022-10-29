@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <algorithm>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"

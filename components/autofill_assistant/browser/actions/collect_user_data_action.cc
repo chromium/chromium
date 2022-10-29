@@ -1044,10 +1044,10 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
       return false;
     }
   }
-  std::copy(collect_user_data.supported_basic_card_networks().begin(),
-            collect_user_data.supported_basic_card_networks().end(),
-            std::back_inserter(
-                collect_user_data_options_->supported_basic_card_networks));
+  base::ranges::copy(
+      collect_user_data.supported_basic_card_networks(),
+      std::back_inserter(
+          collect_user_data_options_->supported_basic_card_networks));
   collect_user_data_options_->request_payment_method =
       collect_user_data.request_payment_method();
   collect_user_data_options_->billing_address_name =

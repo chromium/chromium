@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
+
+#include <algorithm>
 #include <memory>
 #include <vector>
 

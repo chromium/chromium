@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -153,8 +154,7 @@ TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentCustomGenerator) {
   auto custom_callback =
       base::BindLambdaForTesting([](void* ptr, size_t len) -> void {
         DCHECK_EQ(len, kDevelopmentBytes.size());
-        std::copy(kDevelopmentBytes.begin(), kDevelopmentBytes.begin() + len,
-                  static_cast<uint8_t*>(ptr));
+        base::ranges::copy(kDevelopmentBytes, static_cast<uint8_t*>(ptr));
       });
 
   SignedWebBundleId id =

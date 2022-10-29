@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_store_util.h"
+
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store_change.h"
@@ -19,8 +21,7 @@ PasswordChanges JoinPasswordStoreChanges(
         absl::get<PasswordChanges>(changes_or_error);
     if (!changes.has_value())
       return absl::nullopt;
-    std::copy(changes->begin(), changes->end(),
-              std::back_inserter(joined_changes));
+    base::ranges::copy(*changes, std::back_inserter(joined_changes));
   }
   return joined_changes;
 }

@@ -4,6 +4,7 @@
 
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/debug/leak_annotations.h"

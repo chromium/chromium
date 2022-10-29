@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <wlanapi.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>

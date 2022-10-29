@@ -4,7 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <algorithm>
+
 #include <memory>
 #include <tuple>
 
@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -275,7 +276,7 @@ void CreateTestTwoColoredTextureDrawQuad(
         base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
-    std::copy(pixels.begin(), pixels.end(), span.begin());
+    base::ranges::copy(pixels, span.begin());
   }
 
   // Return the mapped resource id.
@@ -337,7 +338,7 @@ void CreateTestTextureDrawQuad(
         base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
-    std::copy(pixels.begin(), pixels.end(), span.begin());
+    base::ranges::copy(pixels, span.begin());
   }
 
   // Return the mapped resource id.

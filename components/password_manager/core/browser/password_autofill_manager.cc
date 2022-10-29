@@ -342,8 +342,7 @@ std::vector<autofill::Suggestion> SetUnlockLoadingState(
           autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE);
   std::vector<autofill::Suggestion> new_suggestions;
   new_suggestions.reserve(suggestions.size());
-  std::copy(suggestions.begin(), suggestions.end(),
-            std::back_inserter(new_suggestions));
+  base::ranges::copy(suggestions, std::back_inserter(new_suggestions));
   auto unlock_iter = base::ranges::find(new_suggestions, unlock_item,
                                         &autofill::Suggestion::frontend_id);
   unlock_iter->is_loading = is_loading;

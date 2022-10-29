@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/android/generic_ui_interactions_android.h"
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantViewInteractions_jni.h"
 #include "components/autofill_assistant/browser/android/ui_controller_android_utils.h"
 #include "components/autofill_assistant/browser/android/view_handler_android.h"
@@ -147,19 +149,16 @@ void ShowListPopup(base::WeakPtr<UserModel> user_model,
 
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<std::string> item_names_vec;
-  std::copy(item_names->strings().values().begin(),
-            item_names->strings().values().end(),
-            std::back_inserter(item_names_vec));
+  base::ranges::copy(item_names->strings().values(),
+                     std::back_inserter(item_names_vec));
 
   std::vector<int> item_types_vec;
-  std::copy(item_types->ints().values().begin(),
-            item_types->ints().values().end(),
-            std::back_inserter(item_types_vec));
+  base::ranges::copy(item_types->ints().values(),
+                     std::back_inserter(item_types_vec));
 
   std::vector<int> selected_indices_vec;
-  std::copy(selected_indices->ints().values().begin(),
-            selected_indices->ints().values().end(),
-            std::back_inserter(selected_indices_vec));
+  base::ranges::copy(selected_indices->ints().values(),
+                     std::back_inserter(selected_indices_vec));
 
   Java_AssistantViewInteractions_showListPopup(
       env, jcontext, base::android::ToJavaArrayOfStrings(env, item_names_vec),
