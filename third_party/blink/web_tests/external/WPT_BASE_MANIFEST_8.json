@@ -894,6 +894,34 @@
          null,
          {}
         ]
+       ],
+       "variable-fragmentainer-size-003-crash.html": [
+        "90834c806b166c928e9c5139e841aaa68b3fb493",
+        [
+         null,
+         {}
+        ]
+       ],
+       "variable-fragmentainer-size-004-crash.html": [
+        "9c4699da93ff6af0b19f3e9a5edcadf311796681",
+        [
+         null,
+         {}
+        ]
+       ],
+       "variable-fragmentainer-size-005-crash.html": [
+        "b17d0cc8100295a709f897a2a635f5d61d907b63",
+        [
+         null,
+         {}
+        ]
+       ],
+       "variable-fragmentainer-size-006-crash.html": [
+        "1345c6eca8da5cc2db52f76d103e0e421cfbe285",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "table-in-abspos-multicol-with-nested-meter-crash.html": [
@@ -89385,6 +89413,19 @@
          {}
         ]
        ],
+       "balanced-inner-multicol.html": [
+        "78340661eda23a2607275e890433c4d99c2c1d3e",
+        [
+         null,
+         [
+          [
+           "/css/css-break/table/repeated-section/balanced-inner-multicol-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "block-in-inline.tentative.html": [
         "1a94c697f15707efe09767c64b9c71a9103d78dc",
         [
@@ -89548,6 +89589,32 @@
          [
           [
            "/css/reference/ref-filled-green-100px-square.xht",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "variable-fragmentainer-size-001.html": [
+        "f75a8cf216e9a7b03c4d92022b9a1fc880bc9e51",
+        [
+         null,
+         [
+          [
+           "/css/css-break/table/repeated-section/variable-fragmentainer-size-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "variable-fragmentainer-size-002.html": [
+        "c3aceac5aea83753c0f8ff4fa52351ee22626c53",
+        [
+         null,
+         [
+          [
+           "/css/css-break/table/repeated-section/variable-fragmentainer-size-002-ref.html",
            "=="
           ]
          ],
@@ -261198,16 +261265,16 @@
      "c03182b1e8f0b29918bce193453359dee5410068",
      []
     ],
+    "fedcm-cross-origin-policy.https.html.sub.headers": [
+     "32523a697886f7fb26ab4456e5b14cb19d8c1aae",
+     []
+    ],
     "fedcm-csp.https.html.sub.headers": [
      "c1e6fd6c4c281f22e7f92506ec72ca39b6293f23",
      []
     ],
     "fedcm-logout-rps.https.html.headers": [
      "90454dbb227b7a3be84fe4618980ef7e74622099",
-     []
-    ],
-    "fedcm-network-requests.https.html.sub.headers": [
-     "c521de644a9c40dda0ca1cb402a28666dc45e283",
      []
     ],
     "federatedcredential-framed-get.sub.https-expected.txt": [
@@ -271597,6 +271664,18 @@
       "repeated-section": {
        "abspos-uncontained-text-ref.html": [
         "a7c2eeb5b8e05397d606776fc8b470e451a12b04",
+        []
+       ],
+       "balanced-inner-multicol-ref.html": [
+        "ab2dcebc4158de315a8df204d110a63bbe93ea69",
+        []
+       ],
+       "variable-fragmentainer-size-001-ref.html": [
+        "bea1ace1c376708c9ab58ba706cdfcf7aa140dbd",
+        []
+       ],
+       "variable-fragmentainer-size-002-ref.html": [
+        "b457b1f7ac8582bc67ae101587fe89bfe954ca64",
         []
        ]
       },
@@ -302260,7 +302339,7 @@
       []
      ],
      "minmax-angle-serialize-expected.txt": [
-      "14d29fed17d1ef8eb55aa32757008bfa21a1bd87",
+      "8f56a1de89b32088e7f0cc5bb09c190f42d67620",
       []
      ],
      "minmax-length-percent-serialize-expected.txt": [
@@ -326864,7 +326943,7 @@
     },
     "select": {
      "options-length-too-large-expected.txt": [
-      "eb66ac7199fe6e0876bc4b269eac1f4c29c62264",
+      "d08d2c45e2fc039099d898a910db379a1f7afa4b",
       []
      ]
     },
@@ -335539,6 +335618,10 @@
      ],
      "lcp-sw.https.html": [
       "069a50eae9a90bce2f8fb1022fed5bd72b5a5d17",
+      []
+     ],
+     "slow-style-change.py": [
+      "780d5736c49065f1ea4140cfb8375aeb1005f039",
       []
      ]
     }
@@ -390660,6 +390743,13 @@
       {}
      ]
     ],
+    "fedcm-cross-origin-policy.https.html": [
+     "808b7f6ea775d10e26dfbd48169a3464d87e89b6",
+     [
+      null,
+      {}
+     ]
+    ],
     "fedcm-csp.https.html": [
      "59c97e8c38ffd6bf796b34dd266a0adfa6222022",
      [
@@ -390682,7 +390772,7 @@
      ]
     ],
     "fedcm-network-requests.https.html": [
-     "4bc7021c858076f60d6fd52e8932422c3c955ecf",
+     "2bcf2941baace8785ce0588af0fd31a335d5db72",
      [
       null,
       {}
@@ -493955,10 +494045,12 @@
     },
     "select": {
      "options-length-too-large.html": [
-      "03a5b85d181762e171a2bb98399ca8691958cff9",
+      "b47ccfccc90f250b5191ae25c78e844f56801f54",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ]
     },
@@ -514729,6 +514821,13 @@
     ],
     "toJSON.html": [
      "5ea84eeb2b186a9256f2a51d0bdd59dd00463d86",
+     [
+      null,
+      {}
+     ]
+    ],
+    "update-on-style-change.tentative.html": [
+     "dd34e61b0f6ffb9072608060a62f693e982cd5c1",
      [
       null,
       {}
