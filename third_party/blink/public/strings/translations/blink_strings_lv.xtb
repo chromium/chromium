@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Izvēlēties failus</translation>
 <translation id="1681022320378710418">pašreizējais laiks</translation>
 <translation id="1727839386348365796">Pipete</translation>
-<translation id="1727886345390570319">paslēpt subtitru izvēlni</translation>
 <translation id="1729654308190250600">Lūdzu, ievadiet e-pasta adresi.</translation>
 <translation id="1758486001363313524">Cits...</translation>
 <translation id="1787192514241997742">Kopējais laiks: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milisekundes</translation>
 <translation id="4201051445878709314">Rādīt iepriekšējo mēnesi</translation>
 <translation id="4360991593054037559">Lūdzu, ievadiet derīgu vērtību. Divas tuvākās derīgās vērtības ir <ph name="VALID_VALUE_LOW" /> un <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">Paslēpt atskaņošanas ātruma izvēlni</translation>
 <translation id="4522570452068850558">Dati</translation>
 <translation id="4664250907885839816">Daļā, kas atrodas aiz zīmes <ph name="ATSIGN" />, nedrīkst būt ietverts simbols <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Tiek atskaņots režīmā “Attēls attēlā”</translation>

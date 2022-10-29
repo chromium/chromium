@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Choose files</translation>
 <translation id="1681022320378710418">current time</translation>
 <translation id="1727839386348365796">Eyedropper</translation>
-<translation id="1727886345390570319">hide closed captions menu</translation>
 <translation id="1729654308190250600">Please enter a non-empty email address.</translation>
 <translation id="1758486001363313524">Other...</translation>
 <translation id="1787192514241997742">total time: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milliseconds</translation>
 <translation id="4201051445878709314">Show previous month</translation>
 <translation id="4360991593054037559">Please enter a valid value. The two nearest valid values are <ph name="VALID_VALUE_LOW" /> and <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">hide playback speed menu</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4664250907885839816">A part following '<ph name="ATSIGN" />' should not contain the symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Playing in picture-in-picture</translation>

@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">აირჩიეთ ფაილები</translation>
 <translation id="1681022320378710418">ამჟამინდელი დრო</translation>
 <translation id="1727839386348365796">საწვეთური</translation>
-<translation id="1727886345390570319">დახურული სუბტიტრების მენიუს დამალვა</translation>
 <translation id="1729654308190250600">გთხოვთ შეიყვანოთ შევსებული ელექტრონული ფოსტის მისამართი.</translation>
 <translation id="1758486001363313524">სხვა…</translation>
 <translation id="1787192514241997742">საერთო დრო: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">მილიწამი</translation>
 <translation id="4201051445878709314">წინა თვის ჩვენება</translation>
 <translation id="4360991593054037559">შეიყვანეთ სწორი მნიშვნელობა. ორი უახლოესი მნიშვნელობაა <ph name="VALID_VALUE_LOW" /> და <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">დაკვრის სიჩქარის მენიუს დამალვა</translation>
 <translation id="4522570452068850558">დეტალები</translation>
 <translation id="4664250907885839816">„<ph name="ATSIGN" />“-ის შემდეგ ნაწილი არ უნდა შეიცავდეს სიმბოლოს „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">გაშვებულია რეჟიმში „გამოსახულება გამოსახულებაში“</translation>

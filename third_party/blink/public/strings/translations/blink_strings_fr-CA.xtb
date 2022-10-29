@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Sélect. fichiers</translation>
 <translation id="1681022320378710418">Heure actuelle</translation>
 <translation id="1727839386348365796">Pipette</translation>
-<translation id="1727886345390570319">masquer le menu des sous-titres</translation>
 <translation id="1729654308190250600">Veuillez entrer une adresse de courriel.</translation>
 <translation id="1758486001363313524">Autres...</translation>
 <translation id="1787192514241997742">durée totale : <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Millisecondes</translation>
 <translation id="4201051445878709314">Afficher le mois précédent</translation>
 <translation id="4360991593054037559">Veuillez entrer une valeur valide. Les deux valeurs valides les plus proches sont « <ph name="VALID_VALUE_LOW" /> » et « <ph name="VALID_VALUE_HIGHER" /> ».</translation>
-<translation id="4371899966896349864">Masquer le menu de la vitesse de lecture</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4664250907885839816">La partie suivant « <ph name="ATSIGN" /> » ne doit pas contenir le symbole « <ph name="INVALIDCHARACTER" /> ».</translation>
 <translation id="4718048029184481307">Lecture en mode d'incrustation d'image</translation>

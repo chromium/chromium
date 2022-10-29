@@ -1954,6 +1954,7 @@
 <translation id="274318651891194348">正在搜尋鍵盤</translation>
 <translation id="2743301740238894839">開始</translation>
 <translation id="2743387203779672305">複製到剪貼簿</translation>
+<translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請將<ph name="DEVICE_NAME" />的私隱開關切換至關閉。</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
 <translation id="2747266560080989517">此檔案含有敏感或危險的內容。請要求擁有者修正。</translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
@@ -2968,6 +2969,7 @@
 <translation id="3712897371525859903">另存網頁為(&amp;A)…</translation>
 <translation id="371300529209814631">返回/前進</translation>
 <translation id="3713047097299026954">此安全密鑰沒有任何登入資料</translation>
+<translation id="3713091615825314967">已開啟自動更新功能。</translation>
 <translation id="3714195043138862580">此示範裝置已設為取消權限狀態。</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3125,6 +3127,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3851428669031642514">載入不安全的指令碼</translation>
 <translation id="3852215160863921508">輸入協助</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" />已開啟</translation>
 <translation id="3854599674806204102">選取選項</translation>
 <translation id="3854967233147778866">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3854976556788175030">輸出紙匣已滿</translation>
@@ -3458,6 +3461,7 @@
 <translation id="4163560723127662357">未知的鍵盤</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不屬於有效的機構，請聯絡您的管理員。如果您是管理員，可前往 g.co/ChromeEnterpriseAccount 設定機構</translation>
 <translation id="4165986682804962316">網站設定</translation>
+<translation id="4167212649627589331">「<ph name="APP_NAME" />」正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請將<ph name="DEVICE_NAME" />的私隱開關切換至關閉。</translation>
 <translation id="4167393659000039775">Google 對任何資料遺失概不負責，而且 <ph name="DEVICE_OS" /> 可能不適用於未通過認證的型號。請前往 g.co/flex/InstallGuide 以瞭解詳情。</translation>
 <translation id="4167686856635546851">網站通常會使用 JavaScript 來顯示互動功能，例如電子遊戲或網上表格</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> 的部分設定已與您共用。不過只有使用多重登入時，這些設定才會影響您的帳戶。</translation>
@@ -3920,6 +3924,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> 發生錯誤</translation>
 <translation id="4610637590575890427">您的意思是想瀏覽 <ph name="SITE" /> 嗎？</translation>
 <translation id="4611114513649582138">可使用數據連線</translation>
+<translation id="4612841084470706111">向所有要求的網站授予存取權。</translation>
 <translation id="4613144866899789710">正在取消安裝 Linux…</translation>
 <translation id="4613271546271159013">擴充功能已變更開啟新分頁時所顯示的頁面。</translation>
 <translation id="4615586811063744755">未選取 Cookie</translation>
@@ -5679,6 +5684,7 @@
 <translation id="6291949900244949761">在網站要存取 USB 裝置時詢問您 (建議)</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
 <translation id="6292699686837272722">將分頁縮成中寬度</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" />已關閉</translation>
 <translation id="6294759976468837022">自動掃瞄速度</translation>
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">正在儲存...</translation>
@@ -6551,7 +6557,6 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="7099337801055912064">無法載入大型 PPD。檔案上限為 250KB。</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{沒有被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
-<translation id="7102687220333134671">已開啟自動更新功能</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="710640343305609397">開啟網絡設定</translation>
 <translation id="7107609441453408294">透過所有喇叭播放相同的音效</translation>
@@ -8491,6 +8496,7 @@
 <translation id="8940081510938872932">您的電腦目前處理的項目太多。請稍後再試。</translation>
 <translation id="8940381019874223173">來自您的「Google 相片」</translation>
 <translation id="8941173171815156065">撤銷「<ph name="PERMISSION" />」權限</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" />已關閉</translation>
 <translation id="894191600409472540">建立安全度高的密碼</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">加快耗電量 (目前為 <ph name="BATTERY_PERCENTAGE" />%)</translation>

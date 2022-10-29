@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">เลือกไฟล์</translation>
 <translation id="1681022320378710418">เวลาปัจจุบัน</translation>
 <translation id="1727839386348365796">หลอดดูดสี</translation>
-<translation id="1727886345390570319">ซ่อนเมนูคำอธิบายภาพ</translation>
 <translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
 <translation id="1758486001363313524">อื่นๆ...</translation>
 <translation id="1787192514241997742">เวลารวม: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">มิลลิวินาที</translation>
 <translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
 <translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
-<translation id="4371899966896349864">ซ่อนเมนูความเร็วในการเล่น</translation>
 <translation id="4522570452068850558">รายละเอียด</translation>
 <translation id="4664250907885839816">ส่วนที่ต่อท้าย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
 <translation id="4718048029184481307">กำลังเล่นแบบการแสดงภาพซ้อนภาพ</translation>

@@ -2971,6 +2971,7 @@
 <translation id="3712897371525859903">Зберегти сторінку &amp;як...</translation>
 <translation id="371300529209814631">Уперед/назад</translation>
 <translation id="3713047097299026954">На цьому ключі безпеки немає даних для входу</translation>
+<translation id="3713091615825314967">Автоматичні оновлення ввімкнено.</translation>
 <translation id="3714195043138862580">Цей демо-пристрій деініціалізовано.</translation>
 <translation id="3719826155360621982">Головна сторінка</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -6557,7 +6558,6 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Вилучити додаток}one{Вилучити додатки}few{Вилучити додатки}many{Вилучити додатки}other{Вилучити додатки}}</translation>
 <translation id="7099337801055912064">Не вдається завантажити великий файл PPD. Розмір не може перевищувати 250 КБ.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
-<translation id="7102687220333134671">Автоматичні оновлення ввімкнено</translation>
 <translation id="7102832101143475489">Час очікування запиту минув</translation>
 <translation id="710640343305609397">Відкрити мережеві налаштування</translation>
 <translation id="7107609441453408294">Відтворювати той самий аудіозапис на всіх колонках</translation>

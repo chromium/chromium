@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">选择文件</translation>
 <translation id="1681022320378710418">当前时间</translation>
 <translation id="1727839386348365796">颜色提取器</translation>
-<translation id="1727886345390570319">隐藏字幕菜单</translation>
 <translation id="1729654308190250600">请输入有效的电子邮件地址。</translation>
 <translation id="1758486001363313524">其他...</translation>
 <translation id="1787192514241997742">总时间：<ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">毫秒</translation>
 <translation id="4201051445878709314">显示上一个月</translation>
 <translation id="4360991593054037559">请输入有效值。两个最接近的有效值分别为<ph name="VALID_VALUE_LOW" />和<ph name="VALID_VALUE_HIGHER" />。</translation>
-<translation id="4371899966896349864">隐藏播放速度菜单</translation>
 <translation id="4522570452068850558">详情</translation>
 <translation id="4664250907885839816">“<ph name="ATSIGN" />”后面的内容不应包含符号“<ph name="INVALIDCHARACTER" />”。</translation>
 <translation id="4718048029184481307">以“画中画”模式播放</translation>

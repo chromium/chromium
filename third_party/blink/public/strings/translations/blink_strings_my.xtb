@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">ဖိုင်များရွေး</translation>
 <translation id="1681022320378710418">လက်ရှိအချိန်</translation>
 <translation id="1727839386348365796">အရောင်ရွေးစနစ်</translation>
-<translation id="1727886345390570319">စာတန်းများမီနူးကို ဖျောက်ရန်</translation>
 <translation id="1729654308190250600">ကျေးဇူးပြု၍ ဗလာမဟုတ်သည့် အီးမေးလ် လိပ်စာ ရိုက်ထည့်ပါ။</translation>
 <translation id="1758486001363313524">အခြား...</translation>
 <translation id="1787192514241997742">စုစုပေါင်းအချိန်- <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">မီလီစက္ကန့်</translation>
 <translation id="4201051445878709314">ယခင် လကို ပြရန်</translation>
 <translation id="4360991593054037559">ကျေးဇူးပြုပြီး မှန်ကန်သည့် တန်ဖိုးကို ရိုက်ထည့်ပါ။ မှန်ကန်သည့် အနီးဆုံး တန်ဖိုး နှစ်ခုမှာ <ph name="VALID_VALUE_LOW" /> နှင့် <ph name="VALID_VALUE_HIGHER" /> ဖြစ်သည်။</translation>
-<translation id="4371899966896349864">ဖွင့်သည့်မြန်နှုန်း မီနူး ဖျောက်ရန်</translation>
 <translation id="4522570452068850558">အသေးစိတ်များ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'၏ နောက်မှာ ပါလာသည့် အပိုင်း ထဲတွင် သင်္ကေတာ '<ph name="INVALIDCHARACTER" />' မပါရပါ။</translation>
 <translation id="4718048029184481307">နှစ်ခုထပ်၍ကြည့်ခြင်း ဖွင့်နေသည်</translation>

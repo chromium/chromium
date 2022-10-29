@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Pumili ng Mga File</translation>
 <translation id="1681022320378710418">kasalukuyang oras</translation>
 <translation id="1727839386348365796">Eyedropper</translation>
-<translation id="1727886345390570319">itago ang menu ng mga nakasarang caption</translation>
 <translation id="1729654308190250600">Mangyaring maglagay ng isang non-empty na email address.</translation>
 <translation id="1758486001363313524">Iba pa...</translation>
 <translation id="1787192514241997742">kabuuang oras: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milliseconds</translation>
 <translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
 <translation id="4360991593054037559">Mangyaring maglagay ng isang wastong value. Ang dalawang pinakamalapit na wastong value ay <ph name="VALID_VALUE_LOW" /> at <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">itago ang menu para sa bilis ng pag-playback</translation>
 <translation id="4522570452068850558">Mga Detalye</translation>
 <translation id="4664250907885839816">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi pagkatapos ng '<ph name="ATSIGN" />.'</translation>
 <translation id="4718048029184481307">Nagpe-play sa picture-in-picture</translation>

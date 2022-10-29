@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Scegli file</translation>
 <translation id="1681022320378710418">ora attuale</translation>
 <translation id="1727839386348365796">Contagocce</translation>
-<translation id="1727886345390570319">nascondi menu sottotitoli codificati</translation>
 <translation id="1729654308190250600">Inserisci un indirizzo email valido.</translation>
 <translation id="1758486001363313524">Altro...</translation>
 <translation id="1787192514241997742">tempo totale: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Millisecondi</translation>
 <translation id="4201051445878709314">Mostra mese precedente</translation>
 <translation id="4360991593054037559">Inserisci un valore valido. I due valori validi più vicini sono <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">Nascondi il menu Velocità di riproduzione</translation>
 <translation id="4522570452068850558">Dettagli</translation>
 <translation id="4664250907885839816">Una parte che segue "<ph name="ATSIGN" />" non deve contenere il simbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Riproduzione in modalità Picture in picture</translation>

@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Dosyaları Seç</translation>
 <translation id="1681022320378710418">şu anki saat</translation>
 <translation id="1727839386348365796">Damlalık</translation>
-<translation id="1727886345390570319">altyazı menüsünü gizle</translation>
 <translation id="1729654308190250600">Lütfen e-posta adresini boş bırakmayın.</translation>
 <translation id="1758486001363313524">Diğer...</translation>
 <translation id="1787192514241997742">toplam süre: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milisaniye</translation>
 <translation id="4201051445878709314">Önceki ayı göster</translation>
 <translation id="4360991593054037559">Lütfen geçerli bir değer girin. En yakın iki geçerli değer şunlardır: <ph name="VALID_VALUE_LOW" /> ve <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">oynatma hızı menüsünü gizle</translation>
 <translation id="4522570452068850558">Ayrıntılar</translation>
 <translation id="4664250907885839816">Başında "<ph name="ATSIGN" />" bulunan kısımda "<ph name="INVALIDCHARACTER" />" simgesi bulunmamalıdır.</translation>
 <translation id="4718048029184481307">Pencere içinde pencere modunda oynatılıyor</translation>

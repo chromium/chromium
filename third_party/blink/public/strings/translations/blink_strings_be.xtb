@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Выбраць файлы</translation>
 <translation id="1681022320378710418">бягучы час</translation>
 <translation id="1727839386348365796">Піпетка</translation>
-<translation id="1727886345390570319">закрыць меню субцітраў</translation>
 <translation id="1729654308190250600">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1758486001363313524">Іншая...</translation>
 <translation id="1787192514241997742">агульны час: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Мілісекунды</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
 <translation id="4360991593054037559">Увядзіце дапушчальнае значэнне. Два найбліжэйшыя дапушчальныя значэнні: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">схаваць меню хуткасці прайгравання</translation>
 <translation id="4522570452068850558">Падрабязнасці</translation>
 <translation id="4664250907885839816">У частцы пасля "<ph name="ATSIGN" />" не павінна быць сімвала "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Прайграецца ў рэжыме "Відарыс у відарысе"</translation>

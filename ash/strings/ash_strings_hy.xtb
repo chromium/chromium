@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">Խաղեր</translation>
 <translation id="2678852583403169292">«Ընտրեք և լսեք» գործառույթի ընտրացանկ</translation>
 <translation id="2689613560355655046">Աշխատասեղան 8</translation>
+<translation id="2695132445805301912">Ցույց տալ ստեղները և սեղմումները</translation>
 <translation id="2695305337569143674">ցանց</translation>
 <translation id="2697697418792422688">Ցուցադրել ստեղնաշարի կարգավորումները։ Ընտրված է՝ <ph name="KEYBOARD_NAME" />։</translation>
 <translation id="2700493154570097719">Ընտրեք ստեղնաշարը</translation>
@@ -1122,6 +1123,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">Ծավալել տեսախցիկը</translation>
 <translation id="731589979057211264">Shelf Party ռեժիմը միացված է։</translation>
+<translation id="7340731148882810149">Ավտոմատ սեղմումների ընտրացանկ</translation>
 <translation id="7346909386216857016">Եղավ</translation>
 <translation id="7348093485538360975">Էկրանի ստեղնաշար</translation>
 <translation id="735745346212279324">VPN-ն ապակապակցված է</translation>
@@ -1299,6 +1301,7 @@
 <translation id="826107067893790409">Սեղմեք Enter, որպեսզի ապակողպեք սարքը <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8270450402312105425">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին մեկ ժամվա ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}}</translation>
+<translation id="8277261673056602147">Ընդգծեք տեքստը էկրանին</translation>
 <translation id="8284362522226889623">Նախորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք ձախ</translation>
 <translation id="828708037801473432">Անջատված է</translation>
 <translation id="8297006494302853456">Թույլ</translation>

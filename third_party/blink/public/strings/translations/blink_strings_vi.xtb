@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Chọn tệp</translation>
 <translation id="1681022320378710418">thời gian hiện tại</translation>
 <translation id="1727839386348365796">Dụng cụ nhỏ giọt</translation>
-<translation id="1727886345390570319">ẩn menu phụ đề chi tiết</translation>
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
 <translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Mili giây</translation>
 <translation id="4201051445878709314">Hiển thị tháng trước</translation>
 <translation id="4360991593054037559">Vui lòng nhập giá trị hợp lệ. Hai giá trị hợp lệ gần nhất là <ph name="VALID_VALUE_LOW" /> và <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">ẩn trình đơn tốc độ phát</translation>
 <translation id="4522570452068850558">Chi tiết</translation>
 <translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Đang phát ở chế độ hình trong hình</translation>

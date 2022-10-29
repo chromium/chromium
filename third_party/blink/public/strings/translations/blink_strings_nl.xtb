@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Bestanden kiezen</translation>
 <translation id="1681022320378710418">huidige tijd</translation>
 <translation id="1727839386348365796">Pipet</translation>
-<translation id="1727886345390570319">ondertitelingsmenu verbergen</translation>
 <translation id="1729654308190250600">Geef een e-mailadres op.</translation>
 <translation id="1758486001363313524">Anders...</translation>
 <translation id="1787192514241997742">totale tijd: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milliseconden</translation>
 <translation id="4201051445878709314">Vorige maand bekijken</translation>
 <translation id="4360991593054037559">Geef een geldige waarde op. De twee dichtstbijzijnde geldige waarden zijn <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">menu afspeelsnelheid verbergen</translation>
 <translation id="4522570452068850558">Details</translation>
 <translation id="4664250907885839816">Het adresgedeelte na '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="4718048029184481307">Beeld-in-beeld afspelen</translation>

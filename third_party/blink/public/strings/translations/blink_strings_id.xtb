@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Pilih File</translation>
 <translation id="1681022320378710418">waktu saat ini</translation>
 <translation id="1727839386348365796">Pipet</translation>
-<translation id="1727886345390570319">sembunyikan menu subtitel</translation>
 <translation id="1729654308190250600">Jangan mengosongkan bidang alamat email.</translation>
 <translation id="1758486001363313524">Lainnya...</translation>
 <translation id="1787192514241997742">waktu total: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milidetik</translation>
 <translation id="4201051445878709314">Tampilkan bulan sebelumnya</translation>
 <translation id="4360991593054037559">Masukkan nilai yang valid. Dua nilai valid terdekat adalah <ph name="VALID_VALUE_LOW" /> dan <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">sembunyikan menu kecepatan pemutaran</translation>
 <translation id="4522570452068850558">Detail</translation>
 <translation id="4664250907885839816">Bagian setelah '<ph name="ATSIGN" />' tidak boleh berisi simbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Diputar dalam mode picture-in-picture</translation>

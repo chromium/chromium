@@ -2968,6 +2968,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3712897371525859903">Бетти &amp;төмөнкүдөй сактоо…</translation>
 <translation id="371300529209814631">Артка/Алдыга</translation>
 <translation id="3713047097299026954">Бул коопсуздук ачкычында кирүү дайындары жок</translation>
+<translation id="3713091615825314967">Автоматтык жаңыртуулар күйгүзүлгөн.</translation>
 <translation id="3714195043138862580">Бул демо түзмөк колдонуудан чыгарылды.</translation>
 <translation id="3719826155360621982">Башкы бет</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -6551,7 +6552,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Колдонмону өчүрүү}other{Колдонмолорду өчүрүү}}</translation>
 <translation id="7099337801055912064">Көлөмдүү PPD жүктөлбөйт. Көлөмү 250 Кб ашпашы керек.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Уурдалган сырсөздөр жок}=1{{COUNT} уурдалган сырсөз бар}other{{COUNT} уурдалган сырсөз бар}}</translation>
-<translation id="7102687220333134671">Автоматтык жаңыртуулар күйгүзүлгөн</translation>
 <translation id="7102832101143475489">Сурамдын күтүү мөөнөтү аяктады</translation>
 <translation id="710640343305609397">Тармактын жөндөөлөрүн ачуу</translation>
 <translation id="7107609441453408294">Бир эле аудиону бардык динамиктерде ойнотуу</translation>

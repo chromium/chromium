@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">انتخاب فایل‌ها</translation>
 <translation id="1681022320378710418">زمان کنونی</translation>
 <translation id="1727839386348365796">قطره‌چکان</translation>
-<translation id="1727886345390570319">پنهان کردن منوی زیرنویس ناشنوایان</translation>
 <translation id="1729654308190250600">لطفاً یک نشانی ایمیل غیرخالی وارد کنید.</translation>
 <translation id="1758486001363313524">موارد دیگر...</translation>
 <translation id="1787192514241997742">زمان کل: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">میلی‌ ثانیه</translation>
 <translation id="4201051445878709314">نمایش ماه قبلی</translation>
 <translation id="4360991593054037559">لطفاً یک مقدار معتبر وارد کنید. نزدیک‌ترین مقادیر معتبر <ph name="VALID_VALUE_LOW" /> و <ph name="VALID_VALUE_HIGHER" /> هستند.</translation>
-<translation id="4371899966896349864">پنهان کردن منوی سرعت بازپخش</translation>
 <translation id="4522570452068850558">جزئیات</translation>
 <translation id="4664250907885839816">قسمت بعد از «<ph name="ATSIGN" />» نباید حاوی نماد «<ph name="INVALIDCHARACTER" />» باشد.</translation>
 <translation id="4718048029184481307">درحال پخش در حالت تصویردرتصویر</translation>

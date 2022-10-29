@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Vali failid</translation>
 <translation id="1681022320378710418">praegune kellaaeg</translation>
 <translation id="1727839386348365796">Värvipipett</translation>
-<translation id="1727886345390570319">peida subtiitrite menüü</translation>
 <translation id="1729654308190250600">Sisestage mittetühi e-posti aadress.</translation>
 <translation id="1758486001363313524">Muu ...</translation>
 <translation id="1787192514241997742">aeg kokku: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Millisekundid</translation>
 <translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
 <translation id="4360991593054037559">Sisestage kehtiv väärtus. Kaks lähimat kehtivat väärtust on <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">esituskiiruse menüü peitmine</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4664250907885839816">Märgile „<ph name="ATSIGN" />” järgnev osa ei tohi sisaldada sümbolit „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Režiimis Pilt pildis mängimine</translation>

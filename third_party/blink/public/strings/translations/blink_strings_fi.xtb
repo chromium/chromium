@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Valitse tiedostot</translation>
 <translation id="1681022320378710418">nykyinen aika</translation>
 <translation id="1727839386348365796">Pipetti</translation>
-<translation id="1727886345390570319">sulje tekstitysvalikko</translation>
 <translation id="1729654308190250600">Kirjoita ei-tyhjä sähköpostiosoite.</translation>
 <translation id="1758486001363313524">Muu...</translation>
 <translation id="1787192514241997742">kokonaisaika: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Millisekuntia</translation>
 <translation id="4201051445878709314">Näytä edellinen kuukausi</translation>
 <translation id="4360991593054037559">Syötä kelvollinen arvo. Kaksi lähintä kelvollista arvoa ovat <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">piilota toistonopeuden valikko</translation>
 <translation id="4522570452068850558">Tiedot</translation>
 <translation id="4664250907885839816"><ph name="ATSIGN" />-osan jälkeen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Toistetaan kuva kuvassa ‑tilassa</translation>

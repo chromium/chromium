@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Επιλογή αρχείων</translation>
 <translation id="1681022320378710418">τρέχουσα ώρα</translation>
 <translation id="1727839386348365796">Σταγονόμετρο</translation>
-<translation id="1727886345390570319">απόκρυψη μενού υποτίτλων</translation>
 <translation id="1729654308190250600">Καταχωρίστε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="1758486001363313524">Άλλες…</translation>
 <translation id="1787192514241997742">συνολικός χρόνος: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Χιλιοστά του δευτερολέπτου</translation>
 <translation id="4201051445878709314">Εμφάνιση προηγούμενου μήνα</translation>
 <translation id="4360991593054037559">Καταχωρίστε μια έγκυρη τιμή. Οι δύο πιο κοντινές έγκυρες τιμές είναι <ph name="VALID_VALUE_LOW" /> και <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">μενού απόκρυψης ταχύτητας αναπαραγωγής</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
 <translation id="4664250907885839816">Το τμήμα της διεύθυνσης μετά το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Αναπαραγωγή σε λειτουργία picture-in-picture</translation>

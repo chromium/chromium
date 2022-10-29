@@ -251,7 +251,6 @@
 <translation id="1539840569003678498">Η αναφορά στάλθηκε:</translation>
 <translation id="154408704832528245">Επιλογή διεύθυνσης παράδοσης</translation>
 <translation id="1549470594296187301">Θα πρέπει να ενεργοποιηθεί η JavaScript για τη χρήση αυτής της λειτουργίας.</translation>
-<translation id="155039086686388498">Engineering-D</translation>
 <translation id="1551884710160394169">Λογισμικό χωρίς κόστος και λογισμικό κοινής χρήσης</translation>
 <translation id="1553358976309200471">Ενημερώστε το Chrome</translation>
 <translation id="1555130319947370107">Μπλε</translation>
@@ -282,7 +281,6 @@
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1622571349153632031">Κουζίνα για χορτοφάγους</translation>
 <translation id="1623104350909869708">Αποτροπή δημιουργίας πρόσθετων παραθύρων διαλόγου από αυτήν τη σελίδα</translation>
-<translation id="16338877384480380">Architecture-B</translation>
 <translation id="1634828734222219955">Σύνολο</translation>
 <translation id="163669211644121865">Προετοιμασία και προγραμματισμός φόρου</translation>
 <translation id="1638780421120290329">Δεν είναι δυνατή η αποθήκευση της κάρτας</translation>
@@ -317,7 +315,6 @@
 <translation id="1711528724596764268">Μηχανική εκμάθηση και τεχνητή νοημοσύνη</translation>
 <translation id="1712552549805331520">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα στον τοπικό υπολογιστή σας</translation>
 <translation id="1713628304598226412">Δίσκος 2</translation>
-<translation id="1715874602234207">Π</translation>
 <translation id="1717218214683051432">Αισθητήρες κίνησης</translation>
 <translation id="1717494416764505390">Γραμματοκιβώτιο 3</translation>
 <translation id="1718029547804390981">Το έγγραφο είναι πάρα πολύ μεγάλο για σχολιασμό.</translation>
@@ -467,7 +464,6 @@
 <translation id="2107021941795971877">Εκτύπωση υποστηριγμάτων</translation>
 <translation id="2108755909498034140">Επανεκκινήστε τον υπολογιστή σας</translation>
 <translation id="2111166930115883695">Πατήστε το πλήκτρο διαστήματος για να παίξετε.</translation>
-<translation id="2111256659903765347">Super-A</translation>
 <translation id="2112529237938317174">Εμφάνιση λεπτομερειών άδειας</translation>
 <translation id="2113977810652731515">Παιχνίδια με κάρτες</translation>
 <translation id="2114841414352855701">Αγνοήθηκε επειδή αντικαταστάθηκε από την πολιτική <ph name="POLICY_NAME" />.</translation>
@@ -579,7 +575,6 @@
 <translation id="2396249848217231973">&amp;Αναίρεση διαγραφής</translation>
 <translation id="2397836504670957718">Φορητοί υπολογιστές και notebook</translation>
 <translation id="2400600116338235695">Μπορεί να ζητά να συνδεθεί σε σειριακές θύρες.</translation>
-<translation id="2410754574180102685">Government-Legal</translation>
 <translation id="2413155254802890957">Παλαιά</translation>
 <translation id="2413528052993050574">Ο διακομιστής δεν κατάφερε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του μπορεί να έχει ανακληθεί. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="2414886740292270097">Σκούρο</translation>
@@ -589,7 +584,6 @@
 <translation id="2448295565072560657">Περιφερειακά που έχουν συνδεθεί σε αυτήν τη συσκευή ενώ είστε συνδεδεμένοι</translation>
 <translation id="2450021089947420533">Διαδρομές</translation>
 <translation id="2463739503403862330">Συμπλήρωση</translation>
-<translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Επιλογή τρόπου παράδοσης</translation>
 <translation id="2465688316154986572">Συρραφή</translation>
 <translation id="2465914000209955735">Διαχείριση των αρχείων που έχετε κατεβάσει στο Chrome.</translation>
@@ -603,7 +597,6 @@
 <translation id="248348093745724435">Πολιτικές συσκευής</translation>
 <translation id="2491120439723279231">Το πιστοποιητικό του διακομιστή περιέχει σφάλματα.</translation>
 <translation id="2491414235131909199">Αυτή η σελίδα έχει αποκλειστεί από μια επέκταση.</translation>
-<translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Συντακτικός αναλυτής JSON</translation>
 <translation id="2498091847651709837">Σάρωση νέας κάρτας</translation>
 <translation id="2501278716633472235">Επιστροφή</translation>
@@ -764,7 +757,6 @@
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="2930577230479659665">Περικοπή μετά από κάθε αντίγραφο</translation>
 <translation id="2932085390869194046">Πρόταση για κωδικό πρόσβασης…</translation>
-<translation id="2934466151127459956">Government-Letter</translation>
 <translation id="2938225289965773019">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Φάκελος 9 x 12 ίντσες</translation>
 <translation id="2941952326391522266">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του είναι από το <ph name="DOMAIN2" />. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
@@ -1335,7 +1327,6 @@
 <translation id="4359160567981085931">Μόλις καταχωρίσατε τον κωδικό πρόσβασής σας σε έναν παραπλανητικό ιστότοπο. Το Chrome μπορεί να βοηθήσει. Για να αλλάξετε τον κωδικό πρόσβασής σας και να ενημερώσετε την Google ότι ο λογαριασμός σας μπορεί να κινδυνεύει, κάντε κλικ στην επιλογή Προστασία λογαριασμού.</translation>
 <translation id="4363222835916186793">Οι ειδοποιήσεις για αυτό το προϊόν έχουν απενεργοποιηθεί.</translation>
 <translation id="437040971055499437">Παρουσιάζεται συμβάν ασφαλείας</translation>
-<translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Αναμενόμενη τιμή <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Προσπαθήσατε να μεταβείτε στον τομέα <ph name="DOMAIN" />, όμως το πιστοποιητικό που παρουσιάστηκε από το διακομιστή ανακλήθηκε από τον εκδότη του. Αυτό σημαίνει ότι τα διαπιστευτήρια ασφαλείας που παρουσιάστηκαν από το διακομιστή δεν πρέπει σε καμία περίπτωση να θεωρηθούν αξιόπιστα. Ενδέχεται να επικοινωνείτε με κάποιον εισβολέα.</translation>
 <translation id="4378154925671717803">Τηλέφωνο</translation>
@@ -1377,7 +1368,6 @@
 <translation id="4492519888999857993">Αυτές οι λειτουργίες είναι απενεργοποιημένες από προεπιλογή. Δεν θα είναι διαθέσιμες σε μελλοντικές εκδόσεις του Chrome.</translation>
 <translation id="4493480324863638523">Μη έγκυρο URL. Πρέπει να είναι ένα URL με βασική μορφή, π.χ. http://example.com ή https://example.com.</translation>
 <translation id="4500587658229086076">μη ασφαλές περιεχόμενο</translation>
-<translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">Σφάλμα επικύρωσης: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Επικοινωνήστε με το διαχειριστή συστήματος</translation>
 <translation id="450710068430902550">Κοινοποίηση στο διαχειριστή</translation>
@@ -1622,12 +1612,10 @@
 <translation id="5114288597538800140">Τροφοδότης χαρτιού 18</translation>
 <translation id="511431458895937675">Φωτογραφία DSC</translation>
 <translation id="5114987907971894280">εικονική πραγματικότητα</translation>
-<translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Παράκαμψη περιορισμένης διαχειριζόμενης περιόδου σύνδεσης επισκέπτη</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
 <translation id="5123063207673082822">Σαββατοκύριακο</translation>
 <translation id="5123433949759960244">Μπάλα μπάσκετ</translation>
-<translation id="5125394840236832993">B-Plus</translation>
 <translation id="5125751979347152379">Μη έγκυρη διεύθυνση URL.</translation>
 <translation id="512592033764059484">Ποδόσφαιρο</translation>
 <translation id="5126510351761255129">Επαλήθευση κάρτας</translation>
@@ -1650,7 +1638,6 @@
 <translation id="516920405563544094">Εισαγάγετε τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" />. Μετά την επιβεβαίωση, τα στοιχεία της κάρτας από τον Λογαριασμό Google θα κοινοποιηθούν σε αυτόν τον ιστότοπο.</translation>
 <translation id="5169827969064885044">Υπάρχει κίνδυνος να χάσετε την πρόσβαση στον λογαριασμό της επιχείρησής σας ή να σας κλέψουν τη διαδικτυακή σας ταυτότητα. Το Chrome συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα.</translation>
 <translation id="5171045022955879922">Αναζήτηση ή πληκτρολόγηση διεύθυνσης URL</translation>
-<translation id="5171689220826475070">Fanfold-European</translation>
 <translation id="5172758083709347301">Υπολογιστής</translation>
 <translation id="5177076414499237632">Μάθετε σχετικά με αυτήν την πηγή και το θέμα</translation>
 <translation id="5179510805599951267">Δεν είναι στα <ph name="ORIGINAL_LANGUAGE" />; Αναφέρετε αυτό το σφάλμα</translation>
@@ -1821,7 +1808,6 @@
 <translation id="5598944008576757369">Επιλογή τρόπου πληρωμής</translation>
 <translation id="560412284261940334">Η διαχείριση δεν υποστηρίζεται</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5607240918979444548">Architecture-C</translation>
 <translation id="5610142619324316209">Ελέγξτε τη σύνδεση</translation>
 <translation id="5610807607761827392">Μπορείτε να διαχειριστείτε τις κάρτες και τις διευθύνσεις στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Μεταφράστε αυτήν τη σελίδα με τη Μετάφραση Google.</translation>
@@ -2105,7 +2091,6 @@
 <translation id="6387645831795005740">Οι εισβολείς απομιμούνται μερικές φορές ιστοτόπους κάνοντας μικρές, δυσδιάκριτες αλλαγές στο URL.</translation>
 <translation id="6389470377220713856">Όνομα σε κάρτα</translation>
 <translation id="6390200185239044127">Δίπλωμα Z στη μέση</translation>
-<translation id="6390662030813198813">Engineering-E</translation>
 <translation id="6391700400718590966">Έχει κλείσει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="6393956493820063117">Η επικόλληση από το <ph name="ORIGIN_NAME" /> σε αυτήν την τοποθεσία έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
 <translation id="6394852772105848029">Αυτός ο ιστότοπος θέλει να ανοίξει την εφαρμογή <ph name="APP_NAME" /></translation>
@@ -2408,7 +2393,6 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Ο διαχειριστής σας μπορεί να βλέπει:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να ανοίξετε μια νέα καρτέλα ανώνυμης περιήγησης για ιδιωτική περιήγηση</translation>
-<translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> δεν συμμορφώνεται με τα πρότυπα ασφάλειας.</translation>
 <translation id="7210993021468939304">Δραστηριότητα Linux εντός του κοντέινερ καθώς και δυνατότητα εγκατάστασης και εκτέλεσης εφαρμογών Linux εντός του κοντέινερ.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με αυτό το πρόβλημα.</translation>
@@ -2721,7 +2705,6 @@
 <translation id="7968982339740310781">Προβολή λεπτομερειών</translation>
 <translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
-<translation id="7977894662897852582">Edp</translation>
 <translation id="7981129096182302364">Χορευτική και ηλεκτρονική μουσική</translation>
 <translation id="798134797138789862">Μπορεί να ζητά να χρησιμοποιεί συσκευές και δεδομένα εικονικής πραγματικότητας.</translation>
 <translation id="7983008347525536475">Οχήματα SUV</translation>
@@ -2958,7 +2941,6 @@
 <translation id="8617269623452051934">χρήση της συσκευής σας</translation>
 <translation id="861775596732816396">Μέγεθος 4</translation>
 <translation id="8620276786115098679">Φάκελος Kaku 7</translation>
-<translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Δεν αντιστοιχούν κωδικοί πρόσβασης. Εμφάνιση όλων των αποθηκευμένων κωδικών πρόσβασης.</translation>
 <translation id="8624354461147303341">Λήψη εκπτώσεων</translation>
 <translation id="8625384913736129811">Αποθήκευση αυτής της κάρτας στη συγκεκριμένη συσκευή</translation>
@@ -3064,7 +3046,6 @@
 <translation id="8894794286471754040">Πρώτα η μεγάλη πλευρά</translation>
 <translation id="8897428486789851669">Κολύμβηση</translation>
 <translation id="8903921497873541725">Μεγέθυνση</translation>
-<translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">Κατάργηση κουμπιού Πρόταση, πατήστε Enter για κατάργηση, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8912362522468806198">Λογαριασμός Google</translation>
 <translation id="8913778647360618320">Κουμπί διαχείρισης τρόπων πληρωμής, πατήστε Enter για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών στις ρυθμίσεις του Chrome.</translation>
@@ -3192,7 +3173,6 @@
 <translation id="922152298093051471">Προσαρμογή του Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ΔΙΑΓΡΑΦΗ ΦΟΡΜΑΣ</translation>
-<translation id="936474030629450166">Super-B</translation>
 <translation id="936602727769022409">Μπορεί να χάσετε την πρόσβαση στον Λογαριασμό σας Google. Το Chromium συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα. Θα σας ζητηθεί να συνδεθείτε.</translation>
 <translation id="937457230470581909">Ζωολογικοί κήποι, ενυδρεία και προστατευόμενες περιοχές</translation>
 <translation id="939736085109172342">Νέος φάκελος</translation>

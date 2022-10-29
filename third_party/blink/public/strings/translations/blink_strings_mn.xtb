@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Файлуудыг сонгох</translation>
 <translation id="1681022320378710418">одоогийн цаг</translation>
 <translation id="1727839386348365796">Eyedropper</translation>
-<translation id="1727886345390570319">хаалттай тайлбаруудын цэсийг нуух</translation>
 <translation id="1729654308190250600">Заавал имэйл хаяг оруулах ёстой.</translation>
 <translation id="1758486001363313524">Бусад ...</translation>
 <translation id="1787192514241997742">нийт хугацаа: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Миллисекунт</translation>
 <translation id="4201051445878709314">Өмнөх сарыг харуулах</translation>
 <translation id="4360991593054037559">Хүчинтэй утгыг оруулна уу. Хамгийн ойрын хүчинтэй дараах хоёр <ph name="VALID_VALUE_LOW" /> болон <ph name="VALID_VALUE_HIGHER" />  утгууд байна.</translation>
-<translation id="4371899966896349864">дахин тоглуулах хурдны цэсийг нуух</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'-ын дараах хэсэгт '<ph name="INVALIDCHARACTER" />' тэмдэг оруулахгүй байх хэрэгтэй.</translation>
 <translation id="4718048029184481307">Дэлгэцэн доторх дэлгэц дээр тоглуулж байна</translation>

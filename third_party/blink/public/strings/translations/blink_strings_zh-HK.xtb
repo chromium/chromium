@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">選擇檔案</translation>
 <translation id="1681022320378710418">目前嘅時間</translation>
 <translation id="1727839386348365796">滴管</translation>
-<translation id="1727886345390570319">唔好顯示隱藏式字幕選單</translation>
 <translation id="1729654308190250600">請輸入一個非空的電郵地址。</translation>
 <translation id="1758486001363313524">其他日期…</translation>
 <translation id="1787192514241997742">總時間：<ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">毫秒</translation>
 <translation id="4201051445878709314">顯示上個月</translation>
 <translation id="4360991593054037559">請輸入有效值。最接近的兩個有效值分別是 <ph name="VALID_VALUE_LOW" /> 和 <ph name="VALID_VALUE_HIGHER" />。</translation>
-<translation id="4371899966896349864">隱藏播放速度選單</translation>
 <translation id="4522570452068850558">詳情</translation>
 <translation id="4664250907885839816">「<ph name="ATSIGN" />」後面的部分不應包含「<ph name="INVALIDCHARACTER" />」符號。</translation>
 <translation id="4718048029184481307">正在畫中畫播放</translation>

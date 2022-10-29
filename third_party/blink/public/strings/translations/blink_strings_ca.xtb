@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Trieu els fitxers</translation>
 <translation id="1681022320378710418">hora actual</translation>
 <translation id="1727839386348365796">Comptagotes</translation>
-<translation id="1727886345390570319">amaga el menú de subtítols</translation>
 <translation id="1729654308190250600">Introduïu una adreça electrònica.</translation>
 <translation id="1758486001363313524">Altres...</translation>
 <translation id="1787192514241997742">temps total: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Mil·lisegons</translation>
 <translation id="4201051445878709314">Mostra el mes anterior</translation>
 <translation id="4360991593054037559">Introduïu un valor vàlid. Els valors vàlids més propers són <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">amaga el menú de velocitat de reproducció</translation>
 <translation id="4522570452068850558">Detalls</translation>
 <translation id="4664250907885839816">Un domini precedit per "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">S'està reproduint en pantalla en pantalla</translation>

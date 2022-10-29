@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Fayllarni tanlash</translation>
 <translation id="1681022320378710418">joriy vaqt</translation>
 <translation id="1727839386348365796">Pipetka</translation>
-<translation id="1727886345390570319">taglavha menyusini yopish</translation>
 <translation id="1729654308190250600">Bo‘sh bo‘lmagan e-pochta manzilini kiriting.</translation>
 <translation id="1758486001363313524">Boshqa...</translation>
 <translation id="1787192514241997742">umimiy vaqt: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Millisoniyalar</translation>
 <translation id="4201051445878709314">Avvalgi oyni ko‘rsatish</translation>
 <translation id="4360991593054037559">Yaroqli qiymat kiriting. Eng yaqin yaroqli qiymatlar: <ph name="VALID_VALUE_LOW" /> va <ph name="VALID_VALUE_HIGHER" /></translation>
-<translation id="4371899966896349864">ijro tezligi menyusini berkitish</translation>
 <translation id="4522570452068850558">Tafsilotlar</translation>
 <translation id="4664250907885839816">Manzillar qatorining “<ph name="ATSIGN" />” qismida “<ph name="INVALIDCHARACTER" />” belgisi bo‘lmasligi kerak.</translation>
 <translation id="4718048029184481307">Tasvir ustida tasvir rejimida ijro etilmoqda</translation>

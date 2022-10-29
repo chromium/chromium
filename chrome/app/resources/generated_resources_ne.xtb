@@ -2951,6 +2951,7 @@
 <translation id="3712897371525859903">यस रूपमा &amp;पृष्ठ बचत गर्नुहोस्...</translation>
 <translation id="371300529209814631">पछाडि/अगाडि जानुहोस्</translation>
 <translation id="3713047097299026954">यो सुरक्षा साँचोमा साइन इन गर्न चाहिने कुनै पनि डेटा छैन</translation>
+<translation id="3713091615825314967">स्वतः अद्यावधिकहरू सक्रिय गरिएका छन्।</translation>
 <translation id="3714195043138862580">यो डेमो यन्त्रलाई प्रयोगबाट हटाइएको छ।</translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -6536,7 +6537,6 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{एप हटाउनुहोस्}other{एपहरू हटाउनुहोस्}}</translation>
 <translation id="7099337801055912064">ठुलो आकारको PPD लोड गर्न सकिँदैन। लोड गर्न सकिने अधिकतम आकार २५० के.बि. हो।</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{COUNT} पासवर्ड ह्याक वा चोरी भएको छ}other{{COUNT} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
-<translation id="7102687220333134671">स्वतःअद्यावधिकहरू सक्रिय गरिएका छन्</translation>
 <translation id="7102832101143475489">यो अनुरोधको समयावधि सकियो</translation>
 <translation id="710640343305609397">नेटवर्कका सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7107609441453408294">सबै स्पिकरहरूबाट उही अडियो प्ले गर्नुहोस्</translation>

@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Izbor datoteka</translation>
 <translation id="1681022320378710418">trenutno vreme</translation>
 <translation id="1727839386348365796">Pipeta</translation>
-<translation id="1727886345390570319">sakrijte meni opcionalnog titla</translation>
 <translation id="1729654308190250600">Unesite imejl adresu koja nije prazna.</translation>
 <translation id="1758486001363313524">Drugo...</translation>
 <translation id="1787192514241997742">ukupno vreme: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Milisekunde</translation>
 <translation id="4201051445878709314">Prikaži prethodni mesec</translation>
 <translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">onemogućite prikaz menija brzine reprodukcije</translation>
 <translation id="4522570452068850558">Detalji</translation>
 <translation id="4664250907885839816">Deo posle „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Reprodukuje se u režimu slike u slici</translation>

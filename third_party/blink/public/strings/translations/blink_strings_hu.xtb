@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
 <translation id="1681022320378710418">aktuális idő</translation>
 <translation id="1727839386348365796">Pipetta</translation>
-<translation id="1727886345390570319">a feliratok menü elrejtése</translation>
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
 <translation id="1758486001363313524">Más...</translation>
 <translation id="1787192514241997742">összes idő: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">Ezredmásodperc</translation>
 <translation id="4201051445878709314">Az előző hónap megjelenítése</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
-<translation id="4371899966896349864">lejátszási sebesség menüjének elrejtése</translation>
 <translation id="4522570452068850558">Részletek</translation>
 <translation id="4664250907885839816">A „<ph name="ATSIGN" />” utáni rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="4718048029184481307">Lejátszás kép a képben módban</translation>

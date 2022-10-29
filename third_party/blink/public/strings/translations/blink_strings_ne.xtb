@@ -13,7 +13,6 @@
 <translation id="1637811476055996098">फाइलहरू छान्नुहोस्</translation>
 <translation id="1681022320378710418">हालको समय</translation>
 <translation id="1727839386348365796">आइड्रपर</translation>
-<translation id="1727886345390570319">उपशीर्षकहरूको मेनु लुकाउनुहोस्</translation>
 <translation id="1729654308190250600">कृपया एउटा खाली नभएको इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
 <translation id="1758486001363313524">अन्य ...</translation>
 <translation id="1787192514241997742">कुल समय: <ph name="REMAINING_TIME" /></translation>
@@ -61,7 +60,6 @@
 <translation id="4103419683916926126">मिलिसेकेन्ड</translation>
 <translation id="4201051445878709314">अघिल्लो महिना देखाउनुहोस्</translation>
 <translation id="4360991593054037559">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। दुईवा सबैभण्दा नजिकका वैध मानहरू <ph name="VALID_VALUE_LOW" /> र <ph name="VALID_VALUE_HIGHER" /> हुन्।</translation>
-<translation id="4371899966896349864">प्लेब्याकको गति नामक मेनु लुकाइयोस्</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' पछ्याउने भागले '<ph name="INVALIDCHARACTER" />' चिन्ह समावेश गर्नु हुँदैन।</translation>
 <translation id="4718048029184481307">picture-in-picture मा प्ले गर्दै</translation>

@@ -2952,6 +2952,7 @@
 <translation id="3712897371525859903">പേജ് &amp;ഇതായി സംരക്ഷിക്കുക...</translation>
 <translation id="371300529209814631">പിന്നിലേക്ക്/മുമ്പോട്ട്</translation>
 <translation id="3713047097299026954">ഈ സുരക്ഷാ കീയിൽ സൈൻ ഇൻ ഡാറ്റയൊന്നുമില്ല</translation>
+<translation id="3713091615825314967">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ ഓണാണ്.</translation>
 <translation id="3714195043138862580">ഈ ഡെമോ ഉപകരണം ഡീപ്രൊവിഷൻ ചെയ്‌ത നിലയിലാക്കിയിരിക്കുന്നു.</translation>
 <translation id="3719826155360621982">ഹോംപേജ്</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -6538,7 +6539,6 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ആപ്പ് നിക്കം ചെയ്യുക}other{ആപ്പുകൾ നീക്കം ചെയ്യുക}}</translation>
 <translation id="7099337801055912064">വലിയ PPD ലോഡ് ചെയ്യാനാകില്ല. പരമാവധി വല‌ുപ്പം 250 kB ആണ്.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {COUNT} പാസ്‌വേഡുകൾ}}</translation>
-<translation id="7102687220333134671">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ ഓണാണ്</translation>
 <translation id="7102832101143475489">അഭ്യർത്ഥന കാലഹരണപ്പെട്ടു</translation>
 <translation id="710640343305609397">നെറ്റ്‍വര്‍ക്ക് ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7107609441453408294">എല്ലാ സ്‌പീക്കറുകളിലും ഒരേ ഓഡിയോ പ്ലേ ചെയ്യുക</translation>

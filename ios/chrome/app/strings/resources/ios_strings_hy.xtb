@@ -119,6 +119,7 @@
 <translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
+<translation id="1891796056033961979">Ձեր պահված էջանիշները, գաղտնաբառերը, կարգավորումները և ավելին հասանելի են այս էկրանից։</translation>
 <translation id="1911619930368729126">Վերբեռնել Google Drive</translation>
 <translation id="1923342640370224680">Վերջին ժամը</translation>
 <translation id="1930989359703290198">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -328,6 +329,7 @@
 <translation id="3533202363250687977">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="3533436815740441613">Նոր ներդիր</translation>
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
+<translation id="3575234738189584619">Որոնել Տեսապակու միջոցով</translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
 <translation id="3595252146048399851">Դուք ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայությունները։</translation>
@@ -495,6 +497,7 @@
 <translation id="4904877109095351937">Նշել որպես կարդացված</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4916679969857390442">Ոսպնապակի</translation>
+<translation id="4922154083994158612">Ուզո՞ւմ եք ուժեղացնել հաշվի պաշտպանությունը</translation>
 <translation id="4930714375720679147">Միացնել</translation>
 <translation id="4941089862236492464">Չհաջողվեց կիսվել տարրով։</translation>
 <translation id="4944543191714094452">Գտնել էջում…</translation>
@@ -833,6 +836,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7435356471928173109">Անջատվել է ադմինիստրատորի կողմից</translation>
 <translation id="7438481509621345350">Այժմ, երբ նոր ներդիր բացեք, կտեսնեք նորություններ <ph name="CHANNEL_NAME" /> ալիքից։</translation>
 <translation id="7454057999980797137">Նահանգ/շրջան</translation>
+<translation id="7459628154744868585">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="7464701184726199289">Համաժամացված տվյալները կհեռացվեն բոլոր սարքերից: Պահված կայքերի կարգավորումները չեն ջնջվի և կարող են արտացոլել համացանցում դիտարկման ձեր սովորությունները: <ph name="BEGIN_LINK" />Մանրամասն<ph name="END_LINK" /></translation>
 <translation id="746684838091935575">3. Ընտրեք Chrome-ը։</translation>
 <translation id="7472734401283673885">Ընկերության անունը</translation>
@@ -1024,6 +1028,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
 <translation id="9039373489628511875">Թողունակություն</translation>
 <translation id="9055772144595778347">Հնարավոր չէ մուտք գործել</translation>
+<translation id="9055960261314198756">Բարելավված պաշտպանությունն անջատված է</translation>
 <translation id="9057972802061533987">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9068336935206019333">Բացել Chrome-ի ինկոգնիտո ներդիրում</translation>

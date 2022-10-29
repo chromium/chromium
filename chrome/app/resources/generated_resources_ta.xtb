@@ -2426,6 +2426,7 @@
 <translation id="3197453258332670132">வலது கிளிக் செய்தோ நீண்ட நேரம் அழுத்தியோ, நீங்கள் தேர்ந்தெடுக்கும் உரைக்கான தொடர்புடைய தகவலைப் பார்க்கலாம்</translation>
 <translation id="3199127022143353223">சேவைகங்கள்</translation>
 <translation id="3200061262156232574">உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவை</translation>
+<translation id="3201237270673604992">Z - A</translation>
 <translation id="3201422919974259695">கிடைக்கக்கூடிய USB சாதனங்கள் இங்குத் தோன்றும்.</translation>
 <translation id="3202131003361292969">தடம்</translation>
 <translation id="3202173864863109533">இந்தத் தாவலின் ஆடியோ முடக்கப்படுகிறது.</translation>
@@ -2960,6 +2961,7 @@
 <translation id="3712897371525859903">பக்கத்தை &amp;இவ்வாறு சேமி...</translation>
 <translation id="371300529209814631">முன்/பின்</translation>
 <translation id="3713047097299026954">இந்தப் பாதுகாப்பு விசையில் உள்நுழைவுத் தகவல்கள் எதுவும் சேமிக்கப்படவில்லை</translation>
+<translation id="3713091615825314967">தானியங்கு புதுப்பிப்புகள் இயக்கப்பட்டுள்ளன.</translation>
 <translation id="3714195043138862580">சேவையகம் இந்த டெமோ சாதனத்திற்கான அணுகலை அகற்றியுள்ளது.</translation>
 <translation id="3719826155360621982">முகப்புப் பக்கம்</translation>
 <translation id="372062398998492895">CUPS</translation>
@@ -3746,6 +3748,7 @@
 <translation id="4460014764210899310">குழுவைப் பிரி</translation>
 <translation id="4462159676511157176">பிரத்தியேகப் பெயர் சேவையகங்கள்</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />க்கு அமைக்கப்பட்ட நேர வரம்பு: <ph name="TIME" /></translation>
+<translation id="4465649939134800363">வரிசைப்படுத்துவதற்கான விருப்பங்கள்</translation>
 <translation id="4466839823729730432">உங்கள் நினைவுகளை இங்கே பாருங்கள்</translation>
 <translation id="4469324811108161144">குறிப்புகளில் அதிகபட்சம் <ph name="CHARACTER_LIMIT" /> எழுத்துகள் இருக்கலாம்.</translation>
 <translation id="4469762931504673593"><ph name="FOLDERNAME" /> ஃபோல்டரில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
@@ -6253,6 +6256,7 @@
 <translation id="6843264316370513305">நெட்வொர்க் பிழைதிருத்தம்</translation>
 <translation id="6843423766595476978">Ok Google அமைக்கப்பட்டுவிட்டது</translation>
 <translation id="6845038076637626672">பெரிதாக்கப்பட்டதை திற</translation>
+<translation id="6845231585063669905">A - Z</translation>
 <translation id="6846178040388691741"><ph name="FILE_NAME" /> ஐ <ph name="PRINTER_NAME" /> பிரிண்டரில் அச்சிட "<ph name="EXTENSION_NAME" />" விரும்புகிறது.</translation>
 <translation id="6847125920277401289">தொடர, இடத்தைக் காலியாக்குங்கள்</translation>
 <translation id="6848388270925200958">தற்போது, இந்தச் சாதனத்தில் மட்டுமே பயன்படுத்தக்கூடிய சில கார்டுகள் உள்ளன</translation>
@@ -6533,7 +6537,6 @@
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ஆப்ஸை அகற்று}other{ஆப்ஸை அகற்று}}</translation>
 <translation id="7099337801055912064">அதிகபட்ச அளவு 250 கி.பை. என்பதால், பெரிய PPDஐ ஏற்ற முடியாது.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{களவாடப்பட்ட {COUNT} கடவுச்சொல்}other{களவாடப்பட்ட {COUNT} கடவுச்சொற்கள்}}</translation>
-<translation id="7102687220333134671">தானியங்கு புதுப்பிப்புகள் இயக்கப்பட்டுள்ளன</translation>
 <translation id="7102832101143475489">கோரிக்கை காலாவதியானது</translation>
 <translation id="710640343305609397">நெட்வொர்க் அமைப்புகளைத் திற</translation>
 <translation id="7107609441453408294">எல்லா ஸ்பீக்கர்களிலும் ஒரே ஆடியோவைப் பிளே செய்யும்</translation>
@@ -7403,6 +7406,7 @@
 <translation id="7939073735115504773"><ph name="HOST" /> தளத்தைப் படிக்கவும் மாற்றவும் இந்த நீட்டிப்பின் ஐகானைக் கிளிக் செய்யவும்</translation>
 <translation id="7939328347457537652">சாதனத்தின் சான்றிதழ்களை நிர்வகி</translation>
 <translation id="7939412583708276221">எப்படியும் வைத்திரு</translation>
+<translation id="7940265372707990269"><ph name="SORT_TYPE" /> இன்படி வரிசைப்படுத்து</translation>
 <translation id="7941179291434537290">இணைப்புமுறையின் தயார்நிலை:</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7943368935008348579">PDFகளைப் பதிவிறக்கு</translation>
