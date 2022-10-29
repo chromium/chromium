@@ -521,4 +521,41 @@ TEST_F(DeviceSettingsServiceTest, LoadDeferredDuringOwnershipEstablishment) {
   EXPECT_TRUE(is_owner_);
 }
 
+// Check that when LoadIfNotPresent function is called first time the policy
+// refresh happens and when LoadIfNotPresent is called the second time, even if
+// the policy has changed, the new data is not loaded.
+TEST_F(DeviceSettingsServiceTest, LoadIfNotPresentDoesntRefresh) {
+  owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
+
+  InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
+            true);
+  ReloadDeviceSettings();
+  device_settings_service_->LoadIfNotPresent();
+
+  EXPECT_TRUE(device_settings_service_->HasPrivateOwnerKey());
+  ASSERT_TRUE(device_settings_service_->GetPublicKey().get());
+  ASSERT_FALSE(device_settings_service_->GetPublicKey()->is_empty());
+  EXPECT_EQ(device_policy_->GetPublicSigningKeyAsString(),
+            device_settings_service_->GetPublicKey()->as_string());
+  EXPECT_EQ(DeviceSettingsService::OWNERSHIP_TAKEN,
+            device_settings_service_->GetOwnershipStatus());
+  EXPECT_FALSE(is_owner_set_);
+  EXPECT_FALSE(
+      device_settings_service_->device_settings()->has_guest_mode_enabled());
+
+  device_policy_->payload()
+      .mutable_guest_mode_enabled()
+      ->set_guest_mode_enabled(true);
+  ReloadDeviceSettings();
+  device_settings_service_->LoadIfNotPresent();
+  EXPECT_FALSE(
+      device_settings_service_->device_settings()->has_guest_mode_enabled());
+  device_settings_service_->Load();
+  EXPECT_TRUE(device_settings_service_->device_settings()
+                  ->guest_mode_enabled()
+                  .guest_mode_enabled());
+}
+
 }  // namespace ash

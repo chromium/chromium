@@ -172,6 +172,13 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // load the device settings.
   void Load();
 
+  // Attempts to load asynchronously the settings if they haven't been loaded
+  // already and no request is in the queue. The aim is to avoid additional
+  // request when not needed. Should NOT be used when the settings need to be
+  // renewed, like in invalidations flow or when an explicit request from user
+  // to reload is received.
+  void LoadIfNotPresent();
+
   // Synchronously pulls the public key and loads the device settings.
   void LoadImmediately();
 

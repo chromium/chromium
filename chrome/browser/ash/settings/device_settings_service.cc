@@ -157,6 +157,19 @@ void DeviceSettingsService::Load() {
   EnqueueLoad(false);
 }
 
+void DeviceSettingsService::LoadIfNotPresent() {
+  // Return if there is already some policy loaded (policy_fetch_response_), or
+  // if there are any pending operations (|pending_operations_| not empty). The
+  // pending operations can be of two types only, load or store. If a loading
+  // operation is in the queue, then a request to load will be issued soon. If a
+  // store operation is pending, then the policy data is already available and
+  // will be stored soon. In either case, it's not needed to load again.
+  if (policy_fetch_response_ || !pending_operations_.empty())
+    return;
+
+  EnqueueLoad(false);
+}
+
 void DeviceSettingsService::LoadImmediately() {
   bool request_key_load = true;
   bool cloud_validations = true;

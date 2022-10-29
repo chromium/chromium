@@ -572,7 +572,7 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   if (force_immediate_policy_load)
     ash::DeviceSettingsService::Get()->LoadImmediately();
   else
-    ash::DeviceSettingsService::Get()->Load();
+    ash::DeviceSettingsService::Get()->LoadIfNotPresent();
 
   policy::CreateConfigurationPolicyProvider(
       this, force_immediate_policy_load, io_task_runner_,
