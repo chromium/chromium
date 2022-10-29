@@ -442,6 +442,8 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
     return NotifyError(D3D11Status::Codes::kFailedToGetDeviceContext);
   }
 
+  LogDecoderAdapterLUID();
+
   // At this point, playback is supported so add a line in the media log to help
   // us figure that out.
   MEDIA_LOG(INFO, media_log_) << "Video is supported by D3D11VideoDecoder";
@@ -992,6 +994,30 @@ void D3D11VideoDecoder::LogPictureBufferUsage() {
   }
 
   min_unused_buffers_.reset();
+}
+
+void D3D11VideoDecoder::LogDecoderAdapterLUID() {
+  if (!device_)
+    return;
+
+  ComDXGIDevice dxgi_device;
+  HRESULT hr = device_.As(&dxgi_device);
+  if (FAILED(hr))
+    return;
+
+  ComDXGIAdapter dxgi_adapter;
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  if (FAILED(hr))
+    return;
+
+  DXGI_ADAPTER_DESC adapter_desc{};
+  hr = dxgi_adapter->GetDesc(&adapter_desc);
+  if (FAILED(hr))
+    return;
+
+  MEDIA_LOG(INFO, media_log_) << "Selected D3D11VideoDecoder adapter LUID:{"
+                              << adapter_desc.AdapterLuid.HighPart << ", "
+                              << adapter_desc.AdapterLuid.LowPart << "}";
 }
 
 // static

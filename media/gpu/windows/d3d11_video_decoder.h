@@ -159,6 +159,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // successfully, if no measurement has been made.
   void LogPictureBufferUsage();
 
+  // Log the LUID of the adapter used for decoding.
+  void LogDecoderAdapterLUID();
+
   // Create a D3D11VideoDecoder, if possible, based on the current config.
   D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
 
