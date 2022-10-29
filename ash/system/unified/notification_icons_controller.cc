@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -160,9 +161,10 @@ void NotificationIconsController::AddNotificationTrayItems(
   notification_counter_view_ = tray_container->AddChildView(
       std::make_unique<NotificationCounterView>(tray_->shelf(), this));
 
-  quiet_mode_view_ = tray_container->AddChildView(
-      std::make_unique<QuietModeView>(tray_->shelf()));
-
+  if (!features::IsQsRevampEnabled()) {
+    quiet_mode_view_ = tray_container->AddChildView(
+        std::make_unique<QuietModeView>(tray_->shelf()));
+  }
   separator_ = tray_container->AddChildView(
       std::make_unique<SeparatorTrayItemView>(tray_->shelf()));
 
@@ -197,7 +199,8 @@ std::u16string NotificationIconsController::GetAccessibleNameString() const {
 
 void NotificationIconsController::UpdateNotificationIndicators() {
   notification_counter_view_->Update();
-  quiet_mode_view_->Update();
+  if (!features::IsQsRevampEnabled())
+    quiet_mode_view_->Update();
 }
 
 void NotificationIconsController::OnSystemTrayButtonSizeChanged(

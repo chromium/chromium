@@ -19,6 +19,7 @@
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/unified/ime_mode_view.h"
+#include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -118,6 +119,10 @@ class UnifiedSystemTrayTest : public AshTestBase,
 
   ImeModeView* ime_mode_view() {
     return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
+  }
+
+  QuietModeView* quiet_mode_view() {
+    return GetPrimaryUnifiedSystemTray()->quiet_mode_view_;
   }
 
  private:
@@ -649,4 +654,20 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 }
 
+// Tests that the `quiet_mode_view_` is visible based on the system's quiet mode
+// setting.
+TEST_P(UnifiedSystemTrayTest, QuietModeViewVisibility) {
+  // `quiet_mode_view_` does not exist in `unified_system_tray_` if QsRevamp is
+  // not enabled. It is owned by `notification_icons_controller` in that case.
+  if (!IsQsRevampEnabled())
+    return;
+
+  auto* message_center = message_center::MessageCenter::Get();
+
+  message_center->SetQuietMode(false);
+  EXPECT_FALSE(quiet_mode_view()->GetVisible());
+
+  message_center->SetQuietMode(true);
+  EXPECT_TRUE(quiet_mode_view()->GetVisible());
+}
 }  // namespace ash

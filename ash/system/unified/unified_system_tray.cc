@@ -185,7 +185,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       privacy_screen_toast_controller_(
           std::make_unique<PrivacyScreenToastController>(this)),
       notification_icons_controller_(
-          std::make_unique<NotificationIconsController>(this)),
+          features::IsQsRevampEnabled()
+              ? nullptr
+              : std::make_unique<NotificationIconsController>(this)),
       snooping_protection_view_(features::IsSnoopingProtectionEnabled()
                                     ? new SnoopingProtectionView(shelf)
                                     : nullptr),
@@ -219,17 +221,28 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     AddTrayItemToContainer(time_view_);
   }
 
-  notification_icons_controller_->AddNotificationTrayItems(tray_container());
-  for (TrayItemView* tray_item : notification_icons_controller_->tray_items()) {
-    tray_items_.push_back(tray_item);
+  if (!features::IsQsRevampEnabled()) {
+    notification_icons_controller_->AddNotificationTrayItems(tray_container());
+    for (TrayItemView* tray_item :
+         notification_icons_controller_->tray_items()) {
+      tray_items_.push_back(tray_item);
+    }
   }
 
   AddTrayItemToContainer(screen_capture_view_);
 
-  tray_items_.push_back(
-      notification_icons_controller_->notification_counter_view());
+  if (features::IsQsRevampEnabled()) {
+    quiet_mode_view_ =
+        tray_container()->AddChildView(std::make_unique<QuietModeView>(shelf));
+    tray_items_.push_back(quiet_mode_view_);
+  }
 
-  tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
+  if (!features::IsQsRevampEnabled()) {
+    tray_items_.push_back(
+        notification_icons_controller_->notification_counter_view());
+
+    tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
+  }
 
   if (features::IsSnoopingProtectionEnabled())
     AddTrayItemToContainer(snooping_protection_view_);
@@ -620,7 +633,13 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(managed_device_view_->GetVisible()
                        ? managed_device_view_->image_view()->GetTooltipText()
                        : base::EmptyString16());
-  status.push_back(notification_icons_controller_->GetAccessibleNameString());
+
+  // `notification_icons_controller_` does not exist when QsRevamp is enabled.
+  status.push_back(
+      features::IsQsRevampEnabled()
+          ? base::EmptyString16()
+          : notification_icons_controller_->GetAccessibleNameString());
+
   status.push_back(ime_mode_view_->GetVisible()
                        ? ime_mode_view_->label()->GetAccessibleNameString()
                        : base::EmptyString16());
@@ -697,6 +716,9 @@ void UnifiedSystemTray::HideBubbleInternal() {
 }
 
 void UnifiedSystemTray::UpdateNotificationInternal() {
+  if (features::IsQsRevampEnabled())
+    quiet_mode_view_->Update();
+
   // Limit update frequency in order to avoid flashing when 2 updates are
   // incoming in a very short period of time. It happens when ARC++ apps
   // creating bundled notifications.
@@ -707,7 +729,10 @@ void UnifiedSystemTray::UpdateNotificationInternal() {
 }
 
 void UnifiedSystemTray::UpdateNotificationAfterDelay() {
-  notification_icons_controller_->UpdateNotificationIndicators();
+  // Notification icons will be removed from system tray with the QsRevamp
+  // feature.
+  if (!features::IsQsRevampEnabled())
+    notification_icons_controller_->UpdateNotificationIndicators();
 }
 
 message_center::MessagePopupView*

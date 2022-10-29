@@ -40,6 +40,7 @@ class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
+class QuietModeView;
 class ScreenCaptureTrayItemView;
 class SnoopingProtectionView;
 class TimeTrayItemView;
@@ -293,6 +294,7 @@ class ASH_EXPORT UnifiedSystemTray
 
   NetworkTrayView* network_tray_view_ = nullptr;
   ChannelIndicatorView* channel_indicator_view_ = nullptr;
+  QuietModeView* quiet_mode_view_ = nullptr;
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;
