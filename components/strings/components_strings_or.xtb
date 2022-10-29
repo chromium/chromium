@@ -283,7 +283,7 @@
 <translation id="163669211644121865">କର ପ୍ରସ୍ତୁତି ଏବଂ ପ୍ଲାନିଂ</translation>
 <translation id="1638780421120290329">କାର୍ଡ ସେଭ୍ କରିପାରିବ ନାହିଁ</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
-<translation id="1640180200866533862">ଉପଯୋଗକର୍ତ୍ତା ନୀତିଗୁଡ଼ିକ</translation>
+<translation id="1640180200866533862">ୟୁଜର ନୀତିଗୁଡ଼ିକ</translation>
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />ସାଇଟ୍‍ର ମୂଳପୃଷ୍ଠାକୁ ଯିବା ପାଇଁ<ph name="END_LINK" /> ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1641976391427233992">ଏତିକି ସମୟ ପର୍ଯ୍ୟନ୍ତ ଆଉଟପୁଟକୁ ବିଳମ୍ବ କରନ୍ତୁ</translation>
 <translation id="164212631332220697">ଚେକଆଉଟ୍ କରିବା ସମୟରେ <ph name="CARD_DETAIL" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ।</translation>
@@ -1788,7 +1788,7 @@
 <translation id="57094364128775171">ଜଟିଳ ପାସ୍‌ୱର୍ଡ ପରାମର୍ଶ କରନ୍ତୁ…</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ପଶୁ ଚିକିତ୍ସକମାନେ</translation>
-<translation id="5720705177508910913">ବର୍ତ୍ତମାନର ଉପଯୋଗକର୍ତ୍ତା</translation>
+<translation id="5720705177508910913">ବର୍ତ୍ତମାନର ୟୁଜର</translation>
 <translation id="5723287205918986743">ଡିଫେନ୍ସ ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
 <translation id="5728056243719941842">C5 (ଏନଭଲପ୍)</translation>
 <translation id="5730040223043577876">ଯଦି ଆପଣ ଆପଣଙ୍କର ପାସ୍‍ୱର୍ଡ ଅନ୍ୟ ସାଇଟ୍‍‍ରେ ପୁନଃବ୍ୟବହାର କରିଛନ୍ତି, ତେବେ Chrome ଏହାକୁ ରିସେଟ୍ କରିବା ପାଇଁ ସୁପାରିଶ୍ କରୁଛି।</translation>
@@ -2192,14 +2192,14 @@
 <translation id="6891596781022320156">ନୀତି ସ୍ତର ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="6895143722905299846">ଭର୍ଚୁଆଲ୍ ନମ୍ବର:</translation>
 <translation id="6895330447102777224">ଆପଣଙ୍କ କାର୍ଡ ସୁନିଶ୍ଚିତ କରାଯାଇଛି</translation>
-<translation id="6897140037006041989">ଉପଯୋଗକର୍ତ୍ତା ଏଜେଣ୍ଟ</translation>
+<translation id="6897140037006041989">ୟୁଜର ଏଜେଣ୍ଟ</translation>
 <translation id="6898699227549475383">ସଂସ୍ଥା (O)</translation>
 <translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" />କୁ ଏହା କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ:</translation>
 <translation id="6907458757809079309">ଫିଟନେସ</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ଆପଣଙ୍କର MIDI ଡିଭାଇସ୍‌ଗୁଡ଼ିକର ପୂର୍ଣ୍ଣ ନିୟନ୍ତ୍ରଣ ପ୍ରାପ୍ତ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="691024665142758461">ଏକାଧିକ ଫାଇଲ୍ ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
-<translation id="6915804003454593391">ଉପଯୋଗକର୍ତ୍ତା:</translation>
+<translation id="6915804003454593391">ୟୁଜର:</translation>
 <translation id="6916954549222464607">ଆର୍ଥିକ ଯୋଜନା ଏବଂ ପରିଚାଳନା</translation>
 <translation id="6917795328362592458">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, Password Manager ଆପଣ ସେଭ କରିଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
 <translation id="6934672428414710184">ଏହି ନାମ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରୁ ଅଟେ</translation>
