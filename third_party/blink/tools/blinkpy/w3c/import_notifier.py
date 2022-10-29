@@ -15,7 +15,7 @@ import re
 
 from blinkpy.common.net.luci_auth import LuciAuth
 from blinkpy.common.path_finder import PathFinder
-from blinkpy.w3c.common import WPT_GH_URL
+from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
@@ -217,8 +217,9 @@ class ImportNotifier(object):
             'the failing results to keep the bots green. Please '
             'investigate the new failures and triage as appropriate.\n')
 
-        range_statement = '\nThis import contains upstream changes from {} to {}:\n'.format(
-            wpt_revision_start, wpt_revision_end)
+        range_statement = '\nUpstream changes imported:\n'
+        range_statement += WPT_GH_RANGE_URL_TEMPLATE.format(
+            wpt_revision_start, wpt_revision_end) + '\n'
 
         description = (prologue + failure_list + expectations_statement +
                        range_statement)
@@ -289,8 +290,9 @@ class ImportNotifier(object):
                 'added for the failing results to keep the bots green. Please '
                 'investigate the new failures and triage as appropriate.\n')
 
-            range_statement = '\nThis import contains upstream changes from {} to {}:\n'.format(
-                wpt_revision_start, wpt_revision_end)
+            range_statement = '\nUpstream changes imported:\n'
+            range_statement += WPT_GH_RANGE_URL_TEMPLATE.format(
+                wpt_revision_start, wpt_revision_end) + '\n'
             commit_list = self.format_commit_list(imported_commits,
                                                   full_directory)
 

@@ -11,6 +11,7 @@ from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 WPT_GH_ORG = 'web-platform-tests'
 WPT_GH_REPO_NAME = 'wpt'
 WPT_GH_URL = 'https://github.com/%s/%s/' % (WPT_GH_ORG, WPT_GH_REPO_NAME)
+WPT_GH_RANGE_URL_TEMPLATE = '%scompare/{}...{}' % WPT_GH_URL
 WPT_MIRROR_URL = 'https://chromium.googlesource.com/external/github.com/web-platform-tests/wpt.git'
 WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % \
     (WPT_GH_ORG, WPT_GH_REPO_NAME)
