@@ -30,6 +30,12 @@ public interface FeedNetworkRequestReliabilityLogger {
     default void logWebFeedRequestStart(long timestamp) {}
 
     /**
+     * Log before filling out and serializing a single web feed request. Starts the network request
+     * flow.
+     */
+    default void logSingleWebFeedRequestStart(long timestamp) {}
+
+    /**
      * Log after the request has been sent.
      * @param timestamp Event time.
      */
