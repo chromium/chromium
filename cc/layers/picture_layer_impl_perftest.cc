@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "cc/layers/picture_layer_impl.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/lap_timer.h"
 #include "cc/test/fake_picture_layer_impl.h"
@@ -31,8 +32,7 @@ void AddTiling(float scale,
   tiling->set_resolution(HIGH_RESOLUTION);
   tiling->CreateAllTilesForTesting();
   std::vector<Tile*> tiling_tiles = tiling->AllTilesForTesting();
-  std::copy(
-      tiling_tiles.begin(), tiling_tiles.end(), std::back_inserter(*all_tiles));
+  base::ranges::copy(tiling_tiles, std::back_inserter(*all_tiles));
 }
 
 class PictureLayerImplPerfTest : public LayerTreeImplTestBase,

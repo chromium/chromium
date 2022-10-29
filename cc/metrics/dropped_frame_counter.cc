@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
@@ -351,8 +352,7 @@ void DroppedFrameCounter::ReportFrames() {
             .GetPercentDroppedFrameBuckets();
     DCHECK_EQ(sliding_window_buckets.size(),
               std::size(smoothness_data.buckets));
-    std::copy(sliding_window_buckets.begin(), sliding_window_buckets.end(),
-              smoothness_data.buckets);
+    base::ranges::copy(sliding_window_buckets, smoothness_data.buckets);
 
     smoothness_data.main_focused_median = SlidingWindowMedianPercentDropped(
         SmoothnessStrategy::kMainFocusedStrategy);

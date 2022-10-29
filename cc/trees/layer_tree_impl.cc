@@ -998,9 +998,7 @@ void LayerTreeImpl::SetBackdropFilterMutated(
 
 void LayerTreeImpl::AddPresentationCallbacks(
     std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks) {
-  std::copy(std::make_move_iterator(callbacks.begin()),
-            std::make_move_iterator(callbacks.end()),
-            std::back_inserter(presentation_callbacks_));
+  base::ranges::move(callbacks, std::back_inserter(presentation_callbacks_));
 }
 
 std::vector<PresentationTimeCallbackBuffer::MainCallback>
