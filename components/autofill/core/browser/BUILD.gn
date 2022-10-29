@@ -1062,3 +1062,12 @@ fuzzer_test("autofill_phone_number_i18n_fuzzer") {
 
   dict = "geo/phone_number_i18n_fuzzer.dict"
 }
+
+fuzzer_test("autofill_legal_message_line_fuzzer") {
+  sources = [ "payments/legal_message_line_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
