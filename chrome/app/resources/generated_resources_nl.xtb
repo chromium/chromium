@@ -4058,7 +4058,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4844633725025837809">Voor extra beveiliging versleutel je je wachtwoorden op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="4846628405149428620">Selecteer waar deze site wijzigingen kan opslaan</translation>
 <translation id="4846680374085650406">Je volgt de aanbeveling van de beheerder voor deze instelling.</translation>
-<translation id="4848191975108266266">Google Assistent 'Oké Google'</translation>
+<translation id="4848191975108266266">Google Assistent 'Hey Google'</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Niet installeren</translation>
 <translation id="485053257961878904">Kan synchronisatie van meldingen niet instellen</translation>
@@ -6102,7 +6102,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6842749380892715807">XML-sitelijsten zijn voor het laatst gedownload op <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Sites nemen meestal waar wanneer je je apparaat actief gebruikt zodat ze je beschikbaarheid kunnen instellen in chat-apps</translation>
 <translation id="6843264316370513305">Foutopsporing voor netwerk</translation>
-<translation id="6843423766595476978">'Oké Google' is helemaal ingesteld</translation>
+<translation id="6843423766595476978">'Hey Google' is helemaal ingesteld</translation>
 <translation id="6845038076637626672">Gemaximaliseerd openen</translation>
 <translation id="6846178040388691741">'<ph name="EXTENSION_NAME" />' wil <ph name="FILE_NAME" /> afdrukken met <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Maak ruimte vrij om door te gaan</translation>
@@ -6189,7 +6189,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6923633482430812883">Fout bij het activeren van de fileshare. Controleer of de bestandsserver waarmee je verbinding maakt, SMBv2 of hoger ondersteunt.</translation>
 <translation id="6925127338315966709">Je voegt een beheerd profiel toe aan deze browser. Je beheerder beheert het profiel en heeft toegang tot de gegevens. Bookmarks, geschiedenis, wachtwoorden en andere instellingen kunnen worden gesynchroniseerd met je account en worden beheerd door je beheerder.</translation>
 <translation id="6929126689972602640">Ouderlijk toezicht wordt niet ondersteund voor schoolaccounts. Log in met het persoonlijke account van je kind als je een schoolaccount wilt toevoegen voor toegang tot Google Classroom en andere websites waarop je thuis schoolwerk kunt doen. Je kunt het schoolaccount later toevoegen in de instellingen.</translation>
-<translation id="6929760895658557216">Oké Google</translation>
+<translation id="6929760895658557216">Hey Google</translation>
 <translation id="6930036377490597025">Externe beveiligingssleutel of ingebouwde sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Een extensie is geweigerd}other{# extensies zijn geweigerd}}</translation>
 <translation id="6931690462168617033">Kliksterkte</translation>
@@ -6294,7 +6294,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7011797924920577670">schat je interesses</translation>
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7014480873681694324">Markering verwijderen</translation>
-<translation id="7017004637493394352">Zeg nog een keer "Oké Google"</translation>
+<translation id="7017004637493394352">Zeg nog een keer "Hey Google"</translation>
 <translation id="7017219178341817193">Een nieuwe pagina toevoegen</translation>
 <translation id="7017354871202642555">Kan modus niet instellen nadat venster is ingesteld.</translation>
 <translation id="7018275672629230621">Je browsegeschiedenis lezen en wijzigen</translation>
@@ -6776,7 +6776,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> is onderbroken</translation>
 <translation id="7520766081042531487">Incognitoportal: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="7522255036471229694">Zeg "Oké Google"</translation>
+<translation id="7522255036471229694">Zeg "Hey Google"</translation>
 <translation id="7523585675576642403">Naam van profiel wijzigen</translation>
 <translation id="7525067979554623046">Maken</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Nog 1}other{Nog {NUM_DOWNLOADS}}}</translation>
