@@ -2982,7 +2982,7 @@ IN_PROC_BROWSER_TEST_F(PortalFencedFrameBrowserTest, CreatePortalBlocked) {
                         portal.src = new URL('about:blank', location.href);
                         document.body.appendChild(portal);
              )"));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 }  // namespace content

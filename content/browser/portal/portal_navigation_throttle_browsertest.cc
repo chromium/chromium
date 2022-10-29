@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
       /*expected_to_succeed=*/false);
   EXPECT_NE(portal, nullptr);
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_THAT(console_observer.GetMessageAt(0u),
               ::testing::HasSubstr("http://not.portal.test"));
 }
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
     console_observer.SetPattern("*avigat*");
     EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
                        "location.href = 'data:text/html,hello world';"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_THAT(console_observer.GetMessageAt(0u),
                 ::testing::HasSubstr("data"));
     SleepWithRunLoop(base::Seconds(3), FROM_HERE);
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
     console_observer.SetPattern("*avigat*");
     EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
                        "location.href = 'ftp://example.com/';"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_THAT(console_observer.GetMessageAt(0u), ::testing::HasSubstr("ftp"));
     SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
         "`https://user:pass@host/`) are blocked.*");
     EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
                        "location.href = 'ftp://user:pass@example.com/';"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     SleepWithRunLoop(base::Seconds(3), FROM_HERE);
     EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
   }
