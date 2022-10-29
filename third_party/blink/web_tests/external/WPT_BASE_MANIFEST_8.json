@@ -547515,19 +547515,11 @@
      ]
     ],
     "getdisplaymedia-capture-controller.https.window.js": [
-     "f9f6b4dcde4a158d8e8296e0f4e52105f8383d8d",
+     "5aa4f4f778c6c9abcbc951804b1ae9f8a4d98868",
      [
       "screen-capture/getdisplaymedia-capture-controller.https.window.html",
       {
        "script_metadata": [
-        [
-         "script",
-         "/resources/testharness.js"
-        ],
-        [
-         "script",
-         "/resources/testharnessreport.js"
-        ],
         [
          "script",
          "/resources/testdriver.js"
