@@ -19,16 +19,14 @@ struct NativePixmapHandle;
 class Size;
 
 // The Ozone interface allows external implementations to hook into Chromium to
-// provide a client pixmap for non-GPU processes (though ClientNativePixmap
-// instances created using this interface can be used in the GPU process).
+// provide a client pixmap for non-GPU processes.
 class GFX_EXPORT ClientNativePixmapFactory {
  public:
   virtual ~ClientNativePixmapFactory() {}
 
-  // Import the native pixmap from |handle|. Implementations must verify that
-  // the buffer in |handle| fits an image of the specified |size| and |format|.
-  // Otherwise nullptr is returned. Note that a |handle| with no planes may or
-  // may not be considered valid depending on the implementation.
+  // Import the native pixmap from |handle| to be used in non-GPU processes.
+  // Implementations must verify that the buffer in |handle| fits an image of
+  // the specified |size| and |format|. Otherwise nullptr is returned.
   virtual std::unique_ptr<ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,

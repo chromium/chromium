@@ -128,22 +128,18 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
   return 0;
 }
 
-base::CheckedNumeric<size_t> PlaneWidthForBufferFormatChecked(
-    size_t width,
-    BufferFormat format,
-    size_t plane) {
+size_t PlaneWidthForBufferFormat(size_t width,
+                                 BufferFormat format,
+                                 size_t plane) {
   const size_t subsample = SubsamplingFactorForBufferFormat(format, plane);
-  return base::CheckDiv(base::CheckAdd(width, base::CheckSub(subsample, 1)),
-                        subsample);
+  return (width + subsample - 1) / subsample;
 }
 
-base::CheckedNumeric<size_t> PlaneHeightForBufferFormatChecked(
-    size_t height,
-    BufferFormat format,
-    size_t plane) {
+size_t PlaneHeightForBufferFormat(size_t height,
+                                  BufferFormat format,
+                                  size_t plane) {
   const size_t subsample = SubsamplingFactorForBufferFormat(format, plane);
-  return base::CheckDiv(base::CheckAdd(height, base::CheckSub(subsample, 1)),
-                        subsample);
+  return (height + subsample - 1) / subsample;
 }
 
 size_t BytesPerPixelForBufferFormat(BufferFormat format, size_t plane) {
@@ -217,7 +213,7 @@ bool RowSizeForBufferFormatChecked(size_t width,
                                    size_t plane,
                                    size_t* size_in_bytes) {
   base::CheckedNumeric<size_t> checked_size =
-      PlaneWidthForBufferFormatChecked(width, format, plane);
+      PlaneWidthForBufferFormat(width, format, plane);
   checked_size *= BytesPerPixelForBufferFormat(format, plane);
   const size_t alignment = RowByteAlignmentForBufferFormat(format, plane);
   checked_size = (checked_size + alignment - 1) & ~(alignment - 1);
@@ -243,13 +239,11 @@ bool PlaneSizeForBufferFormatChecked(const Size& size,
                                      size_t plane,
                                      size_t* size_in_bytes) {
   size_t row_size = 0;
-  if (!RowSizeForBufferFormatChecked(base::checked_cast<size_t>(size.width()),
-                                     format, plane, &row_size)) {
+  if (!RowSizeForBufferFormatChecked(size.width(), format, plane, &row_size))
     return false;
-  }
   base::CheckedNumeric<size_t> checked_plane_size = row_size;
-  checked_plane_size *= PlaneHeightForBufferFormatChecked(
-      base::checked_cast<size_t>(size.height()), format, plane);
+  checked_plane_size *=
+      PlaneHeightForBufferFormat(size.height(), format, plane);
   if (!checked_plane_size.IsValid())
     return false;
 
