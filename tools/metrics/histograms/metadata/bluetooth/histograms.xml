@@ -213,18 +213,77 @@ chromium-metrics-reviews@google.com.
         summary="subsequent pairing protocol"/>
   </token>
   <token key="FastPairTrackedModelID">
-    <variant name="JBLLIVE300TWS" summary="JBL LIVE 300 TWS"/>
-    <variant name="JBLLIVE400BT" summary="JBL LIVE 400 BT"/>
-    <variant name="JBLTUNE125TWS" summary="JBL TUNE 125 TWS"/>
-    <variant name="JBLTUNE225TWS" summary="JBL TUNE 225 TWS"/>
-    <variant name="OnePlusBudsZ" summary="OnePlus Buds Z"/>
-    <variant name="Other"
-        summary="A headset that isn't one of the tracked models."/>
-    <variant name="PixelBuds" summary="Pixel Buds V1"/>
-    <variant name="PixelBudsASeries" summary="Pixel buds A-series"/>
-    <variant name="PixelBudsPro" summary="Pixel buds pro"/>
-    <variant name="RealmeBudsAir2" summary="Realme Buds Air 2"/>
-    <variant name="SonyWF1000XM3" summary="Sony WF-1000 XM3"/>
+    <variant name="JBLLIVE300TWS"/>
+    <variant name="JBLLIVE300TWS_1"/>
+    <variant name="JBLLIVE300TWS_2"/>
+    <variant name="JBLLIVE400BT"/>
+    <variant name="JBLLIVE400BT_1"/>
+    <variant name="JBLLIVE400BT_2"/>
+    <variant name="JBLLIVE400BT_3"/>
+    <variant name="JBLLIVE400BT_4"/>
+    <variant name="JBLLIVEPROTWS"/>
+    <variant name="JBLLIVEPROTWS_1"/>
+    <variant name="JBLLIVEPROTWS_2"/>
+    <variant name="JBLLIVEPROTWS_3"/>
+    <variant name="JBLLIVEPROTWS_4"/>
+    <variant name="JBLLIVEPROTWS_5"/>
+    <variant name="JBLLIVEPROTWS_6"/>
+    <variant name="JBLTUNE125TWS"/>
+    <variant name="JBLTUNE125TWS_1"/>
+    <variant name="JBLTUNE125TWS_2"/>
+    <variant name="JBLTUNE125TWS_3"/>
+    <variant name="JBLTUNE125TWS_4"/>
+    <variant name="JBLTUNE125TWS_5"/>
+    <variant name="JBLTUNE130NCTWS"/>
+    <variant name="JBLTUNE130NCTWS_1"/>
+    <variant name="JBLTUNE130NCTWS_2"/>
+    <variant name="JBLTUNE130NCTWS_3"/>
+    <variant name="JBLTUNE225TWS"/>
+    <variant name="JBLTUNE225TWS_1"/>
+    <variant name="JBLTUNE225TWS_2"/>
+    <variant name="JBLTUNE225TWS_3"/>
+    <variant name="JBLTUNE225TWS_4"/>
+    <variant name="JBLTUNE225TWS_5"/>
+    <variant name="NothingEar1"/>
+    <variant name="NothingEar1_2"/>
+    <variant name="OnePlusBudsZ"/>
+    <variant name="OnePlusBudsZ_1"/>
+    <variant name="OnePlusBudsZ_2"/>
+    <variant name="Other"/>
+    <variant name="PixelBuds"/>
+    <variant name="PixelBudsASeries"/>
+    <variant name="PixelBudsASeries_1"/>
+    <variant name="PixelBudsASeries_2"/>
+    <variant name="PixelBudsPro"/>
+    <variant name="PixelBudsPro_1"/>
+    <variant name="PixelBudsPro_2"/>
+    <variant name="PixelBudsPro_3"/>
+    <variant name="PixelBudsPro_4"/>
+    <variant name="RealMeBudsAir2"/>
+    <variant name="RealMeBudsAir2_1"/>
+    <variant name="RealMeBudsAir2Neo"/>
+    <variant name="RealMeBudsAirPro"/>
+    <variant name="RealMeBudsAirPro_1"/>
+    <variant name="RealMeBudsAirPro_2"/>
+    <variant name="SonyWF1000XM3"/>
+    <variant name="SonyWF1000XM3_1"/>
+    <variant name="SonyWF1000XM3_2"/>
+    <variant name="SonyWF1000XM3_3"/>
+    <variant name="SonyWF1000XM3_4"/>
+    <variant name="SonyWF1000XM3_5"/>
+    <variant name="SonyWF1000XM3_6"/>
+    <variant name="SonyWF1000XM3_7"/>
+    <variant name="SonyWH1000XM3"/>
+    <variant name="SonyWH1000XM3_1"/>
+    <variant name="SRSXB23"/>
+    <variant name="SRSXB23_1"/>
+    <variant name="SRSXB23_2"/>
+    <variant name="SRSXB23_3"/>
+    <variant name="SRSXB23_4"/>
+    <variant name="SRSXB33"/>
+    <variant name="SRSXB33_1"/>
+    <variant name="SRSXB33_2"/>
+    <variant name="SRSXB33_3"/>
   </token>
 </histogram>
 
@@ -364,18 +423,77 @@ chromium-metrics-reviews@google.com.
         summary="subsequent pairing protocol"/>
   </token>
   <token key="FastPairTrackedModelID">
-    <variant name="JBLLIVE300TWS" summary="JBL LIVE 300 TWS"/>
-    <variant name="JBLLIVE400BT" summary="JBL LIVE 400 BT"/>
-    <variant name="JBLTUNE125TWS" summary="JBL TUNE 125 TWS"/>
-    <variant name="JBLTUNE225TWS" summary="JBL TUNE 225 TWS"/>
-    <variant name="OnePlusBudsZ" summary="OnePlus Buds Z"/>
-    <variant name="Other"
-        summary="A headset that isn't one of the tracked models."/>
-    <variant name="PixelBuds" summary="Pixel Buds V1"/>
-    <variant name="PixelBudsASeries" summary="Pixel buds A-series"/>
-    <variant name="PixelBudsPro" summary="Pixel buds pro"/>
-    <variant name="RealmeBudsAir2" summary="realme Buds Air 2"/>
-    <variant name="SonyWF1000XM3" summary="Sony WF-1000 XM3"/>
+    <variant name="JBLLIVE300TWS"/>
+    <variant name="JBLLIVE300TWS_1"/>
+    <variant name="JBLLIVE300TWS_2"/>
+    <variant name="JBLLIVE400BT"/>
+    <variant name="JBLLIVE400BT_1"/>
+    <variant name="JBLLIVE400BT_2"/>
+    <variant name="JBLLIVE400BT_3"/>
+    <variant name="JBLLIVE400BT_4"/>
+    <variant name="JBLLIVEPROTWS"/>
+    <variant name="JBLLIVEPROTWS_1"/>
+    <variant name="JBLLIVEPROTWS_2"/>
+    <variant name="JBLLIVEPROTWS_3"/>
+    <variant name="JBLLIVEPROTWS_4"/>
+    <variant name="JBLLIVEPROTWS_5"/>
+    <variant name="JBLLIVEPROTWS_6"/>
+    <variant name="JBLTUNE125TWS"/>
+    <variant name="JBLTUNE125TWS_1"/>
+    <variant name="JBLTUNE125TWS_2"/>
+    <variant name="JBLTUNE125TWS_3"/>
+    <variant name="JBLTUNE125TWS_4"/>
+    <variant name="JBLTUNE125TWS_5"/>
+    <variant name="JBLTUNE130NCTWS"/>
+    <variant name="JBLTUNE130NCTWS_1"/>
+    <variant name="JBLTUNE130NCTWS_2"/>
+    <variant name="JBLTUNE130NCTWS_3"/>
+    <variant name="JBLTUNE225TWS"/>
+    <variant name="JBLTUNE225TWS_1"/>
+    <variant name="JBLTUNE225TWS_2"/>
+    <variant name="JBLTUNE225TWS_3"/>
+    <variant name="JBLTUNE225TWS_4"/>
+    <variant name="JBLTUNE225TWS_5"/>
+    <variant name="NothingEar1"/>
+    <variant name="NothingEar1_2"/>
+    <variant name="OnePlusBudsZ"/>
+    <variant name="OnePlusBudsZ_1"/>
+    <variant name="OnePlusBudsZ_2"/>
+    <variant name="Other"/>
+    <variant name="PixelBuds"/>
+    <variant name="PixelBudsASeries"/>
+    <variant name="PixelBudsASeries_1"/>
+    <variant name="PixelBudsASeries_2"/>
+    <variant name="PixelBudsPro"/>
+    <variant name="PixelBudsPro_1"/>
+    <variant name="PixelBudsPro_2"/>
+    <variant name="PixelBudsPro_3"/>
+    <variant name="PixelBudsPro_4"/>
+    <variant name="RealMeBudsAir2"/>
+    <variant name="RealMeBudsAir2_1"/>
+    <variant name="RealMeBudsAir2Neo"/>
+    <variant name="RealMeBudsAirPro"/>
+    <variant name="RealMeBudsAirPro_1"/>
+    <variant name="RealMeBudsAirPro_2"/>
+    <variant name="SonyWF1000XM3"/>
+    <variant name="SonyWF1000XM3_1"/>
+    <variant name="SonyWF1000XM3_2"/>
+    <variant name="SonyWF1000XM3_3"/>
+    <variant name="SonyWF1000XM3_4"/>
+    <variant name="SonyWF1000XM3_5"/>
+    <variant name="SonyWF1000XM3_6"/>
+    <variant name="SonyWF1000XM3_7"/>
+    <variant name="SonyWH1000XM3"/>
+    <variant name="SonyWH1000XM3_1"/>
+    <variant name="SRSXB23"/>
+    <variant name="SRSXB23_1"/>
+    <variant name="SRSXB23_2"/>
+    <variant name="SRSXB23_3"/>
+    <variant name="SRSXB23_4"/>
+    <variant name="SRSXB33"/>
+    <variant name="SRSXB33_1"/>
+    <variant name="SRSXB33_2"/>
+    <variant name="SRSXB33_3"/>
   </token>
 </histogram>
 
@@ -956,18 +1074,77 @@ chromium-metrics-reviews@google.com.
     UI, and when the learn more button is pressed on the associate account UI.
   </summary>
   <token key="FastPairTrackedModelID">
-    <variant name="JBLLIVE300TWS" summary="JBL LIVE 300 TWS"/>
-    <variant name="JBLLIVE400BT" summary="JBL LIVE 400 BT"/>
-    <variant name="JBLTUNE125TWS" summary="JBL TUNE 125 TWS"/>
-    <variant name="JBLTUNE225TWS" summary="JBL TUNE 225 TWS"/>
-    <variant name="OnePlusBudsZ" summary="OnePlus Buds Z"/>
-    <variant name="Other"
-        summary="A headset that isn't one of the tracked models."/>
-    <variant name="PixelBuds" summary="Pixel Buds V1"/>
-    <variant name="PixelBudsASeries" summary="Pixel buds A-series"/>
-    <variant name="PixelBudsPro" summary="Pixel buds pro"/>
-    <variant name="RealmeBudsAir2" summary="Realme Buds Air 2"/>
-    <variant name="SonyWF1000XM3" summary="Sony WF-1000 XM3"/>
+    <variant name="JBLLIVE300TWS"/>
+    <variant name="JBLLIVE300TWS_1"/>
+    <variant name="JBLLIVE300TWS_2"/>
+    <variant name="JBLLIVE400BT"/>
+    <variant name="JBLLIVE400BT_1"/>
+    <variant name="JBLLIVE400BT_2"/>
+    <variant name="JBLLIVE400BT_3"/>
+    <variant name="JBLLIVE400BT_4"/>
+    <variant name="JBLLIVEPROTWS"/>
+    <variant name="JBLLIVEPROTWS_1"/>
+    <variant name="JBLLIVEPROTWS_2"/>
+    <variant name="JBLLIVEPROTWS_3"/>
+    <variant name="JBLLIVEPROTWS_4"/>
+    <variant name="JBLLIVEPROTWS_5"/>
+    <variant name="JBLLIVEPROTWS_6"/>
+    <variant name="JBLTUNE125TWS"/>
+    <variant name="JBLTUNE125TWS_1"/>
+    <variant name="JBLTUNE125TWS_2"/>
+    <variant name="JBLTUNE125TWS_3"/>
+    <variant name="JBLTUNE125TWS_4"/>
+    <variant name="JBLTUNE125TWS_5"/>
+    <variant name="JBLTUNE130NCTWS"/>
+    <variant name="JBLTUNE130NCTWS_1"/>
+    <variant name="JBLTUNE130NCTWS_2"/>
+    <variant name="JBLTUNE130NCTWS_3"/>
+    <variant name="JBLTUNE225TWS"/>
+    <variant name="JBLTUNE225TWS_1"/>
+    <variant name="JBLTUNE225TWS_2"/>
+    <variant name="JBLTUNE225TWS_3"/>
+    <variant name="JBLTUNE225TWS_4"/>
+    <variant name="JBLTUNE225TWS_5"/>
+    <variant name="NothingEar1"/>
+    <variant name="NothingEar1_2"/>
+    <variant name="OnePlusBudsZ"/>
+    <variant name="OnePlusBudsZ_1"/>
+    <variant name="OnePlusBudsZ_2"/>
+    <variant name="Other"/>
+    <variant name="PixelBuds"/>
+    <variant name="PixelBudsASeries"/>
+    <variant name="PixelBudsASeries_1"/>
+    <variant name="PixelBudsASeries_2"/>
+    <variant name="PixelBudsPro"/>
+    <variant name="PixelBudsPro_1"/>
+    <variant name="PixelBudsPro_2"/>
+    <variant name="PixelBudsPro_3"/>
+    <variant name="PixelBudsPro_4"/>
+    <variant name="RealMeBudsAir2"/>
+    <variant name="RealMeBudsAir2_1"/>
+    <variant name="RealMeBudsAir2Neo"/>
+    <variant name="RealMeBudsAirPro"/>
+    <variant name="RealMeBudsAirPro_1"/>
+    <variant name="RealMeBudsAirPro_2"/>
+    <variant name="SonyWF1000XM3"/>
+    <variant name="SonyWF1000XM3_1"/>
+    <variant name="SonyWF1000XM3_2"/>
+    <variant name="SonyWF1000XM3_3"/>
+    <variant name="SonyWF1000XM3_4"/>
+    <variant name="SonyWF1000XM3_5"/>
+    <variant name="SonyWF1000XM3_6"/>
+    <variant name="SonyWF1000XM3_7"/>
+    <variant name="SonyWH1000XM3"/>
+    <variant name="SonyWH1000XM3_1"/>
+    <variant name="SRSXB23"/>
+    <variant name="SRSXB23_1"/>
+    <variant name="SRSXB23_2"/>
+    <variant name="SRSXB23_3"/>
+    <variant name="SRSXB23_4"/>
+    <variant name="SRSXB33"/>
+    <variant name="SRSXB33_1"/>
+    <variant name="SRSXB33_2"/>
+    <variant name="SRSXB33_3"/>
   </token>
 </histogram>
 

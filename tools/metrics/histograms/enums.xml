@@ -37396,12 +37396,72 @@ Called by update_extension_permission.py.-->
   <int value="2" label="OnePlusBudsZ"/>
   <int value="3" label="JBLTUNE225TWS"/>
   <int value="4" label="SonyWF1000XM3"/>
-  <int value="5" label="RealmeBudsAir2"/>
+  <int value="5" label="RealMeBudsAir2"/>
   <int value="6" label="JBLLIVE400BT"/>
   <int value="7" label="JBLLIVE300TWS"/>
   <int value="8" label="PixelBuds"/>
   <int value="9" label="PixelBudsASeries"/>
   <int value="10" label="PixelBudsPro"/>
+  <int value="11" label="JBLLIVEPROTWS"/>
+  <int value="12" label="JBLLIVEPROTWS_1"/>
+  <int value="13" label="JBLLIVEPROTWS_2"/>
+  <int value="14" label="JBLLIVEPROTWS_3"/>
+  <int value="15" label="JBLLIVEPROTWS_4"/>
+  <int value="16" label="JBLLIVEPROTWS_5"/>
+  <int value="17" label="JBLLIVEPROTWS_6"/>
+  <int value="18" label="JBLLIVE300TWS_1"/>
+  <int value="19" label="JBLLIVE300TWS_2"/>
+  <int value="20" label="JBLLIVE400BT_1"/>
+  <int value="21" label="JBLLIVE400BT_2"/>
+  <int value="22" label="JBLLIVE400BT_3"/>
+  <int value="23" label="JBLLIVE400BT_4"/>
+  <int value="24" label="JBLTUNE125TWS_1"/>
+  <int value="25" label="JBLTUNE125TWS_2"/>
+  <int value="26" label="JBLTUNE125TWS_3"/>
+  <int value="27" label="JBLTUNE125TWS_4"/>
+  <int value="28" label="JBLTUNE125TWS_5"/>
+  <int value="29" label="JBLTUNE130NCTWS"/>
+  <int value="30" label="JBLTUNE130NCTWS_1"/>
+  <int value="31" label="JBLTUNE130NCTWS_2"/>
+  <int value="32" label="JBLTUNE130NCTWS_3"/>
+  <int value="33" label="JBLTUNE225TWS_1"/>
+  <int value="34" label="JBLTUNE225TWS_2"/>
+  <int value="35" label="JBLTUNE225TWS_3"/>
+  <int value="36" label="JBLTUNE225TWS_4"/>
+  <int value="37" label="JBLTUNE225TWS_5"/>
+  <int value="38" label="NothingEar1"/>
+  <int value="39" label="NothingEar1_1"/>
+  <int value="40" label="OnePlusBudsZ_1"/>
+  <int value="41" label="OnePlusBudsZ_2"/>
+  <int value="42" label="PixelBudsASeries_1"/>
+  <int value="43" label="PixelBudsASeries_2"/>
+  <int value="44" label="PixelBudsPro_1"/>
+  <int value="45" label="PixelBudsPro_2"/>
+  <int value="46" label="PixelBudsPro_3"/>
+  <int value="47" label="PixelBudsPro_4"/>
+  <int value="48" label="RealMeBudsAir2_1"/>
+  <int value="49" label="RealMeBudsAir2Neo"/>
+  <int value="50" label="RealMeBudsAirPro"/>
+  <int value="51" label="RealMeBudsAirPro_1"/>
+  <int value="52" label="RealMeBudsAirPro_2"/>
+  <int value="53" label="SonyWF1000XM3_1"/>
+  <int value="54" label="SonyWF1000XM3_2"/>
+  <int value="55" label="SonyWF1000XM3_3"/>
+  <int value="56" label="SonyWF1000XM3_4"/>
+  <int value="57" label="SonyWF1000XM3_5"/>
+  <int value="58" label="SonyWF1000XM3_6"/>
+  <int value="59" label="SonyWF1000XM3_7"/>
+  <int value="60" label="SonyWH1000XM3"/>
+  <int value="61" label="SonyWH1000XM3_1"/>
+  <int value="62" label="SRSXB23"/>
+  <int value="63" label="SRSXB23_1"/>
+  <int value="64" label="SRSXB23_2"/>
+  <int value="65" label="SRSXB23_3"/>
+  <int value="66" label="SRSXB23_4"/>
+  <int value="67" label="SRSXB33"/>
+  <int value="68" label="SRSXB33_1"/>
+  <int value="69" label="SRSXB33_2"/>
+  <int value="70" label="SRSXB33_3"/>
 </enum>
 
 <enum name="FastPairVersion">
