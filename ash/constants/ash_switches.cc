@@ -562,10 +562,6 @@ const char kForceLaunchBrowser[] = "force-launch-browser";
 // tests can change how it's brought up. This flag disables that.
 const char kForceLoginManagerInTests[] = "force-login-manager-in-tests";
 
-// Forces the "Cast" item in quick settings to be visible, even if no cast
-// devices are available. Useful for UI development in the emulator.
-const char kForceQuickSettingsCast[] = "force-quick-settings-cast";
-
 // Forces the cursor to be shown even if we are mimicking touch events. Note
 // that cursor changes are locked when using this switch.
 const char kForceShowCursor[] = "force-show-cursor";

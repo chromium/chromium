@@ -331,6 +331,13 @@ void QuickSettingsView::AddTemporaryDetailedViewButtons() {
           },
           controller_),
       u"A11y"));
+  temporary_buttons_container_->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(
+          [](UnifiedSystemTrayController* controller) {
+            controller->ShowCastDetailedView();
+          },
+          controller_),
+      u"Cast"));
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)
