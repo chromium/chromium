@@ -567,8 +567,8 @@
   'CROS_EVE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '105.0.5195.134',
-      'cros_img': 'eve-release/R105-14989.107.0',
+      'cros_chrome_version': '107.0.5304.92',
+      'cros_img': 'eve-release/R107-15117.87.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
@@ -658,8 +658,8 @@
   'CROS_JACUZZI_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '106.0.5249.134',
-      'cros_img': 'jacuzzi-release/R106-15054.114.0',
+      'cros_chrome_version': '107.0.5304.92',
+      'cros_img': 'jacuzzi-release/R107-15117.86.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_STABLE',
@@ -760,8 +760,8 @@
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '106.0.5249.134',
-      'cros_img': 'strongbad-release/R106-15054.114.0',
+      'cros_chrome_version': '107.0.5304.92',
+      'cros_img': 'strongbad-release/R107-15117.87.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
