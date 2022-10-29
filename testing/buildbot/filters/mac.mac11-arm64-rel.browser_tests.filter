@@ -1,7 +1,5 @@
 # crbug.com/1262402 Test filter for browser_tests on mac11-arm64-rel
 
--All/CryptotokenBrowserTest.SandboxedPageDoesNotSign/0
--All/CryptotokenBrowserTest.SignShowsPrompt/0
 -All/LoginPromptBrowserTest.TestBasicAuth/0
 -All/LoginPromptBrowserTest.TestBasicAuth/1
 -All/CastV2PerformanceTest.Performance/1

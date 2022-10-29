@@ -11,14 +11,6 @@
 # Expected: blinkRequestResource XMLHttpRequest
 -ActivityLogApiTest.TriggerEvent
 
-# TODO(crbug.com/1311019): [hid_manager_impl.cc(28)] Check failed: hid_service_]
--All/CryptotokenBrowserTest.SignWithEnterprisePolicyDoesNotShowPrompt/0
--All/CryptotokenBrowserTest.SignWithEnterprisePolicyDoesNotShowPrompt/1
--All/CryptotokenBrowserTest.SignWithOriginTrialDoesNotShowPrompt/0
--All/CryptotokenBrowserTest.SignWithOriginTrialDoesNotShowPrompt/1
--All/CryptotokenBrowserTest.SignWithOriginTrialInCrossOriginIframeDoesNotShowPrompt/0
--All/CryptotokenBrowserTest.SignWithOriginTrialInCrossOriginIframeDoesNotShowPrompt/1
-
 # TODO(crbug.com/1326647): Comparison of a couple of very long strings in spanish has an unexpected
 # diff
 -AllForms/FormStructureBrowserTest.DataDrivenHeuristics/153
