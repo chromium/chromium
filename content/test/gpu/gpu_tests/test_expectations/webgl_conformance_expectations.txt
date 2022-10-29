@@ -380,7 +380,6 @@ crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webg
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
 # Win / AMD D3D11 (default) failures
-crbug.com/1043773 [ win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
 
 # Win / AMD D3D9 failures
 
@@ -519,7 +518,6 @@ crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_
 
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android ] conformance/textures/misc/video-rotation.html [ Failure ]
-crbug.com/1347077 [ android ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 
 # Nexus 5
 crbug.com/899754 [ android android-nexus-5 ] conformance/attribs/gl-disabled-vertex-attrib-update.html [ Failure ]
