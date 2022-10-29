@@ -20,6 +20,38 @@ config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
 
+_disallowed_cast_deps = [
+  # Only //components/cast/message_port:* should ever be used. Exclude peers.
+  # TODO(fdegans): Extract message_port so this can become just
+  # "//components/cast/*".
+  "//components/cast/api_bindings/*",
+  "//components/cast/named_message_port_connector/*",
+
+  # This component is not currently used.
+  "//components/cast_receiver/*",
+
+  # WebEngine never implements sender functionality.
+  "//third_party/openscreen/src/cast/sender/*",
+]
+
+if (!enable_cast_receiver) {
+  _disallowed_cast_deps += [
+    "//components/cast/*",
+
+    # TODO(crbug.com/1354845): Once this bug is fixed, update this list to
+    # include as much of "//components/cast_streaming/*" with as few individual
+    # exclusions as is reasonable.
+    "//components/cast_streaming/browser/*",
+    "//components/cast_streaming/common/*",
+    "//components/cast_streaming/renderer/*",
+
+    # TODO(crbug.com/1354845): Once this bug is fixed, update this list to
+    # include as much of "//third_party/openscreen/*" with as few individual
+    # exclusions as is reasonable.
+    "//third_party/openscreen/src/cast/receiver/*",
+  ]
+}
+
 _disallowed_extensions_deps = [
   # Although `enable_extensions` is true for Fuchsia, extensions code should
   # not be linked into WebEngine because it cannot be used and this would
@@ -78,8 +110,9 @@ _disallowed_printing_deps = [
 
 # TODO(crbug.com/1311822): Replace the uses of this in each target with a group
 # that depends on those targets once this is correctly supported.
-_disallowed_deps = _disallowed_extensions_deps + _disallowed_pdf_deps +
-                   _disallowed_ppapi_deps + _disallowed_printing_deps
+_disallowed_deps =
+    _disallowed_cast_deps + _disallowed_extensions_deps + _disallowed_pdf_deps +
+    _disallowed_ppapi_deps + _disallowed_printing_deps
 
 source_set("web_engine_export_from_implementation") {
   public = [ "web_engine_export.h" ]
