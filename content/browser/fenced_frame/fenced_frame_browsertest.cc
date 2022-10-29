@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, UnloadHandler) {
     console_observer.SetPattern(kConsolePattern);
     EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
                        "window.addEventListener('beforeunload', (e) => {});"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
   }
   {
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, UnloadHandler) {
     console_observer.SetPattern(kConsolePattern);
     EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
                        "window.addEventListener('unload', (e) => {});"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
   }
   {
@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, UnloadHandler) {
     console_observer.SetPattern(kConsolePattern);
     EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
                        "window.onbeforeunload = function(e){};"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
   }
   {
@@ -1004,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, UnloadHandler) {
     console_observer.SetPattern(kConsolePattern);
     EXPECT_TRUE(
         ExecJs(fenced_frame_rfh.get(), "window.onunload = function(e){};"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
   }
 }
