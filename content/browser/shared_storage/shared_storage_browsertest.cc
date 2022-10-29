@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cmath>
 #include <map>
 #include <string>
 #include <tuple>
@@ -2537,7 +2538,11 @@ class SharedStorageFencedFrameInteractionBrowserTest
       sharedStorage.run('remaining-budget-operation', {data: {}});
     )"));
 
-    console_observer.Wait();
+    bool observed = console_observer.Wait();
+    EXPECT_TRUE(observed);
+    if (!observed) {
+      return nan("");
+    }
 
     EXPECT_EQ(1u, console_observer.messages().size());
     std::string console_message =
