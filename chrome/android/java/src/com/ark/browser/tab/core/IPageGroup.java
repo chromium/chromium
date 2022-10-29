@@ -3,6 +3,7 @@ package com.ark.browser.tab.core;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabSnapshotManager;
+import com.ark.browser.utils.ArkLogger;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public interface IPageGroup {
     List<IPage> getPageInfoList();
 
     default IPage getPageAt(int i) {
+        ArkLogger.e(this, "getPageAt i=" + i + " count=" + getCount());
         if (i < 0 || i >= getCount()) {
             return null;
         }
@@ -84,10 +86,11 @@ public interface IPageGroup {
     }
 
     default void remove() {
-        for (IPage pageInfo : getPageInfoList()) {
-            PageCacheManager.getInstance().removePage(pageInfo.getPageInfo());
-            TabSnapshotManager.getInstance().removeSnapshot(pageInfo.getPageInfo().getPageId());
-            pageInfo.getPageInfo().delete();
+        for (IPage page : getPageInfoList()) {
+            PageCacheManager.getInstance().removePage(page.getPageInfo());
+            TabSnapshotManager.getInstance().removeSnapshot(page.getPageInfo().getPageId());
+//            pageInfo.getPageInfo().delete();
+            page.deletePageInfo();
         }
         getPageInfoList().clear();
     }

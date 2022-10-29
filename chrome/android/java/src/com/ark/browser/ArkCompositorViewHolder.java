@@ -45,6 +45,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.ark.browser.tab.ArkTabWebContentsObserver;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
 import com.ark.browser.ui.widget.SmartSearchPanel;
 import com.ark.browser.utils.ArkLogger;
@@ -76,6 +77,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -98,6 +100,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -139,6 +142,8 @@ public class ArkCompositorViewHolder extends FrameLayout
     protected TabContentManager mTabContentManager;
 
     protected Callback mCallback;
+
+    private final ArkTabStore mTabStore = new ArkTabStore();
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
 
@@ -215,6 +220,30 @@ public class ArkCompositorViewHolder extends FrameLayout
         public void onLoadProgressChanged(Tab tab, float progress) {
             super.onLoadProgressChanged(tab, progress);
         }
+
+        @Override
+        public void onNavigationEntriesDeleted(Tab tab) {
+            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+            mTabStore.addTabToSaveQueue(tab);
+        }
+
+        @Override
+        public void onPageLoadFinished(Tab tab, GURL url) {
+            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+            mTabStore.addTabToSaveQueue(tab);
+        }
+
+        @Override
+        public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+            mTabStore.addTabToSaveQueue(tab);
+            super.onLoadStopped(tab, toDifferentDocument);
+        }
+
+        @Override
+        public void onTitleUpdated(Tab tab) {
+            if (!tab.isDestroyed()) TabStateAttributes.from(tab).setIsTabStateDirty(true);
+        }
+
     };
 
 

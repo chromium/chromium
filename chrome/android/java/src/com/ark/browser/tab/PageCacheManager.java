@@ -143,9 +143,10 @@ public class PageCacheManager {
     public Tab createLivePage(@NonNull ArkWindowAndroid nativeWindow, @NonNull PageInfo pageInfo) {
         long start = System.currentTimeMillis();
 
-        ArkLogger.e(TAG, "createLivePage");
+        ArkLogger.e(this, "createLivePage pageInfo=" + pageInfo);
 
         Tab tab = ArkTabBuilder.createLiveTab(false)
+                .setId(pageInfo.getPageId())
                 .setIncognito(pageInfo.isIncognito())
                 .setWindow(nativeWindow)
                 .setDelegateFactory(nativeWindow.getTabDelegateFactory())
@@ -172,6 +173,7 @@ public class PageCacheManager {
                                          @NonNull TabState state) {
         long start = System.currentTimeMillis();
         Tab tab = ArkTabBuilder.createFromFrozenState()
+                .setId(pageInfo.getPageId())
                 .setTabState(state)
                 .setWindow(nativeWindow)
                 .setDelegateFactory(nativeWindow.getTabDelegateFactory())

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -221,12 +222,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         }
 
         mViewHolder.onStart();
-
-
-        ThreadPool.postOnUIThread(() -> {
-            LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
-            TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-        });
     }
 
     @Override
@@ -415,7 +410,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
                     @Override
                     public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                        super.onLoadStopped(tab, toDifferentDocument);
                         mProgressBar.setVisibility(View.GONE);
                     }
 
@@ -429,7 +423,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
-                        super.onPageLoadFinished(tab, url);
                         mProgressBar.setVisibility(View.GONE);
                     }
                 };

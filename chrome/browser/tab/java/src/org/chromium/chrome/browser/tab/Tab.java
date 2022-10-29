@@ -310,6 +310,9 @@ public interface Tab extends TabLifecycle {
     void setImportance(@ChildProcessImportance int importance);
 
 
+    default void saveState() {
+
+    }
 
 
 

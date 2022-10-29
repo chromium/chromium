@@ -2,9 +2,21 @@ package com.ark.browser.tab;
 
 import androidx.annotation.Keep;
 
+import com.ark.browser.tab.dao.ArkTabDao;
+import com.ark.browser.utils.ThreadPool;
+
+import org.chromium.chrome.browser.tab.Tab;
+
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 @Keep
 //@Table(database = PageInfoManager.class)
-public class PageInfo extends DbModel {
+public class PageInfo {
 
 //    @PrimaryKey()
     public int pageId;
@@ -13,7 +25,7 @@ public class PageInfo extends DbModel {
     public int parentId;
 
 //    @Column
-    public String tabInfoId;
+    public long tabInfoId;
 //    @Column
     public int originalIndex;
 //    @Column
@@ -30,7 +42,42 @@ public class PageInfo extends DbModel {
 //    @Column
     private String title;
 
-    public static PageInfo from(int pageId, int parentId, String tabInfoId, int index, boolean isIncognito) {
+    private PageInfo() {
+
+    }
+
+//    @Override
+//    public void save() {
+//        ThreadPool.executeIO(() -> {
+//            File pagesDir = ArkTabDao.getPagesDir(tabInfoId);
+//            File file = new File(pagesDir, String.valueOf(pageId));
+//            try (DataOutputStream os = new DataOutputStream(
+//                    new BufferedOutputStream(new FileOutputStream(file)))) {
+//                int version = 1;
+//                os.writeInt(version);
+//                os.writeInt(pageId);
+//                os.writeLong(tabInfoId);
+//                os.writeBoolean(isIncognito);
+//                os.writeBoolean(fromMerge);
+//                os.writeInt(themeColor);
+//                os.writeInt(originalIndex);
+//                os.writeUTF(url);
+//                os.writeUTF(title);
+//                os.flush();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+//
+//    @Override
+//    public void deleteSync() {
+//        File pagesDir = ArkTabDao.getPagesDir(tabInfoId);
+//        File file = new File(pagesDir, String.valueOf(pageId));
+//        file.delete();
+//    }
+
+    public static PageInfo from(int pageId, int parentId, long tabInfoId, int index, boolean isIncognito) {
         PageInfo info = new PageInfo();
         info.pageId = pageId;
         info.parentId = parentId;
@@ -80,6 +127,35 @@ public class PageInfo extends DbModel {
         return info;
     }
 
+
+    public static PageInfo from(File pageFile) throws IOException {
+        try (DataInputStream stream = ArkTabDao.readFile(pageFile)) {
+            if (stream == null) {
+                throw new IOException("page file stream is null!");
+            }
+            return from(stream);
+        }
+//        DataInputStream stream = ArkTabDao.readFile(pageFile);
+//        if (stream == null) {
+//            throw new IOException("page file stream is null!");
+//        }
+//        return from(stream);
+    }
+
+    public static PageInfo from(DataInputStream is) throws IOException {
+        PageInfo info = new PageInfo();
+        int version = is.readInt();
+        info.pageId = is.readInt();
+        info.tabInfoId = is.readLong();
+        info.isIncognito = is.readBoolean();
+        info.fromMerge = is.readBoolean();
+        info.themeColor = is.readInt();
+        info.originalIndex = is.readInt();
+        info.url = is.readUTF();
+        info.title = is.readUTF();
+        return info;
+    }
+
     public int getPageId() {
         return pageId;
     }
@@ -96,11 +172,11 @@ public class PageInfo extends DbModel {
         this.parentId = parentId;
     }
 
-    public String getTabInfoId() {
+    public long getTabInfoId() {
         return tabInfoId;
     }
 
-    public void setTabInfoId(String tabInfoId) {
+    public void setTabInfoId(long tabInfoId) {
         this.tabInfoId = tabInfoId;
     }
 

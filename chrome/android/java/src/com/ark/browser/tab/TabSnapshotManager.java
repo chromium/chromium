@@ -37,15 +37,18 @@ public class TabSnapshotManager {
     private final SparseArray<SnapshotTask> snapshotTasks = new SparseArray<>();
     private final LruCache<Integer, Bitmap> mBitmapCache;
 
-    private final String path;
+//    private final String path;
 
     private static final class Holder {
         private static final TabSnapshotManager MANAGER = new TabSnapshotManager();
     }
 
-    private TabSnapshotManager() {
-        path = ContextUtils.getApplicationContext().getDir(
+    private static final class PathHolder {
+        private static final String path = ContextUtils.getApplicationContext().getDir(
                 THUMBNAIL_DIRECTORY_NAME, Context.MODE_PRIVATE).getPath();
+    }
+
+    private TabSnapshotManager() {
         long maxMemory = Runtime.getRuntime().maxMemory() / 6;
         // 89478485
         ArkLogger.d("TabThumbnailManager", "maxMemory=" + maxMemory);
@@ -87,7 +90,7 @@ public class TabSnapshotManager {
 
     public void removeSnapshot(int pageId) {
         ThreadPool.executeIO(() -> {
-            File file = new File(path, pageId + ".thumbnail");
+            File file = new File(PathHolder.path, pageId + ".thumbnail");
             if (file.exists()) {
                 file.delete();
             }
@@ -102,7 +105,7 @@ public class TabSnapshotManager {
                     synchronized (mBitmapCache) {
                         Bitmap bitmap = mBitmapCache.get(tabId);
                         if (bitmap == null) {
-                            File file = new File(path, tabId + ".thumbnail");
+                            File file = new File(PathHolder.path, tabId + ".thumbnail");
                             if (file.exists()) {
                                 ThreadPool.executeIO(() -> {
                                     Bitmap bitmap1 = BitmapFactory.decodeFile(file.getPath());

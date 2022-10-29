@@ -9,6 +9,7 @@ import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabSnapshotManager;
+import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
@@ -59,7 +60,7 @@ public interface ITabGroup {
     default int indexOf(ITab targetTab) {
         for (int i = 0; i < getCount(); i++) {
             ITab tab = getTabAt(i);
-            if (TextUtils.equals(tab.getId(), targetTab.getId())) {
+            if (tab.getId() == targetTab.getId()) {
                 return i;
             }
         }
@@ -106,15 +107,15 @@ public interface ITabGroup {
         return null;
     }
 
-    default ITab getTabInfoById(String tabId) {
+    default ITab getTabInfoById(long tabId) {
         ITab tabInfo = getCurrentTab();
-        if (tabInfo != null && TextUtils.equals(tabId, tabInfo.getId())) {
+        if (tabInfo != null && tabId == tabInfo.getId()) {
             return tabInfo;
         }
         for (int i = 0; i < getCount(); i++) {
-            ITab manager = getTabAt(i);
-            if (TextUtils.equals(tabId, manager.getId())) {
-                return manager;
+            ITab tab = getTabAt(i);
+            if (tabId == tab.getId()) {
+                return tab;
             }
         }
         return null;
@@ -254,7 +255,7 @@ public interface ITabGroup {
     }
 
     default boolean selectTabInfo(ITab iTab, IPage page) {
-        ArkLogger.e(getTag(), "selectTabInfo tabInfo=" + iTab + " pageInfo=" + page);
+        ArkLogger.e(this, "selectTabInfo tabInfo=" + iTab + " pageInfo=" + page);
         if (page == null) {
             return false;
         }
@@ -282,9 +283,10 @@ public interface ITabGroup {
         int finalLastId = lastId;
         ThreadPool.executeIO(() -> {
             Tab tab = PageCacheManager.getInstance().findPage(page.getId());
-            ArkLogger.e(getTag(), "selectTabInfo tab=" + tab);
-            TabState state = null;
 
+            TabState state = ArkTabDao.restorePageState(page.getId());
+
+            ArkLogger.e(getTag(), "selectTabInfo tab=" + tab + " state=" + state);
 
             TabState finalState = state;
             ThreadPool.post(() -> {
@@ -305,7 +307,8 @@ public interface ITabGroup {
                 onIndexChanged(indexOf(iTab));
                 iTab.getTabInfo().setAccessTime(System.currentTimeMillis());
                 iTab.selectPage(page);
-                iTab.getTabInfo().save();
+//                iTab.getTabInfo().save();
+                iTab.saveTabInfo();
 
 
                 for (TabInfoObserver obs : getObservers()) {

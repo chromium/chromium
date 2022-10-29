@@ -1,7 +1,6 @@
 package com.ark.browser.tab.core;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabInfo;
@@ -9,7 +8,6 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class TabImpl implements ITab {
 
     private transient ITab mFloatingTab;
 
-    protected transient File tabListFolder;
+//    protected transient File tabListFolder;
 
     public TabImpl() {
         this(TabInfo.create(), new ArrayList<>());
@@ -40,25 +38,25 @@ public class TabImpl implements ITab {
     }
 
     @Override
-    public String getId() {
+    public long getId() {
         return this.tabInfo.getTabInfoId();
     }
 
-    @Override
-    public File getTabListFolder() {
-        if (tabListFolder != null) {
-            return tabListFolder;
-        }
-        File root = ContextUtils.getApplicationContext()
-                .getDir("tab_list", Context.MODE_PRIVATE);
-        tabListFolder = new File(root.getAbsolutePath(), getId());
-        if (tabListFolder.exists()) {
-            return tabListFolder;
-        } else {
-            tabListFolder.mkdirs();
-        }
-        return tabListFolder;
-    }
+//    @Override
+//    public File getTabListFolder() {
+//        if (tabListFolder != null) {
+//            return tabListFolder;
+//        }
+//        File root = ContextUtils.getApplicationContext()
+//                .getDir("tab_list", Context.MODE_PRIVATE);
+//        tabListFolder = new File(root.getAbsolutePath(), String.valueOf(getId()));
+//        if (tabListFolder.exists()) {
+//            return tabListFolder;
+//        } else {
+//            tabListFolder.mkdirs();
+//        }
+//        return tabListFolder;
+//    }
 
     @Override
     public boolean hasPage(int id) {
@@ -97,20 +95,21 @@ public class TabImpl implements ITab {
         tabInfo.setLocked(mFloatingTabInfo.isLocked());
         tabInfo.setIncognito(mFloatingTabInfo.isIncognito());
 
-        tabListFolder = mFloatingTab.getTabListFolder();
+//        tabListFolder = mFloatingTab.getTabListFolder();
 
         mPageGroup.getPageInfoList().clear();
         mPageGroup.getPageInfoList().addAll(mFloatingTab.getPageGroup().getPageInfoList());
 
         mFloatingTab = null;
 
-        getTabInfo().save();
+//        getTabInfo().save();
+        saveTabInfo();
 
         ITabGroup tabList = TabListManager.getInstance().getTabList(tabInfo.isIncognito());
         TabInfo currentTabInfo = tabList.getCurrentTabInfo();
         ArkLogger.d(TAG, "exitFloatingTabInfo currentTabInfo=" + currentTabInfo + " this=" + this);
         if (currentTabInfo != null
-                && TextUtils.equals(currentTabInfo.getTabInfoId(), getTabInfo().getTabInfoId())) {
+                && currentTabInfo.getTabInfoId() == getTabInfo().getTabInfoId()) {
             ArkLogger.d(TAG, "exitFloatingTabInfo tab=" + getCurrentPageInfo());
             TabListManager.getInstance().selectTab(this);
         }

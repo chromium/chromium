@@ -352,7 +352,7 @@ public class SmartSearchPanel extends FrameLayout {
         public static TabInfo create(long createTime) {
             MyTabInfo manager = new MyTabInfo();
             manager.createTime = createTime;
-            manager.tabInfoId = String.valueOf(manager.createTime);
+            manager.tabInfoId = manager.createTime;
             return manager;
         }
 
@@ -361,14 +361,14 @@ public class SmartSearchPanel extends FrameLayout {
             this.pageIndex = index;
         }
 
-        @Override
-        public void save() {
-
-        }
-
-        @Override
-        public void update() {
-        }
+//        @Override
+//        public void save() {
+//
+//        }
+//
+//        @Override
+//        public void update() {
+//        }
 
     }
 
@@ -721,16 +721,29 @@ public class SmartSearchPanel extends FrameLayout {
     private int openNewTab(LoadUrlParams loadUrlParams) {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl());
         TabInfo newTabInfo = MyTabInfo.create();
-        ITab newTab = new TabImpl(newTabInfo);
+        ITab newTab = new TabImpl(newTabInfo) {
+
+            @Override
+            public void saveTabInfo() {
+
+            }
+
+            @Override
+            public void deleteTabInfo() {
+
+            }
+        };
 
         Tab tab = PageCacheManager.getInstance().createLivePageByType(newTab.getPageSize(),
                 mFloatTabList.getWindowAndroid(), newTab, TabLaunchType.FROM_CHROME_UI);
 
-        PageInfo pageInfo = new PageInfo();
-        pageInfo.setPageId(tab.getId());
+        PageInfo pageInfo = PageInfo.from(tab.getId(), Tab.INVALID_PAGE_ID, newTab.getId(),
+                newTab.getPageSize(), tab.isIncognito());
         pageInfo.setUrl(tab.getUrl().toString());
         pageInfo.setTitle(tab.getTitle());
-        pageInfo.setIncognito(tab.isIncognito());
+        // TODO
+//        pageInfo.save();
+
         IPage newPage = new PageImpl(pageInfo);
         newTab.getPageGroup().addPage(newPage);
         tab.loadUrl(loadUrlParams);

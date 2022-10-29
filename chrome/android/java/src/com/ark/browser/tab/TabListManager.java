@@ -1,26 +1,23 @@
 package com.ark.browser.tab;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.tab.core.ITabGroup;
-import com.ark.browser.tab.core.TabGroupImpl;
+import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,8 +75,24 @@ public class TabListManager {
 
     public void restore(ArkWindowAndroid nativeWindow, Callback<Void> callback) {
 
-        tabLists[0] = new TabGroupImpl(nativeWindow, false);
-        tabLists[1] = new TabGroupImpl(nativeWindow, true);
+//        tabLists[0] = new TabGroupImpl(nativeWindow, false);
+//        tabLists[1] = new TabGroupImpl(nativeWindow, true);
+//        ThreadPool.execute(() -> {
+//            tabLists[0].init(nativeWindow);
+//            ThreadPool.post(() -> {
+//                tabLists[0].addObserver(tabInfoObserver);
+//                mLoaded = true;
+//                if (callback != null) {
+//                    callback.onResult(null);
+//                }
+//            });
+//        });
+
+
+        tabLists[0] = ArkTabDao.loadTabGroup(nativeWindow, false);
+
+        tabLists[1] = ArkTabDao.loadTabGroup(nativeWindow, true);
+
         ThreadPool.execute(() -> {
             tabLists[0].init(nativeWindow);
             ThreadPool.post(() -> {
@@ -88,9 +101,24 @@ public class TabListManager {
                 if (callback != null) {
                     callback.onResult(null);
                 }
+
+                ThreadPool.postOnUIThread(() -> {
+
+                    int count = tabLists[0].getCount();
+                    ArkLogger.e(TAG, "restore count=" + count);
+
+                    if (count > 0) {
+                        ArkLogger.e(TAG, "restore selectTabAt " + tabLists[0].getIndex());
+                        tabLists[0].selectTabAt(tabLists[0].getIndex());
+                    } else {
+                        ArkLogger.e(TAG, "restore openNewTab");
+                        LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
+                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
+                    }
+                });
+
             });
         });
-
 
     }
 
@@ -130,12 +158,9 @@ public class TabListManager {
         return null;
     }
 
-    public ITab getTabInfoById(String id) {
-        if (TextUtils.isEmpty(id)) {
-            return null;
-        }
+    public ITab getTabInfoById(long tabInfoId) {
         for (ITabGroup tabList : tabLists) {
-            ITab info = tabList.getTabInfoById(id);
+            ITab info = tabList.getTabInfoById(tabInfoId);
             if (info != null) {
                 return info;
             }

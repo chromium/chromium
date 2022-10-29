@@ -32,6 +32,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/core/utils/TaskTabHelper.java",
   "java/src/com/ark/browser/core/utils/WebContextFetcher.java",
 
+  "java/src/com/ark/browser/tab/dao/ArkTabDao.java",
+  "java/src/com/ark/browser/tab/dao/ArkTabStore.java",
+
   "java/src/com/ark/browser/tab/ArkInterceptNavigationDelegateClientImpl.java",
   "java/src/com/ark/browser/tab/ArkInterceptNavigationDelegateImpl.java",
   "java/src/com/ark/browser/tab/ArkInterceptNavigationDelegateTabHelper.java",

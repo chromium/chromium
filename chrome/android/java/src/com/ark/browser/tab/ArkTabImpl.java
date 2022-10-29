@@ -21,9 +21,12 @@ import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.core.utils.ContentUtils;
+import com.ark.browser.tab.dao.ArkTabDao;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.TraceEvent;
@@ -81,6 +84,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
+
+import java.io.File;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
@@ -1615,5 +1620,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         } else {
             onLoadStopped();
         }
+    }
+
+    @Override
+    public void saveState() {
+        ThreadPool.executeIO(() -> {
+            long start = System.currentTimeMillis();
+            ArkTabDao.savePageState(ArkTabImpl.this);
+            Log.d(TAG, "saveState id=" + getId() + " deltaTime=" + (System.currentTimeMillis() - start));
+        });
     }
 }

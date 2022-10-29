@@ -1,22 +1,20 @@
 package com.ark.browser.tab;
 
-public class DbModel {
+import com.ark.browser.utils.ThreadPool;
 
-    public void save() {
+public abstract class DbModel {
 
-    }
+    public abstract void save();
 
     public void update() {
-
+        save();
     }
 
     public void delete() {
-
+        ThreadPool.executeIO(this::deleteSync);
     }
 
-    public void deleteSync() {
-
-    }
+    public abstract void deleteSync();
 
 
 }
