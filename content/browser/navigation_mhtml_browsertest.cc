@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
       mhtml_url.spec().c_str()));
 
   EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   RenderFrameHostImpl* main_document = main_frame_host();
   ASSERT_EQ(1u, main_document->child_count());
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeJavascriptUrlFound) {
       mhtml_url.spec().c_str()));
 
   EXPECT_TRUE(NavigateToURL(shell(), mhtml_url));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   RenderFrameHostImpl* main_document = main_frame_host();
   ASSERT_EQ(1u, main_document->child_count());

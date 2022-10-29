@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       "Not allowed to load local resource: view-source:about:blank");
 
   EXPECT_EQ(true, EvalJs(web_contents(), "clickViewSourceLink();"));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   // Original page shouldn't navigate away.
   EXPECT_EQ(kUrl, web_contents()->GetLastCommittedURL());
   EXPECT_FALSE(shell()
@@ -642,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       "Not allowed to load local resource: googlechrome://");
 
   EXPECT_EQ(true, EvalJs(web_contents(), "clickGoogleChromeLink();"));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   // Original page shouldn't navigate away.
   EXPECT_EQ(kUrl, web_contents()->GetLastCommittedURL());
 }
@@ -1670,7 +1670,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, IPCFlood_GoToEntryAtOffset) {
     }
   )"));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // Ensure the renderer process doesn't send too many IPC to the browser process
@@ -1697,7 +1697,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, IPCFlood_Navigation) {
     }
   )"));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // TODO(http://crbug.com/632514): This test currently expects opener downloads
@@ -2532,7 +2532,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
     // Check Javascript was blocked the first time.
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 
   // 3) The iframe navigates elsewhere.
@@ -2549,7 +2549,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
     // Check Javascript was blocked the second time.
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 }
 
@@ -2586,7 +2586,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
     // Check Javascript was blocked the first time.
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 
   // 3) The iframe navigates elsewhere.
@@ -2603,7 +2603,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBaseBrowserTest,
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
     // Check Javascript was blocked the second time.
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 }
 
@@ -3126,7 +3126,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
         "*Failed to set the 'cookie' property on 'Document': Cookies are "
         "disabled inside 'data:' URLs.*");
     ExecuteScriptAsync(sub_document_1, "document.cookie = 'a=0';");
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 
   // 2. Reading a cookie inside a data-URL document is forbidden.
@@ -3136,7 +3136,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
         "*Failed to read the 'cookie' property from 'Document': Cookies are "
         "disabled inside 'data:' URLs.*");
     ExecuteScriptAsync(sub_document_1, "document.cookie");
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 
   // 3. Set cookie in the main document. No cookies are sent when requested from
@@ -3168,7 +3168,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
         "*Failed to set the 'cookie' property on 'Document': Cookies are "
         "disabled inside 'data:' URLs.*");
     ExecuteScriptAsync(sub_document_2, "document.cookie = 'c=0';");
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 
   // 6. Reading a cookie inside a data-URL document is still forbidden.
@@ -3178,7 +3178,7 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
         "*Failed to read the 'cookie' property from 'Document': Cookies are "
         "disabled inside 'data:' URLs.*");
     ExecuteScriptAsync(sub_document_2, "document.cookie");
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
   }
 
   // 7. No cookies are sent when requested from the data-URL.
@@ -4575,7 +4575,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       "Content-Security-Policy-Report-Only: treat-as-public-address");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // The Content Security Policy directive 'plugin-types' has been removed. Here
@@ -4595,7 +4595,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
       "Content-Security-Policy: plugin-types application/pdf");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 class SubresourceLoadingTest : public NavigationBrowserTest {
@@ -6190,7 +6190,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,
       iframe.sandbox = "allow-same-origin allow-scripts";
       document.body.appendChild(iframe);
   )"));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWarnSandboxIneffective,

@@ -1625,7 +1625,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node1, isolated_suborigin_url));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child_frame_node1->current_frame_host()->GetSiteInstance());
@@ -1699,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(
       NavigateToURLFromRenderer(child_frame_node1, isolated_suborigin_url));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node1->current_frame_host()->GetSiteInstance());

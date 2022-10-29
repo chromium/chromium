@@ -1524,7 +1524,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
 
     // Observers must be reached.
     B2_deleted.WaitUntilDeleted();
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(away_url, web_contents()->GetLastCommittedURL());
@@ -1632,7 +1632,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessSSLBrowserTest,
     // Observers must be reached.
     B2_deleted.WaitUntilDeleted();
     C3_deleted.WaitUntilDeleted();
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(away_url, web_contents()->GetLastCommittedURL());

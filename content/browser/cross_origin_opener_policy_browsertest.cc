@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
             CoopUnsafeNone());
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
