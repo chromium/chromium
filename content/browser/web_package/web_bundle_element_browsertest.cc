@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest,
     EXPECT_EQ(base::StrCat({"\"", expected_message, "\""}), message);
 
     if (std::string(expected_message) == "failed")
-      console_observer.Wait();
+      ASSERT_TRUE(console_observer.Wait());
   }
 }
 

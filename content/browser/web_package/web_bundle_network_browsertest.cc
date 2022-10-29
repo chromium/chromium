@@ -76,7 +76,7 @@ class WebBundleNetworkBrowserTest
               *finish_navigation_observer.error_code());
 
     if (console_observer.messages().empty())
-      console_observer.Wait();
+      ASSERT_TRUE(console_observer.Wait());
 
     ASSERT_FALSE(console_observer.messages().empty());
     EXPECT_EQ(expected_error_message,

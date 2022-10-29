@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest,
                                "load failed");
 
   if (console_observer.messages().empty())
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
   ASSERT_FALSE(console_observer.messages().empty());
   EXPECT_EQ(

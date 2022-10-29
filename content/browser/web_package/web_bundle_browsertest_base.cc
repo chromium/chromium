@@ -273,7 +273,7 @@ std::string ExpectNavigationFailureAndReturnConsoleMessage(
   EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
             *finish_navigation_observer.error_code());
   if (console_observer.messages().empty())
-    console_observer.Wait();
+    EXPECT_TRUE(console_observer.Wait());
 
   if (console_observer.messages().empty()) {
     ADD_FAILURE() << "Could not find a console message.";
