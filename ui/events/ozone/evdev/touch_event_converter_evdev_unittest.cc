@@ -1883,6 +1883,31 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusDrallionRubberSequence) {
   EXPECT_EQ(EventPointerType::kEraser, event.pointer_details.pointer_type);
 }
 
+TEST_F(TouchEventConverterEvdevTest, ActiveStylusHoveringMotionIgnored) {
+  ui::MockTouchEventConverterEvdev* dev = device();
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kEveStylus, &devinfo));
+  dev->Initialize(devinfo);
+
+  struct input_event mock_kernel_queue[] = {
+    {{0, 0}, EV_KEY, BTN_TOOL_RUBBER, 1},
+    {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
+    {{0, 0}, EV_SYN, SYN_REPORT, 0},
+    {{0, 0}, EV_ABS, ABS_X, 4008},
+    {{0, 0}, EV_ABS, ABS_Y, 11247},
+    {{0, 0}, EV_SYN, SYN_REPORT, 0},
+    {{0, 0}, EV_ABS, ABS_X, 4004},
+    {{0, 0}, EV_ABS, ABS_Y, 11248},
+    {{0, 0}, EV_SYN, SYN_REPORT, 0},
+    {{0, 0}, EV_KEY, BTN_TOOL_PEN, 0},
+    {{0, 0}, EV_KEY, BTN_TOOL_RUBBER, 0},
+    {{0, 0}, EV_SYN, SYN_REPORT, 0},
+  };
+  dev->ConfigureReadMock(mock_kernel_queue, std::size(mock_kernel_queue), 0);
+  dev->ReadNow();
+  EXPECT_EQ(0u, size());
+}
+
 TEST_F(TouchEventConverterEvdevTest, ActiveStylusBarrelButtonWhileHovering) {
   ui::MockTouchEventConverterEvdev* dev = device();
   EventDeviceInfo devinfo;
