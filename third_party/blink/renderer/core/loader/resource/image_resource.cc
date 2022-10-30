@@ -140,6 +140,18 @@ class ImageResource::ImageResourceInfoImpl final
     return &resource_->Options().unsupported_image_mime_types->data;
   }
 
+  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
+    auto priority = resource_->GetResourceRequest().Priority();
+    if (priority == WebURLRequest::Priority::kUnresolved) {
+      // This can happen for image documents (e.g. when `<iframe
+      // src="title.png">` is the LCP), because the `ImageResource` isn't
+      // associated with `ResourceLoader` in such cases. For now, consider the
+      // priority not available for such cases by returning nullopt.
+      return absl::nullopt;
+    }
+    return priority;
+  }
+
   const Member<ImageResource> resource_;
 };
 

@@ -626,6 +626,17 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
             perf.LargestContentfulPaintTypeForMetrics());
     timing->paint_timing->largest_contentful_paint->image_bpp =
         perf.LargestContentfulPaintImageBPPForMetrics();
+    if (perf.LargestContentfulPaintImageRequestPriorityForMetrics()) {
+      timing->paint_timing->largest_contentful_paint
+          ->image_request_priority_valid = true;
+      timing->paint_timing->largest_contentful_paint
+          ->image_request_priority_value =
+          blink::WebURLRequest::ConvertToNetPriority(
+              *perf.LargestContentfulPaintImageRequestPriorityForMetrics());
+    } else {
+      timing->paint_timing->largest_contentful_paint
+          ->image_request_priority_valid = false;
+    }
   }
   if (perf.LargestTextPaintSizeForMetrics() > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the

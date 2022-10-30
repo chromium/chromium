@@ -688,6 +688,9 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
             LargestContentTextOrImage::kImage) {
       builder.SetPaintTiming_LargestContentfulPaintBPP(
           CalculateLCPEntropyBucket(cwv_lcp_timing_info.ImageBPP()));
+      auto priority = cwv_lcp_timing_info.ImageRequestPriority();
+      if (priority)
+        builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
     }
   }
   RecordInternalTimingMetrics(cwv_lcp_timing_info);

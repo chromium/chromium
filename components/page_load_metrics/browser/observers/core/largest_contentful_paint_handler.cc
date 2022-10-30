@@ -70,12 +70,13 @@ void MergeForSubframesWithAdjustedTime(
   const ContentfulPaintTimingInfo& merged_candidate =
       MergeTimingsBySizeAndTime(new_candidate, *inout_timing);
   inout_timing->Reset(merged_candidate.Time(), merged_candidate.Size(),
-                      merged_candidate.Type(), merged_candidate.ImageBPP());
+                      merged_candidate.Type(), merged_candidate.ImageBPP(),
+                      merged_candidate.ImageRequestPriority());
 }
 
 void Reset(ContentfulPaintTimingInfo& timing) {
   timing.Reset(absl::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
-               /*image_bpp=*/0.0);
+               /*image_bpp=*/0.0, /*image_request_priority=*/absl::nullopt);
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
@@ -87,6 +88,14 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+absl::optional<net::RequestPriority> GetImageRequestPriority(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint) {
+  if (largest_contentful_paint.image_request_priority_valid)
+    return largest_contentful_paint.image_request_priority_value;
+  return absl::nullopt;
 }
 }  // namespace
 
@@ -103,6 +112,7 @@ ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
     const uint64_t& size,
     const LargestContentTextOrImage text_or_image,
     double image_bpp,
+    const absl::optional<net::RequestPriority>& image_request_priority,
     bool in_main_frame,
     blink::LargestContentfulPaintType type)
     : time_(time),
@@ -110,6 +120,7 @@ ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
       text_or_image_(text_or_image),
       type_(type),
       image_bpp_(image_bpp),
+      image_request_priority_(image_request_priority),
       in_main_frame_(in_main_frame) {}
 
 ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
@@ -151,11 +162,13 @@ void ContentfulPaintTimingInfo::Reset(
     const absl::optional<base::TimeDelta>& time,
     const uint64_t& size,
     blink::LargestContentfulPaintType type,
-    double image_bpp) {
+    double image_bpp,
+    const absl::optional<net::RequestPriority>& image_request_priority) {
   size_ = size;
   time_ = time;
   type_ = type;
   image_bpp_ = image_bpp;
+  image_request_priority_ = image_request_priority;
 }
 ContentfulPaint::ContentfulPaint(bool in_main_frame,
                                  blink::LargestContentfulPaintType type)
@@ -238,7 +251,8 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
         largest_contentful_paint.largest_text_paint,
         largest_contentful_paint.largest_text_paint_size,
         blink::LargestContentfulPaintType::kNone,
-        /*image_bpp=*/0.0);
+        /*image_bpp=*/0.0,
+        /*image_request_priority=*/absl::nullopt);
   }
   if (IsValid(largest_contentful_paint.largest_image_paint)) {
     main_frame_contentful_paint_.Image().Reset(
@@ -246,7 +260,8 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
         largest_contentful_paint.largest_image_paint_size,
         static_cast<blink::LargestContentfulPaintType>(
             largest_contentful_paint.type),
-        largest_contentful_paint.image_bpp);
+        largest_contentful_paint.image_bpp,
+        GetImageRequestPriority(largest_contentful_paint));
   }
 }
 
@@ -297,7 +312,8 @@ void LargestContentfulPaintHandler::RecordSubFrameTimingInternal(
                    navigation_start_offset),
       largest_contentful_paint.largest_text_paint_size,
       ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
-      /*image_bpp=*/0.0, /*in_main_frame=*/false,
+      /*image_bpp=*/0.0, /*image_request_priority=*/absl::nullopt,
+      /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type));
   if (IsValid(new_text_candidate.Time())) {
@@ -311,7 +327,9 @@ void LargestContentfulPaintHandler::RecordSubFrameTimingInternal(
                    navigation_start_offset),
       largest_contentful_paint.largest_image_paint_size,
       ContentfulPaintTimingInfo::LargestContentTextOrImage::kImage,
-      largest_contentful_paint.image_bpp, /*in_main_frame=*/false,
+      largest_contentful_paint.image_bpp,
+      GetImageRequestPriority(largest_contentful_paint),
+      /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type));
   if (IsValid(new_image_candidate.Time())) {
@@ -331,7 +349,8 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
                    navigation_start_offset),
       largest_contentful_paint.largest_text_paint_size,
       ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
-      /*image_bpp=*/0.0, /*in_main_frame=*/false,
+      /*image_bpp=*/0.0, /*image_request_priority=*/absl::nullopt,
+      /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type));
   if (IsValid(new_text_candidate.Time())) {
@@ -345,7 +364,9 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
                    navigation_start_offset),
       largest_contentful_paint.largest_image_paint_size,
       ContentfulPaintTimingInfo::LargestContentTextOrImage::kImage,
-      largest_contentful_paint.image_bpp, /*in_main_frame=*/false,
+      largest_contentful_paint.image_bpp,
+      GetImageRequestPriority(largest_contentful_paint),
+      /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type));
   if (IsValid(new_image_candidate.Time())) {

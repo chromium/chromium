@@ -168,12 +168,14 @@ class UkmPageLoadMetricsObserverTest
   // |test_main_frame| is set, also tests that the main frame LCP histograms
   // also report |value|. If |text_or_image| is kText, then tests that image
   // BPP is not reported, and otherwise tests that it matches |bpp_bucket|.
-  void TestLCP(int value,
-               LargestContentTextOrImage text_or_image,
-               bool test_main_frame,
-               uint32_t bpp_bucket = 0,
-               blink::LargestContentfulPaintType type =
-                   blink::LargestContentfulPaintType::kNone) {
+  void TestLCP(
+      int value,
+      LargestContentTextOrImage text_or_image,
+      bool test_main_frame,
+      uint32_t bpp_bucket = 0,
+      absl::optional<net::RequestPriority> request_priority = absl::nullopt,
+      blink::LargestContentfulPaintType type =
+          blink::LargestContentfulPaintType::kNone) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
             PageLoad::kEntryName);
@@ -198,10 +200,24 @@ class UkmPageLoadMetricsObserverTest
     if (text_or_image == LargestContentTextOrImage::kText) {
       EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
           entry, PageLoad::kPaintTiming_LargestContentfulPaintBPPName));
+      EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+          entry,
+          PageLoad::kPaintTiming_LargestContentfulPaintRequestPriorityName));
     } else {
       tester()->test_ukm_recorder().ExpectEntryMetric(
           entry, PageLoad::kPaintTiming_LargestContentfulPaintBPPName,
           bpp_bucket);
+
+      if (request_priority) {
+        tester()->test_ukm_recorder().ExpectEntryMetric(
+            entry,
+            PageLoad::kPaintTiming_LargestContentfulPaintRequestPriorityName,
+            *request_priority);
+      } else {
+        EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+            entry,
+            PageLoad::kPaintTiming_LargestContentfulPaintRequestPriorityName));
+      }
     }
 
     tester()->test_ukm_recorder().ExpectEntryMetric(
@@ -468,6 +484,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
       base::Milliseconds(600);
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
   timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      true;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_value =
+      net::RequestPriority::MEDIUM;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -478,7 +498,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
   DeleteContents();
 
   TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
-          30 /* image_bpp = "8.0 - 9.0" */);
+          30 /* image_bpp = "8.0 - 9.0" */, net::RequestPriority::MEDIUM);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintVideo) {
@@ -492,6 +512,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintVideo) {
       blink::LargestContentfulPaintTypeToUKMFlags(
           blink::LargestContentfulPaintType::kVideo);
   timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      false;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -501,8 +523,11 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintVideo) {
   // Simulate closing the tab.
   DeleteContents();
 
+  // `image_request_priority_valid` is unset above for video, so no priorities
+  // are reported.
   TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
           30 /* image_bpp = "8.0 - 9.0" */,
+          absl::nullopt /* request_priority */,
           blink::LargestContentfulPaintType::kVideo);
 }
 
@@ -517,6 +542,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintAnimated) {
       blink::LargestContentfulPaintTypeToUKMFlags(
           blink::LargestContentfulPaintType::kAnimatedImage);
   timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      true;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_value =
+      net::RequestPriority::MEDIUM;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -527,7 +556,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintAnimated) {
   DeleteContents();
 
   TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
-          30 /* image_bpp = "8.0 - 9.0" */,
+          30 /* image_bpp = "8.0 - 9.0" */, net::RequestPriority::MEDIUM,
           blink::LargestContentfulPaintType::kAnimatedImage);
 }
 
@@ -546,6 +575,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromSubframeMerged) {
       blink::LargestContentfulPaintTypeToUKMFlags(
           blink::LargestContentfulPaintType::kNone);
   timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      true;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_value =
+      net::RequestPriority::MEDIUM;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -560,6 +593,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromSubframeMerged) {
       blink::LargestContentfulPaintTypeToUKMFlags(
           blink::LargestContentfulPaintType::kAnimatedImage);
   subframe_timing.paint_timing->largest_contentful_paint->image_bpp = 1.5;
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->image_request_priority_valid = true;
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->image_request_priority_value = net::RequestPriority::LOW;
   PopulateExperimentalLCP(subframe_timing.paint_timing);
   PopulateRequiredTimingFields(&subframe_timing);
 
@@ -582,7 +619,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromSubframeMerged) {
   // should be set correctly. Don't check main frame here, as the timing will be
   // different for that paint.
   TestLCP(4780, LargestContentTextOrImage::kImage, false /* test_main_frame */,
-          23 /* image_bpp = "1.0 - 2.0" */,
+          23 /* image_bpp = "1.0 - 2.0" */, net::RequestPriority::LOW,
           blink::LargestContentfulPaintType::kAnimatedImage);
 
   // Test that the main frame largest paint is also correct.
@@ -604,6 +641,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromMainFrameMerged) {
       blink::LargestContentfulPaintTypeToUKMFlags(
           blink::LargestContentfulPaintType::kNone);
   timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      true;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_value =
+      net::RequestPriority::MEDIUM;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -618,6 +659,10 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromMainFrameMerged) {
       blink::LargestContentfulPaintTypeToUKMFlags(
           blink::LargestContentfulPaintType::kAnimatedImage);
   subframe_timing.paint_timing->largest_contentful_paint->image_bpp = 1.5;
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->image_request_priority_valid = true;
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->image_request_priority_value = net::RequestPriority::LOW;
   PopulateExperimentalLCP(subframe_timing.paint_timing);
   PopulateRequiredTimingFields(&subframe_timing);
 
@@ -640,7 +685,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaintFromMainFrameMerged) {
   // should be set correctly. Verify that the main frame LCP timing is also set
   // correctly.
   TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */,
-          30 /* image_bpp = "8.0 - 9.0" */,
+          30 /* image_bpp = "8.0 - 9.0" */, net::RequestPriority::MEDIUM,
           blink::LargestContentfulPaintType::kNone);
 }
 
@@ -1218,6 +1263,10 @@ TEST_F(UkmPageLoadMetricsObserverTest,
       base::Milliseconds(4780);
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
   timing.paint_timing->largest_contentful_paint->image_bpp = 8.5;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_valid =
+      true;
+  timing.paint_timing->largest_contentful_paint->image_request_priority_value =
+      net::RequestPriority::MEDIUM;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
 
@@ -1229,6 +1278,10 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   subframe_timing.paint_timing->largest_contentful_paint
       ->largest_image_paint_size = 100u;
   subframe_timing.paint_timing->largest_contentful_paint->image_bpp = 1.5;
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->image_request_priority_valid = true;
+  subframe_timing.paint_timing->largest_contentful_paint
+      ->image_request_priority_value = net::RequestPriority::LOW;
   PopulateExperimentalLCP(subframe_timing.paint_timing);
   PopulateRequiredTimingFields(&subframe_timing);
 
@@ -1248,7 +1301,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   DeleteContents();
 
   TestLCP(990, LargestContentTextOrImage::kImage, false /* test_main_frame */,
-          23 /* image_bpp = "1.0 - 2.0" */);
+          23 /* image_bpp = "1.0 - 2.0" */, net::RequestPriority::LOW);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, NormalizedUserInteractionLatencies) {

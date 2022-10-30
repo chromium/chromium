@@ -7,6 +7,7 @@ module page_load_metrics.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/request_priority.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import
   "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
@@ -43,6 +44,14 @@ struct LargestContentfulPaintTiming {
   // Computed entropy of the page's largest image, calculated as the image file
   // size, in bits, divided by the image's rendered size, in pixels.
   double image_bpp;
+
+  // Loading priority used for the LCP image.
+  // When the priority is not available or the LCP is a video,
+  // `image_request_priority_valid` is false.
+  // Otherwise, `image_request_priority_value` contains the priority.
+  // TODO(crbug.com/657632): Use an optional enum.
+  bool image_request_priority_valid = false;
+  network.mojom.RequestPriority image_request_priority_value;
 };
 
 // TimeDeltas below relative to navigation start.

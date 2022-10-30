@@ -50,12 +50,16 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
     }
   }
 
-  ImageRecord() = default;
+  ImageRecord() = delete;
 
   // Returns the image's entropy, in encoded-bits-per-layout-pixel, as used to
   // determine whether the image is a potential LCP candidate. Will return 0.0
   // if there is no `media_timing`.
   double EntropyForLCP() const;
+
+  // Returns the image's loading priority. Will return `absl::nullopt` if there
+  // is no `media_timing`.
+  absl::optional<WebURLRequest::Priority> RequestPriority() const;
 
   DOMNodeId node_id = kInvalidDOMNodeId;
   WeakPersistent<const MediaTiming> media_timing;

@@ -227,6 +227,12 @@ double WebPerformance::LargestContentfulPaintImageBPPForMetrics() const {
       ->LargestContentfulPaintImageBPPForMetrics();
 }
 
+absl::optional<WebURLRequest::Priority>
+WebPerformance::LargestContentfulPaintImageRequestPriorityForMetrics() const {
+  return private_->timingForReporting()
+      ->LargestContentfulPaintImageRequestPriorityForMetrics();
+}
+
 double WebPerformance::ExperimentalLargestTextPaint() const {
   return 0.0;
 }

@@ -98,6 +98,8 @@ class CORE_EXPORT PerformanceTimingForReporting final
   uint64_t LargestImagePaintSizeForMetrics() const;
   blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
       const;
+  absl::optional<WebURLRequest::Priority>
+  LargestContentfulPaintImageRequestPriorityForMetrics() const;
 
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within

@@ -60,6 +60,8 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
 
   virtual const HashSet<String>* GetUnsupportedImageMimeTypes() const = 0;
 
+  virtual absl::optional<WebURLRequest::Priority> RequestPriority() const = 0;
+
   void Trace(Visitor* visitor) const override {}
 };
 

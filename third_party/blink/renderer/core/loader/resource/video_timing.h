@@ -53,6 +53,13 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
 
   void SetContentSizeForEntropy(size_t length) { content_size_ = length; }
 
+  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
+    // No priority data are reported for LCP videos as initially we focus on LCP
+    // images (crbug.com/1378698).
+    // TODO(crbug.com/1379728): Revisit priority reporting also for videos.
+    return absl::nullopt;
+  }
+
  private:
   KURL url_;
   bool is_loaded_ = false;

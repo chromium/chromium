@@ -73,6 +73,10 @@ class NullImageResourceInfo final
     return nullptr;
   }
 
+  absl::optional<WebURLRequest::Priority> RequestPriority() const override {
+    return absl::nullopt;
+  }
+
   const KURL url_;
   const ResourceResponse response_;
 };
@@ -211,6 +215,11 @@ ImageResourceContent::PriorityFromObservers() const {
     PriorityFromObserver(it.key, priority, priority_excluding_image_loader);
 
   return std::make_pair(priority, priority_excluding_image_loader);
+}
+
+absl::optional<WebURLRequest::Priority> ImageResourceContent::RequestPriority()
+    const {
+  return info_->RequestPriority();
 }
 
 void ImageResourceContent::DestroyDecodedData() {

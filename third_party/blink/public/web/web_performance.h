@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
+#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
@@ -96,6 +97,8 @@ class BLINK_EXPORT WebPerformance {
   blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
       const;
   double LargestContentfulPaintImageBPPForMetrics() const;
+  absl::optional<WebURLRequest::Priority>
+  LargestContentfulPaintImageRequestPriorityForMetrics() const;
   double ExperimentalLargestTextPaint() const;
   uint64_t ExperimentalLargestTextPaintSize() const;
   double FirstEligibleToPaint() const;

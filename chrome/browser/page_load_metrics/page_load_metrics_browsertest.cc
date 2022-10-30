@@ -432,6 +432,106 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPImagePriority) {
+  // Waiter to ensure main content is loaded.
+  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+  waiter->AddPageExpectation(TimingField::kLoadEvent);
+  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
+
+  const char kHtmlHttpResponseHeader[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n";
+  const char kImgHttpResponseHeader[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: image/png\r\n"
+      "\r\n";
+  auto main_html_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/mock_page.html",
+          false /*relative_url_is_prefix*/);
+  auto img_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/images/lcp.jpg",
+          false /*relative_url_is_prefix*/);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // File is under content/test/data/
+  std::string file_contents;
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::FilePath test_dir;
+    ASSERT_TRUE(base::PathService::Get(content::DIR_TEST_DATA, &test_dir));
+    base::FilePath file_name = test_dir.AppendASCII("single_face.jpg");
+    ASSERT_TRUE(base::ReadFileToString(file_name, &file_contents));
+  }
+
+  browser()->OpenURL(content::OpenURLParams(
+      embedded_test_server()->GetURL("/mock_page.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+
+  main_html_response->WaitForRequest();
+  main_html_response->Send(kHtmlHttpResponseHeader);
+  main_html_response->Send(
+      "<html><body><img src=\"/images/lcp.jpg\"></body></html>");
+  main_html_response->Done();
+
+  img_response->WaitForRequest();
+
+  // Force layout and thus the visibility-based priority to be set, before the
+  // loading is finished.
+  content::EvalJsResult result =
+      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+      new Promise(resolve => {
+        const forceLayout = () => {
+          document.querySelector('img').offsetTop;
+          resolve();
+        };
+        if (document.querySelector('img')) {
+          forceLayout();
+        } else {
+          // Wait for DOMContentLoaded to ensure <img> is inserted.
+          document.addEventListener('DOMContentLoaded', forceLayout);
+        }
+      })
+  )");
+  EXPECT_EQ("", result.error);
+
+  img_response->Send(kImgHttpResponseHeader);
+  img_response->Send(file_contents);
+  img_response->Done();
+
+  // Wait on an LCP entry to make sure we have one to report when navigating
+  // away.
+  content::EvalJsResult result2 =
+      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+ (async () => {
+   await new Promise(resolve => {
+     (new PerformanceObserver(list => {
+       const entries = list.getEntries();
+       for (let entry of entries) {
+         if (entry.url.includes('images')) {resolve()}
+       }
+     }))
+     .observe({type: 'largest-contentful-paint', buffered: true});
+ })})())");
+  EXPECT_EQ("", result2.error);
+  waiter->Wait();
+
+  // LCP is collected only at the end of the page lifecycle. Navigate to
+  // flush.
+  NavigateToUntrackedUrl();
+
+  // Image should be loaded with `net::MEDIUM` priority because the image is
+  // visible.
+  int64_t value = GetUKMPageLoadMetric(
+      PageLoad::PageLoad::
+          kPaintTiming_LargestContentfulPaintRequestPriorityName);
+  ASSERT_EQ(value, static_cast<int>(net::MEDIUM));
+}
+
 class PageLoadMetricsBrowserTestAnimatedLCP
     : public PageLoadMetricsBrowserTest {
  protected:

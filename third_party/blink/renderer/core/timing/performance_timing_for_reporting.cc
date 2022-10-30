@@ -199,6 +199,16 @@ double PerformanceTimingForReporting::LargestContentfulPaintImageBPPForMetrics()
   return paint_timing_detector->LargestContentfulPaintImageBPPForMetrics();
 }
 
+absl::optional<WebURLRequest::Priority> PerformanceTimingForReporting::
+    LargestContentfulPaintImageRequestPriorityForMetrics() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector) {
+    return absl::nullopt;
+  }
+  return paint_timing_detector
+      ->LargestContentfulPaintImageRequestPriorityForMetrics();
+}
+
 uint64_t PerformanceTimingForReporting::LargestTextPaintForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)

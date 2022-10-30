@@ -80,6 +80,12 @@ double ImageRecord::EntropyForLCP() const {
   return media_timing->ContentSizeForEntropy() * 8.0 / recorded_size;
 }
 
+absl::optional<WebURLRequest::Priority> ImageRecord::RequestPriority() const {
+  if (!media_timing)
+    return absl::nullopt;
+  return media_timing->RequestPriority();
+}
+
 ImagePaintTimingDetector::ImagePaintTimingDetector(
     LocalFrameView* frame_view,
     PaintTimingCallbackManager* callback_manager)
@@ -174,6 +180,10 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
   double bpp =
       largest_image_record ? largest_image_record->EntropyForLCP() : 0.0;
 
+  absl::optional<WebURLRequest::Priority> priority =
+      largest_image_record ? largest_image_record->RequestPriority()
+                           : absl::nullopt;
+
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
   // Calling NotifyIfChangedLargestImagePaint only has an impact on
   // PageLoadMetrics, and not on the web exposed metrics.
@@ -181,7 +191,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
   // Two different candidates are rare to have the same time and size.
   // So when they are unchanged, the candidate is considered unchanged.
   bool changed = detector.NotifyIfChangedLargestImagePaint(
-      time, size, largest_image_record, bpp);
+      time, size, largest_image_record, bpp, std::move(priority));
   if (changed) {
     if (!time.is_null() && largest_image_record->loaded) {
       ReportCandidateToTrace(*largest_image_record);

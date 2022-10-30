@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEDIA_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_MEDIA_TIMING_H_
 
+#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -47,6 +48,9 @@ class MediaTiming : public GarbageCollectedMixin {
 
   virtual void SetFirstVideoFrameTime(base::TimeTicks) { NOTREACHED(); }
   virtual base::TimeTicks GetFirstVideoFrameTime() const = 0;
+
+  // Returns the loading priority used for the image.
+  virtual absl::optional<WebURLRequest::Priority> RequestPriority() const = 0;
 };
 
 }  // namespace blink

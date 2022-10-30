@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
+#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_visualizer.h"
@@ -132,6 +133,8 @@ class CORE_EXPORT PaintTimingDetector
     base::TimeTicks largest_text_paint_time_;
     uint64_t largest_text_paint_size_ = 0;
     base::TimeTicks largest_contentful_paint_time_;
+    absl::optional<WebURLRequest::Priority>
+        largest_contentful_paint_image_request_priority_;
   };
 
   // Returns true if the image might ultimately be a candidate for largest
@@ -163,10 +166,12 @@ class CORE_EXPORT PaintTimingDetector
   void NotifyScroll(mojom::blink::ScrollType);
 
   // The returned value indicates whether the candidates have changed.
-  bool NotifyIfChangedLargestImagePaint(base::TimeTicks image_paint_time,
-                                        uint64_t image_size,
-                                        ImageRecord* image_record,
-                                        double image_bpp);
+  bool NotifyIfChangedLargestImagePaint(
+      base::TimeTicks image_paint_time,
+      uint64_t image_size,
+      ImageRecord* image_record,
+      double image_bpp,
+      absl::optional<WebURLRequest::Priority> priority);
   bool NotifyIfChangedLargestTextPaint(base::TimeTicks, uint64_t size);
 
   void DidChangePerformanceTiming();
@@ -211,6 +216,12 @@ class CORE_EXPORT PaintTimingDetector
   }
   uint64_t LargestTextPaintSizeForMetrics() const {
     return lcp_details_for_ukm_.largest_text_paint_size_;
+  }
+
+  absl::optional<WebURLRequest::Priority>
+  LargestContentfulPaintImageRequestPriorityForMetrics() const {
+    return lcp_details_for_ukm_
+        .largest_contentful_paint_image_request_priority_;
   }
 
   base::TimeTicks LargestContentfulPaintForMetrics() const {

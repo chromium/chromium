@@ -192,7 +192,11 @@ class CORE_EXPORT ImageResourceContent final
 
   void SetImageResourceInfo(ImageResourceInfo*);
 
+  // Returns priority information to be used for setting the Resource's
+  // priority. This is NOT the current Resource's priority.
   std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() const;
+  // Returns the current Resource's priroity used by MediaTiming.
+  absl::optional<WebURLRequest::Priority> RequestPriority() const override;
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
   bool ShouldUpdateImageImmediately() const;
   bool HasObservers() const {

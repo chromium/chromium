@@ -41,19 +41,25 @@ class ContentfulPaintTimingInfo {
       const uint64_t& size,
       const LargestContentTextOrImage largest_content_type,
       double image_bpp,
+      const absl::optional<net::RequestPriority>& image_request_priority,
       bool in_main_frame,
       blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
-  void Reset(const absl::optional<base::TimeDelta>&,
-             const uint64_t& size,
-             blink::LargestContentfulPaintType type,
-             double image_bpp);
+  void Reset(
+      const absl::optional<base::TimeDelta>&,
+      const uint64_t& size,
+      blink::LargestContentfulPaintType type,
+      double image_bpp,
+      const absl::optional<net::RequestPriority>& image_request_priority);
   absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
   blink::LargestContentfulPaintType Type() const { return type_; }
   uint64_t Size() const { return size_; }
   LargestContentTextOrImage TextOrImage() const { return text_or_image_; }
   double ImageBPP() const { return image_bpp_; }
+  absl::optional<net::RequestPriority> ImageRequestPriority() const {
+    return image_request_priority_;
+  }
 
   // Returns true iff this object does not represent any paint.
   bool Empty() const {
@@ -80,6 +86,7 @@ class ContentfulPaintTimingInfo {
   blink::LargestContentfulPaintType type_ =
       blink::LargestContentfulPaintType::kNone;
   double image_bpp_ = 0.0;
+  absl::optional<net::RequestPriority> image_request_priority_;
   bool in_main_frame_;
 };
 

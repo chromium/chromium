@@ -259,7 +259,8 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
     ImageRecord* image_record,
-    double image_bpp) {
+    double image_bpp,
+    absl::optional<WebURLRequest::Priority> priority) {
   // (Experimental) Images with insufficient entropy are not considered
   // candidates for LCP
   if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
@@ -297,6 +298,8 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   lcp_details_.largest_image_paint_time_ = image_paint_time;
   lcp_details_.largest_image_paint_size_ = image_paint_size;
   lcp_details_.largest_contentful_paint_image_bpp_ = image_bpp;
+  lcp_details_.largest_contentful_paint_image_request_priority_ =
+      std::move(priority);
   UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;

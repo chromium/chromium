@@ -15490,6 +15490,14 @@ be describing additional metrics about the same event.
       image, and omitted when it is text.
     </summary>
   </metric>
+  <metric name="PaintTiming.LargestContentfulPaintRequestPriority"
+      enum="NetRequestPriority">
+    <summary>
+      Resource loading priority used for the LCP candidate. This metric is
+      recorded whenever the LCP candidate is an image, and omitted when it is
+      text or video.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaintType">
     <summary>
       Indicates that type of the LargestContentfulPaint candidate. This value is
