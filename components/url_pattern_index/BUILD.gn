@@ -21,6 +21,7 @@ static_library("url_pattern_index") {
   public_deps = [
     "//components/url_pattern_index/flat:url_pattern_index",
     "//components/url_pattern_index/proto:url_pattern_index",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [

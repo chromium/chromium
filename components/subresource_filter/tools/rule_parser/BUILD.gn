@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 source_set("rule_parser") {
   sources = [
     "rule.cc",
@@ -30,4 +32,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
   ]
+}
+
+fuzzer_test("subresource_filter_rule_parser_fuzzer") {
+  sources = [ "rule_parser_fuzzer.cc" ]
+  deps = [ ":rule_parser" ]
 }
