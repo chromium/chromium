@@ -800,7 +800,8 @@ void CorsURLLoader::StartRequest() {
       GetPrivateNetworkAccessPreflightBehavior(), tainted_,
       net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
-      std::move(devtools_observer), net_log_);
+      std::move(devtools_observer), net_log_,
+      context_->acam_preflight_spec_conformant());
 }
 
 void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,

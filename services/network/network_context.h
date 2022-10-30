@@ -596,6 +596,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return require_network_isolation_key_;
   }
 
+  bool acam_preflight_spec_conformant() const {
+    return acam_preflight_spec_conformant_;
+  }
+
   cors::NonWildcardRequestHeadersSupport
   cors_non_wildcard_request_headers_support() const {
     return cors_non_wildcard_request_headers_support_;
@@ -903,6 +907,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // NetworkAnonymizationKey with all requests. When set, enabled a variety of
   // DCHECKs on APIs used by external callers.
   bool require_network_isolation_key_ = false;
+
+  // Whether Access-Control-Allow-Methods matching in CORS preflight is done
+  // according to the spec.
+  bool acam_preflight_spec_conformant_ = true;
 
   // Indicating whether
   // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name is

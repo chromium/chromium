@@ -3637,4 +3637,9 @@ const char kVirtualKeyboardResizesLayoutByDefault[] =
     "virtual_keyboard_resizes_layout_by_default";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// A boolean indicating whether Access-Control-Allow-Methods matching in CORS
+// preflights is fixed according to the spec. https://crbug.com/1228178
+const char kAccessControlAllowMethodsInCORSPreflightSpecConformant[] =
+    "access_control_allow_methods_in_cors_preflight_spec_conformant";
+
 }  // namespace prefs

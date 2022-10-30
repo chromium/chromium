@@ -372,9 +372,11 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
 absl::optional<CorsErrorStatus> CheckPreflightResult(
     const PreflightResult& result,
     const ResourceRequest& original_request,
-    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support) {
+    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+    bool acam_preflight_spec_conformant) {
   absl::optional<CorsErrorStatus> status =
-      result.EnsureAllowedCrossOriginMethod(original_request.method);
+      result.EnsureAllowedCrossOriginMethod(original_request.method,
+                                            acam_preflight_spec_conformant);
   if (status)
     return status;
 
@@ -402,7 +404,8 @@ class PreflightController::PreflightLoader final {
       const net::NetworkIsolationKey& network_isolation_key,
       mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      const net::NetLogWithSource net_log)
+      const net::NetLogWithSource net_log,
+      bool acam_preflight_spec_conformant)
       : controller_(controller),
         completion_callback_(std::move(completion_callback)),
         original_request_(request),
@@ -413,7 +416,8 @@ class PreflightController::PreflightLoader final {
         network_isolation_key_(network_isolation_key),
         client_security_state_(std::move(client_security_state)),
         devtools_observer_(std::move(devtools_observer)),
-        net_log_(net_log) {
+        net_log_(net_log),
+        acam_preflight_spec_conformant_(acam_preflight_spec_conformant) {
     if (devtools_observer_)
       devtools_request_id_ = base::UnguessableToken::Create();
     auto preflight_request =
@@ -514,7 +518,8 @@ class PreflightController::PreflightLoader final {
       // Preflight succeeded. Check `original_request_` with `result`.
       DCHECK(!detected_error_status);
       detected_error_status = CheckPreflightResult(
-          *result, original_request_, non_wildcard_request_headers_support_);
+          *result, original_request_, non_wildcard_request_headers_support_,
+          acam_preflight_spec_conformant_);
       has_authorization_covered_by_wildcard =
           result->HasAuthorizationCoveredByWildcard(original_request_.headers);
     }
@@ -578,6 +583,7 @@ class PreflightController::PreflightLoader final {
   const mojom::ClientSecurityStatePtr client_security_state_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   const net::NetLogWithSource net_log_;
+  const bool acam_preflight_spec_conformant_;
 };
 
 // static
@@ -639,7 +645,8 @@ void PreflightController::PerformPreflightCheck(
     const net::IsolationInfo& isolation_info,
     mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-    const net::NetLogWithSource& net_log) {
+    const net::NetLogWithSource& net_log,
+    bool acam_preflight_spec_conformant) {
   DCHECK(request.request_initiator);
 
   const net::NetworkIsolationKey& network_isolation_key =
@@ -652,7 +659,8 @@ void PreflightController::PerformPreflightCheck(
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.target_ip_address_space, request.credentials_mode,
-          request.method, request.headers, request.is_revalidating, net_log)) {
+          request.method, request.headers, request.is_revalidating, net_log,
+          acam_preflight_spec_conformant)) {
     std::move(callback).Run(net::OK, absl::nullopt, false);
     return;
   }
@@ -661,7 +669,8 @@ void PreflightController::PerformPreflightCheck(
       this, std::move(callback), request, with_trusted_header_client,
       non_wildcard_request_headers_support, private_network_access_behavior,
       tainted, annotation_tag, network_isolation_key,
-      std::move(client_security_state), std::move(devtools_observer), net_log));
+      std::move(client_security_state), std::move(devtools_observer), net_log,
+      acam_preflight_spec_conformant));
   (*emplaced_pair.first)->Request(loader_factory);
 }
 

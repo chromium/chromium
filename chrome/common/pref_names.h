@@ -1283,6 +1283,8 @@ extern const char kStrictMimetypeCheckForWorkerScriptsEnabled[];
 extern const char kVirtualKeyboardResizesLayoutByDefault[];
 #endif
 
+extern const char kAccessControlAllowMethodsInCORSPreflightSpecConformant[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

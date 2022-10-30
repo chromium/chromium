@@ -237,7 +237,7 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
       PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*client_security_state=*/nullptr,
-      /*devtools_observer=*/mojo::NullRemote(), net_log);
+      /*devtools_observer=*/mojo::NullRemote(), net_log, true);
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
@@ -246,7 +246,7 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
       PrivateNetworkAccessPreflightBehavior::kWarn, /*tainted=*/false,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*client_security_state=*/nullptr,
-      /*devtools_observer=*/mojo::NullRemote(), net_log);
+      /*devtools_observer=*/mojo::NullRemote(), net_log, true);
 
   ASSERT_EQ(2, url_loader_factory.NumPending());
   EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
@@ -465,7 +465,8 @@ class PreflightControllerTest : public testing::Test {
         isolation_info, std::move(client_security_state),
         devtools_observer_->Bind(),
         net::NetLogWithSource::Make(net::NetLog::Get(),
-                                    net::NetLogSourceType::URL_REQUEST));
+                                    net::NetLogSourceType::URL_REQUEST),
+        true);
     run_loop_->Run();
   }
 

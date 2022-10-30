@@ -61,7 +61,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
 
   // Checks if the given `method` is allowed by the CORS-preflight response.
   absl::optional<CorsErrorStatus> EnsureAllowedCrossOriginMethod(
-      const std::string& method) const;
+      const std::string& method,
+      bool acam_preflight_spec_conformant) const;
 
   // Checks if the given all `headers` are allowed by the CORS-preflight
   // response.
@@ -82,13 +83,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // `headers` is allowed by the CORS-preflight response.
   // This also does not reject the forbidden headers as
   // EnsureAllowCrossOriginHeaders does not.
-  bool EnsureAllowedRequest(
-      mojom::CredentialsMode credentials_mode,
-      const std::string& method,
-      const net::HttpRequestHeaders& headers,
-      bool is_revalidating,
-      NonWildcardRequestHeadersSupport
-          with_non_wildcard_request_headers_support) const;
+  bool EnsureAllowedRequest(mojom::CredentialsMode credentials_mode,
+                            const std::string& method,
+                            const net::HttpRequestHeaders& headers,
+                            bool is_revalidating,
+                            NonWildcardRequestHeadersSupport
+                                with_non_wildcard_request_headers_support,
+                            bool acam_preflight_spec_conformant) const;
 
   // Returns true when `headers` has "authorization" which is covered by the
   // wildcard symbol (and not covered by "authorization") in the preflight

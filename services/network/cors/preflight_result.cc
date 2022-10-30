@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +22,7 @@
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network::cors {
 
@@ -139,14 +141,21 @@ PreflightResult::PreflightResult(const mojom::CredentialsMode credentials_mode)
 PreflightResult::~PreflightResult() = default;
 
 absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
-    const std::string& method) const {
-  // Request method is normalized to upper case, and comparison is performed in
-  // case-sensitive way, that means access control header should provide an
-  // upper case method list.
+    const std::string& method,
+    bool acam_preflight_spec_conformant) const {
+  // `normalized_method_allowed`: Request method is normalized to upper case,
+  // and comparison is performed in case-sensitive way, that means access
+  // control header should provide an upper case method list. This behavior is
+  // to be deprecated (https://crbug.com/1228178).
   const std::string normalized_method = base::ToUpperASCII(method);
   const bool normalized_method_allowed =
       methods_.find(normalized_method) != methods_.end() ||
       IsCorsSafelistedMethod(normalized_method);
+
+  // `method_allowed`: Request method should be already normalized (in Blink, in
+  // https://xhr.spec.whatwg.org/#dom-xmlhttprequest-open or
+  // https://fetch.spec.whatwg.org/#dom-request) so we don't normalize the
+  // method again here.
   const bool method_allowed =
       methods_.find(method) != methods_.end() || IsCorsSafelistedMethod(method);
 
@@ -166,7 +175,11 @@ absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
           ? (method_allowed ? kBothAllowed : kNormalizedMethodAllowed)
           : (method_allowed ? kMethodAllowed : kBothDisallowed));
 
-  if (normalized_method_allowed) {
+  const bool allowed = acam_preflight_spec_conformant
+                           ? method_allowed
+                           : normalized_method_allowed;
+
+  if (allowed) {
     return absl::nullopt;
   }
 
@@ -225,13 +238,13 @@ bool PreflightResult::EnsureAllowedRequest(
     const std::string& method,
     const net::HttpRequestHeaders& headers,
     bool is_revalidating,
-    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support)
-    const {
+    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+    bool acam_preflight_spec_conformant) const {
   if (!credentials_ && credentials_mode == mojom::CredentialsMode::kInclude) {
     return false;
   }
 
-  if (EnsureAllowedCrossOriginMethod(method)) {
+  if (EnsureAllowedCrossOriginMethod(method, acam_preflight_spec_conformant)) {
     return false;
   }
 

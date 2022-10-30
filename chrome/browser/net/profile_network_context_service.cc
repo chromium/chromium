@@ -1028,6 +1028,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
           GetForBrowserContext(profile_);
   DCHECK(fps_service);
   fps_service->AddRemoteAccessDelegate(std::move(fps_access_delegate_remote));
+
+  network_context_params->acam_preflight_spec_conformant =
+      profile_->GetPrefs()->GetBoolean(
+          prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

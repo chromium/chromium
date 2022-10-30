@@ -6,11 +6,11 @@ PASS CORS [PUT], server allows, check preflight has user agent
 PASS CORS [PUT], server refuses
 PASS CORS [PATCH], server allows
 PASS CORS [PATCH], server refuses
-FAIL CORS [patcH], server allows promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS CORS [patcH], server allows
 PASS CORS [patcH], server refuses
 PASS CORS [NEW], server allows
 PASS CORS [NEW], server refuses
-FAIL CORS [chicken], server allows promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS CORS [chicken], server allows
 PASS CORS [chicken], server refuses
 PASS CORS [GET] [x-test-header: allowed], server allows
 PASS CORS [GET] [x-test-header: refused], server refuses

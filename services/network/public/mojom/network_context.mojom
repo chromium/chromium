@@ -540,6 +540,10 @@ struct NetworkContextParams {
   FirstPartySetsAccessDelegateParams? first_party_sets_access_delegate_params;
   pending_receiver<FirstPartySetsAccessDelegate>?
       first_party_sets_access_delegate_receiver;
+
+  // TODO(crbug.com/1228178): This flag is intended to be temporary and to be
+  // removed (always enabled) in the future.
+  bool acam_preflight_spec_conformant = true;
 };
 
 struct NetworkConditions {

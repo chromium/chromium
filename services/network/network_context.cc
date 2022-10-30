@@ -620,6 +620,10 @@ NetworkContext::NetworkContext(
 
   for (const auto& key : cors_exempt_header_list)
     cors_exempt_header_list_.insert(key);
+
+  acam_preflight_spec_conformant_ = base::FeatureList::IsEnabled(
+      network::features::
+          kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 }
 
 NetworkContext::~NetworkContext() {
@@ -2902,6 +2906,12 @@ void NetworkContext::InitializeCorsParams() {
   }
   for (const auto& key : params_->cors_exempt_header_list)
     cors_exempt_header_list_.insert(key);
+
+  acam_preflight_spec_conformant_ =
+      base::FeatureList::IsEnabled(
+          network::features::
+              kAccessControlAllowMethodsInCORSPreflightSpecConformant) &&
+      params_->acam_preflight_spec_conformant;
 }
 
 void NetworkContext::FinishConstructingTrustTokenStore(

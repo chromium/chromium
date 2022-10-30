@@ -1729,6 +1729,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy_prefs::kScreenTimeEnabled,
     base::Value::Type::BOOLEAN},
 #endif
+  { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
+    prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
+    base::Value::Type::BOOLEAN},
   { key::kUrlParamFilterEnabled,
     policy_prefs::kUrlParamFilterEnabled,
     base::Value::Type::BOOLEAN},

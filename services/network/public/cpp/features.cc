@@ -335,4 +335,8 @@ BASE_FEATURE(kOutOfProcessSystemDnsResolution,
              "OutOfProcessSystemDnsResolution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant,
+             "AccessControlAllowMethodsInCORSPreflightSpecConformant",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features
