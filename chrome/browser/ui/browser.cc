@@ -2706,24 +2706,27 @@ StatusBubble* Browser::GetStatusBubble() {
 // Browser, Session restore functions (private):
 
 void Browser::SyncHistoryWithTabs(int index) {
-  // Apps don't need to do this. Skip.
-  if (IsRelevantToAppSessionService(type_)) {
-    return;
-  }
+  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
 
   SessionService* session_service =
       SessionServiceFactory::GetForProfileIfExisting(profile());
-  if (session_service) {
-    for (int i = index; i < tab_strip_model_->count(); ++i) {
-      WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
-      if (web_contents) {
-        sessions::SessionTabHelper* session_tab_helper =
-            sessions::SessionTabHelper::FromWebContents(web_contents);
+
+  if (!service && !session_service)
+    return;
+
+  for (int i = index; i < tab_strip_model_->count(); ++i) {
+    WebContents* web_contents = tab_strip_model_->GetWebContentsAt(i);
+    if (web_contents) {
+      sessions::SessionTabHelper* session_tab_helper =
+          sessions::SessionTabHelper::FromWebContents(web_contents);
+      if (service) {
+        service->SetPinnedState(session_id(), session_tab_helper->session_id(),
+                                tab_strip_model_->IsTabPinned(i));
+      }
+
+      if (!IsRelevantToAppSessionService(type_) && session_service) {
         session_service->SetTabIndexInWindow(
             session_id(), session_tab_helper->session_id(), i);
-        session_service->SetPinnedState(session_id(),
-                                        session_tab_helper->session_id(),
-                                        tab_strip_model_->IsTabPinned(i));
 
         absl::optional<tab_groups::TabGroupId> group_id =
             tab_strip_model_->GetTabGroupForTab(i);

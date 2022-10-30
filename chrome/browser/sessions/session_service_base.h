@@ -143,6 +143,11 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void SetWindowAppName(const SessionID& window_id,
                         const std::string& app_name);
 
+  // Sets the pinned state of the tab.
+  void SetPinnedState(const SessionID& window_id,
+                      const SessionID& tab_id,
+                      bool is_pinned);
+
   // CommandStorageManagerDelegate:
   bool ShouldUseDelayedSave() override;
   void OnWillSaveCommands() override;

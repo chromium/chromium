@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -98,6 +99,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -3305,6 +3307,20 @@ class AppSessionRestoreTest : public SessionRestoreTest {
     web_app_info->title = u"A Web App";
     return web_app::test::InstallWebApp(profile, std::move(web_app_info));
   }
+
+  web_app::AppId InstallTabbedPWA(Profile* profile, const GURL& start_url) {
+    blink::Manifest::TabStrip tab_strip;
+    tab_strip.home_tab = blink::Manifest::HomeTabParams();
+
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
+    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+    web_app_info->title = u"A Web App";
+    web_app_info->tab_strip = std::move(tab_strip);
+    return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+  }
 };
 
 // This is disabled on mac pending http://crbug.com/1194201
@@ -3985,4 +4001,86 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreNavigationApiTest,
       restored_contents, kCheckEntry2Js, &url2_is_censored));
   EXPECT_FALSE(url1_is_censored);
   EXPECT_TRUE(url2_is_censored);
+}
+
+class TabbedAppSessionRestoreTest : public AppSessionRestoreTest {
+ public:
+  TabbedAppSessionRestoreTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDesktopPWAsTabStrip};
+};
+
+IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
+  Profile* profile = browser()->profile();
+  GURL app_url = GURL("http://www.example.com");
+  web_app::AppId app_id = InstallTabbedPWA(profile, app_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  // Expect a tabbed app was opened with a pinned tab.
+  EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile)
+                  ->registrar()
+                  .IsTabbedWindowModeEnabled(app_id));
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+
+  // Add a regular tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      app_browser, GURL("http://www.example.com/2"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_FALSE(tab_strip->IsTabPinned(1));
+
+  // App browser and normal browser.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Pretend to 'close the browser'.
+  // Just shutdown the services as we would if the browser is shutting down for
+  // real.
+  ShutdownServices(profile);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Now that SessionServices are off, we can close stuff to simulate a closure.
+  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Now trigger a restore.
+  // We need to start up the services again before restoring.
+  StartupServices(profile);
+
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  // App and browser restored.
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  // Check the tabbed app was restored with the pinned tab.
+  bool app_checked = false;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    if (browser->type() == Browser::Type::TYPE_APP) {
+      EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
+      EXPECT_TRUE(web_app::WebAppProvider::GetForTest(browser->profile())
+                      ->registrar()
+                      .IsTabbedWindowModeEnabled(app_id));
+
+      EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
+                app_url);
+      EXPECT_EQ(browser->tab_strip_model()->count(), 2);
+      EXPECT_TRUE(browser->tab_strip_model()->IsTabPinned(0));
+      EXPECT_FALSE(browser->tab_strip_model()->IsTabPinned(1));
+      app_checked = true;
+    }
+  }
+  EXPECT_TRUE(app_checked);
 }

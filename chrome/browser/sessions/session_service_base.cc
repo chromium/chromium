@@ -331,6 +331,15 @@ void SessionServiceBase::SetWindowAppName(const SessionID& window_id,
   ScheduleCommand(sessions::CreateSetWindowAppNameCommand(window_id, app_name));
 }
 
+void SessionServiceBase::SetPinnedState(const SessionID& window_id,
+                                        const SessionID& tab_id,
+                                        bool is_pinned) {
+  if (!ShouldTrackChangesToWindow(window_id))
+    return;
+
+  ScheduleCommand(sessions::CreatePinnedStateCommand(tab_id, is_pinned));
+}
+
 bool SessionServiceBase::ShouldUseDelayedSave() {
   return should_use_delayed_save_;
 }
