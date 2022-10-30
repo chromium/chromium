@@ -138,11 +138,11 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
         if (mTab.isClosing() || url == null) return false;
 
 
+
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url.getSpec()));
         params.setHasUserGesture(userGesture);
-        boolean success = ((ArkTabImpl) mTab).getWindowAndroid()
-                .getCompositorViewHolder()
-                .openNewPage(mTab, params);
+        boolean success = ((ArkTabImpl) mTab).openNewPage(params);
+
 
         if (success) {
             if (disposition == org.chromium.ui.mojom.WindowOpenDisposition.NEW_POPUP) {
@@ -195,11 +195,12 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
     @Override
     public void activateContents() {
-        if (mTab.getWindowAndroid() == null) {
-            ArkLogger.e(TAG, "getWindowAndroid not set activateContents().  Bailing out.");
-            return;
-        }
-        Activity activity = mTab.getWindowAndroid().getActivity().get();
+//        if (mTab.getWindowAndroid() == null) {
+//            ArkLogger.e(TAG, "getWindowAndroid not set activateContents().  Bailing out.");
+//            return;
+//        }
+//        Activity activity = mTab.getWindowAndroid().getActivity().get();
+        Activity activity = mTab.getActivity2();
         if (activity == null) {
             ArkLogger.e(TAG, "Activity not set activateContents().  Bailing out.");
             return;
@@ -265,10 +266,11 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
     public void handleKeyboardEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
 
-            if (mTab.getWindowAndroid() == null) {
-                return;
-            }
-            Activity activity = mTab.getWindowAndroid().getActivity().get();
+//            if (mTab.getWindowAndroid() == null) {
+//                return;
+//            }
+//            Activity activity = mTab.getWindowAndroid().getActivity().get();
+            Activity activity = mTab.getActivity2();
             if (activity == null) {
                 return;
             }
@@ -379,10 +381,11 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
     @Override
     public boolean isPictureInPictureEnabled() {
 
-        if (mTab.getWindowAndroid() == null) {
-            return false;
-        }
-        Activity activity = mTab.getWindowAndroid().getActivity().get();
+//        if (mTab.getWindowAndroid() == null) {
+//            return false;
+//        }
+//        Activity activity = mTab.getWindowAndroid().getActivity().get();
+        Activity activity = mTab.getActivity2();
         if (activity == null) {
             return false;
         }
@@ -392,10 +395,11 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
     @Override
     public boolean isNightModeEnabled() {
-        if (mTab.getWindowAndroid() == null) {
-            return false;
-        }
-        Activity activity = mTab.getWindowAndroid().getActivity().get();
+//        if (mTab.getWindowAndroid() == null) {
+//            return false;
+//        }
+//        Activity activity = mTab.getWindowAndroid().getActivity().get();
+        Activity activity = mTab.getActivity2();
         if (activity == null) {
             return false;
         }

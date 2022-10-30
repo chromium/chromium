@@ -17,14 +17,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/callback_android.h"
-#include "base/android/jni_array.h"
-#include "base/android/jni_string.h"
 #include "base/android/locale_utils.h"
 #include "chrome/browser/profiles/profile_android.h"
-
-#include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
-
-using base::android::JavaParamRef;
 #endif
 
 namespace sharing {
@@ -203,15 +197,6 @@ ShareRanking::Ranking AppendUpToLength(
   }
   return result;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
-                        JNIEnv* env,
-                        absl::optional<ShareRanking::Ranking> ranking) {
-  auto result = base::android::ToJavaArrayOfStrings(env, ranking.value());
-  base::android::RunObjectCallbackAndroid(callback, result);
-}
-#endif
 
 #if DCHECK_IS_ON()
 bool EveryElementInList(const std::vector<std::string>& ranking,
@@ -544,46 +529,3 @@ ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
 }
 
 }  // namespace sharing
-
-#if BUILDFLAG(IS_ANDROID)
-
-void JNI_ShareRankingBridge_Rank(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jprofile,
-                                 const JavaParamRef<jstring>& jtype,
-                                 const JavaParamRef<jobjectArray>& javailable,
-                                 jint jfold,
-                                 jint jlength,
-                                 jboolean jpersist,
-                                 const JavaParamRef<jobject>& jcallback) {
-  base::android::ScopedJavaGlobalRef<jobject> callback(jcallback);
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-
-  if (profile->IsOffTheRecord()) {
-    // For incognito/guest profiles, we use the source ranking from the parent
-    // normal profile but never write anything back to that profile, meaning the
-    // user will get their existing ranking but no change to it will be made
-    // based on incognito activity.
-    DCHECK(!jpersist);
-    profile = profile->GetOriginalProfile();
-  }
-
-  auto* history = sharing::ShareHistory::Get(profile);
-  auto* ranking = sharing::ShareRanking::Get(profile);
-
-  DCHECK(history);
-  DCHECK(ranking);
-
-  std::string type = base::android::ConvertJavaStringToUTF8(env, jtype);
-  std::vector<std::string> available;
-
-  base::android::AppendJavaStringArrayToStringVector(env, javailable,
-                                                     &available);
-
-  ranking->Rank(
-      history, type, available, jfold, jlength, jpersist,
-      base::BindOnce(&sharing::RunJniRankCallback, std::move(callback),
-                     // TODO(ellyjones): Is it safe to unretained env here?
-                     base::Unretained(env)));
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)

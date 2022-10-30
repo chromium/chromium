@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -109,12 +110,23 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
         @Override
         public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-            if (window != null) {
-                initializeContainerView(getActivity(tab));
-                updateWebContents();
-            } else {
-                destroyContainerView();
-            }
+//            if (window != null) {
+//                initializeContainerView(window);
+//                updateWebContents();
+//            } else {
+//                destroyContainerView();
+//            }
+        }
+
+        @Override
+        public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+            initializeContainerView(windowAndroid);
+            updateWebContents();
+        }
+
+        @Override
+        public void onDetachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+            destroyContainerView(windowAndroid);
         }
     };
 
@@ -216,20 +228,17 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
     }
 
     private InfoBarContainer(Tab tab) {
-        tab.addObserver(mTabObserver);
         mTabView = tab.getView();
         mTab = tab;
 
-        Activity activity = getActivity(tab);
-        if (activity != null) initializeContainerView(activity);
+//        if (tab.getWindowAndroid() != null) {
+//            initializeContainerView(tab.getWindowAndroid());
+//        }
 
         // Chromium's InfoBarContainer may add an InfoBar immediately during this initialization
         // call, so make sure everything in the InfoBarContainer is completely ready beforehand.
         mNativeInfoBarContainer = InfoBarContainerJni.get().init(InfoBarContainer.this);
-    }
-
-    private static Activity getActivity(Tab tab) {
-        return tab.getWindowAndroid().getActivity().get();
+        tab.addObserver(mTabObserver);
     }
 
     /**
@@ -348,7 +357,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
     @Override
     public void destroy() {
-        destroyContainerView();
+//        destroyContainerView();
         mTab.removeObserver(mTabObserver);
         if (mNativeInfoBarContainer != 0) {
             InfoBarContainerJni.get().destroy(mNativeInfoBarContainer, InfoBarContainer.this);
@@ -438,10 +447,14 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         if (mTabView != null) mTabView.addOnAttachStateChangeListener(mAttachedStateListener);
     }
 
-    private void initializeContainerView(Activity activity) {
-        mInfoBarContainerView = new InfoBarContainerView(activity, mContainerViewObserver,
-                BrowserControlsManagerSupplier.getValueOrNullFrom(mTab.getWindowAndroid()),
-                DeviceFormFactor.isWindowOnTablet(mTab.getWindowAndroid()));
+    private void initializeContainerView(WindowAndroid windowAndroid) {
+        Activity activity = windowAndroid.getActivity().get();
+        mInfoBarContainerView = new InfoBarContainerView(
+                activity,
+                mContainerViewObserver,
+                BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid),
+                DeviceFormFactor.isWindowOnTablet(windowAndroid)
+        );
 
         mInfoBarContainerView.addOnAttachStateChangeListener(
                 new View.OnAttachStateChangeListener() {
@@ -463,10 +476,10 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         addAnimationListener(mIPHSupport);
         addObserver(mIPHSupport);
 
-        mTab.getWindowAndroid().getKeyboardDelegate().addKeyboardVisibilityListener(this);
+        windowAndroid.getKeyboardDelegate().addKeyboardVisibilityListener(this);
     }
 
-    private void destroyContainerView() {
+    private void destroyContainerView(WindowAndroid windowAndroid) {
         if (mIPHSupport != null) {
             removeAnimationListener(mIPHSupport);
             removeObserver(mIPHSupport);
@@ -483,7 +496,10 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
             mInfoBarContainerView = null;
         }
 
-        mTab.getWindowAndroid().getKeyboardDelegate().removeKeyboardVisibilityListener(this);
+        if (mTab.getWindowAndroid() != null) {
+            mTab.getWindowAndroid().getKeyboardDelegate().removeKeyboardVisibilityListener(this);
+        }
+
 
         if (mTabView != null) {
             mTabView.removeOnAttachStateChangeListener(mAttachedStateListener);

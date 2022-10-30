@@ -29,7 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/origin_util.h"
 #include "device/base/features.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"

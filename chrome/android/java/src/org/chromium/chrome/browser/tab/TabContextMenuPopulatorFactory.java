@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A simple wrapper around a {@link ContextMenuPopulatorFactory} for creating
@@ -37,9 +38,9 @@ public class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFacto
 
     @Override
     public ContextMenuPopulator createContextMenuPopulator(
-            Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
+            WindowAndroid windowAndroid, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new TabContextMenuPopulator(
-                mPopulatorFactory.createContextMenuPopulator(context, params, nativeDelegate),
+                mPopulatorFactory.createContextMenuPopulator(windowAndroid, params, nativeDelegate),
                 mTab);
     }
 }

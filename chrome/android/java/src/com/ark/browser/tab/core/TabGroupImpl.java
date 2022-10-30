@@ -1,5 +1,7 @@
 package com.ark.browser.tab.core;
 
+import androidx.core.util.AtomicFile;
+
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.PageInfo;
@@ -16,9 +18,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.Referrer;
 
-import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -56,24 +57,68 @@ public class TabGroupImpl implements ITabGroup {
         mPrefetchTabGroupTask = ArkTabDao.fetchGroupFile(groupFile);
     }
 
-    private void saveGroupFile() {
-        int id = incognito ? 1 : 0;
-        File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
-        try (DataOutputStream os = new DataOutputStream(
-                new BufferedOutputStream(new FileOutputStream(groupFile)))) {
-            int version = 1;
-            os.writeInt(version);
-            os.writeInt(TabGroupImpl.this.index);
-            os.writeBoolean(incognito);
-            os.writeInt(mTabList.size());
-            for (ITab tab : mTabList) {
-                os.writeLong(tab.getId());
-            }
-            os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void saveGroupFile() {
+//
+//
+//        try {
+//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//            DataOutputStream os = new DataOutputStream(stream);
+//            int version = 1;
+//            os.writeInt(version);
+//            os.writeInt(TabGroupImpl.this.index);
+//            os.writeBoolean(incognito);
+//            os.writeInt(mTabList.size());
+//            for (ITab tab : mTabList) {
+//                os.writeLong(tab.getId());
+//            }
+//            os.close();
+//
+//            byte[] bytes = stream.toByteArray();
+//
+//            int id = incognito ? 1 : 0;
+//
+//            ThreadPool.executeIO(new Runnable() {
+//                @Override
+//                public void run() {
+//                    File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
+//                    AtomicFile file = new AtomicFile(groupFile);
+//                    FileOutputStream fos = null;
+//                    try {
+//                        fos = file.startWrite();
+//                        fos.write(bytes, 0, bytes.length);
+//                        file.finishWrite(fos);
+//                    } catch (IOException e) {
+//                        if (fos != null) file.failWrite(fos);
+//                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+//                    }
+//                }
+//            });
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//
+//
+//
+////        int id = incognito ? 1 : 0;
+////        File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
+////        try (DataOutputStream os = new DataOutputStream(
+////                new BufferedOutputStream(new FileOutputStream(groupFile)))) {
+////            int version = 1;
+////            os.writeInt(version);
+////            os.writeInt(TabGroupImpl.this.index);
+////            os.writeBoolean(incognito);
+////            os.writeInt(mTabList.size());
+////            for (ITab tab : mTabList) {
+////                os.writeLong(tab.getId());
+////            }
+////            os.flush();
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
+//    }
 
     public long[] readGroupFile(DataInputStream stream) {
         try {
@@ -96,26 +141,6 @@ public class TabGroupImpl implements ITabGroup {
         }
         return new long[0];
 
-    }
-
-    public void save() {
-        int id = incognito ? 1 : 0;
-        File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
-        try (DataOutputStream os = new DataOutputStream(
-                new BufferedOutputStream(new FileOutputStream(groupFile)))) {
-            int version = 1;
-            os.writeInt(version);
-            os.writeInt(index);
-            os.writeBoolean(incognito);
-
-            os.writeInt(mTabList.size());
-            for (ITab tab : mTabList) {
-                os.writeLong(tab.getId());
-            }
-            os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -196,6 +221,11 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
+    public int getId() {
+        return incognito ? 1 : 0;
+    }
+
+    @Override
     public boolean isIncognito() {
         return incognito;
     }
@@ -203,11 +233,6 @@ public class TabGroupImpl implements ITabGroup {
     @Override
     public int getIndex() {
         return index;
-    }
-
-    @Override
-    public int getCount() {
-        return mTabList.size();
     }
 
     @Override
@@ -248,7 +273,7 @@ public class TabGroupImpl implements ITabGroup {
 
             saveTabPosition(index, position);
 
-            selectTabInfo(tab, tab.getCurrentPage());
+            selectTab(tab, tab.getCurrentPage());
 
             return cloneTab;
         }
@@ -314,7 +339,7 @@ public class TabGroupImpl implements ITabGroup {
         }
         ArkLogger.d(TAG, "openNewTab loadUrlParams=" + loadUrlParams);
         page.loadUrl(loadUrlParams);
-        selectTabInfo(newTab, newPage);
+        selectTab(newTab, newPage);
     }
 
     public ITab getTabInfo(PageInfo pageInfo) {
@@ -333,165 +358,67 @@ public class TabGroupImpl implements ITabGroup {
     }
 
     @Override
-    public boolean openNewPage(Tab parent, @TabLaunchType int type, String url) {
-        ArkLogger.d(TAG, "openNewPage url=" + url + " type=" + type);
+    public boolean openNewPage(Tab parent, LoadUrlParams params, @TabLaunchType int type) {
+        ArkLogger.d(TAG, "openNewPage params=" + params + " type=" + type);
 
         int parentId = parent.getId();
         // The parent tab was already closed.  Do not open child tabs.
         if (isClosurePending(parentId)) return false;
 
         // If parent is in the same tab model, place the new tab next to it.
-        ITab manager = getTabById(parentId);
-        if (manager == null) {
+        ITab iTab = getTabById(parentId);
+        if (iTab == null) {
             return false;
         }
 
-        int index = manager.indexOfPage(parentId);
-        ArkLogger.d(TAG, "openNewPage index=" + index);
-        if (index == ITab.INVALID_TAB_INDEX) {
-            return false;
-        }
-
-        PageInfo parentPageInfo = manager.getPageInfoAt(index);
-        ArkLogger.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
-        if (parentPageInfo == null) {
-            return false;
-        }
-
-        int pageIndex = parentPageInfo.getOriginalIndex() + 1;
-        Tab tab = PageCacheManager.getInstance().createLivePageByType(
-                pageIndex, getWindowAndroid(), manager, type);
-//        PageInfo pageInfo = tab.getPageInfo();
-
-        PageInfo pageInfo = PageInfo.from(tab.getId(), parentId, manager.getId(),
-                pageIndex, tab.isIncognito());
-        pageInfo.setUrl(tab.getUrl().toString());
-        pageInfo.setTitle(tab.getTitle());
-//        pageInfo.save();
-
-        IPage page = new PageImpl(pageInfo);
-        page.savePageInfo();
-        IPageGroup pageInfoList = manager.getPageGroup();
-
-        pageInfoList.getPageInfoList().add(++index, page);
-
-//        pageInfoList.add(pageInfo.getOriginalIndex(), pageInfo);
-
-        for (TabInfoObserver obs : mObservers) {
-            obs.didAddTab(page, type);
-        }
-
-        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
-        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
-        ArkLogger.d(TAG, "openNewPage params=" + params);
-        tab.loadUrl(params);
-        selectTabInfo(manager, page);
-
-
-//        if (++index < pageInfoList.getCount()) {
-//            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
-//                    .subList(index, pageInfoList.getCount());
-//
-//            List<IPage> tempPages = new ArrayList<>(pageRemoved);
-//            ThreadPool.executeIO(() -> {
-//                long start = System.currentTimeMillis();
-//                Log.d(TAG, "openNewPage pageRemovedCount=" + tempPages.size());
-//
-//                DatabaseWrapper database = FlowManager.getDatabase(PageInfoManager.class).getWritableDatabase();
-//                try {
-//                    database.beginTransaction();
-//                    for (IPage info : tempPages) {
-////                        info.removeInfoSync();
-//                        int pageId = info.getId();
-//                        String sql = String.format("delete from PageInfo where pageId=%s", pageId);
-//                        database.execSQL(sql);
-//
-//                        PageCacheManager.getInstance().removePage(info);
-//                        TabSnapshotManager.getInstance().removeSnapshot(pageId);
-//                    }
-//                    database.setTransactionSuccessful();
-//                } finally {
-//                    database.endTransaction();
-//                }
-//
-////                for (PageInfo info : tempPages) {
-////                    info.removeInfoSync();
-////                }
-//                Log.d(TAG, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
-//            });
-//            pageRemoved.clear();
+//        int index = iTab.indexOfPage(parentId);
+//        ArkLogger.d(TAG, "openNewPage index=" + index);
+//        if (index == ITab.INVALID_TAB_INDEX) {
+//            return false;
 //        }
-
-        ArkLogger.d(TAG, "openNewPage end");
-        return true;
-    }
-
-    @Override
-    public boolean openNewPage(Tab parent, LoadUrlParams params) {
-        ArkLogger.d(TAG, "openNewPage params=" + params + " parent=" + parent);
-
-        int parentId = parent.getId();
-        // The parent tab was already closed.  Do not open child tabs.
-        if (isClosurePending(parentId)) return false;
-
-        // If parent is in the same tab model, place the new tab next to it.
-        ITab manager = getTabById(parentId);
-        if (manager == null) {
-            return false;
-        }
-
-        int index = manager.indexOfPage(parentId);
-        ArkLogger.d(TAG, "openNewPage index=" + index);
-        if (index == ITab.INVALID_TAB_INDEX) {
-            return false;
-        }
-
-        PageInfo parentPageInfo = manager.getPageInfoAt(index);
-        ArkLogger.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
-        if (parentPageInfo == null) {
-            return false;
-        }
-
-
-        int pageIndex = parentPageInfo.getOriginalIndex() + 1;
-        Tab tab = PageCacheManager.getInstance().createLivePageByType(
-                pageIndex, getWindowAndroid(),
-                manager, TabLaunchType.FROM_CHROME_UI);
-//        PageInfo pageInfo = tab.getPageInfo();
-        PageInfo pageInfo = PageInfo.from(tab.getId(), parentId, manager.getId(),
-                pageIndex, tab.isIncognito());
-
-        pageInfo.setUrl(tab.getUrl().getSpec());
-        pageInfo.setTitle(tab.getTitle());
-//        pageInfo.save();
-
-        IPage page = new PageImpl(pageInfo);
-        page.savePageInfo();
-        IPageGroup pageInfoList = manager.getPageGroup();
-
-        pageInfoList.getPageInfoList().add(++index, page);
-
-//        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
-//        params.setTransitionType(type);
-//        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
+//
+//        PageInfo parentPageInfo = iTab.getPageInfoAt(index);
+//        ArkLogger.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
+//        if (parentPageInfo == null) {
+//            return false;
+//        }
+//
+//        int pageIndex = parentPageInfo.getOriginalIndex() + 1;
+//        Tab tab = PageCacheManager.getInstance().createLivePageByType(
+//                pageIndex, getWindowAndroid(), iTab, type);
+////        PageInfo pageInfo = tab.getPageInfo();
+//
+//        PageInfo pageInfo = PageInfo.from(tab.getId(), parentId, iTab.getId(),
+//                pageIndex, tab.isIncognito());
+//        pageInfo.setUrl(tab.getUrl().toString());
+//        pageInfo.setTitle(tab.getTitle());
+////        pageInfo.save();
+//
+//        IPage page = new PageImpl(pageInfo);
+//        page.savePageInfo();
+//        IPageGroup pageInfoList = iTab.getPageGroup();
+//
+//        pageInfoList.getPageInfoList().add(++index, page);
+//
+//        for (TabInfoObserver obs : mObservers) {
+//            obs.didAddTab(page, TabSelectionType.FROM_NEW);
+//        }
+//
+//
 //        ArkLogger.d(TAG, "openNewPage params=" + params);
+//        tab.loadUrl(params);
 
+        IPage page = iTab.createPage(parent, params, type);
 
+        if (page == null) {
+            return false;
+        }
 
         for (TabInfoObserver obs : mObservers) {
-            obs.didAddTab(page, TabSelectionType.FROM_USER);
+            obs.didAddTab(page, TabSelectionType.FROM_NEW);
         }
 
-        ArkLogger.d(TAG, "openNewPage params=" + params);
-        tab.loadUrl(params);
-        selectTabInfo(manager, page);
-
-
-        if (++index < pageInfoList.getCount()) {
-            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
-                    .subList(index, pageInfoList.getCount());
-            pageRemoved.clear();
-        }
+        return selectTab(iTab, page);
 
 
 //        if (++index < pageInfoList.getCount()) {
@@ -501,35 +428,19 @@ public class TabGroupImpl implements ITabGroup {
 //            List<IPage> tempPages = new ArrayList<>(pageRemoved);
 //            ThreadPool.executeIO(() -> {
 //                long start = System.currentTimeMillis();
-//                Log.d(TAG, "openNewPage pageRemovedCount=" + tempPages.size());
+//                ArkLogger.d(TAG, "openNewPage pageRemovedCount=" + tempPages.size());
 //
-//                DatabaseWrapper database = FlowManager.getDatabase(PageInfoManager.class).getWritableDatabase();
-//                try {
-//                    database.beginTransaction();
-//                    for (IPage info : tempPages) {
-////                        info.removeInfoSync();
-//                        int pageId = info.getId();
-//                        String sql = String.format("delete from PageInfo where pageId=%s", pageId);
-//                        database.execSQL(sql);
-//
-//                        PageCacheManager.getInstance().removePage(info);
-//                        TabSnapshotManager.getInstance().removeSnapshot(pageId);
-//                    }
-//                    database.setTransactionSuccessful();
-//                } finally {
-//                    database.endTransaction();
+//                for (IPage info : tempPages) {
+//                    info.remove();
 //                }
 //
-////                for (PageInfo info : tempPages) {
-////                    info.removeInfoSync();
-////                }
-//                Log.d(TAG, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
+//                ArkLogger.d(TAG, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
 //            });
 //            pageRemoved.clear();
 //        }
-
-        ArkLogger.d(TAG, "openNewPage end");
-        return true;
+//
+//        ArkLogger.d(TAG, "openNewPage end");
+//        return true;
     }
 
     @Override
@@ -551,7 +462,7 @@ public class TabGroupImpl implements ITabGroup {
 
             saveTabPosition(index, position);
 
-            selectTabInfo(newTab, page);
+            selectTab(newTab, page);
             return true;
         }
         return false;

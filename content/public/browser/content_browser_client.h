@@ -37,7 +37,6 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "media/mojo/mojom/media_service.mojom-forward.h"
 #include "media/mojo/mojom/remoting.mojom-forward.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"

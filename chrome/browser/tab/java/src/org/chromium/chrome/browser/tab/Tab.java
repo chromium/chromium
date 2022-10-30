@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -11,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
@@ -82,6 +84,15 @@ public interface Tab extends TabLifecycle {
      */
     @NonNull
     Context getContext();
+
+    @NonNull
+    default Activity getActivity2() {
+        Context context = getContext();
+        if (context instanceof Activity) {
+            return ContextUtils.activityFromContext(context);
+        }
+        return null;
+    }
 
     /**
      * @return The {@link WindowAndroid} associated with this {@link Tab}.

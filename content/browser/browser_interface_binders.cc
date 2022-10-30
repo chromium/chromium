@@ -72,7 +72,6 @@
 #include "device/gamepad/gamepad_haptics_manager.h"
 #include "device/gamepad/gamepad_monitor.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/mojom/video_capture.mojom.h"

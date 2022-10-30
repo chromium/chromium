@@ -5,6 +5,7 @@ import java.util.Locale;
 public class ArkLogger {
 
     private static final String TAG_PREFIX = "Ark_%s";
+    private static final String TAG_PREFIX_OBJECT = "Ark_%s@%s";
 
     public static void d(Object tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);
@@ -30,7 +31,12 @@ public class ArkLogger {
         if (tag instanceof Class) {
             return String.format(TAG_PREFIX, ((Class<?>) tag).getSimpleName());
         }
-        return String.format(TAG_PREFIX, tag);
+
+        if (tag instanceof CharSequence) {
+            return String.format(TAG_PREFIX, tag);
+        }
+        return String.format(TAG_PREFIX_OBJECT, tag.getClass().getSimpleName(),
+                Integer.toHexString(tag.hashCode()));
     }
 
     private static String getTag(Object tag) {

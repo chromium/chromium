@@ -4,12 +4,16 @@ import android.content.Context;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.AtomicFile;
 
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.core.TabGroupImpl;
+import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
@@ -25,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class ArkTabDao {
@@ -154,6 +159,42 @@ public class ArkTabDao {
         }
 
         return new File(statesDir, "page" + tabId);
+    }
+
+    public static void saveFile(byte[] bytes, File f) {
+        ThreadPool.executeIO(new Runnable() {
+            @Override
+            public void run() {
+                AtomicFile file = new AtomicFile(f);
+                FileOutputStream fos = null;
+                try {
+                    fos = file.startWrite();
+                    fos.write(bytes, 0, bytes.length);
+                    file.finishWrite(fos);
+                } catch (IOException e) {
+                    if (fos != null) file.failWrite(fos);
+                    ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                }
+            }
+        });
+    }
+
+    public static void saveFile(byte[] bytes, Function<Void, File> fileGetter) {
+        ThreadPool.executeIO(new Runnable() {
+            @Override
+            public void run() {
+                AtomicFile file = new AtomicFile(fileGetter.apply(null));
+                FileOutputStream fos = null;
+                try {
+                    fos = file.startWrite();
+                    fos.write(bytes, 0, bytes.length);
+                    file.finishWrite(fos);
+                } catch (IOException e) {
+                    if (fos != null) file.failWrite(fos);
+                    ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                }
+            }
+        });
     }
 
 

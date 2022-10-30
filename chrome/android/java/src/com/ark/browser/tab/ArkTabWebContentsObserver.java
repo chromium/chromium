@@ -153,8 +153,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
             // potential background tabs that did not reload yet).
             if (mTab.needsReload() || SadTab.isShowing(mTab)) return;
 
-            int activityState = ApplicationStatus.getStateForActivity(
-                    mTab.getWindowAndroid().getActivity().get());
+            int activityState = ApplicationStatus.getStateForActivity(mTab.getActivity2());
             if (mTab.isHidden() || activityState == ActivityState.PAUSED
                     || activityState == ActivityState.STOPPED
                     || activityState == ActivityState.DESTROYED) {

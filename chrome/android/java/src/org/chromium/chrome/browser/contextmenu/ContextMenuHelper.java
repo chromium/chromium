@@ -99,7 +99,7 @@ public class ContextMenuHelper {
         mCurrentNativeDelegate =
                 new ContextMenuNativeDelegateImpl(mWebContents, renderFrameHost, params);
         mCurrentPopulator = mPopulatorFactory.createContextMenuPopulator(
-                windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
+                windowAndroid, params, mCurrentNativeDelegate);
         mIsIncognito = mCurrentPopulator.isIncognito();
         mPageTitle = mCurrentPopulator.getPageTitle();
         mCurrentContextMenuParams = params;

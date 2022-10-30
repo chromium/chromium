@@ -21,7 +21,6 @@
 #include "content/public/utility/utility_thread.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

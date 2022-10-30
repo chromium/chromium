@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
@@ -102,9 +103,20 @@ public class ArkSwipeRefreshHandler
         super(tab);
         mTab = tab;
         mTabObserver = new EmptyTabObserver() {
+//            @Override
+//            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+//                if (window == null && mSwipeRefreshLayout != null) {
+//                    cancelStopRefreshingRunnable();
+//                    detachSwipeRefreshLayoutIfNecessary();
+//                    mSwipeRefreshLayout.setOnRefreshListener(null);
+//                    mSwipeRefreshLayout.setOnResetListener(null);
+//                    mSwipeRefreshLayout = null;
+//                }
+//            }
+
             @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                if (window == null && mSwipeRefreshLayout != null) {
+            public void onDetachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+                if (mSwipeRefreshLayout != null) {
                     cancelStopRefreshingRunnable();
                     detachSwipeRefreshLayoutIfNecessary();
                     mSwipeRefreshLayout.setOnRefreshListener(null);
@@ -212,12 +224,11 @@ public class ArkSwipeRefreshHandler
             Log.d(TAG, "HISTORY_NAVIGATION startX=" + startX + " startY=" + startY + " navigateForward=" + navigateForward);
 
             boolean handle;
+
             if (navigateForward) {
-//                handle = TabListManager.getInstance().getCurrentTabList().canGoForward();
-                handle = mTab.getWindowAndroid().getNavigationHandler().canGoForward();
+                handle = mTab.canGoForward2();
             } else {
-//                handle = TabListManager.getInstance().getCurrentTabList().canGoBack();
-                handle = mTab.getWindowAndroid().getNavigationHandler().canGoBack();
+                handle = mTab.canGoBack2();
             }
             if (handle) {
                 mNavigateForward = navigateForward;
@@ -254,11 +265,9 @@ public class ArkSwipeRefreshHandler
             // TODO release
             if (mSwipeRefreshLayout.canBackOrForward()) {
                 if (mNavigateForward) {
-                    mTab.getWindowAndroid().getNavigationHandler().goForward();
-//                    TabListManager.getInstance().getCurrentTabList().goForward();
+                    mTab.goForward2();
                 } else {
-                    mTab.getWindowAndroid().getNavigationHandler().goBack();
-//                    TabListManager.getInstance().getCurrentTabList().goBack();
+                    mTab.goBack2();
                 }
             }
             mSwipeRefreshLayout.release(allowRefresh);

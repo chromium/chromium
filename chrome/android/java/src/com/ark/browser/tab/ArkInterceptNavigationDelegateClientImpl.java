@@ -7,11 +7,13 @@ package com.ark.browser.tab;
 import android.app.Activity;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -46,12 +48,18 @@ public class ArkInterceptNavigationDelegateClientImpl implements InterceptNaviga
                 mInterceptNavigationDelegate.associateWithWebContents(tab.getWebContents());
             }
 
+//            @Override
+//            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+//                if (window != null) {
+//                    mInterceptNavigationDelegate.setExternalNavigationHandler(
+//                            createExternalNavigationHandler());
+//                }
+//            }
+
             @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                if (window != null) {
-                    mInterceptNavigationDelegate.setExternalNavigationHandler(
-                            createExternalNavigationHandler());
-                }
+            public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+                mInterceptNavigationDelegate.setExternalNavigationHandler(
+                        createExternalNavigationHandler());
             }
 
             @Override
@@ -73,7 +81,13 @@ public class ArkInterceptNavigationDelegateClientImpl implements InterceptNaviga
 
     @Override
     public ExternalNavigationHandler createExternalNavigationHandler() {
-        return mTab.getDelegateFactory().createExternalNavigationHandler(mTab);
+
+        return new ExternalNavigationHandler(new ArkExternalNavigationDelegateImpl(mTab));
+
+//        if (mTab.getWindowAndroid() == null) {
+//            return null;
+//        }
+//        return mTab.getWindowAndroid().getTabDelegateFactory().createExternalNavigationHandler(mTab);
     }
 
     @Override

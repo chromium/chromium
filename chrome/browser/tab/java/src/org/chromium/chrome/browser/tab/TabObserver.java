@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
@@ -268,6 +269,14 @@ public interface TabObserver {
     default void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         if (tab == null || window != null) return;
         tab.removeObserver(this);
+    }
+
+    default void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+
+    }
+
+    default void onDetachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+
     }
 
     /**

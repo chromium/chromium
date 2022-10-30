@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForO;
@@ -366,6 +367,10 @@ public class ContentView extends FrameLayout
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         EventForwarder forwarder = getEventForwarder();
+        Log.e(TAG, "onTouchEvent forwarder=" + forwarder + " webContentsAttached()=" + webContentsAttached() + " mWebContents=" + mWebContents);
+        if (mWebContents != null) {
+            Log.e(TAG, "onTouchEvent getTopLevelNativeWindow" + mWebContents.getTopLevelNativeWindow());
+        }
         boolean ret = forwarder != null ? forwarder.onTouchEvent(event) : false;
         if (mEventOffsetHandler != null) mEventOffsetHandler.onTouchEvent(event);
         return ret;

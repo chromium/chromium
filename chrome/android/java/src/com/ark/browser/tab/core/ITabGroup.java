@@ -1,7 +1,8 @@
 package com.ark.browser.tab.core;
 
-import android.text.TextUtils;
 import android.widget.Toast;
+
+import androidx.core.util.AtomicFile;
 
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.tab.PageCacheManager;
@@ -10,20 +11,26 @@ import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabSnapshotManager;
 import com.ark.browser.tab.dao.ArkTabDao;
+import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.content_public.common.Referrer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public interface ITabGroup {
@@ -31,15 +38,15 @@ public interface ITabGroup {
 
     void init(ArkWindowAndroid nativeWindow);
 
-    default String getTag() {
-        return getClass().getSimpleName();
-    }
+    int getId();
 
     public boolean isIncognito();
 
     public int getIndex();
 
-    public int getCount();
+    default int getCount() {
+        return getTabInfoList().size();
+    }
 
     public ArkWindowAndroid getWindowAndroid();
 
@@ -239,22 +246,22 @@ public interface ITabGroup {
         if (tab == null) {
             return;
         }
-        selectTabInfo(tab, tab.getCurrentPage());
+        selectTab(tab, tab.getCurrentPage());
     }
 
     default boolean selectPrePage(ITab tab) {
-        return selectTabInfo(tab, tab.getPreviousPage());
+        return selectTab(tab, tab.getPreviousPage());
     }
 
     default boolean selectNextPage(ITab tab) {
-        return selectTabInfo(tab, tab.getNextPage());
+        return selectTab(tab, tab.getNextPage());
     }
 
     default void selectTab(ITab tab) {
-        selectTabInfo(tab, tab.getCurrentPage());
+        selectTab(tab, tab.getCurrentPage());
     }
 
-    default boolean selectTabInfo(ITab iTab, IPage page) {
+    default boolean selectTab(ITab iTab, IPage page) {
         ArkLogger.e(this, "selectTabInfo tabInfo=" + iTab + " pageInfo=" + page);
         if (page == null) {
             return false;
@@ -264,7 +271,7 @@ public interface ITabGroup {
         ITab currentTab = getCurrentTab();
         if (currentTab != null) {
             lastId = currentTab.getCurrentPageId();
-            ArkLogger.e(getTag(), "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
+            ArkLogger.e(this, "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
             if (lastId != page.getId()) {
                 Tab lastTab = PageCacheManager.getInstance().findPage(lastId);
                 if (lastTab != null && !lastTab.needsReload()) {
@@ -286,7 +293,7 @@ public interface ITabGroup {
 
             TabState state = ArkTabDao.restorePageState(page.getId());
 
-            ArkLogger.e(getTag(), "selectTabInfo tab=" + tab + " state=" + state);
+            ArkLogger.e(ITabGroup.this, "selectTabInfo tab=" + tab + " state=" + state);
 
             TabState finalState = state;
             ThreadPool.post(() -> {
@@ -312,10 +319,10 @@ public interface ITabGroup {
 
 
                 for (TabInfoObserver obs : getObservers()) {
-                    ArkLogger.d(getTag(), "selectTabInfo obs=" + obs);
+                    ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
                     obs.didSelectTab(page, TabSelectionType.FROM_USER, finalLastId);
                 }
-                ArkLogger.e(getTag(), "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
+                ArkLogger.e(ITabGroup.this, "selectTabInfo end create tab deltaTime=" + (System.currentTimeMillis() - start));
             });
         });
 
@@ -390,9 +397,17 @@ public interface ITabGroup {
 
     public void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
-    public boolean openNewPage(Tab parent, @TabLaunchType int type, String url);
+    default boolean openNewPage(Tab parent, @TabLaunchType int type, String url) {
+        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
+        return openNewPage(parent, params, type);
+    }
 
-    public boolean openNewPage(Tab parent, LoadUrlParams loadUrlParams);
+    default boolean openNewPage(Tab parent, LoadUrlParams params) {
+        return openNewPage(parent, params, TabLaunchType.FROM_CHROME_UI);
+    }
+
+    public boolean openNewPage(Tab parent, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
     public boolean moveToNewTab(IPage page);
 
@@ -426,7 +441,7 @@ public interface ITabGroup {
             }
             onIndexChanged(index);
         } else {
-            selectTabInfo(manager, nextPage);
+            selectTab(manager, nextPage);
 
             int i = manager.indexOfPage(tab.getId());
 
@@ -505,5 +520,47 @@ public interface ITabGroup {
     void destroy();
 
     void onIndexChanged(int index);
+
+    default void saveGroupFile() {
+
+
+        try {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            DataOutputStream os = new DataOutputStream(stream);
+            int version = 1;
+            os.writeInt(version);
+            os.writeInt(getIndex());
+            os.writeBoolean(isIncognito());
+            os.writeInt(getCount());
+            for (ITab tab : getTabInfoList()) {
+                os.writeLong(tab.getId());
+            }
+            os.close();
+
+            byte[] bytes = stream.toByteArray();
+
+            int id = isIncognito() ? 1 : 0;
+
+            ThreadPool.executeIO(new Runnable() {
+                @Override
+                public void run() {
+                    File groupFile = new File(ArkTabDao.getGroupsDir(), "group_" + id);
+                    AtomicFile file = new AtomicFile(groupFile);
+                    FileOutputStream fos = null;
+                    try {
+                        fos = file.startWrite();
+                        fos.write(bytes, 0, bytes.length);
+                        file.finishWrite(fos);
+                    } catch (IOException e) {
+                        if (fos != null) file.failWrite(fos);
+                        ArkLogger.e(this, "Failed to write file: " + file.getBaseFile().getAbsolutePath());
+                    }
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

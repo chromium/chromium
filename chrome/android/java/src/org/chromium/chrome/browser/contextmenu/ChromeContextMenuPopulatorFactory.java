@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Factory for creating {@link ContextMenuPopulator}s.
@@ -31,8 +32,8 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
 
     @Override
     public ContextMenuPopulator createContextMenuPopulator(
-            Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
+            WindowAndroid windowAndroid, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
         return new ChromeContextMenuPopulator(mItemDelegate,
-                mContextMenuMode, context, params, nativeDelegate);
+                mContextMenuMode, windowAndroid.getActivity().get(), params, nativeDelegate);
     }
 }

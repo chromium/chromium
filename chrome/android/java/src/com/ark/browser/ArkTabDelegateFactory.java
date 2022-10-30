@@ -4,6 +4,7 @@
 
 package com.ark.browser;
 
+import com.ark.browser.tab.ArkExternalNavigationDelegateImpl;
 import com.ark.browser.tab.ArkTabStateBrowserControlsVisibilityDelegate;
 
 import org.chromium.base.supplier.Supplier;
@@ -48,7 +49,7 @@ public class ArkTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public ExternalNavigationHandler createExternalNavigationHandler(Tab tab) {
-        return new ExternalNavigationHandler(new ExternalNavigationDelegateImpl(tab));
+        return new ExternalNavigationHandler(new ArkExternalNavigationDelegateImpl(tab));
     }
 
     @Override

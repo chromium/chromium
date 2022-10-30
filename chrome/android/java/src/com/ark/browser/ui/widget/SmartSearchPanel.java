@@ -343,35 +343,6 @@ public class SmartSearchPanel extends FrameLayout {
         posArray[index] = pos;
     }
 
-    private static class MyTabInfo extends TabInfo {
-
-        public static TabInfo create() {
-            return create(System.currentTimeMillis());
-        }
-
-        public static TabInfo create(long createTime) {
-            MyTabInfo manager = new MyTabInfo();
-            manager.createTime = createTime;
-            manager.tabInfoId = manager.createTime;
-            return manager;
-        }
-
-        @Override
-        public void setIndex(int index) {
-            this.pageIndex = index;
-        }
-
-//        @Override
-//        public void save() {
-//
-//        }
-//
-//        @Override
-//        public void update() {
-//        }
-
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -720,7 +691,7 @@ public class SmartSearchPanel extends FrameLayout {
 
     private int openNewTab(LoadUrlParams loadUrlParams) {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl());
-        TabInfo newTabInfo = MyTabInfo.create();
+        TabInfo newTabInfo = TabInfo.create();
         ITab newTab = new TabImpl(newTabInfo) {
 
             @Override

@@ -137,14 +137,14 @@ public class ArkTabBrowserControlsConstraintsHelper implements UserData {
     }
 
     private void updateVisibilityDelegate() {
-        if (mTab.getDelegateFactory() == null) {
+        if (mTab.getWindowAndroid() == null) {
             return;
         }
         if (mVisibilityDelegate != null) {
             mVisibilityDelegate.removeObserver(mConstraintsChangedCallback);
         }
-        mVisibilityDelegate =
-                mTab.getDelegateFactory().createBrowserControlsVisibilityDelegate(mTab);
+        mVisibilityDelegate = mTab.getWindowAndroid().getTabDelegateFactory()
+                        .createBrowserControlsVisibilityDelegate(mTab);
         if (mVisibilityDelegate != null) {
             mVisibilityDelegate.addObserver(mConstraintsChangedCallback);
         }

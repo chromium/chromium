@@ -6,6 +6,7 @@ package com.ark.browser.tab;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -51,21 +52,38 @@ public class ArkTabViewAndroidDelegate extends ViewAndroidDelegate {
         }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
-        mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetProvider();
-        mCurrentInsetSupplier.addObserver(insetObserver);
+
+//        WindowAndroid windowAndroid = tab.getWindowAndroid();
+//        if (windowAndroid != null) {
+//            mCurrentInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
+//            mCurrentInsetSupplier.addObserver(insetObserver);
+//        }
+
 
         mTab.addObserver(new EmptyTabObserver() {
             @Override
             public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
-                if (window != null) {
-                    mCurrentInsetSupplier =
-                            tab.getWindowAndroid().getApplicationBottomInsetProvider();
-                    mCurrentInsetSupplier.addObserver(insetObserver);
-                } else {
-                    mCurrentInsetSupplier.removeObserver(insetObserver);
-                    mCurrentInsetSupplier = null;
-                    updateInsetViewportBottom();
-                }
+//                if (window != null) {
+//                    mCurrentInsetSupplier = window.getApplicationBottomInsetProvider();
+//                    mCurrentInsetSupplier.addObserver(insetObserver);
+//                } else {
+//                    mCurrentInsetSupplier.removeObserver(insetObserver);
+//                    mCurrentInsetSupplier = null;
+//                    updateInsetViewportBottom();
+//                }
+            }
+
+            @Override
+            public void onAttachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+                mCurrentInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
+                mCurrentInsetSupplier.addObserver(insetObserver);
+            }
+
+            @Override
+            public void onDetachToWindowAndroid(Tab tab, @NonNull WindowAndroid windowAndroid) {
+                mCurrentInsetSupplier.removeObserver(insetObserver);
+                mCurrentInsetSupplier = null;
+                updateInsetViewportBottom();
             }
 
             @Override

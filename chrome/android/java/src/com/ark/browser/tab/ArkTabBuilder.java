@@ -30,14 +30,14 @@ public class ArkTabBuilder {
     private Tab mParent;
     private TabResolver mTabResolver;
     private boolean mIncognito;
-    private ArkWindowAndroid mWindow;
+//    private ArkWindowAndroid mWindow;
     private Integer mLaunchType;
     private Integer mCreationType;
     private boolean mFromFrozenState;
     private LoadUrlParams mLoadUrlParams;
 
     private WebContents mWebContents;
-    private TabDelegateFactory mDelegateFactory;
+//    private TabDelegateFactory mDelegateFactory;
     private boolean mInitiallyHidden;
     private TabState mTabState;
     private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
@@ -83,15 +83,15 @@ public class ArkTabBuilder {
         return this;
     }
 
-    /**
-     * Sets window which the Tab will be attached to.
-     * @param window An instance of a {@link WindowAndroid}.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setWindow(ArkWindowAndroid window) {
-        mWindow = window;
-        return this;
-    }
+//    /**
+//     * Sets window which the Tab will be attached to.
+//     * @param window An instance of a {@link WindowAndroid}.
+//     * @return {@link ArkTabBuilder} creating the Tab.
+//     */
+//    public ArkTabBuilder setWindow(ArkWindowAndroid window) {
+//        mWindow = window;
+//        return this;
+//    }
 
     /**
      * Sets a flag indicating how this tab is launched (from a link, external app, etc).
@@ -114,15 +114,15 @@ public class ArkTabBuilder {
         return this;
     }
 
-    /**
-     * Sets a {@link TabDelegateFactory} object.
-     * @param delegateFactory The factory delegated to create various Tab-related objects.
-     * @return {@link ArkTabBuilder} creating the Tab.
-     */
-    public ArkTabBuilder setDelegateFactory(TabDelegateFactory delegateFactory) {
-        mDelegateFactory = delegateFactory;
-        return this;
-    }
+//    /**
+//     * Sets a {@link TabDelegateFactory} object.
+//     * @param delegateFactory The factory delegated to create various Tab-related objects.
+//     * @return {@link ArkTabBuilder} creating the Tab.
+//     */
+//    public ArkTabBuilder setDelegateFactory(TabDelegateFactory delegateFactory) {
+//        mDelegateFactory = delegateFactory;
+//        return this;
+//    }
 
     /**
      * Sets a pre-initialization action to run.
@@ -196,17 +196,17 @@ public class ArkTabBuilder {
                 parent = mTabResolver.resolve(mTabState.parentId);
             }
         }
-        tab.updateWindowAndroid(mWindow);
+//        tab.updateWindowAndroid(mWindow);
 
-        if (parent != null && mDelegateFactory == null) {
-            mDelegateFactory = ((ArkTabImpl) parent).getDelegateFactory();
-        }
+//        if (parent != null && mDelegateFactory == null) {
+//            mDelegateFactory = ((ArkTabImpl) parent).getDelegateFactory();
+//        }
 
         if (mPreInitializeAction != null) mPreInitializeAction.onResult(tab);
 
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.
-        tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents, mDelegateFactory,
+        tab.initialize(parent, mCreationType, mLoadUrlParams, mWebContents,
                 mInitiallyHidden, mTabState);
         return tab;
     }

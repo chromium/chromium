@@ -43,6 +43,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.ArkTabWebContentsObserver;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.dao.ArkTabStore;
@@ -136,7 +137,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
 
 
-    protected WindowAndroid mWindowAndroid;
+    protected ArkWindowAndroid mWindowAndroid;
 
     protected ArkLayoutManager mLayoutManager;
     protected TabContentManager mTabContentManager;
@@ -1341,7 +1342,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     /**
      * This is called when the native library are ready.
      */
-    public void initCompositor(WindowAndroid window, Callback callback) {
+    public void initCompositor(ArkWindowAndroid window, Callback callback) {
         mWindowAndroid = window;
         this.mCallback = callback;
         Activity activity = window.getActivity().get();
@@ -1429,8 +1430,6 @@ public class ArkCompositorViewHolder extends FrameLayout
 
 //        final SmartSearchPanel smartSearchDialog = tab.getWindowAndroid().getActivity().get()
 //                .findViewById(R.id.layout_smart_search);
-        Activity activity = tab.getWindowAndroid().getActivity().get();
-        WindowManager manager = activity.getWindowManager();
         controller.setSelectionClient(new SelectionClient() {
 
             private SmartSearchPopupWindow smartSearchDialog;
@@ -1555,13 +1554,13 @@ public class ArkCompositorViewHolder extends FrameLayout
         // the Start surface is showing in the startup and there isn't any Tab opened. Thus, no
         // Tab needs to be loaded. Once a new Tab is opening and Start surface is hiding, this flag
         // will be reset.
-        if (tab != null) {
-            tab.loadIfNeeded();
-        }
+//        if (tab != null) {
+//            tab.loadIfNeeded();
+//        }
 
         View newView = tab != null ? tab.getView() : null;
         ArkLogger.d(TAG, "setTab tab=" + tab + " view=" + newView + " mContentOverlayVisiblity=" + mContentOverlayVisiblity);
-        if (mView == newView) {
+        if (newView != null && mView == newView) {
             if (mCallback != null) {
                 ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
                 onBackPressedCallback.setEnabled(tabGroup.canGoBack());
@@ -1589,12 +1588,15 @@ public class ArkCompositorViewHolder extends FrameLayout
                 if (mCallback != null) {
                     mCallback.onPageDetached(mTabVisible);
                 }
+                ((ArkTabImpl) mTabVisible).updateWindowAndroid(null);
+                mView = null;
             }
 
             mTabVisible = tab;
             updateViewStateListener(tab != null ? tab.getContentView() : null);
             if (mTabVisible != null) {
                 mTabVisible.addObserver(mTabObserver);
+                ((ArkTabImpl) mTabVisible).updateWindowAndroid(mWindowAndroid);
                 mTabContentManager.attachTab(mTabVisible);
                 mCompositorView.onTabChanged();
                 mLayoutManager.initLayoutTabFromHost(mTabVisible.getId());
@@ -1603,9 +1605,9 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
         }
 
-        mView = newView;
 
-        updateContentOverlayVisibility(mContentOverlayVisiblity);
+
+
 
         if (mTabVisible != null) {
             initializeTab(mTabVisible);
@@ -1614,7 +1616,9 @@ public class ArkCompositorViewHolder extends FrameLayout
             if (mCallback != null) {
                 mCallback.onPageAttached(mTabVisible);
             }
+            mView = mTabVisible.getView();
         }
+        updateContentOverlayVisibility(mContentOverlayVisiblity);
 
         if (mOnscreenContentProvider == null) {
             mOnscreenContentProvider =

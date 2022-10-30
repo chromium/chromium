@@ -1,15 +1,10 @@
 package com.ark.browser.tab.core;
 
-import android.content.Context;
-
 import com.ark.browser.tab.PageCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
 
-import org.chromium.base.ContextUtils;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +16,6 @@ public class TabImpl implements ITab {
     private final IPageGroup mPageGroup;
 
     private transient ITab mFloatingTab;
-
-//    protected transient File tabListFolder;
 
     public TabImpl() {
         this(TabInfo.create(), new ArrayList<>());
@@ -41,22 +34,6 @@ public class TabImpl implements ITab {
     public long getId() {
         return this.tabInfo.getTabInfoId();
     }
-
-//    @Override
-//    public File getTabListFolder() {
-//        if (tabListFolder != null) {
-//            return tabListFolder;
-//        }
-//        File root = ContextUtils.getApplicationContext()
-//                .getDir("tab_list", Context.MODE_PRIVATE);
-//        tabListFolder = new File(root.getAbsolutePath(), String.valueOf(getId()));
-//        if (tabListFolder.exists()) {
-//            return tabListFolder;
-//        } else {
-//            tabListFolder.mkdirs();
-//        }
-//        return tabListFolder;
-//    }
 
     @Override
     public boolean hasPage(int id) {

@@ -107,7 +107,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public boolean supportsCall() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("tel:"));
-        return mTab.getWindowAndroid().canResolveActivity(intent);
+        return mTab.canResolveActivity(intent);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public boolean supportsSendEmailMessage() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("mailto:test@example.com"));
-        return mTab.getWindowAndroid().canResolveActivity(intent);
+        return mTab.canResolveActivity(intent);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public boolean supportsSendTextMessage() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("sms:"));
-        return mTab.getWindowAndroid().canResolveActivity(intent);
+        return mTab.canResolveActivity(intent);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public boolean supportsAddToContacts() {
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
-        return mTab.getWindowAndroid().canResolveActivity(intent);
+        return mTab.canResolveActivity(intent);
     }
 
     @Override

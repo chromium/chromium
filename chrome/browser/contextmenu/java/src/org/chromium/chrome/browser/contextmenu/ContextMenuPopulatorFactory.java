@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.contextmenu;
 import android.content.Context;
 
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Factory interface for creating {@link ContextMenuPopulator}s.
@@ -20,7 +21,7 @@ public interface ContextMenuPopulatorFactory {
      * @return The new {@ContextMenuPopulator}.
      */
     ContextMenuPopulator createContextMenuPopulator(
-            Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
+            WindowAndroid windowAndroid, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
 
     void onDestroy();
 }

@@ -34,7 +34,7 @@ import org.chromium.url.GURL;
  */
 public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndroid {
     private final Tab mTab;
-    private final TabWebContentsDelegateAndroid mDelegate;
+    private TabWebContentsDelegateAndroid mDelegate;
     private final Handler mHandler;
     private final Runnable mCloseContentsRunnable;
 
@@ -46,6 +46,10 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) observers.next().onCloseContents(mTab);
         };
+    }
+
+    public void setDelegate(TabWebContentsDelegateAndroid mDelegate) {
+        this.mDelegate = mDelegate;
     }
 
     @CalledByNative
@@ -92,12 +96,18 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
 
     @Override
     public int getDisplayMode() {
+        if (mDelegate == null) {
+            return super.getDisplayMode();
+        }
         return mDelegate.getDisplayMode();
     }
 
     @CalledByNative
     @Override
     public boolean shouldResumeRequestsForCreatedWindow() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.shouldResumeRequestsForCreatedWindow();
     }
 
@@ -105,6 +115,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @Override
     public boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
             int disposition, Rect initialPosition, boolean userGesture) {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.addNewContents(
                 sourceWebContents, webContents, disposition, initialPosition, userGesture);
     }
@@ -114,11 +127,17 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @Override
     public void openNewTab(GURL url, String extraHeaders, ResourceRequestBody postData,
             int disposition, boolean isRendererInitiated) {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.openNewTab(url, extraHeaders, postData, disposition, isRendererInitiated);
     }
 
     @Override
     public void activateContents() {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.activateContents();
     }
 
@@ -131,44 +150,67 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @Override
     public void loadingStateChanged(boolean shouldShowLoadingUI) {
         mTab.loadingStateChanged(shouldShowLoadingUI);
-        mDelegate.loadingStateChanged(shouldShowLoadingUI);
+        if (mDelegate != null) {
+            mDelegate.loadingStateChanged(shouldShowLoadingUI);
+        }
     }
 
     @Override
     public void onUpdateUrl(GURL url) {
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) observers.next().onUpdateUrl(mTab, url);
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.onUpdateUrl(url);
     }
 
     @Override
     public boolean takeFocus(boolean reverse) {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.takeFocus(reverse);
     }
 
     @Override
     public void handleKeyboardEvent(KeyEvent event) {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.handleKeyboardEvent(event);
     }
 
     @Override
     public void enterFullscreenModeForTab(boolean prefersNavigationBar, boolean prefersStatusBar) {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.enterFullscreenModeForTab(prefersNavigationBar, prefersStatusBar);
     }
 
     @Override
     public void fullscreenStateChangedForTab(
             boolean prefersNavigationBar, boolean prefersStatusBar) {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.enterFullscreenModeForTab(prefersNavigationBar, prefersStatusBar);
     }
 
     @Override
     public void exitFullscreenModeForTab() {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.exitFullscreenModeForTab();
     }
 
     @Override
     public boolean isFullscreenForTabOrPending() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.isFullscreenForTabOrPending();
     }
 
@@ -190,6 +232,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) observers.next().onUrlUpdated(mTab);
         }
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.navigationStateChanged(flags);
     }
 
@@ -201,11 +246,17 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
                 ContextUtils.getApplicationContext());
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) observers.next().onSSLStateUpdated(mTab);
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.visibleSSLStateChanged();
     }
 
     @Override
     public boolean shouldCreateWebContents(GURL targetUrl) {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.shouldCreateWebContents(targetUrl);
     }
 
@@ -213,17 +264,26 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     public void webContentsCreated(WebContents sourceWebContents, long openerRenderProcessId,
             long openerRenderFrameId, String frameName, GURL targetUrl,
             WebContents newWebContents) {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.webContentsCreated(sourceWebContents, openerRenderProcessId, openerRenderFrameId,
                 frameName, targetUrl, newWebContents);
     }
 
     @Override
     public void showRepostFormWarningDialog() {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.showRepostFormWarningDialog();
     }
 
     @Override
     public boolean shouldBlockMediaRequest(GURL url) {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.shouldBlockMediaRequest(url);
     }
 
@@ -234,6 +294,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
                     mTab.getWebContents());
         }
         mTab.handleRendererResponsiveStateChanged(false);
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.rendererUnresponsive();
     }
 
@@ -243,6 +306,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
             TabWebContentsDelegateAndroidImplJni.get().onRendererResponsive(mTab.getWebContents());
         }
         mTab.handleRendererResponsiveStateChanged(true);
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.rendererResponsive();
     }
 
@@ -252,18 +318,27 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
         // objects in the middle of executing methods on them.
         mHandler.removeCallbacks(mCloseContentsRunnable);
         mHandler.post(mCloseContentsRunnable);
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.closeContents();
     }
 
     @CalledByNative
     @Override
     public void setOverlayMode(boolean useOverlayMode) {
+        if (mDelegate == null) {
+            return;
+        }
         mDelegate.setOverlayMode(useOverlayMode);
     }
 
     @CalledByNative
     @Override
     public boolean shouldEnableEmbeddedMediaExperience() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.shouldEnableEmbeddedMediaExperience();
     }
 
@@ -273,6 +348,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public boolean isPictureInPictureEnabled() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.isPictureInPictureEnabled();
     }
 
@@ -283,6 +361,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public boolean isNightModeEnabled() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.isNightModeEnabled();
     }
 
@@ -292,6 +373,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public boolean isForceDarkWebContentEnabled() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.isForceDarkWebContentEnabled();
     }
 
@@ -302,6 +386,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public boolean canShowAppBanners() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.canShowAppBanners();
     }
 
@@ -317,6 +404,9 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public String getManifestScope() {
+        if (mDelegate == null) {
+            return super.getManifestScope();
+        }
         return mDelegate.getManifestScope();
     }
 
@@ -327,36 +417,57 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public boolean isCustomTab() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.isCustomTab();
     }
 
     @Override
     public int getTopControlsHeight() {
+        if (mDelegate == null) {
+            return 0;
+        }
         return mDelegate.getTopControlsHeight();
     }
 
     @Override
     public int getTopControlsMinHeight() {
+        if (mDelegate == null) {
+            return 0;
+        }
         return mDelegate.getTopControlsMinHeight();
     }
 
     @Override
     public int getBottomControlsHeight() {
+        if (mDelegate == null) {
+            return 0;
+        }
         return mDelegate.getBottomControlsHeight();
     }
 
     @Override
     public int getBottomControlsMinHeight() {
+        if (mDelegate == null) {
+            return 0;
+        }
         return mDelegate.getBottomControlsMinHeight();
     }
 
     @Override
     public boolean shouldAnimateBrowserControlsHeightChanges() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.shouldAnimateBrowserControlsHeightChanges();
     }
 
     @Override
     public boolean controlsResizeView() {
+        if (mDelegate == null) {
+            return false;
+        }
         return mDelegate.controlsResizeView();
     }
 

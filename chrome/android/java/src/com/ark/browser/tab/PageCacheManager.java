@@ -122,8 +122,8 @@ public class PageCacheManager {
         Tab tab = ArkTabBuilder.createLiveTab(false)
                 .setIncognito(tabInfo.getTabInfo().isIncognito())
                 .setLaunchType(type)
-                .setWindow(nativeWindow)
-                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
+//                .setWindow(nativeWindow)
+//                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
         putPage(tab);
 
@@ -148,8 +148,8 @@ public class PageCacheManager {
         Tab tab = ArkTabBuilder.createLiveTab(false)
                 .setId(pageInfo.getPageId())
                 .setIncognito(pageInfo.isIncognito())
-                .setWindow(nativeWindow)
-                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
+//                .setWindow(nativeWindow)
+//                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(pageInfo.getUrl()));
         params.setTransitionType(TabLaunchType.FROM_CHROME_UI);
@@ -175,8 +175,8 @@ public class PageCacheManager {
         Tab tab = ArkTabBuilder.createFromFrozenState()
                 .setId(pageInfo.getPageId())
                 .setTabState(state)
-                .setWindow(nativeWindow)
-                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
+//                .setWindow(nativeWindow)
+//                .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
         putPage(tab);
         ArkLogger.d(TAG, "createFrozenPageFromState create tab deltaTime=" + (System.currentTimeMillis() - start));

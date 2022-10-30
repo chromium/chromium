@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 class PrefService;

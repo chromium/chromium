@@ -29,7 +29,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/base/features.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "device/vr/orientation/orientation_device_provider.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "gpu/config/gpu_info.h"

@@ -244,7 +244,7 @@ public class TabListManager {
 
     private void selectPageInfo(ITab tabInfo, IPage pageInfo) {
         ITabGroup tabList = getTabList(tabInfo.getTabInfo().isIncognito());
-        tabList.selectTabInfo(tabInfo, pageInfo);
+        tabList.selectTab(tabInfo, pageInfo);
     }
 
     public int getTotalTabCount() {
