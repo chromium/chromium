@@ -42,6 +42,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1229222343402087523">${searchPhrase} – Chrome orqali qidirish</translation>
 <translation id="1242044645101871359">Qaytadan kiring</translation>
 <translation id="1254117744268754948">Jildni tanlash</translation>
+<translation id="1254424942107648268">Avvalgisini topish</translation>
 <translation id="1258491128795710625">Yangi xususiyatlar</translation>
 <translation id="1265739287306757398">Batafsil axborot</translation>
 <translation id="1272079795634619415">To‘xtatish</translation>
@@ -187,6 +188,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2473876017985765807"><ph name="WEBSITE" /> uchun parol allaqachon saqlangan</translation>
 <translation id="2476359652512522418">Tanlanmagan.</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
+<translation id="2496626742194544812">Birinchi varaqni ochish</translation>
 <translation id="2500374554657206846">Parollarni saqlash taklif qilinishi</translation>
 <translation id="2523363575747517183">Bu sayt tinimsiz boshqa ilovani ochishga urinmoqda.</translation>
 <translation id="2529021024822217800">Hammasini ochish</translation>
@@ -202,6 +204,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2647269890314209800">Cookie fayllaridan foydalanish</translation>
 <translation id="2648803196158606475">O‘qilganlarni o‘chirish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
+<translation id="2664621323652615289">Toʻxtatish</translation>
 <translation id="2671426118752779020">Google Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="2690858294534178585">Kamera band.</translation>
 <translation id="2691653761409724435">Oflayn rejimda mavjud emas</translation>
@@ -356,6 +359,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="380329542618494757">Ism</translation>
 <translation id="3803696231112616155">Bu saytda tarjima taklif qilinsin</translation>
 <translation id="3810973564298564668">Sozlash</translation>
+<translation id="3818293389945649617">Keyingisini topish</translation>
 <translation id="3819183753496523827">Siz internetga ulanmagansiz. Internetni tekshiring va qayta urining.</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3858860766373142691">Ism</translation>
@@ -385,6 +389,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="4049507953662678203">Internet yoniqligini tekshiring va qayta urinib ko‘ring.</translation>
 <translation id="4063300985191096908">Tasmani ochish</translation>
 <translation id="408404951701638773">Qidiruv paneli endi yanada qulay joyda</translation>
+<translation id="4092655288299341041">Yordamni ochish</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="411254640334432676">Yuklab olishda xatolik yuz berdi.</translation>
 <translation id="4112644173421521737">Qidiruv</translation>
@@ -770,6 +775,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6859944681507688231">QR kod yoki bank kartasini skanerlash uchun sozlamalar orqali kamerani yoqing.</translation>
 <translation id="6867369562105931222">parol</translation>
 <translation id="6869389390665537774">Tarix orqali ochilgan sahifalarni koʻrish yoki tozalash mumkin</translation>
+<translation id="687135068089457384">Sozlamalarni ochish</translation>
 <translation id="6873263987691478642">Split View</translation>
 <translation id="6882836635272038266">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="6888009575607455378">Haqiqatan ham oʻzgarishlarni bekor qilmoqchimisiz?</translation>
@@ -875,11 +881,13 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7807060072011926525">Google taqdim qilgan</translation>
 <translation id="7839985698273989086">Oflayn sahifa</translation>
 <translation id="7840771868269352570">Tanlangan elementlar olib tashlanadi.</translation>
+<translation id="7845466610722898">Saqlangan sahifalarni chiqarish</translation>
 <translation id="784551991304901159">Kontentni koʻrish uchun menyudan Yoqish bandini tanlang</translation>
 <translation id="7853202427316060426">Harakat</translation>
 <translation id="7856733331829174190">Yuklab olinmadi</translation>
 <translation id="785938070103630874">Parollar, toʻlov usullari, manzillar va boshqalarni oching</translation>
 <translation id="7859704718976024901">Veb-sahifalarni ko‘rish tarixi</translation>
+<translation id="7879275349003161544">Yuklanmalarni chiqarish</translation>
 <translation id="7884694604461143138">Brauzer tarixidan qidirish (<ph name="COUNT" /> ta natija)</translation>
 <translation id="7887198238286927132">Maxfiyligingizni muhofaza qilish uchun Chrome axborotlarni bu maydonga kiritmaydi.</translation>
 <translation id="7911190106180361398">Tashkilotingiz hamma narsa sinxronlanishiga ruxsat bermaydi.</translation>
@@ -991,6 +999,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8741995161408053644">Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
 <translation id="8750037785291841318">Brauzer varaqlari shu yerda chiqadi</translation>
 <translation id="8756969031206844760">Parolni yangilash</translation>
+<translation id="8763613688786959833">Oxirgi varaqni ochish</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> kuzatuvini bekor qilish</translation>
 <translation id="8775144690796719618">URL manzil yaroqsiz</translation>
 <translation id="8787968206789828143">Internetda qidirish</translation>

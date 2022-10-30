@@ -629,6 +629,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Failed – authorisation failed</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> of <ph name="COUNT" /> named <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Access Point Name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>

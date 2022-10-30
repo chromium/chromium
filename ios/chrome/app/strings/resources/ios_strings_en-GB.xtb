@@ -42,6 +42,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Sign in again</translation>
 <translation id="1254117744268754948">Choose folder</translation>
+<translation id="1254424942107648268">Find Previous</translation>
 <translation id="1258491128795710625">What’s new</translation>
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -187,6 +188,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2473876017985765807">You already saved a password for <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Not selected</translation>
 <translation id="2482878487686419369">Notifications</translation>
+<translation id="2496626742194544812">Go to first tab</translation>
 <translation id="2500374554657206846">Options to save password</translation>
 <translation id="2523363575747517183">This website is repeatedly trying to open another application.</translation>
 <translation id="2529021024822217800">Open All</translation>
@@ -202,6 +204,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2647269890314209800">Cookies in Use</translation>
 <translation id="2648803196158606475">Delete Read</translation>
 <translation id="2653659639078652383">Submit</translation>
+<translation id="2664621323652615289">Stop</translation>
 <translation id="2671426118752779020">You can use the passwords that you saved to Google Password Manager in other apps on your iPhone.</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
 <translation id="2691653761409724435">Not available offline</translation>
@@ -356,6 +359,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="380329542618494757">Name</translation>
 <translation id="3803696231112616155">Offer to translate this site</translation>
 <translation id="3810973564298564668">Manage</translation>
+<translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -385,6 +389,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4063300985191096908">Go to feed</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
+<translation id="4092655288299341041">Show Help</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="411254640334432676">Download failed.</translation>
 <translation id="4112644173421521737">Search</translation>
@@ -770,6 +775,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6859944681507688231">To scan a QR code or credit card, enable the camera from settings.</translation>
 <translation id="6867369562105931222">password</translation>
 <translation id="6869389390665537774">You can see the pages that you've visited or clear them from your history</translation>
+<translation id="687135068089457384">Show settings</translation>
 <translation id="6873263987691478642">Split view</translation>
 <translation id="6882836635272038266">Standard protection against websites, downloads and extensions that are known to be dangerous.</translation>
 <translation id="6888009575607455378">Are you sure that you want to discard your changes?</translation>
@@ -875,11 +881,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7807060072011926525">Provided by Google</translation>
 <translation id="7839985698273989086">Offline page</translation>
 <translation id="7840771868269352570">The items that you selected will be removed.</translation>
+<translation id="7845466610722898">Show reading list</translation>
 <translation id="784551991304901159">To see content, select 'Turn On' from the menu</translation>
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="785938070103630874">Open passwords, payment methods or address and more</translation>
 <translation id="7859704718976024901">Browsing history</translation>
+<translation id="7879275349003161544">Show downloads</translation>
 <translation id="7884694604461143138">Search history (<ph name="COUNT" /> found)</translation>
 <translation id="7887198238286927132">To protect your privacy, Chrome will not auto-fill this field.</translation>
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
@@ -991,6 +999,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
 <translation id="8756969031206844760">Update password?</translation>
+<translation id="8763613688786959833">Go to last tab</translation>
 <translation id="8764015330924122850">Unfollow <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Invalid URL</translation>
 <translation id="8787968206789828143">Search on web</translation>
