@@ -29,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/constants.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -55,6 +56,10 @@
 #if BUILDFLAG(USING_SANITIZER)
 #include <sanitizer/common_interface_defs.h>
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/assistant/buildflags.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sandbox {
 namespace policy {
@@ -405,7 +410,17 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
 
   InitLibcLocaltimeFunctions();
 
-  if (!IsUnsandboxedSandboxType(sandbox_type)) {
+  bool is_libassistant_sandbox = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+  // TODO(crbug.com/1312224, b/255771022): re-enable this check on kLibassistant
+  // sandbox when getaddrinfo() can sometimes run in the sandboxed process.
+  if (sandbox_type == sandbox::mojom::Sandbox::kLibassistant)
+    is_libassistant_sandbox = true;
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (!IsUnsandboxedSandboxType(sandbox_type) && !is_libassistant_sandbox) {
     // No sandboxed process should make use of getaddrinfo() as it is impossible
     // to sandbox (e.g. glibc loads arbitrary third party DNS resolution
     // libraries).
