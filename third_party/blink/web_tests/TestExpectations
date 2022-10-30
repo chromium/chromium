@@ -7283,6 +7283,8 @@ crbug.com/1371125 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactio
 crbug.com/1377004 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 crbug.com/1234839 [ Debug Linux ] external/wpt/html/semantics/interactive-elements/the-details-element/toggleEvent.html [ Failure Pass ]
 crbug.com/1379180 [ Linux ] fast/events/event-hit-testing-fallback-to-iframe.html [ Failure Pass ]
+crbug.com/1194961 [ Debug Linux ] fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Failure Pass ]
+crbug.com/1379156 [ Debug Linux ] compositing/layer-creation/overflow-hidden-scroll-with-fixed-overlap.html [ Timeout ]
 
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
