@@ -480,7 +480,16 @@ class WebmMuxerTestUnparametrized : public testing::Test {
         base::BindRepeating(&WebmMuxerTestUnparametrized::OnEndMediaSegment,
                             base::Unretained(this)),
         &media_log_);
-    return parser.Parse(muxed_data_.data(), muxed_data_.size());
+    if (!parser.AppendToParseBuffer(muxed_data_.data(), muxed_data_.size())) {
+      return false;
+    }
+
+    // Run the segment parser loop one time with the full size of the appended
+    // data to ensure the parser has had a chance to parse all the appended
+    // bytes. As a result, kSuccessHasMoreData is considered a failure since
+    // there should be no uninspected data remaining after the parse.
+    return StreamParser::ParseStatus::kSuccess ==
+           parser.Parse(muxed_data_.size());
   }
 
   void AddVideoAtOffset(int system_timestamp_offset_ms, bool is_key_frame) {

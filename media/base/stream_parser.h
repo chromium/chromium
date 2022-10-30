@@ -48,6 +48,29 @@ class MEDIA_EXPORT StreamParser {
   // Map of track ID to decode-timestamp-ordered buffers for the track.
   using BufferQueueMap = std::map<TrackId, BufferQueue>;
 
+  // With incremental parsing, parse can succeed yet also still indicate there
+  // is more uninspected data to parse. This enum identifies the possible
+  // results of incremental parsing by a StreamParser.
+  // TODO:(crbug.com/1378678): Investigate usage of TypeStatus<T>::Or<U> where
+  // this is used.
+  enum class ParseStatus {
+    kFailed,
+    kSuccess,
+    kSuccessHasMoreData,
+  };
+
+  // Incremental parse of a potentially large pending data considers up to this
+  // many further bytes from the pending bytes during the Parse() call. Moved
+  // from older incremental append+parse logic in SourceBuffer, this size value
+  // was originally chosen as 128KiB to not block the renderer event loop very
+  // long. This value had been selected by looking at YouTube SourceBuffer usage
+  // across a variety of bitrates, to allow relatively large appendBuffer()
+  // calls while keeping each parse iteration's duration within ~5-15ms range.
+  // This value may change in future updates as platform capabilities have
+  // generally improved.
+  // TODO(crbug.com/1379177): Tune this experimentally.
+  static constexpr int kMaxPendingBytesPerParse = 128 * 1024;  // 128KiB
+
   // Stream parameters passed in InitCB.
   struct MEDIA_EXPORT InitParameters {
     InitParameters(base::TimeDelta duration);
@@ -115,10 +138,11 @@ class MEDIA_EXPORT StreamParser {
   virtual ~StreamParser();
 
   // Initializes the parser with necessary callbacks. Must be called before any
-  // data is passed to Parse(). |init_cb| will be called once enough data has
-  // been parsed to determine the initial stream configurations, presentation
-  // start time, and duration. If |ignore_text_track| is true, then no text
-  // buffers should be passed later by the parser to |new_buffers_cb|.
+  // data is passed to AppendToParseBuffer() or any call to Parse() or
+  // ProcessChunks(). `init_cb` will be called once enough data has been parsed
+  // to determine the initial stream configurations, presentation start time,
+  // and duration. If `ignore_text_track` is true, then no text buffers should
+  // be passed later by the parser to `new_buffers_cb`.
   virtual void Init(InitCB init_cb,
                     NewConfigCB config_cb,
                     NewBuffersCB new_buffers_cb,
@@ -128,8 +152,8 @@ class MEDIA_EXPORT StreamParser {
                     EndMediaSegmentCB end_of_segment_cb,
                     MediaLog* media_log) = 0;
 
-  // Called during the reset parser state algorithm.  This flushes the current
-  // parser and puts the parser in a state where it can receive data.  This
+  // Called during the reset parser state algorithm. This flushes the current
+  // parser and puts the parser in a state where it can receive data. This
   // method does not need to invoke the EndMediaSegmentCB since the parser reset
   // algorithm already resets the segment parsing state.
   virtual void Flush() = 0;
@@ -138,15 +162,43 @@ class MEDIA_EXPORT StreamParser {
   // for the byte stream corresponding to this parser.
   virtual bool GetGenerateTimestampsFlag() const = 0;
 
-  // Called when there is new data to parse.
-  //
-  // Returns true if the parse succeeds.
+  // Called when there is new data to parse. Any previously provided data must
+  // have been fully attempted to be parsed (by one or more calls to Parse()
+  // until kSuccess results) or has been Flush()'ed. Returns true if the parser
+  // successfully copied the data from `buf` for use in future Parse() calls.
+  // Returns false if the parser was unable to allocate resources; content in
+  // `buf` is not copied as a result, and this failure is reported (through
+  // various layers) up to the SourceBuffer's implementation of appendBuffer(),
+  // which should then notify the app of append failure using a
+  // `QuotaExceededErr` exception per the MSE specification. App could use a
+  // back-off and retry strategy or otherwise alter their behavior to attempt to
+  // buffer media for further playback.
+  // TODO(crbug.com/1286810): Update resource allocation paths in the
+  // StreamParser implementations of this method to recognize and report
+  // allocation failure.
+  [[nodiscard]] virtual bool AppendToParseBuffer(const uint8_t* buf,
+                                                 size_t size) = 0;
+
+  // Attempts to parse more data previously provided via AppendToParseBuffer().
+  // May not attempt to parse all of it in one pass;
+  // `max_pending_bytes_to_inspect` should normally be set to
+  // kMaxPendingBytesPerParse, except if the caller needs to use a different
+  // amount (for example, a file verification parse or a test case that needs to
+  // involve a larger or smaller amount of the pending data in one call to
+  // Parse()).
+  // Returns kSuccess if the parse succeeded and all previously provided data
+  // from AppendToParseBuffer() has been inspected.
+  // Returns kSuccessHasMoreData if the parse succeeded, yet there remains
+  // uninspected data remaining from AppendToParseBuffer(); more call(s) to this
+  // method are necessary for the parser to attempt inspection of that data.
+  // Returns kFailed if there was a parse error.
   //
   // Regular "bytestream-formatted" StreamParsers should fully implement
   // Parse(), but WebCodecsEncodedChunkStreamParsers should instead fully
   // implement ProcessChunks().
-  virtual bool Parse(const uint8_t* buf, int size) = 0;
-  virtual bool ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue);
+  [[nodiscard]] virtual ParseStatus Parse(int max_pending_bytes_to_inspect) = 0;
+  [[nodiscard]] virtual bool ProcessChunks(
+      std::unique_ptr<BufferQueue> buffer_queue);
 };
 
 // Appends to |merged_buffers| the provided buffers in decode-timestamp order.

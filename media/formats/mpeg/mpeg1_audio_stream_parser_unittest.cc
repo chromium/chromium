@@ -21,14 +21,16 @@ class MPEG1AudioStreamParserTest
       : StreamParserTestBase(std::make_unique<MPEG1AudioStreamParser>()) {}
 };
 
-// Test parsing with small prime sized chunks to smoke out "power of
-// 2" field size assumptions.
+// Test appending and parsing with small prime sized chunks to smoke out "power
+// of 2" field size assumptions.
 TEST_F(MPEG1AudioStreamParserTest, UnalignedAppend) {
   const std::string expected =
       "NewSegment"
       "{ 0K }"
       "{ 0K }"
       "{ 0K }"
+      "EndOfSegment"
+      "NewSegment"
       "{ 0K }"
       "{ 0K }"
       "{ 0K }"
@@ -52,12 +54,16 @@ TEST_F(MPEG1AudioStreamParserTest, UnalignedAppendMP2) {
       "NewSegment"
       "{ 0K }"
       "{ 0K }"
+      "EndOfSegment"
+      "NewSegment"
       "{ 0K }"
       "{ 0K }"
       "EndOfSegment"
       "NewSegment"
       "{ 0K }"
       "{ 0K }"
+      "EndOfSegment"
+      "NewSegment"
       "{ 0K }"
       "{ 0K }"
       "{ 0K }"
@@ -67,12 +73,13 @@ TEST_F(MPEG1AudioStreamParserTest, UnalignedAppendMP2) {
   EXPECT_GT(last_audio_config().codec_delay(), 0);
 }
 
-// Test parsing with a larger piece size to verify that multiple buffers
-// are passed to |new_buffer_cb_|.
+// Test appending and parsing with larger piece sizes to verify that multiple
+// buffers are passed to `new_buffer_cb_`.
 TEST_F(MPEG1AudioStreamParserTest, UnalignedAppend512) {
   const std::string expected =
       "NewSegment"
-      "{ 0K 26K 52K 78K }"
+      "{ 0K 26K 52K }"
+      "{ 0K }"
       "EndOfSegment"
       "NewSegment"
       "{ 0K 26K 52K }"

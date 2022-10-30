@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_tracks.h"
+#include "media/base/stream_parser.h"
 #include "media/base/timestamp_constants.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/source_buffer_parse_warnings.h"
@@ -133,12 +134,17 @@ bool WebSourceBufferImpl::EvictCodedFrames(double currentPlaybackTime,
                                     newDataSize);
 }
 
-bool WebSourceBufferImpl::Append(const unsigned char* data,
-                                 unsigned length,
-                                 double* timestamp_offset) {
+bool WebSourceBufferImpl::AppendToParseBuffer(const unsigned char* data,
+                                              size_t length) {
+  return demuxer_->AppendToParseBuffer(id_, data, length);
+}
+
+media::StreamParser::ParseStatus WebSourceBufferImpl::RunSegmentParserLoop(
+    double* timestamp_offset) {
   base::TimeDelta old_offset = timestamp_offset_;
-  bool success = demuxer_->AppendData(id_, data, length, append_window_start_,
-                                      append_window_end_, &timestamp_offset_);
+  media::StreamParser::ParseStatus parse_result =
+      demuxer_->RunSegmentParserLoop(id_, append_window_start_,
+                                     append_window_end_, &timestamp_offset_);
 
   // Coded frame processing may update the timestamp offset. If the caller
   // provides a non-nullptr |timestamp_offset| and frame processing changes the
@@ -148,7 +154,7 @@ bool WebSourceBufferImpl::Append(const unsigned char* data,
   if (timestamp_offset && old_offset != timestamp_offset_)
     *timestamp_offset = timestamp_offset_.InSecondsF();
 
-  return success;
+  return parse_result;
 }
 
 bool WebSourceBufferImpl::AppendChunks(

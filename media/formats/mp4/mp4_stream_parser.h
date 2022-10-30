@@ -52,7 +52,9 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
             MediaLog* media_log) override;
   void Flush() override;
   bool GetGenerateTimestampsFlag() const override;
-  bool Parse(const uint8_t* buf, int size) override;
+  [[nodiscard]] bool AppendToParseBuffer(const uint8_t* buf,
+                                         size_t size) override;
+  [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_inspect) override;
 
   // Calculates the rotation value from the track header display matricies.
   VideoTransformation CalculateRotation(const TrackHeader& track,
@@ -66,6 +68,11 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
     kEmittingSamples,
     kError
   };
+
+  // Wrappers of `queue_` that observe constraint of `max_parse_offset_`.
+  void ModulatedPeek(const uint8_t** buf, int* size);
+  void ModulatedPeekAt(int64_t offset, const uint8_t** buf, int* size);
+  bool ModulatedTrim(int64_t max_offset);
 
   ParseResult ParseBox();
   bool ParseMoov(mp4::BoxReader* reader);
@@ -115,6 +122,19 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   EndMediaSegmentCB end_of_segment_cb_;
   raw_ptr<MediaLog> media_log_;
 
+  // Bytes of the mp4 stream.
+  // `max_parse_offset_` tracks the point in `queue_` beyond which no data may
+  // yet be parsed even if it is less than the queue's tail offset. This allows
+  // incremental parsing. `max_parse_offset_` must be less than or equal to the
+  // queue_'s current tail offset. Note that operations like Trim() and PeekAt()
+  // on the offset queue can involve offsets beyond tail or `max_parse_offset_`,
+  // so this parser must consider `max_parse_offset_` too when using those
+  // operations, otherwise more data than the amount indicated in the Parse()
+  // call's `max_pending_bytes_to_inspect` increment might be inspected in a
+  // Parse() call. See the various Modulated*() wrappers in this class.
+  // TODO(https://crbug.com/1286464): Consider reworking all these parsers to
+  // use a new type of queue that internally modulates the increment.
+  int64_t max_parse_offset_ = 0;
   OffsetByteQueue queue_;
 
   // These two parameters are only valid in the |kEmittingSegments| state.

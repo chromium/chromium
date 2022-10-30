@@ -205,7 +205,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   };
 
   // |open_cb| Run when Initialize() is called to signal that the demuxer
-  //   is ready to receive media data via AppendData/Chunks().
+  //   is ready to receive media data via AppendToParseBuffer()/AppendChunks().
   // |progress_cb| Run each time data is appended.
   // |encrypted_media_init_data_cb| Run when the demuxer determines that an
   //   encryption key is needed to decrypt the content.
@@ -244,15 +244,16 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   void StartWaitingForSeek(base::TimeDelta seek_time) override;
   void CancelPendingSeek(base::TimeDelta seek_time) override;
 
-  // Registers a new |id| to use for AppendData/Chunks() calls. |content_type|
-  // indicates the MIME type's ContentType and |codecs| indicates the MIME
-  // type's "codecs" parameter string (if any) for the data that we intend to
-  // append for this ID.  kOk is returned if the demuxer has enough resources to
-  // support another ID and supports the format indicated by |content_type| and
-  // |codecs|. kReachedIdLimit is returned if the demuxer cannot handle another
-  // ID right now. kNotSupported is returned if |content_type| and |codecs| is
-  // not a supported format.
-  // The |audio_config| and |video_config| overloads behave similarly, except
+  // Registers a new `id` to use for AppendToParseBuffer(),
+  // RunSegmentParserLoop(), AppendChunks(), etc calls. `content_type` indicates
+  // the MIME type's ContentType and `codecs` indicates the MIME type's "codecs"
+  // parameter string (if any) for the data that we intend to append for this
+  // ID. kOk is returned if the demuxer has enough resources to support another
+  // ID and supports the format indicated by `content_type` and `codecs`.
+  // kReachedIdLimit is returned if the demuxer cannot handle another ID right
+  // now. kNotSupported is returned if `content_type` and `codecs` is not a
+  // supported format.
+  // The `audio_config` and `video_config` overloads behave similarly, except
   // the caller must provide valid, supported decoder configs; those overloads'
   // usage indicates that we intend to append WebCodecs encoded audio or video
   // chunks for this ID.
@@ -264,14 +265,14 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   [[nodiscard]] Status AddId(const std::string& id,
                              std::unique_ptr<VideoDecoderConfig> video_config);
 
-  // Notifies a caller via |tracks_updated_cb| that the set of media tracks
-  // for a given |id| has changed. This callback must be set before any calls to
-  // AppendData() for this |id|.
+  // Notifies a caller via `tracks_updated_cb` that the set of media tracks
+  // for a given `id` has changed. This callback must be set before any calls to
+  // AppendToParseBuffer() for this `id`.
   void SetTracksWatcher(const std::string& id,
                         MediaTracksUpdatedCB tracks_updated_cb);
 
-  // Notifies a caller via |parse_warning_cb| of a parse warning. This callback
-  // must be set before any calls to AppendData() for this |id|.
+  // Notifies a caller via `parse_warning_cb` of a parse warning. This callback
+  // must be set before any calls to AppendToParseBuffer() for this `id`.
   void SetParseWarningCallback(const std::string& id,
                                SourceBufferParseWarningCB parse_warning_cb);
 
@@ -294,18 +295,43 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                                    base::TimeDelta curr_time,
                                    TrackChangeCB change_completed_cb) override;
 
-  // Appends media data to the source buffer associated with |id|, applying
-  // and possibly updating |*timestamp_offset| during coded frame processing.
-  // |append_window_start| and |append_window_end| correspond to the MSE spec's
-  // similarly named source buffer attributes that are used in coded frame
-  // processing. Returns true on success, false if the caller needs to run the
-  // append error algorithm with decode error parameter set to true.
-  [[nodiscard]] bool AppendData(const std::string& id,
-                                const uint8_t* data,
-                                size_t length,
-                                base::TimeDelta append_window_start,
-                                base::TimeDelta append_window_end,
-                                base::TimeDelta* timestamp_offset);
+  // Appends media data to the source buffer's stream parser associated with
+  // `id`. No parsing is done, just buffering the media data for future parsing
+  // via RunSegmentParserLoop calls. Returns true on success. Returns false if
+  // the parser was unable to allocate resources; content in `data` is not
+  // copied as a result, and this failure is reported (through various layers)
+  // up to the SourceBuffer's implementation of appendBuffer(), which should
+  // then notify the app of append failure using a `QuotaExceededErr` exception
+  // per the MSE specification. App could use a back-off and retry strategy or
+  // otherwise alter their behavior to attempt to buffer media for further
+  // playback.
+  // TODO(crbug.com/1286810): Update resource allocation paths in the
+  // StreamParser implementations eventually executed within this method to
+  // recognize and report allocation failure.
+  [[nodiscard]] bool AppendToParseBuffer(const std::string& id,
+                                         const uint8_t* data,
+                                         size_t length);
+
+  // Tells the stream parser for the source buffer associated with `id` to parse
+  // more of the data previously sent to it from this object's
+  // AppendToParseBuffer(). This operation applies and possibly updates
+  // `*timestamp_offset` during coded frame processing. `append_window_start`
+  // and `append_window_end` correspond to the MSE spec's similarly named source
+  // buffer attributes that are used in coded frame processing.
+  // Returns kSuccess if the segment parser loop iteration succeeded and all
+  // previously provided data from AppendToParseBuffer() has been inspected.
+  // Returns kSuccessHasMoreData if the segment parser loop iteration succeeded,
+  // yet there remains uninspected data remaining from AppendToParseBuffer();
+  // more call(s) to this method are necessary for the parser to attempt
+  // inspection of that data.
+  // Returns kFailed if the segment parser loop iteration hit error and the
+  // caller needs to run the append error algorithm with decode error parameter
+  // set to true.
+  [[nodiscard]] StreamParser::ParseStatus RunSegmentParserLoop(
+      const std::string& id,
+      base::TimeDelta append_window_start,
+      base::TimeDelta append_window_end,
+      base::TimeDelta* timestamp_offset);
 
   // Appends webcodecs encoded chunks (already converted by caller into a
   // BufferQueue of StreamParserBuffers) to the source buffer associated with
@@ -538,11 +564,11 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
 
   base::TimeDelta duration_ = kNoTimestamp;
 
-  // The duration passed to the last SetDuration(). If
-  // SetDuration() is never called or an AppendData/Chunks() call or
-  // a EndOfStream() call changes |duration_|, then this
-  // variable is set to < 0 to indicate that the |duration_| represents
-  // the actual duration instead of a user specified value.
+  // The duration passed to the last SetDuration(). If SetDuration() is never
+  // called or a RunSegmentParserLoop()/AppendChunks() call or a EndOfStream()
+  // call changes `duration_`, then this variable is set to < 0 to indicate that
+  // the `duration_` represents the actual duration instead of a user specified
+  // value.
   double user_specified_duration_ = -1;
 
   base::Time timeline_offset_;

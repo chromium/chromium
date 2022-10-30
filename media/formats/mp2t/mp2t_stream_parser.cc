@@ -9,7 +9,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/numerics/checked_math.h"
 #include "media/base/media_tracks.h"
+#include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
@@ -307,6 +309,7 @@ void Mp2tStreamParser::Flush() {
   // Remove any bytes left in the TS buffer.
   // (i.e. any partial TS packet => less than 188 bytes).
   ts_byte_queue_.Reset();
+  uninspected_pending_bytes_ = 0;
 
   // Reset the selected PIDs.
   selected_audio_pid_ = -1;
@@ -320,25 +323,64 @@ bool Mp2tStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool Mp2tStreamParser::Parse(const uint8_t* buf, int size) {
-  DVLOG(1) << "Mp2tStreamParser::Parse size=" << size;
+bool Mp2tStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
+  DVLOG(1) << __func__ << " size=" << size;
+
+  // Ensure that we are not still in the middle of iterating Parse calls for
+  // previously appended data. May consider changing this to a DCHECK once
+  // stabilized, though since impact of proceeding when this condition fails
+  // could lead to memory corruption, preferring CHECK.
+  CHECK_EQ(uninspected_pending_bytes_, 0);
 
   // Add the data to the parser state.
-  ts_byte_queue_.Push(buf, size);
+  uninspected_pending_bytes_ = base::checked_cast<int>(size);
+  ts_byte_queue_.Push(buf, uninspected_pending_bytes_);
+
+  return true;
+}
+
+StreamParser::ParseStatus Mp2tStreamParser::Parse(
+    int max_pending_bytes_to_inspect) {
+  DVLOG(1) << __func__;
+  DCHECK_GE(max_pending_bytes_to_inspect, 0);
+
+  const uint8_t* ts_buffer = nullptr;
+  int queue_size = 0;
+  ts_byte_queue_.Peek(&ts_buffer, &queue_size);
+
+  // First, determine the amount of bytes not yet popped, though already
+  // inspected by previous call(s) to Parse().
+  int ts_buffer_size = queue_size - uninspected_pending_bytes_;
+  DCHECK_GE(ts_buffer_size, 0);
+
+  // Next, allow up to `max_pending_bytes_to_inspect` more of `queue_` contents
+  // beyond those previously inspected to be involved in this Parse() call.
+  int inspection_increment =
+      std::min(max_pending_bytes_to_inspect, uninspected_pending_bytes_);
+  ts_buffer_size += inspection_increment;
+
+  // If successfully parsed, remember that we will have inspected this
+  // incremental part of `ts_byte_queue_` contents. Note that parse failures are
+  // fatal.
+  uninspected_pending_bytes_ -= inspection_increment;
+  DCHECK_GE(uninspected_pending_bytes_, 0);
+
+  int bytes_to_pop = 0;
 
   while (true) {
-    const uint8_t* ts_buffer;
-    int ts_buffer_size;
-    ts_byte_queue_.Peek(&ts_buffer, &ts_buffer_size);
-    if (ts_buffer_size < TsPacket::kPacketSize)
+    if (ts_buffer_size < TsPacket::kPacketSize) {
       break;
+    }
 
     // Synchronization.
     int skipped_bytes = TsPacket::Sync(ts_buffer, ts_buffer_size);
     if (skipped_bytes > 0) {
       DVLOG(1) << "Packet not aligned on a TS syncword:"
                << " skipped_bytes=" << skipped_bytes;
-      ts_byte_queue_.Pop(skipped_bytes);
+      CHECK_GE(ts_buffer_size, skipped_bytes);
+      ts_buffer_size -= skipped_bytes;
+      ts_buffer += skipped_bytes;
+      bytes_to_pop += skipped_bytes;
       continue;
     }
 
@@ -347,7 +389,10 @@ bool Mp2tStreamParser::Parse(const uint8_t* buf, int size) {
         TsPacket::Parse(ts_buffer, ts_buffer_size));
     if (!ts_packet) {
       DVLOG(1) << "Error: invalid TS packet";
-      ts_byte_queue_.Pop(1);
+      CHECK_GE(ts_buffer_size, 1);
+      ts_buffer_size--;
+      ts_buffer++;
+      bytes_to_pop++;
       continue;
     }
     DVLOG(LOG_LEVEL_TS)
@@ -382,19 +427,35 @@ bool Mp2tStreamParser::Parse(const uint8_t* buf, int size) {
 
     if (it != pids_.end()) {
       if (!it->second->PushTsPacket(*ts_packet))
-        return false;
+        return ParseStatus::kFailed;
     } else {
       DVLOG(LOG_LEVEL_TS) << "Ignoring TS packet for pid: " << ts_packet->pid();
     }
 
     // Go to the next packet.
-    ts_byte_queue_.Pop(TsPacket::kPacketSize);
+    ts_buffer_size -= TsPacket::kPacketSize;
+    ts_buffer += TsPacket::kPacketSize;
+    bytes_to_pop += TsPacket::kPacketSize;
   }
 
-  RCHECK(FinishInitializationIfNeeded());
+  if (!FinishInitializationIfNeeded()) {
+    // Inlining a former RCHECK here, since we cannot return false from this
+    // method any longer.
+    DLOG(WARNING)
+        << "Failure while parsing Mpeg2TS: FinishInitializationIfNeeded()";
+    return ParseStatus::kFailed;
+  }
 
   // Emit the A/V buffers that kept accumulating during TS parsing.
-  return EmitRemainingBuffers();
+  if (!EmitRemainingBuffers()) {
+    return ParseStatus::kFailed;
+  }
+
+  ts_byte_queue_.Pop(bytes_to_pop);
+  if (uninspected_pending_bytes_ > 0) {
+    return ParseStatus::kSuccessHasMoreData;
+  }
+  return ParseStatus::kSuccess;
 }
 
 void Mp2tStreamParser::RegisterPmt(int program_number, int pmt_pid) {

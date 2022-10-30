@@ -10,9 +10,11 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
+#include "media/base/stream_parser.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/webm/webm_cluster_parser.h"
 #include "media/formats/webm/webm_constants.h"
@@ -62,30 +64,81 @@ void WebMStreamParser::Flush() {
   DCHECK_NE(state_, kWaitingForInit);
 
   byte_queue_.Reset();
-  if (cluster_parser_)
+  uninspected_pending_bytes_ = 0;
+  if (cluster_parser_) {
     cluster_parser_->Reset();
-  if (state_ == kParsingClusters)
+  }
+
+  if (state_ == kParsingClusters) {
     ChangeState(kParsingHeaders);
+  }
 }
 
 bool WebMStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
+bool WebMStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
   DCHECK_NE(state_, kWaitingForInit);
 
-  if (state_ == kError)
-    return false;
+  if (state_ == kError) {
+    // To preserve previous app-visible behavior in this hopefully
+    // never-encountered path, report no failure to caller due to being in
+    // invalid underlying state. If caller then proceeds with async parse (via
+    // Parse, below), they will get the expected parse failure.  If, instead, we
+    // returned false here, then caller would instead tell app QuotaExceededErr
+    // synchronous with the app's appendBuffer() call, instead of async decode
+    // error during async parse. Since Parse() cannot succeed in kError state,
+    // don't even copy `buf` into `byte_queue_` in this case.
+    // TODO(crbug.com/1379160): Instrument this path to see if it can be changed
+    // to just DCHECK_NE(state_, kError).
+    return true;
+  }
 
-  byte_queue_.Push(buf, size);
+  // Ensure that we are not still in the middle of iterating Parse calls for
+  // previously appended data. May consider changing this to a DCHECK once
+  // stabilized, though since impact of proceeding when this condition fails
+  // could lead to memory corruption, preferring CHECK.
+  CHECK_EQ(uninspected_pending_bytes_, 0);
+
+  uninspected_pending_bytes_ = base::checked_cast<int>(size);
+  byte_queue_.Push(buf, uninspected_pending_bytes_);
+
+  return true;
+}
+
+StreamParser::ParseStatus WebMStreamParser::Parse(
+    int max_pending_bytes_to_inspect) {
+  DCHECK_NE(state_, kWaitingForInit);
+  DCHECK_GE(max_pending_bytes_to_inspect, 0);
+
+  if (state_ == kError) {
+    return ParseStatus::kFailed;
+  }
 
   int result = 0;
   int bytes_parsed = 0;
   const uint8_t* cur = nullptr;
-  int cur_size = 0;
+  int queue_size = 0;
+  byte_queue_.Peek(&cur, &queue_size);
 
-  byte_queue_.Peek(&cur, &cur_size);
+  // First, determine the amount of bytes not yet popped, though already
+  // inspected by previous call(s) to Parse().
+  int cur_size = queue_size - uninspected_pending_bytes_;
+  DCHECK_GE(cur_size, 0);
+
+  // Next, allow up to `max_pending_bytes_to_inspect` more of `byte_queue_`
+  // contents beyond those previously inspected to be involved in this Parse()
+  // call.
+  int inspection_increment =
+      std::min(max_pending_bytes_to_inspect, uninspected_pending_bytes_);
+  cur_size += inspection_increment;
+
+  // If successfully parsed, remember that we will have inspected this
+  // incremental part of `byte_queue_` contents.
+  uninspected_pending_bytes_ -= inspection_increment;
+  DCHECK_GE(uninspected_pending_bytes_, 0);
+
   while (cur_size > 0) {
     State oldState = state_;
     switch (state_) {
@@ -99,12 +152,12 @@ bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
 
       case kWaitingForInit:
       case kError:
-        return false;
+        return ParseStatus::kFailed;
     }
 
     if (result < 0) {
       ChangeState(kError);
-      return false;
+      return ParseStatus::kFailed;
     }
 
     if (state_ == oldState && result == 0)
@@ -117,7 +170,10 @@ bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
   }
 
   byte_queue_.Pop(bytes_parsed);
-  return true;
+  if (uninspected_pending_bytes_ > 0) {
+    return ParseStatus::kSuccessHasMoreData;
+  }
+  return ParseStatus::kSuccess;
 }
 
 void WebMStreamParser::ChangeState(State new_state) {

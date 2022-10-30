@@ -15,6 +15,7 @@
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/mock_media_log.h"
+#include "media/base/stream_parser.h"
 #include "media/base/test_helpers.h"
 #include "media/filters/chunk_demuxer.h"
 #include "media/filters/frame_processor.h"
@@ -24,7 +25,9 @@ namespace media {
 
 using base::test::RunClosure;
 using testing::_;
+using testing::DoAll;
 using testing::InvokeWithoutArgs;
+using testing::Return;
 using testing::SaveArg;
 
 namespace {
@@ -108,8 +111,8 @@ class SourceBufferStateTest : public ::testing::Test {
     return sbs;
   }
 
-  // Emulates appending some data to the SourceBufferState, since OnNewConfigs
-  // can only be invoked when append is in progress.
+  // Emulates appending and parsing some data to the SourceBufferState, since
+  // OnNewConfigs can only be invoked when parse is in progress.
   bool AppendDataAndReportTracks(const std::unique_ptr<SourceBufferState>& sbs,
                                  std::unique_ptr<MediaTracks> tracks) {
     const uint8_t stream_data[] = "stream_data";
@@ -117,14 +120,28 @@ class SourceBufferStateTest : public ::testing::Test {
     base::TimeDelta t;
     StreamParser::TextTrackConfigMap text_track_config_map;
 
+    // Ensure `stream_data` fits within one StreamParser::Parse() call.
+    CHECK_GT(StreamParser::kMaxPendingBytesPerParse, data_size);
+
     bool new_configs_result = false;
-    EXPECT_CALL(*mock_stream_parser_, Parse(stream_data, data_size))
-        .WillOnce(InvokeWithoutArgs([&] {
-          new_configs_result =
-              new_config_cb_.Run(std::move(tracks), text_track_config_map);
-          return true;
-        }));
-    sbs->Append(stream_data, data_size, t, t, &t);
+
+    EXPECT_CALL(*mock_stream_parser_,
+                AppendToParseBuffer(stream_data, data_size))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*mock_stream_parser_,
+                Parse(StreamParser::kMaxPendingBytesPerParse))
+        .WillOnce(DoAll(
+            InvokeWithoutArgs([&] {
+              new_configs_result =
+                  new_config_cb_.Run(std::move(tracks), text_track_config_map);
+            }),
+            /* Indicate successful parse with no uninspected data. */
+            Return(StreamParser::ParseStatus::kSuccess)));
+
+    EXPECT_TRUE(sbs->AppendToParseBuffer(stream_data, data_size));
+    EXPECT_EQ(StreamParser::ParseStatus::kSuccess,
+              sbs->RunSegmentParserLoop(t, t, &t));
+
     return new_configs_result;
   }
 

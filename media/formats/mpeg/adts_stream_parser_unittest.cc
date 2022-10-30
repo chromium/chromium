@@ -17,16 +17,11 @@ class ADTSStreamParserTest : public StreamParserTestBase, public testing::Test {
       : StreamParserTestBase(std::make_unique<ADTSStreamParser>()) {}
 };
 
-// Test parsing with small prime sized chunks to smoke out "power of
-// 2" field size assumptions.
+// Test appending and parsing with small prime sized chunks to smoke out "power
+// of 2" field size assumptions.
 TEST_F(ADTSStreamParserTest, UnalignedAppend) {
   const std::string expected =
       "NewSegment"
-      "{ 0K }"
-      "{ 0K }"
-      "{ 0K }"
-      "{ 0K }"
-      "{ 0K }"
       "{ 0K }"
       "{ 0K }"
       "{ 0K }"
@@ -37,19 +32,31 @@ TEST_F(ADTSStreamParserTest, UnalignedAppend) {
       "{ 0K }"
       "{ 0K }"
       "{ 0K }"
+      "EndOfSegment"
+      "NewSegment"
+      "{ 0K }"
+      "EndOfSegment"
+      "NewSegment"
+      "{ 0K }"
+      "{ 0K }"
+      "{ 0K }"
+      "EndOfSegment"
+      "NewSegment"
+      "{ 0K }"
       "{ 0K }"
       "EndOfSegment";
   EXPECT_EQ(expected, ParseFile("sfx.adts", 17));
 }
 
-// Test parsing with a larger piece size to verify that multiple buffers
-// are passed to |new_buffer_cb_|.
+// Test appending and parsing with larger piece sizes to verify that multiple
+// buffers are passed to `new_buffer_cb_`.
 TEST_F(ADTSStreamParserTest, UnalignedAppend512) {
   const std::string expected =
       "NewSegment"
       "{ 0K 23K 46K }"
       "{ 0K 23K 46K 69K 92K }"
-      "{ 0K 23K 46K 69K 92K }"
+      "{ 0K 23K 46K 69K }"
+      "{ 0K }"
       "EndOfSegment"
       "NewSegment"
       "{ 0K }"

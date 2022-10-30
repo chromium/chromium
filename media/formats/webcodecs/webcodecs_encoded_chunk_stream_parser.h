@@ -43,7 +43,9 @@ class MEDIA_EXPORT WebCodecsEncodedChunkStreamParser : public StreamParser {
             MediaLog* media_log) override;
   void Flush() override;
   bool GetGenerateTimestampsFlag() const override;
-  bool Parse(const uint8_t* buf, int size) override;
+  [[nodiscard]] bool AppendToParseBuffer(const uint8_t* buf,
+                                         size_t size) override;
+  [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_expect) override;
 
   // Processes and emits buffers from |buffer_queue|. If state is
   // kWaitingForConfigEmission, first emit the config.

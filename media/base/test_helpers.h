@@ -316,7 +316,7 @@ MATCHER_P2(KeyframeTimeGreaterThanDependant,
 }
 
 MATCHER(StreamParsingFailed, "") {
-  return CONTAINS_STRING(arg, "Append: stream parsing failed.");
+  return CONTAINS_STRING(arg, "RunSegmentParserLoop: stream parsing failed.");
 }
 
 MATCHER(ParsedBuffersNotInDTSSequence, "") {

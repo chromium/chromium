@@ -54,7 +54,9 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
             MediaLog* media_log) override;
   void Flush() override;
   bool GetGenerateTimestampsFlag() const override;
-  bool Parse(const uint8_t* buf, int size) override;
+  [[nodiscard]] bool AppendToParseBuffer(const uint8_t* buf,
+                                         size_t size) override;
+  [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_inspect) override;
 
  private:
   struct BufferQueueWithConfig {
@@ -158,6 +160,15 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   bool sbr_in_mimetype_;
 
   // Bytes of the TS stream.
+  // `uninspected_pending_bytes_` tracks how much data has not yet been
+  // attempted to be parsed from `ts_byte_queue_` between calls to Parse().
+  // AppendToParseBuffer() increases this from 0 as more data is added. Parse()
+  // incrementally reduces this and Flush() zeroes this. Note that Parse() may
+  // have inspected some data at the front of `ts_byte_queue_` but not yet been
+  // able to pop it from the queue. So this value may be lower than the actual
+  // amount of bytes in `ts_byte_queue_`, since more data is needed to complete
+  // the parse.
+  int uninspected_pending_bytes_ = 0;
   ByteQueue ts_byte_queue_;
 
   // List of PIDs and their state.

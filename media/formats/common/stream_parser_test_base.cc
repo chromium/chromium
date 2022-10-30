@@ -11,6 +11,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
+#include "media/base/stream_parser.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,31 +57,64 @@ StreamParserTestBase::~StreamParserTestBase() = default;
 
 std::string StreamParserTestBase::ParseFile(const std::string& filename,
                                             int append_bytes) {
+  CHECK_GE(append_bytes, 0);
+
   results_stream_.clear();
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(filename);
-  EXPECT_TRUE(
-      AppendDataInPieces(buffer->data(), buffer->data_size(), append_bytes));
+
+  const uint8_t* start = buffer->data();
+  const uint8_t* end = start + buffer->data_size();
+  do {
+    size_t chunk_size = std::min(static_cast<size_t>(append_bytes),
+                                 static_cast<size_t>(end - start));
+    // Attempt to incrementally parse each appended chunk to test out the
+    // parser's internal management of input queue and pending data bytes.
+    EXPECT_TRUE(AppendAllDataThenParseInPieces(
+        start, chunk_size, (chunk_size > 7) ? (chunk_size - 7) : chunk_size));
+    start += chunk_size;
+  } while (start < end);
+
   return results_stream_.str();
 }
 
 std::string StreamParserTestBase::ParseData(const uint8_t* data,
                                             size_t length) {
   results_stream_.clear();
-  EXPECT_TRUE(AppendDataInPieces(data, length, length));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(data, length, length));
   return results_stream_.str();
 }
 
-bool StreamParserTestBase::AppendDataInPieces(const uint8_t* data,
-                                              size_t length,
-                                              size_t piece_size) {
-  const uint8_t* start = data;
-  const uint8_t* end = data + length;
-  while (start < end) {
-    size_t append_size = std::min(piece_size, static_cast<size_t>(end - start));
-    if (!parser_->Parse(start, append_size))
-      return false;
-    start += append_size;
+bool StreamParserTestBase::AppendAllDataThenParseInPieces(const uint8_t* data,
+                                                          size_t length,
+                                                          size_t piece_size) {
+  if (!parser_->AppendToParseBuffer(data, length)) {
+    return false;
   }
+
+  // Also verify that the expected number of pieces is needed to fully parse
+  // `data`.
+  size_t expected_remaining_data = length;
+  bool has_more_data = true;
+
+  // A zero-length append still needs a single iteration of parse.
+  while (has_more_data) {
+    StreamParser::ParseStatus parse_result = parser_->Parse(piece_size);
+    if (parse_result == StreamParser::ParseStatus::kFailed) {
+      return false;
+    }
+
+    has_more_data =
+        parse_result == StreamParser::ParseStatus::kSuccessHasMoreData;
+
+    EXPECT_EQ(piece_size < expected_remaining_data, has_more_data);
+
+    if (has_more_data) {
+      expected_remaining_data -= piece_size;
+    } else {
+      EXPECT_EQ(parse_result, StreamParser::ParseStatus::kSuccess);
+    }
+  }
+
   return true;
 }
 

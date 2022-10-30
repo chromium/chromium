@@ -96,22 +96,36 @@ class MP4StreamParserTest : public testing::Test {
   bool verifying_keyframeness_sequence_;
   StrictMock<base::MockRepeatingCallback<void(Keyframeness)>> keyframeness_cb_;
 
-  bool AppendData(const uint8_t* data, size_t length) {
-    return parser_->Parse(data, length);
-  }
+  // Note this is similar to a StreamParserTestBase method, so may benefit from
+  // utility method or inheritance if they don't diverge.
+  bool AppendAllDataThenParseInPieces(const uint8_t* data,
+                                      size_t length,
+                                      size_t piece_size) {
+    EXPECT_TRUE(parser_->AppendToParseBuffer(data, length));
 
-  bool AppendDataInPieces(const uint8_t* data,
-                          size_t length,
-                          size_t piece_size) {
-    const uint8_t* start = data;
-    const uint8_t* end = data + length;
-    while (start < end) {
-      size_t append_size = std::min(piece_size,
-                                    static_cast<size_t>(end - start));
-      if (!AppendData(start, append_size))
+    // Also verify the expected number of pieces is needed to fully parse
+    // `data`.
+    size_t expected_remaining_data = length;
+    bool has_more_data = true;
+
+    while (has_more_data) {
+      StreamParser::ParseStatus parse_result = parser_->Parse(piece_size);
+      if (parse_result == StreamParser::ParseStatus::kFailed) {
         return false;
-      start += append_size;
+      }
+
+      has_more_data =
+          parse_result == StreamParser::ParseStatus::kSuccessHasMoreData;
+
+      EXPECT_EQ(piece_size < expected_remaining_data, has_more_data);
+
+      if (has_more_data) {
+        expected_remaining_data -= piece_size;
+      } else {
+        EXPECT_EQ(parse_result, StreamParser::ParseStatus::kSuccess);
+      }
     }
+
     return true;
   }
 
@@ -250,11 +264,23 @@ class MP4StreamParserTest : public testing::Test {
         GetDefaultInitParametersExpectations());
   }
 
+  // Note this is also similar to a StreamParserTestBase method.
   bool ParseMP4File(const std::string& filename, int append_bytes) {
+    CHECK_GE(append_bytes, 0);
     scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(filename);
-    EXPECT_TRUE(AppendDataInPieces(buffer->data(),
-                                   buffer->data_size(),
-                                   append_bytes));
+
+    const uint8_t* start = buffer->data();
+    const uint8_t* end = start + buffer->data_size();
+    do {
+      size_t chunk_size = std::min(static_cast<size_t>(append_bytes),
+                                   static_cast<size_t>(end - start));
+      // Attempt to incrementally parse each appended chunk to test out the
+      // parser's internal management of input queue and pending data bytes.
+      EXPECT_TRUE(AppendAllDataThenParseInPieces(
+          start, chunk_size, (chunk_size > 7) ? (chunk_size - 7) : chunk_size));
+      start += chunk_size;
+    } while (start < end);
+
     return true;
   }
 };
@@ -285,11 +311,10 @@ TEST_F(MP4StreamParserTest, Flush) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), 65536, 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->data(), 65536, 512));
   parser_->Flush();
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(),
-                                 buffer->data_size(),
-                                 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, Reinitialization) {
@@ -297,12 +322,10 @@ TEST_F(MP4StreamParserTest, Reinitialization) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(),
-                                 buffer->data_size(),
-                                 512));
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(),
-                                 buffer->data_size(),
-                                 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, UnknownDuration_V0_AllBitsSet) {
@@ -409,15 +432,14 @@ TEST_F(MP4StreamParserTest, NoMoovAfterFlush) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(),
-                                 buffer->data_size(),
-                                 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
   parser_->Flush();
 
   const int kFirstMoofOffset = 1307;
-  EXPECT_TRUE(AppendDataInPieces(buffer->data() + kFirstMoofOffset,
-                                 buffer->data_size() - kFirstMoofOffset,
-                                 512));
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(
+      buffer->data() + kFirstMoofOffset, buffer->data_size() - kFirstMoofOffset,
+      512));
 }
 
 // Test an invalid file where there are encrypted samples, but
@@ -438,7 +460,8 @@ TEST_F(MP4StreamParserTest, MissingSampleEncryptionInfo) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-a_frag-cenc_missing-saiz-saio.mp4");
   EXPECT_MEDIA_LOG(SampleEncryptionInfoUnavailableLog());
-  EXPECT_FALSE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_FALSE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 // Test a file where all video samples start with an Access Unit
@@ -464,8 +487,8 @@ TEST_F(MP4StreamParserTest, HEVC_in_MP4_container) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-hevc-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(VideoCodec::kHEVC, video_decoder_config_.codec());
   EXPECT_EQ(HEVCPROFILE_MAIN, video_decoder_config_.profile());
@@ -544,7 +567,8 @@ TEST_F(MP4StreamParserTest, CencWithEncryptionInfoStoredAsAuxDataInMdat) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, CencWithSampleEncryptionBox) {
@@ -558,7 +582,8 @@ TEST_F(MP4StreamParserTest, CencWithSampleEncryptionBox) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-640x360-v_frag-cenc-senc.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, NaturalSizeWithoutPASP) {
@@ -571,7 +596,8 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithoutPASP) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-640x360-non_square_pixel-without_pasp.mp4");
 
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
   EXPECT_EQ(gfx::Size(639, 360), video_decoder_config_.natural_size());
 }
 
@@ -585,7 +611,8 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithPASP) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-640x360-non_square_pixel-with_pasp.mp4");
 
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
   EXPECT_EQ(gfx::Size(639, 360), video_decoder_config_.natural_size());
 }
 
@@ -609,8 +636,8 @@ TEST_F(MP4StreamParserTest, DemuxingAC3) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-ac3-only-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, DemuxingEAC3) {
@@ -633,8 +660,8 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-eac3-only-frag.mp4");
-  EXPECT_EQ(expect_success,
-            AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_EQ(expect_success, AppendAllDataThenParseInPieces(
+                                buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, Flac) {
@@ -645,7 +672,8 @@ TEST_F(MP4StreamParserTest, Flac) {
   InitializeParserWithInitParametersExpectations(params);
 
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("bear-flac_frag.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, Flac192kHz) {
@@ -661,7 +689,8 @@ TEST_F(MP4StreamParserTest, Flac192kHz) {
 
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-flac-192kHz_frag.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, Vp9) {
@@ -670,7 +699,8 @@ TEST_F(MP4StreamParserTest, Vp9) {
   InitializeParserWithInitParametersExpectations(params);
 
   auto buffer = ReadTestDataFile("vp9-hdr-init-segment.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 
   EXPECT_EQ(video_decoder_config_.profile(), VP9PROFILE_PROFILE2);
   EXPECT_EQ(video_decoder_config_.level(), 31u);
@@ -750,7 +780,8 @@ TEST_F(MP4StreamParserTest, TextTrackDetection) {
   scoped_refptr<DecoderBuffer> buffer =
       ReadTestDataFile("bear-1280x720-avt_subt_frag.mp4");
 
-  EXPECT_TRUE(AppendDataInPieces(buffer->data(), buffer->data_size(), 512));
+  EXPECT_TRUE(
+      AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
 TEST_F(MP4StreamParserTest, MultiTrackFile) {

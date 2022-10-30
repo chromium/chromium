@@ -69,15 +69,44 @@ class WebSourceBuffer {
   virtual bool EvictCodedFrames(double current_playback_time,
                                 size_t new_data_size) = 0;
 
-  // Appends data and runs the segment parser loop algorithm (or more simply
-  // appends and processes caller-provided media::StreamParserBuffers in the
-  // AppendChunks version). The algorithm and associated frame processing may
-  // update |*timestamp_offset| if |timestamp_offset| is not null.
-  // Returns true on success, otherwise the append error algorithm needs to
-  // run with the decode error parameter set to true.
-  virtual bool Append(const unsigned char* data,
-                      unsigned length,
-                      double* timestamp_offset) = 0;
+  // Intended to be called during the synchronous initial steps of
+  // SourceBuffer.appendBuffer(), appends data to internal parser input buffer,
+  // but does not do any parsing or execution of the segment parser loop
+  // algorithm. Actual parse is done later when caller invokes
+  // RunSegmentParserLoop(). Returns true if the addition was successful, false
+  // otherwise. Note that a false result here is non-fatal: the parser has not
+  // accepted `data` and the caller is expected to throw a recoverable
+  // QuotaExceededError to the MSE API user. Before this call, the parser must
+  // not still be awaiting RunSegmentParserLoop() call(s). On success, at least
+  // one RunSegmentParserLoop() call will be necessary to actually parse the new
+  // bytes. Note, for zero-length appendBuffers, the caller can skip this call
+  // and just run the segment parser loop asynchronously once.
+  [[nodiscard]] virtual bool AppendToParseBuffer(const unsigned char* data,
+                                                 size_t length) = 0;
+
+  // Intended to be called potentially asynchronously after
+  // SourceBuffer.appendBuffer() and potentially repeatedly, runs the segment
+  // parser loop algorithm on any data already in the parser input buffer (see
+  // AppendToParseBuffer()). The algorithm and associated frame processing may
+  // update `*timestamp_offset` if `timestamp_offset` is not null; this offset
+  // is in seconds.
+  // Returns kSuccess if the segment parser loop iteration succeeded and all
+  // previously provided data from AppendToParseBuffer() has been inspected.
+  // Returns kSuccessHasMoreData if the segment parser loop iteration succeeded,
+  // yet there remains uninspected data remaining from AppendToParseBuffer();
+  // more call(s) to this method are necessary for the parser to attempt
+  // inspection of that data.
+  // Returns kFailed if the segment parser loop iteration hit error and the
+  // caller needs to run the append error algorithm with the decode error
+  // parameter set to true.
+  [[nodiscard]] virtual media::StreamParser::ParseStatus RunSegmentParserLoop(
+      double* timestamp_offset) = 0;
+
+  // Processes caller-provided media::StreamParserBuffers. The associated frame
+  // processing may update `*timestamp_offset` if `timestamp_offset` is not
+  // null; this offset is in seconds.
+  // Returns true on success, otherwise the append error algorithm needs to run
+  // with the decode error parameter set to true.
   virtual bool AppendChunks(
       std::unique_ptr<media::StreamParser::BufferQueue> buffer_queue,
       double* timestamp_offset) = 0;

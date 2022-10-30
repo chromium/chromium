@@ -19,6 +19,7 @@
 #include "media/base/demuxer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mime_util.h"
+#include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
@@ -905,18 +906,12 @@ bool ChunkDemuxer::EvictCodedFrames(const std::string& id,
   return itr->second->EvictCodedFrames(currentMediaTime, newDataSize);
 }
 
-bool ChunkDemuxer::AppendData(const std::string& id,
-                              const uint8_t* data,
-                              size_t length,
-                              base::TimeDelta append_window_start,
-                              base::TimeDelta append_window_end,
-                              base::TimeDelta* timestamp_offset) {
-  DVLOG(1) << "AppendData(" << id << ", " << length << ")";
+bool ChunkDemuxer::AppendToParseBuffer(const std::string& id,
+                                       const uint8_t* data,
+                                       size_t length) {
+  DVLOG(1) << "AppendToParseBuffer(" << id << ", " << length << ")";
 
   DCHECK(!id.empty());
-  DCHECK(timestamp_offset);
-
-  Ranges<base::TimeDelta> ranges;
 
   if (length == 0u) {
     // We don't DCHECK that |state_| != ENDED here, since |state_| is protected
@@ -933,17 +928,11 @@ bool ChunkDemuxer::AppendData(const std::string& id,
     base::AutoLock auto_lock(lock_);
     DCHECK_NE(state_, ENDED);
 
-    // Capture if any of the SourceBuffers are waiting for data before we start
-    // parsing.
-    bool old_waiting_for_data = IsSeekWaitingForData_Locked();
-
     switch (state_) {
       case INITIALIZING:
       case INITIALIZED:
         DCHECK(IsValidId(id));
-        if (!source_state_map_[id]->Append(data, length, append_window_start,
-                                           append_window_end,
-                                           timestamp_offset)) {
+        if (!source_state_map_[id]->AppendToParseBuffer(data, length)) {
           ReportError_Locked(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
           return false;
         }
@@ -953,22 +942,82 @@ bool ChunkDemuxer::AppendData(const std::string& id,
       case WAITING_FOR_INIT:
       case ENDED:
       case SHUTDOWN:
-        DVLOG(1) << "AppendData(): called in unexpected state " << state_;
-        return false;
+        DVLOG(1) << "AppendToParseBuffer(): called in unexpected state "
+                 << state_;
+        // To preserve previous app-visible behavior in this hopefully
+        // never-encountered path, report no failure to caller due to being in
+        // invalid underlying state. If caller then proceeds with async parse
+        // (via RunSegmentParserLoop, below), they will get the expected parse
+        // failure for this set of states. If, instead, we returned false here,
+        // then caller would instead tell app QuotaExceededErr synchronous with
+        // the app's appendBuffer() call, instead of async decode error during
+        // async parse.
+        // TODO(crbug.com/1379160): Instrument this path to see if it can be
+        // changed to just NOTREACHED() << state_.
+        return true;
+    }
+  }
+
+  return true;
+}
+
+StreamParser::ParseStatus ChunkDemuxer::RunSegmentParserLoop(
+    const std::string& id,
+    base::TimeDelta append_window_start,
+    base::TimeDelta append_window_end,
+    base::TimeDelta* timestamp_offset) {
+  DVLOG(1) << "RunSegmentParserLoop(" << id << ")";
+
+  DCHECK(!id.empty());
+  DCHECK(timestamp_offset);
+
+  Ranges<base::TimeDelta> ranges;
+
+  StreamParser::ParseStatus result = StreamParser::ParseStatus::kFailed;
+
+  {
+    base::AutoLock auto_lock(lock_);
+    DCHECK_NE(state_, ENDED);
+
+    // Capture if any of the SourceBuffers are waiting for data before we start
+    // parsing.
+    bool old_waiting_for_data = IsSeekWaitingForData_Locked();
+
+    switch (state_) {
+      case INITIALIZING:
+      case INITIALIZED:
+        DCHECK(IsValidId(id));
+        result = source_state_map_[id]->RunSegmentParserLoop(
+            append_window_start, append_window_end, timestamp_offset);
+        if (result == StreamParser::ParseStatus::kFailed) {
+          ReportError_Locked(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
+          return result;
+        }
+        break;
+
+      case PARSE_ERROR:
+      case WAITING_FOR_INIT:
+      case ENDED:
+      case SHUTDOWN:
+        DVLOG(1) << "RunSegmentParserLoop(): called in unexpected state "
+                 << state_;
+        return StreamParser::ParseStatus::kFailed;
     }
 
-    // Check to see if data was appended at the pending seek point. This
+    // Check to see if newly parsed data was at the pending seek point. This
     // indicates we have parsed enough data to complete the seek. Work is still
     // in progress at this point, but it's okay since |seek_cb_| will post.
-    if (old_waiting_for_data && !IsSeekWaitingForData_Locked() && seek_cb_)
+    if (old_waiting_for_data && !IsSeekWaitingForData_Locked() && seek_cb_) {
       RunSeekCB_Locked(PIPELINE_OK);
+    }
 
     ranges = GetBufferedRanges_Locked();
   }
 
+  DCHECK_NE(StreamParser::ParseStatus::kFailed, result);
   host_->OnBufferedTimeRangesChanged(ranges);
   progress_cb_.Run();
-  return true;
+  return result;
 }
 
 bool ChunkDemuxer::AppendChunks(
@@ -1427,7 +1476,7 @@ ChunkDemuxerStream* ChunkDemuxer::CreateDemuxerStream(
     DemuxerStream::Type type) {
   // New ChunkDemuxerStreams can be created only during initialization segment
   // processing, which happens when a new chunk of data is appended and the
-  // lock_ must be held by ChunkDemuxer::AppendData/Chunks.
+  // lock_ must be held by ChunkDemuxer::RunSegmentParserLoop/AppendChunks.
   lock_.AssertAcquired();
 
   MediaTrack::Id media_track_id = GenerateMediaTrackId();

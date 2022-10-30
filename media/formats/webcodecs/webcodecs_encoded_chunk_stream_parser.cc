@@ -12,6 +12,7 @@
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/media_tracks.h"
+#include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
@@ -80,8 +81,9 @@ bool WebCodecsEncodedChunkStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool WebCodecsEncodedChunkStreamParser::Parse(const uint8_t* /* buf */,
-                                              int /* size */) {
+bool WebCodecsEncodedChunkStreamParser::AppendToParseBuffer(
+    const uint8_t* /* buf */,
+    size_t /* size */) {
   // TODO(crbug.com/1144908): Protect against app reaching this (and similer
   // inverse case in other parsers) simply by using the wrong append method on
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
@@ -89,7 +91,19 @@ bool WebCodecsEncodedChunkStreamParser::Parse(const uint8_t* /* buf */,
   // attempting the wrong append method, without causing parse/decode error?
   NOTREACHED();  // ProcessChunks() is the method to use instead for this
                  // parser.
-  return false;
+  return true;   // Subsequent async Parse failure will occur below.
+}
+
+StreamParser::ParseStatus WebCodecsEncodedChunkStreamParser::Parse(
+    int /* max_pending_bytes_to_inspect */) {
+  // TODO(crbug.com/1144908): Protect against app reaching this (and similer
+  // inverse case in other parsers) simply by using the wrong append method on
+  // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
+  // instead have the top-level SourceBuffer throw synchronous exception when
+  // attempting the wrong append method, without causing parse/decode error?
+  NOTREACHED();  // ProcessChunks() is the method to use instead for this
+                 // parser.
+  return ParseStatus::kFailed;
 }
 
 bool WebCodecsEncodedChunkStreamParser::ProcessChunks(

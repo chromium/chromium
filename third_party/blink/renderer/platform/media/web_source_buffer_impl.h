@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
+#include "media/base/stream_parser.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -38,9 +39,10 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
   double HighestPresentationTimestamp() override;
   bool EvictCodedFrames(double currentPlaybackTime,
                         size_t newDataSize) override;
-  bool Append(const unsigned char* data,
-              unsigned length,
-              double* timestamp_offset) override;
+  [[nodiscard]] bool AppendToParseBuffer(const unsigned char* data,
+                                         size_t length) override;
+  [[nodiscard]] media::StreamParser::ParseStatus RunSegmentParserLoop(
+      double* timestamp_offset) override;
   bool AppendChunks(
       std::unique_ptr<media::StreamParser::BufferQueue> buffer_queue,
       double* timestamp_offset) override;

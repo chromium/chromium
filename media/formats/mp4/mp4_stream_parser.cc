@@ -22,6 +22,7 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
+#include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/text_track_config.h"
 #include "media/base/timestamp_constants.h"
@@ -109,6 +110,7 @@ void MP4StreamParser::Init(
 
 void MP4StreamParser::Reset() {
   queue_.Reset();
+  max_parse_offset_ = 0;
   runs_.reset();
   moof_head_ = 0;
   mdat_tail_ = 0;
@@ -124,13 +126,48 @@ bool MP4StreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool MP4StreamParser::Parse(const uint8_t* buf, int size) {
+bool MP4StreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
   DCHECK_NE(state_, kWaitingForInit);
 
-  if (state_ == kError)
-    return false;
+  if (state_ == kError) {
+    // To preserve previous app-visible behavior in this hopefully
+    // never-encountered path, report no failure to caller due to being in
+    // invalid underlying state. If caller then proceeds with async parse (via
+    // Parse, below), they will get the expected parse failure.  If, instead, we
+    // returned false here, then caller would instead tell app QuotaExceededErr
+    // synchronous with the app's appendBuffer() call, instead of async decode
+    // error during async parse. Since Parse() cannot succeed in kError state,
+    // don't even copy `buf` into `queue_` in this case.
+    // TODO(crbug.com/1379160): Instrument this path to see if it can be changed
+    // to just DCHECK_NE(state_, kError).
+    return true;
+  }
 
-  queue_.Push(buf, size);
+  // Ensure that we are not still in the middle of iterating Parse calls for
+  // previously appendded data. May consider changing this to a DCHECK once
+  // stabilized, though since impact of proceeding when this condition fails
+  // could lead to memory corruption, preferring CHECK.
+  CHECK_EQ(queue_.tail(), max_parse_offset_);
+
+  queue_.Push(buf, base::checked_cast<int>(size));
+  return true;
+}
+
+StreamParser::ParseStatus MP4StreamParser::Parse(
+    int max_pending_bytes_to_inspect) {
+  DCHECK_NE(state_, kWaitingForInit);
+  DCHECK_GE(max_pending_bytes_to_inspect, 0);
+
+  if (state_ == kError) {
+    return ParseStatus::kFailed;
+  }
+
+  // Update `max_parse_offset_` to include potentially more appended bytes in
+  // scope of this Parse() call.
+  DCHECK_GE(max_parse_offset_, queue_.head());
+  DCHECK_LE(max_parse_offset_, queue_.tail());
+  max_parse_offset_ =
+      std::min(queue_.tail(), max_parse_offset_ + max_pending_bytes_to_inspect);
 
   BufferQueueMap buffers;
 
@@ -144,7 +181,7 @@ bool MP4StreamParser::Parse(const uint8_t* buf, int size) {
       case kWaitingForInit:
       case kError:
         NOTREACHED();
-        return false;
+        return ParseStatus::kFailed;
 
       case kParsingBoxes: {
         ParseResult pr = ParseBox();
@@ -180,18 +217,76 @@ bool MP4StreamParser::Parse(const uint8_t* buf, int size) {
     moov_.reset();
     Reset();
     ChangeState(kError);
-    return false;
+    return ParseStatus::kFailed;
   }
 
-  return true;
+  DCHECK_LE(max_parse_offset_, queue_.tail());
+  if (max_parse_offset_ < queue_.tail()) {
+    return ParseStatus::kSuccessHasMoreData;
+  }
+  return ParseStatus::kSuccess;
+}
+
+void MP4StreamParser::ModulatedPeek(const uint8_t** buf, int* size) {
+  DCHECK(buf);
+  DCHECK(size);
+
+  queue_.Peek(buf, size);
+
+  // The size or even availability of anything to parse (in scope of current
+  // iteration of Parse()) may be less than reported in the Peek() call,
+  // depending on `max_parse_offset_`.
+  DCHECK_GE(max_parse_offset_, queue_.head());
+  DCHECK_LE(max_parse_offset_, queue_.tail());
+  if (*buf) {
+    int parseable_size = max_parse_offset_ - queue_.head();
+    DCHECK_LE(parseable_size, *size);
+    *size = parseable_size;
+    if (!*size) {
+      *buf = nullptr;
+    }
+  }
+}
+
+void MP4StreamParser::ModulatedPeekAt(int64_t offset,
+                                      const uint8_t** buf,
+                                      int* size) {
+  DCHECK(buf);
+  DCHECK(size);
+  DCHECK_GE(max_parse_offset_, queue_.head());
+  DCHECK_LE(max_parse_offset_, queue_.tail());
+
+  if (offset >= max_parse_offset_) {
+    *buf = nullptr;
+    *size = 0;
+    return;
+  }
+
+  queue_.PeekAt(offset, buf, size);
+
+  if (*buf) {
+    int parseable_size = max_parse_offset_ - offset;
+    DCHECK_LE(parseable_size, *size);
+    DCHECK_GT(parseable_size, 0);
+    *size = parseable_size;
+  }
+}
+
+bool MP4StreamParser::ModulatedTrim(int64_t max_offset) {
+  DCHECK_GE(max_parse_offset_, queue_.head());
+  DCHECK_LE(max_parse_offset_, queue_.tail());
+  max_offset = std::min(max_offset, max_parse_offset_);
+  return queue_.Trim(max_offset);
 }
 
 ParseResult MP4StreamParser::ParseBox() {
   const uint8_t* buf;
   int size;
-  queue_.Peek(&buf, &size);
-  if (!size)
+  ModulatedPeek(&buf, &size);
+
+  if (!size) {
     return ParseResult::kNeedMoreData;
+  }
 
   std::unique_ptr<BoxReader> reader;
   ParseResult result =
@@ -720,8 +815,9 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     // since |mdat_tail_| is never outside of the queue. It's also plausible
     // that this Trim() is always a no-op, but perhaps if all runs are empty
     // this still does something?
-    if (!queue_.Trim(mdat_tail_))
+    if (!ModulatedTrim(mdat_tail_)) {
       return ParseResult::kNeedMoreData;
+    }
 
     ChangeState(kParsingBoxes);
     end_of_segment_cb_.Run();
@@ -736,9 +832,10 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
 
   const uint8_t* buf;
   int buf_size;
-  queue_.Peek(&buf, &buf_size);
-  if (!buf_size)
+  ModulatedPeek(&buf, &buf_size);
+  if (!buf_size) {
     return ParseResult::kNeedMoreData;
+  }
 
   bool audio =
       audio_track_ids_.find(runs_->track_id()) != audio_track_ids_.end();
@@ -760,15 +857,19 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   // memory-constrained devices where the source buffer consumes a substantial
   // portion of the total system memory.
   if (runs_->AuxInfoNeedsToBeCached()) {
-    queue_.PeekAt(runs_->aux_info_offset() + moof_head_, &buf, &buf_size);
-    if (buf_size < runs_->aux_info_size())
+    ModulatedPeekAt(runs_->aux_info_offset() + moof_head_, &buf, &buf_size);
+    if (buf_size < runs_->aux_info_size()) {
       return ParseResult::kNeedMoreData;
-    if (!runs_->CacheAuxInfo(buf, buf_size))
+    }
+
+    if (!runs_->CacheAuxInfo(buf, buf_size)) {
       return ParseResult::kError;
+    }
+
     return ParseResult::kOk;
   }
 
-  queue_.PeekAt(runs_->sample_offset() + moof_head_, &buf, &buf_size);
+  ModulatedPeekAt(runs_->sample_offset() + moof_head_, &buf, &buf_size);
 
   if (runs_->sample_size() >
       static_cast<uint32_t>(std::numeric_limits<int>::max())) {
@@ -937,11 +1038,12 @@ bool MP4StreamParser::SendAndFlushSamples(BufferQueueMap* buffers) {
 
 bool MP4StreamParser::ReadAndDiscardMDATsUntil(int64_t max_clear_offset) {
   ParseResult result = ParseResult::kOk;
-  int64_t upper_bound = std::min(max_clear_offset, queue_.tail());
+  DCHECK_LE(max_parse_offset_, queue_.tail());
+  int64_t upper_bound = std::min(max_clear_offset, max_parse_offset_);
   while (mdat_tail_ < upper_bound) {
     const uint8_t* buf = nullptr;
     int size = 0;
-    queue_.PeekAt(mdat_tail_, &buf, &size);
+    ModulatedPeekAt(mdat_tail_, &buf, &size);
 
     FourCC type;
     size_t box_sz;
@@ -961,7 +1063,7 @@ bool MP4StreamParser::ReadAndDiscardMDATsUntil(int64_t max_clear_offset) {
     // discard partial mdats.
     mdat_tail_ += base::checked_cast<int64_t>(box_sz);
   }
-  queue_.Trim(std::min(mdat_tail_, upper_bound));
+  ModulatedTrim(std::min(mdat_tail_, upper_bound));
   return result != ParseResult::kError;
 }
 
@@ -977,8 +1079,9 @@ bool MP4StreamParser::HaveEnoughDataToEnqueueSamples() {
   // data and allow per sample offset checks to meter sample enqueuing.
   // TODO(acolwell): Fix trun box handling so we don't have to special case
   // muxed content.
+  DCHECK_LE(max_parse_offset_, queue_.tail());
   return !(has_audio_ && has_video_ &&
-           queue_.tail() < highest_end_offset_ + moof_head_);
+           max_parse_offset_ < highest_end_offset_ + moof_head_);
 }
 
 bool MP4StreamParser::ComputeHighestEndOffset(const MovieFragment& moof) {
