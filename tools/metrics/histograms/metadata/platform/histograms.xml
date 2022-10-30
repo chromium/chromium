@@ -1683,7 +1683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WriteSectorsLong" units="sectors per second"
-    expires_after="2022-10-01">
+    expires_after="2023-10-27">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1693,7 +1693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WriteSectorsShort" units="sectors per second"
-    expires_after="2022-12-04">
+    expires_after="2023-10-27">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
