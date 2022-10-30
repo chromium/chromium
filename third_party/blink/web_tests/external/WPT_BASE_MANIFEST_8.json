@@ -343141,7 +343141,7 @@
      []
     ],
     "getdisplaymedia.https-expected.txt": [
-     "3853b8fb41454b8b2ba93501b5c1e84e2a528746",
+     "22a39e4a36601eae5cb351484a1f999c6a0686f4",
      []
     ]
    },
@@ -498468,6 +498468,13 @@
        ],
        "adoption.html": [
         "15e02bcf51535d45a702b0977f919eff8ce5ba9c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "already-loaded-image-sync-width.html": [
+        "4a63bd7a7a7cde8829bd8ecdc9dcbf23eb990051",
         [
          null,
          {}
