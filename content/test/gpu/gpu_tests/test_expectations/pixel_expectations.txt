@@ -272,7 +272,6 @@ crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiu
 crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
 
 # Flakes on Nexus 5X.
-crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
