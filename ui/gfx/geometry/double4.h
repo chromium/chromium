@@ -76,9 +76,14 @@ ALWAYS_INLINE void StoreDouble4(Double4 v, double d[4]) {
 //     ...
 //   if (AllTrue((double4_a1 == double4_b1) & (double4_a2 == double4_b2)))
 //     ...
-template <typename T>
-ALWAYS_INLINE auto AllTrue(T __attribute__((vector_size(4 * sizeof(T)))) b4) {
-  static_assert(std::is_integral<T>::value);
+typedef int64_t __attribute__((vector_size(4 * sizeof(int64_t))))
+DoubleBoolean4;
+ALWAYS_INLINE int64_t AllTrue(DoubleBoolean4 b4) {
+  return b4[0] & b4[1] & b4[2] & b4[3];
+}
+
+typedef int32_t __attribute__((vector_size(4 * sizeof(int32_t)))) FloatBoolean4;
+ALWAYS_INLINE int32_t AllTrue(FloatBoolean4 b4) {
   return b4[0] & b4[1] & b4[2] & b4[3];
 }
 
