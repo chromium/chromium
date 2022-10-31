@@ -7,7 +7,14 @@
 #include <map>
 
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/strings/grit/components_strings.h"
+#include "printing/backend/print_backend_utils.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace printing {
@@ -277,6 +284,85 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
   return it != media_map->end() ? it->second : -1;
 }
 
+// Generate a human-readable name from a PWG self-describing name.  If
+// `pwg_name` is not a valid self-describing media size, return an empty string.
+std::string NameForSelfDescribingSize(const std::string& pwg_name) {
+  using printing::Unit::kInches;
+  using printing::Unit::kMillimeters;
+
+  // The expected format is area_description_dimensions, and dimensions are
+  // WxHmm or WxHin.  Both W and H can contain decimals.
+  static const base::NoDestructor<re2::RE2> media_name_pattern(
+      "[^_]+_([^_]+)_([\\d.]+)x([\\d.]+)(in|mm)");
+  std::string description;
+  std::string width;
+  std::string height;
+  std::string unit_str;
+  if (!RE2::FullMatch(pwg_name, *media_name_pattern, &description, &width,
+                      &height, &unit_str)) {
+    PRINTER_LOG(ERROR) << "Can't generate name for invalid IPP media size "
+                       << pwg_name;
+    return "";
+  }
+  printing::Unit units = unit_str == "in" ? kInches : kMillimeters;
+
+  // If the name appears to end with approximately the paper dimensions, just
+  // display the dimensions.  This avoids having things like "Card 4x6" and
+  // "4 X 7" mixed with "4 x 6 in".
+  static const base::NoDestructor<re2::RE2> description_dimensions_pattern(
+      ".*\\b([\\d.]+)-?x-?([\\d.]+)(in|mm)?$");
+  std::string name_width;
+  std::string name_height;
+  if (RE2::FullMatch(description, *description_dimensions_pattern, &name_width,
+                     &name_height) &&
+      base::StartsWith(width, name_width) &&
+      base::StartsWith(height, name_height)) {
+    switch (units) {
+      case kInches:
+        return l10n_util::GetStringFUTF8(PRINT_PREVIEW_MEDIA_DIMENSIONS_INCHES,
+                                         base::ASCIIToUTF16(width),
+                                         base::ASCIIToUTF16(height));
+
+      case kMillimeters:
+        return l10n_util::GetStringFUTF8(PRINT_PREVIEW_MEDIA_DIMENSIONS_MM,
+                                         base::ASCIIToUTF16(width),
+                                         base::ASCIIToUTF16(height));
+    }
+  }
+
+  // For other names, attempt to generate a readable name by splitting into
+  // words and title-casing each word.  Self-describing names are always ASCII,
+  // so it is safe to do case conversion without considering locales.  We don't
+  // have any way to know if the results unambiguously describe a paper size the
+  // user would recognize, so also append the dimensions.  The final output is
+  // dependent on the quality of the descriptions provided by the printer, but
+  // should in any case be better than simply displaying the raw region and
+  // description.
+  std::vector<std::string> words = base::SplitString(
+      description, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (std::string& word : words) {
+    word[0] = base::ToUpperASCII(word[0]);  // Safe due to NONEMPTY split above.
+    for (size_t i = 1; i < word.size(); i++) {
+      word[i] = base::ToLowerASCII(word[i]);
+    }
+  }
+  std::string clean_name = base::JoinString(words, " ");
+
+  switch (units) {
+    case kInches:
+      return l10n_util::GetStringFUTF8(
+          PRINT_PREVIEW_MEDIA_NAME_WITH_DIMENSIONS_INCHES,
+          base::ASCIIToUTF16(clean_name), base::ASCIIToUTF16(width),
+          base::ASCIIToUTF16(height));
+
+    case kMillimeters:
+      return l10n_util::GetStringFUTF8(
+          PRINT_PREVIEW_MEDIA_NAME_WITH_DIMENSIONS_MM,
+          base::ASCIIToUTF16(clean_name), base::ASCIIToUTF16(width),
+          base::ASCIIToUTF16(height));
+  }
+}
+
 }  // namespace
 
 std::string LocalizePaperDisplayName(const std::string& vendor_id) {
@@ -286,7 +372,7 @@ std::string LocalizePaperDisplayName(const std::string& vendor_id) {
   }
 
   int translation_id = VendorIdToTranslatedId(vendor_id);
-  return translation_id < 0 ? std::string()
+  return translation_id < 0 ? NameForSelfDescribingSize(vendor_id)
                             : l10n_util::GetStringUTF8(translation_id);
 }
 

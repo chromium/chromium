@@ -72,6 +72,11 @@ source_set("printing") {
   }
 
   if (enable_print_media_l10n) {
+    deps += [
+      "//components/device_event_log",
+      "//third_party/re2",
+    ]
+
     sources += [
       "print_media_l10n.cc",
       "print_media_l10n.h",

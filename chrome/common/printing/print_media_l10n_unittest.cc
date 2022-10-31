@@ -40,7 +40,8 @@ TEST(PrintMediaL10N, DoWithoutCommonName) {
     const char* vendor_id;
     const char* expected_localized_name;
   } kTestCases[] = {
-      {"lorem_ipsum_8x10in", ""},
+      {"", ""},
+      {"lorem_ipsum_8x10", ""},
       {"q_e_d_130x200mm", ""},
       {"not at all a valid vendor ID", ""},
   };
@@ -71,4 +72,27 @@ TEST(PrintMediaL10N, LocalizeDuplicateNames) {
               LocalizePaperDisplayName(test_case.vendor_id));
   }
 }
+
+// Verifies that we generate names for unrecognized sizes correctly.
+TEST(PrintMediaL10N, LocalizeSelfDescribingSizes) {
+  const struct {
+    const char* vendor_id;
+    const char* expected_localized_name;
+  } kTestCases[] = {
+      {"invalid_size", ""},
+      {"om_photo-31x41_310x410mm", "310 x 410 mm"},
+      {"om_t-4-x-7_4x7in", "4 x 7 in"},
+      {"om_4-x-7_101.6x180.6mm", "4 X 7 (101.6 x 180.6 mm)"},
+      {"om_custom-1_209.9x297.04mm", "Custom 1 (209.9 x 297.04 mm)"},
+      {"om_double-postcard-rotated_200.03x148.17mm",
+       "Double Postcard Rotated (200.03 x 148.17 mm)"},
+      {"oe_photo-8x10-tab_8x10.5in", "Photo 8x10 Tab (8 x 10.5 in)"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(LocalizePaperDisplayName(test_case.vendor_id),
+              test_case.expected_localized_name);
+  }
+}
+
 }  // namespace printing

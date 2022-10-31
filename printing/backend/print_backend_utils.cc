@@ -28,11 +28,6 @@ constexpr float kMicronsPerInch = kMmPerInch * kMicronsPerMm;
 constexpr base::StringPiece kMediaCustomMinPrefix = "custom_min";
 constexpr base::StringPiece kMediaCustomMaxPrefix = "custom_max";
 
-enum class Unit {
-  kInches,
-  kMillimeters,
-};
-
 gfx::Size DimensionsToMicrons(base::StringPiece value) {
   Unit unit;
   base::StringPiece dims;

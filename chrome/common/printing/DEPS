@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/device_event_log",
+  "+third_party/re2/src/re2",
+]

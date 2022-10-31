@@ -11,6 +11,11 @@
 
 namespace printing {
 
+enum class Unit {
+  kInches,
+  kMillimeters,
+};
+
 COMPONENT_EXPORT(PRINT_BACKEND)
 PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value);
 

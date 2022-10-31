@@ -845,5 +845,23 @@
              desc="In ALL CAPS: Media size shown to user in print preview for media ``ROC 8K''.  ROC is an acronym and 8K is a paper size.">
       ROC 8K
     </message>
+
+    <!-- Additional strings used to construct generated sizes. -->
+    <message name="PRINT_PREVIEW_MEDIA_DIMENSIONS_INCHES"
+             desc="The dimensions of a media size measured in inches">
+      <ph name="WIDTH">$1<ex>8.5</ex></ph> x <ph name="HEIGHT">$2<ex>11</ex></ph> in
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_DIMENSIONS_MM"
+             desc="The dimensions of a media size measured in millimeters">
+      <ph name="WIDTH">$1<ex>210</ex></ph> x <ph name="HEIGHT">$2<ex>297</ex></ph> mm
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_NAME_WITH_DIMENSIONS_INCHES"
+             desc="A paper size name together with its dimensions measured in inches">
+      <ph name="NAME">$1<ex>Letter</ex></ph> (<ph name="WIDTH">$2<ex>8.5</ex></ph> x <ph name="HEIGHT">$3<ex>11</ex></ph> in)
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_NAME_WITH_DIMENSIONS_MM"
+             desc="A paper size name together with its dimensions measured in millimeters">
+      <ph name="NAME">$1<ex>A4</ex></ph> (<ph name="WIDTH">$2<ex>210</ex></ph> x <ph name="HEIGHT">$3<ex>297</ex></ph> mm)
+    </message>
   </if>
 </grit-part>
