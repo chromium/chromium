@@ -6,13 +6,17 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/strings/string_piece.h"
 #include "components/attribution_reporting/parse.h"
 
 namespace {
 
 struct Environment {
-  Environment() { base::CommandLine::Init(0, nullptr); }
+  Environment() {
+    base::CommandLine::Init(0, nullptr);
+    base::i18n::InitializeICU();
+  }
 };
 
 }  // namespace

@@ -39,6 +39,7 @@ fuzzer_test("os_source_parse_fuzzer") {
   deps = [
     ":attribution_reporting",
     "//base",
+    "//base:i18n",
   ]
 
   seed_corpus = "//components/attribution_reporting/os_source_fuzzer_corpus/"
@@ -49,6 +50,7 @@ fuzzer_test("os_trigger_parse_fuzzer") {
   deps = [
     ":attribution_reporting",
     "//base",
+    "//base:i18n",
   ]
 
   seed_corpus = "//components/attribution_reporting/os_trigger_fuzzer_corpus/"
