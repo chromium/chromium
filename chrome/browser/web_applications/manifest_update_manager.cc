@@ -266,8 +266,11 @@ void ManifestUpdateManager::OnManifestDataFetchAwaitAppWindowClose(
       Profile::FromBrowserContext(contents.get()->GetBrowserContext());
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
-  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
+  if (!profile->IsOffTheRecord()) {
+    profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+  }
 
   if (BypassWindowCloseWaitingForTesting()) {
     StartManifestWriteAfterWindowsClosed(
