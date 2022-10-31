@@ -530,6 +530,15 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     SetIsBlockInInline();
 
   if (UNLIKELY(has_block_fragmentation_ && node_)) {
+    if (previous_break_token_ && previous_break_token_->IsAtBlockEnd()) {
+      // Avoid trailing margin propagation from a node that just has overflowing
+      // content here in the current fragmentainer. It's in a parallel flow. If
+      // we don't prevent such propagation, the trailing margin may push down
+      // subsequent nodes that are being resumed after a break, rather than
+      // resuming at the block-start of the fragmentainer.
+      end_margin_strut_ = NGMarginStrut();
+    }
+
     if (!break_token_) {
       if (last_inline_break_token_)
         child_break_tokens_.push_back(std::move(last_inline_break_token_));
