@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/sync_method_unittest.test-mojom.h"
 #include "mojo/public/interfaces/bindings/tests/test_sync_methods.mojom.h"
@@ -1563,7 +1564,144 @@ TEST_P(SyncInterruptTest, SharedAssociatedRemoteNoInterrupt) {
   EXPECT_EQ(0, same_pipe_ponger().num_sync_pongs());
 }
 
+class SyncService : public mojom::SyncService {
+ public:
+  explicit SyncService(PendingReceiver<mojom::SyncService> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  void SetCallHandler(base::OnceClosure call_handler) {
+    call_handler_ = std::move(call_handler);
+  }
+
+  // mojom::SyncService:
+  void SyncCall(SyncCallCallback callback) override {
+    std::move(callback).Run();
+    if (call_handler_) {
+      std::move(call_handler_).Run();
+    }
+  }
+
+ private:
+  Receiver<mojom::SyncService> receiver_;
+  base::OnceClosure call_handler_;
+};
+
+class DisableSyncInterruptTest : public BindingsTestBase {
+ public:
+  void SetUp() override {
+    mojo::SyncCallRestrictions::DisableSyncCallInterrupts();
+  }
+
+  void TearDown() override {
+    mojo::SyncCallRestrictions::EnableSyncCallInterruptsForTesting();
+  }
+};
+
+TEST_P(DisableSyncInterruptTest, NoInterruptWhenDisabled) {
+  PendingRemote<mojom::SyncService> interrupter;
+  SyncService service(interrupter.InitWithNewPipeAndPassReceiver());
+
+  base::RunLoop wait_for_main_thread_service_call;
+  bool main_thread_service_called = false;
+  service.SetCallHandler(base::BindLambdaForTesting([&] {
+    main_thread_service_called = true;
+    wait_for_main_thread_service_call.Quit();
+  }));
+
+  Remote<mojom::SyncService> caller;
+  base::Thread background_service_thread("SyncService");
+  background_service_thread.Start();
+  base::SequenceBound<SyncService> background_service{
+      background_service_thread.task_runner(),
+      caller.BindNewPipeAndPassReceiver()};
+
+  base::Thread interrupter_thread("Interrupter");
+  interrupter_thread.Start();
+  interrupter_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&interrupter] {
+        // Issue a sync call to the SyncService on the main thread. This should
+        // never be dispatched until *after* the sync call *from* the main
+        // thread completes below.
+        Remote<mojom::SyncService>(std::move(interrupter))->SyncCall();
+      }));
+
+  // The key test expectation here is that `main_thread_service_called` cannot
+  // be set to true until after SyncCall() returns and we can pump the thread's
+  // message loop. If sync interrupts are not properly disabled, this
+  // expectation can fail flakily (and often.)
+  caller->SyncCall();
+  EXPECT_FALSE(main_thread_service_called);
+
+  // Now the incoming sync call can be dispatched.
+  wait_for_main_thread_service_call.Run();
+  EXPECT_TRUE(main_thread_service_called);
+
+  background_service.SynchronouslyResetForTest();
+  interrupter_thread.Stop();
+  background_service_thread.Stop();
+}
+
+TEST_P(DisableSyncInterruptTest, SharedRemoteNoInterruptWhenDisabled) {
+  PendingRemote<mojom::SyncService> interrupter;
+  SyncService service(interrupter.InitWithNewPipeAndPassReceiver());
+
+  base::RunLoop wait_for_main_thread_service_call;
+  bool main_thread_service_called = false;
+  service.SetCallHandler(base::BindLambdaForTesting([&] {
+    main_thread_service_called = true;
+    wait_for_main_thread_service_call.Quit();
+  }));
+
+  // Bind a SharedRemote to another background thread so that we exercise
+  // SharedRemote's own sync wait codepath when called into from the main
+  // thread.
+  base::Thread background_client_thread("Client");
+  background_client_thread.Start();
+
+  base::Thread background_service_thread("Service");
+  background_service_thread.Start();
+
+  SharedRemote<mojom::SyncService> caller;
+  base::SequenceBound<SyncService> background_service{
+      background_service_thread.task_runner(),
+      caller.BindNewPipeAndPassReceiver(
+          background_client_thread.task_runner())};
+
+  base::Thread interrupter_thread("Interrupter");
+  interrupter_thread.Start();
+  interrupter_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&interrupter] {
+        // Issue a sync call to the SyncService on the main thread. This should
+        // never be dispatched until *after* the sync call *from* the main
+        // thread completes below.
+        Remote<mojom::SyncService>(std::move(interrupter))->SyncCall();
+      }));
+
+  // The key test expectation here is that `main_thread_service_called` cannot
+  // be set to true until after SyncCall() returns and we can pump the thread's
+  // message loop. If sync interrupts are not properly disabled, this
+  // expectation can fail flakily (and often.)
+  caller->SyncCall();
+  EXPECT_FALSE(main_thread_service_called);
+
+  // Now the incoming sync call can be dispatched.
+  wait_for_main_thread_service_call.Run();
+  EXPECT_TRUE(main_thread_service_called);
+
+  background_service.SynchronouslyResetForTest();
+
+  // We need to reset the SharedRemote before the client thread is stopped, to
+  // ensure the necessary teardown work is executed on that thread. Otherwise
+  // the underlying pipe and related state will leak, and ASan will complain.
+  caller.reset();
+
+  interrupter_thread.Stop();
+  background_service_thread.Stop();
+  background_client_thread.Stop();
+}
+
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(SyncInterruptTest);
+INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(DisableSyncInterruptTest);
 
 }  // namespace
 }  // namespace sync_method_unittest

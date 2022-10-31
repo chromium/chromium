@@ -36,6 +36,10 @@ class InterfaceEndpointController {
   // Watches the endpoint for a specific incoming sync reply. This method only
   // returns true once the reply is received, or false if the endpoint is
   // detached or destroyed beforehand.
+  //
+  // Unlike with SyncWatch(), no other IPCs (not even other sync IPCs) can be
+  // dispatched to the calling thread while SyncWatchExclusive() is waiting on
+  // the reply for `request_id`.
   virtual bool SyncWatchExclusive(uint64_t request_id) = 0;
 
   // Notifies the controller that a specific in-flight sync message identified
