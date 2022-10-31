@@ -365,7 +365,7 @@
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Builder (reclient compare)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
-      'Linux ChromiumOS MSan Focal': 'chromeos_msan_release_bot',
+      'Linux ChromiumOS MSan Focal': 'chromeos_msan_release_bot_reclient',
       'Linux MSan Focal': 'msan_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       # TODO(crbug.com/1260232): remove this after the migration.
@@ -398,7 +398,7 @@
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
-      'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
+      'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64_reclient',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script_reclient',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
@@ -416,8 +416,8 @@
       'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel_reclient',
-      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
-      'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi',
+      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi_reclient',
+      'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
@@ -2062,6 +2062,10 @@
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'is_skylab',
     ],
 
+    'chromeos_amd64-generic_lacros_rel_fyi_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'is_skylab',
+    ],
+
     'chromeos_amd64-generic_lacros_rel_reclient': [
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release',
     ],
@@ -2154,6 +2158,10 @@
 
     'chromeos_arm64-generic_lacros_rel_fyi': [
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'release','is_skylab',
+    ],
+
+    'chromeos_arm64-generic_lacros_rel_fyi_reclient': [
+      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release','is_skylab',
     ],
 
     'chromeos_arm64-generic_lacros_rel_reclient': [
@@ -3467,9 +3475,10 @@
       'release_bot_reclient', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
-    'release_bot_fuchsia_cfv2_script_arm64': [
-      'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
+    'release_bot_fuchsia_cfv2_script_arm64_reclient': [
+      'release_bot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
     ],
+
 
     'release_bot_fuchsia_cfv2_script_chrome_reclient': [
       'release_bot_reclient', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',

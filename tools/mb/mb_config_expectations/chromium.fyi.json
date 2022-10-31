@@ -433,7 +433,7 @@
       "is_msan": true,
       "msan_track_origins": 2,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "Linux MSan Focal": {
@@ -789,7 +789,7 @@
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
       "use_cfv2_script": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "fuchsia-fyi-cfv2-script": {
@@ -1042,7 +1042,7 @@
       "is_skylab": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-arm64-generic-rel-skylab-fyi": {
@@ -1055,7 +1055,7 @@
       "is_skylab": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-annotator-rel": {

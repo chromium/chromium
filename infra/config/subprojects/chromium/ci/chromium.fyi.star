@@ -215,8 +215,6 @@ ci.builder(
         ),
     ],
     os = os.LINUX_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -264,8 +262,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -303,8 +299,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -391,7 +385,6 @@ ci.builder(
         },
     },
     goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -463,7 +456,6 @@ ci.builder(
     ),
     os = os.LINUX_DEFAULT,
     goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -1801,7 +1793,6 @@ fyi_coverage_builder(
     export_coverage_to_zoss = True,
     triggered_by = [],
     goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_coverage_builder(
@@ -2089,9 +2080,7 @@ ci.builder(
         category = "msan",
         short_name = "crs",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     os = os.LINUX_FOCAL,
     execution_timeout = 16 * time.hour,
 )
