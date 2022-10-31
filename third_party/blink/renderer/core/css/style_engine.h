@@ -888,8 +888,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   HeapHashMap<AtomicString, WeakMember<StyleSheetContents>>
       text_to_sheet_cache_;
-  HeapHashMap<WeakMember<StyleSheetContents>, AtomicString>
-      sheet_to_text_cache_;
 
   std::unique_ptr<StyleResolverStats> style_resolver_stats_;
   unsigned style_for_element_count_{0};

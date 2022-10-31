@@ -31,27 +31,22 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
+#include "base/hash/hash.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
-#include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
-#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
-#include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
-#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/document_style_sheet_collection.h"
-#include "third_party/blink/renderer/core/css/document_style_sheet_collector.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
@@ -81,15 +76,14 @@
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/frame_owner.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
-#include "third_party/blink/renderer/core/html/html_iframe_element.h"
-#include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -103,19 +97,18 @@
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
-#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
-#include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -798,9 +791,29 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   if (type != PendingSheetType::kNonBlocking)
     AddPendingBlockingSheet(element, type);
 
-  AtomicString text_content(text);
+  // The style sheet text can be long; hundreds of kilobytes. In order not to
+  // insert such a huge string into the AtomicString table, we take its hash
+  // instead and use that. (This is not a cryptographic hash, so a page could
+  // cause collisions if it wanted to, but only within its own renderer.)
+  // Note that in many cases, we won't actually be able to free the
+  // memory used by the string, since it may e.g. be already stuck in
+  // the DOM (as text contents of the <style> tag), but it may eventually
+  // be parked (compressed, or stored to disk) if there's memory pressure,
+  // or otherwise dropped, so this keeps us from being the only thing
+  // that keeps it alive.
+  AtomicString key;
+  if (text.length() >= 1024) {
+    size_t digest = FastHash(base::span<const uint8_t>(
+        reinterpret_cast<const uint8_t*>(text.Bytes()),
+        text.CharactersSizeInBytes()));
+    LChar digest_as_char[sizeof(digest)];
+    memcpy(digest_as_char, &digest, sizeof(digest));
+    key = AtomicString(digest_as_char, sizeof(digest));
+  } else {
+    key = AtomicString(text);
+  }
 
-  auto result = text_to_sheet_cache_.insert(text_content, nullptr);
+  auto result = text_to_sheet_cache_.insert(key, nullptr);
   StyleSheetContents* contents = result.stored_value->value;
   if (result.is_new_entry || !contents ||
       !contents->IsCacheableForStyleElement()) {
@@ -809,7 +822,6 @@ CSSStyleSheet* StyleEngine::CreateSheet(
         ParseSheet(element, text, start_position, render_blocking_behavior);
     if (style_sheet->Contents()->IsCacheableForStyleElement()) {
       result.stored_value->value = style_sheet->Contents();
-      sheet_to_text_cache_.insert(style_sheet->Contents(), text_content);
     }
   } else {
     DCHECK(contents);
@@ -3494,7 +3506,6 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(layout_tree_rebuild_root_);
   visitor->Trace(font_selector_);
   visitor->Trace(text_to_sheet_cache_);
-  visitor->Trace(sheet_to_text_cache_);
   visitor->Trace(tracker_);
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
