@@ -22,7 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getDisplayApi} from './device_page_browser_proxy.js';
 import {getTemplate} from './display_overscan_dialog.html.js';
 
-type Insets = chrome.system.display.Insets;
+import Insets = chrome.system.display.Insets;
 
 export interface SettingsDisplayOverscanDialogElement {
   $: {

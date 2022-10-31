@@ -45,13 +45,13 @@ import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from 
 import {getTemplate} from './display.html.js';
 import {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
 
-type DisplayLayout = chrome.system.display.DisplayLayout;
-type DisplayMode = chrome.system.display.DisplayMode;
-type DisplayProperties = chrome.system.display.DisplayProperties;
-type DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
-type GetInfoFlags = chrome.system.display.GetInfoFlags;
-type MirrorModeInfo = chrome.system.display.MirrorModeInfo;
-const MirrorMode = chrome.system.display.MirrorMode;
+import DisplayLayout = chrome.system.display.DisplayLayout;
+import DisplayMode = chrome.system.display.DisplayMode;
+import DisplayProperties = chrome.system.display.DisplayProperties;
+import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
+import GetInfoFlags = chrome.system.display.GetInfoFlags;
+import MirrorMode = chrome.system.display.MirrorMode;
+import MirrorModeInfo = chrome.system.display.MirrorModeInfo;
 
 interface DisplayResolutionPrefObject {
   value: {

@@ -21,9 +21,9 @@ import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_
 import {getTemplate} from './display_layout.html.js';
 import {LayoutMixin, LayoutMixinInterface, Position} from './layout_mixin.js';
 
-type DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
-type DisplayLayout = chrome.system.display.DisplayLayout;
-type Bounds = chrome.system.display.Bounds;
+import Bounds = chrome.system.display.Bounds;
+import DisplayLayout = chrome.system.display.DisplayLayout;
+import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 
 /**
  * Container for DisplayUnitInfo.  Mostly here to make the DisplaySelectEvent
