@@ -79,6 +79,7 @@ source_set("chrome_public_test_apk_filters") {
 
   data = [
     "//testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator.bf_cache_chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter",
@@ -120,6 +121,7 @@ source_set("content_browsertests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.asan.content_browsertests.filter",
+    "//testing/buildbot/filters/android.emulator.bf_cache_content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_n.content_browsertests.filter",
@@ -143,6 +145,7 @@ source_set("content_shell_test_apk_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/android.emulator.bf_cache_content_shell_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_n.content_shell_test_apk.filter",

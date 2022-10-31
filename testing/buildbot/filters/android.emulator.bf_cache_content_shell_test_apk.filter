@@ -1,0 +1,4 @@
+# TODO(crbug/1367512)
+-org.chromium.content.browser.input.ImeTest.testImeCopy
+-org.chromium.content.browser.input.ImeTest.testImeCut
+-org.chromium.content.browser.input.ImeTest.testImePaste
