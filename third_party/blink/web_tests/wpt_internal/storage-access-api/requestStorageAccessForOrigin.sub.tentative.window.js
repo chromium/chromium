@@ -99,7 +99,7 @@ if (topLevelDocument) {
   promise_test(
       async t => {
         let testMethod = () => document.requestStorageAccessForOrigin(document.location.origin);
-        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        const {clickPromise} = await ClickButtonWithGesture('b1', testMethod);
         return clickPromise;
       },
       '[' + testPrefix +
@@ -117,8 +117,7 @@ if (topLevelDocument) {
                                  assert_equals('NotAllowedError', e.name, description);
                                });
         };
-        await ClickButtonWithGesture(testMethod);
-        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        const {clickPromise} = await ClickButtonWithGesture('b2', testMethod);
         return clickPromise;
       },
       '[' + testPrefix +
@@ -136,8 +135,7 @@ if (topLevelDocument) {
                     assert_equals('NotAllowedError', e.name, description);
                   });
         };
-        await ClickButtonWithGesture(testMethod);
-        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        const {clickPromise} = await ClickButtonWithGesture('b3', testMethod);
         return clickPromise;
       },
       '[' + testPrefix +
@@ -156,7 +154,7 @@ if (topLevelDocument) {
                     assert_equals('NotAllowedError', e.name, description);
                   });
         };
-        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        const {clickPromise} = await ClickButtonWithGesture('b4', testMethod);
         // TODO(https://crbug.com/1379595): guarantee that `testMethod`
         // executes, and then await `clickPromise`.
       },
