@@ -404,18 +404,27 @@ void IndexedDBContextImpl::DownloadBucketData(
 void IndexedDBContextImpl::GetAllBucketsDetails(
     GetAllBucketsDetailsCallback callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  std::vector<storage::BucketLocator> bucket_locators = GetAllBuckets();
+  InitializeFromFilesIfNeeded(base::BindOnce(
+      [](base::WeakPtr<IndexedDBContextImpl> handler,
+         GetAllBucketsDetailsCallback callback) {
+        if (!handler) {
+          return;
+        }
+        std::vector<storage::BucketLocator> bucket_locators =
+            handler->GetAllBuckets();
 
-  auto collect_buckets =
-      base::BarrierCallback<storage::QuotaErrorOr<storage::BucketInfo>>(
-          bucket_locators.size(),
-          base::BindOnce(&IndexedDBContextImpl::OnBucketInfoReady,
-                         weak_factory_.GetWeakPtr(), std::move(callback)));
+        auto collect_buckets =
+            base::BarrierCallback<storage::QuotaErrorOr<storage::BucketInfo>>(
+                bucket_locators.size(),
+                base::BindOnce(&IndexedDBContextImpl::OnBucketInfoReady,
+                               handler, std::move(callback)));
 
-  for (const auto& bucket_locator : bucket_locators) {
-    quota_manager_proxy_->GetBucketById(bucket_locator.id, idb_task_runner_,
-                                        collect_buckets);
-  }
+        for (const auto& bucket_locator : bucket_locators) {
+          handler->quota_manager_proxy_->GetBucketById(
+              bucket_locator.id, handler->idb_task_runner_, collect_buckets);
+        }
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IndexedDBContextImpl::OnBucketInfoReady(
@@ -551,12 +560,13 @@ void IndexedDBContextImpl::OnBucketInfoReady(
           storage::mojom::IdbStorageKeyMetadata::New();
 
       // Sort by name alphabetically but with the default bucket always first.
-      std::sort(buckets.begin(), buckets.end(),
-                [](const storage::mojom::IdbBucketMetadataPtr& b1,
-                   const storage::mojom::IdbBucketMetadataPtr& b2) {
-                  return (b1->bucket_locator.is_default) ||
-                         (!b2->bucket_locator.is_default && b1->name < b2->name);
-                });
+      std::sort(
+          buckets.begin(), buckets.end(),
+          [](const storage::mojom::IdbBucketMetadataPtr& b1,
+             const storage::mojom::IdbBucketMetadataPtr& b2) {
+            return (b1->bucket_locator.is_default) ||
+                   (!b2->bucket_locator.is_default && b1->name < b2->name);
+          });
 
       storage_key_metadata->top_level_site = storage_key.top_level_site();
       storage_key_metadata->serialized_storage_key = storage_key.Serialize();
@@ -1105,6 +1115,13 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
     return;
   }
 
+  const bool running_initialize_from_files =
+      on_initialize_from_files_callbacks_.size() > 0;
+  on_initialize_from_files_callbacks_.push_back(std::move(callback));
+  if (running_initialize_from_files) {
+    return;
+  }
+
   using Barrier =
       base::RepeatingCallback<void(absl::optional<storage::BucketLocator>)>;
   Barrier barrier =
@@ -1112,7 +1129,6 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
           storage_key_to_file_path.size() + bucket_id_to_file_path.size(),
           base::BindOnce(
               [](base::WeakPtr<IndexedDBContextImpl> context,
-                 base::OnceClosure inner_callback,
                  const std::vector<absl::optional<storage::BucketLocator>>&
                      bucket_locators) {
                 DCHECK(context);
@@ -1121,9 +1137,16 @@ void IndexedDBContextImpl::InitializeFromFilesIfNeeded(
                     context->bucket_set_.insert(*locator);
                 }
                 context->did_initialize_from_files_ = true;
-                std::move(inner_callback).Run();
+                for (base::OnceClosure& callback :
+                     context->on_initialize_from_files_callbacks_) {
+                  std::move(callback).Run();
+                  if (!context) {
+                    return;
+                  }
+                }
+                context->on_initialize_from_files_callbacks_.clear();
               },
-              weak_factory_.GetWeakPtr(), std::move(callback)));
+              weak_factory_.GetWeakPtr()));
 
   auto on_lookup_done = base::BindRepeating(
       [](Barrier barrier,

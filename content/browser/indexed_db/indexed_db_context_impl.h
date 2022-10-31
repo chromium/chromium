@@ -274,6 +274,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // cannot be done in the constructor as it might block destruction.
   void InitializeFromFilesIfNeeded(base::OnceClosure callback);
   bool did_initialize_from_files_{false};
+  std::vector<base::OnceClosure> on_initialize_from_files_callbacks_;
 
   using DidGetBucketLocatorCallback = base::OnceCallback<void(
       const absl::optional<storage::BucketLocator>& bucket_locator)>;
