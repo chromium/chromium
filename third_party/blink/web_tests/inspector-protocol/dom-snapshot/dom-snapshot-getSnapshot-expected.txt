@@ -357,7 +357,7 @@ Tests DOMSnapshot.getSnapshot method.
             properties : [
                 [0] : {
                     name : transform
-                    value : matrix(0, 1, -1, 0, 0, 0)
+                    value : matrix(6.12323e-17, 1, -1, 6.12323e-17, 0, 0)
                 }
                 [1] : {
                     name : transform-origin
@@ -389,7 +389,7 @@ Tests DOMSnapshot.getSnapshot method.
             properties : [
                 [0] : {
                     name : transform
-                    value : matrix(0, 1, -1, 0, 0, 0)
+                    value : matrix(6.12323e-17, 1, -1, 6.12323e-17, 0, 0)
                 }
                 [1] : {
                     name : transform-origin

@@ -87,18 +87,15 @@ class GeometryMapperTest : public testing::Test,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(GeometryMapperTest);
 
-#define EXPECT_CLIP_RECT_NEAR(expected, actual, tolerance)                \
-  do {                                                                    \
-    SCOPED_TRACE("EXPECT_CLIP_RECT_EQ: " #expected " vs " #actual);       \
-    EXPECT_EQ((expected).IsInfinite(), (actual).IsInfinite());            \
-    EXPECT_EQ((expected).HasRadius(), (actual).HasRadius());              \
-    EXPECT_EQ((expected).IsTight(), (actual).IsTight());                  \
-    if (!(expected).IsInfinite())                                         \
-      EXPECT_RECTF_NEAR((expected).Rect(), (actual).Rect(), (tolerance)); \
+#define EXPECT_CLIP_RECT_EQ(expected, actual)                       \
+  do {                                                              \
+    SCOPED_TRACE("EXPECT_CLIP_RECT_EQ: " #expected " vs " #actual); \
+    EXPECT_EQ((expected).IsInfinite(), (actual).IsInfinite());      \
+    EXPECT_EQ((expected).HasRadius(), (actual).HasRadius());        \
+    EXPECT_EQ((expected).IsTight(), (actual).IsTight());            \
+    if (!(expected).IsInfinite())                                   \
+      EXPECT_EQ((expected).Rect(), (actual).Rect());                \
   } while (false)
-
-#define EXPECT_CLIP_RECT_EQ(expected, actual) \
-  EXPECT_CLIP_RECT_NEAR(expected, actual, 0)
 
 void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
   FloatClipRect actual_visual_rect(input_rect);
@@ -883,22 +880,22 @@ TEST_P(GeometryMapperTest, SiblingTransforms) {
   // We convervatively treat any rotated clip rect as not tight, even if it's
   // rotated by 90 degrees.
   expected_clip.ClearIsTight();
-  EXPECT_CLIP_RECT_NEAR(expected_clip, result_clip, 1e-12f);
+  EXPECT_CLIP_RECT_EQ(expected_clip, result_clip);
 
   gfx::RectF result = input_rect;
   GeometryMapper::SourceToDestinationRect(*transform1, *transform2, result);
-  EXPECT_RECTF_NEAR(gfx::RectF(-100, 0, 100, 100), result, 1e-12f);
+  EXPECT_EQ(gfx::RectF(-100, 0, 100, 100), result);
 
   result_clip = FloatClipRect(input_rect);
   GeometryMapper::LocalToAncestorVisualRect(transform2_state, transform1_state,
                                             result_clip);
   expected_clip = FloatClipRect(gfx::RectF(0, -100, 100, 100));
   expected_clip.ClearIsTight();
-  EXPECT_CLIP_RECT_NEAR(expected_clip, result_clip, 1e-12f);
+  EXPECT_CLIP_RECT_EQ(expected_clip, result_clip);
 
   result = input_rect;
   GeometryMapper::SourceToDestinationRect(*transform2, *transform1, result);
-  EXPECT_RECTF_NEAR(gfx::RectF(0, -100, 100, 100), result, 1e-12f);
+  EXPECT_EQ(gfx::RectF(0, -100, 100, 100), result);
 }
 
 TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
@@ -926,7 +923,7 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   // of the source state, no clips are applied.
   FloatClipRect expected(gfx::RectF(-100, 0, 100, 100));
   expected.ClearIsTight();
-  EXPECT_CLIP_RECT_NEAR(expected, result, 1e-12f);
+  EXPECT_CLIP_RECT_EQ(expected, result);
 
   result = FloatClipRect(input_rect);
   GeometryMapper::LocalToAncestorVisualRect(transform2_and_clip_state,
@@ -935,7 +932,7 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   // This is because the combined Rotate(45) and Rotate(-45) is not exactly a
   // translation-only transform due to calculation errors.
   expected.ClearIsTight();
-  EXPECT_CLIP_RECT_NEAR(expected, result, 1e-12f);
+  EXPECT_CLIP_RECT_EQ(expected, result);
 }
 
 TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {

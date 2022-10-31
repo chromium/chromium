@@ -1300,8 +1300,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxTransformNode) {
   EXPECT_EQ(gfx::Vector2dF(5, 7), svg_properties->Transform()->Translation2D());
   auto matrix = MakeTranslationMatrix(11, 11);
   matrix.Scale(100.0 / 13.0);
-  EXPECT_TRANSFORM_EQ(matrix,
-                      svg_properties->ReplacedContentTransform()->Matrix());
+  EXPECT_EQ(matrix, svg_properties->ReplacedContentTransform()->Matrix());
   EXPECT_EQ(svg_properties->PaintOffsetTranslation(),
             svg_properties->Transform()->Parent());
   EXPECT_EQ(svg_properties->Transform(),

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
-#include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace blink {
 
@@ -34,15 +33,17 @@ XRRigidTransform::XRRigidTransform(
 
 void XRRigidTransform::DecomposeMatrix() {
   // decompose matrix to position and orientation
-  absl::optional<gfx::DecomposedTransform> decomp = matrix_->Decompose();
-  DCHECK(decomp) << "Matrix decompose failed for " << matrix_->ToString();
+  TransformationMatrix::DecomposedType decomposed;
+  bool succeeded = matrix_->Decompose(decomposed);
+  DCHECK(succeeded) << "Matrix decompose failed for " << matrix_->ToString();
 
-  position_ = DOMPointReadOnly::Create(
-      decomp->translate[0], decomp->translate[1], decomp->translate[2], 1.0);
+  position_ =
+      DOMPointReadOnly::Create(decomposed.translate_x, decomposed.translate_y,
+                               decomposed.translate_z, 1.0);
 
-  orientation_ =
-      makeNormalizedQuaternion(decomp->quaternion.x(), decomp->quaternion.y(),
-                               decomp->quaternion.z(), decomp->quaternion.w());
+  orientation_ = makeNormalizedQuaternion(
+      decomposed.quaternion_x, decomposed.quaternion_y, decomposed.quaternion_z,
+      decomposed.quaternion_w);
 }
 
 XRRigidTransform::XRRigidTransform(DOMPointInit* position,
@@ -140,17 +141,24 @@ TransformationMatrix XRRigidTransform::TransformMatrix() {
 
 void XRRigidTransform::EnsureMatrix() {
   if (!matrix_) {
-    gfx::DecomposedTransform decomp;
+    matrix_ = std::make_unique<TransformationMatrix>();
+    TransformationMatrix::DecomposedType decomp;
+    memset(&decomp, 0, sizeof(decomp));
+    decomp.perspective_w = 1;
+    decomp.scale_x = 1;
+    decomp.scale_y = 1;
+    decomp.scale_z = 1;
 
-    decomp.quaternion = gfx::Quaternion(orientation_->x(), orientation_->y(),
-                                        orientation_->z(), orientation_->w());
+    decomp.quaternion_x = orientation_->x();
+    decomp.quaternion_y = orientation_->y();
+    decomp.quaternion_z = orientation_->z();
+    decomp.quaternion_w = orientation_->w();
 
-    decomp.translate[0] = position_->x();
-    decomp.translate[1] = position_->y();
-    decomp.translate[2] = position_->z();
+    decomp.translate_x = position_->x();
+    decomp.translate_y = position_->y();
+    decomp.translate_z = position_->z();
 
-    matrix_ = std::make_unique<TransformationMatrix>(
-        TransformationMatrix::Compose(decomp));
+    matrix_->Recompose(decomp);
   }
 }
 

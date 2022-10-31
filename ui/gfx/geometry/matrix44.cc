@@ -154,22 +154,6 @@ void Matrix44::RotateUnitSinCos(double x,
                                 double z,
                                 double sin_angle,
                                 double cos_angle) {
-  // Optimize cases where the axis is along a major axis. Since we've already
-  // normalized the vector we don't need to check that the other two dimensions
-  // are zero. Tiny errors of the other two dimensions are ignored.
-  if (x == 1.0) {
-    RotateAboutXAxisSinCos(sin_angle, cos_angle);
-    return;
-  }
-  if (y == 1.0) {
-    RotateAboutYAxisSinCos(sin_angle, cos_angle);
-    return;
-  }
-  if (z == 1.0) {
-    RotateAboutZAxisSinCos(sin_angle, cos_angle);
-    return;
-  }
-
   double c = cos_angle;
   double s = sin_angle;
   double C = 1 - c;

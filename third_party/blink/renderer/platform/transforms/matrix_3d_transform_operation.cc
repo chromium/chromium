@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
-#include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/quaternion.h"
 
 #include <algorithm>
@@ -45,37 +44,48 @@ scoped_refptr<TransformOperation> Matrix3DTransformOperation::Accumulate(
   // Similar to interpolation, accumulating 3D matrices is done by decomposing
   // them, accumulating the individual functions, and then recomposing.
 
-  absl::optional<gfx::DecomposedTransform> from_decomp = matrix_.Decompose();
-  if (!from_decomp)
-    return nullptr;
-
-  absl::optional<gfx::DecomposedTransform> to_decomp =
-      other.matrix_.Decompose();
-  if (!to_decomp)
+  TransformationMatrix::DecomposedType from_decomp;
+  TransformationMatrix::DecomposedType to_decomp;
+  if (!matrix_.Decompose(from_decomp) || !other.matrix_.Decompose(to_decomp))
     return nullptr;
 
   // Scale is accumulated using 1-based addition.
-  for (size_t i = 0; i < std::size(from_decomp->scale); i++)
-    from_decomp->scale[i] += to_decomp->scale[i] - 1;
+  from_decomp.scale_x += to_decomp.scale_x - 1;
+  from_decomp.scale_y += to_decomp.scale_y - 1;
+  from_decomp.scale_z += to_decomp.scale_z - 1;
 
   // Skew can be added.
-  for (size_t i = 0; i < std::size(from_decomp->skew); i++)
-    from_decomp->skew[i] += to_decomp->skew[i];
+  from_decomp.skew_xy += to_decomp.skew_xy;
+  from_decomp.skew_xz += to_decomp.skew_xz;
+  from_decomp.skew_yz += to_decomp.skew_yz;
 
   // To accumulate quaternions, we multiply them. This is equivalent to 'adding'
   // the rotations that they represent.
-  from_decomp->quaternion = from_decomp->quaternion * to_decomp->quaternion;
+  gfx::Quaternion from_quaternion(
+      from_decomp.quaternion_x, from_decomp.quaternion_y,
+      from_decomp.quaternion_z, from_decomp.quaternion_w);
+  gfx::Quaternion to_quaternion(to_decomp.quaternion_x, to_decomp.quaternion_y,
+                                to_decomp.quaternion_z, to_decomp.quaternion_w);
+
+  gfx::Quaternion result_quaternion = from_quaternion * to_quaternion;
+  from_decomp.quaternion_x = result_quaternion.x();
+  from_decomp.quaternion_y = result_quaternion.y();
+  from_decomp.quaternion_z = result_quaternion.z();
+  from_decomp.quaternion_w = result_quaternion.w();
 
   // Translate is a simple addition.
-  for (size_t i = 0; i < std::size(from_decomp->translate); i++)
-    from_decomp->translate[i] += to_decomp->translate[i];
+  from_decomp.translate_x += to_decomp.translate_x;
+  from_decomp.translate_y += to_decomp.translate_y;
+  from_decomp.translate_z += to_decomp.translate_z;
 
   // We sum the perspective components; note that w is 1-based.
-  for (size_t i = 0; i < std::size(from_decomp->perspective) - 1; i++)
-    from_decomp->perspective[i] += to_decomp->perspective[i];
-  from_decomp->perspective[3] += to_decomp->perspective[3] - 1;
+  from_decomp.perspective_x += to_decomp.perspective_x;
+  from_decomp.perspective_y += to_decomp.perspective_y;
+  from_decomp.perspective_z += to_decomp.perspective_z;
+  from_decomp.perspective_w += to_decomp.perspective_w - 1;
 
-  TransformationMatrix result = gfx::Transform::Compose(*from_decomp);
+  TransformationMatrix result;
+  result.Recompose(from_decomp);
   return Matrix3DTransformOperation::Create(result);
 }
 

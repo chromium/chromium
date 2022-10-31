@@ -147,7 +147,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
   static bool ValidateAndFixup2D(DOMMatrix2DInit*);
   static bool ValidateAndFixup(DOMMatrixInit*, ExceptionState&);
   TransformationMatrix matrix_;
-  bool is2d_ = true;
+  bool is2d_;
 };
 
 }  // namespace blink
