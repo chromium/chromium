@@ -97,7 +97,9 @@ try_.orchestrator_builder(
         "ci/Mac12 Tests",
         "ci/GPU Mac Builder",
         "ci/Mac Release (Intel)",
-        "ci/Mac Retina Release (AMD)",
+        # TODO(crbug.com/1380184) Once the GPU test capacity situation is
+        # resolved, restore this mirror.
+        # "ci/Mac Retina Release (AMD)",
     ],
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(
@@ -117,13 +119,7 @@ try_.orchestrator_builder(
     name = "mac-rel-inverse-fyi",
     compilator = "mac-rel-compilator",
     check_for_flakiness = True,
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac12 Tests",
-        "ci/GPU Mac Builder",
-        "ci/Mac Release (Intel)",
-        "ci/Mac Retina Release (AMD)",
-    ],
+    mirrors = builder_config.copy_from("try/mac-rel"),
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,

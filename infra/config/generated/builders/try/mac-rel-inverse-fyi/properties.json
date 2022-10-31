@@ -96,36 +96,6 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac Retina Release (AMD)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-gpu-archive",
-              "builder_group": "chromium.gpu",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb",
-                  "goma_use_local"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU Mac Builder",
-                "project": "chromium"
-              }
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Mac12 Tests",
               "project": "chromium"
             },
@@ -170,11 +140,6 @@
         {
           "bucket": "ci",
           "builder": "Mac Release (Intel)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Mac Retina Release (AMD)",
           "project": "chromium"
         },
         {
