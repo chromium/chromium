@@ -3340,6 +3340,14 @@ TEST(Btree, IteratorSubtraction) {
   }
 }
 
+#ifndef NDEBUG
+TEST(Btree, DereferencingEndIterator) {
+  absl::btree_set<int> set;
+  for (int i = 0; i < 1000; ++i) set.insert(i);
+  EXPECT_DEATH(*set.end(), R"regex(Dereferencing end\(\) iterator)regex");
+}
+#endif
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

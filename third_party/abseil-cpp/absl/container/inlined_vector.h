@@ -97,14 +97,11 @@ class InlinedVector {
   using DisableIfAtLeastForwardIterator = absl::enable_if_t<
       !inlined_vector_internal::IsAtLeastForwardIterator<Iterator>::value, int>;
 
-  struct MemcpyPolicy {};
-  struct ElementwiseAssignPolicy {};
-  struct ElementwiseConstructPolicy {};
-
-  using MoveAssignmentPolicy = absl::conditional_t<
-      IsMemcpyOk<A>::value, MemcpyPolicy,
-      absl::conditional_t<IsMoveAssignOk<A>::value, ElementwiseAssignPolicy,
-                          ElementwiseConstructPolicy>>;
+  using MemcpyPolicy = typename Storage::MemcpyPolicy;
+  using ElementwiseAssignPolicy = typename Storage::ElementwiseAssignPolicy;
+  using ElementwiseConstructPolicy =
+      typename Storage::ElementwiseConstructPolicy;
+  using MoveAssignmentPolicy = typename Storage::MoveAssignmentPolicy;
 
  public:
   using allocator_type = A;

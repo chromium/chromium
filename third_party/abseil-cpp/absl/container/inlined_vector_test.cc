@@ -1841,98 +1841,185 @@ MATCHER(HasValue, "") {
   return ::testing::get<0>(arg).value() == ::testing::get<1>(arg);
 }
 
-TEST(MoveAssignment, NonAssignable) {
+TEST(NonAssignableMoveAssignmentTest, AllocatedToInline) {
   using X = MoveConstructibleOnlyInstance;
-  {
-    InstanceTracker tracker;
-    absl::InlinedVector<X, 2> inlined;
-    inlined.emplace_back(1);
-    absl::InlinedVector<X, 2> allocated;
-    allocated.emplace_back(1);
-    allocated.emplace_back(2);
-    allocated.emplace_back(3);
-    tracker.ResetCopiesMovesSwaps();
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> inlined;
+  inlined.emplace_back(1);
+  absl::InlinedVector<X, 2> allocated;
+  allocated.emplace_back(1);
+  allocated.emplace_back(2);
+  allocated.emplace_back(3);
+  tracker.ResetCopiesMovesSwaps();
 
-    inlined = std::move(allocated);
-    // passed ownership of the allocated storage
-    EXPECT_EQ(tracker.moves(), 0);
-    EXPECT_EQ(tracker.live_instances(), 3);
+  inlined = std::move(allocated);
+  // passed ownership of the allocated storage
+  EXPECT_EQ(tracker.moves(), 0);
+  EXPECT_EQ(tracker.live_instances(), 3);
 
-    EXPECT_THAT(inlined, Pointwise(HasValue(), {1, 2, 3}));
-  }
+  EXPECT_THAT(inlined, Pointwise(HasValue(), {1, 2, 3}));
+}
 
-  {
-    InstanceTracker tracker;
-    absl::InlinedVector<X, 2> inlined;
-    inlined.emplace_back(1);
-    absl::InlinedVector<X, 2> allocated;
-    allocated.emplace_back(1);
-    allocated.emplace_back(2);
-    allocated.emplace_back(3);
-    tracker.ResetCopiesMovesSwaps();
+TEST(NonAssignableMoveAssignmentTest, InlineToAllocated) {
+  using X = MoveConstructibleOnlyInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> inlined;
+  inlined.emplace_back(1);
+  absl::InlinedVector<X, 2> allocated;
+  allocated.emplace_back(1);
+  allocated.emplace_back(2);
+  allocated.emplace_back(3);
+  tracker.ResetCopiesMovesSwaps();
 
-    allocated = std::move(inlined);
-    // Moved elements
-    EXPECT_EQ(tracker.moves(), 1);
-    EXPECT_EQ(tracker.live_instances(), 1);
+  allocated = std::move(inlined);
+  // Moved elements
+  EXPECT_EQ(tracker.moves(), 1);
+  EXPECT_EQ(tracker.live_instances(), 1);
 
-    EXPECT_THAT(allocated, Pointwise(HasValue(), {1}));
-  }
+  EXPECT_THAT(allocated, Pointwise(HasValue(), {1}));
+}
 
-  {
-    InstanceTracker tracker;
-    absl::InlinedVector<X, 2> inlined_a;
-    inlined_a.emplace_back(1);
-    absl::InlinedVector<X, 2> inlined_b;
-    inlined_b.emplace_back(1);
-    tracker.ResetCopiesMovesSwaps();
+TEST(NonAssignableMoveAssignmentTest, InlineToInline) {
+  using X = MoveConstructibleOnlyInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> inlined_a;
+  inlined_a.emplace_back(1);
+  absl::InlinedVector<X, 2> inlined_b;
+  inlined_b.emplace_back(1);
+  tracker.ResetCopiesMovesSwaps();
 
-    inlined_a = std::move(inlined_b);
-    // Moved elements
-    EXPECT_EQ(tracker.moves(), 1);
-    EXPECT_EQ(tracker.live_instances(), 1);
+  inlined_a = std::move(inlined_b);
+  // Moved elements
+  EXPECT_EQ(tracker.moves(), 1);
+  EXPECT_EQ(tracker.live_instances(), 1);
 
-    EXPECT_THAT(inlined_a, Pointwise(HasValue(), {1}));
-  }
+  EXPECT_THAT(inlined_a, Pointwise(HasValue(), {1}));
+}
 
-  {
-    InstanceTracker tracker;
-    absl::InlinedVector<X, 2> allocated_a;
-    allocated_a.emplace_back(1);
-    allocated_a.emplace_back(2);
-    allocated_a.emplace_back(3);
-    absl::InlinedVector<X, 2> allocated_b;
-    allocated_b.emplace_back(4);
-    allocated_b.emplace_back(5);
-    allocated_b.emplace_back(6);
-    allocated_b.emplace_back(7);
-    tracker.ResetCopiesMovesSwaps();
+TEST(NonAssignableMoveAssignmentTest, AllocatedToAllocated) {
+  using X = MoveConstructibleOnlyInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> allocated_a;
+  allocated_a.emplace_back(1);
+  allocated_a.emplace_back(2);
+  allocated_a.emplace_back(3);
+  absl::InlinedVector<X, 2> allocated_b;
+  allocated_b.emplace_back(4);
+  allocated_b.emplace_back(5);
+  allocated_b.emplace_back(6);
+  allocated_b.emplace_back(7);
+  tracker.ResetCopiesMovesSwaps();
 
-    allocated_a = std::move(allocated_b);
-    // passed ownership of the allocated storage
-    EXPECT_EQ(tracker.moves(), 0);
-    EXPECT_EQ(tracker.live_instances(), 4);
+  allocated_a = std::move(allocated_b);
+  // passed ownership of the allocated storage
+  EXPECT_EQ(tracker.moves(), 0);
+  EXPECT_EQ(tracker.live_instances(), 4);
 
-    EXPECT_THAT(allocated_a, Pointwise(HasValue(), {4, 5, 6, 7}));
-  }
+  EXPECT_THAT(allocated_a, Pointwise(HasValue(), {4, 5, 6, 7}));
+}
 
-  {
-    InstanceTracker tracker;
-    absl::InlinedVector<X, 2> v;
-    v.emplace_back(1);
-    v.emplace_back(2);
-    v.emplace_back(3);
+TEST(NonAssignableMoveAssignmentTest, AssignThis) {
+  using X = MoveConstructibleOnlyInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> v;
+  v.emplace_back(1);
+  v.emplace_back(2);
+  v.emplace_back(3);
 
-    tracker.ResetCopiesMovesSwaps();
+  tracker.ResetCopiesMovesSwaps();
 
-    // Obfuscated in order to pass -Wself-move.
-    v = std::move(*std::addressof(v));
-    // nothing happens
-    EXPECT_EQ(tracker.moves(), 0);
-    EXPECT_EQ(tracker.live_instances(), 3);
+  // Obfuscated in order to pass -Wself-move.
+  v = std::move(*std::addressof(v));
+  // nothing happens
+  EXPECT_EQ(tracker.moves(), 0);
+  EXPECT_EQ(tracker.live_instances(), 3);
 
-    EXPECT_THAT(v, Pointwise(HasValue(), {1, 2, 3}));
-  }
+  EXPECT_THAT(v, Pointwise(HasValue(), {1, 2, 3}));
+}
+
+class NonSwappableInstance : public absl::test_internal::BaseCountedInstance {
+ public:
+  explicit NonSwappableInstance(int x) : BaseCountedInstance(x) {}
+  NonSwappableInstance(const NonSwappableInstance& other) = default;
+  NonSwappableInstance& operator=(const NonSwappableInstance& other) = default;
+  NonSwappableInstance(NonSwappableInstance&& other) = default;
+  NonSwappableInstance& operator=(NonSwappableInstance&& other) = default;
+};
+
+void swap(NonSwappableInstance&, NonSwappableInstance&) = delete;
+
+TEST(NonSwappableSwapTest, InlineAndAllocatedTransferStorageAndMove) {
+  using X = NonSwappableInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> inlined;
+  inlined.emplace_back(1);
+  absl::InlinedVector<X, 2> allocated;
+  allocated.emplace_back(1);
+  allocated.emplace_back(2);
+  allocated.emplace_back(3);
+  tracker.ResetCopiesMovesSwaps();
+
+  inlined.swap(allocated);
+  EXPECT_EQ(tracker.moves(), 1);
+  EXPECT_EQ(tracker.live_instances(), 4);
+
+  EXPECT_THAT(inlined, Pointwise(HasValue(), {1, 2, 3}));
+}
+
+TEST(NonSwappableSwapTest, InlineAndInlineMoveIndividualElements) {
+  using X = NonSwappableInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> inlined_a;
+  inlined_a.emplace_back(1);
+  absl::InlinedVector<X, 2> inlined_b;
+  inlined_b.emplace_back(2);
+  tracker.ResetCopiesMovesSwaps();
+
+  inlined_a.swap(inlined_b);
+  EXPECT_EQ(tracker.moves(), 3);
+  EXPECT_EQ(tracker.live_instances(), 2);
+
+  EXPECT_THAT(inlined_a, Pointwise(HasValue(), {2}));
+  EXPECT_THAT(inlined_b, Pointwise(HasValue(), {1}));
+}
+
+TEST(NonSwappableSwapTest, AllocatedAndAllocatedOnlyTransferStorage) {
+  using X = NonSwappableInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> allocated_a;
+  allocated_a.emplace_back(1);
+  allocated_a.emplace_back(2);
+  allocated_a.emplace_back(3);
+  absl::InlinedVector<X, 2> allocated_b;
+  allocated_b.emplace_back(4);
+  allocated_b.emplace_back(5);
+  allocated_b.emplace_back(6);
+  allocated_b.emplace_back(7);
+  tracker.ResetCopiesMovesSwaps();
+
+  allocated_a.swap(allocated_b);
+  EXPECT_EQ(tracker.moves(), 0);
+  EXPECT_EQ(tracker.live_instances(), 7);
+
+  EXPECT_THAT(allocated_a, Pointwise(HasValue(), {4, 5, 6, 7}));
+  EXPECT_THAT(allocated_b, Pointwise(HasValue(), {1, 2, 3}));
+}
+
+TEST(NonSwappableSwapTest, SwapThis) {
+  using X = NonSwappableInstance;
+  InstanceTracker tracker;
+  absl::InlinedVector<X, 2> v;
+  v.emplace_back(1);
+  v.emplace_back(2);
+  v.emplace_back(3);
+
+  tracker.ResetCopiesMovesSwaps();
+
+  v.swap(v);
+  EXPECT_EQ(tracker.moves(), 0);
+  EXPECT_EQ(tracker.live_instances(), 3);
+
+  EXPECT_THAT(v, Pointwise(HasValue(), {1, 2, 3}));
 }
 
 }  // anonymous namespace

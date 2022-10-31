@@ -1098,9 +1098,12 @@ class btree_iterator {
   // Accessors for the key/value the iterator is pointing at.
   reference operator*() const {
     ABSL_HARDENING_ASSERT(node_ != nullptr);
-    ABSL_HARDENING_ASSERT(node_->start() <= position_);
-    ABSL_HARDENING_ASSERT(node_->finish() > position_);
     assert_valid_generation();
+    ABSL_HARDENING_ASSERT(position_ >= node_->start());
+    if (position_ >= node_->finish()) {
+      ABSL_HARDENING_ASSERT(!IsEndIterator() && "Dereferencing end() iterator");
+      ABSL_HARDENING_ASSERT(position_ < node_->finish());
+    }
     return node_->value(static_cast<field_type>(position_));
   }
   pointer operator->() const { return &operator*(); }
@@ -1156,6 +1159,15 @@ class btree_iterator {
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
     generation_ = other.generation_;
 #endif
+  }
+
+  bool IsEndIterator() const {
+    if (position_ != node_->finish()) return false;
+    // Navigate to the rightmost node.
+    node_type *node = node_;
+    while (!node->is_root()) node = node->parent();
+    while (node->is_internal()) node = node->child(node->finish());
+    return node == node_;
   }
 
   // Returns n such that n calls to ++other yields *this.
