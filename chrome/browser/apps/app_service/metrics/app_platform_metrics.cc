@@ -329,6 +329,18 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet() {
   return ::GetAppTypeNameSet();
 }
 
+ApplicationInstallTime ConvertInstallTimeToProtoApplicationInstallTime(
+    InstallTime install_time) {
+  switch (install_time) {
+    case InstallTime::kInit:
+      return ApplicationInstallTime::APPLICATION_INSTALL_TIME_INIT;
+    case InstallTime::kRunning:
+      return ApplicationInstallTime::APPLICATION_INSTALL_TIME_RUNNING;
+    default:
+      return ApplicationInstallTime::APPLICATION_INSTALL_TIME_UNKNOWN;
+  }
+}
+
 void RecordAppLaunchMetrics(Profile* profile,
                             AppType app_type,
                             const std::string& app_id,

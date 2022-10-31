@@ -19,6 +19,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/protos/app_types.pb.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
@@ -58,6 +59,9 @@ extern const char kUsageTimeDurationKey[];
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
 const std::set<apps::AppTypeName>& GetAppTypeNameSet();
+
+ApplicationInstallTime ConvertInstallTimeToProtoApplicationInstallTime(
+    InstallTime install_time);
 
 // Records metrics when launching apps.
 void RecordAppLaunchMetrics(Profile* profile,
