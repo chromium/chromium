@@ -3309,7 +3309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WebCodecs.{AudioCodecApi}.Codec" enum="AudioCodec"
-    expires_after="M110">
+    expires_after="2023-03-12">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3323,7 +3323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WebCodecs.{CodecApi}.FinalStatus" enum="MediaStatusCode"
-    expires_after="M110">
+    expires_after="2023-03-12">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3340,7 +3340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.WebCodecs.{VideoCodecApi}.Codec" enum="VideoCodec"
-    expires_after="M110">
+    expires_after="2023-03-12">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
