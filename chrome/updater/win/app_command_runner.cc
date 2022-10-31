@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
@@ -240,12 +241,16 @@ HRESULT AppCommandRunner::Run(const std::vector<std::wstring>& substitutions,
 HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
                                        const std::wstring& command_line,
                                        base::Process& process) {
+  VLOG(2) << __func__ << ": " << executable << ": " << command_line;
+
   if (executable.empty() || process.IsValid()) {
     return E_UNEXPECTED;
   }
 
-  if (!executable.IsAbsolute())
+  if (!executable.IsAbsolute()) {
+    LOG(ERROR) << __func__ << "!executable.IsAbsolute(): " << executable;
     return E_INVALIDARG;
+  }
 
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
@@ -258,7 +263,9 @@ HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
   if (!::CreateProcess(executable.value().c_str(), &parameters[0], nullptr,
                        nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si,
                        &pi)) {
-    return HRESULTFromLastError();
+    const HRESULT hr = HRESULTFromLastError();
+    LOG(ERROR) << __func__ << "::CreateProcess failed: " << hr;
+    return hr;
   }
 
   ::CloseHandle(pi.hThread);
@@ -273,15 +280,21 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
     std::wstring command_format,
     base::FilePath& executable,
     std::vector<std::wstring>& parameters) {
+  VLOG(2) << __func__ << ": " << scope << ": " << command_format;
+
   int num_args = 0;
   ScopedLocalAlloc args(::CommandLineToArgvW(&command_format[0], &num_args));
-  if (!args.is_valid() || num_args < 1)
+  if (!args.is_valid() || num_args < 1) {
+    LOG(ERROR) << __func__ << "!args.is_valid() || num_args < 1: " << num_args;
     return E_INVALIDARG;
+  }
 
   const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
   const base::FilePath exe = base::FilePath(argv[0]);
-  if (!IsSecureAppCommandExePath(scope, exe))
+  if (!IsSecureAppCommandExePath(scope, exe)) {
+    LOG(ERROR) << __func__ << "!IsSecureAppCommandExePath(scope, exe): " << exe;
     return E_INVALIDARG;
+  }
 
   executable = exe;
   parameters.clear();
@@ -319,10 +332,16 @@ HRESULT AppCommandRunner::ExecuteAppCommand(
     const std::vector<std::wstring>& parameters,
     const std::vector<std::wstring>& substitutions,
     base::Process& process) {
+  VLOG(2) << __func__ << ": " << executable << ": "
+          << base::JoinString(parameters, L",")
+          << base::JoinString(substitutions, L",");
+
   const absl::optional<std::wstring> command_line =
       FormatAppCommandLine(parameters, substitutions);
-  if (!command_line)
+  if (!command_line) {
+    LOG(ERROR) << __func__ << "!command_line";
     return E_INVALIDARG;
+  }
 
   return StartProcess(executable, command_line.value(), process);
 }
