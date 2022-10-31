@@ -211,7 +211,14 @@ class NewTabPageTest : public InProcessBrowserTest,
   base::OnceClosure lazy_load_quit_closure_;
 };
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, LandingPagePixelTest) {
+// TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky on
+// ubsan.
+#if defined(UNDEFINED_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
+#else
+#define MAYBE_LandingPagePixelTest LandingPagePixelTest
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_LandingPagePixelTest) {
   WaitForLazyLoad();
   // By default WaitForNetworkLoad waits for all resources that have started
   // loading at this point. However, sometimes not all required resources have
