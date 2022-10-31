@@ -38,7 +38,7 @@ bool IsValidWebDestination(const url::Origin& origin) {
 
 // static
 absl::optional<OsSource> OsSource::Parse(base::StringPiece header) {
-  const auto item = net::structured_headers::ParseItem(header);
+  auto item = net::structured_headers::ParseItem(header);
 
   if (!item || !item->item.is_string())
     return absl::nullopt;
@@ -54,12 +54,12 @@ absl::optional<OsSource> OsSource::Parse(base::StringPiece header) {
   bool has_os = false;
   bool has_web = false;
 
-  for (const auto& it : item->params) {
+  for (auto& it : item->params) {
     if (it.first == "os-destination") {
       if (!it.second.is_string())
         return absl::nullopt;
 
-      os_destination = it.second.GetString();
+      os_destination = std::move(it.second).TakeString();
       has_os = true;
     } else if (it.first == "web-destination") {
       if (!it.second.is_string())
