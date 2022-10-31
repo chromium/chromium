@@ -1102,7 +1102,7 @@
   {
     "name": "context-menu-search-with-google-lens",
     "owners": [ "benwgold@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 114
   },
   {
     "name": "contextual-nudges",
@@ -4453,7 +4453,7 @@
   {
     "name": "lens-camera-assisted-search",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "fgorski", "wylieb", "lens-chrome@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 114
   },
   {
     "name": "lens-on-quick-action-search-widget",
