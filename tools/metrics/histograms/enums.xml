@@ -27173,6 +27173,29 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="4" label="Task-fatal transaction error"/>
 </enum>
 
+<enum name="DNS.TaskTypeMetadataAvailability">
+  <int value="0" label="SYSTEM, no metadata"/>
+  <int value="1" label="SYSTEM, with metadata"/>
+  <int value="2" label="DNS, no metadata"/>
+  <int value="3" label="DNS, with metadata"/>
+  <int value="4" label="SECURE_DNS, no metadata"/>
+  <int value="5" label="SECURE_DNS, with metadata"/>
+  <int value="6" label="MDNS, no metadata"/>
+  <int value="7" label="MDNS, with metadata"/>
+  <int value="8" label="CACHE_LOOKUP, no metadata"/>
+  <int value="9" label="CACHE_LOOKUP, with metadata"/>
+  <int value="10" label="INSECURE_CACHE_LOOKUP, no metadata"/>
+  <int value="11" label="INSECURE_CACHE_LOOKUP, with metadata"/>
+  <int value="12" label="SECURE_CACHE_LOOKUP, no metadata"/>
+  <int value="13" label="SECURE_CACHE_LOOKUP, with metadata"/>
+  <int value="14" label="CONFIG_PRESET, no metadata"/>
+  <int value="15" label="CONFIG_PRESET, with metadata"/>
+  <int value="16" label="NAT64, no metadata"/>
+  <int value="17" label="NAT64, with metadata"/>
+  <int value="18" label="HOSTS, no metadata"/>
+  <int value="19" label="HOSTS, with metadata"/>
+</enum>
+
 <enum name="DNS.UdpIdMismatchStatus">
   <obsolete>
     Metrics removed from code 2021-01.

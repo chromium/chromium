@@ -822,5 +822,21 @@ TEST(UrlUtilTest, IsLocalHostname) {
   EXPECT_FALSE(IsLocalHostname("localhostjustkidding"));
 }
 
+TEST(UrlUtilTest, GoogleHostWithAlpnH3) {
+  struct {
+    base::StringPiece host;
+    bool expected_output;
+  } test_cases[] = {
+      {"google.com", true},        {"www.google.com", true},
+      {"google.CoM", true},        {"www.Google.cOm", true},
+      {"www.google.cat", false},   {"www.google.co.in", false},
+      {"www.google.co.jp", false},
+  };
+
+  for (const auto& host : test_cases) {
+    EXPECT_EQ(host.expected_output, IsGoogleHostWithAlpnH3(host.host));
+  }
+}
+
 }  // namespace
 }  // namespace net

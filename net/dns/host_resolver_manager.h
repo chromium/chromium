@@ -276,16 +276,21 @@ class NET_EXPORT HostResolverManager
   using JobMap = std::map<JobKey, std::unique_ptr<Job>>;
 
   // Task types that a Job might run.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused
   enum class TaskType {
-    SYSTEM,
-    DNS,
-    SECURE_DNS,
-    MDNS,
-    CACHE_LOOKUP,
-    INSECURE_CACHE_LOOKUP,
-    SECURE_CACHE_LOOKUP,
-    CONFIG_PRESET,
-    NAT64,
+    SYSTEM = 0,
+    DNS = 1,
+    SECURE_DNS = 2,
+    MDNS = 3,
+    CACHE_LOOKUP = 4,
+    INSECURE_CACHE_LOOKUP = 5,
+    SECURE_CACHE_LOOKUP = 6,
+    CONFIG_PRESET = 7,
+    NAT64 = 8,
+    HOSTS = 9,
+
+    kMaxValue = HOSTS,
   };
 
   // Returns true if the task is local, synchronous, and instantaneous.

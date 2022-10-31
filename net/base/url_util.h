@@ -217,6 +217,11 @@ NET_EXPORT_PRIVATE bool HasGoogleHost(const GURL& url);
 // be used for histograms and shouldn't be used to affect behavior.
 NET_EXPORT_PRIVATE bool IsGoogleHost(base::StringPiece host);
 
+// Returns true if |host| is the hostname of a Google server and HTTPS DNS
+// record of |host| is expected to indicate H3 support. This should only be used
+// for histograms and shouldn't be used to affect behavior.
+NET_EXPORT_PRIVATE bool IsGoogleHostWithAlpnH3(base::StringPiece host);
+
 // This function tests |host| to see if it is of any local hostname form.
 // |host| is normalized before being tested.
 NET_EXPORT_PRIVATE bool IsLocalHostname(base::StringPiece host);

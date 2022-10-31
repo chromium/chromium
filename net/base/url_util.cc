@@ -13,6 +13,7 @@
 #endif
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -489,6 +490,11 @@ bool IsGoogleHost(base::StringPiece host) {
       return true;
   }
   return false;
+}
+
+bool IsGoogleHostWithAlpnH3(base::StringPiece host) {
+  return base::EqualsCaseInsensitiveASCII(host, "google.com") ||
+         base::EqualsCaseInsensitiveASCII(host, "www.google.com");
 }
 
 bool IsLocalHostname(base::StringPiece host) {
