@@ -15,6 +15,8 @@
 
 namespace ash::onc {
 
+namespace test_utils = ::chromeos::onc::test_utils;
+
 // First parameter: Filename of source ONC.
 // Second parameter: Filename of expected translated Shill json.
 class ONCTranslatorOncToShillTest

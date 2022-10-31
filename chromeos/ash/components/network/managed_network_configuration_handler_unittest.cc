@@ -277,10 +277,10 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
                  const std::string& path_to_onc) {
-    base::Value policy =
-        path_to_onc.empty()
-            ? onc::ReadDictionaryFromJson(kEmptyUnencryptedConfiguration)
-            : test_utils::ReadTestDictionaryValue(path_to_onc);
+    base::Value policy = path_to_onc.empty()
+                             ? chromeos::onc::ReadDictionaryFromJson(
+                                   kEmptyUnencryptedConfiguration)
+                             : test_utils::ReadTestDictionaryValue(path_to_onc);
     SetPolicy(onc_source, userhash, std::move(policy));
   }
 

@@ -52,8 +52,9 @@ base::Value DefaultRuntimeValuesSetter(
   base::Value expanded = onc_network_configuration.Clone();
   chromeos::VariableExpander variable_expander(
       GetAllExpansions(profile_wide_expansions, resolved_cert));
-  onc::ExpandStringsInOncObject(chromeos::onc::kNetworkConfigurationSignature,
-                                variable_expander, &expanded);
+  chromeos::onc::ExpandStringsInOncObject(
+      chromeos::onc::kNetworkConfigurationSignature, variable_expander,
+      &expanded);
   client_cert::SetResolvedCertInOnc(resolved_cert, expanded);
   return expanded;
 }

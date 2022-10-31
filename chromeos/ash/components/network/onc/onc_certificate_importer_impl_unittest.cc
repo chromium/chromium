@@ -73,7 +73,8 @@ class ONCCertificateImporterImplTest : public testing::Test {
                                ImportType import_type,
                                bool expected_parse_success,
                                bool expected_import_success) {
-    base::Value onc = test_utils::ReadTestDictionaryValue(filename);
+    base::Value onc =
+        chromeos::onc::test_utils::ReadTestDictionaryValue(filename);
     absl::optional<base::Value> certificates_value =
         onc.ExtractKey(::onc::toplevel_config::kCertificates);
     onc_certificates_ = std::move(*certificates_value);

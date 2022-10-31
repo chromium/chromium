@@ -124,13 +124,4 @@ bool ResolveServerCertRefsInNetwork(const CertPEMsByGUIDMap& certs_by_guid,
 }  // namespace onc
 }  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::onc {
-using ::chromeos::onc::ExpandStringsInOncObject;
-using ::chromeos::onc::FillInHexSSIDField;
-using ::chromeos::onc::FillInHexSSIDFieldsInOncObject;
-using ::chromeos::onc::MaskCredentialsInOncObject;
-using ::chromeos::onc::ReadDictionaryFromJson;
-}  // namespace ash::onc
-
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_UTILS_H_

@@ -36,12 +36,4 @@ base::Value ReadTestDictionaryValue(const std::string& filename);
 }  // namespace onc
 }  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::onc::test_utils {
-using ::chromeos::onc::test_utils::Equals;
-using ::chromeos::onc::test_utils::ReadTestData;
-using ::chromeos::onc::test_utils::ReadTestDictionaryValue;
-using ::chromeos::onc::test_utils::ReadTestJson;
-}  // namespace ash::onc::test_utils
-
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_TEST_UTILS_H_

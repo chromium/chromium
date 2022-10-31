@@ -100,7 +100,8 @@ std::string NetworkTestHelperBase::ConfigureService(
     const std::string& shill_json_string) {
   last_created_service_path_.clear();
 
-  base::Value shill_json_dict = onc::ReadDictionaryFromJson(shill_json_string);
+  base::Value shill_json_dict =
+      chromeos::onc::ReadDictionaryFromJson(shill_json_string);
   if (!shill_json_dict.is_dict()) {
     LOG(ERROR) << "Error parsing json: " << shill_json_string;
     return last_created_service_path_;

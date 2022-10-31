@@ -15,6 +15,8 @@
 namespace ash::onc {
 namespace {
 
+namespace test_utils = ::chromeos::onc::test_utils;
+
 // Checks that both dictionaries contain an entry at |path| with the same value.
 ::testing::AssertionResult HaveSameValueAt(const base::Value& a,
                                            const base::Value& b,

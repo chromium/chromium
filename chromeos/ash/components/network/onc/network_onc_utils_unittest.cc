@@ -22,6 +22,8 @@
 
 namespace ash::onc {
 
+namespace test_utils = ::chromeos::onc::test_utils;
+
 TEST(ONCUtils, ProxySettingsToProxyConfig) {
   base::Value list_of_tests = test_utils::ReadTestJson("proxy_config.json");
   ASSERT_TRUE(list_of_tests.is_list());

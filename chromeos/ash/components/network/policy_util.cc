@@ -345,9 +345,10 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
             .value_or(true);
     const std::string credential_mask =
         saving_credentials ? kFakeCredential : std::string();
-    base::Value sanitized_user_settings = onc::MaskCredentialsInOncObject(
-        chromeos::onc::kNetworkConfigurationSignature, *user_settings,
-        credential_mask);
+    base::Value sanitized_user_settings =
+        chromeos::onc::MaskCredentialsInOncObject(
+            chromeos::onc::kNetworkConfigurationSignature, *user_settings,
+            credential_mask);
 
     if (network_policy) {
       FixupEthernetUIDataGUID(network_policy->GetDict(), guid,

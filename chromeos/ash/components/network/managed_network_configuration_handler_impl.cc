@@ -308,7 +308,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   }
 
   // Fill in HexSSID field from contents of SSID field if not set already.
-  onc::FillInHexSSIDFieldsInOncObject(
+  chromeos::onc::FillInHexSSIDFieldsInOncObject(
       chromeos::onc::kNetworkConfigurationSignature,
       validated_user_settings.GetDict());
 
@@ -394,7 +394,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
 
   // Fill in HexSSID field from contents of SSID field if not set already - this
   // is required to properly match the configuration against existing policies.
-  onc::FillInHexSSIDFieldsInOncObject(
+  chromeos::onc::FillInHexSSIDFieldsInOncObject(
       chromeos::onc::kNetworkConfigurationSignature,
       validated_properties.GetDict());
 

@@ -115,7 +115,7 @@ class UIProxyConfigServiceTest : public testing::Test {
 
   void ConfigureService(const std::string& shill_json_string) {
     base::Value shill_json_dict =
-        onc::ReadDictionaryFromJson(shill_json_string);
+        chromeos::onc::ReadDictionaryFromJson(shill_json_string);
     ASSERT_TRUE(shill_json_dict.is_dict());
     ShillManagerClient::Get()->ConfigureService(
         shill_json_dict, base::DoNothing(),

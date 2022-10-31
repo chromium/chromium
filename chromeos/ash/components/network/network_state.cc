@@ -159,7 +159,8 @@ bool NetworkState::PropertyChanged(const std::string& key,
       proxy_config_ = base::Value();
       return true;
     }
-    base::Value proxy_config = onc::ReadDictionaryFromJson(*proxy_config_str);
+    base::Value proxy_config =
+        chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config.is_dict()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
       proxy_config_ = base::Value();

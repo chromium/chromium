@@ -735,7 +735,8 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
   const std::string* proxy_config_str =
       shill_dictionary_->FindStringKey(shill::kProxyConfigProperty);
   if (proxy_config_str && !proxy_config_str->empty()) {
-    base::Value proxy_config_value = ReadDictionaryFromJson(*proxy_config_str);
+    base::Value proxy_config_value =
+        chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config_value.is_none()) {
       base::Value proxy_settings =
           ConvertProxyConfigToOncProxySettings(proxy_config_value);

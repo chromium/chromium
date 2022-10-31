@@ -11,6 +11,8 @@
 
 namespace ash::onc {
 
+namespace test_utils = ::chromeos::onc::test_utils;
+
 // Validate that StaticIPConfig IPAddress and dependent fields will be removed
 // if IPAddressConfigType is not 'Static'.
 TEST(ONCNormalizerTest, RemoveUnnecessaryAddressStaticIPConfigFields) {

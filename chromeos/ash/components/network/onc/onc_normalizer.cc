@@ -250,7 +250,7 @@ void Normalizer::NormalizeWiFi(base::Value* wifi) {
   RemoveEntryUnless(
       wifi, ::onc::wifi::kPassphrase,
       security == ::onc::wifi::kWEP_PSK || security == ::onc::wifi::kWPA_PSK);
-  FillInHexSSIDField(wifi->GetDict());
+  chromeos::onc::FillInHexSSIDField(wifi->GetDict());
 }
 
 void Normalizer::NormalizeStaticIPConfigForNetwork(base::Value* network) {
