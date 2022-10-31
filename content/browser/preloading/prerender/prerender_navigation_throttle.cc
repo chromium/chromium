@@ -200,6 +200,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   } else if (!prerender_navigation_utils::IsSameSite(
                  prerendering_url,
                  prerender_host->initiator_origin().value())) {
+    // TODO(crbug.com/1176054): Once cross-site prerendering is implemented,
+    // we'll need to enforce strict referrer policies
+    // (https://wicg.github.io/nav-speculation/prefetch.html#list-of-sufficiently-strict-speculative-navigation-referrer-policies).
+    //
     // Cancel prerendering if this is cross-site prerendering, cross-site
     // redirection during prerendering, or cross-site navigation from a
     // prerendered page.

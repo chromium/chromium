@@ -23,7 +23,14 @@ namespace blink {
 namespace {
 
 // https://wicg.github.io/nav-speculation/prefetch.html#list-of-sufficiently-strict-speculative-navigation-referrer-policies
-bool AcceptableReferrerPolicy(const Referrer& referrer) {
+bool AcceptableReferrerPolicy(mojom::blink::SpeculationAction action,
+                              const Referrer& referrer) {
+  // Lax referrer policies are acceptable for same-site prerenders. The browser
+  // is responsible for aborting a cross-site prerender with a lax referrer
+  // policy.
+  if (action == mojom::blink::SpeculationAction::kPrerender)
+    return true;
+
   switch (referrer.referrer_policy) {
     case network::mojom::ReferrerPolicy::kAlways:
     case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
@@ -164,7 +171,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         Referrer referrer = SecurityPolicy::GenerateReferrer(
             referrer_policy, url, outgoing_referrer);
 
-        if (!AcceptableReferrerPolicy(referrer)) {
+        if (!AcceptableReferrerPolicy(action, referrer)) {
           execution_context->AddConsoleMessage(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kWarning,
