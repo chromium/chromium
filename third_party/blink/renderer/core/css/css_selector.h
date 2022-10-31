@@ -111,7 +111,7 @@ class CORE_EXPORT CSSSelector {
 
   CSSSelector(CSSSelector&&);
   explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false);
-  explicit CSSSelector(const StyleRule* parent_rule);
+  explicit CSSSelector(const StyleRule* parent_rule, bool is_implicit);
 
   ~CSSSelector();
 
@@ -494,7 +494,7 @@ class CORE_EXPORT CSSSelector {
   unsigned is_last_in_tag_history_ : 1;
   unsigned has_rare_data_ : 1;
   unsigned is_for_page_ : 1;
-  unsigned tag_is_implicit_ : 1;
+  unsigned is_implicitly_added_ : 1;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -640,7 +640,7 @@ inline CSSSelector::CSSSelector()
       is_last_in_tag_history_(false),
       has_rare_data_(false),
       is_for_page_(false),
-      tag_is_implicit_(false),
+      is_implicitly_added_(false),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -652,10 +652,10 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       is_last_in_tag_history_(false),
       has_rare_data_(false),
       is_for_page_(false),
-      tag_is_implicit_(tag_is_implicit),
+      is_implicitly_added_(tag_is_implicit),
       data_(tag_q_name) {}
 
-inline CSSSelector::CSSSelector(const StyleRule* parent_rule)
+inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
     : relation_(kSubSelector),
       match_(kPseudoClass),
       pseudo_type_(kPseudoParent),
@@ -663,6 +663,7 @@ inline CSSSelector::CSSSelector(const StyleRule* parent_rule)
       is_last_in_tag_history_(false),
       has_rare_data_(false),
       is_for_page_(false),
+      is_implicitly_added_(is_implicit),
       data_(parent_rule) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
@@ -673,7 +674,7 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       is_last_in_tag_history_(o.is_last_in_tag_history_),
       has_rare_data_(o.has_rare_data_),
       is_for_page_(o.is_for_page_),
-      tag_is_implicit_(o.tag_is_implicit_),
+      is_implicitly_added_(o.is_implicitly_added_),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);
@@ -756,6 +757,13 @@ inline void swap(CSSSelector& a, CSSSelector& b) {
   memcpy(&a, &b, sizeof(CSSSelector));
   memcpy(&b, tmp, sizeof(CSSSelector));
 }
+
+// Converts descendant to relative descendant, child to relative child
+// and so on. Subselector is converted to relative descendant.
+// All others that don't have a corresponding relative combinator will
+// call NOTREACHED().
+CSSSelector::RelationType ConvertRelationToRelative(
+    CSSSelector::RelationType relation);
 
 }  // namespace blink
 

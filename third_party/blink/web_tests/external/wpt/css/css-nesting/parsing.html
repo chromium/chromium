@@ -1,5 +1,5 @@
 <!doctype html>
-<title>CSS Selectors @nest parsing</title>
+<title>CSS Selectors parsing</title>
 <link rel="author" title="Adam Argyle" href="mailto:argyle@google.com">
 <link rel="help" href="https://drafts.csswg.org/css-nesting-1/">
 <script src="/resources/testharness.js"></script>
@@ -20,9 +20,9 @@
     `.foo {\n  & .bar { color: green; }\n}`,
     `.foo {\n  & > .bar { color: green; }\n}`,
     `.foo {\n  &:is(.bar, &.baz) { color: green; }\n}`,
-    `.foo {\n  @nest .bar& { color: green; }\n}`,
-    `.foo {\n  @nest .bar & { color: green; }\n}`,
-    `.foo {\n  @nest .bar > & { color: green; }\n}`,
+    `.foo {\n  .bar& { color: green; }\n}`,
+    `.foo {\n  .bar & { color: green; }\n}`,
+    `.foo {\n  .bar > & { color: green; }\n}`,
     `.foo, .bar {\n  & + .baz, &.qux { color: green; }\n}`,
     `.foo {\n  & .bar & .baz & .qux { color: green; }\n}`,
     `.foo {\n  @media (min-width: 50px) {\n  & { color: green; }\n}\n}`,

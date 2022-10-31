@@ -849,7 +849,7 @@ static void SerializeNamespacePrefixIfNeeded(const AtomicString& prefix,
 
 const CSSSelector* CSSSelector::SerializeCompound(
     StringBuilder& builder) const {
-  if (match_ == kTag && !tag_is_implicit_) {
+  if (match_ == kTag && !is_implicitly_added_) {
     SerializeNamespacePrefixIfNeeded(TagQName().Prefix(), g_star_atom, builder,
                                      IsAttributeSelector());
     SerializeIdentifierOrAny(TagQName().LocalName(), UniversalSelectorAtom(),
@@ -931,6 +931,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
         case kPseudoWhere:
           break;
         case kPseudoParent:
+          DCHECK(!simple_selector->is_implicitly_added_);
           builder.Append('&');
           break;
         case kPseudoRelativeAnchor:
@@ -1041,8 +1042,17 @@ String CSSSelector::SelectorText() const {
     if (!compound)
       return builder.ReleaseString() + result;
 
-    DCHECK(compound->Relation() != kSubSelector);
-    switch (compound->Relation()) {
+    // If we are combining with an implicit &, it is as if we used
+    // a relative combinator.
+    RelationType relation = compound->Relation();
+    DCHECK_NE(relation, kSubSelector);
+    if (compound->TagHistory()->Match() == kPseudoClass &&
+        compound->TagHistory()->GetPseudoType() == kPseudoParent &&
+        compound->TagHistory()->is_implicitly_added_) {
+      relation = ConvertRelationToRelative(relation);
+    }
+
+    switch (relation) {
       case kDescendant:
         result = " " + builder.ReleaseString() + result;
         break;
@@ -1381,6 +1391,24 @@ const CSSSelector* CSSSelector::SelectorListOrParent() const {
     return data_.rare_data_->selector_list_->First();
   } else {
     return nullptr;
+  }
+}
+
+CSSSelector::RelationType ConvertRelationToRelative(
+    CSSSelector::RelationType relation) {
+  switch (relation) {
+    case CSSSelector::kSubSelector:
+    case CSSSelector::kDescendant:
+      return CSSSelector::kRelativeDescendant;
+    case CSSSelector::kChild:
+      return CSSSelector::kRelativeChild;
+    case CSSSelector::kDirectAdjacent:
+      return CSSSelector::kRelativeDirectAdjacent;
+    case CSSSelector::kIndirectAdjacent:
+      return CSSSelector::kRelativeIndirectAdjacent;
+    default:
+      NOTREACHED();
+      return {};
   }
 }
 

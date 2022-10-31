@@ -222,7 +222,9 @@ class CORE_EXPORT CSSParserImpl {
       StyleRule::RuleType,
       StyleRule* parent_rule_for_nesting,
       HeapVector<Member<StyleRuleBase>, 4>* child_rules);
-  StyleRuleBase* ConsumeNestedRule(CSSAtRuleID id,
+  // If id is absl::nullopt, we're parsing a qualified style rule;
+  // otherwise, we're parsing an at-rule.
+  StyleRuleBase* ConsumeNestedRule(absl::optional<CSSAtRuleID> id,
                                    CSSParserTokenStream& stream,
                                    StyleRule* parent_rule_for_nesting);
   void ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);

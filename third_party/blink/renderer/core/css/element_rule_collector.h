@@ -99,7 +99,8 @@ class MatchedRule {
 
   friend class ElementRuleCollector;
   FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, DirectNesting);
-  FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, AtNest);
+  FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest,
+                           RuleNotStartingWithAmpersand);
   FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, NestedRulesInMediaQuery);
 };
 

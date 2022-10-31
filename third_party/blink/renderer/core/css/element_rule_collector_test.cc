@@ -401,7 +401,7 @@ TEST_F(ElementRuleCollectorTest, DirectNesting) {
   ASSERT_EQ(0u, baz_rules.size());
 }
 
-TEST_F(ElementRuleCollectorTest, AtNest) {
+TEST_F(ElementRuleCollectorTest, RuleNotStartingWithAmpersand) {
   SetBodyInnerHTML(R"HTML(
     <div id="foo"></div>
     <div id="bar"></div>
@@ -409,7 +409,7 @@ TEST_F(ElementRuleCollectorTest, AtNest) {
   String rule = R"CSS(
     #foo {
        color: green;
-       @nest :not(&) { color: red; }
+       :not(&) { color: red; }
     }
   )CSS";
   RuleSet* rule_set = RuleSetFromSingleRule(GetDocument(), rule);
@@ -426,9 +426,6 @@ TEST_F(ElementRuleCollectorTest, AtNest) {
 
   Vector<MatchedRule> bar_rules = GetAllMatchedRules(bar, rule_set);
   ASSERT_EQ(1u, bar_rules.size());
-  // FIXME(sesse): In the current spec, this should have been @nest :not(&),
-  // but we don't serialize the @nest yet. This part of the spec is somewhat
-  // in flux, so update when it settles.
   EXPECT_EQ(":not(&)", bar_rules[0].GetRuleData()->Selector().SelectorText());
 }
 

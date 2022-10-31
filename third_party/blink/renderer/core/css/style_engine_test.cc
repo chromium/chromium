@@ -4524,7 +4524,7 @@ TEST_F(StyleEngineTest, NestingUseCount) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSNesting));
 }
 
-TEST_F(StyleEngineTest, NestingUseCountAtNest) {
+TEST_F(StyleEngineTest, NestingUseCountNotStartingWithAmpersand) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       body { --x: No @nest rule or & here; }
@@ -4536,7 +4536,7 @@ TEST_F(StyleEngineTest, NestingUseCountAtNest) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       body {
-        @nest .foo & { color: lemonchiffon; }
+        .foo & { color: lemonchiffon; }
       }
     </style>
   )HTML");

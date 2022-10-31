@@ -14,15 +14,15 @@ PASS .foo {
 PASS .foo {
   &:is(.bar, &.baz) { color: green; }
 }
-FAIL .foo {
-  @nest .bar& { color: green; }
-} assert_equals: expected ".foo {\n  @nest .bar& { color: green; }\n}" but got ".foo {\n  .bar& { color: green; }\n}"
-FAIL .foo {
-  @nest .bar & { color: green; }
-} assert_equals: expected ".foo {\n  @nest .bar & { color: green; }\n}" but got ".foo {\n  .bar & { color: green; }\n}"
-FAIL .foo {
-  @nest .bar > & { color: green; }
-} assert_equals: expected ".foo {\n  @nest .bar > & { color: green; }\n}" but got ".foo {\n  .bar > & { color: green; }\n}"
+PASS .foo {
+  .bar& { color: green; }
+}
+PASS .foo {
+  .bar & { color: green; }
+}
+PASS .foo {
+  .bar > & { color: green; }
+}
 PASS .foo, .bar {
   & + .baz, &.qux { color: green; }
 }
