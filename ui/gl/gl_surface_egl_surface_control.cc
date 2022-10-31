@@ -510,7 +510,6 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   transaction_ack_timeout_manager_.OnTransactionAck();
 
-  context_->MakeCurrent(this);
   for (auto& surface_stat : transaction_stats.surface_stats) {
     auto it = released_resources.find(surface_stat.surface);
 
