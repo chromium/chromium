@@ -13,8 +13,6 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
-DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kPageInfoCookiesSubpageLoaded);
-
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
 // are allowed).

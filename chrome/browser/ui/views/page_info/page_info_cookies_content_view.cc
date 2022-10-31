@@ -12,15 +12,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace views {
 class StyledLabel;
 }  // namespace views
-
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kPageInfoCookiesSubpageLoaded);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoCookiesContentView,
                                       kCookieDialogButton);
@@ -155,15 +152,6 @@ void PageInfoCookiesContentView::SetCookieInfo(
   PreferredSizeChanged();
   if (!initialized_callback_.is_null())
     std::move(initialized_callback_).Run();
-
-  // TODO(crbug.com/1369052): Investigate why element is null when running unit
-  // tests.
-  ui::TrackedElement* element =
-      views::ElementTrackerViews::GetInstance()->GetElementForView(this);
-  if (element) {
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-        element, kPageInfoCookiesSubpageLoaded);
-  }
 }
 
 void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
