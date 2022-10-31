@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/webrtc/api/video/video_frame.h"
@@ -195,8 +196,6 @@ class RTCVideoDecoderAdapter::Impl {
     // |weak_decoder_this| must be invalidated on the media sequence.
     weak_decoder_this_factory_.InvalidateWeakPtrs();
 
-    Release();
-
     if (have_started_decoding_)
       g_num_decoders_--;
   }
@@ -212,7 +211,6 @@ class RTCVideoDecoderAdapter::Impl {
       scoped_refptr<media::DecoderBuffer> buffer);
   void Flush(WTF::CrossThreadOnceClosure flush_success_cb,
              WTF::CrossThreadOnceClosure flush_fail_cb);
-  void Release();
   void RegisterDecodeCompleteCallback(webrtc::DecodedImageCallback* callback);
   void SetResolution(int width, int height);
 
@@ -463,12 +461,6 @@ void RTCVideoDecoderAdapter::Impl::Flush(
           std::move(flush_success_cb), std::move(flush_fail_cb)));
 }
 
-void RTCVideoDecoderAdapter::Impl::Release() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  pending_buffers_.clear();
-  decode_timestamps_.clear();
-}
-
 void RTCVideoDecoderAdapter::Impl::RegisterDecodeCompleteCallback(
     webrtc::DecodedImageCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
@@ -536,9 +528,9 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
     return;
   }
 
-  // Assumes that Decoded() can be safely called with the lock held, which
-  // apparently it can be because RTCVideoDecoder does the same.
-  DCHECK(decode_complete_callback_);
+  if (!decode_complete_callback_)
+    return;
+
   decode_complete_callback_->Decoded(rtc_frame);
   consecutive_error_count_ = 0;
 }
@@ -613,8 +605,7 @@ RTCVideoDecoderAdapter::~RTCVideoDecoderAdapter() {
   // |weak_this_factory_| must be invalidated on |decoding_sequence_checker_|.
   weak_this_factory_.InvalidateWeakPtrs();
 
-  if (impl_)
-    media_task_runner_->DeleteSoon(FROM_HERE, std::move(impl_));
+  Release();
 }
 
 bool RTCVideoDecoderAdapter::InitializeSync(
@@ -657,6 +648,9 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
 
+  if (!impl_)
+    return false;
+
   if (WebRtcToMediaVideoCodec(settings.codec_type()) != config_.codec())
     return false;
 
@@ -681,6 +675,10 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
 int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  if (!impl_)
+    return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+
   auto result = DecodeInternal(input_image, missing_frames, render_time_ms);
   if (!result)
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
@@ -775,7 +773,13 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
     webrtc::DecodedImageCallback* callback) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
-  DCHECK(callback);
+
+  if (!impl_) {
+    if (callback) {
+      return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+    }
+    return WEBRTC_VIDEO_CODEC_OK;
+  }
 
   if (!PostCrossThreadTask(
           *media_task_runner_.get(), FROM_HERE,
@@ -796,13 +800,31 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
 
 int32_t RTCVideoDecoderAdapter::Release() {
   DVLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
+  if (!impl_)
+    return WEBRTC_VIDEO_CODEC_OK;
 
+  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+  base::WaitableEvent waiter(base::WaitableEvent::ResetPolicy::MANUAL,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED);
   if (!PostCrossThreadTask(
           *media_task_runner_.get(), FROM_HERE,
-          CrossThreadBindOnce(&RTCVideoDecoderAdapter::Impl::Release,
-                              weak_impl_))) {
-    return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+          CrossThreadBindOnce(
+              [](std::unique_ptr<Impl> impl, base::WaitableEvent* waiter) {
+                impl.reset();
+                waiter->Signal();
+              },
+              std::move(impl_), CrossThreadUnretained(&waiter)))) {
+    return WEBRTC_VIDEO_CODEC_ERROR;
   }
+
+  waiter.Wait();
+
+  // The object pointed by |weak_impl_| has been invalidated in Impl destructor.
+  // Calling reset() is optional, but it's good to invalidate the value of
+  // |weak_impl_| too
+  weak_impl_.reset();
+
   return WEBRTC_VIDEO_CODEC_OK;
 }
 
