@@ -61,16 +61,18 @@ component("native_theme") {
   }
 
   if (is_win) {
-    sources += [ "caption_style_win.cc" ]
+    sources += [
+      "caption_style_win.cc",
+      "native_theme_constants_fluent.h",
+      "native_theme_fluent.cc",
+      "native_theme_fluent.h",
+    ]
   }
 
   if (use_aura || toolkit_views) {
     sources += [
       "native_theme_aura.cc",
       "native_theme_aura.h",
-      "native_theme_constants_fluent.h",
-      "native_theme_fluent.cc",
-      "native_theme_fluent.h",
       "overlay_scrollbar_constants_aura.h",
     ]
   }
@@ -147,15 +149,13 @@ test("native_theme_unittests") {
   sources = [ "native_theme_unittest.cc" ]
 
   if (use_aura) {
-    sources += [
-      "native_theme_aura_unittest.cc",
-      "native_theme_fluent_unittest.cc",
-    ]
+    sources += [ "native_theme_aura_unittest.cc" ]
   }
 
   if (is_win) {
     sources += [
       "caption_style_win_unittest.cc",
+      "native_theme_fluent_unittest.cc",
       "native_theme_win_unittest.cc",
     ]
   }
