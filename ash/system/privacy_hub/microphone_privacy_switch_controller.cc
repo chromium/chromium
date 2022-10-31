@@ -45,7 +45,9 @@ void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
   SetSystemMute();
 }
 
-void MicrophonePrivacySwitchController::OnInputMuteChanged(bool mute_on) {
+void MicrophonePrivacySwitchController::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
   // `pref_change_registrar_` is only initialized after a user logs in.
   if (pref_change_registrar_ == nullptr) {
     return;
@@ -71,7 +73,8 @@ void MicrophonePrivacySwitchController::SetSystemMute() {
       prefs::kUserMicrophoneAllowed);
   const bool microphone_muted = !microphone_allowed;
   if (CrasAudioHandler::Get()->IsInputMuted() != microphone_muted) {
-    CrasAudioHandler::Get()->SetInputMute(microphone_muted);
+    CrasAudioHandler::Get()->SetInputMute(
+        microphone_muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
   }
 }
 

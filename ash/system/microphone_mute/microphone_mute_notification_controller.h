@@ -40,7 +40,9 @@ class ASH_EXPORT MicrophoneMuteNotificationController
                              bool recreate);
 
   // ash::CrasAudioHandler::AudioObserver:
-  void OnInputMuteChanged(bool mute_on) override;
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
   void OnNumberOfInputStreamsWithPermissionChanged() override;
 

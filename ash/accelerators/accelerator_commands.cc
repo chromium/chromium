@@ -706,7 +706,8 @@ void MicrophoneMuteToggle() {
   else
     base::RecordAction(base::UserMetricsAction("Keyboard_Microphone_Unmuted"));
 
-  audio_handler->HandleKeyboardMicrophoneMuteSwitchPressed(mute);
+  audio_handler->SetInputMute(
+      mute, CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
 }
 
 void MoveActiveItem(bool going_left) {

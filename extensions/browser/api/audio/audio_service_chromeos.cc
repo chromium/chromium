@@ -104,7 +104,9 @@ class AudioServiceImpl : public AudioService,
   void OnOutputNodeVolumeChanged(uint64_t id, int volume) override;
   void OnInputNodeGainChanged(uint64_t id, int gain) override;
   void OnOutputMuteChanged(bool mute_on) override;
-  void OnInputMuteChanged(bool mute_on) override;
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnAudioNodesChanged() override;
   void OnActiveOutputNodeChanged() override;
   void OnActiveInputNodeChanged() override;
@@ -260,7 +262,8 @@ void AudioServiceImpl::SetMute(bool is_input,
   }
 
   if (is_input)
-    cras_audio_handler_->SetInputMute(value);
+    cras_audio_handler_->SetInputMute(
+        value, CrasAudioHandler::InputMuteChangeMethod::kOther);
   else
     cras_audio_handler_->SetOutputMute(value);
 
@@ -336,7 +339,9 @@ void AudioServiceImpl::OnInputNodeGainChanged(uint64_t id, int gain) {
   NotifyLevelChanged(id, gain);
 }
 
-void AudioServiceImpl::OnInputMuteChanged(bool mute_on) {
+void AudioServiceImpl::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
   NotifyMuteChanged(true, mute_on);
 }
 

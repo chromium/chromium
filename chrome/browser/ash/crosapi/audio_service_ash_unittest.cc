@@ -219,7 +219,8 @@ TEST_F(AudioServiceAshTest, OnMuteChangedIn) {
 
   EXPECT_CALL(mock_observer_, OnMuteChangedMock(true, kNewMuteValue));
 
-  cras_audio_handler_.Get().SetInputMute(kNewMuteValue);
+  cras_audio_handler_.Get().SetInputMute(
+      kNewMuteValue, ash::CrasAudioHandler::InputMuteChangeMethod::kOther);
   mock_observer_.Wait();
 }
 

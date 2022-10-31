@@ -525,9 +525,10 @@ TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledBySoftwareSwitch) {
   EXPECT_FALSE(IsMicrophoneMuteToastShown());
 
   CrasAudioHandler* cras_audio_handler = CrasAudioHandler::Get();
-  // This is similar to toggling the microphone mute state using the software
-  // switches.
-  cras_audio_handler->SetInputMute(!cras_audio_handler->IsInputMuted());
+  // Toggling the system input mute state using software switches.
+  cras_audio_handler->SetInputMute(
+      !cras_audio_handler->IsInputMuted(),
+      CrasAudioHandler::InputMuteChangeMethod::kOther);
 
   // The toast should not be visible as the mute state is toggled using a
   // software switch.
@@ -541,10 +542,10 @@ TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledByKeyboardSwitch) {
   EXPECT_FALSE(IsMicrophoneMuteToastShown());
 
   CrasAudioHandler* cras_audio_handler = CrasAudioHandler::Get();
-  // This is similar to pressing the keyboard button for toggling the microphone
-  // mute state.
-  cras_audio_handler->HandleKeyboardMicrophoneMuteSwitchPressed(
-      !cras_audio_handler->IsInputMuted());
+  // Toggling the system input mute state using the dedicated keyboard button.
+  cras_audio_handler->SetInputMute(
+      !cras_audio_handler->IsInputMuted(),
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
 
   // The toast should be visible as the mute state is toggled using the keyboard
   // switch.
@@ -593,16 +594,18 @@ TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledButNoMicrophoneAvailable) {
 
   fake_cras_audio_client->SetAudioNodesAndNotifyObserversForTesting(
       {internal_speaker, internal_mic});
-  cras_audio_handler->HandleKeyboardMicrophoneMuteSwitchPressed(
-      !cras_audio_handler->IsInputMuted());
+  cras_audio_handler->SetInputMute(
+      !cras_audio_handler->IsInputMuted(),
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
   // The toast should be visible as the input mute has changed and there is a
   // microphone for simple usage attached to the device.
   EXPECT_TRUE(IsMicrophoneMuteToastShown());
 
   fake_cras_audio_client->SetAudioNodesAndNotifyObserversForTesting(
       {internal_speaker});
-  cras_audio_handler->HandleKeyboardMicrophoneMuteSwitchPressed(
-      !cras_audio_handler->IsInputMuted());
+  cras_audio_handler->SetInputMute(
+      !cras_audio_handler->IsInputMuted(),
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
   // There is no microphone for simple usage attached to the device. The toast
   // should not be displayed even though the input mute has changed in the
   // backend.

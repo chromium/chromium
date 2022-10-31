@@ -148,15 +148,17 @@ void MicGainSliderView::OnInputNodeGainChanged(uint64_t node_id, int gain) {
   Update(true /* by_user */);
 }
 
-void MicGainSliderView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
-  Update(true /* by_user */);
-}
-
-void MicGainSliderView::OnInputMuteChanged(bool mute_on) {
+void MicGainSliderView::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
   Update(true /* by_user */);
   announcement_view_->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(mute_on ? IDS_ASH_STATUS_AREA_TOAST_MIC_OFF
                                         : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
+}
+
+void MicGainSliderView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
+  Update(true /* by_user */);
 }
 
 void MicGainSliderView::OnActiveInputNodeChanged() {

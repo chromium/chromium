@@ -106,7 +106,8 @@ TEST_F(PrivacyHubMicrophoneControllerTest, OnInputMuteChanged) {
   for (bool microphone_muted : {false, true, false}) {
     const bool microphone_allowed = !microphone_muted;
 
-    CrasAudioHandler::Get()->SetInputMute(microphone_muted);
+    CrasAudioHandler::Get()->SetInputMute(
+        microphone_muted, CrasAudioHandler::InputMuteChangeMethod::kOther);
     EXPECT_EQ(GetUserPref(), microphone_allowed);
   }
 }

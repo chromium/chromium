@@ -209,7 +209,8 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnInputMuteChanged) {
   EXPECT_EQ(kJabraMic1.id, audio_handler()->GetPrimaryActiveInputNode());
 
   // Un-mute the input.
-  audio_handler()->SetInputMute(false);
+  audio_handler()->SetInputMute(
+      false, CrasAudioHandler::InputMuteChangeMethod::kOther);
   EXPECT_FALSE(audio_handler()->IsInputMuted());
 
   // Loads background app.
@@ -219,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(AudioApiTest, OnInputMuteChanged) {
   ASSERT_TRUE(load_listener.WaitUntilSatisfied());
 
   // Mute the input.
-  audio_handler()->SetInputMute(true);
+  audio_handler()->SetInputMute(
+      true, CrasAudioHandler::InputMuteChangeMethod::kOther);
   EXPECT_TRUE(audio_handler()->IsInputMuted());
 
   // Verify the background app got the OnMuteChanged event

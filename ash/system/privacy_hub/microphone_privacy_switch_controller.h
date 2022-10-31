@@ -34,7 +34,9 @@ class ASH_EXPORT MicrophonePrivacySwitchController
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // CrasAudioHandler::AudioObserver
-  void OnInputMuteChanged(bool mute_on) override;
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
 
   // CrasAudioHandler::AudioObserver
   void OnAudioNodesChanged() override;

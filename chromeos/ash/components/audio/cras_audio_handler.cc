@@ -87,9 +87,9 @@ void CrasAudioHandler::AudioObserver::OnInputNodeGainChanged(
 
 void CrasAudioHandler::AudioObserver::OnOutputMuteChanged(bool /* mute_on */) {}
 
-void CrasAudioHandler::AudioObserver::OnInputMuteChanged(bool /* mute_on */) {}
-
-void CrasAudioHandler::AudioObserver::OnInputMutedByKeyboardSwitchChanged() {}
+void CrasAudioHandler::AudioObserver::OnInputMuteChanged(
+    bool /* mute_on */,
+    InputMuteChangeMethod /* method */) {}
 
 void CrasAudioHandler::AudioObserver::OnInputMutedByMicrophoneMuteSwitchChanged(
     bool /* muted */) {}
@@ -359,19 +359,9 @@ void CrasAudioHandler::MediaSessionPositionChanged(
   }
 }
 
-void CrasAudioHandler::HandleKeyboardMicrophoneMuteSwitchPressed(bool muted) {
-  const bool old_mute_on = input_mute_on_;
-  SetInputMute(muted);
-
-  if (old_mute_on != input_mute_on_) {
-    for (auto& observer : observers_)
-      observer.OnInputMutedByKeyboardSwitchChanged();
-  }
-}
-
 void CrasAudioHandler::OnMicrophoneMuteSwitchValueChanged(bool muted) {
   input_muted_by_microphone_mute_switch_ = muted;
-  SetInputMute(muted);
+  SetInputMute(muted, InputMuteChangeMethod::kPhysicalShutter);
 
   for (auto& observer : observers_)
     observer.OnInputMutedByMicrophoneMuteSwitchChanged(muted);
@@ -833,13 +823,14 @@ void CrasAudioHandler::AdjustOutputVolumeToAudibleLevel() {
   }
 }
 
-void CrasAudioHandler::SetInputMute(bool mute_on) {
+void CrasAudioHandler::SetInputMute(bool mute_on,
+                                    InputMuteChangeMethod method) {
   const bool old_mute_on = input_mute_on_;
   SetInputMuteInternal(mute_on);
 
   if (old_mute_on != input_mute_on_) {
     for (auto& observer : observers_)
-      observer.OnInputMuteChanged(input_mute_on_);
+      observer.OnInputMuteChanged(input_mute_on_, method);
   }
 }
 
@@ -935,7 +926,7 @@ void CrasAudioHandler::SetMuteForDevice(uint64_t device_id, bool mute_on) {
   if (device_id == active_input_node_id_) {
     VLOG(1) << "SetMuteForDevice sets active input device id="
             << "0x" << std::hex << device_id << " mute=" << mute_on;
-    SetInputMute(mute_on);
+    SetInputMute(mute_on, InputMuteChangeMethod::kOther);
     return;
   }
 
@@ -1293,7 +1284,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
 
   input_muted_by_microphone_mute_switch_ = IsMicrophoneMuteSwitchOn();
   if (input_muted_by_microphone_mute_switch_)
-    SetInputMute(true);
+    SetInputMute(true, InputMuteChangeMethod::kPhysicalShutter);
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {

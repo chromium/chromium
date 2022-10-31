@@ -96,9 +96,15 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
     ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(muted);
   }
 
-  void MuteMicrophone() { CrasAudioHandler::Get()->SetInputMute(true); }
+  void MuteMicrophone() {
+    CrasAudioHandler::Get()->SetInputMute(
+        true, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  }
 
-  void UnMuteMicrophone() { CrasAudioHandler::Get()->SetInputMute(false); }
+  void UnMuteMicrophone() {
+    CrasAudioHandler::Get()->SetInputMute(
+        false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  }
 
   void SetNumberOfActiveInputStreams(int number_of_active_input_streams) {
     FakeCrasAudioClient::Get()->SetActiveInputStreamsWithPermission(

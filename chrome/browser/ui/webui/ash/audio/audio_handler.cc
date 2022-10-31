@@ -75,7 +75,9 @@ void AudioHandler::OnOutputMuteChanged(bool mute) {
   page_->UpdateDeviceMute(output_id, mute);
 }
 
-void AudioHandler::OnInputMuteChanged(bool mute) {
+void AudioHandler::OnInputMuteChanged(
+    bool mute,
+    CrasAudioHandler::InputMuteChangeMethod method) {
   const uint64_t input_id =
       ash::CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
   page_->UpdateDeviceMute(input_id, mute);

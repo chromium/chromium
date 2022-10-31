@@ -229,7 +229,9 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++output_mute_changed_count_;
   }
 
-  void OnInputMuteChanged(bool /* mute_on */) override {
+  void OnInputMuteChanged(
+      bool /* mute_on */,
+      CrasAudioHandler::InputMuteChangeMethod /* method */) override {
     ++input_mute_changed_count_;
   }
 
@@ -2094,14 +2096,16 @@ TEST_P(CrasAudioHandlerTest, SetInputMute) {
   EXPECT_EQ(0, test_observer_->input_mute_changed_count());
 
   // Mute the device.
-  cras_audio_handler_->SetInputMute(true);
+  cras_audio_handler_->SetInputMute(
+      true, CrasAudioHandler::InputMuteChangeMethod::kOther);
 
   // Verify the input is muted, OnInputMuteChanged event is fired.
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
   EXPECT_EQ(1, test_observer_->input_mute_changed_count());
 
   // Unmute the device.
-  cras_audio_handler_->SetInputMute(false);
+  cras_audio_handler_->SetInputMute(
+      false, CrasAudioHandler::InputMuteChangeMethod::kOther);
 
   // Verify the input is unmuted, OnInputMuteChanged event is fired.
   EXPECT_FALSE(cras_audio_handler_->IsInputMuted());
@@ -4574,7 +4578,8 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteHwSwitchMutesInput) {
   EXPECT_EQ(1, test_observer_->input_mute_changed_count());
 
   // Unmuting input while the hw mute switch is on should fail.
-  cras_audio_handler_->SetInputMute(false);
+  cras_audio_handler_->SetInputMute(
+      false, CrasAudioHandler::InputMuteChangeMethod::kOther);
 
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
   EXPECT_EQ(1, test_observer_->input_mute_changed_count());
@@ -4600,7 +4605,8 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteSwitchToggledBeforeHandlerSetup) {
   EXPECT_EQ(0, test_observer_->input_mute_changed_count());
 
   // Unmuting input while the hw mute switch is on should fail.
-  cras_audio_handler_->SetInputMute(false);
+  cras_audio_handler_->SetInputMute(
+      false, CrasAudioHandler::InputMuteChangeMethod::kOther);
 
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
   EXPECT_EQ(0, test_observer_->input_mute_changed_count());
@@ -4739,8 +4745,9 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {
 
   // This is similar to pressing the keyboard button for toggling the microphone
   // mute state.
-  cras_audio_handler_->HandleKeyboardMicrophoneMuteSwitchPressed(
-      !cras_audio_handler_->IsInputMuted());
+  cras_audio_handler_->SetInputMute(
+      !cras_audio_handler_->IsInputMuted(),
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
 
   // Verify the input is muted, OnInputMuteChanged event is fired.
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
@@ -4759,8 +4766,9 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {
             test_observer_->input_mute_changed_count());
 
   // Trying to toggle system input mute state using the keyboard switch.
-  cras_audio_handler_->HandleKeyboardMicrophoneMuteSwitchPressed(
-      !cras_audio_handler_->IsInputMuted());
+  cras_audio_handler_->SetInputMute(
+      !cras_audio_handler_->IsInputMuted(),
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
 
   // Input should still be muted. OnInputMuteChanged event should not be fired.
   EXPECT_TRUE(cras_audio_handler_->IsInputMuted());

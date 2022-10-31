@@ -74,6 +74,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   typedef base::flat_map<std::string, std::string> AudioSurveyData;
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
+  enum class InputMuteChangeMethod {
+    kKeyboardButton,
+    kPhysicalShutter,
+    kOther,
+  };
+
   class AudioObserver {
    public:
     AudioObserver(const AudioObserver&) = delete;
@@ -89,11 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
     virtual void OnInputNodeGainChanged(uint64_t node_id, int gain);
 
     // Called when input mute state changed.
-    virtual void OnInputMuteChanged(bool mute_on);
-
-    // Called when the input mute is changed by the keyboard switch.
-    // TODO(b/253627924)
-    virtual void OnInputMutedByKeyboardSwitchChanged();
+    virtual void OnInputMuteChanged(bool mute_on, InputMuteChangeMethod method);
 
     // Called when the state of input mute hw switch state changes.
     virtual void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted);
@@ -203,10 +205,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // ui::MicrophoneMuteSwitchMonitor::Observer:
   void OnMicrophoneMuteSwitchValueChanged(bool muted) override;
-
-  // Called when the microphone mute keyboard switch is pressed and adjusts the
-  // input mute state accordingly.
-  void HandleKeyboardMicrophoneMuteSwitchPressed(bool muted);
 
   // Adds an audio observer.
   void AddAudioObserver(AudioObserver* observer);
@@ -335,7 +333,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void SetOutputMuteLockedBySecurityCurtain(bool mute_on);
 
   // Mutes or unmutes audio input device.
-  void SetInputMute(bool mute_on);
+  void SetInputMute(bool mute_on, InputMuteChangeMethod method);
 
   // Switches active audio device to |device|. |activate_by| indicates why
   // the device is switched to active: by user's manual choice, by priority,

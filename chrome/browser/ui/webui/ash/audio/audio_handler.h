@@ -45,7 +45,9 @@ class AudioHandler : public audio::mojom::PageHandler,
 
   void OnOutputMuteChanged(bool mute) override;
 
-  void OnInputMuteChanged(bool mute) override;
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
 
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool mute) override;
 
