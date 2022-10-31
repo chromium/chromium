@@ -19,6 +19,7 @@
 #include "base/task/task_runner_util.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
+#include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
@@ -44,6 +45,11 @@
 namespace syncer {
 
 namespace {
+
+// Enables updating invalidator state for Sync standalone invalidations.
+BASE_FEATURE(kSyncUpdateInvalidatorState,
+             "SyncUpdateInvalidatorState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reads from prefs into a struct, to be posted across sequences.
 SyncEngineBackend::RestoredLocalTransportData
@@ -137,6 +143,9 @@ SyncEngineImpl::SyncEngineImpl(
   DCHECK(prefs_);
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
+  if (sync_invalidations_service_) {
+    sync_invalidations_service_->AddTokenObserver(this);
+  }
 }
 
 SyncEngineImpl::~SyncEngineImpl() {
@@ -314,6 +323,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
     // It's safe to call RemoveListener even if AddListener wasn't called
     // before.
     sync_invalidations_service_->RemoveListener(this);
+    sync_invalidations_service_->RemoveTokenObserver(this);
     sync_invalidations_service_ = nullptr;
   }
   last_enabled_types_.Clear();
@@ -437,12 +447,8 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     // state.
     OnInvalidatorStateChange(invalidator_->GetInvalidatorState());
   } else {
-    DCHECK(sync_invalidations_service_);
-    // TODO(crbug.com/1297919): clean up the state in OnInvalidatorStateChange
-    // once fully migrated to new invalidations. Also clean up the logic for
-    // disabled invalidations since it's not used in new invalidations anymore.
-    OnInvalidatorStateChange(
-        invalidation::InvalidatorState::INVALIDATIONS_ENABLED);
+    DCHECK(base::FeatureList::IsEnabled(kUseSyncInvalidations));
+    UpdateStandaloneInvalidationsState();
   }
 
   active_devices_provider_->SetActiveDevicesChangedCallback(base::BindRepeating(
@@ -600,6 +606,11 @@ void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
                      backend_, payload, *interested_data_types));
 }
 
+void SyncEngineImpl::OnFCMRegistrationTokenChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateStandaloneInvalidationsState();
+}
+
 // static
 std::string SyncEngineImpl::GenerateCacheGUIDForTest() {
   return GenerateCacheGUID();
@@ -656,6 +667,22 @@ void SyncEngineImpl::UpdateLastSyncedTime() {
 void SyncEngineImpl::ClearLocalTransportDataAndNotify() {
   prefs_->ClearAll();
   sync_transport_data_cleared_cb_.Run();
+}
+
+void SyncEngineImpl::UpdateStandaloneInvalidationsState() {
+  DCHECK(sync_invalidations_service_);
+  if (!sync_invalidations_service_->GetFCMRegistrationToken().has_value() &&
+      base::FeatureList::IsEnabled(kSyncUpdateInvalidatorState)) {
+    OnInvalidatorStateChange(invalidation::TRANSIENT_INVALIDATION_ERROR);
+    return;
+  }
+
+  // This code should not be called when the token is empty (which means that
+  // sync standalone invalidations are disabled). DCHECK_NE does not support
+  // comparison between an optional and a string, so use has_value() directly.
+  DCHECK(!sync_invalidations_service_->GetFCMRegistrationToken().has_value() ||
+         sync_invalidations_service_->GetFCMRegistrationToken().value() != "");
+  OnInvalidatorStateChange(invalidation::INVALIDATIONS_ENABLED);
 }
 
 }  // namespace syncer

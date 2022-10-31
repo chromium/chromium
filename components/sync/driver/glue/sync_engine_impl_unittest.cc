@@ -776,7 +776,24 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
 
 TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
        ShouldEnableInvalidationsWhenInitialized) {
+  EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
+      .WillRepeatedly(Return("fcm_token"));
   InitializeBackend(/*expect_success=*/true);
+  fake_manager_->WaitForSyncThread();
+  EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
+}
+
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+       ShouldEnableInvalidationsOnTokenUpdate) {
+  EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
+      .WillRepeatedly(Return(absl::nullopt));
+  InitializeBackend(/*expect_success=*/true);
+  fake_manager_->WaitForSyncThread();
+  EXPECT_FALSE(fake_manager_->IsInvalidatorEnabled());
+
+  EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
+      .WillRepeatedly(Return("fcm_token"));
+  backend_->OnFCMRegistrationTokenChanged();
   fake_manager_->WaitForSyncThread();
   EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
