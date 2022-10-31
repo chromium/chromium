@@ -55,7 +55,6 @@ class OverscrollSceneLayer : public SceneLayer,
   void SetNeedsAnimate();
 
   // ui::WindowAndroidObserver implementation.
-  void OnCompositingDidCommit() override {}
   void OnRootWindowVisibilityChanged(bool visible) override {}
   void OnAttachCompositor() override;
   void OnDetachCompositor() override;

@@ -50,7 +50,6 @@ class CONTENT_EXPORT FlingSchedulerAndroid
   void RemoveCompositorTick();
 
   // ui::WindowAndroidObserver implementation.
-  void OnCompositingDidCommit() override {}
   void OnRootWindowVisibilityChanged(bool visible) override {}
   void OnAttachCompositor() override;
   void OnDetachCompositor() override;

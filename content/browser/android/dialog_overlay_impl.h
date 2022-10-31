@@ -70,7 +70,6 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
 
   // WindowAndroidObserver
   void OnRootWindowVisibilityChanged(bool visible) override;
-  void OnCompositingDidCommit() override {}
   void OnAttachCompositor() override {}
   void OnDetachCompositor() override {}
   void OnActivityStopped() override {}

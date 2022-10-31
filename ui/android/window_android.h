@@ -65,9 +65,6 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  // Compositor callback relay.
-  void OnCompositingDidCommit();
-
   void AttachCompositor(WindowAndroidCompositor* compositor);
   void DetachCompositor();
 

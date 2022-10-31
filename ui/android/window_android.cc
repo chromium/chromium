@@ -104,11 +104,6 @@ WindowAndroid::CreateForTesting() {
       reinterpret_cast<WindowAndroid*>(native_pointer));
 }
 
-void WindowAndroid::OnCompositingDidCommit() {
-  for (WindowAndroidObserver& observer : observer_list_)
-    observer.OnCompositingDidCommit();
-}
-
 void WindowAndroid::AddObserver(WindowAndroidObserver* observer) {
   if (!observer_list_.HasObserver(observer))
     observer_list_.AddObserver(observer);

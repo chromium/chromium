@@ -50,7 +50,6 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void OnBackToTab(JNIEnv* env);
 
   // ui::WindowAndroidObserver implementation.
-  void OnCompositingDidCommit() override {}
   void OnRootWindowVisibilityChanged(bool visible) override {}
   void OnAttachCompositor() override;
   void OnDetachCompositor() override;
