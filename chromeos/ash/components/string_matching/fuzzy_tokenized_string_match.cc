@@ -165,13 +165,10 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
   const std::u16string query_normalized(base::JoinString(query.tokens(), u" "));
   const std::u16string text_normalized(base::JoinString(text.tokens(), u" "));
 
-  // TODO(crbug.com/1336160): Refactor the calculation flow in this method to
-  // make it easier to understand. For example, there is a long chain of
-  // std::max calls which is difficult to read. And it is confusing to have a
-  // conditional called |use_partial| but to also see |partial_scale| seemingly
-  // unconditionally applied.
-  double weighted_ratio =
-      SequenceMatcher(query_normalized, text_normalized).Ratio();
+  std::vector<double> weighted_ratios;
+  weighted_ratios.emplace_back(
+      SequenceMatcher(query_normalized, text_normalized).Ratio());
+
   const double length_ratio =
       static_cast<double>(
           std::max(query_normalized.size(), text_normalized.size())) /
@@ -179,7 +176,7 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
 
   // Use partial if two strings are quite different in sizes.
   const bool use_partial = length_ratio >= 1.5;
-  double partial_scale = 1;
+  double length_ratio_scale = 1;
 
   if (use_partial) {
     // TODO(crbug.com/1336160): Consider scaling |partial_scale| smoothly with
@@ -187,23 +184,21 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
     //
     // If one string is much much shorter than the other, set |partial_scale| to
     // be 0.6, otherwise set it to be 0.9.
-    partial_scale = length_ratio > 8 ? 0.6 : 0.9;
-    weighted_ratio = std::max(
-        weighted_ratio,
-        PartialRatio(query_normalized, text_normalized) * partial_scale);
+    length_ratio_scale = length_ratio > 8 ? 0.6 : 0.9;
+    weighted_ratios.emplace_back(
+        PartialRatio(query_normalized, text_normalized) * length_ratio_scale);
   }
-  weighted_ratio =
-      std::max(weighted_ratio, TokenSortRatio(query, text, use_partial) *
-                                   unbase_scale * partial_scale);
+  weighted_ratios.emplace_back(TokenSortRatio(query, text, use_partial) *
+                               unbase_scale * length_ratio_scale);
 
   // Do not use partial match for token set because the match between the
   // intersection string and query/text rewrites will always return an extremely
   // high value.
-  weighted_ratio =
-      std::max(weighted_ratio, TokenSetRatio(query, text, false /*partial*/
-                                             ) *
-                                   unbase_scale * partial_scale);
-  return weighted_ratio;
+  weighted_ratios.emplace_back(TokenSetRatio(query, text, false /*partial*/) *
+                               unbase_scale * length_ratio_scale);
+
+  // Return the maximum of all included weighted ratios
+  return *std::max_element(weighted_ratios.begin(), weighted_ratios.end());
 }
 
 double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
