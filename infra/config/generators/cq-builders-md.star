@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/try.star", "DEFAULT_EXCLUDE_LOCATION_FILTERS")
+load("//lib/try.star", "location_filters_without_defaults")
 load("//outages/config.star", outages_config = "config")
 
 _MD_HEADER = """\
@@ -69,22 +69,8 @@ def _get_main_config_group_builders(ctx):
 
     fail("Could not find the main CQ group")
 
-def _normalize_regexp(regexp):
-    if regexp == ".*":
-        return None
-    return regexp
-
-def _normalize_location_filter(f):
-    return cq.location_filter(
-        gerrit_host_regexp = _normalize_regexp(f.gerrit_host_regexp),
-        gerrit_project_regexp = _normalize_regexp(f.gerrit_project_regexp),
-        path_regexp = _normalize_regexp(f.path_regexp),
-        exclude = f.exclude,
-    )
-
 def _normalize_builder(builder):
-    location_filters = [_normalize_location_filter(f) for f in builder.location_filters]
-    location_filters = [f for f in location_filters if f not in DEFAULT_EXCLUDE_LOCATION_FILTERS]
+    location_filters = location_filters_without_defaults(builder)
 
     return struct(
         name = builder.name,
@@ -123,7 +109,7 @@ def _codesearch_query(*atoms):
     return "".join(query)
 
 def _get_location_filter_details(f):
-    if f.gerrit_host_regexp or f.gerrit_project_regexp:
+    if f.gerrit_host_regexp != ".*" or f.gerrit_project_regexp != ".*":
         fail("cq-builders.md generator needs updating to support gerrit host/project regexp")
 
     regex = f.path_regexp

@@ -45,7 +45,7 @@ def presubmit_builder(*, name, tryjob, **kwargs):
     if tryjob:
         tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
         tryjob_args["disable_reuse"] = True
-        tryjob_args["add_default_excludes"] = False
+        tryjob_args["add_default_filters"] = False
         tryjob = try_.job(**tryjob_args)
     return try_.builder(name = name, tryjob = tryjob, **kwargs)
 
