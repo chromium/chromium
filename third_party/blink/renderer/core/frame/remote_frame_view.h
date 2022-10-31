@@ -109,6 +109,9 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   // animations.
   gfx::Rect ComputeCompositingRect() const;
 
+  // Fetch the frozen size, if any, from the associated LayoutObject.
+  void UpdateFrozenSize();
+
   // The properties and handling of the cycle between RemoteFrame
   // and its RemoteFrameView corresponds to that between LocalFrame
   // and LocalFrameView. Please see the LocalFrameView::frame_ comment for
@@ -116,6 +119,7 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   Member<RemoteFrame> remote_frame_;
   mojom::blink::ViewportIntersectionState last_intersection_state_;
   gfx::Rect compositing_rect_;
+  absl::optional<gfx::Size> frozen_size_;
   float compositing_scale_factor_ = 1.0f;
 
   IntrinsicSizingInfo intrinsic_sizing_info_;

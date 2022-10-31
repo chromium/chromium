@@ -197,9 +197,8 @@ void RemoteFrameView::UpdateCompositingRect() {
   // embedding frame, updating this can be used for communication with a fenced
   // frame. So if the frame size is frozen, we use the complete viewport of the
   // child frame as its compositing rect.
-  if (auto frozen_size = owner_layout_object->FrozenFrameSize()) {
-    compositing_rect_ =
-        gfx::Rect(frozen_size->width.Ceil(), frozen_size->height.Ceil());
+  if (frozen_size_) {
+    compositing_rect_ = gfx::Rect(*frozen_size_);
   } else {
     compositing_rect_ = ComputeCompositingRect();
   }
@@ -269,9 +268,26 @@ void RemoteFrameView::Dispose() {
 }
 
 void RemoteFrameView::SetFrameRect(const gfx::Rect& rect) {
+  UpdateFrozenSize();
   EmbeddedContentView::SetFrameRect(rect);
   if (needs_frame_rect_propagation_)
     PropagateFrameRects();
+}
+
+void RemoteFrameView::UpdateFrozenSize() {
+  if (frozen_size_)
+    return;
+  auto* layout_embedded_content = GetLayoutEmbeddedContent();
+  if (!layout_embedded_content)
+    return;
+  absl::optional<PhysicalSize> frozen_phys_size =
+      layout_embedded_content->FrozenFrameSize();
+  if (!frozen_phys_size)
+    return;
+  const gfx::Size rounded_frozen_size(frozen_phys_size->width.Ceil(),
+                                      frozen_phys_size->height.Ceil());
+  frozen_size_ = rounded_frozen_size;
+  needs_frame_rect_propagation_ = true;
 }
 
 void RemoteFrameView::PropagateFrameRects() {
@@ -286,13 +302,7 @@ void RemoteFrameView::PropagateFrameRects() {
     rect_in_local_root = parent->ConvertToRootFrame(rect_in_local_root);
   }
 
-  gfx::Size frame_size = frame_rect.size();
-  if (auto* layout_object = GetLayoutEmbeddedContent()) {
-    if (auto frozen_size = layout_object->FrozenFrameSize()) {
-      frame_size =
-          gfx::Size(frozen_size->width.Ceil(), frozen_size->height.Ceil());
-    }
-  }
+  gfx::Size frame_size = frozen_size_.value_or(frame_rect.size());
   remote_frame_->FrameRectsChanged(frame_size, rect_in_local_root);
 }
 
