@@ -8,11 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ReceiverCallNotAllowedException;
 import android.content.ServiceConnection;
+import android.os.Build;
+
+import org.chromium.base.Log;
 
 /**
  * Helper methods for working with Services in WebView.
  */
 public class ServiceHelper {
+    private static final String TAG = "ServiceHelper";
+
     /**
      * Connects to a Service specified by {@code intent} with {@code flags}. This handles edge cases
      * such as attempting to bind from restricted BroadcastReceiver Contexts.
@@ -34,6 +39,20 @@ public class ServiceHelper {
             // If we're running in a BroadcastReceiver Context then we cannot bind to Services.
             context.unbindService(serviceConnection);
             return false;
+        } catch (SecurityException e) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                    && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                // There's a known issue on Android N where a secondary user account may not have
+                // permission to view the system WebView provider app (most likely, this is
+                // Monochrome). In this case, we cannot bind to services so we just log the
+                // exception and carry on.
+                Log.e(TAG, "Unable to bind to services from a secondary user account on Android N",
+                        e);
+                context.unbindService(serviceConnection);
+                return false;
+            } else {
+                throw e;
+            }
         }
     }
 
