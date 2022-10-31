@@ -3327,6 +3327,18 @@ const FeatureEntry::FeatureVariation kGridTabSwitcherForTabletsVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kContentVisibilityDelay10[] = {
+    {"content_visibility_delay", "10"}};
+const FeatureEntry::FeatureParam kContentVisibilityDelay5[] = {
+    {"content_visibility_delay", "5"}};
+const FeatureEntry::FeatureVariation kFoldableJankFixDelayVariations[] = {
+    {"10ms delay", kContentVisibilityDelay10,
+     std::size(kContentVisibilityDelay10), nullptr},
+    {"5ms delay", kContentVisibilityDelay5, std::size(kContentVisibilityDelay5),
+     nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabStripImprovementsTabWidthShort[] = {
     {"min_tab_width", "108"}};
 const FeatureEntry::FeatureParam kTabStripImprovementsTabWidthMedium[] = {
@@ -6566,7 +6578,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-foldable-jank-fix", flag_descriptions::kFoldableJankFixAndroidName,
      flag_descriptions::kFoldableJankFixAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kFoldableJankFix)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFoldableJankFix,
+                                    kFoldableJankFixDelayVariations,
+                                    "FoldableJankFix")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"unsafely-treat-insecure-origin-as-secure",

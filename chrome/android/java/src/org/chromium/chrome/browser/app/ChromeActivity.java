@@ -112,6 +112,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
@@ -269,6 +270,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                    MenuOrKeyboardActionController, CompositorViewHolder.Initializer,
                    TabModelInitializer {
     private static final String TAG = "ChromeActivity";
+    public static final IntCachedFieldTrialParameter CONTENT_VIS_DELAY_MS =
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.FOLDABLE_JANK_FIX, "content_visibility_delay", 5);
     private C mComponent;
 
     /** Used to access the {@link ShareDelegate} from {@link WindowAndroid}. */
@@ -404,6 +408,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private SelectionPopupBackPressHandler mSelectionPopupBackPressHandler;
     private Callback<TabModelSelector> mSelectionPopupBackPressInitCallback;
     private StylusWritingCoordinator mStylusWritingCoordinator;
+    private boolean mBlockingDrawForAppRestart;
+    private Runnable mShowContentRunnable;
 
     protected ChromeActivity() {
         mIntentHandler = new IntentHandler(this, createIntentHandlerDelegate());
@@ -664,6 +670,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     mRootUiCoordinator::getBottomSheetController, this::getSnackbarManager,
                     isCustomTab());
             mTabBookmarkerSupplier.set(tabBookmarker);
+
+            mShowContentRunnable = () -> {
+                findViewById(android.R.id.content).setVisibility(View.VISIBLE);
+                mBlockingDrawForAppRestart = false;
+            };
 
             // If onStart was called before postLayoutInflation (because inflation was done in a
             // background thread) then make sure to call the relevant methods belatedly.
@@ -1747,6 +1758,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
             @Override
             public void onCurrentModeChanged(Mode currentMode) {
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.FOLDABLE_JANK_FIX)
+                        && !mBlockingDrawForAppRestart && didChangeTabletMode()) {
+                    mBlockingDrawForAppRestart = true;
+                    findViewById(android.R.id.content).setVisibility(View.INVISIBLE);
+                    showContent();
+                }
                 maybeOnScreenSizeChange();
             }
         };
@@ -2156,6 +2173,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         }
         mConfig = newConfig;
+    }
+
+    // Triggers runnable that makes content visible.
+    private void showContent() {
+        if (!mBlockingDrawForAppRestart || mShowContentRunnable == null) return;
+        mHandler.postDelayed(mShowContentRunnable, CONTENT_VIS_DELAY_MS.getValue());
     }
 
     // Checks whether the given uiModeTypes were present on oldUiMode or newUiMode but not the
@@ -2905,7 +2928,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         boolean isTablet = smallestWidth >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         boolean wasTablet =
                 mConfig.smallestScreenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
-        return wasTablet != isTablet;
+        boolean didChangeTabletMode = wasTablet != isTablet;
+        if (didChangeTabletMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Log.i(TAG, "Current smallest screen width is: " + smallestWidth);
+        }
+        return didChangeTabletMode;
     }
 
     /**
@@ -2918,6 +2945,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mIsTabReparentingPrepared = true;
             if (!isFinishing()) {
                 recreate();
+                mHandler.removeCallbacks(mShowContentRunnable);
                 return true;
             }
         }
