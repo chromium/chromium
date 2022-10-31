@@ -98,57 +98,47 @@ if (topLevelDocument) {
 
   promise_test(
       async t => {
-        let access_promise = null;
-        let testMethod = function() {
-          access_promise =
-              document.requestStorageAccessForOrigin(document.location.origin);
-        };
-        await ClickButtonWithGesture(testMethod);
-
-        return access_promise;
+        let testMethod = () => document.requestStorageAccessForOrigin(document.location.origin);
+        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        return clickPromise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be resolved when called properly with a user gesture and the same site');
 
   promise_test(
       async t => {
-        let access_promise = null;
         let description =
             'document.requestStorageAccessForOrigin() call with bogus URL';
         let testMethod = function() {
-          access_promise = document.requestStorageAccessForOrigin('bogus-url')
+          return document.requestStorageAccessForOrigin('bogus-url')
                                .then(t.unreached_func(
                                    'Should have rejected: ' + description))
                                .catch(function(e) {
                                  assert_equals('NotAllowedError', e.name, description);
                                });
-          ;
         };
         await ClickButtonWithGesture(testMethod);
-
-        return access_promise;
+        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        return clickPromise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an invalid site');
 
   promise_test(
       async t => {
-        let access_promise = null;
         let description =
             'document.requestStorageAccessForOrigin() call with data URL';
         let testMethod = function() {
-          access_promise =
-              document.requestStorageAccessForOrigin('data:,Hello%2C%20World%21')
+          return document.requestStorageAccessForOrigin('data:,Hello%2C%20World%21')
                   .then(
                       t.unreached_func('Should have rejected: ' + description))
                   .catch(function(e) {
                     assert_equals('NotAllowedError', e.name, description);
                   });
-          ;
         };
         await ClickButtonWithGesture(testMethod);
-
-        return access_promise;
+        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        return clickPromise;
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called with an opaque origin');
@@ -156,22 +146,19 @@ if (topLevelDocument) {
 } else {
   promise_test(
       async t => {
-        let access_promise = null;
         let description =
             'document.requestStorageAccessForOrigin() call in a non-top-level context';
         let testMethod = function() {
-          access_promise =
-              document.requestStorageAccessForOrigin(document.location.origin)
+          return document.requestStorageAccessForOrigin(document.location.origin)
                   .then(
                       t.unreached_func('Should have rejected: ' + description))
                   .catch(function(e) {
                     assert_equals('NotAllowedError', e.name, description);
                   });
-          ;
         };
-        await ClickButtonWithGesture(testMethod);
-
-        return access_promise;
+        const {clickPromise} = await ClickButtonWithGesture(testMethod);
+        // TODO(https://crbug.com/1379595): guarantee that `testMethod`
+        // executes, and then await `clickPromise`.
       },
       '[' + testPrefix +
           '] document.requestStorageAccessForOrigin() should be rejected when called in an iframe');

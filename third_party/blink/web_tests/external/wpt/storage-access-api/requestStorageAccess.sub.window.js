@@ -90,12 +90,10 @@ if (topLevelDocument) {
               await test_driver.set_permission(
                   {name: 'storage-access'}, 'granted');
 
-              let access_promise;
-              await ClickButtonWithGesture(() => {
-                access_promise = document.requestStorageAccess();
-              });
+              const {clickPromise} = await ClickButtonWithGesture(
+                () => document.requestStorageAccess());
 
-              await access_promise;
+              await clickPromise;
             },
             '[' + testPrefix +
                 '] document.requestStorageAccess() should be resolved when called properly with a user gesture');

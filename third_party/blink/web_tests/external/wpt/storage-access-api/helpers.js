@@ -49,13 +49,13 @@ function RunRequestStorageAccessViaDomParser() {
 }
 
 let g_clickID = 0;
-function ClickButtonWithGesture(onClickMethod) {
+async function ClickButtonWithGesture(onClickMethod) {
   // Append some formatting and information so non WebDriver instances can complete this test too.
-  let info = document.createElement('p');
+  const info = document.createElement('p');
   info.innerText = "This test case requires user-interaction and TestDriver. If you're running it manually please click the 'Request Access' button below exactly once.";
   document.body.appendChild(info);
 
-  let button = document.createElement('button');
+  const button = document.createElement('button');
   button.innerText = "Request Access";
   g_clickID += 1;
   button.id = g_clickID;
@@ -64,10 +64,13 @@ function ClickButtonWithGesture(onClickMethod) {
   // Insert the button and use test driver to click the button with a gesture.
   document.body.appendChild(button);
 
-  button.addEventListener('click', e => {
-    onClickMethod();
-    button.style = "background-color:#00FF00;"
-  }, {once: true});
+  const clickPromise = new Promise((resolve, reject) => {
+    button.addEventListener('click', e => {
+      onClickMethod().then(resolve, reject);
+      button.style = "background-color:#00FF00;"
+    }, {once: true});
+  });
 
-  return test_driver.click(button);
+  await test_driver.click(button);
+  return {clickPromise};
 }
