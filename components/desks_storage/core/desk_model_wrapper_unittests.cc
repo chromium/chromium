@@ -5,6 +5,7 @@
 #include "components/desks_storage/core/desk_model_wrapper.h"
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"

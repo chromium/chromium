@@ -6,6 +6,7 @@
 #define COMPONENTS_DESKS_STORAGE_CORE_DESK_SYNC_BRIDGE_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <vector>

@@ -5,6 +5,7 @@
 #include "components/desks_storage/core/desk_sync_bridge.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <set>
 #include <utility>

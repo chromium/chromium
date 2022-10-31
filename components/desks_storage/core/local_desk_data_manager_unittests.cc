@@ -5,6 +5,7 @@
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "ash/public/cpp/desk_template.h"

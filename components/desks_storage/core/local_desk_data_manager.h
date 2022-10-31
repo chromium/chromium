@@ -6,6 +6,7 @@
 #define COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"

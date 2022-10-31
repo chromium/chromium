@@ -6,6 +6,7 @@
 #define COMPONENTS_DESKS_STORAGE_CORE_DESK_MODEL_WRAPPER_H_
 
 #include <stddef.h>
+
 #include <map>
 #include <memory>
 
