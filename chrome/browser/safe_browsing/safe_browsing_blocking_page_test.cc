@@ -2071,7 +2071,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser, GURL("data:application/octet-stream;base64,SGVsbG8=")));
     observer.WaitForNavigationFinished();
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     ASSERT_EQ(1u, console_observer.messages().size());
   }
