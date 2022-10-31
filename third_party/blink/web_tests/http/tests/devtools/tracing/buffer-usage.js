@@ -42,7 +42,7 @@
     }
   };
 
-  let controller = new Timeline.TimelineController(SDK.targetManager.mainTarget(), new TestTimelineControllerClient());
+  let controller = new Timeline.TimelineController(SDK.targetManager.mainFrameTarget(), new TestTimelineControllerClient());
   controller.startRecording({}, []).then(() => {
     TestRunner.addResult('TimelineControllerClient.recordingStarted');
   });
