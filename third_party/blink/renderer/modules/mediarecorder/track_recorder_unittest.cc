@@ -22,7 +22,7 @@ TEST(TrackRecorderTest, CallsOutOnSourceStateEnded) {
   EXPECT_CALL(callback, Call);
 
   TrackRecorder<WebMediaStreamSink> recorder(
-      base::BindOnce(&CallMockFunction, base::Unretained(&callback)));
+      WTF::BindOnce(&CallMockFunction, WTF::Unretained(&callback)));
   recorder.OnReadyStateChanged(WebMediaStreamSource::kReadyStateEnded);
 }
 
@@ -31,7 +31,7 @@ TEST(TrackRecorderTest, DoesNotCallOutOnAnythingButStateEnded) {
   EXPECT_CALL(callback, Call).Times(0);
 
   TrackRecorder<WebMediaStreamSink> recorder(
-      base::BindOnce(&CallMockFunction, base::Unretained(&callback)));
+      WTF::BindOnce(&CallMockFunction, WTF::Unretained(&callback)));
   recorder.OnReadyStateChanged(WebMediaStreamSource::kReadyStateLive);
   recorder.OnReadyStateChanged(WebMediaStreamSource::kReadyStateMuted);
 }
