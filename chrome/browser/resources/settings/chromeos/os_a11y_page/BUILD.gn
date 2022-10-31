@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":change_dictation_locale_dialog",
-    ":externs",
     ":manage_a11y_page",
     ":manage_a11y_page_browser_proxy",
     ":os_a11y_page",
@@ -24,14 +23,7 @@ js_type_check("closure_compile_module") {
     ":switch_access_setup_guide_warning_dialog",
     ":switch_access_subpage",
     ":switch_access_subpage_browser_proxy",
-    ":text_to_speech_page",
-    ":text_to_speech_page_browser_proxy",
-    ":tts_subpage",
-    ":tts_subpage_browser_proxy",
   ]
-}
-
-js_library("externs") {
 }
 
 js_library("change_dictation_locale_dialog") {
@@ -66,25 +58,6 @@ js_library("manage_a11y_page") {
 }
 
 js_library("manage_a11y_page_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("text_to_speech_page") {
-  deps = [
-    ":text_to_speech_page_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos:route_origin_behavior",
-    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
-  ]
-}
-
-js_library("text_to_speech_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
@@ -191,41 +164,15 @@ js_library("switch_access_subpage_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-js_library("tts_subpage") {
-  deps = [
-    ":tts_subpage_browser_proxy",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/settings:router",
-    "//chrome/browser/resources/settings/chromeos:deep_linking_behavior",
-    "//chrome/browser/resources/settings/chromeos:os_route",
-    "//chrome/browser/resources/settings/chromeos:route_observer_behavior",
-    "//chrome/browser/resources/settings/chromeos/os_languages_page:languages_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
-  ]
-}
-
-js_library("tts_subpage_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "change_dictation_locale_dialog.js",
     "manage_a11y_page.js",
-    "text_to_speech_page.js",
     "os_a11y_page.js",
     "switch_access_action_assignment_dialog.js",
     "switch_access_action_assignment_pane.js",
     "switch_access_setup_guide_dialog.js",
     "switch_access_setup_guide_warning_dialog.js",
     "switch_access_subpage.js",
-    "tts_subpage.js",
   ]
 }

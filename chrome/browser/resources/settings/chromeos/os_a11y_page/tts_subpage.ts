@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'tts-subpage' is the collapsible section containing
+ * @fileoverview 'settings-tts-subpage' is the collapsible section containing
  * text-to-speech settings.
  */
 
@@ -15,44 +15,78 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import '../../controls/settings_slider.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeat, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
+import {getTemplate} from './tts_subpage.html.js';
 import {TtsSubpageBrowserProxy, TtsSubpageBrowserProxyImpl} from './tts_subpage_browser_proxy.js';
 
 /**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
+ * Represents a voice as sent from the TTS Handler class. |languageCode| is
+ * the language, not the locale, i.e. 'en' rather than 'en-us'. |name| is the
+ * user-facing voice name, and |id| is the unique ID for that voice name (which
+ * is generated in tts_subpage.js and not passed from tts_handler.cc).
+ * |displayLanguage| is the user-facing display string, i.e. 'English'.
+ * |fullLanguageCode| is the code with locale, i.e. 'en-us' or 'en-gb'.
+ * |languageScore| is a relative measure of how closely the voice's language
+ * matches the app language, and can be used to set a default voice.
  */
-const SettingsTtsSubpageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+interface TtsHandlerVoice {
+  languageCode: string;
+  name: string;
+  displayLanguage: string;
+  extensionId: string;
+  id: string;
+  fullLanguageCode: string;
+  languageScore: number;
+}
 
-/** @polymer */
+interface TtsHandlerExtension {
+  name: string;
+  extensionId: string;
+  optionsPage: string;
+}
+
+interface TtsLanguage {
+  language: string;
+  code: string;
+  preferred: boolean;
+  voices: TtsHandlerVoice[];
+}
+
+interface SettingsTtsSubpageElement {
+  $: {
+    previewVoiceOptions: DomRepeat,
+    previewVoice: HTMLSelectElement,
+  };
+}
+
+const SettingsTtsSubpageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & RouteObserverMixinInterface &
+          DeepLinkingBehaviorInterface,
+    };
+
 class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   static get is() {
     return 'settings-tts-subpage';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -67,8 +101,6 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
       /**
        * Available languages.
-       * @type {!Array<!{language: string, code: string, preferred: boolean,
-       *     voice: TtsHandlerVoice}>}
        */
       languagesToVoices: {
         type: Array,
@@ -77,7 +109,6 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
       /**
        * All voices.
-       * @type {!Array<!TtsHandlerVoice>}
        */
       allVoices: {
         type: Array,
@@ -95,14 +126,12 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
       /**
        * Whether preview is currently speaking.
-       * @private
        */
       isPreviewing_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       previewText_: {
         type: String,
         value: '',
@@ -122,7 +151,6 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -137,45 +165,48 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
     };
   }
 
-  /** @override */
+  allVoices: TtsHandlerVoice[];
+  defaultPreviewVoice: string;
+  extensions: TtsHandlerExtension[];
+  hasVoices: boolean;
+  languagesOpened: boolean;
+  languagesToVoices: TtsLanguage[];
+  prefs: {[key: string]: any};
+  private isPreviewing_: boolean;
+  private langBrowserProxy_: LanguagesBrowserProxy;
+  private previewText_: string;
+  private ttsBrowserProxy_: TtsSubpageBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!TtsSubpageBrowserProxy} */
     this.ttsBrowserProxy_ = TtsSubpageBrowserProxyImpl.getInstance();
-
-    /** @private {!LanguagesBrowserProxy} */
     this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
-
-    /** @type {Array<!TtsHandlerExtension>} */
     this.extensions = [];
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     // Populate the preview text with textToSpeechPreviewInput. Users can change
     // this to their own value later.
     this.previewText_ = this.i18n('textToSpeechPreviewInput');
     this.addWebUIListener(
-        'all-voice-data-updated', voices => this.populateVoiceList_(voices));
+        'all-voice-data-updated',
+        (voices: TtsHandlerVoice[]) => this.populateVoiceList_(voices));
     this.ttsBrowserProxy_.getAllTtsVoiceData();
     this.addWebUIListener(
         'tts-extensions-updated',
-        extensions => this.populateExtensionList_(extensions));
+        (extensions: TtsHandlerExtension[]) =>
+            this.populateExtensionList_(extensions));
     this.addWebUIListener(
         'tts-preview-state-changed',
-        isSpeaking => this.onTtsPreviewStateChanged_(isSpeaking));
+        (isSpeaking: boolean) => this.onTtsPreviewStateChanged_(isSpeaking));
     this.ttsBrowserProxy_.getTtsExtensions();
     this.ttsBrowserProxy_.refreshTtsVoices();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.MANAGE_TTS_SETTINGS) {
       return;
@@ -186,42 +217,32 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
   /*
    * Ticks for the Speech Rate slider. Valid rates are between 0.1 and 5.
-   * @return {!Array<!SliderTick>}
-   * @private
    */
-  speechRateTicks_() {
+  private speechRateTicks_(): SliderTick[] {
     return this.buildLinearTicks_(0.1, 5);
   }
 
   /**
    * Ticks for the Speech Pitch slider. Valid pitches are between 0.2 and 2.
-   * @return {!Array<!SliderTick>}
-   * @private
    */
-  speechPitchTicks_() {
+  private speechPitchTicks_(): SliderTick[] {
     return this.buildLinearTicks_(0.2, 2);
   }
 
   /**
    * Ticks for the Speech Volume slider. Valid volumes are between 0.2 and
    * 1 (100%), but volumes lower than .2 are excluded as being too quiet.
-   * @return {!Array<!SliderTick>}
-   * @private
    */
-  speechVolumeTicks_() {
+  private speechVolumeTicks_(): SliderTick[] {
     return this.buildLinearTicks_(0.2, 1);
   }
 
   /**
    * A helper to build a set of ticks between |min| and |max| (inclusive) spaced
    * evenly by 0.1.
-   * @param {number} min
-   * @param {number} max
-   * @return {!Array<!SliderTick>}
-   * @private
    */
-  buildLinearTicks_(min, max) {
-    const ticks = [];
+  private buildLinearTicks_(min: number, max: number): SliderTick[] {
+    const ticks: SliderTick[] = [];
 
     // Avoid floating point addition errors by scaling everything by 10.
     min *= 10;
@@ -235,11 +256,8 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
   /**
    * Initializes i18n labels for ticks arrays.
-   * @param {number} tick The value to make a tick for.
-   * @return {!SliderTick}
-   * @private
    */
-  initTick_(tick) {
+  private initTick_(tick: number): SliderTick {
     const value = Math.round(100 * tick);
     const strValue = value.toFixed(0);
     const label = strValue === '100' ?
@@ -250,24 +268,18 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
   /**
    * Returns true if any voices are loaded.
-   * @param {!Array<!TtsHandlerVoice>} voices
-   * @return {boolean}
-   * @private
    */
-  hasVoices_(voices) {
+  private hasVoices_(voices: TtsHandlerVoice[]): boolean {
     return voices.length > 0;
   }
 
   /**
    * Returns true if voices are loaded and preview is not currently speaking and
    * there is text to preview.
-   * @param {!Array<!TtsHandlerVoice>} voices
-   * @param {boolean} isPreviewing
-   * @param {boolean} previewText
-   * @return {boolean}
-   * @private
    */
-  enablePreviewButton_(voices, isPreviewing, previewText) {
+  private enablePreviewButton_(
+      voices: TtsHandlerVoice[], isPreviewing: boolean,
+      previewText: string): boolean {
     const nonWhitespaceRe = /\S+/;
     const hasPreviewText = nonWhitespaceRe.exec(previewText) != null;
     return this.hasVoices_(voices) && !isPreviewing && hasPreviewText;
@@ -275,15 +287,13 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
   /**
    * Populates the list of languages and voices for the UI to use in display.
-   * @param {!Array<!TtsHandlerVoice>} voices
-   * @private
    */
-  populateVoiceList_(voices) {
+  private populateVoiceList_(voices: TtsHandlerVoice[]): void {
     // Build a map of language code to human-readable language and voice.
-    const result = {};
-    const languageCodeMap = {};
-    const pref = this.prefs['intl']['accept_languages'];
-    const preferredLangs = pref.value.split(',');
+    const result: {[key: string]: TtsLanguage} = {};
+    const languageCodeMap: {[key: string]: string} = {};
+    const preferredLangs =
+        this.get('prefs.intl.accept_languages.value').split(',');
     voices.forEach(voice => {
       if (!result[voice.languageCode]) {
         result[voice.languageCode] = {
@@ -316,75 +326,54 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   /**
    * Returns true if the language is a primary language and should be shown by
    * default, false if it should be hidden by default.
-   * @param {!{language: string, code: string, preferred: boolean,
-   *     voice: TtsHandlerVoice}} language
-   * @return {boolean} true if it's a primary language.
-   * @private
    */
-  isPrimaryLanguage_(language) {
+  private isPrimaryLanguage_(language: TtsLanguage): boolean {
     return language.preferred;
   }
 
   /**
    * Returns true if the language is a secondary language and should be hidden
    * by default, true if it should be shown by default.
-   * @param {!{language: string, code: string, preferred: boolean,
-   *     voice: TtsHandlerVoice}} language
-   * @return {boolean} true if it's a secondary language.
-   * @private
    */
-  isSecondaryLanguage_(language) {
+  private isSecondaryLanguage_(language: TtsLanguage): boolean {
     return !language.preferred;
   }
 
   /**
    * Sets the list of Text-to-Speech extensions for the UI.
-   * @param {!Array<!TtsHandlerExtension>} extensions
-   * @private
    */
-  populateExtensionList_(extensions) {
+  private populateExtensionList_(extensions: TtsHandlerExtension[]): void {
     this.extensions = extensions;
   }
 
   /**
    * Called when the TTS voice preview state changes between speaking and not
    * speaking.
-   * @param {boolean} isSpeaking
-   * @private
    */
-  onTtsPreviewStateChanged_(isSpeaking) {
+  private onTtsPreviewStateChanged_(isSpeaking: boolean): void {
     this.isPreviewing_ = isSpeaking;
   }
 
   /**
    * A function used for sorting languages alphabetically.
-   * @param {!Object} first A languageToVoices array item.
-   * @param {!Object} second A languageToVoices array item.
-   * @return {number} The result of the comparison.
-   * @private
    */
-  alphabeticalSort_(first, second) {
+  private alphabeticalSort_(first: TtsLanguage, second: TtsLanguage): number {
     return first.language.localeCompare(second.language);
   }
 
   /**
    * Tests whether a language has just once voice.
-   * @param {!Object} lang A languageToVoices array item.
-   * @return {boolean} True if the item has only one voice.
-   * @private
    */
-  hasOneLanguage_(lang) {
-    return lang['voices'].length === 1;
+  private hasOneLanguage_(lang: TtsLanguage): boolean {
+    return lang.voices.length === 1;
   }
 
   /**
    * Returns a list of objects that can be used as drop-down menu options for a
    * language. This is a list of voices in that language.
-   * @param {!Object} lang A languageToVoices array item.
-   * @return {!Array<!Object>} An array of menu options with a value and name.
-   * @private
    */
-  menuOptionsForLang_(lang) {
+  private menuOptionsForLang_(lang: TtsLanguage):
+      Array<{value: string, name: string}> {
     return lang.voices.map(voice => {
       return {value: voice.id, name: voice.name};
     });
@@ -392,24 +381,20 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
   /**
    * Updates the preferences given the current list of voices.
-   * @param {!Object<string, !{language: string,
-   *                           code: string,
-   *                           preferred: boolean,
-   *                           voices: !Array<!TtsHandlerVoice>}>} langToVoices
-   * @private
    */
-  updateLangToVoicePrefs_(langToVoices) {
-    if (langToVoices.length === 0) {
+  private updateLangToVoicePrefs_(langToVoices: {[key: string]: TtsLanguage}):
+      void {
+    if (Object.keys(langToVoices).length === 0) {
       return;
     }
     const allCodes = new Set(
-        Object.keys(this.prefs['settings']['tts']['lang_to_voice_name'].value));
+        Object.keys(this.get('prefs.settings.tts.lang_to_voice_name.value')));
     for (const code in langToVoices) {
       // Remove from allCodes, to track what we've found a default for.
       allCodes.delete(code);
       const voices = langToVoices[code].voices;
       const defaultVoiceForLang =
-          this.prefs['settings']['tts']['lang_to_voice_name'].value[code];
+          this.get('prefs.settings.tts.lang_to_voice_name.value')[code];
       if (!defaultVoiceForLang || defaultVoiceForLang === '') {
         // Initialize prefs that have no value
         this.set(
@@ -438,12 +423,12 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
   /**
    * Sets the voice to show in the preview drop-down as default, based on the
    * current locale and voice preferences.
-   * @param {!Array<!TtsHandlerVoice>} allVoices
-   * @param {!Object<string, string>} languageCodeMap Mapping from language code
-   *     to simple language code without locale.
-   * @private
+   * @param languageCodeMap Mapping from language code to simple language
+   *    code without locale.
    */
-  setDefaultPreviewVoiceForLocale_(allVoices, languageCodeMap) {
+  private setDefaultPreviewVoiceForLocale_(
+      allVoices: TtsHandlerVoice[],
+      languageCodeMap: {[key: string]: string}): void {
     if (!allVoices || allVoices.length === 0) {
       return;
     }
@@ -460,13 +445,13 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
     this.langBrowserProxy_.getProspectiveUILanguage().then(
         prospectiveUILanguage => {
-          let result;
+          let result: string = '';
           if (prospectiveUILanguage && prospectiveUILanguage !== '' &&
               languageCodeMap[prospectiveUILanguage]) {
             const code = languageCodeMap[prospectiveUILanguage];
             // First try the pref value.
             result =
-                this.prefs['settings']['tts']['lang_to_voice_name'].value[code];
+                this.get('prefs.settings.tts.lang_to_voice_name.value')[code];
           }
           if (!result) {
             // If it's not a pref value yet, or the prospectiveUILanguage was
@@ -479,11 +464,8 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
 
   /**
    * Gets the best voice for the app locale.
-   * @param {!Array<!TtsHandlerVoice>} voices Voices to search through.
-   * @return {string} The ID of the best matching voice in the array.
-   * @private
    */
-  getBestVoiceForLocale_(voices) {
+  private getBestVoiceForLocale_(voices: TtsHandlerVoice[]): string {
     let bestScore = -1;
     let bestVoice = '';
     voices.forEach((voice) => {
@@ -495,19 +477,21 @@ class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
     return bestVoice;
   }
 
-  /** @private */
-  onPreviewTtsClick_() {
+  private onPreviewTtsClick_(): void {
     this.ttsBrowserProxy_.previewTtsVoice(
         this.previewText_, this.$.previewVoice.value);
   }
 
-  /**
-   * @param {!{model:Object}} event
-   * @private
-   */
-  onEngineSettingsTap_(event) {
+  private onEngineSettingsTap_(event: DomRepeatEvent<TtsHandlerExtension>):
+      void {
     this.ttsBrowserProxy_.wakeTtsEngine();
-    window.open(event.model.extension.optionsPage);
+    window.open(event.model.item.optionsPage);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-tts-subpage': SettingsTtsSubpageElement;
   }
 }
 

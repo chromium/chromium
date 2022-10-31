@@ -143,15 +143,15 @@
 </div>
 
 <h2>$i18n{textToSpeechEngines}</h2>
-<template is="dom-repeat" items="[[extensions]]" as="extension">
+<template is="dom-repeat" items="[[extensions]]">
   <div class="settings-box continuation">
     <div id="extension_name_[[index]]" class="start settings-box-text">
-      [[extension.name]]
+      [[item.name]]
     </div>
     <cr-button id="extensionOptionsButton_[[index]]"
         on-click="onEngineSettingsTap_"
         aria-describedby$="extension_name_[[index]]"
-        hidden$="[[!extension.optionsPage]]"
+        hidden$="[[!item.optionsPage]]"
         deep-link-focus-id$="[[Setting.kTextToSpeechEngines]]">
       $i18n{settings}
     </cr-button>

@@ -12,41 +12,32 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
+import {getTemplate} from './text_to_speech_page.html.js';
 import {TextToSpeechPageBrowserProxy, TextToSpeechPageBrowserProxyImpl} from './text_to_speech_page_browser_proxy.js';
 
+const SettingsTextToSpeechPageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+          RouteOriginBehavior,
+        ],
+        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & DeepLinkingBehaviorInterface &
+          RouteOriginBehaviorInterface,
+    };
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {RouteOriginBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsTextToSpeechPageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      RouteOriginBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
-
-/** @polymer */
 class SettingsTextToSpeechPageElement extends
     SettingsTextToSpeechPageElementBase {
   static get is() {
@@ -54,7 +45,7 @@ class SettingsTextToSpeechPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -70,13 +61,11 @@ class SettingsTextToSpeechPageElement extends
       /**
        * |hasKeyboard_| starts undefined so observer doesn't trigger until it
        * has been populated.
-       * @private
        */
       hasKeyboard_: Boolean,
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -88,33 +77,34 @@ class SettingsTextToSpeechPageElement extends
     };
   }
 
-  /** @override */
+  prefs: {[key: string]: any};
+  private deviceBrowserProxy_: DevicePageBrowserProxy;
+  private hasKeyboard_: boolean;
+  private route_: Route;
+  private textToSpeechBrowserProxy_: TextToSpeechPageBrowserProxy;
+
   constructor() {
     super();
 
     /** RouteOriginBehavior override */
     this.route_ = routes.A11Y_TEXT_TO_SPEECH;
 
-    /** @private {!TextToSpeechPageBrowserProxy} */
     this.textToSpeechBrowserProxy_ =
         TextToSpeechPageBrowserProxyImpl.getInstance();
 
-    /** @private {!DevicePageBrowserProxy} */
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
         'has-hardware-keyboard',
-        (hasKeyboard) => this.set('hasKeyboard_', hasKeyboard));
+        (hasKeyboard: boolean) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.addFocusConfig(routes.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
@@ -122,11 +112,8 @@ class SettingsTextToSpeechPageElement extends
 
   /**
    * Note: Overrides RouteOriginBehavior implementation
-   * @param {!Route} newRoute
-   * @param {!Route=} prevRoute
-   * @protected
    */
-  currentRouteChanged(newRoute, prevRoute) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
     RouteOriginBehaviorImpl.currentRouteChanged.call(this, newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -139,11 +126,8 @@ class SettingsTextToSpeechPageElement extends
 
   /**
    * Return ChromeVox description text based on whether ChromeVox is enabled.
-   * @param {boolean} enabled
-   * @return {string}
-   * @private
    */
-  getChromeVoxDescription_(enabled) {
+  private getChromeVoxDescription_(enabled: boolean): string {
     return this.i18n(
         enabled ? 'chromeVoxDescriptionOn' : 'chromeVoxDescriptionOff');
   }
@@ -152,12 +136,9 @@ class SettingsTextToSpeechPageElement extends
    * Return Select-to-Speak description text based on:
    *    1. Whether Select-to-Speak is enabled.
    *    2. If it is enabled, whether a physical keyboard is present.
-   * @param {boolean} enabled
-   * @param {boolean} hasKeyboard
-   * @return {string}
-   * @private
    */
-  getSelectToSpeakDescription_(enabled, hasKeyboard) {
+  private getSelectToSpeakDescription_(enabled: boolean, hasKeyboard: boolean):
+      string {
     if (!enabled) {
       return this.i18n('selectToSpeakDisabledDescription');
     }
@@ -167,24 +148,26 @@ class SettingsTextToSpeechPageElement extends
     return this.i18n('selectToSpeakDescriptionWithoutKeyboard');
   }
 
-  /** @private */
-  onManageTtsSettingsTap_() {
+  private onManageTtsSettingsTap_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
   }
 
-  /** @private */
-  onChromeVoxSettingsTap_() {
+  private onChromeVoxSettingsTap_(): void {
     this.textToSpeechBrowserProxy_.showChromeVoxSettings();
   }
 
-  /** @private */
-  onChromeVoxTutorialTap_() {
+  private onChromeVoxTutorialTap_(): void {
     this.textToSpeechBrowserProxy_.showChromeVoxTutorial();
   }
 
-  /** @private */
-  onSelectToSpeakSettingsTap_() {
+  private onSelectToSpeakSettingsTap_(): void {
     this.textToSpeechBrowserProxy_.showSelectToSpeakSettings();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-text-to-speech-page': SettingsTextToSpeechPageElement;
   }
 }
 

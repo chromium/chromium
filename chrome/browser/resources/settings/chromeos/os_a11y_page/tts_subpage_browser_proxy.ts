@@ -2,79 +2,65 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @interface */
-export class TtsSubpageBrowserProxy {
+export interface TtsSubpageBrowserProxy {
   /**
    * Requests the updated voice data. Returned by the 'all-voice-data-updated'
    * WebUI Listener event.
    */
-  getAllTtsVoiceData() {}
+  getAllTtsVoiceData(): void;
 
   /**
    * Requests the updated extensions. Returned by the 'tts-extensions-updated'
    * WebUI Listener event.
    */
-  getTtsExtensions() {}
+  getTtsExtensions(): void;
 
   /**
    * Requests the tts preview. Returns a success boolean in the
    * 'tts-preview-state-changed' WebUI Listener event.
-   * @param {string} previewText
-   * @param {String} previewVoice
    */
-  previewTtsVoice(previewText, previewVoice) {}
+  previewTtsVoice(previewText: string, previewVoice: string): void;
 
   /**
    * Awakens the tts engine.
    */
-  wakeTtsEngine() {}
+  wakeTtsEngine(): void;
 
   /**
    * Triggers the TtsPlatform to update its list of voices and relay that update
    * through VoicesChanged.
    */
-  refreshTtsVoices() {}
+  refreshTtsVoices(): void;
 }
 
-/** @type {?TtsSubpageBrowserProxy} */
-let instance = null;
+let instance: TtsSubpageBrowserProxy|null = null;
 
-/**
- * @implements {TtsSubpageBrowserProxy}
- */
-export class TtsSubpageBrowserProxyImpl {
-  /** @return {!TtsSubpageBrowserProxy} */
-  static getInstance() {
+export class TtsSubpageBrowserProxyImpl implements TtsSubpageBrowserProxy {
+  static getInstance(): TtsSubpageBrowserProxy {
     return instance || (instance = new TtsSubpageBrowserProxyImpl());
   }
 
-  /** @param {!TtsSubpageBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: TtsSubpageBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  getAllTtsVoiceData() {
+  getAllTtsVoiceData(): void {
     chrome.send('getAllTtsVoiceData');
   }
 
-  /** @override */
-  getTtsExtensions() {
+  getTtsExtensions(): void {
     chrome.send('getTtsExtensions');
   }
 
-  /** @override */
-  previewTtsVoice(previewText, previewVoice) {
+  previewTtsVoice(previewText: string, previewVoice: string): void {
     chrome.send('previewTtsVoice', [previewText, previewVoice]);
   }
 
-  /** @override */
-  wakeTtsEngine() {
+  wakeTtsEngine(): void {
     chrome.send('wakeTtsEngine');
   }
 
-  /** @override */
-  refreshTtsVoices() {
+  refreshTtsVoices(): void {
     chrome.send('refreshTtsVoices');
   }
 }
