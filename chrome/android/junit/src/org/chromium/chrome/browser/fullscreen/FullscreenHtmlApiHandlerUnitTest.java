@@ -39,6 +39,10 @@ import org.chromium.content_public.browser.WebContents;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FullscreenHtmlApiHandlerUnitTest {
+    private static final int DEVICE_WIDTH = 900;
+    private static final int DEVICE_HEIGHT = 1600;
+    private static final int SYSTEM_UI_HEIGHT = 100;
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -153,5 +157,32 @@ public class FullscreenHtmlApiHandlerUnitTest {
         mFullscreenHtmlApiHandler.onActivityStateChange(mActivity, ActivityState.RESUMED);
         assertTrue("Fullscreen toast should not be visible after resume when not in fullscreen",
                 !mFullscreenHtmlApiHandler.isToastVisibleForTesting());
+    }
+
+    @Test
+    public void testToastIsShownAtLayoutChangeWithRotation() {
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(true).when(mTab).isHidden();
+        doReturn(true).when(mContentView).hasWindowFocus();
+        mAreControlsHidden.set(true);
+
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+
+        ArgumentCaptor<OnLayoutChangeListener> arg =
+                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
+        verify(mContentView).addOnLayoutChangeListener(arg.capture());
+
+        // Device rotation swaps device width/height dimension.
+        arg.getValue().onLayoutChange(mContentView, 0, 0, DEVICE_HEIGHT, DEVICE_WIDTH, 0, 0,
+                /*oldRight=*/DEVICE_WIDTH, /*oldBottom=*/DEVICE_HEIGHT - SYSTEM_UI_HEIGHT);
+
+        // We should now be in fullscreen, with the toast shown.
+        assertTrue("Fullscreen toast should be visible in fullscreen",
+                mFullscreenHtmlApiHandler.isToastVisibleForTesting());
     }
 }
