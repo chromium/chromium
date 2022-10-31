@@ -159,9 +159,9 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 // tests that they are properly restored.
 // Disabled due to flakes on iPad Air 2 14.5; see https://crbug.com/1379254.
 #if TARGET_OS_SIMULATOR
-#define MAYBE_testRestoreHistory testRestoreHistory
-#else
 #define MAYBE_testRestoreHistory FLAKY_testRestoreHistory
+#else
+#define MAYBE_testRestoreHistory testRestoreHistory
 #endif
 - (void)MAYBE_testRestoreHistory {
   [self setUpRestoreServers];
@@ -173,9 +173,9 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 // tests that they are properly restored in airplane mode.
 // Disabled due to flakes on iPad Air 2 14.5; see https://crbug.com/1379254.
 #if TARGET_OS_SIMULATOR
-#define MAYBE_testRestoreNoNetwork testRestoreNoNetwork
-#else
 #define MAYBE_testRestoreNoNetwork FLAKY_testRestoreNoNetwork
+#else
+#define MAYBE_testRestoreNoNetwork testRestoreNoNetwork
 #endif
 - (void)MAYBE_testRestoreNoNetwork {
   [self setUpRestoreServers];
@@ -187,9 +187,9 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 // Tests that only the selected web state is loaded on a session restore.
 // Disabled due to flakes on iPad Air 2 14.5; see https://crbug.com/1379254.
 #if TARGET_OS_SIMULATOR
-#define MAYBE_testRestoreOneWebstateOnly testRestoreOneWebstateOnly
-#else
 #define MAYBE_testRestoreOneWebstateOnly FLAKY_testRestoreOneWebstateOnly
+#else
+#define MAYBE_testRestoreOneWebstateOnly testRestoreOneWebstateOnly
 #endif
 - (void)MAYBE_testRestoreOneWebstateOnly {
   // Visit the background page.
