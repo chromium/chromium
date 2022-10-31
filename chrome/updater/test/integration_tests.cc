@@ -108,7 +108,8 @@ class IntegrationTest : public ::testing::Test {
 
   void TearDown() override {
     ExitTestMode();
-    ExpectClean();
+    if (!HasFatalFailure())
+      ExpectClean();
     PrintLog();
     // TODO(crbug.com/1159189): Use a specific test output directory
     // because Uninstall() deletes the files under GetDataDirPath().
@@ -370,7 +371,7 @@ TEST_F(IntegrationTest, InstallUninstall) {
 }
 
 TEST_F(IntegrationTest, OverinstallWorking) {
-  SetupRealUpdaterLowerVersion();
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionNotActive(kUpdaterVersion);
 
@@ -384,7 +385,7 @@ TEST_F(IntegrationTest, OverinstallWorking) {
 }
 
 TEST_F(IntegrationTest, OverinstallBroken) {
-  SetupRealUpdaterLowerVersion();
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
   DeleteUpdaterDirectory();
 
@@ -745,7 +746,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
-  SetupRealUpdaterLowerVersion();
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ExpectVersionNotActive(kUpdaterVersion);
 
   // Trigger an old instance update check.
@@ -769,7 +770,7 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
 TEST_F(IntegrationTest, InstallUninstallLowerVersion) {
-  SetupRealUpdaterLowerVersion();
+  ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ExpectVersionNotActive(kUpdaterVersion);
   Uninstall();
 
