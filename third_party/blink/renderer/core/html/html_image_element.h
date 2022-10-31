@@ -141,6 +141,8 @@ class CORE_EXPORT HTMLImageElement final
   virtual void EnsurePrimaryContent();
   bool IsCollapsed() const;
 
+  void SetAutoSizesUsecounter();
+
   // CanvasImageSource interface implementation.
   gfx::SizeF DefaultDestinationSize(
       const gfx::SizeF&,
@@ -283,7 +285,7 @@ class CORE_EXPORT HTMLImageElement final
   bool is_ad_related_ : 1;
   bool is_lcp_element_ : 1;
   bool is_changed_shortly_after_mouseover_ : 1;
-  bool has_sizes_attribute_ : 1;
+  bool has_sizes_attribute_in_img_or_sibling_ : 1;
   bool is_lazy_loaded_ : 1;
 
   network::mojom::ReferrerPolicy referrer_policy_;

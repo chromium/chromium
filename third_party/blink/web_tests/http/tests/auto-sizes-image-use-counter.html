@@ -1,31 +1,99 @@
 <!DOCTYPE html>
+<html>
+<head>
 <script src=resources/common.js></script>
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
-
+</head>
+<body>
 <script>
   // The UseCounter ID.
   const kViewportDependentLazyLoadedImageWithSizesAttribute = 4351;
+  const kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381;
 
 
-  function clearUseCounter() {
+  const clearUseCounter = () => {
     internals.clearUseCounter(document, kViewportDependentLazyLoadedImageWithSizesAttribute);
+    internals.clearUseCounter(document, kViewportDependentLazyLoadedImageWithoutSizesAttribute);
+  }
+
+  const double_raf = () => {
+    return new Promise(r => requestAnimationFrame(
+                            () => requestAnimationFrame(r)));
+  }
+
+  const test_picture = async (lazy, sizes) => {
+    clearUseCounter();
+    const img = new Image();
+    const picture = document.createElement("picture");
+    const source = document.createElement("source");
+    source.srcset = "square100.png 100w";
+    source.type = "image/png";
+    if (lazy) {
+      img.loading = "lazy";
+    }
+    if (sizes) {
+      source.sizes = "90vw";
+    }
+    document.body.appendChild(picture);
+    picture.appendChild(source);
+    picture.appendChild(img);
+
+    await double_raf();
+
+    assert_equals(internals.isUseCounted(document,
+                 kViewportDependentLazyLoadedImageWithSizesAttribute),
+                 lazy && sizes,
+                 'ViewportDependentLazyLoadedImageWithSizesAttribute is not set'
+                 + ' for non-matching picture. '
+                 + `|lazy| is ${lazy} and |sizes| is ${sizes}.`);
+    assert_equals(internals.isUseCounted(document,
+                 kViewportDependentLazyLoadedImageWithoutSizesAttribute),
+                 lazy && !sizes,
+                 'ViewportDependentLazyLoadedImageWithoutSizesAttribute is not'
+                 + ' set for non-matching picture. '
+                 + `|lazy| is ${lazy} and |sizes| is ${sizes}.`);
+  }
+
+  const test_image = async (lazy, sizes) => {
+    clearUseCounter();
+    const img = new Image();
+    img.srcset = "square100.png 100w";
+    if (lazy) {
+      img.loading = "lazy";
+    }
+    if (sizes) {
+      img.sizes = "90vw";
+    }
+    document.body.appendChild(img);
+
+    await double_raf();
+
+    assert_equals(internals.isUseCounted(document,
+                 kViewportDependentLazyLoadedImageWithSizesAttribute),
+                 lazy && sizes,
+                 'ViewportDependentLazyLoadedImageWithSizesAttribute is not set'
+                 + ' for non-matching image. '
+                 + `|lazy| is ${lazy} and |sizes| is ${sizes}.`);
+    assert_equals(internals.isUseCounted(document,
+                 kViewportDependentLazyLoadedImageWithoutSizesAttribute),
+                 lazy && !sizes,
+                 'ViewportDependentLazyLoadedImageWithoutSizesAttribute is not'
+                 + ' set for non-matching image. '
+                 + `|lazy| is ${lazy} and |sizes| is ${sizes}.`);
   }
 
   test(t => {
-    t.add_cleanup(clearUseCounter);
-    assert_false(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
-                 'The auto-sizes compat use counter is not set before an impacted image is created');
-    const img = new Image();
-    img.srcset = "square100.png 100w";
-    assert_false(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
-                 'the auto-sizes compat use counter is not set after srcset');
-    img.sizes = "90vw";
-    assert_false(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
-                 'the auto-sizes compat use counter is not set after sizes');
-    img.loading = "lazy";
-    assert_true(internals.isUseCounted(document, kViewportDependentLazyLoadedImageWithSizesAttribute),
-                 'The auto-sizes compat use counter is counted after an impacted image is created');
-  }, 'The auto-sizes use-counter works properly');
+    test_image(/*lazy=*/false, /*sizes=*/false);
+    test_image(/*lazy=*/false, /*sizes=*/true);
+    test_image(/*lazy=*/true, /*sizes=*/false);
+    test_image(/*lazy=*/true, /*sizes=*/true);
+    test_picture(/*lazy=*/false, /*sizes=*/false);
+    test_picture(/*lazy=*/false, /*sizes=*/true);
+    test_picture(/*lazy=*/true, /*sizes=*/false);
+    test_picture(/*lazy=*/true, /*sizes=*/true);
+  }, 'The auto-sizes use-counters work properly');
 
 </script>
+</body>
+</html>
