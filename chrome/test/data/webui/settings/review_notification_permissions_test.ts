@@ -11,7 +11,6 @@ import {CrActionMenuElement} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -81,11 +80,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
           expectedAnimation[i]!, rows[i]!.classList.contains('removed'),
           'Expectation not met for row #' + i);
     }
-  }
-
-  function getExpandButtonElement(): HTMLElement|null {
-    return testElement.shadowRoot!.querySelector('#expandButton')!.shadowRoot!
-        .querySelector('#icon');
   }
 
   setup(function() {
@@ -281,9 +275,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     webUIListenerCallback(
         'notification-permission-review-list-maybe-changed', mockData);
     assertAnimation([false, false]);
-
-    await flushTasks();
-    assertEquals(getDeepActiveElement(), getExpandButtonElement());
   });
 
   /**
@@ -304,9 +295,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     webUIListenerCallback(
         'notification-permission-review-list-maybe-changed', mockData);
     assertAnimation([false, false]);
-
-    await flushTasks();
-    assertEquals(getDeepActiveElement(), getExpandButtonElement());
   });
 
   /**
@@ -327,9 +315,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     webUIListenerCallback(
         'notification-permission-review-list-maybe-changed', mockData);
     assertAnimation([false, false]);
-
-    await flushTasks();
-    assertEquals(getDeepActiveElement(), getExpandButtonElement());
   });
 
   /**
@@ -360,11 +345,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertEquals(2, origins2.length);
     assertEquals(
         JSON.stringify(origins2.sort()), JSON.stringify([origin1, origin2]));
-
-    webUIListenerCallback(
-        'notification-permission-review-list-maybe-changed', mockData);
-    await flushTasks();
-    assertEquals(getDeepActiveElement(), getExpandButtonElement());
   });
 
   test('Block All Click single entry', async function() {
