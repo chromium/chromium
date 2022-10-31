@@ -32,18 +32,18 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
         future extensions or use cases.
     -   Negative policies (*Disable*, *Disallow*) are verboten because setting
         something to "true" to disable it confuses people.
-2.  Declare the policy in the [policies.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
+2.  Declare the policy in the [policies.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
     -   This file contains the policy names and their ids.
 3.  If you need to add a new policy group, create a directory with the name of
-    that group under [policy group](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
+    that group under [policy group](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
     -  Inside the newly created directory, create a `.group.details.yaml` file
        with the caption and description of the group. This group is used for
        documentation and policy template generation, so it is recommended to
        group policies in meaningful groups.
-    -  Use [.group.details.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/.group.details.yaml)
+    -  Use [.group.details.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/.group.details.yaml)
        as a templates for group definition.
-4.  Create a file named `PolicyName.yaml` under the appropriate [policy group](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
-    You may use [policy.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) to start off your policy.
+4.  Create a file named `PolicyName.yaml` under the appropriate [policy group](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
+    You may use [policy.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) to start off your policy.
     -   This file contains meta-level descriptions of all policies and is used
         to generate code, policy templates (ADM/ADMX for Windows and the
         application manifest for Mac), as well as documentation. Please make
@@ -69,7 +69,7 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
             policy as recommended and allow the user to override it in the UI,
             using a command line switch or an extension.
     - The complete list of attributes and their expected values can be found in
-      the [policy.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) file.
+      the [policy.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) file.
     -   The textual policy description should include the following:
         -   What features of Chrome are affected.
         -   Which behavior and/or UI/UX changes the policy triggers.
@@ -91,10 +91,10 @@ read [this article](https://www.chromium.org/developers/enterprise-changes/).**
       policies from multiple sources. This [feature](https://chromeenterprise.google/intl/en_ca/policies/atomic-groups/)
       is controlled by the policy [PolicyAtomicGroupsEnabled](https://chromeenterprise.google/intl/en_ca/policies/#PolicyAtomicGroupsEnabled).
 
-        -  Declare the atomic group in the [policies.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
+        -  Declare the atomic group in the [policies.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policies.yaml) file.
     -  Create a `policy_atomic_groups.yaml` file in the group where you added the
        policies if it does not already exist.
-       You may use [policy.yaml](https:/cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) as reference.
+       You may use [policy.yaml](https://cs.chromium.org/chromium/src/components/policy/resources/new_policy_templates/policy.yaml) as reference.
 6.  Create a preference and map the policy value to it.
     -   All policy values need to be mapped into a prefs value before being used
         unless the policy is needed before PrefService initialization.
@@ -309,7 +309,7 @@ put the deprecated flag if you deprecate a policy.
 To enforce the above rules concerning policy modification and ensure no
 backwards incompatible changes are introduced, presubmit checks
 will be performed on every change to
-[templates](https:/cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
+[templates](https://cs.chromium.org/chromium/src/components/policy/resources/templates/policy_definitions/).
 
 The presubmit checks perform the following verifications:
 
