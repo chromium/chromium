@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -44,17 +45,28 @@
 #include "ui/aura/window.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class WebUITabStripInteractiveTest : public InProcessBrowserTest {
+namespace {
+class WebUITabStripTestHelper {
  public:
-  WebUITabStripInteractiveTest() {
+  WebUITabStripTestHelper() {
     feature_override_.InitAndEnableFeature(features::kWebUITabStrip);
   }
 
-  ~WebUITabStripInteractiveTest() override = default;
+  ~WebUITabStripTestHelper() = default;
 
  private:
   base::test::ScopedFeatureList feature_override_;
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
+};
+}  // namespace
+
+class WebUITabStripInteractiveTest : public InProcessBrowserTest {
+ public:
+  WebUITabStripInteractiveTest() = default;
+  ~WebUITabStripInteractiveTest() override = default;
+
+ private:
+  WebUITabStripTestHelper helper_;
 };
 
 // Regression test for crbug.com/1027375.
@@ -156,9 +168,11 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ImmersiveFullscreenControllerTestApi immersive_test_api(
       chromeos::ImmersiveFullscreenController::Get(browser_view->GetWidget()));
   immersive_test_api.SetupForTest();
+#endif
 
   ImmersiveModeController* const immersive_mode_controller =
       browser_view->immersive_mode_controller();
@@ -206,123 +220,14 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
 }
 
-namespace {
-
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseDragCompleteCustomEvent);
-
-// Ends any drag currently in progress or that starts during this object's
-// lifetime. Used to prevent test hangs at the end of a test before TearDown()
-// is run because a spurious drag starts. See crbug.com/1352602 for discussion.
-class DragEnder : public aura::client::DragDropClientObserver {
- public:
-  explicit DragEnder(aura::client::DragDropClient* client) : client_(client) {
-    if (client_->IsDragDropInProgress()) {
-      PostCancel();
-    } else {
-      scoped_observation_.Observe(client_);
-    }
-  }
-
-  ~DragEnder() override = default;
-
- private:
-  void OnDragStarted() override {
-    scoped_observation_.Reset();
-    PostCancel();
-  }
-
-  void PostCancel() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DragEnder::CancelDrag, weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void CancelDrag() { client_->DragCancel(); }
-
-  aura::client::DragDropClient* const client_;
-  base::ScopedObservation<aura::client::DragDropClient,
-                          aura::client::DragDropClientObserver>
-      scoped_observation_{this};
-  base::WeakPtrFactory<DragEnder> weak_ptr_factory_{this};
-};
-
-}  // namespace
-
 // Test fixture with additional logic for drag/drop.
-class WebUITabStripDragInteractiveTest : public WebUITabStripInteractiveTest {
+class WebUITabStripDragInteractiveTest : public InteractiveBrowserTest {
  public:
   WebUITabStripDragInteractiveTest() = default;
   ~WebUITabStripDragInteractiveTest() override = default;
 
- protected:
-  // Performs a drag by sending mouse events.
-  //
-  // Moves the cursor to `start` and begins a drag to `end` in screen
-  // coordinates (but does not release the mouse button). When the mouse reaches
-  // `end`, an event is sent.
-  //
-  // This can probably be turned into a common utility method for testing things
-  // that happen in the middle of a drag.
-  void PerformDragWithoutRelease(gfx::Point start,
-                                 gfx::Point end,
-                                 ui::ElementIdentifier target_id) {
-    using WeakPtr = base::WeakPtr<WebUITabStripDragInteractiveTest>;
-    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-        start.x(), start.y(),
-        base::BindOnce(
-            [](WeakPtr test, gfx::Point end, ui::ElementIdentifier target_id) {
-              if (!test)
-                return;
-              ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
-                  ui_controls::LEFT, ui_controls::DOWN,
-                  base::BindOnce(
-                      [](WeakPtr test, gfx::Point end,
-                         ui::ElementIdentifier target_id) {
-                        if (!test)
-                          return;
-                        ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-                            end.x(), end.y(),
-                            base::BindOnce(&WebUITabStripDragInteractiveTest::
-                                               SendCustomEvent,
-                                           test, target_id,
-                                           kMouseDragCompleteCustomEvent)));
-                      },
-                      test, end, target_id)));
-            },
-            weak_ptr_factory_.GetWeakPtr(), end, target_id)));
-  }
-
-  void EndPendingDrag() {
-    // First, send a mouse-up to end the drag.
-    ui_controls::SendMouseEvents(ui_controls::LEFT, ui_controls::UP);
-
-    // Second, due to an interaction between the Linux Ash simulator and certain
-    // Chrome builds, intermittently, a drag operation can start spuriously
-    // after this sequence. Unfortunately, this happens between here and the
-    // TearDown() method, which soft-locks the test (see crbug.com/1352602 for
-    // discussion). Install an observer to detect if this happens and cancel the
-    // drag.
-    auto* const drag_client = aura::client::GetDragDropClient(
-        browser()->window()->GetNativeWindow()->GetRootWindow());
-    drag_ender_ = std::make_unique<DragEnder>(drag_client);
-  }
-
  private:
-  // Convenience method to locate and send a custom event of type `event_type`
-  // on the element with identifier `id`.
-  void SendCustomEvent(ui::ElementIdentifier id,
-                       ui::CustomElementEventType event_type) {
-    auto* const target =
-        ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-            id, browser()->window()->GetElementContext());
-    ASSERT_NE(nullptr, target);
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(target,
-                                                                  event_type);
-  }
-
-  std::unique_ptr<DragEnder> drag_ender_;
-  base::WeakPtrFactory<WebUITabStripDragInteractiveTest> weak_ptr_factory_{
-      this};
+  WebUITabStripTestHelper helper_;
 };
 
 // Regression test for crbug.com/1286203.
@@ -354,180 +259,90 @@ class WebUITabStripDragInteractiveTest : public WebUITabStripInteractiveTest {
 //
 // This sequence of events would crash without the associated bugfix. More
 // detail is provided in the actual test sequence.
-IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest, CloseTabDuringDrag) {
+IN_PROC_BROWSER_TEST_F(WebUITabStripDragInteractiveTest,
+                       CloseTabDuringDragDoesNotCrash) {
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
   // Add a second tab and set up an object to instrument that tab.
   ASSERT_TRUE(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabElementId);
-  std::unique_ptr<WebContentsInteractionTestUtil> first_tab =
-      WebContentsInteractionTestUtil::ForExistingTabInBrowser(
-          browser(), kFirstTabElementId, 0);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabElementId);
-  std::unique_ptr<WebContentsInteractionTestUtil> second_tab =
-      WebContentsInteractionTestUtil::ForExistingTabInBrowser(
-          browser(), kSecondTabElementId, 1);
+  InstrumentTab(browser(), kSecondTabElementId, 1);
 
-  // The WebUI for the tabstrip will be instrumented only after it is guaranteed
-  // to have been created.
+  // Lays out the browser to finish opening the WebUI tabstrip, then instruments
+  // the WebUI.
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUiTabStripElementId);
-  std::unique_ptr<WebContentsInteractionTestUtil> tab_strip;
+  auto instrument_tabstrip_webcontents = base::BindLambdaForTesting([&]() {
+    browser_view->GetWidget()->LayoutRootViewIfNecessary();
+    InstrumentNonTabWebView(
+        browser_view->webui_tab_strip()->web_view_for_testing(),
+        kWebUiTabStripElementId);
+  });
 
   // This is the DeepQuery path to the second tab element in the WebUI tabstrip.
-  // If the structure of the WebUI page changes greatly, it may need to be
   // modified to reflect a new page structure.
-  const WebContentsInteractionTestUtil::DeepQuery kSecondTabQuery{
-      "tabstrip-tab-list", "tabstrip-tab + tabstrip-tab"};
+  const DeepQuery kSecondTabQuery{"tabstrip-tab-list",
+                                  "tabstrip-tab + tabstrip-tab"};
 
-  // Some custom events used to advance the test sequence.
+  // It takes a while for tab data to be filled out in the tabstrip. Before it
+  // is fully loaded the tabs have zero visible size, so wait until they are the
+  // expected size.
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTabPopulatedCustomEvent);
+  StateChange tab_populated_change;
+  tab_populated_change.event = kTabPopulatedCustomEvent;
+  tab_populated_change.where = kSecondTabQuery;
+  tab_populated_change.type = StateChange::Type::kExistsAndConditionTrue;
+  tab_populated_change.test_function =
+      "el => (el.getBoundingClientRect().width > 0)";
 
-  // These are needed to determine the sequence didn't fail. They're boilerplate
-  // and will probably be exchanged in the future for a smarter version of
-  // InteractionSequence::RunSynchronouslyForTesting().
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
-  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  // Provide a way to get a reasonable target for a tab drag that is guaranteed
+  // to be outside the tabstrip.
+  auto get_point_not_in_tabstrip = base::BindLambdaForTesting([browser_view]() {
+    return browser_view->contents_web_view()->bounds().CenterPoint();
+  });
 
-  // This object contains the sequence of expected stets in the test.
-  auto sequence =
-      ui::InteractionSequence::Builder()
-          .SetContext(browser()->window()->GetElementContext())
-          .SetCompletedCallback(completed.Get())
-          .SetAbortedCallback(aborted.Get())
+  // Close a tab from within its own javascript.
+  auto close_tab = base::BindRepeating([](ui::TrackedElement* tab) {
+    AsInstrumentedWebContents(tab)->Execute("() => window.close()");
+  });
 
-          // Wait until the second tab has fully loaded. This is advisable since
-          // later the destruction of the tab needs to be observed.
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kSecondTabElementId))
+  auto get_tab_count = base::BindRepeating(
+      [](Browser* browser) { return browser->tab_strip_model()->count(); },
+      base::Unretained(browser()));
 
-          // Click the tab counter button to display the WebUI tabstrip and
-          // make sure the tabstrip appears.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kTabCounterButtonElementId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
-                          ui::TrackedElement* element) {
-                        InteractionTestUtilBrowser test_util;
-                        test_util.PressButton(element);
-
-                        // The WebUI tabstrip can be created dynamically, so
-                        // wait until the button is pressed and the browser is
-                        // re-laid-out to bind the associated WebUI.
-                        auto* const browser_view =
-                            BrowserView::GetBrowserViewForBrowser(browser());
-                        browser_view->GetWidget()->LayoutRootViewIfNecessary();
-                        auto* const web_view = browser_view->webui_tab_strip()
-                                                   ->web_view_for_testing();
-                        tab_strip =
-                            WebContentsInteractionTestUtil::ForNonTabWebView(
-                                web_view, kWebUiTabStripElementId);
-                      })))
-
-          // Wait for the WebUI tabstrip to become fully loaded, and then wait
-          // for the tab data to load and render.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetType(ui::InteractionSequence::StepType::kShown)
-                  .SetElementID(kWebUiTabStripElementId)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence*,
-                          ui::TrackedElement* element) {
-                        // At this point the new tab has been fully loaded and
-                        // its onLoad() called.
-                        EXPECT_EQ(2, browser()->tab_strip_model()->count());
-
-                        // It takes a while for tab data to be filled out in the
-                        // tabstrip. Before it is fully loaded the tabs have
-                        // zero visible size, so wait until they are the
-                        // expected size.
-                        WebContentsInteractionTestUtil::StateChange change;
-                        change.event = kTabPopulatedCustomEvent;
-                        change.where = kSecondTabQuery;
-                        change.type = WebContentsInteractionTestUtil::
-                            StateChange::Type::kExistsAndConditionTrue;
-                        change.test_function =
-                            "el => (el.getBoundingClientRect().width > 0)";
-                        tab_strip->SendEventOnStateChange(std::move(change));
-                      })))
-
-          // Now that the tab is properly rendered, drag it out of the tabstrip.
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                                kTabPopulatedCustomEvent)
-                       .SetElementID(kWebUiTabStripElementId)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             // Starting point of drag is the center of the
-                             // second tab in the WebUI tabstrip.
-                             const gfx::Point start =
-                                 tab_strip
-                                     ->GetElementBoundsInScreen(kSecondTabQuery)
-                                     .CenterPoint();
-
-                             // Endpoint is center of the main webcontents, so
-                             // guaranteed to be outside the tabstrip.
-                             const gfx::Point end = browser()
-                                                        ->tab_strip_model()
-                                                        ->GetActiveWebContents()
-                                                        ->GetContainerBounds()
-                                                        .CenterPoint();
-
-                             // Perform but do not complete the drag.
-                             PerformDragWithoutRelease(start, end,
-                                                       kWebUiTabStripElementId);
-                           })))
-
-          // Wait for the drag to finish and close the tab without releasing the
-          // mouse and actually ending the drag.
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                                kMouseDragCompleteCustomEvent)
-                       .SetElementID(kWebUiTabStripElementId)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             LOG(WARNING) << "Drag test: mouse move completed.";
-                             // For WebUI tab drag, the tab isn't actually
-                             // removed from the tabstrip until the drag
-                             // completes.
-                             EXPECT_EQ(2,
-                                       browser()->tab_strip_model()->count());
-
-                             // Close the new tab.
-                             second_tab->Execute("() => window.close()");
-                             LOG(WARNING)
-                                 << "Drag test: waiting for window to close.";
-                           })))
-
-          // Wait for the dragged tab to be closed, verify it is closed, and
-          // release the mouse to finish the drag.
-          //
-          // SetTransitionOnlyOnEvent(true) means the test will fail if the tab
-          // goes away before this step is queued; it will only succeed if the
-          // tab disappears specifically in response to the previous step.
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kHidden)
-                       .SetElementID(kSecondTabElementId)
-                       .SetTransitionOnlyOnEvent(true)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             LOG(WARNING)
-                                 << "Drag test: window successfully closed.";
-                             // The tab should now be removed from the tabstrip
-                             // because it was closed; the drag has not yet
-                             // finished.
-                             EXPECT_EQ(1,
-                                       browser()->tab_strip_model()->count());
-
-                             // Be sure to clean up from the drag.
-                             EndPendingDrag();
-                           })))
-          .Build();
-
-  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+  RunTestSequence(
+      WaitForWebContentsReady(kSecondTabElementId),
+      // Click the counter button and then wait for the WebUI tabstrip to
+      // appear.
+      PressButton(kTabCounterButtonElementId),
+      // The WebUI tabstrip can be created dynamically, so wait until the button
+      // is pressed and the browser is re-laid-out to bind the associated WebUI.
+      Do(instrument_tabstrip_webcontents),
+      // Wait for the WebUI tabstrip load.
+      WaitForShow(kWebUiTabStripElementId),
+      // Verify there are two tabs.
+      CheckResult(get_tab_count, 2),
+      // Wait for the WebUI tabstrip contents to populate.
+      WaitForStateChange(kWebUiTabStripElementId,
+                         std::move(tab_populated_change)),
+      // Now that the tab is properly rendered, drag it out of the tabstrip.
+      MoveMouseTo(kWebUiTabStripElementId, kSecondTabQuery),
+      // Drag to the center of the main web contents pane, which should be
+      // sufficiently outside the tabstrip. Do not release the drag.
+      DragMouseTo(get_point_not_in_tabstrip, /* release =*/false),
+      // The tab is not removed from the tabstrip until the drag completes.
+      // Verify the count and close the tab.
+      CheckResult(get_tab_count, 2),
+      WithElement(kSecondTabElementId, close_tab),
+      // Wait for the dragged tab to be closed, and verify the tab count is
+      // updated.
+      //
+      // Transition only on event means the test will fail if the tab goes
+      // away before this step is queued; it will only succeed if the tab
+      // disappears specifically in response to the previous step.
+      WaitForHide(kSecondTabElementId, /* transition_only_on_event =*/true),
+      CheckResult(get_tab_count, 1),
+      // Finish the drag to clean up.
+      ReleaseMouse());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
