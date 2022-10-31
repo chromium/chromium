@@ -55,6 +55,12 @@ constexpr char kJsonChallenge[] =
     "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
     "}";
 
+constexpr char kAttestationResponse[] =
+    "{"
+    "\"challengeResponse\": "
+    "\"64 encoded challenge response\""
+    "}";
+
 constexpr char kResultHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.Result";
 
@@ -131,6 +137,26 @@ class DeviceTrustServiceTest
   bool is_flag_enabled() { return std::get<0>(GetParam()); }
   bool is_policy_enabled() { return std::get<1>(GetParam()); }
 
+  void TestFailToParseChallenge(std::string serialized_signed_challenge) {
+    auto device_trust_service = CreateService();
+
+    EXPECT_CALL(*mock_signals_service_, CollectSignals(_)).Times(0);
+
+    EXPECT_CALL(*mock_attestation_service_,
+                BuildChallengeResponseForVAChallenge(_, _, _))
+        .Times(0);
+
+    base::test::TestFuture<const DeviceTrustResponse&> future;
+    device_trust_service->BuildChallengeResponse(
+        serialized_signed_challenge,
+        /*callback=*/future.GetCallback());
+
+    const DeviceTrustResponse& dt_response = future.Get();
+    EXPECT_TRUE(dt_response.challenge_response.empty());
+    EXPECT_EQ(dt_response.error, DeviceTrustError::kFailedToParseChallenge);
+    EXPECT_FALSE(dt_response.attestation_result);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
@@ -164,17 +190,19 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
           }));
 
   const DTAttestationResult result_code = DTAttestationResult::kSuccess;
+  AttestationResponse attestation_response = {kAttestationResponse,
+                                              result_code};
   EXPECT_CALL(*mock_attestation_service_,
               BuildChallengeResponseForVAChallenge(
                   GetSerializedSignedChallenge(kJsonChallenge), _, _))
-      .WillOnce(Invoke([&fake_display_name](
+      .WillOnce(Invoke([&fake_display_name, &attestation_response](
                            const std::string& challenge,
                            const base::Value::Dict signals,
                            AttestationService::AttestationCallback callback) {
         EXPECT_EQ(
             signals.FindString(device_signals::names::kDisplayName)->c_str(),
             fake_display_name);
-        std::move(callback).Run({challenge, result_code});
+        std::move(callback).Run(attestation_response);
       }));
 
   base::test::TestFuture<const DeviceTrustResponse&> future;
@@ -183,12 +211,66 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
       /*callback=*/future.GetCallback());
 
   const DeviceTrustResponse& dt_response = future.Get();
-  EXPECT_FALSE(dt_response.challenge_response.empty());
+  EXPECT_EQ(dt_response.challenge_response,
+            attestation_response.challenge_response);
   EXPECT_FALSE(dt_response.error);
-  ASSERT_TRUE(dt_response.attestation_result);
-  EXPECT_EQ(dt_response.attestation_result.value(), result_code);
+  EXPECT_EQ(dt_response.attestation_result, attestation_response.result_code);
 
   histogram_tester_.ExpectUniqueSample(kResultHistogramName, result_code, 1);
+}
+
+TEST_P(DeviceTrustServiceTest, AttestationFailure) {
+  auto device_trust_service = CreateService();
+
+  std::string fake_display_name = "fake_display_name";
+  EXPECT_CALL(*mock_signals_service_, CollectSignals(_))
+      .WillOnce(Invoke(
+          [&fake_display_name](
+              base::OnceCallback<void(base::Value::Dict)> signals_callback) {
+            auto fake_signals = std::make_unique<base::Value::Dict>();
+            fake_signals->Set(device_signals::names::kDisplayName,
+                              fake_display_name);
+            std::move(signals_callback).Run(std::move(*fake_signals));
+          }));
+
+  const DTAttestationResult result_code =
+      DTAttestationResult::kMissingSigningKey;
+  AttestationResponse attestation_response = {kAttestationResponse,
+                                              result_code};
+  EXPECT_CALL(*mock_attestation_service_,
+              BuildChallengeResponseForVAChallenge(
+                  GetSerializedSignedChallenge(kJsonChallenge), _, _))
+      .WillOnce(Invoke([&attestation_response](
+                           const std::string& challenge,
+                           const base::Value::Dict signals,
+                           AttestationService::AttestationCallback callback) {
+        std::move(callback).Run(attestation_response);
+      }));
+
+  base::test::TestFuture<const DeviceTrustResponse&> future;
+  device_trust_service->BuildChallengeResponse(
+      kJsonChallenge,
+      /*callback=*/future.GetCallback());
+
+  const DeviceTrustResponse& dt_response = future.Get();
+  EXPECT_EQ(dt_response.challenge_response,
+            attestation_response.challenge_response);
+  EXPECT_EQ(dt_response.error, DeviceTrustError::kFailedToCreateResponse);
+  EXPECT_EQ(dt_response.attestation_result, attestation_response.result_code);
+
+  histogram_tester_.ExpectUniqueSample(kResultHistogramName, result_code, 1);
+}
+
+TEST_P(DeviceTrustServiceTest, EmptyJson) {
+  TestFailToParseChallenge("");
+}
+
+TEST_P(DeviceTrustServiceTest, JsonMissingChallenge) {
+  TestFailToParseChallenge("{\"not_challenge\": \"random_value\"}");
+}
+
+TEST_P(DeviceTrustServiceTest, JsonInvalidEncode) {
+  TestFailToParseChallenge("{\"challenge\": \"%% %% %%\"}");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
