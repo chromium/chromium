@@ -34,8 +34,8 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
     bool user_gesture,
     permissions::BrowserPermissionCallback* callback,
     permissions::GeolocationPermissionContext* context) {
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      id.render_process_id(), id.render_frame_id());
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
   DCHECK(rfh);
 
   content::WebContents* web_contents =

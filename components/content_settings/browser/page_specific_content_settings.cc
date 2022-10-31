@@ -442,11 +442,9 @@ void PageSpecificContentSettings::DeleteForWebContentsForTest(
 
 // static
 PageSpecificContentSettings* PageSpecificContentSettings::GetForFrame(
-    int render_process_id,
-    int render_frame_id) {
+    const content::GlobalRenderFrameHostId& id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetForFrame(
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id));
+  return GetForFrame(content::RenderFrameHost::FromID(id));
 }
 
 // static
@@ -478,8 +476,7 @@ void PageSpecificContentSettings::StorageAccessed(StorageType storage_type,
           rfh, &PageSpecificContentSettings::StorageAccessed, storage_type,
           render_process_id, render_frame_id, url, blocked_by_policy))
     return;
-  PageSpecificContentSettings* settings =
-      GetForFrame(render_process_id, render_frame_id);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
   if (settings)
     settings->OnStorageAccessed(storage_type, url, blocked_by_policy);
 }
@@ -508,8 +505,8 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
     const blink::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PageSpecificContentSettings* settings =
-      GetForFrame(render_process_id, render_frame_id);
+  PageSpecificContentSettings* settings = GetForFrame(
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id));
   if (settings)
     settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
                                      blocked_by_policy);

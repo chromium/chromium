@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/types/id_type.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -28,16 +29,16 @@ class PermissionRequestID {
 
   PermissionRequestID(content::RenderFrameHost* render_frame_host,
                       RequestLocalId request_local_id);
-  PermissionRequestID(int render_process_id,
-                      int render_frame_id,
+  PermissionRequestID(content::GlobalRenderFrameHostId id,
                       RequestLocalId request_local_id);
   ~PermissionRequestID();
 
   PermissionRequestID(const PermissionRequestID&);
   PermissionRequestID& operator=(const PermissionRequestID&);
 
-  int render_process_id() const { return render_process_id_; }
-  int render_frame_id() const { return render_frame_id_; }
+  const content::GlobalRenderFrameHostId& global_render_frame_host_id() const {
+    return global_render_frame_host_id_;
+  }
 
   // Deprecated. Only accessible for testing.
   RequestLocalId request_local_id_for_testing() const {
@@ -50,8 +51,7 @@ class PermissionRequestID {
   std::string ToString() const;
 
  private:
-  int render_process_id_;
-  int render_frame_id_;
+  content::GlobalRenderFrameHostId global_render_frame_host_id_;
   RequestLocalId request_local_id_;
 };
 

@@ -55,7 +55,7 @@ void GeolocationPermissionContext::UpdateTabContext(
     bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.render_process_id(), id.render_frame_id());
+          id.global_render_frame_host_id());
 
   // WebContents might not exist (extensions) or no longer exist. In which case,
   // PageSpecificContentSettings will be null.

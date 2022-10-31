@@ -83,8 +83,7 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
       id, url, true,

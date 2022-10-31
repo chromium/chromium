@@ -28,7 +28,7 @@ void MidiSysexPermissionContext::UpdateTabContext(const PermissionRequestID& id,
                                                   bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.render_process_id(), id.render_frame_id());
+          id.global_render_frame_host_id());
   if (!content_settings)
     return;
 
@@ -36,7 +36,7 @@ void MidiSysexPermissionContext::UpdateTabContext(const PermissionRequestID& id,
     content_settings->OnContentAllowed(ContentSettingsType::MIDI_SYSEX);
 
     content::ChildProcessSecurityPolicy::GetInstance()
-        ->GrantSendMidiSysExMessage(id.render_process_id());
+        ->GrantSendMidiSysExMessage(id.global_render_frame_host_id().child_id);
   } else {
     content_settings->OnContentBlocked(ContentSettingsType::MIDI_SYSEX);
   }

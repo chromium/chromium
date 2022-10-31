@@ -70,8 +70,7 @@ void CameraPanTiltZoomPermissionContext::RequestPermission(
   // If there is no camera with PTZ capabilities, let's request a "regular"
   // camera permission instead.
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(id.render_process_id(),
-                                       id.render_frame_id());
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
 
   if (requesting_frame_origin !=
       render_frame_host->GetLastCommittedOrigin().GetURL()) {

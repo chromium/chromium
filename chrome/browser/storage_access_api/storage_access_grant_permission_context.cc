@@ -145,8 +145,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
     return;
   }
 
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      id.render_process_id(), id.render_frame_id());
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
   DCHECK(rfh);
   StorageAccessRequestType request_type =
       GetStorageAccessRequestType(requesting_origin, embedding_origin, rfh);

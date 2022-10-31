@@ -774,8 +774,7 @@ class WebAppNonClientFrameViewAshTest
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame();
     content_settings::PageSpecificContentSettings* content_settings =
-        content_settings::PageSpecificContentSettings::GetForFrame(
-            frame->GetProcess()->GetID(), frame->GetRoutingID());
+        content_settings::PageSpecificContentSettings::GetForFrame(frame);
     content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
     return *base::ranges::find(*content_setting_views_,

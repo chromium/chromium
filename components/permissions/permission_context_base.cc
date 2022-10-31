@@ -118,8 +118,8 @@ void PermissionContextBase::RequestPermission(
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
-      id.render_process_id(), id.render_frame_id());
+  content::RenderFrameHost* const rfh =
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
 
   if (!rfh) {
     // Permission request is not allowed without a valid RenderFrameHost.
@@ -368,8 +368,8 @@ void PermissionContextBase::DecidePermission(
          requesting_origin == embedding_origin ||
          content_settings_type_ == ContentSettingsType::STORAGE_ACCESS);
 
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      id.render_process_id(), id.render_frame_id());
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(id.global_render_frame_host_id());
   DCHECK(rfh);
 
   content::WebContents* web_contents =

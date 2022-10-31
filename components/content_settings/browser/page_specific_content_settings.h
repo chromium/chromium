@@ -196,8 +196,9 @@ class PageSpecificContentSettings
   // Returns the object given a RenderFrameHost ids. Returns nullptr if the
   // frame no longer exist or there are no PageSpecificContentSettings attached
   // to the document.
-  static PageSpecificContentSettings* GetForFrame(int render_process_id,
-                                                  int render_frame_id);
+  static PageSpecificContentSettings* GetForFrame(
+      const content::GlobalRenderFrameHostId& id);
+
   // Returns the object given a RenderFrameHost. Returns nullptr if the frame
   // is nullptr or there are no PageSpecificContentSettings attached to the
   // document.

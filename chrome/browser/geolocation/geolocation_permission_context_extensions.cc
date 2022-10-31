@@ -58,7 +58,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      request_id.render_process_id(), request_id.render_frame_id());
+      request_id.global_render_frame_host_id());
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
@@ -86,7 +86,8 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
             web_contents->GetPrimaryMainFrame())) {
       // Make sure the extension is in the calling process.
       if (extensions::ProcessMap::Get(profile_)->Contains(
-              extension->id(), request_id.render_process_id())) {
+              extension->id(),
+              request_id.global_render_frame_host_id().child_id)) {
         *permission_set = true;
         *new_permission = true;
         return true;

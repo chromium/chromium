@@ -115,7 +115,7 @@ void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
   // WebContents may have gone away.
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.render_process_id(), id.render_frame_id());
+          id.global_render_frame_host_id());
   if (content_settings) {
     content_settings->OnProtectedMediaIdentifierPermissionSet(
         requesting_frame.DeprecatedGetOriginAsURL(), allowed);

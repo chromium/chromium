@@ -41,8 +41,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(id.render_process_id(),
-                                           id.render_frame_id()));
+          content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
 
   // Ignore when the associated RenderFrameHost has already been destroyed.
   if (!web_contents)

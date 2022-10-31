@@ -36,8 +36,7 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
     DCHECK_EQ(!!*callback, permission_set);
     if (permission_set) {
       content::RenderFrameHost* const render_frame_host =
-          content::RenderFrameHost::FromID(id.render_process_id(),
-                                           id.render_frame_id());
+          content::RenderFrameHost::FromID(id.global_render_frame_host_id());
       ContentSetting content_setting =
           new_permission ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
       context->NotifyPermissionSet(

@@ -44,7 +44,7 @@ void WindowManagementPermissionContext::UserMadePermissionDecision(
   // then immediately request fullscreen or place a window using granted info.
   if (content_setting == CONTENT_SETTING_ALLOW) {
     if (auto* render_frame_host = content::RenderFrameHost::FromID(
-            id.render_process_id(), id.render_frame_id())) {
+            id.global_render_frame_host_id())) {
       render_frame_host->NotifyUserActivation(
           blink::mojom::UserActivationNotificationType::kInteraction);
     }

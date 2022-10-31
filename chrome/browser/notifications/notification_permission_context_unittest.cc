@@ -274,8 +274,7 @@ TEST_F(NotificationPermissionContextTest, WebNotificationsTopLevelOriginOnly) {
 
   // Requesting permission for different origins should fail.
   permissions::PermissionRequestID request_id(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
@@ -345,8 +344,7 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
 
   base::TestMockTimeTaskRunner* task_runner = SwitchToMockTime();
@@ -413,12 +411,10 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   web_contents()->WasShown();
 
   const permissions::PermissionRequestID id1(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId(1));
   const permissions::PermissionRequestID id2(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId(2));
 
   base::TestMockTimeTaskRunner* task_runner = SwitchToMockTime();

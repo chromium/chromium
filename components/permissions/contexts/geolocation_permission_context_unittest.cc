@@ -211,8 +211,7 @@ class GeolocationPermissionContextTests
 PermissionRequestID GeolocationPermissionContextTests::RequestID(
     int request_id) {
   return PermissionRequestID(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       PermissionRequestID::RequestLocalId(request_id));
 }
 
@@ -220,8 +219,7 @@ PermissionRequestID GeolocationPermissionContextTests::RequestIDForTab(
     int tab,
     int request_id) {
   return PermissionRequestID(
-      extra_tabs_[tab]->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      extra_tabs_[tab]->GetPrimaryMainFrame()->GetRoutingID(),
+      extra_tabs_[tab]->GetPrimaryMainFrame()->GetGlobalId(),
       PermissionRequestID::RequestLocalId(request_id));
 }
 
@@ -250,7 +248,7 @@ GeolocationPermissionContextTests::GetPermissionStatus(
 void GeolocationPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
     ContentSetting content_setting) {
-  responses_[id.render_process_id()] =
+  responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
                      content_setting == CONTENT_SETTING_ALLOW);
 }

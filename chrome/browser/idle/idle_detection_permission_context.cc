@@ -29,7 +29,7 @@ void IdleDetectionPermissionContext::UpdateTabContext(
     bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
-          id.render_process_id(), id.render_frame_id());
+          id.global_render_frame_host_id());
   if (!content_settings)
     return;
 
@@ -53,8 +53,8 @@ void IdleDetectionPermissionContext::DecidePermission(
   // PermissionMenuModel::PermissionMenuModel which prevents users from manually
   // allowing the permission.
   if (browser_context()->IsOffTheRecord()) {
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-        id.render_process_id(), id.render_frame_id());
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(id.global_render_frame_host_id());
 
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(rfh);

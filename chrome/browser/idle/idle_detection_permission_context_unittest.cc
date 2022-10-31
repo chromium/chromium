@@ -79,8 +79,7 @@ TEST_F(IdleDetectionPermissionContextTest, TestDenyInIncognitoAfterDelay) {
   NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
 
   ASSERT_EQ(0, permission_context.permission_set_count());
@@ -145,12 +144,10 @@ TEST_F(IdleDetectionPermissionContextTest, TestParallelDenyInIncognito) {
   web_contents()->WasShown();
 
   const permissions::PermissionRequestID id1(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId(1));
   const permissions::PermissionRequestID id2(
-      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId(2));
 
   ASSERT_EQ(0, permission_context.permission_set_count());

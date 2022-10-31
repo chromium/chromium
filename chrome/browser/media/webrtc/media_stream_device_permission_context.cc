@@ -152,8 +152,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(id.render_process_id(),
-                                           id.render_frame_id()));
+          content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
   if (!web_contents) {
     // If we can't get the web contents, we don't know the state of the OS
     // permission, so assume we don't have it.
