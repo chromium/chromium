@@ -64,31 +64,6 @@ GURL GetDictionaryURL(const std::string& file_name) {
   return GURL(std::string(kDownloadServerUrl) + base::ToLowerASCII(file_name));
 }
 
-bool SaveDictionaryData(std::unique_ptr<std::string> data,
-                        const base::FilePath& file_path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  // Create a temporary file.
-  base::FilePath tmp_path;
-  if (!base::CreateTemporaryFileInDir(file_path.DirName(), &tmp_path)) {
-    LOG(ERROR) << "Failed to create a temporary file.";
-    return false;
-  }
-
-  // Write to the temporary file.
-  size_t bytes_written =
-      base::WriteFile(tmp_path, data->data(), data->length());
-  if (bytes_written != data->length()) {
-    base::DeleteFile(tmp_path);
-    LOG(ERROR) << "Failed to write dictionary data to the temporary file";
-    return false;
-  }
-
-  // Atomically rename the temporary file to become the real one.
-  return base::ReplaceFile(tmp_path, file_path, nullptr);
-}
-
 base::File OpenDictionaryFile(const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -156,8 +131,7 @@ void SpellCheckLanguage::InitializeSpellCheckService() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void SpellCheckLanguage::OnSimpleURLLoaderComplete(
-    std::unique_ptr<std::string> data) {
+void SpellCheckLanguage::OnSimpleURLLoaderComplete(base::FilePath tmp_path) {
   int response_code = -1;
   if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers)
     response_code = loader_->ResponseInfo()->headers->response_code();
@@ -168,17 +142,10 @@ void SpellCheckLanguage::OnSimpleURLLoaderComplete(
     return;
   }
 
-  // Basic sanity check on the dictionary data.
-  if (!data || data->size() < 4 || data->compare(0, 4, "BDic") != 0) {
-    LOG(ERROR) << "Downloaded dictionary data is empty or broken.";
-    MaybeRetryInitialize();
-    return;
-  }
-
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
-      base::BindOnce(&SaveDictionaryData, std::move(data),
-                     dictionary_file_path_),
+      base::BindOnce(&base::ReplaceFile, tmp_path, dictionary_file_path_,
+                     nullptr),
       base::BindOnce(&SpellCheckLanguage::OnSaveDictionaryDataComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -226,8 +193,7 @@ void SpellCheckLanguage::OnPathExistsComplete(bool path_exists) {
         network::SimpleURLLoader::RetryMode::RETRY_ON_5XX |
             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 
-    // TODO(b/226221138): Probably use |DownloadToTempFile| instead.
-    loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+    loader_->DownloadToTempFile(
         url_loader_factory_.get(),
         base::BindOnce(&SpellCheckLanguage::OnSimpleURLLoaderComplete,
                        base::Unretained(this)));

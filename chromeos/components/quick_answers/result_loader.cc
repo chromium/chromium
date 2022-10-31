@@ -96,10 +96,11 @@ void ResultLoader::OnBuildRequestComplete(
                              network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 
   fetch_start_time_ = base::TimeTicks::Now();
-  loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&ResultLoader::OnSimpleURLLoaderComplete,
-                     weak_factory_.GetWeakPtr(), preprocessed_output));
+                     weak_factory_.GetWeakPtr(), preprocessed_output),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void ResultLoader::OnSimpleURLLoaderComplete(

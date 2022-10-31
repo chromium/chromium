@@ -52,7 +52,7 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
  private:
   void InitializeSpellCheckService();
 
-  void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleURLLoaderComplete(base::FilePath response_path);
 
   void OnDictionaryCreated(
       mojo::PendingRemote<mojom::SpellCheckDictionary> dictionary);
