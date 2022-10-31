@@ -220,7 +220,14 @@ void PresentationFrame::Reset() {
       local_presentation_manager->UnregisterLocalPresentationController(
           pid_route.first, render_frame_host_id_);
     } else {
-      router_->DetachRoute(pid_route.second.media_route_id());
+      // We avoid using `router_` here because it may have been invalidated if
+      // this method is called during profile shutdown. This is a speculative
+      // fix for crbug.com/1219904.
+      MediaRouter* router = MediaRouterFactory::GetApiForBrowserContextIfExists(
+          web_contents_->GetBrowserContext());
+      if (router) {
+        router->DetachRoute(pid_route.second.media_route_id());
+      }
     }
   }
 

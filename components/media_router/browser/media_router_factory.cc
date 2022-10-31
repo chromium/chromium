@@ -30,6 +30,16 @@ MediaRouter* MediaRouterFactory::GetApiForBrowserContext(
 }
 
 // static
+MediaRouter* MediaRouterFactory::GetApiForBrowserContextIfExists(
+    BrowserContext* context) {
+  if (!context) {
+    return nullptr;
+  }
+  return static_cast<MediaRouter*>(
+      g_instance->GetServiceForBrowserContext(context, false));
+}
+
+// static
 MediaRouterFactory* MediaRouterFactory::GetInstance() {
   DCHECK(g_instance);
   return g_instance;

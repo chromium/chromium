@@ -116,6 +116,7 @@ source_set("unit_tests") {
   sources = [
     "media_router_base_unittest.cc",
     "media_router_dialog_controller_unittest.cc",
+    "media_router_factory_unittest.cc",
     "media_router_metrics_unittest.cc",
     "media_sinks_observer_unittest.cc",
     "presentation/browser_presentation_connection_proxy_unittest.cc",
