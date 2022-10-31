@@ -829,6 +829,8 @@ void RTCVideoEncoder::Impl::NotifyEncoderInfoChange(
 void RTCVideoEncoder::Impl::Enqueue(const webrtc::VideoFrame* input_frame,
                                     bool force_keyframe,
                                     SignaledValue encode_event) {
+  TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::Enqueue", "timestamp",
+               input_frame->timestamp());
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!input_next_frame_);
@@ -1286,11 +1288,12 @@ void RTCVideoEncoder::Impl::LogAndNotifyError(
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrame() {
-  TRACE_EVENT0("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrame");
   DVLOG(3) << "Impl::EncodeOneFrame()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_next_frame_);
   DCHECK(!input_buffers_free_.empty());
+  TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrame", "timestamp",
+               input_next_frame_->timestamp());
 
   // EncodeOneFrame() may re-enter InputBufferReleased() if VEA::Encode() fails,
   // we receive a VEA::NotifyError(), and the media::VideoFrame we pass to
@@ -1452,12 +1455,12 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
 }
 
 void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
-  TRACE_EVENT0("webrtc",
-               "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput");
   DVLOG(3) << "Impl::EncodeOneFrameWithNativeInput()";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(input_buffers_.empty() && input_buffers_free_.empty());
   DCHECK(input_next_frame_);
+  TRACE_EVENT1("webrtc", "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput",
+               "timestamp", input_next_frame_->timestamp());
 
   const webrtc::VideoFrame* next_frame = input_next_frame_;
   const bool next_frame_keyframe = input_next_frame_keyframe_;
@@ -1623,6 +1626,10 @@ int32_t RTCVideoEncoder::InitEncode(
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
   }
 
+  TRACE_EVENT2(
+      "webrtc", "RTCVideoEncoder::InitEncode", "profile",
+      media::GetProfileName(profile_), "resolution",
+      gfx::Size(codec_settings->width, codec_settings->height).ToString());
   // This wait is necessary because this task is completed in GPU process
   // asynchronously but WebRTC API is synchronous.
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -1649,6 +1656,8 @@ int32_t RTCVideoEncoder::InitEncode(
 int32_t RTCVideoEncoder::Encode(
     const webrtc::VideoFrame& input_image,
     const std::vector<webrtc::VideoFrameType>* frame_types) {
+  TRACE_EVENT1("webrtc", "RTCVideoEncoder::Encode", "timestamp",
+               input_image.timestamp());
   DVLOG(3) << __func__;
   if (!impl_.get()) {
     DVLOG(3) << "Encoder is not initialized";
