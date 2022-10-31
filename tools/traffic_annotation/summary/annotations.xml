@@ -293,7 +293,7 @@ Refer to README.md for content description and update process.
  <item id="ime_url_downloader" added_in_milestone="98" content_hash_code="00f13105" os_list="chromeos" file_path="chrome/browser/ash/input_method/ime_service_connector.cc" />
  <item id="chromebook_mail_api" added_in_milestone="98" content_hash_code="01bfcf72" os_list="chromeos" file_path="chrome/browser/ash/login/marketing_backend_connector.cc" />
  <item id="terms_of_service_fetch" added_in_milestone="98" content_hash_code="050bde78" os_list="chromeos" file_path="chrome/browser/ash/login/screens/terms_of_service_screen.cc" />
- <item id="chrome_plugin_vm_api" added_in_milestone="98" content_hash_code="040df05e" os_list="chromeos" file_path="chrome/browser/ash/plugin_vm/plugin_vm_license_checker.cc" />
+ <item id="chrome_plugin_vm_api" added_in_milestone="98" content_hash_code="01e4c4bd" os_list="chromeos" file_path="chrome/browser/ash/plugin_vm/plugin_vm_license_checker.cc" />
  <item id="remote_command_screenshot" added_in_milestone="98" content_hash_code="07acca89" os_list="chromeos" file_path="chrome/browser/ash/policy/remote_commands/screenshot_delegate.cc" />
  <item id="remote_apps_image_downloader" added_in_milestone="98" content_hash_code="039bbcf1" os_list="chromeos" file_path="chrome/browser/ash/remote_apps/remote_apps_manager.cc" />
  <item id="smb_netbios_name_query" added_in_milestone="98" content_hash_code="03d9baa0" os_list="chromeos" file_path="chrome/browser/ash/smb_client/discovery/netbios_client.cc" />
