@@ -83,6 +83,10 @@ HelpAppZeroStateResult::HelpAppZeroStateResult(Profile* profile,
   SetTitle(title);
   if (!details.empty())
     SetDetails(details);
+  // Show this in the first position, in front of any other chips that may be
+  // also claiming the first slot.
+  SetDisplayIndex(DisplayIndex::kFirstIndex);
+  SetPositionPriority(1.0f);
   SetResultType(ResultType::kZeroStateHelpApp);
   SetDisplayType(display_type);
   // Some chips have different metrics types.
