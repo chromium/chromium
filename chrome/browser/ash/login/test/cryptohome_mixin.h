@@ -30,6 +30,7 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
 
   void MarkUserAsExisting(const AccountId& user);
   void AddGaiaPassword(const AccountId& user, std::string password);
+  bool HasPinFactor(const AccountId& user);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CryptohomeMixinTest,

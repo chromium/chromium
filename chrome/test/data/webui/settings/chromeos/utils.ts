@@ -18,6 +18,11 @@ export function hasBooleanProperty<X extends {}, Y extends PropertyKey>(
   return hasProperty(obj, prop) && typeof obj[prop] === 'boolean';
 }
 
+export function hasStringProperty<X extends {}, Y extends PropertyKey>(
+    obj: X, prop: Y): obj is X&Record<Y, string> {
+  return hasProperty(obj, prop) && typeof obj[prop] === 'string';
+}
+
 export function sleep(milliseconds: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 }

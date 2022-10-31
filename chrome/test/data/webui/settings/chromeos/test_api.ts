@@ -5,7 +5,75 @@
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
-import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, Lazy, querySelectorShadow, retry, retryUntilSome} from './utils.js';
+import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, hasStringProperty, Lazy, querySelectorShadow, retry, retryUntilSome, sleep} from './utils.js';
+
+enum PinDialogType {
+  SETUP,
+  AUTOSUBMIT,
+}
+
+// A dialog that asks for a pin. Used for both the "setup pin" dialog and the
+// "pin autosubmit" dialog.
+class PinDialog {
+  private element: HTMLElement;
+  private dialogType: PinDialogType;
+
+  constructor(element: HTMLElement, dialogType: PinDialogType) {
+    this.element = element;
+    assertTrue(this.element.shadowRoot !== null);
+    this.dialogType = dialogType;
+  }
+
+  private shadowRoot(): ShadowRoot {
+    const shadowRoot = this.element.shadowRoot;
+    assertTrue(shadowRoot !== null);
+    return shadowRoot;
+  }
+
+  private pinInput(): HTMLElement&{value: string} {
+    const pinKeyboard = this.shadowRoot().getElementById('pinKeyboard');
+    assertTrue(pinKeyboard instanceof HTMLElement);
+    assertTrue(pinKeyboard.shadowRoot !== null);
+
+    switch (this.dialogType) {
+      case PinDialogType.SETUP: {
+        const pinInput = pinKeyboard.shadowRoot.getElementById('pinKeyboard');
+        assertTrue(pinInput instanceof HTMLElement);
+        assertTrue(hasStringProperty(pinInput, 'value'));
+        return pinInput;
+      }
+      case PinDialogType.AUTOSUBMIT: {
+        assertTrue(hasStringProperty(pinKeyboard, 'value'));
+        return pinKeyboard;
+      }
+    }
+  }
+
+  private cancelButton(): HTMLElement {
+    const button = this.shadowRoot().querySelector('.cancel-button');
+    assertTrue(button instanceof HTMLElement);
+    return button;
+  }
+
+  private submitButton(): HTMLElement {
+    const button = this.shadowRoot().querySelector('.action-button');
+    assertTrue(button instanceof HTMLElement);
+    return button;
+  }
+
+  async enterPin(pin: string): Promise<void> {
+    (await retry(() => this.pinInput())).value = pin;
+  }
+
+  async submit(): Promise<void> {
+    await sleep(2000);
+    (await retry(() => this.submitButton())).click();
+  }
+
+  async cancel(): Promise<void> {
+    (await retry(() => this.cancelButton())).click();
+  }
+}
 
 export class LockScreenSettings implements LockScreenSettingsInterface {
   // Relevant elements are stored as lazy values because element identity might
@@ -136,6 +204,151 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     toggle.click();
 
     await assertAsync(toggleIsFlipped);
+  }
+
+  private passwordOnlyToggle(): HTMLElement&{checked: boolean} {
+    const toggle =
+        this.shadowRoot().querySelector('cr-radio-button[name="password"]');
+    assertTrue(toggle instanceof HTMLElement);
+    assertTrue(hasBooleanProperty(toggle, 'checked'));
+    return toggle;
+  }
+
+  private pinAndPasswordToggle(): HTMLElement&{checked: boolean}|null {
+    const toggle =
+        this.shadowRoot().querySelector('cr-radio-button[name="pin+password"]');
+    assertTrue(toggle instanceof HTMLElement);
+    assertTrue(hasBooleanProperty(toggle, 'checked'));
+    return toggle;
+  }
+
+  private setupPinButton(): HTMLElement|null {
+    return this.shadowRoot().getElementById('setupPinButton');
+  }
+
+  private setupPinDialog(): PinDialog|null {
+    const element = this.shadowRoot().getElementById('setupPin');
+    if (element === null) {
+      return null;
+    }
+    assertTrue(element instanceof HTMLElement);
+    return new PinDialog(element, PinDialogType.SETUP);
+  }
+
+  private pinAutosubmitDialog(): PinDialog|null {
+    const element = this.shadowRoot().getElementById('pinAutosubmitDialog');
+    if (element === null) {
+      return null;
+    }
+    assertTrue(element instanceof HTMLElement);
+    return new PinDialog(element, PinDialogType.AUTOSUBMIT);
+  }
+
+  async assertIsUsingPin(isUsing: boolean): Promise<void> {
+    const property = () => {
+      const toggle = this.pinAndPasswordToggle();
+      return toggle !== null && toggle.checked === isUsing;
+    };
+    await assertAsync(property);
+    await assertForDuration(property);
+  }
+
+  async removePin(): Promise<void> {
+    (await retry(() => this.passwordOnlyToggle())).click();
+    await assertAsync(() => this.passwordOnlyToggle().checked === true);
+  }
+
+  async setPin(pin: string): Promise<void> {
+    // Click the "pin and password" toggle button.
+    (await retryUntilSome(() => this.pinAndPasswordToggle())).click();
+    // The toggle button should be checked.
+    await assertAsync(() => {
+      const toggle = this.pinAndPasswordToggle();
+      return toggle !== null && toggle.checked;
+    });
+
+    // Click the pin setup button.
+    (await retryUntilSome(() => this.setupPinButton())).click();
+    // The pin dialog should be shown.
+    const pinDialog = await retryUntilSome(() => this.setupPinDialog());
+
+    // Enter pin twice and submit each time.
+    await pinDialog.enterPin(pin);
+    await pinDialog.submit();
+    await pinDialog.enterPin(pin);
+    await pinDialog.submit();
+
+    // The setup pin dialog should disappear.
+    await assertAsync(() => this.setupPinDialog() === null);
+
+    // The "pin or password" toggle should still be checked.
+    await assertAsync(() => {
+      const toggle = this.pinAndPasswordToggle();
+      return toggle !== null && toggle.checked;
+    });
+  }
+
+  private autosubmitToggle(): HTMLElement&{checked: boolean}|null {
+    const toggle = this.shadowRoot().getElementById('enablePinAutoSubmit');
+    if (toggle === null) {
+      return null;
+    }
+
+    assertTrue(toggle instanceof HTMLElement);
+    assertTrue(hasBooleanProperty(toggle, 'checked'));
+    return toggle;
+  }
+
+  isPinAutosubmitEnabled(): boolean {
+    const toggle = this.autosubmitToggle();
+    return toggle !== null && toggle.checked;
+  }
+
+  async assertPinAutosubmitEnabled(isEnabled: boolean): Promise<void> {
+    const check = () => this.isPinAutosubmitEnabled() === isEnabled;
+    await assertAsync(check);
+    await assertForDuration(check);
+  }
+
+  async enablePinAutosubmit(pin: string): Promise<void> {
+    // Initially, autosubmit must be disabled.
+    await assertAsync(() => this.isPinAutosubmitEnabled() === false);
+
+    // Click the toggle.
+    (await retryUntilSome(() => this.autosubmitToggle())).click();
+
+    // Wait for the confirmation dialog to appear and enter pin.
+    const dialog = await retryUntilSome(() => this.pinAutosubmitDialog());
+    await dialog.enterPin(pin);
+    await dialog.submit();
+
+    // The dialog should disappear, and the toggle must be checked.
+    await assertAsync(() => this.pinAutosubmitDialog() === null);
+    await assertAsync(() => this.isPinAutosubmitEnabled() === true);
+  }
+
+  async enablePinAutosubmitIncorrectly(incorrectPin: string): Promise<void> {
+    // Initially, autosubmit must be disabled.
+    await assertAsync(() => this.isPinAutosubmitEnabled() === false);
+
+    // Click the toggle.
+    (await retryUntilSome(() => this.autosubmitToggle())).click();
+
+    // Wait for the confirmation dialog to appear and enter pin.
+    const dialog = await retryUntilSome(() => this.pinAutosubmitDialog());
+    await dialog.enterPin(incorrectPin);
+    await dialog.submit();
+
+    // The dialog should not disappear. Dismiss it.
+    await assertForDuration(() => this.pinAutosubmitDialog() !== null);
+    await dialog.cancel();
+    await assertAsync(() => this.pinAutosubmitDialog() === null);
+  }
+
+  async disablePinAutosubmit(): Promise<void> {
+    await assertAsync(() => this.isPinAutosubmitEnabled() === true);
+    (await retryUntilSome(() => this.autosubmitToggle())).click();
+    await assertAsync(() => this.isPinAutosubmitEnabled() === false);
   }
 }
 

@@ -32,6 +32,31 @@ interface LockScreenSettings {
   // does not eventually show that recovery configuration has changed as
   // expected.
   ToggleRecoveryConfiguration() => ();
+
+  // Checks whether the user wants to use pin for login and unlock or not. This
+  // can be true even though there is no pin if the user has not set up a pin
+  // yet.
+  AssertIsUsingPin(bool is_using) => ();
+
+  // Removes the PIN if there is a PIN.
+  RemovePin() => ();
+
+  // Sets the pin to a given value.
+  SetPin(string pin) => ();
+
+  // Checks that pin autosubmit is enabled or disabled.
+  AssertPinAutosubmitEnabled(bool is_enabled) => ();
+
+  // Enable pin autosubmit. Can only be called if pin autosubmit is currently
+  // disabled. The parameter is used to confirm the pin and must be correct.
+  EnablePinAutosubmit(string pin) => ();
+
+  // Disable pin autosubmit. Can only be called if pin autosubmit is currently
+  // disabled.
+  DisablePinAutosubmit() => ();
+
+  // Try to enable pin autosubmit, but fail due to a wrong pin.
+  EnablePinAutosubmitIncorrectly(string incorrect_pin) => ();
 };
 
 // An interface that allows clients to manipulate the os settings ui. Served by

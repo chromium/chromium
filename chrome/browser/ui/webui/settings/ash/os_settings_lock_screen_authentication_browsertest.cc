@@ -52,24 +52,37 @@ class OSSettingsLockScreenAuthenticationTest
     cryptohome_.AddGaiaPassword(account, kCorrectPassword);
   }
 
- protected:
-  CryptohomeMixin cryptohome_{&mixin_host_};
-  OSSettingsBrowserTestMixin os_settings_{&mixin_host_};
+  // Opens the ChromeOS settings app and goes to the "lock screen" section.
+  // Does not enter a password.
+  mojom::LockScreenSettingsAsyncWaiter OpenLockScreenSettings() {
+    os_settings_driver_remote_ =
+        mojo::Remote{os_settings_mixin_.OpenOSSettings()};
+    lock_screen_settings_remote_ = mojo::Remote{
+        mojom::OSSettingsDriverAsyncWaiter{os_settings_driver_remote_.get()}
+            .GoToLockScreenSettings()};
+    return mojom::LockScreenSettingsAsyncWaiter{
+        lock_screen_settings_remote_.get()};
+  }
 
  private:
+  ash::CryptohomeMixin cryptohome_{&mixin_host_};
+  OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
+
   base::test::ScopedFeatureList feature_list_;
+  mojo::Remote<mojom::OSSettingsDriver> os_settings_driver_remote_;
+  mojo::Remote<mojom::LockScreenSettings> lock_screen_settings_remote_;
 };
 
 IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
                        SuccessfulUnlock) {
-  auto lock_screen_settings = os_settings_.GoToLockScreenSettings();
+  auto lock_screen_settings = OpenLockScreenSettings();
   lock_screen_settings.AssertAuthenticated(false);
   lock_screen_settings.Authenticate(kCorrectPassword);
   lock_screen_settings.AssertAuthenticated(true);
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
-  auto lock_screen_settings = os_settings_.GoToLockScreenSettings();
+  auto lock_screen_settings = OpenLockScreenSettings();
   lock_screen_settings.AssertAuthenticated(false);
   lock_screen_settings.AuthenticateIncorrectly(kIncorrectPassword);
   lock_screen_settings.AssertAuthenticated(false);

@@ -26,10 +26,10 @@ class ScopedWebUIControllerFactoryRegistration;
 
 namespace ash::settings {
 
-// A browser test mixin that opens the chromeos settings webui page and injects
-// the corresponding Javascript test api into it. The mixin wires up and
-// provides access to an OSSettingsRemote that is served from the webui. C++
-// browser tests can use this remote to control the ui in the settings page.
+// A browser test mixin that allows users to open the chromeos settings webui
+// page. The mixin injects a Javascript test api into the settings webui. This
+// test api is accessible via a mojo api from C++ browser test. Tests can use
+// this test api to control the ui of the settings page.
 // This mixin overrides the browser client.
 class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
  public:
@@ -42,13 +42,9 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
 
   void SetUpOnMainThread() override;
 
-  // Returns the mojo remote that can be used in C++ browser tests to
-  // manipulate the os settings UI.
-  mojom::OSSettingsDriverAsyncWaiter OSSettingsDriver();
-
-  // mojom::OSSettingsDriver functions, with return type wrapped into an
-  // AsyncWaiter.
-  mojom::LockScreenSettingsAsyncWaiter GoToLockScreenSettings();
+  // Opens the ChromeOS settings webui. Returns the mojo remote that can be
+  // used in C++ browser tests to perform UI actions.
+  mojo::Remote<mojom::OSSettingsDriver> OpenOSSettings();
 
  private:
   class BrowserProcessServer : public mojom::OSSettingsBrowserProcess {
@@ -63,7 +59,11 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
         mojo::PendingRemote<mojom::OSSettingsDriver> os_settings,
         base::OnceCallback<void()>) override;
 
-    mojom::OSSettingsDriver* OSSettingsDriver();
+    // Reset the OSSettingsDriver remote stored in this object, and return the
+    // previous remote.
+    // The remote must have been registered via a call to the mojo method
+    // RegisterOSSettingsDriver.
+    mojo::Remote<mojom::OSSettingsDriver> ReleaseOSSettingsDriver();
 
     void Bind(content::RenderFrameHost* render_frame_host,
               mojo::PendingReceiver<mojom::OSSettingsBrowserProcess> receiver);
@@ -107,14 +107,6 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
   TestChromeWebUIControllerFactory test_factory_;
   content::ScopedWebUIControllerFactoryRegistration
       web_ui_factory_registration_{&test_factory_};
-
-  // The set of LockScreenSettings remotes obtained during calls to
-  // GoToLockScreenSettings. AsyncWaiter does not own the LockScreenSettings
-  // remote passed to it, so we store the remotes here. This remote set is only
-  // cleaned up when the mixin object is destroyed. Since it will usually not
-  // contain more than perhaps a single digit number of remotes, this shouldn't
-  // be a problem. mojo::RemoteSet<mojom::LockScreenSettings>
-  mojo::RemoteSet<mojom::LockScreenSettings> lock_screen_settings_remotes_;
 };
 
 }  // namespace ash::settings

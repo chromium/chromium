@@ -33,12 +33,15 @@ void OSSettingsBrowserTestMixin::BrowserProcessServer::RegisterOSSettingsDriver(
   std::move(cont).Run();
 }
 
-mojom::OSSettingsDriver*
-OSSettingsBrowserTestMixin::BrowserProcessServer::OSSettingsDriver() {
-  CHECK(os_settings_driver_)
+mojo::Remote<mojom::OSSettingsDriver>
+OSSettingsBrowserTestMixin::BrowserProcessServer::ReleaseOSSettingsDriver() {
+  CHECK(os_settings_driver_.has_value())
       << "OSSettingsDriver implementation is not registered";
-  DCHECK(os_settings_driver_.value().get());
-  return os_settings_driver_.value().get();
+  CHECK(os_settings_driver_.value().get());
+
+  auto result = std::move(*os_settings_driver_);
+  os_settings_driver_ = absl::nullopt;
+  return result;
 }
 
 void OSSettingsBrowserTestMixin::BrowserProcessServer::Bind(
@@ -91,16 +94,19 @@ OSSettingsBrowserTestMixin::OSSettingsBrowserTestMixin(
 OSSettingsBrowserTestMixin::~OSSettingsBrowserTestMixin() = default;
 
 void OSSettingsBrowserTestMixin::SetUpOnMainThread() {
+  // Override browser client to bind our BrowserTestApi implementation.
+  content::SetBrowserClientForTesting(&test_browser_client_);
+
   // Load browser test resource bundle.
   base::FilePath pak_path;
   CHECK(base::PathService::Get(base::DIR_ASSETS, &pak_path));
   pak_path = pak_path.AppendASCII("browser_tests.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::kScaleFactorNone);
+}
 
-  // Overwrite browser client to bind our BrowserTestApi implementation.
-  content::SetBrowserClientForTesting(&test_browser_client_);
-
+mojo::Remote<mojom::OSSettingsDriver>
+OSSettingsBrowserTestMixin::OpenOSSettings() {
   // Open os-settings page.
   BrowserList* browser_list = BrowserList::GetInstance();
   CHECK(browser_list);
@@ -119,21 +125,8 @@ void OSSettingsBrowserTestMixin::SetUpOnMainThread() {
       })()
   )";
   CHECK_EQ(true, content::EvalJs(render_frame_host, script));
-  CHECK(browser_process_server_.OSSettingsDriver());
-}
 
-mojom::OSSettingsDriverAsyncWaiter
-OSSettingsBrowserTestMixin::OSSettingsDriver() {
-  return mojom::OSSettingsDriverAsyncWaiter(
-      browser_process_server_.OSSettingsDriver());
-}
-
-mojom::LockScreenSettingsAsyncWaiter
-OSSettingsBrowserTestMixin::GoToLockScreenSettings() {
-  auto pending_remote = OSSettingsDriver().GoToLockScreenSettings();
-  const auto id = lock_screen_settings_remotes_.Add(std::move(pending_remote));
-  return mojom::LockScreenSettingsAsyncWaiter(
-      lock_screen_settings_remotes_.Get(id));
+  return browser_process_server_.ReleaseOSSettingsDriver();
 }
 
 }  // namespace ash::settings

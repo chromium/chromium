@@ -496,6 +496,12 @@ bool FakeUserDataAuthClient::TestApi::HasRecoveryFactor(
   return ContainsFakeFactor<RecoveryFactor>(user_state.auth_factors);
 }
 
+bool FakeUserDataAuthClient::TestApi::HasPinFactor(
+    const cryptohome::AccountIdentifier& account_id) {
+  const UserCryptohomeState& user_state = GetUserState(account_id);
+  return ContainsFakeFactor<PinFactor>(user_state.auth_factors);
+}
+
 std::string FakeUserDataAuthClient::TestApi::AddSession(
     const cryptohome::AccountIdentifier& account_id,
     bool authenticated) {
@@ -1120,7 +1126,9 @@ void FakeUserDataAuthClient::ListAuthFactors(
     reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
   } else {
     reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
-    reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+    if (supports_low_entropy_credentials_) {
+      reply.add_supported_auth_factors(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+    }
     reply.add_supported_auth_factors(
         user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
   }

@@ -52,6 +52,11 @@ void CryptohomeMixin::AddGaiaPassword(const AccountId& user,
                                                  cryptohome_key);
 }
 
+bool CryptohomeMixin::HasPinFactor(const AccountId& user) {
+  return TestApi::HasPinFactor(
+      cryptohome::CreateAccountIdentifierFromAccountId(user));
+}
+
 void CryptohomeMixin::SetUpOnMainThread() {
   while (!pending_users_.empty()) {
     auto user = pending_users_.front();
