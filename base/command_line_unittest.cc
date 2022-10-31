@@ -338,6 +338,15 @@ TEST(CommandLineTest, HasSingleArgument) {
   EXPECT_TRUE(cl_for_shell.HasSingleArgumentSwitch());
 }
 
+// Test that creating a new command line from the string version of a single
+// argument command line maintains the single argument switch.
+TEST(CommandLineTest, MaintainSingleArgument) {
+  CommandLine cl = CommandLine::FromString(
+      FILE_PATH_LITERAL("program --switch --single-argument foo.html"));
+  CommandLine cl_for_shell = CommandLine::FromString(cl.GetCommandLineString());
+  EXPECT_TRUE(cl_for_shell.HasSingleArgumentSwitch());
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Tests that when AppendArguments is called that the program is set correctly
