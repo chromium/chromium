@@ -175,14 +175,30 @@ Color::Color(int r, int g, int b, int a) {
 
 // static
 Color Color::FromHSLA(double h, double s, double l, double a) {
-  Color result = Color(gfx::HSLToSkColor4f(h, s, l, a));
+  Color result;
+  result.param0_ = h;
+  result.param1_ = s;
+  result.param2_ = l;
+  result.alpha_ = a;
+  result.param0_is_none_ = false;
+  result.param1_is_none_ = false;
+  result.param2_is_none_ = false;
+  result.alpha_is_none_ = false;
   result.color_space_ = ColorSpace::kHSL;
   return result;
 }
 
 // static
 Color Color::FromHWBA(double h, double w, double b, double a) {
-  Color result = Color(gfx::HWBToSkColor4f(h, w, b, a));
+  Color result;
+  result.param0_ = h;
+  result.param1_ = w;
+  result.param2_ = b;
+  result.alpha_ = a;
+  result.param0_is_none_ = false;
+  result.param1_is_none_ = false;
+  result.param2_is_none_ = false;
+  result.alpha_is_none_ = false;
   result.color_space_ = ColorSpace::kHWB;
   return result;
 }
@@ -320,8 +336,6 @@ Color Color::FromColorMix(Color::ColorInterpolationSpace interpolation_space,
 std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
   switch (color_space_) {
     case ColorSpace::kRGBLegacy:
-    case ColorSpace::kHSL:
-    case ColorSpace::kHWB:
     case ColorSpace::kSRGB:
       return gfx::SRGBToXYZD50(param0_, param1_, param2_);
     case ColorSpace::kSRGBLinear:
@@ -353,9 +367,10 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
       auto [x, y, z] = gfx::OklabToXYZD65(l, a, b);
       return gfx::XYZD65ToD50(x, y, z);
     }
-    default:
-      NOTIMPLEMENTED();
-      return {0.f, 0.f, 0.f};
+    case ColorSpace::kHSL:
+    case ColorSpace::kHWB:
+      SkColor4f srgb_color = toSkColor4f();
+      return gfx::SRGBToXYZD50(srgb_color.fR, srgb_color.fG, srgb_color.fB);
   }
 }
 
@@ -477,23 +492,32 @@ void Color::ConvertToColorInterpolationSpace(
       color_space_ = ColorSpace::kOklch;
       return;
     }
-    case ColorInterpolationSpace::kHSL:
-    case ColorInterpolationSpace::kHWB:
     case ColorInterpolationSpace::kSRGB: {
-      if (color_space_ != ColorSpace::kHSL &&
-          color_space_ != ColorSpace::kHWB &&
-          color_space_ != ColorSpace::kSRGB) {
-        SkColor4f sRGB_color = toSkColor4f();
-        param0_ = sRGB_color.fR;
-        param1_ = sRGB_color.fG;
-        param2_ = sRGB_color.fB;
-      }
-      if (interpolation_space == ColorInterpolationSpace::kHSL)
-        color_space_ = ColorSpace::kHSL;
-      else if (interpolation_space == ColorInterpolationSpace::kHWB)
-        color_space_ = ColorSpace::kHWB;
-      else  //(interpolation_space == ColorInterpolationSpace::kSRGB)
-        color_space_ = ColorSpace::kSRGB;
+      if (color_space_ == ColorSpace::kSRGB)
+        return;
+      SkColor4f sRGB_color = toSkColor4f();
+      param0_ = sRGB_color.fR;
+      param1_ = sRGB_color.fG;
+      param2_ = sRGB_color.fB;
+      color_space_ = ColorSpace::kSRGB;
+      return;
+    }
+    case ColorInterpolationSpace::kHSL: {
+      if (color_space_ == ColorSpace::kHSL)
+        return;
+      SkColor4f sRGB_color = toSkColor4f();
+      std::tie(param0_, param1_, param2_) =
+          gfx::SRGBToHSL(sRGB_color.fR, sRGB_color.fG, sRGB_color.fB);
+      color_space_ = ColorSpace::kHSL;
+      return;
+    }
+    case ColorInterpolationSpace::kHWB: {
+      if (color_space_ == ColorSpace::kHWB)
+        return;
+      SkColor4f sRGB_color = toSkColor4f();
+      std::tie(param0_, param1_, param2_) =
+          gfx::SRGBToHWB(sRGB_color.fR, sRGB_color.fG, sRGB_color.fB);
+      color_space_ = ColorSpace::kHWB;
       return;
     }
   }
@@ -531,9 +555,11 @@ SkColor4f Color::toSkColor4f() const {
           param0_, param1_,
           param2_is_none_ ? absl::nullopt : absl::optional<float>(param2_),
           alpha_);
-    case ColorSpace::kRGBLegacy:
     case ColorSpace::kHSL:
+      return gfx::HSLToSkColor4f(param0_, param1_, param2_, alpha_);
     case ColorSpace::kHWB:
+      return gfx::HWBToSkColor4f(param0_, param1_, param2_, alpha_);
+    case ColorSpace::kRGBLegacy:
       return SkColor4f{param0_, param1_, param2_, alpha_};
     default:
       NOTIMPLEMENTED();
