@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
     console_observer.SetPattern("Not allowed to navigate to*");
     EXPECT_TRUE(ExecuteScript(
         popup, "location.href = '" + nested_urls[1].spec() + "';"));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     // about:blank URLs can be modified by their opener. In that case their
     // effective origin changes to that of the opener, but the page URL remains

@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), popup_url));
 
   // The iframe must be blocked because of CSP.
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_EQ(popup_url, main_frame->GetLastCommittedURL());

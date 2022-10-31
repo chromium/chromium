@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWorldCspBrowserTest, JavascriptUrl_ManifestV3) {
                                             "/page_with_script_src_csp.html");
   ASSERT_TRUE(RunExtensionTest("mv3", {.page_url = url.spec().c_str()}))
       << message_;
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   // Also ensure the page title wasn't changed.
   EXPECT_EQ(u"Page With CSP", web_contents->GetTitle());

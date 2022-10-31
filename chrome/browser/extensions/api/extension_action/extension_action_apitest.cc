@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, SetIconInTabWithInvalidPath) {
       "setIcon({tabId: %d, path: 'does_not_exist.png'});";
   RunTestAndWaitForSuccess(web_contents,
                            base::StringPrintf(kSetIconScript, tab_id));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // Tests calling setIcon() in the service worker with an invalid icon paths
