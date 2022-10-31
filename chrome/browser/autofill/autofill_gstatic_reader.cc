@@ -150,7 +150,7 @@ std::vector<std::string> AutofillGstaticReader::ParseListJSON(
   if (!raw_result || !raw_result->is_list())
     return {};
   std::vector<std::string> result;
-  for (const base::Value& value : raw_result->GetListDeprecated()) {
+  for (const base::Value& value : raw_result->GetList()) {
     if (value.is_string())
       result.push_back(value.GetString());
   }

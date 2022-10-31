@@ -204,7 +204,7 @@ std::vector<FieldValue> GetFieldValues(
   DCHECK(r.value.is_list()) << r.error;
   std::vector<FieldValue> fields;
 
-  for (const base::Value& field : r.value.GetListDeprecated()) {
+  for (const base::Value& field : r.value.GetList()) {
     fields.push_back({.id = *field.FindStringKey("id"),
                       .value = *field.FindStringKey("value")});
   }

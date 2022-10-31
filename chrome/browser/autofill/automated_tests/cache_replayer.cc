@@ -490,7 +490,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
     ServerCache* cache_to_fill) {
   bool fail_on_error = FailOnError(options);
   bool split_requests_by_form = SplitRequestsByForm(options);
-  for (const base::Value& request : query_node.node->GetListDeprecated()) {
+  for (const base::Value& request : query_node.node->GetList()) {
     // Get AutofillQueryContents from request.
     bool is_post_request = GetRequestTypeFromURL<ReadEnv>(query_node.url) ==
                            RequestType::kQueryProtoPOST;

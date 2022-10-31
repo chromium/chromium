@@ -342,7 +342,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   }
 
   bool also_run_disabled = testing::FLAGS_gtest_also_run_disabled_tests == 1;
-  for (auto& item : list_node->GetListDeprecated()) {
+  for (auto& item : list_node->GetList()) {
     if (!item.is_dict())
       continue;
     CapturedSiteParams param;
