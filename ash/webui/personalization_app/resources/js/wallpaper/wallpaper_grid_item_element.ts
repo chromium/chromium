@@ -30,6 +30,12 @@ function getDataIndex(event: Event&{currentTarget: HTMLImageElement}): number {
   return index;
 }
 
+function shouldShowPlaceholder(imageStatus: ImageStatus[]): boolean {
+  return imageStatus.length === 0 ||
+      (imageStatus.includes(ImageStatus.LOADING) &&
+       !imageStatus.includes(ImageStatus.ERROR));
+}
+
 export class WallpaperGridItem extends PolymerElement {
   static get is(): 'wallpaper-grid-item' {
     return 'wallpaper-grid-item';
@@ -127,9 +133,7 @@ export class WallpaperGridItem extends PolymerElement {
   }
 
   private onImageStatusChanged_(imageStatus: ImageStatus[]) {
-    if (imageStatus.length === 0 ||
-        (imageStatus.includes(ImageStatus.LOADING) &&
-         !imageStatus.includes(ImageStatus.ERROR))) {
+    if (shouldShowPlaceholder(imageStatus)) {
       this.setAttribute('placeholder', '');
     } else {
       this.removeAttribute('placeholder');
@@ -188,7 +192,11 @@ export class WallpaperGridItem extends PolymerElement {
   }
 
   /** Whether any text is currently visible. */
-  private isTextVisible_() {
+  private isTextVisible_(): boolean {
+    if (shouldShowPlaceholder(this.imageStatus_)) {
+      // Hide text while placeholder is displayed.
+      return false;
+    }
     return this.isSecondaryTextVisible_() || this.isPrimaryTextVisible_();
   }
 }

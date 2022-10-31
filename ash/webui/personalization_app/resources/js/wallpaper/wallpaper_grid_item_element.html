@@ -90,15 +90,20 @@
     }
   }
 
-  .text {
+  #textShadow {
     background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
         rgba(var(--google-grey-900-rgb), 55%));
     bottom: 0;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
     height: 50%;
-    justify-content: flex-end;
+    left: 0;
+    position: absolute;
+    right: 0;
+    z-index: 1;
+  }
+
+  #text {
+    bottom: 0;
+    box-sizing: border-box;
     left: 0;
     overflow: hidden;
     padding: 8px 16px;
@@ -106,6 +111,7 @@
     right: 0;
     white-space: nowrap;
     width: 100%;
+    z-index: 2;
   }
 
   .primary-text,
@@ -123,6 +129,10 @@
     font: var(--cros-headline-1-font);
   }
 
+  p.primary-text:last-of-type {
+    margin-bottom: var(--cros-annotation-2-line-height);
+  }
+
   .secondary-text {
     font: var(--cros-annotation-2-font);
   }
@@ -136,6 +146,7 @@
     left: 8px;
     position: absolute;
     top: 8px;
+    z-index: 2;
   }
 
   @keyframes iron-icon-scale {
@@ -162,12 +173,17 @@
         on-load="onImgLoad_">
   </template>
   <div class="wallpaper-grid-item-border"></div>
-  <template is="dom-if" if="[[isTextVisible_(primaryText, secondaryText)]]">
-    <div class="text">
-      <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]">
+  <template is="dom-if"
+      if="[[isTextVisible_(imageStatus_, primaryText, secondaryText)]]"
+      restamp>
+    <div id="textShadow"></div>
+    <div id="text">
+      <template is="dom-if" if="[[isPrimaryTextVisible_(primaryText)]]" restamp>
         <p class="primary-text" title$="[[primaryText]]">[[primaryText]]</p>
       </template>
-      <template is="dom-if" if="[[isSecondaryTextVisible_(secondaryText)]]">
+      <template is="dom-if"
+          if="[[isSecondaryTextVisible_(secondaryText)]]"
+          restamp>
         <p class="secondary-text" title$="[[secondaryText]]">
           [[secondaryText]]
         </p>
