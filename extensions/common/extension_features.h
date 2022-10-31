@@ -46,6 +46,8 @@ BASE_DECLARE_FEATURE(kExtensionsFSPInServiceWorkers);
 
 BASE_DECLARE_FEATURE(kFileHandlersMV3);
 
+BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

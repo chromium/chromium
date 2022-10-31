@@ -127,4 +127,9 @@ BASE_FEATURE(kFileHandlersMV3,
              "FileHandlersMV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// IsValidSourceUrl enforcement for ExtensionHostMsg_OpenChannelToExtension IPC.
+BASE_FEATURE(kExtensionSourceUrlEnforcement,
+             "ExtensionSourceUrlEnforcement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features
