@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
@@ -34,9 +33,9 @@
 #include "components/sync/test/sync_error_factory_mock.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -159,12 +158,14 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 TEST_F(ExternalProviderImplChromeOSTest, Normal) {
   InitServiceWithExternalProviders(false);
 
-  service_->CheckForExternalUpdates();
-  content::WindowedNotificationObserver(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources()).Wait();
+  TestExtensionRegistryObserver observer(registry());
 
-  EXPECT_TRUE(registry()->GetInstalledExtension(kExternalAppId));
+  service_->CheckForExternalUpdates();
+
+  scoped_refptr<const Extension> loaded_extension =
+      observer.WaitForExtensionLoaded();
+
+  EXPECT_EQ(loaded_extension->id(), kExternalAppId);
 }
 
 // App mode, no external app should be installed.
@@ -208,24 +209,24 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_StandaloneChild) {
 }
 
 // Normal mode, standalone app should be installed, because sync is disabled.
-// TODO(crbug.com/1181737): Flaky test
-TEST_F(ExternalProviderImplChromeOSTest, DISABLED_SyncDisabled) {
+TEST_F(ExternalProviderImplChromeOSTest, SyncDisabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
 
   InitServiceWithExternalProviders(true);
 
-  service_->CheckForExternalUpdates();
-  content::WindowedNotificationObserver(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources()).Wait();
+  TestExtensionRegistryObserver observer(registry());
 
+  service_->CheckForExternalUpdates();
+
+  scoped_refptr<const Extension> loaded_extension =
+      observer.WaitForExtensionLoaded();
+  EXPECT_EQ(loaded_extension->id(), kStandaloneAppId);
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
 
 // User signed in, sync service started, install app when sync is disabled by
 // policy.
-// flaky: crbug.com/706506
-TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
+TEST_F(ExternalProviderImplChromeOSTest, PolicyDisabled) {
   InitServiceWithExternalProviders(true);
 
   // Log user in, start sync.
@@ -238,16 +239,17 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
       ->MakePrimaryAccountAvailable("test_user@gmail.com",
                                     signin::ConsentLevel::kSync);
 
-  // App sync will wait for priority sync to complete.
-  service_->CheckForExternalUpdates();
-
   // Sync is dsabled by policy.
   profile_->GetPrefs()->SetBoolean(syncer::prefs::kSyncManaged, true);
 
-  content::WindowedNotificationObserver(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources()).Wait();
+  TestExtensionRegistryObserver observer(registry());
 
+  // App sync will wait for priority sync to complete.
+  service_->CheckForExternalUpdates();
+
+  scoped_refptr<const Extension> loaded_extension =
+      observer.WaitForExtensionLoaded();
+  EXPECT_EQ(loaded_extension->id(), kStandaloneAppId);
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 
   TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
@@ -255,8 +257,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PolicyDisabled) {
 
 // User signed in, sync service started, install app when priority sync is
 // completed.
-// TODO(crbug.com/1177118) Re-enable test
-TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
+TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
   InitServiceWithExternalProviders(true);
 
   // User is logged in.
@@ -269,8 +270,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(chromeos::prefs::kSyncOobeCompleted, true);
 
-  // App sync will wait for priority sync to complete.
-  service_->CheckForExternalUpdates();
+  TestExtensionRegistryObserver observer(registry());
 
   // Priority sync completed.
   PrefServiceSyncableFromProfile(profile())
@@ -280,10 +280,12 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
           std::make_unique<syncer::FakeSyncChangeProcessor>(),
           std::make_unique<syncer::SyncErrorFactoryMock>());
 
-  content::WindowedNotificationObserver(
-      extensions::NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources()).Wait();
+  // App sync will wait for priority sync to complete.
+  service_->CheckForExternalUpdates();
 
+  scoped_refptr<const Extension> loaded_extension =
+      observer.WaitForExtensionLoaded();
+  EXPECT_EQ(loaded_extension->id(), kStandaloneAppId);
   EXPECT_TRUE(registry()->GetInstalledExtension(kStandaloneAppId));
 }
 
