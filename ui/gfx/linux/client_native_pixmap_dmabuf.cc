@@ -50,8 +50,31 @@ namespace gfx {
 
 namespace {
 
+void* MapPlane(const NativePixmapPlane& plane) {
+  // The |size_to_map| computation has been determined to be valid in
+  // ClientNativePixmapFactoryDmabuf::ImportFromHandle().
+  const size_t size_to_map =
+      base::CheckAdd(plane.size, plane.offset).ValueOrDie<size_t>();
+  void* data = mmap(nullptr, size_to_map, (PROT_READ | PROT_WRITE), MAP_SHARED,
+                    plane.fd.get(), 0);
+  if (data == MAP_FAILED) {
+    logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
+    if (mmap_error == ENOMEM)
+      base::TerminateBecauseOutOfMemory(size_to_map);
+    LOG(ERROR) << "Failed to mmap dmabuf: "
+               << logging::SystemErrorCodeToString(mmap_error);
+    return nullptr;
+  }
+  return data;
+}
+
 void PrimeSyncStart(int dmabuf_fd) {
-  struct dma_buf_sync sync_start = {0};
+  struct dma_buf_sync sync_start;
+
+  // Do memset() instead of aggregate initialization because the latter can
+  // behave unintuitively with unions in C++, and we probably should not assume
+  // that dma_buf_sync will never contain a union.
+  memset(&sync_start, 0, sizeof(sync_start));
 
   sync_start.flags = DMA_BUF_SYNC_START | DMA_BUF_SYNC_RW;
   int rv = HANDLE_EINTR(ioctl(dmabuf_fd, DMA_BUF_IOCTL_SYNC, &sync_start));
@@ -60,6 +83,11 @@ void PrimeSyncStart(int dmabuf_fd) {
 
 void PrimeSyncEnd(int dmabuf_fd) {
   struct dma_buf_sync sync_end = {0};
+
+  // Do memset() instead of aggregate initialization because the latter can
+  // behave unintuitively with unions in C++, and we probably should not assume
+  // that dma_buf_sync will never contain a union.
+  memset(&sync_end, 0, sizeof(sync_end));
 
   sync_end.flags = DMA_BUF_SYNC_END | DMA_BUF_SYNC_RW;
   int rv = HANDLE_EINTR(ioctl(dmabuf_fd, DMA_BUF_IOCTL_SYNC, &sync_end));
@@ -179,39 +207,12 @@ std::unique_ptr<gfx::ClientNativePixmap>
 ClientNativePixmapDmaBuf::ImportFromDmabuf(gfx::NativePixmapHandle handle,
                                            const gfx::Size& size,
                                            gfx::BufferFormat format) {
-  std::array<PlaneInfo, kMaxPlanes> plane_info;
-
-  size_t expected_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
-  if (expected_planes == 0 || handle.planes.size() != expected_planes) {
+  if (handle.planes.size() > kMaxPlanes)
     return nullptr;
-  }
 
+  std::array<PlaneInfo, kMaxPlanes> plane_info;
   for (size_t i = 0; i < handle.planes.size(); ++i) {
-    // Verify that the plane buffer has appropriate size.
-    const size_t plane_stride =
-        base::strict_cast<size_t>(handle.planes[i].stride);
-    size_t min_stride = 0;
-    size_t subsample_factor = SubsamplingFactorForBufferFormat(format, i);
-    base::CheckedNumeric<size_t> plane_height =
-        (base::CheckedNumeric<size_t>(size.height()) + subsample_factor - 1) /
-        subsample_factor;
-    if (!gfx::RowSizeForBufferFormatChecked(size.width(), format, i,
-                                            &min_stride) ||
-        plane_stride < min_stride) {
-      return nullptr;
-    }
-    base::CheckedNumeric<size_t> min_size =
-        base::CheckedNumeric<size_t>(plane_stride) * plane_height;
-    if (!min_size.IsValid() || handle.planes[i].size < min_size.ValueOrDie())
-      return nullptr;
-
-    // The stride must be a valid integer in order to be consistent with the
-    // GpuMemoryBuffer::stride() API. Also, refer to http://crbug.com/1093644#c1
-    // for some comments on this check and others in this method.
-    if (!base::IsValueInRangeForNumericType<int>(plane_stride))
-      return nullptr;
-
-    plane_info[i].offset = handle.planes[i].offset;
+    plane_info[i].offset = base::checked_cast<size_t>(handle.planes[i].offset);
     plane_info[i].size = base::checked_cast<size_t>(handle.planes[i].size);
   }
 
@@ -238,22 +239,11 @@ bool ClientNativePixmapDmaBuf::Map() {
   if (!mapped_) {
     TRACE_EVENT0("drm", "DmaBuf:InitialMap");
     for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i) {
-      const auto& plane = pixmap_handle_.planes[i];
-      void* data =
-          mmap(nullptr, plane.size + plane.offset, (PROT_READ | PROT_WRITE),
-               MAP_SHARED, plane.fd.get(), 0);
-
-      if (data == MAP_FAILED) {
-        logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
-        if (mmap_error == ENOMEM)
-          base::TerminateBecauseOutOfMemory(plane.size + plane.offset);
-        LOG(ERROR) << "Failed to mmap dmabuf: "
-                   << logging::SystemErrorCodeToString(mmap_error);
+      void* data = MapPlane(pixmap_handle_.planes[i]);
+      if (!data)
         return false;
-      }
       plane_info_[i].data = data;
     }
-
     mapped_ = true;
   }
 
