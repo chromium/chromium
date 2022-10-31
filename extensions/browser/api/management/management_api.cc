@@ -37,6 +37,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
@@ -608,7 +609,11 @@ ExtensionFunction::ResponseAction ManagementUninstallFunctionBase::Uninstall(
     return RespondNow(Error(keys::kUserCantModifyError, target_extension_id_));
   }
 
-  // Note: null extension() means it's WebUI.
+  // A null extension() should only happen if the call is coming from WebUI or
+  // the new Webstore which is a webpage the management API is exposed on.
+  DCHECK(extension() || source_context_type() == Feature::WEBUI_CONTEXT ||
+         extension_urls::IsWebstoreDomain(source_url()));
+
   bool self_uninstall = extension() && extension_id() == target_extension_id_;
   // We need to show a dialog for any extension uninstalling another extension.
   show_confirm_dialog |= !self_uninstall;
