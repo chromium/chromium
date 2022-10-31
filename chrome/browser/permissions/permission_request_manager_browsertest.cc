@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
           kCounterVerificationPattern);
     }
 
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
 
     ASSERT_EQ(1u, console_observer.messages().size());
     if (test.expected_message) {
@@ -1246,7 +1246,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   permission_controller->RequestPermissionFromCurrentDocument(
       blink::PermissionType::SENSORS, fenced_frame_host,
       /* user_gesture = */ true, callback.Get());
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
 }
 
