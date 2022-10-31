@@ -149,6 +149,27 @@ const char* TransformTypePrefixForParsing(SVGTransformType type) {
   return "";
 }
 
+gfx::PointF DecomposeRotationCenter(const AffineTransform& matrix,
+                                    float angle) {
+  const double angle_in_rad = Deg2rad(angle);
+  const double cos_angle = std::cos(angle_in_rad);
+  const double sin_angle = std::sin(angle_in_rad);
+  if (cos_angle == 1)
+    return gfx::PointF();
+  // Solve for the point <cx, cy> from a matrix on the form:
+  //
+  // [ a, c, e ] = [ cos(a), -sin(a), cx + (-cx * cos(a)) + (-cy * -sin(a)) ]
+  // [ b, d, f ]   [ sin(a),  cos(a), cy + (-cx * sin(a)) + (-cy *  cos(a)) ]
+  //
+  // => cx = (e * (1 - cos(a)) - f * sin(a)) / (1 - cos(a)) / 2
+  //    cy = (e * sin(a) / (1 - cos(a)) + f) / 2
+  const double e = matrix.E();
+  const double f = matrix.F();
+  const double cx = (e * (1 - cos_angle) - f * sin_angle) / (1 - cos_angle) / 2;
+  const double cy = (e * sin_angle / (1 - cos_angle) + f) / 2;
+  return gfx::PointF(ClampTo<float>(cx), ClampTo<float>(cy));
+}
+
 }  // namespace
 
 String SVGTransform::ValueAsString() const {
@@ -179,21 +200,10 @@ String SVGTransform::ValueAsString() const {
     case SVGTransformType::kRotate: {
       arguments[argument_count++] = angle_;
 
-      double angle_in_rad = Deg2rad(angle_);
-      double cos_angle = cos(angle_in_rad);
-      double sin_angle = sin(angle_in_rad);
-      float cx = ClampTo<float>(
-          cos_angle != 1
-              ? (matrix_.E() * (1 - cos_angle) - matrix_.F() * sin_angle) /
-                    (1 - cos_angle) / 2
-              : 0);
-      float cy = ClampTo<float>(
-          cos_angle != 1
-              ? (matrix_.E() * sin_angle / (1 - cos_angle) + matrix_.F()) / 2
-              : 0);
-      if (cx || cy) {
-        arguments[argument_count++] = cx;
-        arguments[argument_count++] = cy;
+      const gfx::PointF center = DecomposeRotationCenter(matrix_, angle_);
+      if (!center.IsOrigin()) {
+        arguments[argument_count++] = center.x();
+        arguments[argument_count++] = center.y();
       }
       break;
     }
