@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -33,7 +34,8 @@ class WorkletAnimationBase;
 // control the conversion of scroll amount to time output.
 //
 // Spec: https://wicg.github.io/scroll-animations/#scroll-timelines
-class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
+class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
+                                   public ScrollSnapshotClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -114,9 +116,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // for style recalc.
   void InvalidateEffectTargetStyle();
 
-  // See DocumentAnimations::ValidateTimelines
-  bool ValidateState();
-
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
 
@@ -164,7 +163,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
       PaintLayerScrollableArea* scrollable_area,
       ScrollOrientation physical_orientation) const;
 
-  void SnapshotState();
+  // ScrollSnapshotClient:
+  void UpdateSnapshot() override;
+  bool ValidateSnapshot() override;
+  bool ShouldScheduleNextService() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);

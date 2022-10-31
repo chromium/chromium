@@ -76,24 +76,6 @@ class CORE_EXPORT DocumentAnimations final
 
   HeapVector<Member<Animation>> getAnimations(const TreeScope&);
 
-  // All newly created AnimationTimelines are considered "unvalidated". This
-  // means that the internal state of the timeline is considered tentative,
-  // and that computing the actual state may require an additional style/layout
-  // pass.
-  //
-  // The lifecycle update will call this function after style and layout has
-  // completed. The function will then go though all unvalidated timelines,
-  // and compare the current state snapshot to a fresh state snapshot. If they
-  // are equal, then the tentative state turned out to be correct, and no
-  // further action is needed. Otherwise, all effects targets associated with
-  // the timeline are marked for recalc, which causes the style/layout phase
-  // to run again.
-  //
-  // Returns true if all timeline states are correct, otherwise returns false.
-  //
-  // https://github.com/w3c/csswg-drafts/issues/5261
-  bool ValidateTimelines();
-
   // Detach compositor timelines to prevent further ticking of any animations
   // associated with the timelines.  Detached timelines may be subsequently
   // reattached if needed.
@@ -103,10 +85,7 @@ class CORE_EXPORT DocumentAnimations final
       const {
     return timelines_;
   }
-  const HeapHashSet<WeakMember<AnimationTimeline>>&
-  GetUnvalidatedTimelinesForTesting() const {
-    return unvalidated_timelines_;
-  }
+
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
 
@@ -121,7 +100,6 @@ class CORE_EXPORT DocumentAnimations final
 
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
-  HeapHashSet<WeakMember<AnimationTimeline>> unvalidated_timelines_;
 };
 
 }  // namespace blink

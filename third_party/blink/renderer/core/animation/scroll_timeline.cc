@@ -85,7 +85,7 @@ ScrollTimeline* ScrollTimeline::Create(Document* document,
                                        ScrollDirection orientation) {
   ScrollTimeline* scroll_timeline = MakeGarbageCollected<ScrollTimeline>(
       document, ReferenceType::kSource, source, orientation);
-  scroll_timeline->SnapshotState();
+  scroll_timeline->UpdateSnapshot();
 
   return scroll_timeline;
 }
@@ -117,6 +117,7 @@ ScrollTimeline::ScrollTimeline(Document* document,
                                Element* reference,
                                ScrollDirection orientation)
     : AnimationTimeline(document),
+      ScrollSnapshotClient(document->GetFrame()),
       reference_type_(reference_type),
       reference_element_(reference),
       orientation_(orientation) {
@@ -267,10 +268,6 @@ AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
 }
 
 void ScrollTimeline::ServiceAnimations(TimingUpdateReason reason) {
-  // Snapshot timeline state once at top of animation frame.
-  if (reason == kTimingUpdateForAnimationFrame)
-    SnapshotState();
-
   // When scroll timeline goes from inactive to active the animations may need
   // to be started and possibly composited.
   bool was_active =
@@ -282,19 +279,21 @@ void ScrollTimeline::ServiceAnimations(TimingUpdateReason reason) {
   AnimationTimeline::ServiceAnimations(reason);
 }
 
-void ScrollTimeline::ScheduleNextService() {
+bool ScrollTimeline::ShouldScheduleNextService() {
   if (AnimationsNeedingUpdateCount() == 0)
-    return;
+    return false;
 
   auto state = ComputeTimelineState();
   PhaseAndTime current_phase_and_time{state.phase, state.current_time};
-  if (current_phase_and_time == last_current_phase_and_time_)
-    return;
-
-  ScheduleServiceOnNextFrame();
+  return current_phase_and_time != last_current_phase_and_time_;
 }
 
-void ScrollTimeline::SnapshotState() {
+void ScrollTimeline::ScheduleNextService() {
+  // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
+  NOTREACHED();
+}
+
+void ScrollTimeline::UpdateSnapshot() {
   timeline_state_snapshotted_ = ComputeTimelineState();
 }
 
@@ -428,6 +427,7 @@ void ScrollTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(resolved_source_);
   visitor->Trace(attached_worklet_animations_);
   AnimationTimeline::Trace(visitor);
+  ScrollSnapshotClient::Trace(visitor);
 }
 
 void ScrollTimeline::InvalidateEffectTargetStyle() {
@@ -435,7 +435,7 @@ void ScrollTimeline::InvalidateEffectTargetStyle() {
     animation->InvalidateEffectTargetStyle();
 }
 
-bool ScrollTimeline::ValidateState() {
+bool ScrollTimeline::ValidateSnapshot() {
   auto state = ComputeTimelineState();
   if (timeline_state_snapshotted_ == state)
     return true;

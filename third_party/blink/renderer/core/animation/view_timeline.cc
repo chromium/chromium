@@ -155,7 +155,7 @@ ViewTimeline* ViewTimeline::Create(Document& document,
 
   ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
       &document, subject, orientation, inset);
-  view_timeline->SnapshotState();
+  view_timeline->UpdateSnapshot();
   return view_timeline;
 }
 

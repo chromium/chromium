@@ -82,7 +82,6 @@ DocumentAnimations::DocumentAnimations(Document* document)
 
 void DocumentAnimations::AddTimeline(AnimationTimeline& timeline) {
   timelines_.insert(&timeline);
-  unvalidated_timelines_.insert(&timeline);
 }
 
 void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
@@ -134,8 +133,12 @@ void DocumentAnimations::UpdateAnimations(
   }
 
   document_->GetWorkletAnimationController().UpdateAnimationStates();
-  for (auto& timeline : timelines_)
-    timeline->ScheduleNextService();
+  document_->GetFrame()->ScheduleNextServiceForScrollSnapshotClients();
+  for (auto& timeline : timelines_) {
+    // ScrollTimelines are already handled as ScrollSnapshotClients above.
+    if (!timeline->IsScrollTimeline())
+      timeline->ScheduleNextService();
+  }
 }
 
 void DocumentAnimations::MarkPendingIfCompositorPropertyAnimationChanges(
@@ -181,19 +184,6 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   return animations;
 }
 
-bool DocumentAnimations::ValidateTimelines() {
-  bool all_timelines_valid = true;
-  for (auto& timeline : unvalidated_timelines_) {
-    if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(timeline.Get())) {
-      bool timeline_valid = scroll_timeline->ValidateState();
-      all_timelines_valid &= timeline_valid;
-    }
-  }
-
-  unvalidated_timelines_.clear();
-  return all_timelines_valid;
-}
-
 void DocumentAnimations::DetachCompositorTimelines() {
   if (!Platform::Current()->IsThreadedAnimationEnabled() ||
       !document_->GetSettings()->GetAcceleratedCompositingEnabled() ||
@@ -216,7 +206,6 @@ void DocumentAnimations::DetachCompositorTimelines() {
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
-  visitor->Trace(unvalidated_timelines_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(

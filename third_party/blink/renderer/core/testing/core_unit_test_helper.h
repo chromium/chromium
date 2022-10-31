@@ -95,9 +95,16 @@ class RenderingTestChromeClient : public EmptyChromeClient {
                                 CompositorElementId scrollable_area_element_id,
                                 WebInputEvent::Type injected_type) override;
 
+  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
+    animation_scheduled_ = true;
+  }
+  bool AnimationScheduled() const { return animation_scheduled_; }
+  void UnsetAnimationScheduled() { animation_scheduled_ = false; }
+
  private:
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
   TransformationMatrix device_emulation_transform_;
+  bool animation_scheduled_ = false;
 };
 
 class RenderingTest : public PageTestBase {

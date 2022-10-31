@@ -177,6 +177,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -410,6 +411,8 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(frame_color_overlay_);
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
+  visitor->Trace(scroll_snapshot_clients_);
+  visitor->Trace(unvalidated_scroll_snapshot_clients_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
   visitor->Trace(box_shadow_paint_image_generator_);
@@ -3322,6 +3325,35 @@ bool LocalFrame::HasBlockingReasonsHelper(
     return false;
   }
   return false;
+}
+
+void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
+  scroll_snapshot_clients_.insert(&client);
+  unvalidated_scroll_snapshot_clients_.insert(&client);
+}
+
+void LocalFrame::UpdateScrollSnapshots() {
+  // TODO(xiaochengh): Can we DCHECK that is is done at the beginning of a frame
+  // and is done exactly once?
+  for (auto& client : scroll_snapshot_clients_)
+    client->UpdateSnapshot();
+}
+
+bool LocalFrame::ValidateScrollSnapshotClients() {
+  bool valid = true;
+  for (auto& client : unvalidated_scroll_snapshot_clients_)
+    valid &= client->ValidateSnapshot();
+  unvalidated_scroll_snapshot_clients_.clear();
+  return valid;
+}
+
+void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
+  for (auto& client : scroll_snapshot_clients_) {
+    if (client->ShouldScheduleNextService()) {
+      View()->ScheduleAnimation();
+      return;
+    }
+  }
 }
 
 }  // namespace blink

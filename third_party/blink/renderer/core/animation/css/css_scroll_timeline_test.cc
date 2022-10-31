@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -29,6 +30,11 @@ class CSSScrollTimelineTest : public PageTestBase,
 
   DocumentAnimations& GetDocumentAnimations() const {
     return GetDocument().GetDocumentAnimations();
+  }
+
+  const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
+  GetUnvalidatedTimelines() {
+    return GetFrame().GetUnvalidatedScrollSnapshotClientsForTesting();
   }
 };
 
@@ -189,8 +195,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
     <div id=main></div>
   )HTML");
 
-  ASSERT_TRUE(
-      GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().empty());
+  ASSERT_TRUE(GetUnvalidatedTimelines().empty());
 
   Element* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   element->setAttribute(blink::html_names::kIdAttr, "element");
@@ -210,8 +215,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
   observer->observe(element);
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1u,
-            GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().size());
+  EXPECT_EQ(1u, GetUnvalidatedTimelines().size());
 }
 
 }  // namespace blink

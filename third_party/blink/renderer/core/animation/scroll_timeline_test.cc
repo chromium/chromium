@@ -76,23 +76,13 @@ class TestScrollTimeline : public ScrollTimeline {
       : ScrollTimeline(document,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
-                       ScrollDirection::kVertical),
-        next_service_scheduled_(false) {
-    SnapshotState();
+                       ScrollDirection::kVertical) {
+    UpdateSnapshot();
   }
 
-  void ScheduleServiceOnNextFrame() override {
-    ScrollTimeline::ScheduleServiceOnNextFrame();
-    next_service_scheduled_ = true;
-  }
   void Trace(Visitor* visitor) const override {
     ScrollTimeline::Trace(visitor);
   }
-  bool NextServiceScheduled() const { return next_service_scheduled_; }
-  void ResetNextServiceScheduled() { next_service_scheduled_ = false; }
-
- private:
-  bool next_service_scheduled_;
 };
 
 TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfSourceIsNotScrollable) {
@@ -386,16 +376,16 @@ TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {
   UpdateAllLifecyclePhasesForTest();
 
   // Validate that no frame is scheduled when there is no scroll change.
-  scroll_timeline->ResetNextServiceScheduled();
-  scroll_timeline->ScheduleNextService();
-  EXPECT_FALSE(scroll_timeline->NextServiceScheduled());
+  GetChromeClient().UnsetAnimationScheduled();
+  GetFrame().ScheduleNextServiceForScrollSnapshotClients();
+  EXPECT_FALSE(GetChromeClient().AnimationScheduled());
 
   // Validate that frame is scheduled when scroll changes.
-  scroll_timeline->ResetNextServiceScheduled();
+  GetChromeClient().UnsetAnimationScheduled();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 30),
                                    mojom::blink::ScrollType::kProgrammatic);
-  scroll_timeline->ScheduleNextService();
-  EXPECT_TRUE(scroll_timeline->NextServiceScheduled());
+  GetFrame().ScheduleNextServiceForScrollSnapshotClients();
+  EXPECT_TRUE(GetChromeClient().AnimationScheduled());
 }
 
 // This test verifies scenario when scroll timeline is updated as a result of
@@ -440,16 +430,16 @@ TEST_F(ScrollTimelineTest, ScheduleFrameWhenScrollerLayoutChanges) {
   // affects current time because endScrollOffset is 'auto'.
   Element* spacer_element = GetElementById("spacer");
   spacer_element->setAttribute(html_names::kStyleAttr, "height:1000px;");
-  scroll_timeline->ResetNextServiceScheduled();
+  GetChromeClient().UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(scroll_timeline->NextServiceScheduled());
+  EXPECT_TRUE(GetChromeClient().AnimationScheduled());
 
   // Also test changing the scroller height, which also affect the max offset.
   GetElementById("scroller")
       ->setAttribute(html_names::kStyleAttr, "height: 200px");
-  scroll_timeline->ResetNextServiceScheduled();
+  GetChromeClient().UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(scroll_timeline->NextServiceScheduled());
+  EXPECT_TRUE(GetChromeClient().AnimationScheduled());
 }
 
 TEST_F(ScrollTimelineTest,
@@ -488,9 +478,9 @@ TEST_F(ScrollTimelineTest,
   UpdateAllLifecyclePhasesForTest();
 
   scroller_element->setAttribute(html_names::kStyleAttr, "display:table-cell;");
-  scroll_timeline->ResetNextServiceScheduled();
+  GetChromeClient().UnsetAnimationScheduled();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(scroll_timeline->NextServiceScheduled());
+  EXPECT_TRUE(GetChromeClient().AnimationScheduled());
 }
 
 // Verify that scroll timeline current time is updated once upon construction

@@ -961,7 +961,7 @@ class CORE_EXPORT LocalFrameView final
       absl::optional<base::TimeTicks>& monotonic_time) override;
   void DeliverSynchronousIntersectionObservations();
 
-  bool RunScrollTimelineSteps();
+  bool RunScrollSnapshotClientSteps();
 
   bool RunCSSToggleSteps();
 
