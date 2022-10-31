@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -131,6 +132,23 @@ copy_generated_mojo("copy_accelerator_info_mojo") {
   mojo_files = [ "accelerator_info.mojom-webui.js" ]
 }
 
+ts_definitions("build_mojo_dts") {
+  extra_deps = [
+    ":copy_accelerator_info_mojo",
+    ":copy_shortcuts_mojo",
+  ]
+
+  root_dir = target_gen_dir
+  out_dir = root_dir
+
+  js_files = []
+  foreach(dep, extra_deps) {
+    js_files += rebase_path(get_target_outputs(dep), root_dir, root_build_dir)
+  }
+
+  extra_deps += [ "//ui/webui/resources/mojo:library" ]
+}
+
 ts_library("build_ts") {
   composite = true
   root_dir = "$target_gen_dir/$preprocess_folder"
@@ -148,8 +166,17 @@ ts_library("build_ts") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
+  definitions = []
+  foreach(file, get_target_outputs(":build_mojo_dts")) {
+    # Only take the .d.ts files, and ignoring the manifest.json that is also
+    # listed as output file.
+    if (get_path_info(file, "extension") == "ts") {
+      definitions += [ rebase_path(file) ]
+    }
+  }
 
   extra_deps = [
+    ":build_mojo_dts",
     ":copy_accelerator_info_mojo",
     ":copy_shortcuts_mojo",
     ":preprocess",
