@@ -19,7 +19,8 @@ std::string GetGetSecurityDomainMemberURLPathAndQuery(
   base::Base64UrlEncode(std::string(public_key.begin(), public_key.end()),
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &encoded_public_key);
-  return kSecurityDomainMemberNamePrefix + encoded_public_key + "?view=2";
+  return kSecurityDomainMemberNamePrefix + encoded_public_key + "?view=2"
+    + "&request_header.force_master_read=true";
 }
 
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url) {

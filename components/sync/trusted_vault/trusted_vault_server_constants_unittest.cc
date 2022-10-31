@@ -40,7 +40,9 @@ TEST(TrustedVaultServerConstantsTest,
       GetGetSecurityDomainMemberURLPathAndQuery(kPublicKey),
       Eq("users/me/members/"
          "BPJMRbr0-Gz5c851DMnUD0pTt4VGQfsxFw_"
-         "rC0XkKWmbsgcSwQk977tX3FYSKfJz4cWZHEk6ojD5ujuxg88bXeg?view=2"));
+         "rC0XkKWmbsgcSwQk977tX3FYSKfJz4cWZHEk6ojD5ujuxg88bXeg"
+         "?view=2"
+         "&request_header.force_master_read=true"));
 }
 
 }  // namespace
