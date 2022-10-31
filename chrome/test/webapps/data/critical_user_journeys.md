@@ -21,11 +21,11 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut_by_user_windowed(Standalone) |  launch(Standalone) | check_app_title(Standalone, StandaloneOriginal) |
-| WMLC | install_or_shortcut_by_user_windowed(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | handle_app_identity_update_dialog_response(AcceptUpdate) | await_manifest_update | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
-| WMLC | install_or_shortcut_by_user_windowed(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | handle_app_identity_update_dialog_response(CancelDialogAndUninstall) | check_app_not_in_list | check_platform_shortcut_not_exists |
-| WMLC | install_or_shortcut_by_user_windowed | manifest_update_icon | await_manifest_update | check_app_in_list_icon_correct |
-| WMLC | install_or_shortcut_by_user_windowed | manifest_update_icon | await_manifest_update | check_platform_shortcut_and_icon |
-| WMLC | install_policy_app(Standalone, NoShortcut, WindowOptions::All, WebApp) | manifest_update_title(Standalone, StandaloneUpdated) | check_update_dialog_not_shown  | await_manifest_update | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_or_shortcut_by_user_windowed(Standalone) | manifest_update_title(Standalone, StandaloneUpdated, AcceptUpdate) | await_manifest_update | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_or_shortcut_by_user_windowed(Standalone) | manifest_update_title(Standalone, StandaloneUpdated, CancelDialogAndUninstall) | check_app_not_in_list | check_platform_shortcut_not_exists |
+| WMLC | install_or_shortcut_by_user_windowed | manifest_update_icon(Standalone, AcceptUpdate) | await_manifest_update | check_app_in_list_icon_correct |
+| WMLC | install_or_shortcut_by_user_windowed | manifest_update_icon(Standalone, AcceptUpdate) | await_manifest_update | check_platform_shortcut_and_icon |
+| WMLC | install_policy_app(Standalone, NoShortcut, WindowOptions::All, WebApp) | manifest_update_title(Standalone, StandaloneUpdated, SkipUpdate) | check_update_dialog_not_shown  | await_manifest_update | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
 
 ## Run on OS Login
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
