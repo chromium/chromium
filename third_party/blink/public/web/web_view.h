@@ -289,7 +289,9 @@ class BLINK_EXPORT WebView {
   // level.
   virtual void SetZoomFactorForDeviceScaleFactor(float) = 0;
 
-  virtual float ZoomFactorForDeviceScaleFactor() = 0;
+  // Gets the device scale zoom that will be factored into the viewport layout
+  // width.
+  virtual float ZoomFactorForViewportLayout() = 0;
 
   // Override the screen orientation override.
   virtual void SetScreenOrientationOverrideForTesting(

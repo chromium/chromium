@@ -1350,6 +1350,11 @@ void ChromeClientImpl::PasswordFieldReset(HTMLInputElement& element) {
   }
 }
 
+float ChromeClientImpl::ZoomFactorForViewportLayout() {
+  DCHECK(web_view_);
+  return web_view_->ZoomFactorForViewportLayout();
+}
+
 gfx::Rect ChromeClientImpl::AdjustWindowRectForMinimum(
     const gfx::Rect& pending_rect) {
   gfx::Rect window = pending_rect;

@@ -185,8 +185,21 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdatePreferredSize() override;
   void EnablePreferredSizeChangedMode() override;
   void SetZoomFactorForDeviceScaleFactor(float) override;
-  float ZoomFactorForDeviceScaleFactor() override {
-    return zoom_factor_for_device_scale_factor_;
+  float ZoomFactorForViewportLayout() override {
+    // This returns the zoom factor to use when determining the layout width
+    // while processing the viewport meta tag. We use only the device scale
+    // factor, rather than the full zoom factor which includes browser zoom,
+    // since changing browser zoom should cause a page to reflow into a static
+    // initial containing block. i.e. The device's (potentially simulated by the
+    // meta tag) screen size, as measured in physical pixels, does not change
+    // with browser zoom.
+    //
+    // compositor_device_scale_factor_override_ is set by dev tools emulation to
+    // simulate a device scale factor of a particular device. If this is set we
+    // should use it rather than the host's device scale factor.
+    return compositor_device_scale_factor_override_
+               ? compositor_device_scale_factor_override_
+               : zoom_factor_for_device_scale_factor_;
   }
   bool AutoResizeMode() override;
   void EnableAutoResizeForTesting(const gfx::Size& min_window_size,

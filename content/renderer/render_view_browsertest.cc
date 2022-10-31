@@ -1164,7 +1164,7 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(device_scale, GetMainRenderFrame()->GetDeviceScaleFactor());
-  EXPECT_EQ(device_scale, web_view_->ZoomFactorForDeviceScaleFactor());
+  EXPECT_EQ(device_scale, web_view_->ZoomFactorForViewportLayout());
 
   double device_pixel_ratio;
   std::u16string get_dpr = u"Number(window.devicePixelRatio)";

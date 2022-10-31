@@ -304,6 +304,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   void PasswordFieldReset(HTMLInputElement& element) override;
 
+  float ZoomFactorForViewportLayout() override;
+
  private:
   bool IsChromeClientImpl() const override { return true; }
 

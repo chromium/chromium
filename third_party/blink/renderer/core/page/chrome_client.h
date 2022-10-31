@@ -568,6 +568,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void PasswordFieldReset(HTMLInputElement& element) {}
 
+  virtual float ZoomFactorForViewportLayout() { return 1; }
+
  protected:
   ChromeClient() = default;
 

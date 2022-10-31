@@ -3156,6 +3156,8 @@ class ViewportMetaSimTest : public SimTest {
     SimTest::SetUp();
     WebView().GetSettings()->SetViewportEnabled(true);
     WebView().GetSettings()->SetViewportMetaEnabled(true);
+    WebView().GetSettings()->SetViewportStyle(
+        mojom::blink::ViewportStyle::kMobile);
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 
@@ -3422,6 +3424,64 @@ TEST_F(ViewportMetaSimTest, InteractiveWidgetUseCounters) {
     EXPECT_TRUE(GetDocument().IsUseCounted(
         WebFeature::kInteractiveWidgetOverlaysContent));
   }
+}
+
+// Test that the zoom factor for the device scale is used in the calculation of
+// the viewport layout width when browser zoom is applied.
+TEST_F(ViewportMetaSimTest, PageZoomDoesntAffectMobileLayoutSize_WidthDefault) {
+  const float zoom_factor = 3.f;
+
+  // This will set the device scale zoom factor.
+  WebView().MainFrameWidget()->SetDeviceScaleFactorForTesting(zoom_factor);
+  // This will set the browser zoom level. This must not affect the layout size.
+  WebView().MainFrameWidget()->SetZoomLevelForTesting(1.5f);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // 980 (default viewport width) * 3 (zoom factor) = 2940.
+  EXPECT_EQ(2940, GetDocument().View()->GetLayoutSize().width());
+}
+
+TEST_F(ViewportMetaSimTest, PageZoomDoesntAffectMobileLayoutSize_Width1000) {
+  const float zoom_factor = 3.f;
+
+  // This will set the device scale zoom factor.
+  WebView().MainFrameWidget()->SetDeviceScaleFactorForTesting(zoom_factor);
+  // This will set the browser zoom level. This must not affect the layout size.
+  WebView().MainFrameWidget()->SetZoomLevelForTesting(1.5f);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="width=1000">
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // 1000 (viewport width) * 3 (zoom factor) = 3000.
+  EXPECT_EQ(3000, GetDocument().View()->GetLayoutSize().width());
+}
+
+TEST_F(ViewportMetaSimTest, PageZoomDoesntAffectMobileLayoutSize_WidthDevice) {
+  const float zoom_factor = 3.f;
+
+  // This will set the device scale zoom factor.
+  WebView().MainFrameWidget()->SetDeviceScaleFactorForTesting(zoom_factor);
+  // This will set the browser zoom level. This must not affect the layout size.
+  WebView().MainFrameWidget()->SetZoomLevelForTesting(1.5f);
+
+  LoadPageWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <meta name="viewport" content="width=device-width">
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // 800 (device width) * 3 (zoom factor) = 2400.
+  EXPECT_EQ(2400, GetDocument().View()->GetLayoutSize().width());
 }
 
 }  // namespace blink

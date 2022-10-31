@@ -54,7 +54,7 @@ class CORE_EXPORT ViewportStyleResolver final
  private:
   void Reset();
   void Resolve();
-  float Zoom() const;
+  float DeviceScaleZoom() const;
   ViewportDescription ResolveViewportDescription(mojom::blink::ViewportStyle);
 
   Member<Document> document_;

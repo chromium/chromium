@@ -50,8 +50,10 @@ void ViewportStyleResolver::Reset() {
   needs_update_ = false;
 }
 
-float ViewportStyleResolver::Zoom() const {
-  return document_->GetStyleResolver().InitialZoom();
+float ViewportStyleResolver::DeviceScaleZoom() const {
+  float zoom_factor_for_device_scale =
+      document_->GetPage()->GetChromeClient().ZoomFactorForViewportLayout();
+  return zoom_factor_for_device_scale ? zoom_factor_for_device_scale : 1;
 }
 
 ViewportDescription ViewportStyleResolver::ResolveViewportDescription(
@@ -67,12 +69,15 @@ ViewportDescription ViewportStyleResolver::ResolveViewportDescription(
   switch (viewport_style) {
     case mojom::blink::ViewportStyle::kDefault:
       return description;
+    // We only want to use the device scale portion of the zoom factor, because
+    // the page layout size should remain fixed relative to page zoom in order
+    // to reflow into it.
     case mojom::blink::ViewportStyle::kMobile: {
-      description.min_width = Length::Fixed(980.0 * Zoom());
+      description.min_width = Length::Fixed(980.0 * DeviceScaleZoom());
       return description;
     }
     case mojom::blink::ViewportStyle::kTelevision: {
-      description.min_width = Length::Fixed(1280 * Zoom());
+      description.min_width = Length::Fixed(1280 * DeviceScaleZoom());
       return description;
     }
   }
