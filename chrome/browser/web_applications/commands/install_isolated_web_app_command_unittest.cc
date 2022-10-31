@@ -1026,13 +1026,12 @@ TEST_F(InstallIsolatedWebAppCommandTest,
               }),
               IsInstallationOk());
 
-  EXPECT_THAT(
-      isolation_data,
-      Optional(Field("content", &IsolationData::content,
-                     VariantWith<IsolationData::InstalledBundle>(Field(
-                         "proxy_url", &IsolationData::InstalledBundle::path,
-                         Eq(base::FilePath{FILE_PATH_LITERAL(
-                             "/testing/path/to/a/bundle")}))))));
+  EXPECT_THAT(isolation_data,
+              Optional(Field("content", &IsolationData::content,
+                             VariantWith<IsolationData::InstalledBundle>(Field(
+                                 "path", &IsolationData::InstalledBundle::path,
+                                 Eq(base::FilePath{FILE_PATH_LITERAL(
+                                     "/testing/path/to/a/bundle")}))))));
 }
 
 using InstallIsolatedWebAppCommandMetricsTest =
