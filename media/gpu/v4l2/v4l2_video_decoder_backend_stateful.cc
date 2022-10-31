@@ -785,4 +785,9 @@ bool V4L2StatefulVideoDecoderBackend::StopInputQueueOnResChange() const {
   return false;
 }
 
+size_t V4L2StatefulVideoDecoderBackend::GetNumOUTPUTQueueBuffers() const {
+  constexpr size_t kNumInputBuffers = 8;
+  return kNumInputBuffers;
+}
+
 }  // namespace media

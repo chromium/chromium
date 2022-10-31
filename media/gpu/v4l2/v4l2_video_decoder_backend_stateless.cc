@@ -646,6 +646,15 @@ bool V4L2StatelessVideoDecoderBackend::StopInputQueueOnResChange() const {
   return true;
 }
 
+size_t V4L2StatelessVideoDecoderBackend::GetNumOUTPUTQueueBuffers() const {
+  // Some H.264 test vectors (CAPCM*1_Sand_E.h264) need 16 reference frames.
+  // TODO(b/249325255): reduce this number to e.g. 8 or even less when it does
+  // not artificially limit the size of the CAPTURE (decoded video frames)
+  // queue.
+  constexpr size_t kNumInputBuffers = 16;
+  return kNumInputBuffers;
+}
+
 bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
     VideoCodecProfile profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
