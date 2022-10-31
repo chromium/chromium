@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -54,6 +56,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::AccountManagerErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::BluetoothPairingDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::AddSupervisionUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::CrostiniInstallerUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<ash::SampleSystemWebAppUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)

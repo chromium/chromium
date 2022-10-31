@@ -8,6 +8,9 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,6 +19,16 @@
 namespace ash {
 
 class CrostiniUpgraderPageHandler;
+class CrostiniUpgraderUI;
+
+// WebUIConfig for chrome://crostini-upgrader
+class CrostiniUpgraderUIConfig
+    : public content::DefaultWebUIConfig<CrostiniUpgraderUI> {
+ public:
+  CrostiniUpgraderUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUICrostiniUpgraderHost) {}
+};
 
 // The WebUI for chrome://crostini-upgrader
 class CrostiniUpgraderUI : public ui::MojoWebDialogUI,

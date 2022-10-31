@@ -7,6 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer.mojom.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -15,6 +18,16 @@
 namespace ash {
 
 class CrostiniInstallerPageHandler;
+class CrostiniInstallerUI;
+
+// WebUIConfig for chrome://crostini-installer
+class CrostiniInstallerUIConfig
+    : public content::DefaultWebUIConfig<CrostiniInstallerUI> {
+ public:
+  CrostiniInstallerUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUICrostiniInstallerHost) {}
+};
 
 // The WebUI for chrome://crostini-installer
 class CrostiniInstallerUI

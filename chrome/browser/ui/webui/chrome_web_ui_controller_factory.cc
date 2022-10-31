@@ -1007,10 +1007,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == ash::kChromeUIGuestOSInstallerHost)
     return &NewWebUI<ash::GuestOSInstallerUI>;
-  if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)
-    return &NewWebUI<ash::CrostiniInstallerUI>;
-  if (url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)
-    return &NewWebUI<ash::CrostiniUpgraderUI>;
   if (url.host_piece() == chrome::kChromeUICryptohomeHost)
     return &NewWebUI<ash::CryptohomeUI>;
   if (url.host_piece() == chrome::kChromeUIDriveInternalsHost)
