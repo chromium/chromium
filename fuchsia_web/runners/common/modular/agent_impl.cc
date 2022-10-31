@@ -67,8 +67,7 @@ AgentImpl::AgentImpl(
       agent_binding_(outgoing_directory, this) {
   if (!public_service_names_.empty()) {
     fuchsia::io::DirectoryHandle root_directory;
-    zx_status_t status =
-        outgoing_directory->Serve(root_directory.NewRequest().TakeChannel());
+    zx_status_t status = outgoing_directory->Serve(root_directory.NewRequest());
     ZX_CHECK(status == ZX_OK, status) << "Serve(root)";
     fuchsia::io::DirectoryHandle svc_directory;
     status = fdio_service_connect_at(

@@ -116,13 +116,12 @@ class CastRunnerCfv1ShimIntegrationTest : public ::testing::Test {
     svc_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
                        fuchsia::io::OpenFlags::RIGHT_WRITABLE,
                    svc_dir_handle.NewRequest().TakeChannel());
-    additional_services->host_directory = svc_dir_handle.TakeChannel();
+    additional_services->host_directory = std::move(svc_dir_handle);
 
     launch_info.additional_services = std::move(additional_services);
 
     fuchsia::io::DirectoryHandle cast_runner_services_dir;
-    launch_info.directory_request =
-        cast_runner_services_dir.NewRequest().TakeChannel();
+    launch_info.directory_request = cast_runner_services_dir.NewRequest();
 
     fuchsia::sys::LauncherPtr launcher;
     base::ComponentContextForProcess()->svc()->Connect(launcher.NewRequest());

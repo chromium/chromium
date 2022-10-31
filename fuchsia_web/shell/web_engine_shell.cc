@@ -100,7 +100,7 @@ fuchsia::web::ContextProviderPtr ConnectToContextProvider(
       web_engine_package_name.data());
   launch_info.arguments = extra_command_line_arguments;
   fidl::InterfaceHandle<fuchsia::io::Directory> service_directory;
-  launch_info.directory_request = service_directory.NewRequest().TakeChannel();
+  launch_info.directory_request = service_directory.NewRequest();
 
   launcher->CreateComponent(std::move(launch_info),
                             component_controller_.NewRequest());

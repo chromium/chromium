@@ -34,8 +34,7 @@ class InspectTest : public ::testing::Test {
     auto incoming_services =
         std::make_shared<sys::ServiceDirectory>(std::move(incoming_directory));
     context_ = std::make_unique<sys::ComponentContext>(
-        std::move(incoming_services),
-        published_root_directory_.NewRequest().TakeChannel());
+        std::move(incoming_services), published_root_directory_.NewRequest());
     inspector_ = std::make_unique<sys::ComponentInspector>(context_.get());
     base::RunLoop().RunUntilIdle();
   }

@@ -260,7 +260,7 @@ class TestCastComponent {
 
     fidl::InterfaceHandle<fuchsia::io::Directory> outgoing_directory;
     startup_info.launch_info.directory_request =
-        outgoing_directory.NewRequest().TakeChannel();
+        outgoing_directory.NewRequest();
 
     fidl::InterfaceHandle<fuchsia::io::Directory> svc_directory;
     EXPECT_EQ(fdio_service_connect_at(

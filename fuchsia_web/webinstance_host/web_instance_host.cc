@@ -152,7 +152,7 @@ bool HandleDataDirectoryParam(fuchsia::web::CreateContextParams* params,
   launch_info->flat_namespace->paths.push_back(
       base::kPersistedDataDirectoryPath);
   launch_info->flat_namespace->directories.push_back(
-      params->mutable_data_directory()->TakeChannel());
+      std::move(*params->mutable_data_directory()));
   if (params->has_data_quota_bytes()) {
     launch_args->AppendSwitchNative(
         switches::kDataQuotaBytes,
@@ -173,7 +173,7 @@ bool HandleCdmDataDirectoryParam(fuchsia::web::CreateContextParams* params,
   launch_args->AppendSwitchNative(switches::kCdmDataDirectory, kCdmDataPath);
   launch_info->flat_namespace->paths.push_back(kCdmDataPath);
   launch_info->flat_namespace->directories.push_back(
-      params->mutable_cdm_data_directory()->TakeChannel());
+      std::move(*params->mutable_cdm_data_directory()));
   if (params->has_cdm_data_quota_bytes()) {
     launch_args->AppendSwitchNative(
         switches::kCdmDataQuotaBytes,
@@ -275,7 +275,7 @@ bool HandleContentDirectoriesParam(fuchsia::web::CreateContextParams* params,
     launch_info->flat_namespace->paths.push_back(
         kContentDirectories.Append(directory.name()).value());
     launch_info->flat_namespace->directories.push_back(
-        directory.mutable_directory()->TakeChannel());
+        std::move(*directory.mutable_directory()));
   }
 
   launch_args->AppendSwitch(switches::kEnableContentDirectories);
@@ -649,13 +649,12 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
 
   if (tmp_dir_.is_valid()) {
     launch_info.flat_namespace->paths.push_back("/tmp");
-    launch_info.flat_namespace->directories.push_back(tmp_dir_.TakeChannel());
+    launch_info.flat_namespace->directories.push_back(std::move(tmp_dir_));
   }
 
   // Create a request for the new instance's service-directory.
   fidl::InterfaceHandle<fuchsia::io::Directory> instance_services_handle;
-  launch_info.directory_request =
-      instance_services_handle.NewRequest().TakeChannel();
+  launch_info.directory_request = instance_services_handle.NewRequest();
   sys::ServiceDirectory instance_services(std::move(instance_services_handle));
 
   // If one or more Debug protocol clients are active then enable debugging,
@@ -677,7 +676,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   launch_info.additional_services = fuchsia::sys::ServiceList::New();
   launch_info.additional_services->names = GetRequiredServicesForConfig(params);
   launch_info.additional_services->host_directory =
-      service_directory.TakeChannel();
+      std::move(service_directory);
 
   // Take the accumulated command line arguments, omitting the program name in
   // argv[0], and set them in |launch_info|.
@@ -712,8 +711,8 @@ fuchsia::sys::Launcher* WebInstanceHost::IsolatedEnvironmentLauncher() {
   auto services = fuchsia::sys::ServiceList::New();
   services->names.push_back(fuchsia::sys::Loader::Name_);
   fidl::InterfaceHandle<::fuchsia::io::Directory> services_channel;
-  environment->GetDirectory(services_channel.NewRequest().TakeChannel());
-  services->host_directory = services_channel.TakeChannel();
+  environment->GetDirectory(services_channel.NewRequest());
+  services->host_directory = std::move(services_channel);
 
   // Instantiate the isolated environment. This ContextProvider instance's PID
   // is included in the label to ensure that concurrent service instances

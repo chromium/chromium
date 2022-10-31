@@ -170,8 +170,7 @@ class FakeSysLauncher final : public fuchsia::sys::testing::Launcher_TestBase {
         tmp_directory.NewRequest().TakeChannel().release());
     ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
     launch_info.flat_namespace->paths.push_back("/tmp");
-    launch_info.flat_namespace->directories.push_back(
-        tmp_directory.TakeChannel());
+    launch_info.flat_namespace->directories.push_back(std::move(tmp_directory));
 
     // Redirect the sub-process Component's stderr to feed into the test output.
     launch_info.err = fuchsia::sys::FileDescriptor::New();
@@ -258,9 +257,9 @@ class FakeSysEnvironment final
     fake_nested_environment_.Bind(std::move(environment_request));
     nested_environment_controller_request_ = std::move(controller_request);
   }
-  void GetDirectory(zx::channel request) override {
-    base::ComponentContextForProcess()->svc()->CloneChannel(
-        fidl::InterfaceRequest<fuchsia::io::Directory>(std::move(request)));
+  void GetDirectory(
+      fidl::InterfaceRequest<::fuchsia::io::Directory> request) override {
+    base::ComponentContextForProcess()->svc()->CloneChannel(std::move(request));
   }
 
  private:

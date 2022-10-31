@@ -30,8 +30,7 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartIsolatedArchivist(
   launch_info.url = kArchivistUrl;
 
   fidl::InterfaceHandle<fuchsia::io::Directory> archivist_services_dir;
-  launch_info.directory_request =
-      archivist_services_dir.NewRequest().TakeChannel();
+  launch_info.directory_request = archivist_services_dir.NewRequest();
 
   auto launcher = base::ComponentContextForProcess()
                       ->svc()

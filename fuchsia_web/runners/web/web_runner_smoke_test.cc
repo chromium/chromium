@@ -107,7 +107,7 @@ class WebRunnerSmokeTest : public testing::Test {
     auto services = fuchsia::sys::ServiceList::New();
     services->names = std::move(runner_services);
     services->host_directory =
-        base::ComponentContextForProcess()->svc()->CloneChannel().TakeChannel();
+        base::ComponentContextForProcess()->svc()->CloneChannel();
 
     fuchsia::sys::EnvironmentPtr runner_environment;
     environment->CreateNestedEnvironment(
@@ -174,7 +174,7 @@ TEST_F(WebRunnerSmokeTest, LifecycleTerminate) {
 
   fuchsia::sys::LaunchInfo launch_info = LaunchInfoWithServices();
   launch_info.url = test_server_.GetURL("/test.html").spec();
-  launch_info.directory_request = directory.NewRequest().TakeChannel();
+  launch_info.directory_request = directory.NewRequest();
 
   fuchsia::sys::ComponentControllerPtr controller;
   GetLauncher()->CreateComponent(std::move(launch_info),

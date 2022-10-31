@@ -44,8 +44,7 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
       command_line.argv().begin() + 1, command_line.argv().end()));
 
   fuchsia::io::DirectorySyncPtr web_engine_services_dir;
-  launch_info.directory_request =
-      web_engine_services_dir.NewRequest().TakeChannel();
+  launch_info.directory_request = web_engine_services_dir.NewRequest();
 
   fuchsia::sys::LauncherPtr launcher;
   base::ComponentContextForProcess()->svc()->Connect(launcher.NewRequest());

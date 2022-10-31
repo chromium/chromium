@@ -64,7 +64,7 @@ class BASE_EXPORT StartupContext {
   std::unique_ptr<sys::ComponentContext> component_context_;
 
   // Used to store outgoing directory until ServeOutgoingDirectory() is called.
-  zx::channel outgoing_directory_request_;
+  fidl::InterfaceRequest<fuchsia::io::Directory> outgoing_directory_request_;
 };
 
 }  // namespace base

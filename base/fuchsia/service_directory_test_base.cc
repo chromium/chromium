@@ -20,8 +20,7 @@ ServiceDirectoryTestBase::ServiceDirectoryTestBase()
   // Mount service dir and publish the service.
   outgoing_directory_ = std::make_unique<sys::OutgoingDirectory>();
   fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
-  zx_status_t status =
-      outgoing_directory_->Serve(directory.NewRequest().TakeChannel());
+  zx_status_t status = outgoing_directory_->Serve(directory.NewRequest());
   ZX_CHECK(status == ZX_OK, status);
   service_binding_ =
       std::make_unique<ScopedServiceBinding<testfidl::TestInterface>>(

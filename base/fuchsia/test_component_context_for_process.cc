@@ -54,8 +54,7 @@ TestComponentContextForProcess::TestComponentContextForProcess(
   fidl::InterfaceHandle<::fuchsia::io::Directory> published_root_directory;
   old_context_ = ReplaceComponentContextForProcessForTest(
       std::make_unique<sys::ComponentContext>(
-          std::move(incoming_services),
-          published_root_directory.NewRequest().TakeChannel()));
+          std::move(incoming_services), published_root_directory.NewRequest()));
 
   // Connect to the "/svc" directory of the |published_root_directory| and wrap
   // that into a ServiceDirectory.
