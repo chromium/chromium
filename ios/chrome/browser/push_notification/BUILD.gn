@@ -23,6 +23,8 @@ source_set("push_notification_service") {
     "//components/prefs",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce",
+    "//ios/chrome/browser/commerce/push_notification",
     "//ios/chrome/browser/prefs:pref_names",
   ]
 }

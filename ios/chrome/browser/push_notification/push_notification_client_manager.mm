@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 #import <vector>
 
+#import "ios/chrome/browser/commerce/price_alert_util.h"
+#import "ios/chrome/browser/commerce/push_notification/commerce_push_notification_client.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,8 +20,12 @@ NSString* kClientIdPushNotificationDictionaryKey =
     @"push_notification_client_id";
 }  // namespace
 
-PushNotificationClientManager::PushNotificationClientManager() = default;
-
+PushNotificationClientManager::PushNotificationClientManager() {
+  if (IsPriceNotificationsEnabled()) {
+    AddPushNotificationClient(
+        std::make_unique<CommercePushNotificationClient>());
+  }
+}
 PushNotificationClientManager::~PushNotificationClientManager() = default;
 
 void PushNotificationClientManager::AddPushNotificationClient(
