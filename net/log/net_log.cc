@@ -165,18 +165,17 @@ bool NetLog::HasCaptureModeObserver(ThreadSafeCaptureModeObserver* observer) {
 }
 
 // static
-std::string NetLog::TickCountToString(const base::TimeTicks& time) {
+base::Value NetLog::TickCountToValue(const base::TimeTicks& time) {
   int64_t delta_time = time.since_origin().InMilliseconds();
-  // TODO(https://crbug.com/915391): Use NetLogNumberValue().
-  return base::NumberToString(delta_time);
+  return NetLogNumberValue(delta_time);
 }
 
 // static
-std::string NetLog::TimeToString(const base::Time& time) {
+base::Value NetLog::TimeToValue(const base::Time& time) {
   // Convert the base::Time to its (approximate) equivalent in base::TimeTicks.
   base::TimeTicks time_ticks =
       base::TimeTicks::UnixEpoch() + (time - base::Time::UnixEpoch());
-  return TickCountToString(time_ticks);
+  return TickCountToValue(time_ticks);
 }
 
 // static

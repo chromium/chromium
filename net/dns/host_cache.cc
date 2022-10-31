@@ -496,7 +496,7 @@ base::Value::Dict HostCache::Entry::GetAsValue(bool include_staleness) const {
     // The kExpirationKey value is using TimeTicks instead of Time used if
     // |include_staleness| is false, so it cannot be used to deserialize.
     // This is ok as it is used only for netlog.
-    entry_dict.Set(kExpirationKey, NetLog::TickCountToString(expires()));
+    entry_dict.Set(kExpirationKey, NetLog::TickCountToValue(expires()));
     entry_dict.Set(kTtlKey, base::saturated_cast<int>(ttl().InMilliseconds()));
     entry_dict.Set(kNetworkChangesKey, network_changes());
     // The "pinned" status is meaningful only if "network_changes" is also

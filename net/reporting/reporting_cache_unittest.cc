@@ -404,7 +404,7 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
           "body": {},
           "attempts": 1,
           "depth": 0,
-          "queued": "100000",
+          "queued": 100000,
         },
         {
           "url": "https://origin1/path",
@@ -415,7 +415,7 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
           "body": {},
           "attempts": 0,
           "depth": 0,
-          "queued": "200000",
+          "queued": 200000,
         },
       ]
       )json",
@@ -442,7 +442,7 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
           "body": {},
           "attempts": 1,
           "depth": 0,
-          "queued": "100000",
+          "queued": 100000,
         },
         {
           "url": "https://origin1/path",
@@ -453,7 +453,7 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
           "body": {},
           "attempts": 0,
           "depth": 0,
-          "queued": "200000",
+          "queued": 200000,
         },
         {
           "url": "https://origin2/path",
@@ -464,7 +464,7 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
           "body": {},
           "attempts": 0,
           "depth": 2,
-          "queued": "200000",
+          "queued": 200000,
         },
         {
           "url": "https://origin1/path",
@@ -475,7 +475,7 @@ TEST_P(ReportingCacheTest, GetReportsAsValue) {
           "body": {},
           "attempts": 0,
           "depth": 0,
-          "queued": "300000",
+          "queued": 300000,
         },
       ]
       )json",
@@ -1026,7 +1026,7 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
           "groups": [
             {
               "name": "group1",
-              "expires": "604800000",
+              "expires": 604800000,
               "includeSubdomains": false,
               "endpoints": [
                 {"url": "https://endpoint1/", "priority": 1, "weight": 1,
@@ -1042,7 +1042,7 @@ TEST_P(ReportingCacheTest, GetClientsAsValue) {
           "groups": [
             {
               "name": "group1",
-              "expires": "604800000",
+              "expires": 604800000,
               "includeSubdomains": true,
               "endpoints": [
                 {"url": "https://endpoint2/", "priority": 1, "weight": 1,

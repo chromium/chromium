@@ -108,7 +108,7 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
     report_dict.Set("group", report->group);
     report_dict.Set("type", report->type);
     report_dict.Set("depth", report->depth);
-    report_dict.Set("queued", NetLog::TickCountToString(report->queued));
+    report_dict.Set("queued", NetLog::TickCountToValue(report->queued));
     report_dict.Set("attempts", report->attempts);
     report_dict.Set("body", report->body.Clone());
     switch (report->status) {
@@ -1621,7 +1621,7 @@ base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
     const CachedReportingEndpointGroup& group) const {
   base::Value::Dict group_dict;
   group_dict.Set("name", group.group_key.group_name);
-  group_dict.Set("expires", NetLog::TimeToString(group.expires));
+  group_dict.Set("expires", NetLog::TimeToValue(group.expires));
   group_dict.Set("includeSubdomains",
                  group.include_subdomains == OriginSubdomains::INCLUDE);
 

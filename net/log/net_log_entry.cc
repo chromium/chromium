@@ -34,13 +34,13 @@ NetLogEntry& NetLogEntry::operator=(NetLogEntry&& entry) = default;
 base::Value NetLogEntry::ToValue() const {
   base::Value::Dict entry_dict;
 
-  entry_dict.Set("time", NetLog::TickCountToString(time));
+  entry_dict.Set("time", NetLog::TickCountToValue(time));
 
   // Set the entry source.
   base::Value::Dict source_dict;
   source_dict.Set("id", static_cast<int>(source.id));
   source_dict.Set("type", static_cast<int>(source.type));
-  source_dict.Set("start_time", NetLog::TickCountToString(source.start_time));
+  source_dict.Set("start_time", NetLog::TickCountToValue(source.start_time));
   entry_dict.Set("source", std::move(source_dict));
 
   // Set the event info.
