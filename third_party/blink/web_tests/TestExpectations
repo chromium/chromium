@@ -7744,3 +7744,6 @@ crbug.com/1376495 http/tests/devtools/runtime/evaluate-timeout.js [ Failure Pass
 crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 
 crbug.com/1378359 external/wpt/clipboard-apis/async-navigator-clipboard-basics.https.html [ Failure ]
+
+# Sheriff 2022-10-31
+crbug.com/1376679 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Skip ]
