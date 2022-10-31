@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/crx_installer.h"
@@ -15,15 +16,12 @@
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
@@ -33,7 +31,6 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/test/extension_background_page_waiter.h"
-#include "extensions/test/extension_test_notification_observer.h"
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -249,14 +246,20 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
           CrxInstaller::OffStoreInstallAllowedInTest);
     }
 
-    content::WindowedNotificationObserver install_observer(
-        NOTIFICATION_CRX_INSTALLER_DONE,
-        content::Source<CrxInstaller>(installer.get()));
-    installer->InstallCrx(file_path);
-    install_observer.Wait();
+    base::test::TestFuture<absl::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
 
-    extension =
-        content::Details<const Extension>(install_observer.details()).ptr();
+    installer->InstallCrx(file_path);
+
+    absl::optional<CrxInstallError> error = installer_done_future.Get();
+    if (error) {
+      return nullptr;
+    }
+
+    extension = installer->extension();
   }
 
   return extension;
