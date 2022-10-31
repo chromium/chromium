@@ -1054,6 +1054,14 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
       AttributionTrigger::AggregatableResult::kNotRegistered, 1);
 }
 
+TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
+  base::HistogramTester histograms;
+  attribution_manager_->HandleSource(SourceBuilder().Build());
+  task_environment_.RunUntilIdle();
+  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus",
+                                StorableSource::Result::kSuccess, 1);
+}
+
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build());

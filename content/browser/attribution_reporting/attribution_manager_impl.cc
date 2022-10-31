@@ -159,6 +159,14 @@ bool IsStorageKeySessionOnly(
   return false;
 }
 
+void RecordStoreSourceStatus(AttributionStorage::StoreSourceResult result) {
+  static_assert(StorableSource::Result::kMaxValue ==
+                    StorableSource::Result::kProhibitedByBrowserPolicy,
+                "Bump version of Conversions.SourceStoredStatus histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus",
+                                result.status);
+}
+
 void RecordCreateReportStatus(CreateReportResult result) {
   static_assert(AttributionTrigger::EventLevelResult::kMaxValue ==
                     AttributionTrigger::EventLevelResult::kExcessiveReports,
@@ -484,8 +492,7 @@ void AttributionManagerImpl::OnSourceStored(
     StorableSource source,
     absl::optional<uint64_t> cleared_debug_key,
     AttributionStorage::StoreSourceResult result) {
-  // TODO(apaseltiner): Consider logging UMA based on `result` to help
-  // understand how often this fails due to privacy limits, etc.
+  RecordStoreSourceStatus(result);
 
   for (auto& observer : observers_)
     observer.OnSourceHandled(source, cleared_debug_key, result.status);

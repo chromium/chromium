@@ -14,13 +14,17 @@ namespace content {
 class CONTENT_EXPORT StorableSource {
  public:
   // Represents the potential outcomes from attempting to register a source.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class Result {
-    kSuccess,
-    kInternalError,
-    kInsufficientSourceCapacity,
-    kInsufficientUniqueDestinationCapacity,
-    kExcessiveReportingOrigins,
-    kProhibitedByBrowserPolicy,
+    kSuccess = 0,
+    kInternalError = 1,
+    kInsufficientSourceCapacity = 2,
+    kInsufficientUniqueDestinationCapacity = 3,
+    kExcessiveReportingOrigins = 4,
+    kProhibitedByBrowserPolicy = 5,
+    kMaxValue = kProhibitedByBrowserPolicy,
   };
 
   StorableSource(CommonSourceInfo common_info,
