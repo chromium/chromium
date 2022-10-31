@@ -110,14 +110,11 @@
       extension_runWithResource(/audits-style1\.css$/, function(resource) {
         resource.setContent("div.test { width: 140px; height: 42px; }", false);
       });
-      // The next step is going to produce a console message that will be logged, so synchronize the output now.
-      evaluateOnFrontend("TestRunner.deprecatedRunAfterPendingDispatches(reply)", function() {
-        extension_runWithResource(/abe\.png$/, function(resource) {
-          resource.setContent("", true);
-        });
-        extension_runWithResource(/audits-style1\.css$/, function(resource) {
-          resource.setContent(expected_content, true);
-        });
+      extension_runWithResource(/abe\.png$/, function(resource) {
+        resource.setContent("", true);
+      });
+      extension_runWithResource(/audits-style1\.css$/, function(resource) {
+        resource.setContent(expected_content, true);
       });
 
       function onContentCommitted(resource, content) {
