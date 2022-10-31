@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, ConsoleErrorTest) {
   console_observer.SetPattern("*contentSettings.plugins is deprecated.*");
   browsertest_util::ExecuteScriptInBackgroundPageNoWait(
       profile(), extension->id(), "setPluginsSetting()");
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
