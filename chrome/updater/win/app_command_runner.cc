@@ -272,6 +272,7 @@ HRESULT AppCommandRunner::StartProcess(const base::FilePath& executable,
 
   process = base::Process(pi.hProcess);
   CHECK(process.IsValid());
+  VLOG(2) << __func__ << "Started process with PID: " << process.Pid();
   return S_OK;
 }
 
