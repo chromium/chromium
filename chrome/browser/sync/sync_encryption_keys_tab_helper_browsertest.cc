@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   const std::vector<uint8_t> kExpectedEncryptionKey = {7};
   ExecJsSetSyncEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
                               kExpectedEncryptionKey);
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
 
   AccountInfo account;
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
     // the callback by setSyncEncryptionKeys().
     const std::vector<uint8_t> kExpectedEncryptionKey = {7};
     ExecJsSetSyncEncryptionKeys(primary_main_frame, kExpectedEncryptionKey);
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(1u, console_observer.messages().size());
 
     AccountInfo account;
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
   // the callback by setSyncEncryptionKeys().
   const std::vector<uint8_t> kExpectedEncryptionKey = {7};
   ExecJsSetSyncEncryptionKeys(fenced_frame_host, kExpectedEncryptionKey);
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
 
   AccountInfo account;
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::vector<uint8_t> kEncryptionKey = {7};
   ExecJsSetSyncEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
                               kEncryptionKey);
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
 }
 
