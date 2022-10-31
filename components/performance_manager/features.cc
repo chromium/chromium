@@ -49,6 +49,19 @@ const base::FeatureParam<int> kHighEfficiencyModePromoMemoryPercentThreshold{
     "memory_percent_threshold",
     70,
 };
+
+// On ChromeOS, the adjustment generally seems to be around 3%, sometimes 2%. We
+// choose 3% because it gets us close enough, or overestimates (which is better
+// than underestimating in this instance).
+const base::FeatureParam<int>
+    kBatterySaverModeThresholdAdjustmentForDisplayLevel {
+  &kBatterySaverModeAvailable, "low_battery_threshold_adjustment",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      3,
+#else
+      0,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+};
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,

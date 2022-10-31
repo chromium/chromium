@@ -364,10 +364,18 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
 
   bool was_below_threshold = is_below_low_battery_threshold_;
 
-  // A battery is below the threshold if it's under 20% charge.
+  // A battery is below the threshold if it's under 20% charge. On some
+  // platforms, we adjust the threshold by a value specified in Finch to account
+  // for the displayed battery level being artificially lower than the actual
+  // level. See
+  // `power_manager::BatteryPercentageConverter::ConvertActualToDisplay`.
+  uint64_t adjusted_low_battery_threshold =
+      kLowBatteryThresholdPercent +
+      performance_manager::features::
+          kBatterySaverModeThresholdAdjustmentForDisplayLevel.Get();
   is_below_low_battery_threshold_ = *(battery_state->current_capacity) <
                                     (*(battery_state->full_charged_capacity) *
-                                     kLowBatteryThresholdPercent / 100);
+                                     adjusted_low_battery_threshold / 100);
 
   if (is_below_low_battery_threshold_ && !was_below_threshold) {
     for (auto& obs : observers_) {

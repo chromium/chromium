@@ -53,6 +53,17 @@ extern const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold;
 // would be triggered when memory use exceeds 70% of available memory.
 extern const base::FeatureParam<int>
     kHighEfficiencyModePromoMemoryPercentThreshold;
+
+// On certain platforms (ChromeOS), the battery level displayed to the user is
+// artificially lower than the actual battery level. Unfortunately, the battery
+// level that Battery Saver Mode looks at is the "actual" level, so users on
+// that platform may see Battery Saver Mode trigger at say 17% rather than the
+// "advertised" 20%. This parameter allows us to heuristically tweak the
+// threshold on those platforms, by being added to the 20% threshold value (so
+// setting this parameter to 3 would result in battery saver being activated at
+// 23% actual battery level).
+extern const base::FeatureParam<int>
+    kBatterySaverModeThresholdAdjustmentForDisplayLevel;
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the
