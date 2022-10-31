@@ -14,6 +14,7 @@
 #include "services/network/public/mojom/link_header.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -488,6 +489,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // language negotiation on the top-level document, all subresource requests
   // will inherit the Accept-Language header value of the top-level document.
   WebString reduced_accept_language;
+
+  // Carries on the `navigational_delivery_type` in `NavigationParam` on the
+  // renderer side.
+  network::mojom::NavigationDeliveryType navigation_delivery_type =
+      network::mojom::NavigationDeliveryType::kDefault;
 };
 
 }  // namespace blink

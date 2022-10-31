@@ -137,6 +137,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom.h"
@@ -1301,7 +1302,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          std::string() /* reduced_accept_language */);
+          std::string() /* reduced_accept_language */,
+          /*navigation_delivery_type=*/
+          network::mojom::NavigationDeliveryType::kDefault);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1431,7 +1434,9 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          std::string() /* reduced_accept_language */);
+          std::string() /* reduced_accept_language */,
+          /*navigation_delivery_type=*/
+          network::mojom::NavigationDeliveryType::kDefault);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -5149,6 +5154,11 @@ void NavigationRequest::CommitNavigation() {
   if (early_hints_manager_) {
     commit_params_->early_hints_preloaded_resources =
         early_hints_manager_->TakePreloadedResourceURLs();
+  }
+
+  if (response_head_) {
+    commit_params_->navigation_delivery_type =
+        response_head_->navigation_delivery_type;
   }
 
   auto common_params = common_params_->Clone();

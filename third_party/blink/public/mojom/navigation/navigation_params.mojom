@@ -512,4 +512,8 @@ struct CommitNavigationParams {
   // language negotiation on the top-level document, all subresource requests
   // will inherit the Accept-Language header value of the top-level document.
   string reduced_accept_language;
+
+  // Indicates how the response is served for this navigation. Observed from
+  // `PerformanceNavigationTiming` APIs.
+  network.mojom.NavigationDeliveryType navigation_delivery_type = kDefault;
 };

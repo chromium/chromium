@@ -925,7 +925,9 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
           GURL() /* fallback_srcdoc_baseurl */,
           false /* should_load_data_url */, ancestor_or_self_has_cspee,
-          std::string() /* reduced_accept_language */);
+          std::string() /* reduced_accept_language */,
+          /*navigation_delivery_type=*/
+          network::mojom::NavigationDeliveryType::kDefault);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

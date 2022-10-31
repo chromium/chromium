@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -49,9 +50,30 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+using network::mojom::blink::NavigationDeliveryType;
+
+namespace {
+const AtomicString& GetDeliveryType(
+    NavigationDeliveryType navigation_delivery_type,
+    mojom::blink::CacheState cache_state) {
+  switch (navigation_delivery_type) {
+    case NavigationDeliveryType::kDefault:
+      return cache_state == mojom::blink::CacheState::kNone
+                 ? g_empty_atom
+                 : delivery_type_names::kCache;
+    case NavigationDeliveryType::kNavigationalPrefetch:
+      return delivery_type_names::kNavigationalPrefetch;
+    default:
+      NOTREACHED();
+      return g_empty_atom;
+  }
+}
+}  // namespace
 
 PerformanceResourceTiming::PerformanceResourceTiming(
     const mojom::blink::ResourceTimingInfo& info,
@@ -74,9 +96,8 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       initiator_type_(initiator_type.empty()
                           ? fetch_initiator_type_names::kOther
                           : initiator_type),
-      delivery_type_(info.cache_state == mojom::blink::CacheState::kNone
-                         ? g_empty_string
-                         : delivery_type_names::kCache),
+      delivery_type_(
+          GetDeliveryType(NavigationDeliveryType::kDefault, info.cache_state)),
       alpn_negotiated_protocol_(
           static_cast<String>(info.alpn_negotiated_protocol)),
       connection_info_(static_cast<String>(info.connection_info)),
@@ -114,8 +135,10 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     mojom::blink::CacheState cache_state,
     bool is_secure_transport,
     HeapVector<Member<PerformanceServerTiming>> server_timing,
-    ExecutionContext* context)
+    ExecutionContext* context,
+    NavigationDeliveryType navigation_delivery_type)
     : PerformanceEntry(name, 0.0, 0.0, kNavigationIdDefaultValue),
+      delivery_type_(GetDeliveryType(navigation_delivery_type, cache_state)),
       time_origin_(time_origin),
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       context_type_(mojom::blink::RequestContextType::HYPERLINK),

@@ -438,6 +438,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // even if it is friend of DocumentLoader
   class DecodedBodyData;
 
+  network::mojom::NavigationDeliveryType GetNavigationDeliveryType() const {
+    return navigation_delivery_type_;
+  }
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
@@ -769,6 +773,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Reduced accept language for top-level frame.
   const AtomicString reduced_accept_language_;
+
+  const network::mojom::NavigationDeliveryType navigation_delivery_type_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

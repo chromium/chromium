@@ -43,6 +43,7 @@ include_rules = [
     "+services/network/public/mojom/referrer_policy.mojom-shared.h",
     "+services/network/public/mojom/url_loader.mojom-shared.h",
     "+services/network/public/mojom/url_loader_factory.mojom-shared.h",
+    "+services/network/public/mojom/url_response_head.mojom-shared.h",
     "+services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h",
     "+services/network/public/mojom/web_sandbox_flags.mojom-shared.h",
     "+services/service_manager/public",

@@ -17,6 +17,15 @@ import "services/network/public/mojom/parsed_headers.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/url.mojom";
 
+// Describes the navigational delivery type of the response.
+// `kNavigationalPrefetch` if the response is served by Prefetch; `kDefault`
+// if the response if served from a normal network request, even if the response
+// of the request is resurrected from the HTTP cache.
+enum NavigationDeliveryType {
+  kDefault,
+  kNavigationalPrefetch,
+};
+
 struct URLResponseHead {
   // The time at which the request was made that resulted in this response.
   // For cached responses, this time could be "far" in the past.
@@ -100,6 +109,13 @@ struct URLResponseHead {
 
   // True if the response came from cache.
   bool was_fetched_via_cache = false;
+
+  // This field, along with `is_validated` and `was_fetched_via_cache`, are used
+  // to determine the value of `PerformanceResourceTiming::deliveryType` Web
+  // API. `kDefault` indicates the response is served from normal network
+  // request; `kNavigationalPrefetch` indicates the response is served from a
+  // prefetched URL.
+  NavigationDeliveryType navigation_delivery_type = kDefault;
 
   // The proxy server used for this request, if any.
   proxy_resolver.mojom.ProxyServer proxy_server;

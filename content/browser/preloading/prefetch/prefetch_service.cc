@@ -51,6 +51,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/cookie_partition_key.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -888,6 +889,8 @@ void PrefetchService::OnPrefetchComplete(
       prefetch_container->GetLoader()->ResponseInfo()) {
     network::mojom::URLResponseHeadPtr head =
         prefetch_container->GetLoader()->ResponseInfo()->Clone();
+    head->navigation_delivery_type =
+        network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
 
     // Verifies that the request was made using the prefetch proxy if required,
     // or made directly if the proxy was not required.

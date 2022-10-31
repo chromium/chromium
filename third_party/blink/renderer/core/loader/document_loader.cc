@@ -301,6 +301,7 @@ struct SameSizeAsDocumentLoader
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting;
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
+  network::mojom::NavigationDeliveryType navigation_delivery_type;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -505,7 +506,8 @@ DocumentLoader::DocumentLoader(
       navigation_api_back_entries_(params_->navigation_api_back_entries),
       navigation_api_forward_entries_(params_->navigation_api_forward_entries),
       extra_data_(std::move(extra_data)),
-      reduced_accept_language_(params_->reduced_accept_language) {
+      reduced_accept_language_(params_->reduced_accept_language),
+      navigation_delivery_type_(params_->navigation_delivery_type) {
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -682,6 +684,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
     }
   }
   params->reduced_accept_language = reduced_accept_language_;
+  params->navigation_delivery_type = navigation_delivery_type_;
   return params;
 }
 

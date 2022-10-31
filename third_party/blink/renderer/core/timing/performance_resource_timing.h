@@ -65,7 +65,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
       mojom::blink::CacheState cache_state,
       bool is_secure_transport,
       HeapVector<Member<PerformanceServerTiming>> server_timing,
-      ExecutionContext* context);
+      ExecutionContext* context,
+      network::mojom::NavigationDeliveryType delivery_type);
   PerformanceResourceTiming(const mojom::blink::ResourceTimingInfo&,
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,

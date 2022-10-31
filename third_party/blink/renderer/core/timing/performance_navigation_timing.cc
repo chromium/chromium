@@ -55,7 +55,8 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
     ResourceTimingInfo* info,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
-    HeapVector<Member<PerformanceServerTiming>> server_timing)
+    HeapVector<Member<PerformanceServerTiming>> server_timing,
+    network::mojom::NavigationDeliveryType navigation_delivery_type)
     : PerformanceResourceTiming(
           info ? AtomicString(
                      info->FinalResponse().CurrentRequestUrl().GetString())
@@ -66,7 +67,8 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
           base::Contains(url::GetSecureSchemes(),
                          window->Url().Protocol().Ascii()),
           std::move(server_timing),
-          window),
+          window,
+          navigation_delivery_type),
       ExecutionContextClient(window),
       resource_timing_info_(info) {
   DCHECK(window);

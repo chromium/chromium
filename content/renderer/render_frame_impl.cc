@@ -2601,6 +2601,8 @@ void RenderFrameImpl::CommitNavigation(
       !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
   auto navigation_params = std::make_unique<WebNavigationParams>(
       document_token, devtools_navigation_token);
+  navigation_params->navigation_delivery_type =
+      commit_params->navigation_delivery_type;
   navigation_params->is_client_redirect = is_client_redirect;
   FillMiscNavigationParams(*common_params, *commit_params,
                            navigation_params.get());
