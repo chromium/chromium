@@ -20,12 +20,14 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/ime/input_methods.h"
 #include "extensions/browser/extension_pref_value_map.h"
@@ -424,6 +426,16 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       if (base::StartsWith(engine.engine_id, "experimental_",
                            base::CompareCase::SENSITIVE) &&
           !base::FeatureList::IsEnabled(features::kMultilingualTyping)) {
+        continue;
+      }
+
+      const char* kHindiInscriptEngineId = "vkd_hi_inscript";
+      DCHECK(g_browser_process);
+      DCHECK(g_browser_process->local_state());
+      if (engine.engine_id == kHindiInscriptEngineId &&
+          !base::FeatureList::IsEnabled(features::kHindiInscriptLayout) &&
+          !g_browser_process->local_state()->GetBoolean(
+              prefs::kHindiInscriptLayoutEnabled)) {
         continue;
       }
 

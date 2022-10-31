@@ -695,7 +695,6 @@ LanguageSettingsPrivateSetTranslateTargetLanguageFunction::Run() {
 // descriptors. Used for languageSettingsPrivate.getInputMethodLists().
 void PopulateInputMethodListFromDescriptors(
     const InputMethodDescriptors& descriptors,
-    const PrefService* prefs,
     std::vector<language_settings_private::InputMethod>* input_methods) {
   InputMethodManager* manager = InputMethodManager::Get();
   InputMethodUtil* util = manager->GetInputMethodUtil();
@@ -720,14 +719,6 @@ void PopulateInputMethodListFromDescriptors(
       input_map(l10n_util::StringComparator<std::u16string>(collator.get()));
 
   for (const auto& descriptor : descriptors) {
-    if (base::EndsWith(descriptor.id(), "vkd_hi_inscript")) {
-      bool allow_hindi_inscript =
-          base::FeatureList::IsEnabled(
-              chromeos::features::kHindiInscriptLayout) ||
-          (prefs && (prefs->GetBoolean(prefs::kHindiInscriptLayoutEnabled)));
-      if (!allow_hindi_inscript)
-        continue;
-    }
     language_settings_private::InputMethod input_method;
     input_method.id = descriptor.id();
     input_method.display_name = util->GetLocalizedDisplayName(descriptor);
@@ -769,7 +760,6 @@ LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
       manager->GetComponentExtensionIMEManager();
   PopulateInputMethodListFromDescriptors(
       component_extension_manager->GetAllIMEAsInputMethodDescriptor(),
-      Profile::FromBrowserContext(browser_context())->GetPrefs(),
       &input_method_lists.component_extension_imes);
 
   scoped_refptr<InputMethodManager::State> ime_state =
@@ -778,8 +768,7 @@ LanguageSettingsPrivateGetInputMethodListsFunction::Run() {
     InputMethodDescriptors ext_ime_descriptors;
     ime_state->GetInputMethodExtensions(&ext_ime_descriptors);
     PopulateInputMethodListFromDescriptors(
-        ext_ime_descriptors, nullptr,
-        &input_method_lists.third_party_extension_imes);
+        ext_ime_descriptors, &input_method_lists.third_party_extension_imes);
   }
 
   return RespondNow(WithArguments(input_method_lists.ToValue()));

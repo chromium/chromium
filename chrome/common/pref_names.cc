@@ -627,11 +627,6 @@ const char kLanguageInputMethodSpecificSettings[] =
 const char kLanguageShouldMergeInputMethods[] =
     "settings.language.merge_input_methods";
 
-// An boolean pref that controls whether or not Hindi Inscript keyboard layout
-// is available. Set with the corresponding enterprise user policy.
-const char kHindiInscriptLayoutEnabled[] =
-    "settings.input.hindi_inscript_layout_enabled";
-
 // A boolean pref which turns on Advanced Filesystem
 // (USB support, SD card, etc).
 const char kLabsAdvancedFilesystemEnabled[] =
@@ -3605,6 +3600,11 @@ const char kSCTAuditingHashdanceReportCount[] =
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kConsumerAutoUpdateToggle[] = "settings.consumer_auto_update_toggle";
+
+// A boolean pref that controls whether or not Hindi Inscript keyboard layout
+// is available. Set with the corresponding enterprise policy.
+const char kHindiInscriptLayoutEnabled[] =
+    "settings.input.hindi_inscript_layout_enabled";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
