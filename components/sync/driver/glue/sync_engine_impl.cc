@@ -246,7 +246,6 @@ void SyncEngineImpl::StartSyncingWithServer() {
 }
 
 void SyncEngineImpl::StartHandlingInvalidations() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sync_invalidations_service_) {
     // Sync invalidation service must be subscribed to data types by this time.
     // Without that, incoming invalidations would be filtered out.
@@ -255,11 +254,6 @@ void SyncEngineImpl::StartHandlingInvalidations() {
     // Adding a listener several times is safe. Only first adding replays last
     // incoming messages.
     sync_invalidations_service_->AddListener(this);
-  }
-
-  if (invalidator_) {
-    DCHECK(invalidation_handler_registered_);
-    SendInterestedTopicsToInvalidator();
   }
 }
 
@@ -420,6 +414,7 @@ void SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop(
     const ModelTypeSet enabled_types,
     base::OnceClosure ready_task) {
   last_enabled_types_ = enabled_types;
+  SendInterestedTopicsToInvalidator();
 
   std::move(ready_task).Run();
 }
@@ -617,7 +612,7 @@ void SyncEngineImpl::OnCookieJarChangedDoneOnFrontendLoop(
 }
 
 void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
-  if (!invalidator_ || !invalidation_handler_registered_) {
+  if (!invalidator_) {
     return;
   }
 
