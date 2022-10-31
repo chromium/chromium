@@ -25,9 +25,6 @@ class View;
 namespace ash {
 class HoverHighlightView;
 class DetailedViewDelegate;
-class TrayAccessibilityLoginScreenTest;
-class TrayAccessibilitySodaTest;
-class TrayAccessibilityTest;
 
 enum class SodaFeature {
   kDictation,
@@ -55,8 +52,9 @@ class ASH_EXPORT AccessibilityDetailedView
   const char* GetClassName() const override;
 
  private:
-  friend class TrayAccessibilityLoginScreenTest;
-  friend class TrayAccessibilitySodaTest;
+  friend class AccessibilityDetailedViewLoginScreenTest;
+  friend class AccessibilityDetailedViewSodaTest;
+  friend class AccessibilityDetailedViewTest;
   friend class TrayAccessibilityTest;
 
   // TrayDetailedView:

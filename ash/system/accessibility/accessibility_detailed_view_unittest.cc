@@ -17,13 +17,11 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "media/base/media_switches.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/label.h"
@@ -122,13 +120,14 @@ speech::LanguageCode fr_fr() {
 
 }  // namespace
 
-// TODO(jamescook): Rename this to AccessibilityDetailedViewTest.
-class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
+class AccessibilityDetailedViewTest : public AshTestBase,
+                                      public AccessibilityObserver {
  public:
-  TrayAccessibilityTest() = default;
-  TrayAccessibilityTest(const TrayAccessibilityTest&) = delete;
-  TrayAccessibilityTest& operator=(const TrayAccessibilityTest&) = delete;
-  ~TrayAccessibilityTest() override = default;
+  AccessibilityDetailedViewTest() = default;
+  AccessibilityDetailedViewTest(const AccessibilityDetailedViewTest&) = delete;
+  AccessibilityDetailedViewTest& operator=(
+      const AccessibilityDetailedViewTest&) = delete;
+  ~AccessibilityDetailedViewTest() override = default;
 
  protected:
   void SetUp() override {
@@ -479,7 +478,7 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TrayAccessibilityTest, ListItemsAreInRoundedContainer) {
+TEST_F(AccessibilityDetailedViewTest, ListItemsAreInRoundedContainer) {
   base::test::ScopedFeatureList feature_list{features::kQsRevamp};
 
   CreateDetailedMenu();
@@ -505,7 +504,7 @@ TEST_F(TrayAccessibilityTest, ListItemsAreInRoundedContainer) {
   CloseDetailMenu();
 }
 
-TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
+TEST_F(AccessibilityDetailedViewTest, CheckMenuVisibilityOnDetailMenu) {
   // Except help & settings, others should be kept the same
   // in LOGIN | NOT LOGIN | LOCKED. https://crbug.com/632107.
   CreateDetailedMenu();
@@ -578,7 +577,7 @@ TEST_F(TrayAccessibilityTest, CheckMenuVisibilityOnDetailMenu) {
   UnblockUserSession();
 }
 
-TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
+TEST_F(AccessibilityDetailedViewTest, ClickDetailMenu) {
   AccessibilityControllerImpl* accessibility_controller =
       Shell::Get()->accessibility_controller();
   // Confirms that the check item toggles the spoken feedback.
@@ -759,23 +758,24 @@ TEST_F(TrayAccessibilityTest, ClickDetailMenu) {
 }
 
 // Trivial test to increase code coverage.
-TEST_F(TrayAccessibilityTest, GetClassName) {
+TEST_F(AccessibilityDetailedViewTest, GetClassName) {
   CreateDetailedMenu();
   EXPECT_EQ(AccessibilityDetailedView::kClassName, GetDetailedViewClassName());
 }
 
-class TrayAccessibilitySodaTest
-    : public TrayAccessibilityTest,
+class AccessibilityDetailedViewSodaTest
+    : public AccessibilityDetailedViewTest,
       public testing::WithParamInterface<SodaFeature> {
- protected:
-  TrayAccessibilitySodaTest() { set_start_session(false); }
-  TrayAccessibilitySodaTest(const TrayAccessibilitySodaTest&) = delete;
-  TrayAccessibilitySodaTest& operator=(const TrayAccessibilitySodaTest&) =
+ public:
+  AccessibilityDetailedViewSodaTest() { set_start_session(false); }
+  AccessibilityDetailedViewSodaTest(const AccessibilityDetailedViewSodaTest&) =
       delete;
-  ~TrayAccessibilitySodaTest() override = default;
+  AccessibilityDetailedViewSodaTest& operator=(
+      const AccessibilityDetailedViewSodaTest&) = delete;
+  ~AccessibilityDetailedViewSodaTest() override = default;
 
   void SetUp() override {
-    TrayAccessibilityTest::SetUp();
+    AccessibilityDetailedViewTest::SetUp();
     // Since this test suite is part of ash unit tests, the
     // SodaInstallerImplChromeOS is never created (it's normally created when
     // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
@@ -796,7 +796,7 @@ class TrayAccessibilitySodaTest
 
   void TearDown() override {
     soda_installer_impl_.reset();
-    TrayAccessibilityTest::TearDown();
+    AccessibilityDetailedViewTest::TearDown();
   }
 
   void EnableFeature(bool enabled) {
@@ -853,13 +853,13 @@ class TrayAccessibilitySodaTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         TrayAccessibilitySodaTest,
+                         AccessibilityDetailedViewSodaTest,
                          ::testing::Values(SodaFeature::kDictation,
                                            SodaFeature::kLiveCaption));
 
 // Ensures that the feature subtitle changes when SODA AND the language pack
 // matching the feature locale are installed.
-TEST_P(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
+TEST_P(AccessibilityDetailedViewSodaTest, OnSodaInstalledNotification) {
   SetFeatureLocale("fr-FR");
 
   // Pretend that the SODA binary was installed. We still need to wait for the
@@ -874,7 +874,7 @@ TEST_P(TrayAccessibilitySodaTest, OnSodaInstalledNotification) {
 
 // Ensures we only notify the user of progress for the language pack matching
 // the feature locale.
-TEST_P(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
+TEST_P(AccessibilityDetailedViewSodaTest, OnSodaProgressNotification) {
   SetFeatureLocale("en-US");
 
   soda_installer()->NotifySodaProgressForTesting(75, fr_fr());
@@ -887,14 +887,14 @@ TEST_P(TrayAccessibilitySodaTest, OnSodaProgressNotification) {
 
 // Ensures we notify the user of an error when the SODA binary fails to
 // download.
-TEST_P(TrayAccessibilitySodaTest, SodaBinaryErrorNotification) {
+TEST_P(AccessibilityDetailedViewSodaTest, SodaBinaryErrorNotification) {
   soda_installer()->NotifySodaErrorForTesting();
   EXPECT_EQ(kSodaFailed, GetFeatureViewSubtitleText());
 }
 
 // Ensures we only notify the user of an error if the failed language pack
 // matches the feature locale.
-TEST_P(TrayAccessibilitySodaTest, SodaLanguageErrorNotification) {
+TEST_P(AccessibilityDetailedViewSodaTest, SodaLanguageErrorNotification) {
   SetFeatureLocale("en-US");
   soda_installer()->NotifySodaErrorForTesting(fr_fr());
   EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
@@ -904,7 +904,7 @@ TEST_P(TrayAccessibilitySodaTest, SodaLanguageErrorNotification) {
 
 // Ensures that we don't respond to SODA download updates when the feature is
 // off.
-TEST_P(TrayAccessibilitySodaTest, SodaDownloadFeatureDisabled) {
+TEST_P(AccessibilityDetailedViewSodaTest, SodaDownloadFeatureDisabled) {
   EnableFeature(false);
   EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
   soda_installer()->NotifySodaErrorForTesting();
@@ -915,19 +915,20 @@ TEST_P(TrayAccessibilitySodaTest, SodaDownloadFeatureDisabled) {
   EXPECT_EQ(kInitialFeatureViewSubtitleText, GetFeatureViewSubtitleText());
 }
 
-class TrayAccessibilityLoginScreenTest : public TrayAccessibilityTest {
+class AccessibilityDetailedViewLoginScreenTest
+    : public AccessibilityDetailedViewTest {
  public:
-  TrayAccessibilityLoginScreenTest(const TrayAccessibilityLoginScreenTest&) =
-      delete;
-  TrayAccessibilityLoginScreenTest& operator=(
-      const TrayAccessibilityLoginScreenTest&) = delete;
+  AccessibilityDetailedViewLoginScreenTest(
+      const AccessibilityDetailedViewLoginScreenTest&) = delete;
+  AccessibilityDetailedViewLoginScreenTest& operator=(
+      const AccessibilityDetailedViewLoginScreenTest&) = delete;
 
  protected:
-  TrayAccessibilityLoginScreenTest() { set_start_session(false); }
-  ~TrayAccessibilityLoginScreenTest() override = default;
+  AccessibilityDetailedViewLoginScreenTest() { set_start_session(false); }
+  ~AccessibilityDetailedViewLoginScreenTest() override = default;
 };
 
-TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
+TEST_F(AccessibilityDetailedViewLoginScreenTest, NothingCheckedByDefault) {
   // At first, all of the check is unchecked.
   CreateDetailedMenu();
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
@@ -949,7 +950,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, SpokenFeedback) {
   // Enabling spoken feedback.
   EnableSpokenFeedback(true);
   CreateDetailedMenu();
@@ -995,7 +998,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, SelectToSpeak) {
   // Enabling select to speak.
   EnableSelectToSpeak(true);
   CreateDetailedMenu();
@@ -1041,7 +1046,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, Dictation) {
   // Enabling dictation.
   EnableDictation(true);
   CreateDetailedMenu();
@@ -1087,7 +1094,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, HighContrast) {
   // Enabling high contrast.
   EnableHighContrast(true);
   CreateDetailedMenu();
@@ -1133,7 +1142,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, FullScreenMagnifier) {
   // Enabling full screen magnifier.
   SetScreenMagnifierEnabled(true);
   CreateDetailedMenu();
@@ -1179,7 +1190,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, DockedMagnifier) {
   // Enabling docked magnifier.
   SetDockedMagnifierEnabled(true);
   CreateDetailedMenu();
@@ -1225,7 +1238,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, LargeCursor) {
   // Enabling large cursor.
   EnableLargeCursor(true);
   CreateDetailedMenu();
@@ -1271,7 +1286,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, LiveCaption) {
   // Enabling Live Caption.
   EnableLiveCaption(true);
   CreateDetailedMenu();
@@ -1317,7 +1334,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, VirtualKeyboard) {
   // Enable on-screen keyboard.
   EnableVirtualKeyboard(true);
   CreateDetailedMenu();
@@ -1363,7 +1382,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, MonoAudio) {
   // Enabling mono audio.
   EnableMonoAudio(true);
   CreateDetailedMenu();
@@ -1409,7 +1430,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, CaretHighlight) {
   // Enabling caret highlight.
   SetCaretHighlightEnabled(true);
   CreateDetailedMenu();
@@ -1455,7 +1478,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, CursorHighlight) {
   // Enabling highlight mouse cursor.
   SetCursorHighlightEnabled(true);
   CreateDetailedMenu();
@@ -1501,7 +1526,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, FocusHighlight) {
   // Enabling highlight keyboard focus.
   SetFocusHighlightEnabled(true);
   CreateDetailedMenu();
@@ -1547,7 +1574,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, StickyKeys) {
   // Enabling sticky keys.
   EnableStickyKeys(true);
   CreateDetailedMenu();
@@ -1593,10 +1622,13 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
-  // Switch Access is currently not available on the login screen; see
-  // crbug/1108808
-  /* // Enabling switch access.
+// Switch Access is currently not available on the login screen; see
+// crbug/1108808
+/*
+TEST_F(AccessibilityDetailedViewLoginScreenTest, SwitchAccess) {
+  // Enabling switch access.
   EnableSwitchAccess(true);
   CreateDetailedMenu();
   EXPECT_FALSE(IsSpokenFeedbackEnabledOnDetailMenu());
@@ -1637,8 +1669,10 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   EXPECT_FALSE(IsStickyKeysEnabledOnDetailMenu());
   EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
-  */
+}
+*/
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, AllFeatures) {
   // Enabling all of the a11y features.
   EnableSpokenFeedback(true);
   EnableSelectToSpeak(true);
@@ -1713,7 +1747,9 @@ TEST_F(TrayAccessibilityLoginScreenTest, CheckMarksOnDetailMenu) {
   // TODO(crbug.com/1108808): Uncomment once issue is addressed.
   // EXPECT_FALSE(IsSwitchAccessEnabledOnDetailMenu());
   CloseDetailMenu();
+}
 
+TEST_F(AccessibilityDetailedViewLoginScreenTest, Autoclick) {
   // Enabling autoclick.
   EnableAutoclick(true);
   CreateDetailedMenu();
