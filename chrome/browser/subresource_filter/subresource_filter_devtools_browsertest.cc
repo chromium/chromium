@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_FALSE(
         WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(kActivationWarningConsoleMessage,
               console_observer.GetMessageAt(0u));
     // Close devtools, should stop forced activation.

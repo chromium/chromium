@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     console_observer.SetPattern(kActivationWarningConsoleMessage);
     // Initial page loading adds a console message.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     ASSERT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(kActivationWarningConsoleMessage,
               console_observer.GetMessageAt(0u));
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     console_observer.SetPattern(kActivationWarningConsoleMessage);
     // Trigger a prerender.
     const int host_id = prerender_helper_.AddPrerender(prerender_url);
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     RenderFrameHost* prerender_rfh =
         prerender_helper_.GetPrerenderedMainFrameHost(host_id);
     // The prerendering adds a console message.

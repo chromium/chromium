@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   EXPECT_EQ(false, content::EvalJs(web_contents(), "openWindow()",
                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(blocked_content::kAbusiveEnforceMessage,
             console_observer.GetMessageAt(0u));
 

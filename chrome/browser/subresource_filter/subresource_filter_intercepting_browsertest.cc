@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
     content::WebContentsConsoleObserver warn_console_observer(web_contents());
     warn_console_observer.SetPattern(kActivationWarningConsoleMessage);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), warn_url));
-    warn_console_observer.Wait();
+    ASSERT_TRUE(warn_console_observer.Wait());
     EXPECT_TRUE(
         WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
     EXPECT_EQ(kActivationWarningConsoleMessage,
