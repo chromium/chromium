@@ -32,6 +32,11 @@ namespace {
 
 // Obtain an authenticated DRM fd from X11 and create a GbmDevice with it.
 std::unique_ptr<ui::GbmDevice> CreateX11GbmDevice() {
+  if (getenv("RUNNING_UNDER_RR") != nullptr) {
+    LOG(ERROR) << "Running under rr, disabling dri3";
+    return nullptr;
+  }
+
   auto* connection = x11::Connection::Get();
   // |connection| may be nullptr in headless mode.
   if (!connection) {
