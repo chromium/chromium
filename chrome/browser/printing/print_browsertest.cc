@@ -2358,7 +2358,7 @@ class PrintFencedFrameBrowserTest
 
     EXPECT_EQ("beforeprint: false, afterprint: false",
               content::EvalJs(fenced_frame_host, test_script));
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     ASSERT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(
         "Ignored call to 'print()'. The document is in a fenced frame tree.",
