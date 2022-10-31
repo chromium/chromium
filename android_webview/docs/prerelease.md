@@ -17,7 +17,7 @@ has four release channels:
   - Updated every 2-3 weeks with minor releases, and every 6 weeks with major
     releases
 - Beta channel
-  - Available on Android 5 (Lollipop) and later
+  - Available on Android 7 (Nougat) and later
   - Tested before release, but not as extensively as stable
   - One major update ahead of stable, minor updates every week
 - Dev channel
@@ -45,11 +45,38 @@ version of WebView around.
 
 Steps depend on your version of Android:
 
-### Android 10 and later (Q, R, etc.)
+### Android 10 and later (Q, R, etc.) - Beta channel {#trichrome-beta}
 
-Pre-release channels must be downloaded and installed as separate apps, but only
-one must be chosen to provide the system's WebView implementation at any given
-time.
+We offer a new streamlined experience for joining the WebView Beta channel
+(if you want to opt into Dev or Canary, [skip to the next
+section](#trichrome-dev)).
+
+The easiest way to start testing WebView Beta is to opt into the experience on
+the Google Play Store.
+
+1. [Join the beta tester program on Google Play.][WebView tester program]
+2. On your device, update **Android System WebView** [in the Play
+   Store.][WebView PlayStore]
+3. When the Play Store finishes updating, you will be using WebView Beta!
+4. **Bonus:** you'll also now see the "WebView Beta" icon in your list of apps.
+   You can use this app to report bugs, toggle experimental features, and much
+   more! See the [WebView DevTools user guide] for more details.
+
+#### Returning to stable WebView
+
+1. [Leave the tester program.][WebView tester program]
+2. Uninstall all updates by visiting Settings > Apps > Android System WebView >
+   Three dots menu in the top right > Uninstall updates.
+3. [Visit the Play Store page][Webview PlayStore] one more time to install the
+   latest updates to WebView stable, which will include important security
+   fixes.
+
+
+### Android 10 and later (Q, R, etc.) - Dev and Canary channel {#trichrome-dev}
+
+Dev and Canary channels must be downloaded and installed as separate apps, but
+only one must be chosen to provide the system's WebView implementation at any
+given time.
 
 *** note
 WebView pre-release channels are independent of Chrome in Android 10 and later.
@@ -59,6 +86,8 @@ later.
 
 1. Download a pre-release channel of WebView from the play store, available here:
    - [WebView Beta](https://play.google.com/store/apps/details?id=com.google.android.webview.beta)
+     may be installed either through this method or through the [streamlined
+     approach mentioned above](#trichrome-beta)
    - [WebView Dev](https://play.google.com/store/apps/details?id=com.google.android.webview.dev)
    - [WebView Canary](https://play.google.com/store/apps/details?id=com.google.android.webview.canary)
 2. Follow the [steps to enable Android's developer options
@@ -97,27 +126,33 @@ time.
 1. To return to WebView stable, select Chrome again in the WebView
    implementation menu
 
-### Android 5 or 6 (Lollipop/Marshmallow) and Android TV
+### Android Auto and Android TV
 
 Only one installation of WebView is allowed, but users can opt to receive the
 latest beta updates from the Play Store.
 
-1. [Join the beta tester program on Google
-   Play](https://play.google.com/apps/testing/com.google.android.webview)
-2. On your device, update Android System Webview [in the Play
-   Store](https://play.google.com/store/apps/details?id=com.google.android.webview)
-3. When the Play Store finishes updating, you will be using WebView beta!
+1. [Join the beta tester program on Google Play.][WebView tester program]
+2. On your device, update **Android System WebView** [in the Play
+   Store.][WebView PlayStore]
+3. When the Play Store finishes updating, you will be using WebView Beta!
+4. **Bonus:** you'll also now see the "WebView Beta" icon in your list of apps.
+   You can use this app to report bugs, toggle experimental features, and much
+   more! See the [WebView DevTools user guide] for more details.
 
 #### Returning to stable WebView
 
-1. [Leave the tester
-   program](https://play.google.com/apps/testing/com.google.android.webview)
+1. [Leave the tester program.][WebView tester program]
 2. Uninstall all updates by visiting Settings > Apps > Android System WebView >
-   Three dots menu in the top right > Uninstall updates
-3. [Visit the Play Store
-   page](https://play.google.com/store/apps/details?id=com.google.android.webview)
-   one more time to install the latest updates to WebView stable, which will
-   include important security fixes.
+   Three dots menu in the top right > Uninstall updates.
+3. [Visit the Play Store page][WebView PlayStore] one more time to install the
+   latest updates to WebView stable, which will include important security
+   fixes.
+
+### Android 5 or 6 (Lollipop/Marshmallow)
+
+We no longer support devices running Android 5 or 6. Devices on these old OS
+versions can still update to the last supported WebView release but will not be
+able to install further updates.
 
 ### Android 4.4 (KitKat) or earlier
 
@@ -184,3 +219,7 @@ Package names are as follows:
 - [Chrome Release
   Channels](https://www.chromium.org/getting-involved/dev-channel)
 - [WebView Release History](https://chromiumdash.appspot.com/releases?platform=Android)
+
+[WebView DevTools user guide]: https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/developer-ui.md
+[WebView PlayStore]: https://play.google.com/store/apps/details?id=com.google.android.webview
+[WebView tester program]: https://play.google.com/apps/testing/com.google.android.webview
