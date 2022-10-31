@@ -3026,6 +3026,11 @@
       status: "experimental",
     },
     {
+      name: "WebFontResizeLCP",
+      status: "experimental",
+      base_feature: "WebFontResizeLCP",
+    },
+    {
       name: "WebGLColorManagement",
       status: "stable",
     },
