@@ -99,13 +99,6 @@ class ASH_EXPORT AppListPresenterImpl
   // folder was closed.
   bool HandleCloseOpenFolder();
 
-  // Show the app list if it is visible, hide it if it is hidden. If
-  // |event_time_stamp| is not 0, it means |ToggleAppList()| was triggered by
-  // one of the AppListShowSources: kSearchKey or kShelfButton.
-  ShelfAction ToggleAppList(int64_t display_id,
-                            AppListShowSource show_source,
-                            base::TimeTicks event_time_stamp);
-
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list presenter.
   void UpdateForNewSortingOrder(

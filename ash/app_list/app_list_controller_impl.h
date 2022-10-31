@@ -372,10 +372,6 @@ class ASH_EXPORT AppListControllerImpl
   // configuration.
   bool ShouldShowHomeScreen() const;
 
-  // Returns true if the bubble app list should be shown (instead of the
-  // fullscreen app list), based on tablet mode state.
-  bool ShouldShowAppListBubble() const;
-
   // Updates home launcher scale and opacity when the overview mode state
   // changes. `show_home_launcher` - whether the home launcher should be shown.
   // `animate` - whether the transition should be animated.

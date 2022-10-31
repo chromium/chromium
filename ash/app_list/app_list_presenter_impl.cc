@@ -437,21 +437,6 @@ bool AppListPresenterImpl::HandleCloseOpenFolder() {
   return is_target_visibility_show_ && view_ && view_->HandleCloseOpenFolder();
 }
 
-ShelfAction AppListPresenterImpl::ToggleAppList(
-    int64_t display_id,
-    AppListShowSource show_source,
-    base::TimeTicks event_time_stamp) {
-  // Dismiss or show based on the target visibility because the show/hide
-  // animation can be reversed.
-  if (is_target_visibility_show_ && GetDisplayId() == display_id) {
-    Dismiss(event_time_stamp);
-    return SHELF_ACTION_APP_LIST_DISMISSED;
-  }
-  Show(AppListViewState::kFullscreenAllApps, display_id, event_time_stamp,
-       show_source);
-  return SHELF_ACTION_APP_LIST_SHOWN;
-}
-
 void AppListPresenterImpl::UpdateForNewSortingOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,

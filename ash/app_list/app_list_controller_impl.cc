@@ -425,24 +425,13 @@ void AppListControllerImpl::ShowAppList() {
     return;
   }
 
-  if (IsKioskSession())
-    return;
-
-  if (ShouldShowAppListBubble()) {
-    DCHECK(!fullscreen_presenter_->GetTargetVisibility());
-    bubble_presenter_->Show(GetDisplayIdToShowAppListOn());
-    return;
-  }
-  DCHECK(!bubble_presenter_->IsShowing());
-  fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps,
-                              GetDisplayIdToShowAppListOn(), base::TimeTicks(),
-                              /*show_source=*/absl::nullopt);
+  Show(GetDisplayIdToShowAppListOn(), absl::nullopt, base::TimeTicks());
 }
 
 aura::Window* AppListControllerImpl::GetWindow() {
-  if (ShouldShowAppListBubble())
-    return bubble_presenter_->GetWindow();
-  return fullscreen_presenter_->GetWindow();
+  if (IsTabletMode())
+    return fullscreen_presenter_->GetWindow();
+  return bubble_presenter_->GetWindow();
 }
 
 bool AppListControllerImpl::IsVisible(
@@ -535,18 +524,17 @@ void AppListControllerImpl::Show(int64_t display_id,
                                  base::TimeTicks event_time_stamp) {
   if (IsKioskSession())
     return;
-  const bool show_app_list_bubble = ShouldShowAppListBubble();
-  if (show_source.has_value())
-    LogAppListShowSource(show_source.value(), show_app_list_bubble);
 
-  if (show_app_list_bubble) {
-    if (show_source.has_value())
-      DCHECK_NE(show_source.value(), AppListShowSource::kSwipeFromShelf);
-    bubble_presenter_->Show(display_id);
+  if (show_source.has_value())
+    LogAppListShowSource(show_source.value(), !IsTabletMode());
+
+  if (IsTabletMode()) {
+    fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps,
+                                display_id, event_time_stamp, show_source);
     return;
   }
-  fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps, display_id,
-                              event_time_stamp, show_source);
+
+  bubble_presenter_->Show(display_id);
 }
 
 void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
@@ -907,7 +895,7 @@ void AppListControllerImpl::OnTabletModeEnded() {
 
 void AppListControllerImpl::OnWallpaperColorsChanged() {
   // Clamshell doesn't use wallpaper prominent color.
-  if (IsVisible(last_visible_display_id_) && !ShouldShowAppListBubble()) {
+  if (IsVisible(last_visible_display_id_) && IsTabletMode()) {
     AppListView* app_list_view = fullscreen_presenter_->GetView();
     DCHECK(app_list_view);
     app_list_view->OnWallpaperColorsChanged();
@@ -999,7 +987,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
         Show(GetDisplayIdToShowAppListOn(),
              AppListShowSource::kAssistantEntryPoint, base::TimeTicks());
       }
-      if (ShouldShowAppListBubble()) {
+      if (!IsTabletMode()) {
         bubble_presenter_->ShowEmbeddedAssistantUI();
       } else {
         if (!fullscreen_presenter_->IsShowingEmbeddedAssistantUI() ||
@@ -1829,10 +1817,6 @@ bool AppListControllerImpl::ShouldShowHomeScreen() const {
     return false;
 
   return !SplitViewController::Get(window)->InSplitViewMode();
-}
-
-bool AppListControllerImpl::ShouldShowAppListBubble() const {
-  return !IsTabletMode();
 }
 
 void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
