@@ -17,7 +17,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 export class CrostiniImpl {
   constructor() {
     /**
-     * True if VM is enabled.
+     * Map of VM name to if it's enabled. False or undefined means not enabled.
      * @private {Object<boolean>}
      */
     this.enabled_ = {};
@@ -38,10 +38,11 @@ export class CrostiniImpl {
    * Must be done after loadTimeData is available.
    */
   initEnabled() {
-    this.enabled_[CrostiniImpl.DEFAULT_VM] =
-        loadTimeData.getBoolean('CROSTINI_ENABLED');
-    this.enabled_[CrostiniImpl.PLUGIN_VM] =
-        loadTimeData.getBoolean('PLUGIN_VM_ENABLED');
+    const vms = /** @type {!Array<string>} */ (
+        loadTimeData.getValue('VMS_FOR_SHARING'));
+    for (const vm of vms) {
+      this.setEnabled(vm, true);
+    }
     chrome.fileManagerPrivate.onCrostiniChanged.addListener(
         this.onCrostiniChanged_.bind(this));
   }
@@ -64,12 +65,12 @@ export class CrostiniImpl {
   }
 
   /**
-   * Returns true if crostini is enabled.
+   * Returns true if the specified VM is enabled.
    * @param {string} vmName
    * @return {boolean}
    */
   isEnabled(vmName) {
-    return this.enabled_[vmName];
+    return !!this.enabled_[vmName];
   }
 
   /**
@@ -194,7 +195,7 @@ export class CrostiniImpl {
    * @return {boolean}
    */
   canSharePath(vmName, entry, persist) {
-    if (!this.enabled_[vmName]) {
+    if (!this.isEnabled(vmName)) {
       return false;
     }
 

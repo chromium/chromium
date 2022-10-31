@@ -6,6 +6,7 @@ import './webui_command_extender.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
@@ -358,7 +359,7 @@ CommandUtil.shouldShowMenuItemsForEntry = (volumeManager, entry) => {
  *
  * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps.
  * @param {!Array<Entry>} entries List of entries to check capabilities for.
- * @param {!string} capability Name of the capability to check for.
+ * @param {string} capability Name of the capability to check for.
  */
 CommandUtil.hasCapability = (fileManager, entries, capability) => {
   if (entries.length == 0) {
@@ -2096,7 +2097,7 @@ CommandHandler.COMMANDS_['dlp-restriction-details'] =
           return;
         }
 
-        const sourceUrl = /** @type {!string} */ (metadata[0].sourceUrl);
+        const sourceUrl = /** @type {string} */ (metadata[0].sourceUrl);
         try {
           const details = await getDlpRestrictionDetails(sourceUrl);
           fileManager.ui.dlpRestrictionDetailsDialog
@@ -2510,9 +2511,54 @@ CommandHandler.COMMANDS_['manage-mirrorsync'] =
     })();
 
 /**
- * Shares the selected (single only) directory with the default crostini VM.
+ * A command to share the target folder with the specified Guest OS.
  */
-CommandHandler.COMMANDS_['share-with-linux'] = new (class extends FilesCommand {
+class GuestOsShareCommand extends FilesCommand {
+  /**
+   * @param {string} vmName Name of the vm to share into.
+   * @param {string} typeForStrings VM type to identify the strings used for
+   *     this VM e.g. LINUX or PLUGIN_VM.
+   * @param {string} settingsPath Path to the page in settings to manage
+   *     sharing.
+   * @param {!CommandHandler.MenuCommandsForUMA} manageUma MenuCommandsForUMA
+   *     entry this command should emit metrics under when the toast to manage
+   *     sharing is clicked on.
+   * @param {!CommandHandler.MenuCommandsForUMA} shareUma MenuCommandsForUMA
+   *     entry this command should emit metrics under.
+   */
+  constructor(vmName, typeForStrings, settingsPath, manageUma, shareUma) {
+    super();
+    this.vmName_ = vmName;
+    this.typeForStrings_ = typeForStrings;
+    this.settingsPath_ = settingsPath;
+    this.manageUma_ = manageUma;
+    this.shareUma_ = shareUma;
+
+    this.validateTranslationStrings_();
+  }
+
+  /**
+   * Asserts that the necessary strings have been loaded into loadTimeData.
+   */
+  validateTranslationStrings_() {
+    if (!loadTimeData.isInitialized()) {
+      // Tests might not set loadTimeData.
+      return;
+    }
+    const translations = [
+      `FOLDER_SHARED_WITH_${this.typeForStrings_}`,
+      `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`,
+      `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}`,
+      `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_DRIVE`,
+    ];
+    for (const translation of translations) {
+      console.assert(
+          loadTimeData.valueExists(translation),
+          `VM ${this.vmName_} doesn't have the translation string ${
+              translation}`);
+    }
+  }
+
   execute(event, fileManager) {
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
     if (!entry || !entry.isDirectory) {
@@ -2523,110 +2569,35 @@ CommandHandler.COMMANDS_['share-with-linux'] = new (class extends FilesCommand {
     if (!info) {
       return;
     }
-    function share() {
+    function share(vmName) {
       // Always persist shares via right-click > Share with Linux.
       chrome.fileManagerPrivate.sharePathsWithCrostini(
-          constants.DEFAULT_CROSTINI_VM, [dir], true /* persist */, () => {
+          vmName, [dir], true /* persist */, () => {
             if (chrome.runtime.lastError) {
               console.warn(
-                  'Error sharing with linux: ' +
+                  'Error sharing with guest: ' +
                   chrome.runtime.lastError.message);
             }
           });
-      // Show the 'Manage Linux sharing' toast immediately, since the container
-      // may take 10s or more to start.
-      fileManager.ui.toast.show(str('FOLDER_SHARED_WITH_CROSTINI'), {
-        text: str('MANAGE_TOAST_BUTTON_LABEL'),
-        callback: () => {
-          chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
-          CommandHandler.recordMenuItemSelected(
-              CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING_TOAST);
-        },
-      });
+      // Show the 'Manage $typeForStrings sharing' toast immediately, since
+      // the guest may take a while to start.
+      fileManager.ui.toast.show(
+          str(`FOLDER_SHARED_WITH_${this.typeForStrings_}`), {
+            text: str('MANAGE_TOAST_BUTTON_LABEL'),
+            callback: () => {
+              chrome.fileManagerPrivate.openSettingsSubpage(this.settingsPath_);
+              CommandHandler.recordMenuItemSelected(this.manageUma_);
+            },
+          });
     }
     // Show a confirmation dialog if we are sharing the root of a volume.
     // Non-Drive volume roots are always '/'.
     if (dir.fullPath == '/') {
       fileManager.ui.confirmDialog.showHtml(
-          strf('SHARE_ROOT_FOLDER_WITH_CROSTINI_TITLE'),
-          strf('SHARE_ROOT_FOLDER_WITH_CROSTINI', info.volumeInfo.label), share,
-          () => {});
-    } else if (
-        info.isRootEntry &&
-        (info.rootType == VolumeManagerCommon.RootType.DRIVE ||
-         info.rootType == VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-         info.rootType ==
-             VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT)) {
-      // Only show the dialog for My Drive, Shared Drives Grand Root and
-      // Computers Grand Root.  Do not show for roots of a single Shared Drive
-      // or Computer.
-      fileManager.ui.confirmDialog.showHtml(
-          strf('SHARE_ROOT_FOLDER_WITH_CROSTINI_TITLE'),
-          strf('SHARE_ROOT_FOLDER_WITH_CROSTINI_DRIVE'), share, () => {});
-    } else {
-      // This is not a root, share it without confirmation dialog.
-      share();
-    }
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.SHARE_WITH_LINUX);
-  }
-
-  /** @override */
-  canExecute(event, fileManager) {
-    // Must be single directory not already shared.
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    event.canExecute = entries.length === 1 && entries[0].isDirectory &&
-        !fileManager.crostini.isPathShared(
-            constants.DEFAULT_CROSTINI_VM, entries[0]) &&
-        fileManager.crostini.canSharePath(
-            constants.DEFAULT_CROSTINI_VM, entries[0], true /* persist */);
-    event.command.setHidden(!event.canExecute);
-  }
-})();
-
-/**
- * Shares the selected (single only) directory with the Plugin VM.
- */
-CommandHandler
-    .COMMANDS_['share-with-plugin-vm'] = new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const entry = CommandUtil.getCommandEntry(fileManager, event.target);
-    if (!entry || !entry.isDirectory) {
-      return;
-    }
-    const dir = /** @type {!DirectoryEntry} */ (entry);
-    const info = fileManager.volumeManager.getLocationInfo(dir);
-    if (!info) {
-      return;
-    }
-    function share() {
-      // Always persist shares via right-click > Share with PluginVM.
-      chrome.fileManagerPrivate.sharePathsWithCrostini(
-          constants.PLUGIN_VM, [dir], true /* persist */, () => {
-            if (chrome.runtime.lastError) {
-              console.warn(
-                  'Error sharing with Plugin VM: ' +
-                  chrome.runtime.lastError.message);
-            }
-          });
-      // Show the 'Manage PluginVM sharing' toast immediately, since the
-      // container may take 10s or more to start.
-      fileManager.ui.toast.show(str('FOLDER_SHARED_WITH_PLUGIN_VM'), {
-        text: str('MANAGE_TOAST_BUTTON_LABEL'),
-        callback: () => {
-          chrome.fileManagerPrivate.openSettingsSubpage(
-              'app-management/pluginVm/sharedPaths');
-          CommandHandler.recordMenuItemSelected(
-              CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST);
-        },
-      });
-    }
-    // Show a confirmation dialog if we are sharing the root of a volume.
-    // Non-Drive volume roots are always '/'.
-    if (dir.fullPath == '/') {
-      fileManager.ui.confirmDialog.showHtml(
-          strf('SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE'),
-          strf('SHARE_ROOT_FOLDER_WITH_PLUGIN_VM', info.volumeInfo.label),
+          strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
+          strf(
+              `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}`,
+              info.volumeInfo.label),
           share, () => {});
     } else if (
         info.isRootEntry &&
@@ -2635,116 +2606,122 @@ CommandHandler
          info.rootType ==
              VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT)) {
       // Only show the dialog for My Drive, Shared Drives Grand Root and
-      // Computers Grand Root.  Do not show for roots of a single Shared Drive
-      // or Computer.
+      // Computers Grand Root.  Do not show for roots of a single Shared
+      // Drive or Computer.
       fileManager.ui.confirmDialog.showHtml(
-          strf('SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE'),
-          strf('SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_DRIVE'), share, () => {});
+          strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
+          strf(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_DRIVE`), share,
+          () => {});
     } else {
       // This is not a root, share it without confirmation dialog.
-      share();
+      share(this.vmName_);
     }
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.SHARE_WITH_PLUGIN_VM);
+    CommandHandler.recordMenuItemSelected(this.shareUma_);
   }
 
   /** @override */
   canExecute(event, fileManager) {
-    // Must be single directory subfolder of Downloads not already shared.
+    // Must be single directory not already shared.
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
     event.canExecute = entries.length === 1 && entries[0].isDirectory &&
-        !fileManager.crostini.isPathShared(constants.PLUGIN_VM, entries[0]) &&
+        !fileManager.crostini.isPathShared(this.vmName_, entries[0]) &&
         fileManager.crostini.canSharePath(
-            constants.PLUGIN_VM, entries[0], true /* persist */);
+            this.vmName_, entries[0], true /* persist */);
     event.command.setHidden(!event.canExecute);
   }
-})();
+}
 
 /**
- * Link to settings page from gear menu.  Allows the user to manage files and
- * folders shared with the crostini container.
+ * Creates a command for the gear icon to manage sharing.
  */
+class GuestOsManagingSharingGearCommand extends FilesCommand {
+  /**
+   * @param {string} vmName Name of the vm to share into.
+   * @param {string} settingsPath Path to the page in settings to manage
+   *     sharing.
+   * @param {!CommandHandler.MenuCommandsForUMA} manageUma MenuCommandsForUMA
+   *     entry this command should emit metrics under when the toast to manage
+   *     sharing is clicked on.
+   */
+  constructor(vmName, settingsPath, manageUma) {
+    super();
+    this.vmName_ = vmName;
+    this.settingsPath_ = settingsPath;
+    this.manageUma_ = manageUma;
+  }
+  execute(event, fileManager) {
+    chrome.fileManagerPrivate.openSettingsSubpage(this.settingsPath_);
+    CommandHandler.recordMenuItemSelected(this.manageUma_);
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    event.canExecute = fileManager.crostini.isEnabled(this.vmName_);
+    event.command.setHidden(!event.canExecute);
+  }
+}
+
+/**
+ * Creates a command for managing sharing.
+ */
+class GuestOsManagingSharingCommand extends FilesCommand {
+  /**
+   * @param {string} vmName Name of the vm to share into.
+   * @param {string} settingsPath Path to the page in settings to manage
+   *     sharing.
+   * @param {!CommandHandler.MenuCommandsForUMA} manageUma MenuCommandsForUMA
+   *     entry this command should emit metrics under when the toast to manage
+   *     sharing is clicked on.
+   */
+  constructor(vmName, settingsPath, manageUma) {
+    super();
+    this.vmName_ = vmName;
+    this.settingsPath_ = settingsPath;
+    this.manageUma_ = manageUma;
+  }
+  execute(event, fileManager) {
+    chrome.fileManagerPrivate.openSettingsSubpage(this.settingsPath_);
+    CommandHandler.recordMenuItemSelected(this.manageUma_);
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    event.canExecute = entries.length === 1 && entries[0].isDirectory &&
+        fileManager.crostini.isPathShared(this.vmName_, entries[0]);
+    event.command.setHidden(!event.canExecute);
+  }
+}
+
+const crostiniSettings = 'crostini/sharedPaths';
+const pluginVmSettings = 'app-management/pluginVm/sharedPaths';
+
+CommandHandler.COMMANDS_['share-with-linux'] = new GuestOsShareCommand(
+    constants.DEFAULT_CROSTINI_VM, 'CROSTINI', crostiniSettings,
+    CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING_TOAST,
+    CommandHandler.MenuCommandsForUMA.SHARE_WITH_LINUX);
+CommandHandler.COMMANDS_['share-with-plugin-vm'] = new GuestOsShareCommand(
+    constants.PLUGIN_VM, 'PLUGIN_VM', pluginVmSettings,
+    CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING_TOAST,
+    CommandHandler.MenuCommandsForUMA.SHARE_WITH_PLUGIN_VM);
+
 CommandHandler.COMMANDS_['manage-linux-sharing-gear'] =
-    new (class extends FilesCommand {
-      execute(event, fileManager) {
-        chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
-        CommandHandler.recordMenuItemSelected(
-            CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
-      }
-
-      /** @override */
-      canExecute(event, fileManager) {
-        event.canExecute =
-            fileManager.crostini.isEnabled(constants.DEFAULT_CROSTINI_VM);
-        event.command.setHidden(!event.canExecute);
-      }
-    })();
-
-/**
- * Link to settings page from file context menus (not gear menu).  Allows
- * the user to manage files and folders shared with the crostini container.
- */
-CommandHandler.COMMANDS_['manage-linux-sharing'] =
-    new (class extends FilesCommand {
-      execute(event, fileManager) {
-        chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
-        CommandHandler.recordMenuItemSelected(
-            CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
-      }
-
-      /** @override */
-      canExecute(event, fileManager) {
-        const entries =
-            CommandUtil.getCommandEntries(fileManager, event.target);
-        event.canExecute = entries.length === 1 && entries[0].isDirectory &&
-            fileManager.crostini.isPathShared(
-                constants.DEFAULT_CROSTINI_VM, entries[0]);
-        event.command.setHidden(!event.canExecute);
-      }
-    })();
-
-/**
- * Link to settings page from gear menu.  Allows the user to manage files and
- * folders shared with the Plugin VM.
- */
+    new GuestOsManagingSharingGearCommand(
+        constants.DEFAULT_CROSTINI_VM, crostiniSettings,
+        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
 CommandHandler.COMMANDS_['manage-plugin-vm-sharing-gear'] =
-    new (class extends FilesCommand {
-      execute(event, fileManager) {
-        chrome.fileManagerPrivate.openSettingsSubpage(
-            'app-management/pluginVm/sharedPaths');
-        CommandHandler.recordMenuItemSelected(
-            CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
-      }
+    new GuestOsManagingSharingGearCommand(
+        constants.PLUGIN_VM, pluginVmSettings,
+        CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
 
-      /** @override */
-      canExecute(event, fileManager) {
-        event.canExecute = fileManager.crostini.isEnabled(constants.PLUGIN_VM);
-        event.command.setHidden(!event.canExecute);
-      }
-    })();
-
-/**
- * Link to settings page from file context menus (not gear menu).  Allows
- * the user to manage files and folders shared with the Plugin VM.
- */
+CommandHandler.COMMANDS_['manage-linux-sharing'] =
+    new GuestOsManagingSharingCommand(
+        constants.DEFAULT_CROSTINI_VM, crostiniSettings,
+        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
 CommandHandler.COMMANDS_['manage-plugin-vm-sharing'] =
-    new (class extends FilesCommand {
-      execute(event, fileManager) {
-        chrome.fileManagerPrivate.openSettingsSubpage(
-            'app-management/pluginVm/sharedPaths');
-        CommandHandler.recordMenuItemSelected(
-            CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
-      }
-
-      /** @override */
-      canExecute(event, fileManager) {
-        const entries =
-            CommandUtil.getCommandEntries(fileManager, event.target);
-        event.canExecute = entries.length === 1 && entries[0].isDirectory &&
-            fileManager.crostini.isPathShared(constants.PLUGIN_VM, entries[0]);
-        event.command.setHidden(!event.canExecute);
-      }
-    })();
+    new GuestOsManagingSharingCommand(
+        constants.PLUGIN_VM, pluginVmSettings,
+        CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
 
 /**
  * Creates a shortcut of the selected folder (single only).

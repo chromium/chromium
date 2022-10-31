@@ -72,17 +72,15 @@ export function setUp() {
  * Tests init sets crostini and PluginVm enabled status.
  */
 export function testInitCrostiniPluginVmEnabled() {
-  loadTimeData.data_['CROSTINI_ENABLED'] = true;
-  loadTimeData.data_['PLUGIN_VM_ENABLED'] = true;
-  crostini.initEnabled();
-  assertTrue(crostini.isEnabled('termina'));
-  assertTrue(crostini.isEnabled('PvmDefault'));
-
-  loadTimeData.data_['CROSTINI_ENABLED'] = false;
-  loadTimeData.data_['PLUGIN_VM_ENABLED'] = false;
+  loadTimeData.data_['VMS_FOR_SHARING'] = [];
   crostini.initEnabled();
   assertFalse(crostini.isEnabled('termina'));
   assertFalse(crostini.isEnabled('PvmDefault'));
+
+  loadTimeData.data_['VMS_FOR_SHARING'] = ['termina', 'PvmDefault'];
+  crostini.initEnabled();
+  assertTrue(crostini.isEnabled('termina'));
+  assertTrue(crostini.isEnabled('PvmDefault'));
 }
 
 /**
