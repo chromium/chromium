@@ -80483,7 +80483,7 @@
       ]
      ],
      "border-image-slice-percentage.html": [
-      "0026157a62785913a736e3c5d21aff47c2cc256c",
+      "000a96ac01e7073fe059b868b2491ddd41444b1e",
       [
        null,
        [
@@ -80492,7 +80492,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            7
+           ],
+           [
+            0,
+            944
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-space-001.html": [
@@ -148669,7 +148685,7 @@
     },
     "css-nesting": {
      "conditional-properties.html": [
-      "73000d43c77eb475ad6c94d5890e5453aa5a5410",
+      "122b8635c1d09458360fbe06f15029919b1e36f4",
       [
        null,
        [
@@ -148682,7 +148698,7 @@
       ]
      ],
      "conditional-rules.html": [
-      "94ef7ac1c3da4314c165f6eca90a956bedcb8a77",
+      "be925d5d8733599e460449de5f64d373eb059357",
       [
        null,
        [
@@ -148694,8 +148710,21 @@
        {}
       ]
      ],
+     "implicit-nesting.html": [
+      "05b9e04fa84dc464bb2fe3173199fbf350bbe3c1",
+      [
+       null,
+       [
+        [
+         "/css/css-nesting/implicit-nesting-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nesting-basic.html": [
-      "fc0d046e45ec0523b17b38a07df0503a3a9750f2",
+      "6bc727a73195122f6f2abca1a07a289c99376f5c",
       [
        null,
        [
@@ -289899,19 +289928,23 @@
     },
     "css-nesting": {
      "conditional-properties-ref.html": [
-      "2a74dd6d671c2586bb176769d8aa8b9805fee32c",
+      "0285acbf33f9b9e360d715db33f4a56bbb235e87",
       []
      ],
      "conditional-rules-ref.html": [
-      "2a74dd6d671c2586bb176769d8aa8b9805fee32c",
+      "945ed30513682e619736986305b0506a46b8e694",
+      []
+     ],
+     "implicit-nesting-ref.html": [
+      "006216b60e71d2d1af9c3d6c9fc81ea4c53f1d1d",
       []
      ],
      "nesting-basic-ref.html": [
-      "3eddaad70fef4ddca8cf54c5928b2c595f8e5bd4",
+      "c2f7c669497d363e868cb96d2c2bb1ee315fff49",
       []
      ],
      "parsing-expected.txt": [
-      "c8f2e59716a9de57f8e4c24f5dbf6e01fe787505",
+      "cba7633348beabb13a167f57dd130c194d0a7d63",
       []
      ]
     },
@@ -343189,6 +343222,10 @@
      "b8c0b9741d4a22ac42a995ca04b3df2c96cfc16f",
      []
     ],
+    "active-lock-expected.txt": [
+     "f9a7b964f99ac9665fe5f6d6d25066a17edab284",
+     []
+    ],
     "event-before-promise-expected.txt": [
      "c22adc8ffc47ebaafaaec80faf3061bbf51b9883",
      []
@@ -343231,7 +343268,7 @@
       []
      ],
      "orientation-utils.js": [
-      "0353e01c81736298700544c01e50c29daa1082a1",
+      "630aca2d1f9facf245f7f1d062474c5d8bf2e611",
       []
      ],
      "sandboxed-iframe-locking.html": [
@@ -405459,7 +405496,7 @@
       ]
      ],
      "invalidation-003.html": [
-      "c87e6b66610ff7aee1137580b2038caff8794b39",
+      "d1d6d4b9aeb19969fc5dc8bce94a3c43beb2a586",
       [
        null,
        {}
@@ -405473,7 +405510,7 @@
       ]
      ],
      "parsing.html": [
-      "1bb904deb5d7b9ca472ba405cf0ae7d81aae25fd",
+      "66d1566586cd7d94f3c1da014e1ef3e4134daeac",
       [
        null,
        {}
@@ -547742,7 +547779,7 @@
    },
    "screen-orientation": {
     "active-lock.html": [
-     "6459e67ca8358f1ae9c9ef7f40baf6a2ce0f025b",
+     "6dcbe4a8ffab0bf4e8fb784b028bd061383059d6",
      [
       null,
       {
@@ -555896,6 +555933,25 @@
       "dd9916632f685fe270984bcf2c7e27ce01a70b85",
       [
        null,
+       {}
+      ]
+     ],
+     "navigation-timing-delivery-type.tentative.https.html": [
+      "cee8e55f124cbc69f31afb5a939574438b7d8e4a",
+      [
+       "speculation-rules/prefetch/navigation-timing-delivery-type.tentative.https.html?prefetch=false&bypass_cache=false",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/navigation-timing-delivery-type.tentative.https.html?prefetch=false&bypass_cache=true",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/navigation-timing-delivery-type.tentative.https.html?prefetch=true&bypass_cache=false",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/navigation-timing-delivery-type.tentative.https.html?prefetch=true&bypass_cache=true",
        {}
       ]
      ],

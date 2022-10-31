@@ -6,6 +6,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <p id="#fragment"></p>
+<a href="#fragment">fragment</a>
 <script type="module">
   import {
     attachIframe,
@@ -18,22 +19,23 @@
     await test_driver.bless("request full screen");
     await document.documentElement.requestFullscreen();
     const orientation = getOppositeOrientation();
-    const p = screen.orientation.lock(orientation);
-    const href = window.location.href;
-    window.location.href = "#fragment";
+    const p = screen.orientation.lock("landscape");
+    await test_driver.click(document.querySelector("a"));
     await p;
-    window.location.href = href;
   }, "Performing a fragment navigation must not abort the screen orientation change");
 
   promise_test(async (t) => {
     t.add_cleanup(makeCleanup());
     const iframe = await attachIframe();
+    iframe.contentDocument.body.innerHTML = `
+      <p id="#fragment"></p>
+      <a href="#fragment">fragment</a>
+    `;
     await test_driver.bless("request full screen");
     await document.documentElement.requestFullscreen();
     const orientation = getOppositeOrientation();
     const p = iframe.contentWindow.screen.orientation.lock(orientation);
-    const href = `${iframe.contentWindow.location.href}#fragment`;
-    iframe.contentWindow.location.href = href;
+    await test_driver.click(iframe.contentDocument.querySelector("a"));
     await p;
     iframe.remove();
   }, "Performing a fragment navigation within an iframe must not abort the lock promise");

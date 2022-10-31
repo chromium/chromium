@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Performing a fragment navigation must not abort the screen orientation change
+PASS Performing a fragment navigation within an iframe must not abort the lock promise
+FAIL Unloading an iframe by navigating it must abort the lock promise assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+
