@@ -2094,6 +2094,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.TypeC.PartnerLocation" enum="PartnerLocationMetric"
+    expires_after="2023-06-30">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents the location and order of a USB Type-C peripheral
+    (partner) which is connected to a device. It is recorded every time a new
+    peripheral is connected.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.TypeC.PartnerType" enum="PartnerTypeMetric"
     expires_after="2023-03-19">
   <owner>pmalani@chromium.org</owner>
@@ -2101,6 +2112,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     This value represents the type of a USB Type-C peripheral (the Partner)
     which is connected to a device. It is recorded every time a new peripheral
+    is connected.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.TypeC.PowerSourceLocation"
+    enum="PowerSourceLocationMetric" expires_after="2023-06-30">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    This value represents the location and order of a USB Type-C power source
+    which is connected to a device. It is recorded every time a new power source
     is connected.
   </summary>
 </histogram>

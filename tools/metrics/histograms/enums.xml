@@ -77099,6 +77099,22 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PartnerLocationMetric">
+  <int value="0" label="Other"/>
+  <int value="1"
+      label="User has no choice since all open ports are only on one side"/>
+  <int value="2" label="Left: first partner"/>
+  <int value="3" label="Left: second partner (same side with first)"/>
+  <int value="4" label="Left: second partner (opposite side to first)"/>
+  <int value="5" label="Left: third or later partner"/>
+  <int value="6" label="Left: coldplugged on boot"/>
+  <int value="7" label="Right: first partner"/>
+  <int value="8" label="Right: second partner (same side with first)"/>
+  <int value="9" label="Right: second partner (opposite side to first)"/>
+  <int value="10" label="Right: third or later partner"/>
+  <int value="11" label="Right: coldplugged on boot"/>
+</enum>
+
 <enum name="PartnerTypeMetric">
   <int value="0" label="Other"/>
   <int value="1" label="Thunderbolt + DisplayPort Alt Mode Hub"/>
@@ -80844,6 +80860,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="14" label="kSmallMainThreadAnimation"/>
   <int value="15" label="kMediumMainThreadAnimation"/>
   <int value="16" label="kScriptExecution"/>
+</enum>
+
+<enum name="PowerSourceLocationMetric">
+  <int value="0" label="Other"/>
+  <int value="1"
+      label="User has no choice since all ports are only on one side"/>
+  <int value="2" label="Left: first connection during a session"/>
+  <int value="3" label="Left: same side with previous connection"/>
+  <int value="4" label="Left: opposite side from previous connection"/>
+  <int value="5" label="Right: first connectoin during a session"/>
+  <int value="6" label="Right: same side with previous connection"/>
+  <int value="7" label="Right: opposite side with previous connection"/>
 </enum>
 
 <enum name="PowerSupplyType">
