@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {PolymerElement, mixinBehaviors} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.m.js';
-// #import {assert} from '//resources/js/assert.js';
+import {assert} from '//resources/js/assert.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.m.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OobeBaseButtonBase = Polymer.mixinBehaviors(
-  [OobeI18nBehavior], Polymer.Element);
+const OobeBaseButtonBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
 
 /**
  * @polymer
  */
-/* #export */ class OobeBaseButton extends OobeBaseButtonBase {
-
+export class OobeBaseButton extends OobeBaseButtonBase {
   static get properties() {
     return {
       disabled: {
