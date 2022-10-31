@@ -324,7 +324,6 @@ crbug.com/angleproject/7079 [ mac passthrough angle-metal ] deqp/functional/gles
 crbug.com/angleproject/7234 [ mac passthrough angle-metal ] conformance2/textures/misc/integer-cubemap-texture-sampling.html [ Failure ]
 
 # Metal AMD
-crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] conformance2/renderbuffers/multisampled-stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/pixelbufferobject.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/shaderpackingfunction.html [ Failure ]
