@@ -21,6 +21,13 @@ class MockInSessionAuthDialogClient : public InSessionAuthDialogClient {
 
   // InSessionAuthDialogClient:
   MOCK_METHOD(void,
+              StartAuthSession,
+              (base::OnceCallback<void(bool)>),
+              (override));
+
+  MOCK_METHOD(void, InvalidateAuthSession, (), (override));
+
+  MOCK_METHOD(void,
               AuthenticateUserWithPasswordOrPin,
               (const std::string& password,
                bool authenticated_by_pin,

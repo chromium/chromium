@@ -22,6 +22,12 @@ namespace ash {
 // is responsible for.
 class ASH_PUBLIC_EXPORT InSessionAuthDialogClient {
  public:
+  // Starts a cryptohome auth session that spans the life of the dialog.
+  virtual void StartAuthSession(base::OnceCallback<void(bool)> callback) = 0;
+
+  // Ends the cryptohome auth session when the dialog is destroyed.
+  virtual void InvalidateAuthSession() = 0;
+
   // Attempt to authenticate the current session user with a password or PIN.
   // |password|: The submitted password.
   // |authenticated_by_pin|: True if we are authenticating by PIN..

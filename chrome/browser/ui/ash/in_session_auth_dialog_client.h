@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
@@ -44,6 +45,8 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
   static InSessionAuthDialogClient* Get();
 
   // ash::InSessionAuthDialogClient:
+  void StartAuthSession(base::OnceCallback<void(bool)> callback) override;
+  void InvalidateAuthSession() override;
   void AuthenticateUserWithPasswordOrPin(
       const std::string& password,
       bool authenticated_by_pin,
@@ -92,14 +95,15 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   // Passed as a callback to `AuthPerformer::StartAuthSession`. Actually
   // initiates the auth attempt.
-  void OnAuthSessionStarted(const std::string& password,
+  void OnAuthSessionStarted(base::OnceCallback<void(bool)> callback,
                             bool user_exists,
                             std::unique_ptr<ash::UserContext> user_context,
                             absl::optional<ash::AuthenticationError> error);
 
   // Passed as a callback to `AuthPerformer::AuthenticateWith*`. Checks
   // the result of the authentication operation.
-  void OnAuthVerified(std::unique_ptr<ash::UserContext> user_context,
+  void OnAuthVerified(bool authenticated_by_password,
+                      std::unique_ptr<ash::UserContext> user_context,
                       absl::optional<ash::AuthenticationError> error);
 
   void OnPinAttemptDone(std::unique_ptr<ash::UserContext> user_context,
@@ -119,6 +123,8 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   // Used to start and authenticate auth sessions.
   ash::AuthPerformer auth_performer_;
+
+  std::unique_ptr<ash::UserContext> user_context_;
 
   base::WeakPtrFactory<InSessionAuthDialogClient> weak_factory_{this};
 };
