@@ -35,7 +35,7 @@ class LayoutThemeMobile : public LayoutThemeDefault {
   static scoped_refptr<LayoutTheme> Create();
   String ExtraDefaultStyleSheet() override;
 
-  void AdjustInnerSpinButtonStyle(ComputedStyle&) const override;
+  void AdjustInnerSpinButtonStyle(ComputedStyleBuilder&) const override;
 
   String ExtraFullscreenStyleSheet() override;
 

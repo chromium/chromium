@@ -177,7 +177,7 @@ void LayoutThemeDefault::SetSelectionColors(Color active_background_color,
 }
 
 void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
-    ComputedStyle& style) const {
+    ComputedStyleBuilder& style) const {
   gfx::Size size = WebThemeEngineHelper::GetNativeThemeEngine()->GetSize(
       WebThemeEngine::kPartInnerSpinButton);
 

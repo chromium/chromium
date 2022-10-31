@@ -360,16 +360,16 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       style.SetMarginTop(value);
       return true;
     case CSSPropertyID::kMaxHeight:
-      style.SetMaxHeight(value);
+      builder.SetMaxHeight(value);
       return true;
     case CSSPropertyID::kMaxWidth:
-      style.SetMaxWidth(value);
+      builder.SetMaxWidth(value);
       return true;
     case CSSPropertyID::kMinHeight:
-      style.SetMinHeight(value);
+      builder.SetMinHeight(value);
       return true;
     case CSSPropertyID::kMinWidth:
-      style.SetMinWidth(value);
+      builder.SetMinWidth(value);
       return true;
     case CSSPropertyID::kOffsetDistance:
       builder.SetOffsetDistance(value);

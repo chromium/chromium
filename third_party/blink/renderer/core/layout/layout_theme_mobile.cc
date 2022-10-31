@@ -52,17 +52,13 @@ String LayoutThemeMobile::ExtraFullscreenStyleSheet() {
   return UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_ANDROID_CSS);
 }
 
-void LayoutThemeMobile::AdjustInnerSpinButtonStyle(ComputedStyle& style) const {
-  if (WebTestSupport::IsRunningWebTest()) {
-    // Match Linux spin button style in web tests.
-    // FIXME: Consider removing the conditional if a future Android theme
-    // matches this.
-    gfx::Size size = WebThemeEngineHelper::GetNativeThemeEngine()->GetSize(
-        WebThemeEngine::kPartInnerSpinButton);
-
-    style.SetWidth(Length::Fixed(size.width()));
-    style.SetMinWidth(Length::Fixed(size.width()));
-  }
+void LayoutThemeMobile::AdjustInnerSpinButtonStyle(
+    ComputedStyleBuilder& builder) const {
+  // Match Linux spin button style in web tests.
+  // FIXME: Consider removing the conditional if a future Android theme matches
+  // this.
+  if (WebTestSupport::IsRunningWebTest())
+    LayoutThemeDefault::AdjustInnerSpinButtonStyle(builder);
 }
 
 }  // namespace blink

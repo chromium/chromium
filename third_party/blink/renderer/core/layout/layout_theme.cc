@@ -443,7 +443,7 @@ void LayoutTheme::AdjustRadioStyle(ComputedStyle& style,
 
 void LayoutTheme::AdjustButtonStyle(ComputedStyleBuilder&) const {}
 
-void LayoutTheme::AdjustInnerSpinButtonStyle(ComputedStyle&) const {}
+void LayoutTheme::AdjustInnerSpinButtonStyle(ComputedStyleBuilder&) const {}
 
 void LayoutTheme::AdjustMenuListStyle(ComputedStyleBuilder& builder) const {
   // Menulists should have visible overflow
@@ -821,7 +821,7 @@ void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style,
     case kButtonPart:
       return AdjustButtonStyle(builder);
     case kInnerSpinButtonPart:
-      return AdjustInnerSpinButtonStyle(style);
+      return AdjustInnerSpinButtonStyle(builder);
     default:
       break;
   }

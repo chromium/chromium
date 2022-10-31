@@ -3318,6 +3318,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "max-width",
@@ -3335,6 +3336,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "min-height",
@@ -3351,6 +3353,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "min-width",
@@ -3367,6 +3370,7 @@
       },
       supports_incremental_style: true,
       valid_for_position_fallback: true,
+      readonly: true,
     },
     {
       name: "mix-blend-mode",

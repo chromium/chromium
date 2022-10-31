@@ -61,7 +61,7 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   int SliderTickOffsetFromTrackCenter() const override;
   void AdjustSliderThumbSize(ComputedStyle&) const override;
 
-  void AdjustInnerSpinButtonStyle(ComputedStyle&) const override;
+  void AdjustInnerSpinButtonStyle(ComputedStyleBuilder&) const override;
   void AdjustButtonStyle(ComputedStyleBuilder&) const override;
 
   Color PlatformTapHighlightColor() const override {

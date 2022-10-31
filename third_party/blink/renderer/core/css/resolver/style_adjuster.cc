@@ -334,10 +334,10 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
   style.SetContainIntrinsicHeight(StyleIntrinsicLength(false, size.Height()));
   style.SetHeight(size.Height());
   builder.SetLineHeight(size.Height());
-  style.SetMaxHeight(size.Height());
-  style.SetMaxWidth(size.Width());
-  style.SetMinHeight(size.Height());
-  style.SetMinWidth(size.Width());
+  builder.SetMaxHeight(size.Height());
+  builder.SetMaxWidth(size.Width());
+  builder.SetMinHeight(size.Height());
+  builder.SetMinWidth(size.Width());
   style.SetWidth(size.Width());
   AdjustStyleForCombinedText(builder);
 }
