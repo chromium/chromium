@@ -82,7 +82,10 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   const scoped_refptr<base::SequencedTaskRunner> gpu_task_runner_;
 
   // The RTCVideoEncoder::Impl that does all the work.
-  scoped_refptr<Impl> impl_;
+  std::unique_ptr<Impl> impl_;
+
+  // This weak pointer is bound to |gpu_task_runner_|.
+  base::WeakPtr<Impl> weak_impl_;
 };
 
 }  // namespace blink
