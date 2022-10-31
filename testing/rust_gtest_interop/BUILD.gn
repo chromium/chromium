@@ -13,26 +13,24 @@ if (enable_rust) {
       "rust_gtest_interop.cc",
       "rust_gtest_interop.h",
     ]
-    if (enable_rust) {
-      rs_crate_root = "rust_gtest_interop.rs"
-      rs_sources = [
-        "expect_macros.rs",
-        "rust_gtest_interop.rs",
-      ]
-      rs_cxx_bindings = [ "rust_gtest_interop.rs" ]
-      rs_deps = [
-        # Macros re-exported from the rust_gtest_interop crate. Can only be
-        # accessed through the crate, so not public_deps.
-        ":gtest_attribute",
+    rs_crate_root = "rust_gtest_interop.rs"
+    rs_sources = [
+      "expect_macros.rs",
+      "rust_gtest_interop.rs",
+    ]
+    rs_cxx_bindings = [ "rust_gtest_interop.rs" ]
+    rs_deps = [
+      # Macros re-exported from the rust_gtest_interop crate. Can only be
+      # accessed through the crate, so not public_deps.
+      ":gtest_attribute",
 
-        # This is re-exported for the gtest_attribute macros.
-        "//third_party/rust/small_ctor/v0_1:test_support",
-      ]
-      deps = [
-        "//build/rust:cxx_cppdeps",
-        "//testing/gtest",
-      ]
-    }
+      # This is re-exported for the gtest_attribute macros.
+      "//third_party/rust/small_ctor/v0_1:test_support",
+    ]
+    deps = [
+      "//build/rust:cxx_cppdeps",
+      "//testing/gtest",
+    ]
   }
 
   rust_macro("gtest_attribute") {
