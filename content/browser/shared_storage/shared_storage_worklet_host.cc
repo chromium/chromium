@@ -20,6 +20,7 @@
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/common/private_aggregation_host.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -842,10 +843,15 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 mojo::PendingRemote<content::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   DCHECK(browser_context_);
+
+  if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi) ||
+      !content::kPrivateAggregationApiEnabledInSharedStorage.Get()) {
+    return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();
+  }
+
   PrivateAggregationManager* private_aggregation_manager =
       PrivateAggregationManager::GetManager(*browser_context_);
-  if (!private_aggregation_manager)
-    return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();
+  DCHECK(private_aggregation_manager);
 
   mojo::PendingRemote<content::mojom::PrivateAggregationHost>
       pending_pa_host_remote;

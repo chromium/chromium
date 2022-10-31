@@ -3825,6 +3825,40 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
             console_observer.messages()[0].log_level);
 }
 
+class SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest
+    : public SharedStorageBrowserTest {
+ public:
+  SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content::kPrivateAggregationApi,
+        {{"enabled_in_shared_storage", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest,
+    PrivateAggregationNotDefined) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+    )",
+                         &out_script_url);
+
+  ASSERT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("ReferenceError: privateAggregation is not defined",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[0].log_level);
+}
+
 class SharedStoragePrivateAggregationEnabledBrowserTest
     : public SharedStorageBrowserTest {
  public:

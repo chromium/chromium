@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_PRIVATE_AGGREGATION_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -14,6 +15,12 @@ namespace content {
 // `kPrivacySandboxAggregationService` to be enabled to successfully send
 // reports.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
+
+// Selectively allows the JavaScript API to be disabled in just one of the
+// contexts.
+extern const base::FeatureParam<bool>
+    kPrivateAggregationApiEnabledInSharedStorage;
+extern const base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge;
 
 }  // namespace content
 

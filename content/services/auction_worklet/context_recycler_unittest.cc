@@ -1345,4 +1345,61 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
   }
 }
 
+class ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest
+    : public ContextRecyclerTest {
+ public:
+  ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content::kPrivateAggregationApi, {{"enabled_in_fledge", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Exercise PrivateAggregationBindings, and make sure they reset properly.
+TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
+       PrivateAggregationBindings) {
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
+  const char kScript[] = R"(
+    function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.sendHistogramReport(args);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  context_recycler.AddPrivateAggregationBindings();
+
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:8 Uncaught ReferenceError: "
+                    "privateAggregation is not defined."));
+
+    PrivateAggregationRequests pa_requests =
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests();
+    ASSERT_TRUE(pa_requests.empty());
+  }
+}
+
 }  // namespace auction_worklet

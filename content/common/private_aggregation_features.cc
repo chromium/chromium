@@ -12,4 +12,11 @@ BASE_FEATURE(kPrivateAggregationApi,
              "PrivateAggregationApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInSharedStorage{
+    &kPrivateAggregationApi, "enabled_in_shared_storage",
+    /*default_value=*/true};
+constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge{
+    &kPrivateAggregationApi, "enabled_in_fledge",
+    /*default_value=*/true};
+
 }  // namespace content

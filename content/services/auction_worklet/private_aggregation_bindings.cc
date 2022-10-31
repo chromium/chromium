@@ -33,7 +33,8 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
 void PrivateAggregationBindings::FillInGlobalTemplate(
     v8::Local<v8::ObjectTemplate> global_template) {
-  if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi)) {
+  if (!base::FeatureList::IsEnabled(content::kPrivateAggregationApi) ||
+      !content::kPrivateAggregationApiEnabledInFledge.Get()) {
     return;
   }
 
