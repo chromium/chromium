@@ -20,11 +20,6 @@ void DemoPreferencesScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void DemoPreferencesScreenHandler::SetInputMethodId(
-    const std::string& input_method) {
-  CallJS("login.DemoPreferencesScreen.setSelectedKeyboard", input_method);
-}
-
 void DemoPreferencesScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("demoPreferencesScreenTitle",

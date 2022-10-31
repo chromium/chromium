@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/ime/ash/input_method_descriptor.h"
 
 namespace ash {
 namespace {
@@ -44,17 +43,9 @@ DemoPreferencesScreen::DemoPreferencesScreen(
     : BaseScreen(DemoPreferencesScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
-      exit_callback_(exit_callback) {
-  // TODO(agawronska): Add tests for locale and input changes.
-  input_method::InputMethodManager* input_manager =
-      input_method::InputMethodManager::Get();
-  UpdateInputMethod(input_manager);
-  input_manager_observation_.Observe(input_manager);
-}
+      exit_callback_(exit_callback) {}
 
-DemoPreferencesScreen::~DemoPreferencesScreen() {
-  input_method::InputMethodManager::Get()->RemoveObserver(this);
-}
+DemoPreferencesScreen::~DemoPreferencesScreen() = default;
 
 void DemoPreferencesScreen::SetDemoModeRetailerAndStoreIdInput(
     const std::string& retailer_store_id_input) {
@@ -94,22 +85,6 @@ void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
                                                 args[1].GetString());
   } else {
     BaseScreen::OnUserAction(args);
-  }
-}
-
-void DemoPreferencesScreen::InputMethodChanged(
-    input_method::InputMethodManager* manager,
-    Profile* profile,
-    bool show_message) {
-  UpdateInputMethod(manager);
-}
-
-void DemoPreferencesScreen::UpdateInputMethod(
-    input_method::InputMethodManager* input_manager) {
-  if (view_) {
-    const input_method::InputMethodDescriptor input_method =
-        input_manager->GetActiveIMEState()->GetCurrentInputMethod();
-    view_->SetInputMethodId(input_method.id());
   }
 }
 

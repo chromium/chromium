@@ -57,14 +57,6 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
       },
 
       /**
-       * List of keyboards for keyboard selector dropdown.
-       * @type {!Array<!OobeTypes.IMEDsc>}
-       */
-      keyboards: {
-        type: Array,
-      },
-
-      /**
        * List of countries for country selector dropdown.
        * @type {!Array<!OobeTypes.DemoCountryDsc>}
        */
@@ -127,7 +119,7 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
   get EXTERNAL_API() {
-    return ['setSelectedKeyboard'];
+    return [];
   }
   // clang-format on
 
@@ -163,37 +155,11 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
         loadTimeData.getValue('languageList'));
     this.setLanguageList_(languageList);
 
-    const inputMethodsList = /** @type {!Array<OobeTypes.IMEDsc>} */ (
-        loadTimeData.getValue('inputMethodsList'));
-    this.setInputMethods_(inputMethodsList);
-
     const countryList = /** @type {!Array<OobeTypes.DemoCountryDsc>} */ (
         loadTimeData.getValue('demoModeCountryList'));
     this.setCountryList_(countryList);
 
     this.i18nUpdateLocale();
-  }
-
-  /**
-   * Sets selected keyboard.
-   * @param {string} keyboardId
-   */
-  setSelectedKeyboard(keyboardId) {
-    let found = false;
-    for (const keyboard of this.keyboards) {
-      if (keyboard.value != keyboardId) {
-        keyboard.selected = false;
-        continue;
-      }
-      keyboard.selected = true;
-      found = true;
-    }
-    if (!found) {
-      return;
-    }
-
-    // Force i18n-dropdown to refresh.
-    this.keyboards = this.keyboards.slice();
   }
 
   /**
@@ -203,15 +169,6 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    */
   setLanguageList_(languages) {
     this.languages = languages;
-  }
-
-  /**
-   * Sets input methods.
-   * @param {!Array<!OobeTypes.IMEDsc>} inputMethods
-   * @private
-   */
-  setInputMethods_(inputMethods) {
-    this.keyboards = inputMethods;
   }
 
   /**

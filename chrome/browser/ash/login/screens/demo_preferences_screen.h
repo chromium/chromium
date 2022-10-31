@@ -9,19 +9,15 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/ash/login/demo_preferences_screen_handler.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 
 // Controls demo mode preferences. The screen can be shown during OOBE. It
 // allows user to choose preferences for retail demo mode.
-class DemoPreferencesScreen
-    : public BaseScreen,
-      public input_method::InputMethodManager::Observer {
+class DemoPreferencesScreen : public BaseScreen {
  public:
   enum class Result { COMPLETED, COMPLETED_CONSOLIDATED_CONSENT, CANCELED };
 
@@ -49,18 +45,6 @@ class DemoPreferencesScreen
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
-  // InputMethodManager::Observer:
-  void InputMethodChanged(input_method::InputMethodManager* manager,
-                          Profile* profile,
-                          bool show_message) override;
-
-  // Passes current input method to the context, so it can be shown in the UI.
-  void UpdateInputMethod(input_method::InputMethodManager* input_manager);
-
-  base::ScopedObservation<input_method::InputMethodManager,
-                          input_method::InputMethodManager::Observer>
-      input_manager_observation_{this};
-
   base::WeakPtr<DemoPreferencesScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
