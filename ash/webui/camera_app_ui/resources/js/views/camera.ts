@@ -80,6 +80,9 @@ export class Camera extends View implements CameraViewUI {
   private readonly docModeDialogView =
       new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
 
+  private readonly lowStorageDialogView =
+      new Dialog(ViewName.LOW_STORAGE_DIALOG);
+
   private readonly subViews: View[];
 
   /**
@@ -137,6 +140,7 @@ export class Camera extends View implements CameraViewUI {
       this.cropDocument,
       this.documentReview,
       this.docModeDialogView,
+      this.lowStorageDialogView,
       new View(ViewName.FLASH),
     ];
 

@@ -704,6 +704,7 @@ body.doc-mode-reviewing #open-settings {
 #view-ptz-panel,
 #view-review,
 #view-flash,
+#view-low-storage-dialog,
 #view-settings,
 #view-photo-aspect-ratio-settings,
 #view-photo-resolution-settings,
@@ -733,6 +734,7 @@ body.view-option-panel #view-option-panel,
 body.view-ptz-panel #view-ptz-panel,
 body.view-review #view-review,
 body.view-flash #view-flash,
+body.view-low-storage-dialog #view-low-storage-dialog,
 body.view-settings #view-settings,
 body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
@@ -1540,4 +1542,44 @@ body:not(.video) #settings-video-resolution {
 #nudge .warning-msg {
   color: var(--grey-400);
   font: 400 14px/20px Roboto;
+}
+
+.low-storage-dialog-popup {
+  background: var(--grey-900);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  width: 320px;
+}
+
+.low-storage-dialog-popup .dialog-title {
+  color: white;
+  font: 500 16px/24px var(--default-font-family);
+}
+
+.low-storage-dialog-popup .dialog-description {
+  color: var(--grey-400);
+  font: 400 14px/20px var(--default-font-family);
+}
+
+.low-storage-dialog-buttons {
+  align-items: center;
+  align-self: flex-end;
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.low-storage-dialog-buttons .dialog-negative-button {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.low-storage-dialog-buttons .external-link-icon {
+  background: url(/images/external_link_icon.svg);
+  height: 20px;
+  width: 20px;
 }

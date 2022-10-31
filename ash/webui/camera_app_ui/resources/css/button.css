@@ -40,6 +40,16 @@ button.text-button.pill:focus {
   background: rgba(var(--blue-300-rgb), 0.08);
 }
 
+.text-button.dark.system-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--grey-200);
+}
+
+.text-button.dark.system-secondary:hover,
+.text-button.dark.system-secondary:focus {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .icon-button {
   background-position: center;
   background-repeat: no-repeat;

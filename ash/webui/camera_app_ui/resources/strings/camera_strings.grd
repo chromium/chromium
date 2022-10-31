@@ -722,6 +722,21 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Message for page deletion" name="IDS_DELETE_PAGE_MESSAGE">
         Page <ph name="page_number">$1<ex>2</ex></ph> deleted
       </message>
+      <message desc="Dialog title indicating that recording could not be started due to low storage." name="IDS_LOW_STORAGE_DIALOG_CANNOT_START_TITLE">
+        Can’t start recording
+      </message>
+      <message desc="Dialog description explaining that recording could not be started due to low storage." name="IDS_LOW_STORAGE_DIALOG_CANNOT_START_DESC">
+        You can't record because of low device storage space. To start recording, you need to free up space on your device.
+      </message>
+      <message desc="Dialog title indicating that recording is automatically stopped due to low storage." name="IDS_LOW_STORAGE_DIALOG_AUTO_STOP_TITLE">
+        Recording has been stopped
+      </message>
+      <message desc="Dialog description explaining that recording is automatically stopped due to low storage." name="IDS_LOW_STORAGE_DIALOG_AUTO_STOP_DESC">
+        Your recording stopped because of low device storage space. To record more videos, you need to free up space on your device.
+      </message>
+      <message desc="Dialog button to navigate to system storage management page." name="IDS_LOW_STORAGE_DIALOG_STORAGE_BUTTON">
+        Storage management
+      </message>
       <message desc="Warning message about low storage and possible recording automatic stopping." name="IDS_LOW_STORAGE_NUDGE_WARNING_MSG">
         Recording will stop soon. Go to device storage to free up space.
       </message>

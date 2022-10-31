@@ -41,6 +41,21 @@ export function getAllFrom<T extends Element>(
 }
 
 /**
+ * If an element matching CSS selector exists under the target, check its type
+ * and return, otherwise return null.
+ *
+ * @param target The target root element to execute the CSS selector from.
+ * @param selector The CSS selector.
+ * @param ctor The expected element type.
+ */
+export function getFromIfExists<T extends Element>(
+    target: ParentNode, selector: string,
+    ctor: new (...args: unknown[]) => T): T|null {
+  const element = target.querySelector(selector);
+  return element instanceof Element ? assertInstanceof(element, ctor) : null;
+}
+
+/**
  * Gets an element in document matching CSS selector and checks its type.
  *
  * @param selector The CSS selector.

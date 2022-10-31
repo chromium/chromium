@@ -12,14 +12,21 @@ import {WaitableEvent} from '../waitable_event.js';
 
 export interface DialogEnterOptions {
   /**
-   * Message of the dialog view.
-   */
-  message?: string;
-
-  /**
    * Whether the dialog view is cancellable.
    */
   cancellable?: boolean;
+  /**
+   * Description of the dialog.
+   */
+  description?: I18nString;
+  /**
+   * Message of the dialog view.
+   */
+  message?: string;
+  /**
+   * Title of the dialog.
+   */
+  title?: I18nString;
 }
 
 /**

@@ -126,6 +126,12 @@ export enum I18nString {
   LABEL_VIDEO_RESOLUTION_FULL_HD = 'label_video_resolution_full_hd',
   LABEL_VIDEO_RESOLUTION_HD = 'label_video_resolution_hd',
   LABEL_VIDEO_RESOLUTION_QUAD_HD = 'label_video_resolution_quad_hd',
+  LOW_STORAGE_DIALOG_AUTO_STOP_DESC = 'low_storage_dialog_auto_stop_desc',
+  LOW_STORAGE_DIALOG_AUTO_STOP_TITLE = 'low_storage_dialog_auto_stop_title',
+  LOW_STORAGE_DIALOG_CANNOT_START_DESC = 'low_storage_dialog_cannot_start_desc',
+  LOW_STORAGE_DIALOG_CANNOT_START_TITLE =
+      'low_storage_dialog_cannot_start_title',
+  LOW_STORAGE_DIALOG_STORAGE_BUTTON = 'low_storage_dialog_storage_button',
   LOW_STORAGE_NUDGE_WARNING_MSG = 'low_storage_nudge_warning_msg',
   MIGRATE_PICTURES_MSG = 'migrate_pictures_msg',
   MOVING_IN_BOTTOM_DIRECTION = 'moving_in_bottom_direction',
