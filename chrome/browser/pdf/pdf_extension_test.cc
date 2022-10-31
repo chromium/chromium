@@ -650,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CSPFrameAncestorsCanBlockEmbedding) {
       browser(), embedded_test_server()->GetURL(
                      "/pdf/frame-test-csp-frame-ancestors-none.html")));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   EXPECT_EQ(0, CountPDFProcesses());
 }
@@ -1477,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BlockDirectAccess) {
       "https://example.com/notrequested.pdf");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), forbidden_url));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   EXPECT_EQ(0, CountPDFProcesses());
 }
