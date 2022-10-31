@@ -149,7 +149,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
 
   for (const char* p : kPaths) {
     std::string path_without_query = p;
-    std::string::size_type path_index = sub_page.find('?');
+    std::string::size_type path_index = path_without_query.find('?');
     if (path_index != std::string::npos)
       path_without_query.resize(path_index);
 
