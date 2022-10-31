@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_recorder.h"
 
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -112,10 +113,9 @@ scoped_refptr<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
 }
 
 void AudioTrackRecorder::OnSetFormat(const media::AudioParameters& params) {
-  // If the source is restarted, might have changed to another capture thread.
-  DETACH_FROM_THREAD(capture_thread_checker_);
-  DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
-
+#if DCHECK_IS_ON()
+  CHECK_EQ(race_checker_.fetch_add(1), 0) << __func__ << ": race detected.";
+#endif
   int max_frames_per_chunk = params.sample_rate() *
                              kMaxChunkedBufferDurationMs /
                              base::Time::kMillisecondsPerSecond;
@@ -126,11 +126,16 @@ void AudioTrackRecorder::OnSetFormat(const media::AudioParameters& params) {
   PostCrossThreadTask(
       *encoder_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&AudioTrackEncoder::OnSetFormat, encoder_, params));
+#if DCHECK_IS_ON()
+  race_checker_.store(0);
+#endif
 }
 
 void AudioTrackRecorder::OnData(const media::AudioBus& audio_bus,
                                 base::TimeTicks capture_time) {
-  DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
+#if DCHECK_IS_ON()
+  CHECK_EQ(race_checker_.fetch_add(1), 0) << __func__ << ": race detected.";
+#endif
   DCHECK(!capture_time.is_null());
   DCHECK_GT(frames_per_chunk_, 0) << "OnSetFormat not called before OnData";
 
@@ -148,6 +153,9 @@ void AudioTrackRecorder::OnData(const media::AudioBus& audio_bus,
         CrossThreadBindOnce(&AudioTrackEncoder::EncodeAudio, encoder_,
                             std::move(audio_data), capture_time));
   }
+#if DCHECK_IS_ON()
+  race_checker_.store(0);
+#endif
 }
 
 void AudioTrackRecorder::Pause() {

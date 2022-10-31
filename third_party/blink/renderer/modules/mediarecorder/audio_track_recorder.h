@@ -90,10 +90,6 @@ class MODULES_EXPORT AudioTrackRecorder
 
   void Prefinalize();
 
-  // Used to check that MediaStreamAudioSink's methods are called on the
-  // capture audio thread.
-  THREAD_CHECKER(capture_thread_checker_);
-
   // We need to hold on to the Blink track to remove ourselves on destruction.
   Persistent<MediaStreamComponent> track_;
 
@@ -112,6 +108,13 @@ class MODULES_EXPORT AudioTrackRecorder
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;
+
+  // Integer used for checking OnSetFormat/OnData against races. We can use
+  // neither ThreadChecker (due to SilentSinkSuspender), nor SequenceChecker.
+  // See crbug.com/1377367.
+#if DCHECK_IS_ON()
+  std::atomic<int> race_checker_{0};
+#endif
 };
 
 }  // namespace blink
