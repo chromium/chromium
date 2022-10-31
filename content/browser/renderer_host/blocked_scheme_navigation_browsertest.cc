@@ -99,7 +99,7 @@ class BlockedURLWarningConsoleObserver {
   ~BlockedURLWarningConsoleObserver() = default;
 
   void Wait() {
-    console_observer_.Wait();
+    ASSERT_TRUE(console_observer_.Wait());
     ASSERT_EQ(1u, console_observer_.messages().size());
     std::string message = console_observer_.GetMessageAt(0u);
     if (base::MatchPattern(message, fail_filter_))
@@ -377,7 +377,7 @@ class BlockedSchemeNavigationBrowserTest
     EXPECT_TRUE(ExecJs(rfh, javascript));
 
     if (console_observer)
-      console_observer->Wait();
+      ASSERT_TRUE(console_observer->Wait());
 
     switch (expected_navigation_status) {
       case NAVIGATION_ALLOWED:

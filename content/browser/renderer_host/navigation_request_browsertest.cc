@@ -3676,7 +3676,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestFencedFrameBrowserTest,
   EXPECT_EQ(view_source_url.spec(),
             EvalJs(fenced_frame_host,
                    JsReplace(R"({location.href = $1;})", view_source_url)));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   // Original page shouldn't navigate away.
   EXPECT_EQ(fenced_frame_url, fenced_frame_host->GetLastCommittedURL());
