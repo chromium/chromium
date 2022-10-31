@@ -406,7 +406,6 @@ TEST_F(ApcClientImplTest,
   autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
       .success = true};
 
-  EXPECT_CALL(*scrim_manager(), ShutDown());
   EXPECT_CALL(*runtime_manager(),
               SetUIState(autofill_assistant::UIState::kNotShown));
   EXPECT_CALL(result_callback1, Run(true));
