@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS expected match: .kernON .latin vs .paltOFFkernON .latin
+PASS expected match: .kernON .latin vs .paltONkernON .latin
+PASS expected match: .kernOFF .latin vs .paltONkernOFF .latin
+FAIL expected match: .kernON .cjk vs .paltONkernON .cjk assert_equals: expected 312 but got 372
+FAIL expected match: .default .cjk vs .kernOFF .cjk assert_equals: expected 384 but got 372
+PASS expected mismatch: .kernOFF .latin vs .kernON .latin
+PASS expected mismatch: .kernOFF .cjk vs .kernON .cjk
+PASS expected mismatch: .paltOFFkernON .cjk vs .paltONkernON .cjk
+PASS .default .latin matches one of [.kernON .latin, .kernOFF .latin]
+Harness: the test ran to completion.
+
