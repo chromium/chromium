@@ -830,6 +830,13 @@
        {}
       ]
      ],
+     "parallel-flow-trailing-margin-003-crash.html": [
+      "899683d792d5690cd2e0ac4b2856999956b366d6",
+      [
+       null,
+       {}
+      ]
+     ],
      "resumed-float-and-inline-block-crash.html": [
       "c86034c3723c3dc8cb89a5383b4dcfdf9abb94d9",
       [
@@ -88971,6 +88978,32 @@
      ],
      "overflowed-block-with-room-after-004.html": [
       "ba3d62241f1f1d2dba6e0971dddaa2430777dc34",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "parallel-flow-trailing-margin-001.html": [
+      "a6391cd9d4738676417f69223038f9f603ea83d1",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "parallel-flow-trailing-margin-002.html": [
+      "a308ede37dcc383d3e86dae6163de66668a82878",
       [
        null,
        [
@@ -309051,7 +309084,7 @@
      []
     ],
     "idlharness.window_exclude=Node-expected.txt": [
-     "215a303b31574d866a32210584796bb488d4f5a7",
+     "836b44069385d6046702df10689ebd2b76c24c6d",
      []
     ],
     "lists": {
@@ -339256,7 +339289,7 @@
       []
      ],
      "pending_beacon-helper.js": [
-      "6d1cc80d8b81c2737d688b030865496d79432e46",
+      "3e8bd20f766e8c3a65bc0155d4fc629edd55e4fe",
       []
      ],
      "set_beacon.py": [
@@ -342975,7 +343008,7 @@
      []
     ],
     "idlharness.js": [
-     "622f974077db387f8a9268a885a6f7fe4511ea4d",
+     "e097ee7f7fead84912f797fd945b74eb37d3b3f9",
      []
     ],
     "idlharness.js.headers": [
@@ -528282,6 +528315,48 @@
         [
          "script",
          "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_beacon-sendonhidden.tentative.https.window.js": [
+     "5fca0a6e63a97cb2c0892d51f35bf61fc801964b",
+     [
+      "pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
         ],
         [
          "script",

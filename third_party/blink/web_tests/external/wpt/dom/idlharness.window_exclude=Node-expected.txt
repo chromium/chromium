@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1295 tests; 1292 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1292 tests; 1290 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -1244,11 +1244,6 @@ PASS XPathNSResolver interface: existence and properties of interface prototype 
 PASS XPathNSResolver interface: existence and properties of interface prototype object's "constructor" property
 PASS XPathNSResolver interface: existence and properties of interface prototype object's @@unscopables property
 PASS XPathNSResolver interface: operation lookupNamespaceURI(DOMString?)
-PASS Stringification of document.createNSResolver(document.body)
-PASS XPathNSResolver interface: document.createNSResolver(document.body) must inherit property "lookupNamespaceURI(DOMString?)" with the proper type
-FAIL XPathNSResolver interface: calling lookupNamespaceURI(DOMString?) on document.createNSResolver(document.body) with too few arguments must throw TypeError assert_throws_js: Called with 0 arguments function "function() {
-            fn.apply(obj, args);
-        }" did not throw
 PASS XPathEvaluator interface: existence and properties of interface object
 PASS XPathEvaluator interface object length
 PASS XPathEvaluator interface object name

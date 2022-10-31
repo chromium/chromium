@@ -2763,21 +2763,26 @@ IdlInterface.prototype.test_object = function(desc)
         expected_typeof = "object";
     }
 
-    this.test_primary_interface_of(desc, obj, exception, expected_typeof);
+    if (this.is_callback()) {
+        assert_equals(exception, null, "Unexpected exception when evaluating object");
+        assert_equals(typeof obj, expected_typeof, "wrong typeof object");
+    } else {
+        this.test_primary_interface_of(desc, obj, exception, expected_typeof);
 
-    var current_interface = this;
-    while (current_interface)
-    {
-        if (!(current_interface.name in this.array.members))
+        var current_interface = this;
+        while (current_interface)
         {
-            throw new IdlHarnessError("Interface " + current_interface.name + " not found (inherited by " + this.name + ")");
+            if (!(current_interface.name in this.array.members))
+            {
+                throw new IdlHarnessError("Interface " + current_interface.name + " not found (inherited by " + this.name + ")");
+            }
+            if (current_interface.prevent_multiple_testing && current_interface.already_tested)
+            {
+                return;
+            }
+            current_interface.test_interface_of(desc, obj, exception, expected_typeof);
+            current_interface = this.array.members[current_interface.base];
         }
-        if (current_interface.prevent_multiple_testing && current_interface.already_tested)
-        {
-            return;
-        }
-        current_interface.test_interface_of(desc, obj, exception, expected_typeof);
-        current_interface = this.array.members[current_interface.base];
     }
 };
 
