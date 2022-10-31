@@ -178,7 +178,9 @@ public abstract class PureJavaExceptionReporter
         if (VersionInfo.isBetaBuild()) {
             return "beta";
         }
-        // An empty string indicates the stable channel.
+        if (VersionInfo.isStableBuild()) {
+            return "stable";
+        }
         return "";
     }
 
