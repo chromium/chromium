@@ -132,3 +132,6 @@ crbug.com/1372356 [ Linux ] virtual/oopr-canvas2d/fast/canvas/* [ Skip ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.sharedworker.html [ Timeout ]
 crbug.com/1378044 [ Linux ] external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.worker.html [ Timeout ]
+
+# Disable web test flake cause builder step failure
+crbug.com/1379156 [ Linux ] compositing/layer-creation/overflow-hidden-scroll-with-fixed-overlap.html [ Pass Timeout ]
