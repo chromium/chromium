@@ -149,12 +149,21 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void UpdateInterestGroupsOfOwners(
       base::span<url::Origin> owners,
       network::mojom::ClientSecurityStatePtr client_security_state);
+
   // For testing *only*; changes the maximum amount of time that the update
   // process can run before it gets cancelled for taking too long.
-  void set_max_update_round_duration_for_testing(base::TimeDelta delta);
+  void set_max_update_round_duration_for_testing(base::TimeDelta delta) {
+    update_manager_.set_max_update_round_duration_for_testing(
+        delta);  // IN-TEST
+  }
+
   // For testing *only*; changes the maximum number of groups that can be
   // updated at the same time.
-  void set_max_parallel_updates_for_testing(int max_parallel_updates);
+  void set_max_parallel_updates_for_testing(int max_parallel_updates) {
+    update_manager_.set_max_parallel_updates_for_testing(  // IN-TEST
+        max_parallel_updates);
+  }
+
   // Adds an entry to the bidding history for this interest group.
   void RecordInterestGroupBids(const blink::InterestGroupSet& groups);
   // Adds an entry to the win history for this interest group. `ad_json` is a
@@ -243,19 +252,27 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // For testing *only*; changes the maximum number of active report requests
   // at a time.
   void set_max_active_report_requests_for_testing(
-      int max_active_report_requests);
+      int max_active_report_requests) {
+    max_active_report_requests_ = max_active_report_requests;
+  }
 
   // For testing *only*; changes the maximum number of report requests that can
   // be stored in `report_requests_` queue.
-  void set_max_report_queue_length_for_testing(int max_queue_length);
+  void set_max_report_queue_length_for_testing(int max_queue_length) {
+    max_report_queue_length_ = max_queue_length;
+  }
 
   // For testing *only*; changes `max_reporting_round_duration_`.
   void set_max_reporting_round_duration_for_testing(
-      base::TimeDelta max_reporting_round_duration);
+      base::TimeDelta max_reporting_round_duration) {
+    max_reporting_round_duration_ = max_reporting_round_duration;
+  }
 
   // For testing *only*; changes the time interval to wait before sending the
   // next report after sending one.
-  void set_reporting_interval_for_testing(base::TimeDelta interval);
+  void set_reporting_interval_for_testing(base::TimeDelta interval) {
+    reporting_interval_ = interval;
+  }
 
   size_t report_queue_length_for_testing() const {
     return report_requests_.size();
