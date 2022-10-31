@@ -56,6 +56,8 @@ constexpr char kLatencyHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.ResponseLatency.%s";
 constexpr char kFunnelHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.Funnel";
+constexpr char kHandshakeResultHistogram[] =
+    "Enterprise.DeviceTrust.Handshake.Result";
 
 scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
     const std::string& challenge) {
@@ -105,7 +107,8 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
   }
 
   void TestReplyChallengeResponseAndResume(DeviceTrustResponse response,
-                                           std::string expected_json) {
+                                           std::string expected_json,
+                                           DTHandshakeResult expected_result) {
     content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
                                               main_frame());
     test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
@@ -134,6 +137,8 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
                                ? "Failure"
                                : "Success"),
         1);
+    histogram_tester_.ExpectUniqueSample(kHandshakeResultHistogram,
+                                         expected_result, 1);
   }
 
  protected:
@@ -205,8 +210,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestReplyValidChallengeResponse) {
   DeviceTrustResponse test_response_valid = {kChallengeResponse, absl::nullopt,
                                              absl::nullopt};
   std::string valid_challenge_json = kChallengeResponse;
-  TestReplyChallengeResponseAndResume(test_response_valid,
-                                      valid_challenge_json);
+  TestReplyChallengeResponseAndResume(test_response_valid, valid_challenge_json,
+                                      DTHandshakeResult::kSuccess);
   histogram_tester_.ExpectBucketCount(
       kFunnelHistogramName, DTAttestationFunnelStep::kChallengeResponseSent, 1);
 
@@ -221,8 +226,8 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   DeviceTrustResponse test_response_unknown = {"", absl::nullopt,
                                                absl::nullopt};
   std::string unknown_error_json = "{\"error\":\"unknown\"}";
-  TestReplyChallengeResponseAndResume(test_response_unknown,
-                                      unknown_error_json);
+  TestReplyChallengeResponseAndResume(test_response_unknown, unknown_error_json,
+                                      DTHandshakeResult::kUnknown);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest,
@@ -232,7 +237,8 @@ TEST_F(DeviceTrustNavigationThrottleTest,
       DTAttestationResult::kMissingSigningKey};
   std::string timeout_json =
       "{\"code\":\"missing_signing_key\",\"error\":\"timeout\"}";
-  TestReplyChallengeResponseAndResume(test_response_timeout, timeout_json);
+  TestReplyChallengeResponseAndResume(test_response_timeout, timeout_json,
+                                      DTHandshakeResult::kTimeout);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, TestChallengeNotFromIdp) {
@@ -297,6 +303,9 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
       base::StringPrintf(kLatencyHistogramName, "Failure"), 1);
   histogram_tester_.ExpectTotalCount(
       base::StringPrintf(kLatencyHistogramName, "Success"), 0);
+
+  histogram_tester_.ExpectUniqueSample(kHandshakeResultHistogram,
+                                       DTHandshakeResult::kTimeout, 1);
 }
 
 }  // namespace enterprise_connectors

@@ -220,8 +220,7 @@ void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
     copied_dt_response.error = DeviceTrustError::kUnknown;
   }
 
-  LogAttestationResponseLatency(start_time,
-                                /*success=*/!copied_dt_response.error);
+  LogDeviceTrustResponse(copied_dt_response, start_time);
 
   if (copied_dt_response.error) {
     navigation_handle()->SetRequestHeader(
@@ -243,10 +242,10 @@ void DeviceTrustNavigationThrottle::OnResponseTimedOut(
   }
   is_resumed_ = true;
 
-  LogAttestationResponseLatency(start_time, /*success=*/false);
-
   DeviceTrustResponse timeout_response;
   timeout_response.error = DeviceTrustError::kTimeout;
+
+  LogDeviceTrustResponse(timeout_response, start_time);
 
   navigation_handle()->SetRequestHeader(
       kVerifiedAccessResponseHeader, CreateErrorJsonString(timeout_response));

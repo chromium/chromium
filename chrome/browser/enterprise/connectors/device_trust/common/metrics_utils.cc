@@ -14,8 +14,6 @@
 namespace enterprise_connectors {
 
 namespace {
-constexpr char kLatencyHistogramFormat[] =
-    "Enterprise.DeviceTrust.Attestation.ResponseLatency.%s";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enrollment status of the device where the Device Trust connector attestation
@@ -28,32 +26,64 @@ enum class DTEnrollmentStatus {
   kMaxValue = kUnmanaged,
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+DTHandshakeResult ResponseToResult(const DeviceTrustResponse& response) {
+  if (!response.error) {
+    return DTHandshakeResult::kSuccess;
+  }
+
+  switch (response.error.value()) {
+    case DeviceTrustError::kUnknown:
+      return DTHandshakeResult::kUnknown;
+    case DeviceTrustError::kTimeout:
+      return DTHandshakeResult::kTimeout;
+    case DeviceTrustError::kFailedToParseChallenge:
+      return DTHandshakeResult::kFailedToParseChallenge;
+    case DeviceTrustError::kFailedToCreateResponse:
+      return DTHandshakeResult::kFailedToCreateResponse;
+  }
+}
+
 }  // namespace
 
 void LogAttestationFunnelStep(DTAttestationFunnelStep step) {
-  base::UmaHistogramEnumeration("Enterprise.DeviceTrust.Attestation.Funnel",
-                                step);
+  static constexpr char kFunnelStepHistogram[] =
+      "Enterprise.DeviceTrust.Attestation.Funnel";
+  base::UmaHistogramEnumeration(kFunnelStepHistogram, step);
 }
 
 void LogAttestationResult(DTAttestationResult result) {
-  base::UmaHistogramEnumeration("Enterprise.DeviceTrust.Attestation.Result",
-                                result);
+  static constexpr char kAttestationResultHistogram[] =
+      "Enterprise.DeviceTrust.Attestation.Result";
+  base::UmaHistogramEnumeration(kAttestationResultHistogram, result);
 }
 
-void LogAttestationResponseLatency(base::TimeTicks start_time, bool success) {
-  base::UmaHistogramTimes(base::StringPrintf(kLatencyHistogramFormat,
-                                             success ? "Success" : "Failure"),
-                          base::TimeTicks::Now() - start_time);
+void LogDeviceTrustResponse(const DeviceTrustResponse& response,
+                            base::TimeTicks start_time) {
+  static constexpr char kLatencyHistogramFormat[] =
+      "Enterprise.DeviceTrust.Attestation.ResponseLatency.%s";
+  base::UmaHistogramTimes(
+      base::StringPrintf(kLatencyHistogramFormat,
+                         response.error ? "Failure" : "Success"),
+      base::TimeTicks::Now() - start_time);
+
+  static constexpr char kHandshakeResultHistogram[] =
+      "Enterprise.DeviceTrust.Handshake.Result";
+  base::UmaHistogramEnumeration(kHandshakeResultHistogram,
+                                ResponseToResult(response));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void LogOrigin(DTOrigin origin) {
-  base::UmaHistogramEnumeration("Enterprise.DeviceTrust.Origin", origin);
+  static constexpr char kOriginHistogram[] = "Enterprise.DeviceTrust.Origin";
+  base::UmaHistogramEnumeration(kOriginHistogram, origin);
 }
 
 void LogEnrollmentStatus() {
+  static constexpr char kEnrollmentStatusHistogram[] =
+      "Enterprise.DeviceTrust.EnrollmentStatus";
   base::UmaHistogramEnumeration(
-      "Enterprise.DeviceTrust.EnrollmentStatus",
+      kEnrollmentStatusHistogram,
       ash::InstallAttributes::Get()->IsEnterpriseManaged()
           ? DTEnrollmentStatus::kManaged
           : DTEnrollmentStatus::kUnmanaged);

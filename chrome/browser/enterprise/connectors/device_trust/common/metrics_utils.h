@@ -21,6 +21,18 @@ enum class DTAttestationFunnelStep {
   kMaxValue = kChallengeResponseSent,
 };
 
+// Top-level result of a complete Device Trust handshake flow between the
+// browser and a server. Please update the DTHandshakeResult in enums.xml when
+// adding new enum values.
+enum class DTHandshakeResult {
+  kSuccess = 0,
+  kUnknown = 1,
+  kTimeout = 2,
+  kFailedToParseChallenge = 3,
+  kFailedToCreateResponse = 4,
+  kMaxValue = kFailedToCreateResponse
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Possible origins of the Device Trust connector attestation flow on ChromeOS.
 // These values are persisted to logs and should not be renumbered. Please
@@ -36,7 +48,8 @@ void LogAttestationFunnelStep(DTAttestationFunnelStep step);
 
 void LogAttestationResult(DTAttestationResult result);
 
-void LogAttestationResponseLatency(base::TimeTicks start_time, bool success);
+void LogDeviceTrustResponse(const DeviceTrustResponse& response,
+                            base::TimeTicks start_time);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void LogOrigin(DTOrigin origin);

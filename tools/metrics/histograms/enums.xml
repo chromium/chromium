@@ -29576,6 +29576,14 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Unmanaged"/>
 </enum>
 
+<enum name="DTHandshakeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Timeout"/>
+  <int value="3" label="Failed to parse challenge"/>
+  <int value="4" label="Failed to create response"/>
+</enum>
+
 <enum name="DTKeyPersistenceError">
   <int value="0" label="Failed to attain a lock on the persistence storage."/>
   <int value="1" label="Failed to open the persistence storage."/>
