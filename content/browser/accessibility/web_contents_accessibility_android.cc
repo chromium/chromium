@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -39,8 +39,9 @@ using base::android::ScopedJavaLocalRef;
 namespace content {
 
 namespace {
+
 using SearchKeyToPredicateMap =
-    base::flat_map<std::u16string, AccessibilityMatchPredicate>;
+    std::unordered_map<std::u16string, AccessibilityMatchPredicate>;
 base::LazyInstance<SearchKeyToPredicateMap>::Leaky
     g_search_key_to_predicate_map = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<std::u16string>::Leaky g_all_search_keys =

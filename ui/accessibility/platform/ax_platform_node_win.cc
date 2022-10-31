@@ -11,10 +11,10 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
@@ -210,7 +210,7 @@ namespace ui {
 
 namespace {
 
-typedef base::flat_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
+typedef std::unordered_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
 // Set of all AXPlatformNodeWin objects that were the target of an
 // alert event.
 base::LazyInstance<AXPlatformNodeWinSet>::Leaky g_alert_targets =
