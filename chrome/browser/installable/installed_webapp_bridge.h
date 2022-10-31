@@ -30,9 +30,6 @@ class InstalledWebappBridge {
                                const GURL& origin_url,
                                const GURL& last_committed_url,
                                PermissionCallback callback);
-
-  static ContentSetting GetPermission(ContentSettingsType type,
-                                      const GURL& origin);
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_BRIDGE_H_
