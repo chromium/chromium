@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTestWithAutoupgradesDisabled,
 
   PendingTaskWaiter waiter(web_contents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), favicon_page));
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   waiter.Wait();
 
   EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
