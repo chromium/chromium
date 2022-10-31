@@ -104,7 +104,7 @@ class BASE_EXPORT WaitableEvent {
   // have elapsed if this returns false.
   //
   // TimedWait can synchronise its own destruction like |Wait|.
-  bool NOT_TAIL_CALLED TimedWait(const TimeDelta& wait_delta);
+  bool NOT_TAIL_CALLED TimedWait(TimeDelta wait_delta);
 
 #if BUILDFLAG(IS_WIN)
   HANDLE handle() const { return handle_.get(); }
@@ -167,6 +167,11 @@ class BASE_EXPORT WaitableEvent {
 
  private:
   friend class WaitableEventWatcher;
+
+  // The platform specific portions of Signal and TimedWait (which do the actual
+  // signaling and waiting).
+  void SignalImpl();
+  bool TimedWaitImpl(TimeDelta wait_delta);
 
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle handle_;

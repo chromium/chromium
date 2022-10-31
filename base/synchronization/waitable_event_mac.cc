@@ -47,7 +47,7 @@ void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);
 }
 
-void WaitableEvent::Signal() {
+void WaitableEvent::SignalImpl() {
   mach_msg_empty_send_t msg{};
   msg.header.msgh_bits = MACH_MSGH_BITS_REMOTE(MACH_MSG_TYPE_COPY_SEND);
   msg.header.msgh_size = sizeof(&msg);
@@ -64,26 +64,7 @@ bool WaitableEvent::IsSignaled() {
   return PeekPort(receive_right_->Name(), policy_ == ResetPolicy::AUTOMATIC);
 }
 
-void WaitableEvent::Wait() {
-  bool result = TimedWait(TimeDelta::Max());
-  DCHECK(result) << "TimedWait() should never fail with infinite timeout";
-}
-
-bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  if (wait_delta <= TimeDelta())
-    return IsSignaled();
-
-  // Record the event that this thread is blocking upon (for hang diagnosis) and
-  // consider blocked for scheduling purposes. Ignore this for non-blocking
-  // WaitableEvents.
-  absl::optional<debug::ScopedEventWaitActivity> event_activity;
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
-      scoped_blocking_call;
-  if (waiting_is_blocking_) {
-    event_activity.emplace(this);
-    scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
-  }
-
+bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
   mach_msg_empty_rcv_t msg{};
   msg.header.msgh_local_port = receive_right_->Name();
 

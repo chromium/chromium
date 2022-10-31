@@ -176,6 +176,7 @@
   X("views.frame")                                                       \
   X("viz")                                                               \
   X("vk")                                                                \
+  X("wakeup.flow")                                                       \
   X("wayland")                                                           \
   X("webaudio")                                                          \
   X("weblayer")                                                          \

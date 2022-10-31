@@ -57,7 +57,7 @@ void WaitableEvent::Reset() {
   kernel_->signaled_ = false;
 }
 
-void WaitableEvent::Signal() {
+void WaitableEvent::SignalImpl() {
   base::AutoLock locked(kernel_->lock_);
 
   if (kernel_->signaled_)
@@ -154,26 +154,7 @@ class SyncWaiter : public WaitableEvent::Waiter {
   base::ConditionVariable cv_;
 };
 
-void WaitableEvent::Wait() {
-  bool result = TimedWait(TimeDelta::Max());
-  DCHECK(result) << "TimedWait() should never fail with infinite timeout";
-}
-
-bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  if (wait_delta <= TimeDelta())
-    return IsSignaled();
-
-  // Record the event that this thread is blocking upon (for hang diagnosis) and
-  // consider it blocked for scheduling purposes. Ignore this for non-blocking
-  // WaitableEvents.
-  absl::optional<debug::ScopedEventWaitActivity> event_activity;
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
-      scoped_blocking_call;
-  if (waiting_is_blocking_) {
-    event_activity.emplace(this);
-    scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
-  }
-
+bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
   kernel_->lock_.Acquire();
   if (kernel_->signaled_) {
     if (!kernel_->manual_reset_) {

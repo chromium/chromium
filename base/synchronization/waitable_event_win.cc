@@ -43,7 +43,7 @@ void WaitableEvent::Reset() {
   ResetEvent(handle_.get());
 }
 
-void WaitableEvent::Signal() {
+void WaitableEvent::SignalImpl() {
   SetEvent(handle_.get());
 }
 
@@ -54,40 +54,7 @@ bool WaitableEvent::IsSignaled() {
   return result == WAIT_OBJECT_0;
 }
 
-void WaitableEvent::Wait() {
-  // Record the event that this thread is blocking upon (for hang diagnosis) and
-  // consider it blocked for scheduling purposes. Ignore this for non-blocking
-  // WaitableEvents.
-  absl::optional<debug::ScopedEventWaitActivity> event_activity;
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
-      scoped_blocking_call;
-  if (waiting_is_blocking_) {
-    event_activity.emplace(this);
-    scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
-  }
-
-  DWORD result = WaitForSingleObject(handle_.get(), INFINITE);
-  // It is most unexpected that this should ever fail.  Help consumers learn
-  // about it if it should ever fail.
-  DPCHECK(result != WAIT_FAILED);
-  DCHECK_EQ(WAIT_OBJECT_0, result);
-}
-
-bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  if (wait_delta <= TimeDelta())
-    return IsSignaled();
-
-  // Record the event that this thread is blocking upon (for hang diagnosis) and
-  // consider it blocked for scheduling purposes. Ignore this for non-blocking
-  // WaitableEvents.
-  absl::optional<debug::ScopedEventWaitActivity> event_activity;
-  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
-      scoped_blocking_call;
-  if (waiting_is_blocking_) {
-    event_activity.emplace(this);
-    scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
-  }
-
+bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
   // TimeTicks takes care of overflow but we special case is_max() nonetheless
   // to avoid invoking TimeTicksNowIgnoringOverride() unnecessarily.
   // WaitForSingleObject(handle_.Get(), INFINITE) doesn't spuriously wakeup so
@@ -105,7 +72,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
             ? INFINITE
             : saturated_cast<DWORD>(remaining.InMillisecondsRoundedUp());
     const DWORD result = WaitForSingleObject(handle_.get(), timeout_ms);
-    DCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
+    DPCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
         << "Unexpected WaitForSingleObject result " << result;
     switch (result) {
       case WAIT_OBJECT_0:
