@@ -60,7 +60,7 @@ public class CreatorCoordinator {
         List<NtpListContentManager.FeedContent> contentPreviewsList = new ArrayList<>();
         // Add empty state to Content Manager
         contentPreviewsList.add(new NtpListContentManager.NativeViewContent(
-                getLateralPaddingsPx(), NATIVE_CONTENT_ID, R.layout.no_content_v2));
+                getContentPreviewsPaddingPx(), NATIVE_CONTENT_ID, R.layout.no_content_v2));
         mContentManager.addContents(0, contentPreviewsList);
 
         // Inflate the XML
@@ -117,13 +117,17 @@ public class CreatorCoordinator {
             view.setId(R.id.creator_feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
+            view.setPadding(view.getPaddingLeft(), getContentPreviewsPaddingPx(),
+                    view.getPaddingRight(), view.getPaddingBottom());
         } else {
             view = null;
         }
+
         return view;
     }
 
-    private int getLateralPaddingsPx() {
+    private int getContentPreviewsPaddingPx() {
+        // Return 16dp
         return mActivity.getResources().getDimensionPixelSize(R.dimen.content_previews_padding);
     }
 
