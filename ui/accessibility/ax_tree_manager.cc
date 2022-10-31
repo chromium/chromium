@@ -221,6 +221,25 @@ AXTreeManager::~AXTreeManager() {
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
                                       const AXTreeData& old_data,
                                       const AXTreeData& new_data) {
+  DCHECK_EQ(ax_tree(), tree);
+  if (new_data.tree_id == ui::AXTreeIDUnknown() ||
+      new_data.tree_id == ax_tree_id_) {
+    // Tree ID hasn't changed.
+    return;
+  }
+
+  // Either the tree that is being managed by this manager has just been
+  // created, or it has been destroyed and re-created.
+  connected_to_parent_tree_node_ = false;
+
+  // If the current focus is in the tree that has just been destroyed, then
+  // reset the focus to nullptr. It will be set to the current focus again the
+  // next time there is a focus event.
+  if (ax_tree_id_ != ui::AXTreeIDUnknown() &&
+      ax_tree_id_ == last_focused_node_tree_id_) {
+    SetLastFocusedNode(nullptr);
+  }
+
   GetMap().RemoveTreeManager(ax_tree_id_);
   ax_tree_id_ = new_data.tree_id;
   GetMap().AddTreeManager(ax_tree_id_, this);

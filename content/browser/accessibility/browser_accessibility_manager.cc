@@ -1493,31 +1493,6 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
   return result;
 }
 
-void BrowserAccessibilityManager::OnTreeDataChanged(
-    ui::AXTree* tree,
-    const ui::AXTreeData& old_data,
-    const ui::AXTreeData& new_data) {
-  DCHECK_EQ(ax_tree(), tree);
-  if (new_data.tree_id == ui::AXTreeIDUnknown() ||
-      new_data.tree_id == ax_tree_id_) {
-    return;  // Tree ID hasn't changed.
-  }
-
-  // Either the tree that is being managed by this manager has just been
-  // created, or it has been destroyed and re-created.
-  connected_to_parent_tree_node_ = false;
-
-  // If the current focus is in the tree that has just been destroyed, then
-  // reset the focus to nullptr. It will be set to the current focus again the
-  // next time there is a focus event.
-  if (ax_tree_id_ != ui::AXTreeIDUnknown() &&
-      ax_tree_id_ == last_focused_node_tree_id_) {
-    SetLastFocusedNode(nullptr);
-  }
-
-  ui::AXTreeManager::OnTreeDataChanged(tree, old_data, new_data);
-}
-
 void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
                                                 ui::AXNode* node) {
   DCHECK(node);

@@ -407,9 +407,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   }
 
   // AXTreeObserver implementation.
-  void OnTreeDataChanged(ui::AXTree* tree,
-                         const ui::AXTreeData& old_data,
-                         const ui::AXTreeData& new_data) override;
   void OnNodeCreated(ui::AXTree* tree, ui::AXNode* node) override;
   void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override;
   void OnNodeReparented(ui::AXTree* tree, ui::AXNode* node) override;
