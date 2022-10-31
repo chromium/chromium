@@ -162,10 +162,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-    experiments = {
-        # TODO(crbug.com/1374440): Re-enable merge script failure exposure.
-        "chromium_swarming.expose_merge_script_failures": 0,
-    },
 )
 
 ci.builder(
@@ -235,8 +231,4 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-    experiments = {
-        # TODO(crbug.com/1374440): Re-enable merge script failure exposure.
-        "chromium_swarming.expose_merge_script_failures": 0,
-    },
 )
