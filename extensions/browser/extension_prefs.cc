@@ -501,22 +501,21 @@ void ExtensionPrefs::SetIntegerPref(const std::string& id,
                                     const PrefMap& pref,
                                     int value) {
   DCHECK_EQ(pref.type, PrefType::kInteger);
-  UpdateExtensionPref(id, pref, std::make_unique<base::Value>(value));
+  UpdateExtensionPrefInternal(id, pref, base::Value(value));
 }
 
 void ExtensionPrefs::SetBooleanPref(const std::string& id,
                                     const PrefMap& pref,
                                     bool value) {
   DCHECK_EQ(pref.type, PrefType::kBool);
-  UpdateExtensionPref(id, pref, std::make_unique<base::Value>(value));
+  UpdateExtensionPrefInternal(id, pref, base::Value(value));
 }
 
 void ExtensionPrefs::SetStringPref(const std::string& id,
                                    const PrefMap& pref,
                                    const std::string value) {
   DCHECK_EQ(pref.type, PrefType::kString);
-  UpdateExtensionPref(id, pref,
-                      std::make_unique<base::Value>(std::move(value)));
+  UpdateExtensionPrefInternal(id, pref, base::Value(std::move(value)));
 }
 
 void ExtensionPrefs::SetListPref(const std::string& id,
@@ -524,8 +523,7 @@ void ExtensionPrefs::SetListPref(const std::string& id,
                                  base::Value value) {
   DCHECK_EQ(pref.type, PrefType::kList);
   DCHECK_EQ(base::Value::Type::LIST, value.type());
-  UpdateExtensionPref(id, pref,
-                      std::make_unique<base::Value>(std::move(value)));
+  UpdateExtensionPrefInternal(id, pref, std::move(value));
 }
 
 void ExtensionPrefs::SetDictionaryPref(
@@ -534,27 +532,25 @@ void ExtensionPrefs::SetDictionaryPref(
     std::unique_ptr<base::DictionaryValue> value) {
   DCHECK_EQ(pref.type, PrefType::kDictionary);
   DCHECK_EQ(base::Value::Type::DICTIONARY, value->type());
-  UpdateExtensionPref(id, pref, std::move(value));
+  UpdateExtensionPrefInternal(id, pref, std::move(*value));
 }
 
 void ExtensionPrefs::SetTimePref(const std::string& id,
                                  const PrefMap& pref,
                                  const base::Time value) {
   DCHECK_EQ(pref.type, PrefType::kTime);
-  UpdateExtensionPref(
-      id, pref, std::make_unique<base::Value>(::base::TimeToValue(value)));
+  UpdateExtensionPrefInternal(id, pref, ::base::TimeToValue(value));
 }
 
-void ExtensionPrefs::UpdateExtensionPref(
+void ExtensionPrefs::UpdateExtensionPrefInternal(
     const std::string& extension_id,
     const PrefMap& pref,
-    std::unique_ptr<base::Value> data_value) {
+    base::Value data_value) {
   DCHECK_EQ(PrefScope::kExtensionSpecific, pref.scope);
-  DCHECK(CheckPrefType(pref.type, data_value.get()));
+  DCHECK(CheckPrefType(pref.type, &data_value));
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
-  update->Set(pref.name,
-              base::Value::FromUniquePtrValue(std::move(data_value)));
+  update->Set(pref.name, std::move(data_value));
 }
 
 void ExtensionPrefs::UpdateExtensionPref(

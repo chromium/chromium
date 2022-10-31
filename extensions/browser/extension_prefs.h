@@ -801,9 +801,9 @@ class ExtensionPrefs : public KeyedService {
   void SetPref(const PrefMap& pref, std::unique_ptr<base::Value> value);
 
   // Updates ExtensionPrefs for a specific extension.
-  void UpdateExtensionPref(const std::string& id,
-                           const PrefMap& pref,
-                           std::unique_ptr<base::Value> value);
+  void UpdateExtensionPrefInternal(const std::string& id,
+                                   const PrefMap& pref,
+                                   base::Value value);
 
   // Converts absolute paths in the pref to paths relative to the
   // install_directory_.
