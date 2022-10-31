@@ -40,7 +40,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   using Tags = ash::SearchResultTags;
   using Action = ash::SearchResultAction;
   using Actions = ash::SearchResultActions;
-  using DisplayIndex = ash::SearchResultDisplayIndex;
   using IconInfo = ash::SearchResultIconInfo;
   using IconShape = ash::SearchResultIconShape;
   using TextItem = ash::SearchResultTextItem;
@@ -142,16 +141,6 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   MetricsType metrics_type() const { return metadata_->metrics_type; }
   void set_metrics_type(MetricsType metrics_type) {
     metadata_->metrics_type = metrics_type;
-  }
-
-  DisplayIndex display_index() const { return metadata_->display_index; }
-  void set_display_index(DisplayIndex display_index) {
-    metadata_->display_index = display_index;
-  }
-
-  float position_priority() const { return metadata_->position_priority; }
-  void set_position_priority(float position_priority) {
-    metadata_->position_priority = position_priority;
   }
 
   const Actions& actions() const { return metadata_->actions; }

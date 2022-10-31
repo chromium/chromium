@@ -132,6 +132,13 @@ void SearchControllerImpl::AddProvider(
   providers_.emplace_back(std::move(provider));
 }
 
+size_t SearchControllerImpl::ReplaceProvidersForResultTypeForTest(
+    ash::AppListSearchResultType result_type,
+    std::unique_ptr<SearchProvider> provider) {
+  NOTIMPLEMENTED();
+  return 0u;
+}
+
 void SearchControllerImpl::SetResults(const SearchProvider* provider,
                                       Results results) {
   // TODO(crbug.com/1199206): Clean up this function as

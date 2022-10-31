@@ -50,6 +50,13 @@ void TestSearchController::AddProvider(
   provider_->set_controller(this);
 }
 
+size_t TestSearchController::ReplaceProvidersForResultTypeForTest(
+    ash::AppListSearchResultType result_type,
+    std::unique_ptr<SearchProvider> provider) {
+  NOTREACHED();
+  return 0u;
+}
+
 void TestSearchController::SetResults(const SearchProvider* provider,
                                       Results results) {
   last_results_ = std::move(results);
