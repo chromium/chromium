@@ -4,81 +4,39 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icons.css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
-
-<link rel="import" href="../common_styles/common_styles.html">
-<link rel="import" href="../hd_iron_icon.html">
-<link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
-<link rel="import" href="../behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="./oobe_base_button.html">
-
-<!--
-  Material design button that shows an icon and displays text.
-
-  Example:
-    <oobe-icon-button icon="close" text-key="offlineLoginCloseBtn">
-    </oobe-icon-button>
-
-    or
-
-    <oobe-icon-button icon="close"
-        label-for-aria="[[i18nDynamic(locale, 'offlineLoginCloseBtn')]]">
-      <div slot="text">[[i18nDynamic(locale, 'offlineLoginCloseBtn')]]</div>
-    </oobe-icon-button>
-
-  Attributes:
-    'text-key' - ID of localized string to be used as button text.
-    1x and 2x icons:
-      'icon1x' - a name of icon from material design set to show on button.
-      'icon2x' - a name of icon from material design set to show on button.
-    'label-for-aria' - accessibility label, override usual behavior
-                       (string specified by text-key is used as aria-label).
-                       Elements that use slot="text" must provide label-for-aria
-                       value.
--->
-<dom-module id="oobe-icon-button">
-  <template>
-    <style include="cr-icons cr-shared-style oobe-common-styles">
-      cr-button {
-        --border-color: var(--oobe-bg-color);
-        --cr-button-height: var(--oobe-button-height);
-        border-radius: var(--oobe-button-radius);
-        margin: 0 4px;
-      }
-      ::slotted(*) {
-        text-transform: none;
-      }
-      hd-iron-icon {
-        --iron-icon-height: var(--oobe-button-icon-size);
-        --iron-icon-width: var(--oobe-button-icon-size);
-        margin-inline-end: 4px;
-      }
-      :host ::slotted(*),
-      .fallback {
-        font-family: var(--oobe-button-font-family);
-        font-size: var(--oobe-button-font-size);
-      }
-    </style>
-    <cr-button id="button" disabled="[[disabled]]"
-        aria-label$="[[labelForAriaText_]]">
-      <div id="container" class="flex vertical layout center self-stretch">
-        <div class="flex layout horizontal center self-stretch center-justified">
-          <hd-iron-icon id="icon" icon1x="[[icon1x]]" icon2x="[[icon2x]]"
-              class="oobe-icon" hidden>
-          </hd-iron-icon>
-          <slot name="text">
-            <template is="dom-if" if="[[textKey]]">
-              <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
-            </template>
-          </slot>
-        </div>
-      </div>
-    </cr-button>
-  </template>
-  <script src="oobe_icon_button.js"></script>
-</dom-module>
+<style include="cr-icons cr-shared-style oobe-common-styles">
+  cr-button {
+    --border-color: var(--oobe-bg-color);
+    --cr-button-height: var(--oobe-button-height);
+    border-radius: var(--oobe-button-radius);
+    margin: 0 4px;
+  }
+  ::slotted(*) {
+    text-transform: none;
+  }
+  hd-iron-icon {
+    --iron-icon-height: var(--oobe-button-icon-size);
+    --iron-icon-width: var(--oobe-button-icon-size);
+    margin-inline-end: 4px;
+  }
+  :host ::slotted(*),
+  .fallback {
+    font-family: var(--oobe-button-font-family);
+    font-size: var(--oobe-button-font-size);
+  }
+</style>
+<cr-button id="button" disabled="[[disabled]]"
+    aria-label$="[[labelForAriaText_]]">
+  <div id="container" class="flex vertical layout center self-stretch">
+    <div class="flex layout horizontal center self-stretch center-justified">
+      <hd-iron-icon id="icon" icon1x="[[icon1x]]" icon2x="[[icon2x]]"
+          class="oobe-icon" hidden>
+      </hd-iron-icon>
+      <slot name="text">
+        <template is="dom-if" if="[[textKey]]">
+          <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
+        </template>
+      </slot>
+    </div>
+  </div>
+</cr-button>

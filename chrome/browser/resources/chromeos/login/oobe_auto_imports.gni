@@ -41,7 +41,6 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
   "chrome/browser/resources/chromeos/login/components/buttons/oobe_back_button.html|OobeBackButton",
   "chrome/browser/resources/chromeos/login/components/buttons/oobe_base_button.html|OobeBaseButton",
-  "chrome/browser/resources/chromeos/login/components/buttons/oobe_icon_button.html|OobeIconButton",
   "chrome/browser/resources/chromeos/login/components/buttons/oobe_next_button.html|OobeNextButton",
   "chrome/browser/resources/chromeos/login/components/buttons/oobe_text_button.html|OobeTextButton",
   "chrome/browser/resources/chromeos/login/components/display_manager_types.html|OOBE_UI_STATE,SCREEN_GAIA_SIGNIN",

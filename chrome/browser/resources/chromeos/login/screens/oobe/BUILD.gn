@@ -214,7 +214,7 @@ js_library("welcome_dialog") {
     "../../components:long_touch_detector.m",
     "../../components:oobe_cr_lottie",
     "../../components/behaviors:oobe_i18n_behavior.m",
-    "../../components/buttons:oobe_icon_button.m",
+    "../../components/buttons:oobe_icon_button",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
