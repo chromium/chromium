@@ -155,6 +155,10 @@ constexpr int AlphaChannel(RGBA32 color) {
   return (color >> 24) & 0xFF;
 }
 
+float AngleToUnitCircleDegrees(float angle) {
+  return fmod(fmod(angle, 360.f) + 360.f, 360.f);
+}
+
 }  // namespace
 
 // The color parameters will use 16 bytes (for 4 floats). Ensure that the
@@ -306,29 +310,143 @@ Color Color::FromColorMix(Color::ColorInterpolationSpace interpolation_space,
                           Color color2,
                           float percentage,
                           float alpha_multiplier) {
-  // todo(1092638) : Support other color spaces, and conversions to the given
-  // color space.
-  if (interpolation_space != ColorInterpolationSpace::kSRGB) {
-    NOTIMPLEMENTED();
-    return Color();
+  DCHECK(percentage >= 0.0f && percentage <= 1.0f);
+  DCHECK(alpha_multiplier >= 0.0f && alpha_multiplier <= 1.0f);
+  Color result = InterpolateColors(interpolation_space, hue_method, color1,
+                                   color2, percentage);
+
+  result.alpha_ *= alpha_multiplier;
+
+  return result;
+}
+
+// static
+float Color::HueInterpolation(float value1,
+                              float value2,
+                              float percentage,
+                              Color::HueInterpolationMethod hue_method) {
+  DCHECK(value1 >= 0.0f && value1 < 360.0f) << value1;
+  DCHECK(value2 >= 0.0f && value2 < 360.0f) << value2;
+  DCHECK(percentage >= 0.0f && percentage <= 1.0f);
+  percentage = 1.0f - percentage;
+  // Adapt values of angles if needed, depending on the hue_method.
+  switch (hue_method) {
+    case Color::HueInterpolationMethod::kShorter: {
+      float diff = value2 - value1;
+      if (diff > 180.0f) {
+        value1 += 360.0f;
+      } else if (diff < -180.0f) {
+        value2 += 360.0f;
+      }
+      DCHECK(value2 - value1 >= -180.0f && value2 - value1 <= 180.0f);
+    } break;
+    case Color::HueInterpolationMethod::kLonger: {
+      float diff = value2 - value1;
+      if (diff > 0.0f && diff < 180.0f) {
+        value1 += 360.0f;
+      } else if (diff > -180.0f && diff <= 0.0f) {
+        value2 += 360.0f;
+      }
+      DCHECK((value2 - value1 >= -360.0f && value2 - value1 <= -180.0f) ||
+             (value2 - value1 >= 180.0f && value2 - value1 <= 360.0f))
+          << value2 - value1;
+    } break;
+    case Color::HueInterpolationMethod::kIncreasing:
+      if (value2 < value1)
+        value2 += 360.0f;
+      DCHECK(value2 - value1 >= 0.0f && value2 - value1 < 360.0f);
+      break;
+    case Color::HueInterpolationMethod::kDecreasing:
+      if (value1 < value2)
+        value1 += 360.0f;
+      DCHECK(-360.0f < value2 - value1 && value2 - value1 <= 0.f);
+      break;
+    case Color::HueInterpolationMethod::kSpecified:
+      // No fixup performed.
+      break;
   }
+  return AngleToUnitCircleDegrees(blink::Blend(value2, value1, percentage));
+}
+
+// static
+Color Color::InterpolateColors(
+    Color::ColorInterpolationSpace interpolation_space,
+    absl::optional<HueInterpolationMethod> hue_method,
+    Color color1,
+    Color color2,
+    float percentage) {
+  DCHECK(percentage >= 0.0f && percentage <= 1.0f);
+  // TODO(1092638) : HSL, HWB and LegacyRGB don't support yet the "none"
+  // interpolation.
+  // TODO(1092638) : HSL, HWB don't support interpolation yet.
+  if (interpolation_space == ColorInterpolationSpace::kHSL ||
+      interpolation_space == ColorInterpolationSpace::kHWB)
+    return color1;
+
+  if (interpolation_space == ColorInterpolationSpace::kHSL ||
+      interpolation_space == ColorInterpolationSpace::kHWB ||
+      interpolation_space == ColorInterpolationSpace::kLch ||
+      interpolation_space == ColorInterpolationSpace::kOklch)
+    DCHECK(hue_method.has_value());
 
   color1.ConvertToColorInterpolationSpace(interpolation_space);
   color2.ConvertToColorInterpolationSpace(interpolation_space);
 
-  float alpha1 = color1.PremultiplyColor();
-  float alpha2 = color2.PremultiplyColor();
+  absl::optional<float> alpha1 = color1.PremultiplyColor();
+  absl::optional<float> alpha2 = color2.PremultiplyColor();
 
-  Color result = FromColorFunction(
-      ColorSpace::kSRGB,
-      blink::Blend(color2.param0_, color1.param0_, percentage),
-      blink::Blend(color2.param1_, color1.param1_, percentage),
-      blink::Blend(color2.param2_, color1.param2_, percentage),
-      blink::Blend(alpha2, alpha1, percentage));
+  auto HandleNoneInterpolation = [](float value1, bool value1_is_none,
+                                    float value2, bool value2_is_none) {
+    DCHECK(value1_is_none || value2_is_none);
+
+    if (!value1_is_none) {
+      return absl::optional<float>(value1);
+    }
+
+    if (!value2_is_none) {
+      return absl::optional<float>(value2);
+    }
+
+    DCHECK(value1_is_none && value2_is_none);
+    return absl::optional<float>();
+  };
+
+  absl::optional<float> param0 =
+      (color1.param0_is_none_ || color2.param0_is_none_)
+          ? HandleNoneInterpolation(color1.param0_, color1.param0_is_none_,
+                                    color2.param0_, color2.param0_is_none_)
+      : (interpolation_space == ColorInterpolationSpace::kHSL ||
+         interpolation_space == ColorInterpolationSpace::kHWB)
+          ? HueInterpolation(color2.param0_, color1.param0_, percentage,
+                             hue_method.value())
+          : blink::Blend(color2.param0_, color1.param0_, percentage);
+
+  absl::optional<float> param1 =
+      (color1.param1_is_none_ || color2.param1_is_none_)
+          ? HandleNoneInterpolation(color1.param1_, color1.param1_is_none_,
+                                    color2.param1_, color2.param1_is_none_)
+          : blink::Blend(color2.param1_, color1.param1_, percentage);
+
+  absl::optional<float> param2 =
+      (color1.param2_is_none_ || color2.param2_is_none_)
+          ? HandleNoneInterpolation(color1.param2_, color1.param2_is_none_,
+                                    color2.param2_, color2.param2_is_none_)
+      : (interpolation_space == ColorInterpolationSpace::kLch ||
+         interpolation_space == ColorInterpolationSpace::kOklch)
+          ? HueInterpolation(color2.param2_, color1.param2_, percentage,
+                             hue_method.value())
+          : blink::Blend(color2.param2_, color1.param2_, percentage);
+
+  absl::optional<float> alpha =
+      (color1.alpha_is_none_ && color2.alpha_is_none_)
+          ? HandleNoneInterpolation(alpha1.value(), color1.alpha_is_none_,
+                                    alpha2.value(), color2.alpha_is_none_)
+          : blink::Blend(alpha2.value(), alpha1.value(), percentage);
+
+  Color result =
+      FromColorFunction(ColorSpace::kSRGB, param0, param1, param2, alpha);
 
   result.UnpremultiplyColor();
-
-  result.alpha_ *= alpha_multiplier;
 
   return result;
 }
@@ -463,6 +581,7 @@ void Color::ConvertToColorInterpolationSpace(
       }();
 
       std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
+      param2_ = AngleToUnitCircleDegrees(param2_);
       color_space_ = ColorSpace::kLch;
       return;
     }
@@ -489,6 +608,7 @@ void Color::ConvertToColorInterpolationSpace(
 
       auto [l, a, b] = gfx::XYZD65ToOklab(xd65, yd65, zd65);
       std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
+      param2_ = AngleToUnitCircleDegrees(param2_);
       color_space_ = ColorSpace::kOklch;
       return;
     }
@@ -568,21 +688,33 @@ SkColor4f Color::toSkColor4f() const {
 }
 
 float Color::PremultiplyColor() {
+  // By the spec (https://www.w3.org/TR/css-color-4/#interpolation) Hue values
+  // are not premultiplied, and if alpha is none, the color premultiplied value
+  // is the same as unpremultiplied.
+  if (alpha_is_none_)
+    return alpha_;
   float alpha = alpha_;
-  param0_ = param0_ * alpha_;
+  if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
+    param0_ = param0_ * alpha_;
   param1_ = param1_ * alpha_;
-  param2_ = param2_ * alpha_;
+  if (color_space_ != ColorSpace::kLch && color_space_ != ColorSpace::kOklch)
+    param2_ = param2_ * alpha_;
   alpha_ = 1.0f;
   return alpha;
 }
 
 void Color::UnpremultiplyColor() {
-  if (alpha_ == 0.0f)
+  // By the spec (https://www.w3.org/TR/css-color-4/#interpolation) Hue values
+  // are not premultiplied, and if alpha is none, the color premultiplied value
+  // is the same as unpremultiplied.
+  if (alpha_is_none_ || alpha_ == 0.0f)
     return;
 
-  param0_ = param0_ / alpha_;
+  if (color_space_ != ColorSpace::kHSL && color_space_ != ColorSpace::kHWB)
+    param0_ = param0_ / alpha_;
   param1_ = param1_ / alpha_;
-  param2_ = param2_ / alpha_;
+  if (color_space_ != ColorSpace::kLch && color_space_ != ColorSpace::kOklch)
+    param2_ = param2_ / alpha_;
 }
 
 // static

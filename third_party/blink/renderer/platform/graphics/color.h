@@ -209,12 +209,22 @@ class PLATFORM_EXPORT Color {
     kSpecified,
   };
 
+  // Creates a color with the Color-Mix method in CSS Color 5. This will produce
+  // an interpolation between two colors, and apply an alpha multiplier if the
+  // proportion was not 100% when parsing.
   static Color FromColorMix(ColorInterpolationSpace interpolation_space,
                             absl::optional<HueInterpolationMethod> hue_method,
                             Color color1,
                             Color color2,
                             float percentage,
-                            float alpha_multiplier = 1.0f);
+                            float alpha_multiplier);
+
+  static Color InterpolateColors(
+      ColorInterpolationSpace interpolation_space,
+      absl::optional<HueInterpolationMethod> hue_method,
+      Color color1,
+      Color color2,
+      float percentage);
 
   // TODO(crbug.com/1308932): These three functions are just helpers for while
   // we're converting platform/graphics to float color.
@@ -313,6 +323,9 @@ class PLATFORM_EXPORT Color {
       Color::HueInterpolationMethod hue_interpolation_method =
           Color::HueInterpolationMethod::kShorter);
 
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorMixNone);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, ColorInterpolation);
+  FRIEND_TEST_ALL_PREFIXES(BlinkColor, HueInterpolation);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, Premultiply);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, Unpremultiply);
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, toSkColor4fValidation);
@@ -351,6 +364,13 @@ class PLATFORM_EXPORT Color {
 
   float PremultiplyColor();
   void UnpremultiplyColor();
+
+  // HueInterpolation assumes value1 and value2 are degrees, it will interpolate
+  // value1 and value2 as per CSS Color 4 spec.
+  static float HueInterpolation(float value1,
+                                float value2,
+                                float percentage,
+                                HueInterpolationMethod hue_method);
 
   ColorSpace color_space_ = ColorSpace::kRGBLegacy;
 

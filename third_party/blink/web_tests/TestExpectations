@@ -2011,6 +2011,7 @@ crbug.com/1068610 [ Linux ] external/wpt/css/css-color/t425-hsla-onscreen-multip
 crbug.com/1068610 [ Linux ] external/wpt/css/css-color/t425-hsla-onscreen-b.xht [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure ]
 crbug.com/1068610 external/wpt/css/css-color/color-mix-currentcolor-001.html [ Failure ]
+crbug.com/1068610 external/wpt/css/css-color/color-mix-currentcolor-002.html [ Failure ]
 
 crbug.com/1343361 external/wpt/css/css-color/currentcolor-003.html [ Failure ]
 

@@ -150,6 +150,135 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
   }
 }
 
+TEST(BlinkColor, ColorMixNone) {
+  Color color1 = Color::FromColorFunction(
+      Color::ColorSpace::kXYZD50, absl::nullopt, 0.5f, absl::nullopt, 1.0f);
+  Color color2 = Color::FromColorFunction(
+      Color::ColorSpace::kXYZD50, absl::nullopt, absl::nullopt, 0.7f, 1.0f);
+
+  Color result = Color::FromColorMix(
+      Color::ColorInterpolationSpace::kXYZD50, /*hue_method=*/absl::nullopt,
+      color1, color2, /*percentage=*/0.5f, /*alpha_multiplier=*/1.0f);
+
+  EXPECT_EQ(result.param0_is_none_, true);
+  EXPECT_EQ(result.param1_is_none_, false);
+  EXPECT_EQ(result.param1_, color1.param1_);
+  EXPECT_EQ(result.param2_is_none_, false);
+  EXPECT_EQ(result.param2_, color2.param2_);
+}
+
+TEST(BlinkColor, ColorInterpolation) {
+  struct ColorsTest {
+    Color color1;
+    Color color2;
+    Color::ColorInterpolationSpace space;
+    absl::optional<Color::HueInterpolationMethod> hue_method;
+    float percentage;
+    Color expected;
+  };
+
+  // Tests extracted from the CSS Color 4 spec.
+  ColorsTest colors_test[] = {
+      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
+                                0.4f),
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
+                                0.6f),
+       Color::ColorInterpolationSpace::kSRGB, absl::nullopt, 0.5f,
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.468f, 0.204f,
+                                0.776f, 0.5f)},
+      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.76f, 0.62f, 0.03f,
+                                0.4f),
+       Color::FromColorFunction(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f,
+                                0.72f, 0.6f),
+       Color::ColorInterpolationSpace::kLab, absl::nullopt, 0.5f,
+       Color::FromLab(58.873f, 51.552f, 7.108f, 0.5f)},
+      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.76f, 0.62f, 0.03f,
+                                0.4f),
+       Color::FromColorFunction(Color::ColorSpace::kDisplayP3, 0.84f, 0.19f,
+                                0.72f, 0.6f),
+       Color::ColorInterpolationSpace::kLch,
+       Color::HueInterpolationMethod::kShorter, 0.5f,
+       Color::FromLch(58.873f, 81.126f, 63.64f, 0.5f)}};
+
+  for (auto& color_test : colors_test) {
+    Color result = Color::InterpolateColors(
+        color_test.space, color_test.hue_method, color_test.color1,
+        color_test.color2, color_test.percentage);
+    EXPECT_NEAR(result.param0_, color_test.expected.param0_, 0.01f);
+    EXPECT_NEAR(result.param1_, color_test.expected.param1_, 0.01f);
+    EXPECT_NEAR(result.param2_, color_test.expected.param2_, 0.01f);
+    EXPECT_NEAR(result.alpha_, color_test.expected.alpha_, 0.01f);
+  }
+}
+
+TEST(BlinkColor, HueInterpolation) {
+  struct HueTest {
+    float value1;
+    float value2;
+    float percentage;
+    Color::HueInterpolationMethod method;
+    float expected;
+  };
+
+  auto HueMethodToString = [](Color::HueInterpolationMethod method) {
+    switch (method) {
+      case Color::HueInterpolationMethod::kShorter:
+        return "shorter";
+      case Color::HueInterpolationMethod::kLonger:
+        return "kLonger";
+      case Color::HueInterpolationMethod::kIncreasing:
+        return "kIncreasing";
+      case Color::HueInterpolationMethod::kDecreasing:
+        return "kDecreasing";
+      case Color::HueInterpolationMethod::kSpecified:
+        return "kSpecified";
+    }
+  };
+
+  HueTest hue_tests[] = {
+      {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kShorter, 60.0f},
+      {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kShorter, 330.0f},
+      {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kShorter, 357.0f},
+      {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kLonger, 60.0f},
+      {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kLonger, 330.0f},
+      {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kLonger, 249.0f},
+      {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kIncreasing, 60.0f},
+      {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kIncreasing, 330.0f},
+      {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kIncreasing, 249.0f},
+      {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kDecreasing, 60.0f},
+      {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kDecreasing, 330.0f},
+      {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kDecreasing, 357.0f},
+      {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kSpecified, 60.0f},
+      {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kSpecified, 330.0f},
+      {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kSpecified, 249.0f},
+      {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kShorter, 60.0f},
+      {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kShorter, 90.0f},
+      {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kShorter, 81.0f},
+      {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kLonger, 60.0f},
+      {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kLonger, 90.0f},
+      {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kLonger, 189.0f},
+      {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kIncreasing, 60.0f},
+      {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kIncreasing, 90.0f},
+      {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kIncreasing, 81.0f},
+      {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kDecreasing, 60.0f},
+      {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kDecreasing, 90.0f},
+      {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kDecreasing, 189.0f},
+      {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kSpecified, 60.0f},
+      {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kSpecified, 90.0f},
+      {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kSpecified, 81.0f},
+  };
+
+  for (auto& hue_test : hue_tests) {
+    float result = Color::HueInterpolation(
+        hue_test.value1, hue_test.value2, hue_test.percentage, hue_test.method);
+
+    EXPECT_NEAR(result, hue_test.expected, 0.01f)
+        << hue_test.value1 << ' ' << hue_test.value2 << ' '
+        << hue_test.percentage << ' ' << HueMethodToString(hue_test.method)
+        << " produced " << result << " but was expecting " << hue_test.expected;
+  }
+}
+
 TEST(BlinkColor, toSkColor4fValidation) {
   struct ColorFunctionValues {
     Color::ColorSpace color_space;
@@ -304,58 +433,94 @@ TEST(BlinkColor, ExportAsXYZD50Floats) {
 
 TEST(BlinkColor, Premultiply) {
   ColorTest color_tests[] = {
+      // Testing rectangular-color-space premultiplication.
       {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f, 0.12f, 0.98f,
                                 0.4f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.096f, 0.048f,
-                                0.392f, 1.0f)},
-      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.62f, 0.26f, 0.64f,
-                                0.6f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.372f, 0.156f,
-                                0.384f, 1.0f)},
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.24f * 0.4f,
+                                0.12f * 0.4f, 0.98f * 0.4f, 1.0f)},
+      // Testing none value in each component premultiplication.
+      {Color::FromColorFunction(Color::ColorSpace::kSRGB, absl::nullopt, 0.26f,
+                                0.64f, 0.6f),
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, absl::nullopt,
+                                0.26f * 0.6f, 0.64f * 0.6f, 1.0f)},
+      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f, absl::nullopt,
+                                0.64f, 0.6f),
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
+                                absl::nullopt, 0.64f * 0.6f, 1.0f)},
+      {Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f, 0.64f,
+                                absl::nullopt, 0.6f),
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.26f * 0.6f,
+                                0.64f * 0.6f, absl::nullopt, 1.0f)},
       {Color::FromColorFunction(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
-                                0.5f),
-       Color::FromColorFunction(Color::ColorSpace::kSRGB, 0.5f, 0.4f, 0.0f,
-                                1.0f)}};
+                                absl::nullopt),
+       Color::FromColorFunction(Color::ColorSpace::kSRGB, 1.0f, 0.8f, 0.0f,
+                                absl::nullopt)},
+      // Testing polar-color-space premultiplication. Hue component should not
+      // be premultiplied.
+      {Color::FromLch(0.24f, 0.12f, 0.98f, 0.4f),
+       Color::FromLch(0.24f * 0.4f, 0.12f * 0.4f, 0.98f, 1.0f)},
+      {Color::FromOklch(0.24f, 0.12f, 0.98f, 0.4f),
+       Color::FromOklch(0.24f * 0.4f, 0.12f * 0.4f, 0.98f, 1.0f)}};
 
   for (auto& color_test : color_tests) {
     color_test.color.PremultiplyColor();
 
-    EXPECT_NEAR(color_test.color.param0_, color_test.color_expected.param0_,
-                0.001f)
-        << "Premultiplying generated " << color_test.color.param0_ << " "
-        << color_test.color.param1_ << " " << color_test.color.param2_ << " "
-        << color_test.color.alpha_ << " and it was expecting "
-        << color_test.color_expected.param0_ << " "
-        << color_test.color_expected.param1_ << " "
-        << color_test.color_expected.param2_ << " "
-        << color_test.color_expected.alpha_;
-    EXPECT_NEAR(color_test.color.param1_, color_test.color_expected.param1_,
-                0.001f)
-        << "Premultiplying generated " << color_test.color.param0_ << " "
-        << color_test.color.param1_ << " " << color_test.color.param2_ << " "
-        << color_test.color.alpha_ << " and it was expecting "
-        << color_test.color_expected.param0_ << " "
-        << color_test.color_expected.param1_ << " "
-        << color_test.color_expected.param2_ << " "
-        << color_test.color_expected.alpha_;
-    EXPECT_NEAR(color_test.color.param2_, color_test.color_expected.param2_,
-                0.001f)
-        << "Premultiplying generated " << color_test.color.param0_ << " "
-        << color_test.color.param1_ << " " << color_test.color.param2_ << " "
-        << color_test.color.alpha_ << " and it was expecting "
-        << color_test.color_expected.param0_ << " "
-        << color_test.color_expected.param1_ << " "
-        << color_test.color_expected.param2_ << " "
-        << color_test.color_expected.alpha_;
-    EXPECT_NEAR(color_test.color.alpha_, color_test.color_expected.alpha_,
-                0.001f)
-        << "Premultiplying generated " << color_test.color.param0_ << " "
-        << color_test.color.param1_ << " " << color_test.color.param2_ << " "
-        << color_test.color.alpha_ << " and it was expecting "
-        << color_test.color_expected.param0_ << " "
-        << color_test.color_expected.param1_ << " "
-        << color_test.color_expected.param2_ << " "
-        << color_test.color_expected.alpha_;
+    if (color_test.color.param0_is_none_) {
+      EXPECT_EQ(color_test.color.param0_is_none_,
+                color_test.color_expected.param0_is_none_);
+    } else {
+      EXPECT_NEAR(color_test.color.param0_, color_test.color_expected.param0_,
+                  0.001f)
+          << "Premultiplying generated " << color_test.color.param0_ << " "
+          << color_test.color.param1_ << " " << color_test.color.param2_ << " "
+          << color_test.color.alpha_ << " and it was expecting "
+          << color_test.color_expected.param0_ << " "
+          << color_test.color_expected.param1_ << " "
+          << color_test.color_expected.param2_ << " "
+          << color_test.color_expected.alpha_;
+    }
+    if (color_test.color_expected.param1_is_none_) {
+      EXPECT_EQ(color_test.color.param1_is_none_,
+                color_test.color_expected.param1_is_none_);
+    } else {
+      EXPECT_NEAR(color_test.color.param1_, color_test.color_expected.param1_,
+                  0.001f)
+          << "Premultiplying generated " << color_test.color.param0_ << " "
+          << color_test.color.param1_ << " " << color_test.color.param2_ << " "
+          << color_test.color.alpha_ << " and it was expecting "
+          << color_test.color_expected.param0_ << " "
+          << color_test.color_expected.param1_ << " "
+          << color_test.color_expected.param2_ << " "
+          << color_test.color_expected.alpha_;
+    }
+    if (color_test.color_expected.param2_is_none_) {
+      EXPECT_EQ(color_test.color.param2_is_none_,
+                color_test.color_expected.param2_is_none_);
+    } else {
+      EXPECT_NEAR(color_test.color.param2_, color_test.color_expected.param2_,
+                  0.001f)
+          << "Premultiplying generated " << color_test.color.param0_ << " "
+          << color_test.color.param1_ << " " << color_test.color.param2_ << " "
+          << color_test.color.alpha_ << " and it was expecting "
+          << color_test.color_expected.param0_ << " "
+          << color_test.color_expected.param1_ << " "
+          << color_test.color_expected.param2_ << " "
+          << color_test.color_expected.alpha_;
+    }
+    if (color_test.color_expected.alpha_is_none_) {
+      EXPECT_EQ(color_test.color.alpha_is_none_,
+                color_test.color_expected.alpha_is_none_);
+    } else {
+      EXPECT_NEAR(color_test.color.alpha_, color_test.color_expected.alpha_,
+                  0.001f)
+          << "Premultiplying generated " << color_test.color.param0_ << " "
+          << color_test.color.param1_ << " " << color_test.color.param2_ << " "
+          << color_test.color.alpha_ << " and it was expecting "
+          << color_test.color_expected.param0_ << " "
+          << color_test.color_expected.param1_ << " "
+          << color_test.color_expected.param2_ << " "
+          << color_test.color_expected.alpha_;
+    }
   }
 }
 
