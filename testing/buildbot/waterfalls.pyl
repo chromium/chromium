@@ -3549,7 +3549,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-          'isolated_scripts': 'wpt_web_tests_content_shell',
+          'isolated_scripts': 'wpt_web_tests_content_shell_multiple_flags',
         },
       },
       'linux-wpt-fyi-rel': {

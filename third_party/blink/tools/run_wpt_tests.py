@@ -189,6 +189,12 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
             configs = self.port.flag_specific_configs()
             rest_args.extend('--binary-arg=%s' % arg
                              for arg in configs[self.options.flag_specific][0])
+            if configs[self.options.flag_specific][1] is not None:
+                smoke_file_path = self.path_finder.path_from_web_tests(
+                    configs[self.options.flag_specific][1])
+                # TODO(crbug.com/1376700): should prioritize --include
+                # if it exists
+                rest_args.append('--include-file=%s' % smoke_file_path)
 
         if self.options.test_filter:
             for pattern in self.options.test_filter.split(':'):
