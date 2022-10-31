@@ -145,6 +145,7 @@ class AbstractRebaseliningCommand(Command):
         self.expectation_line_changes = ChangeSet()
         self._tool = None
         self._dry_run = False
+        self._resultdb_fetcher = False
 
     def baseline_directory(self, builder_name):
         port = self._tool.port_factory.get_from_builder_name(builder_name)
@@ -366,29 +367,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return (set(build_steps_to_fallback_paths[True])
                 | set(build_steps_to_fallback_paths[False]))
 
-    def baseline_fetch_url_resultdb(self, test_name, build):
-        # TODO(crbug.com/1213998): Optimize the loop through all artifact_list.
-        # Currently the runtime is O(# tests * # artifacts), but the rpc to get
-        # query all artifacts per build is cached instead rpc sent per test.
-        webtest_results_resultdb = self._tool.results_fetcher.fetch_results_from_resultdb_layout_tests(
-            build, True)
-        artifact_list = (self._tool.results_fetcher.
-                         query_artifact_for_build_test_results(build))
-        artifact_fetch_urls = []
-        if webtest_results_resultdb:
-            results_list = webtest_results_resultdb.test_results_resultdb()
-            done = False
-            for result in results_list:
-                if done:
-                    break
-                if test_name in result['testId']:
-                    for artifact in artifact_list:
-                        if 'actual' in artifact['artifactId'] and result[
-                                'name'] in artifact['name']:
-                            artifact_fetch_urls.append(artifact['fetchUrl'])
-                            done = True
-        return artifact_fetch_urls
-
     def _rebaseline_args(self,
                          test,
                          suffixes,
@@ -418,19 +396,13 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         rebaseline_commands = []
         copy_baseline_commands = []
         lines_to_remove = {}
-        fetch_urls = []
 
         # A test baseline set is a high-dimensional object, so we try to avoid
         # iterating it.
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
         for test, build, step_name, port_name in baseline_subset:
-            if options.resultDB:
-                fetch_urls = self.baseline_fetch_url_resultdb(test, build)
-                suffixes = list(
-                    self._suffixes_for_actual_failures_resultdb(test, build))
-            else:
-                suffixes = list(
-                    self._suffixes_for_actual_failures(test, build, step_name))
+            suffixes = list(
+                self._suffixes_for_actual_failures(test, build, step_name))
             if not suffixes:
                 # Only try to remove the expectation if the test
                 #   1. ran and passed ([ Skip ], [ WontFix ] should be kept)
@@ -459,8 +431,17 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if step_name:
                 args.extend(['--step-name', step_name])
 
-            if options.resultDB:
+            if self._resultdb_fetcher:
                 args.append('--resultDB')
+                raw_result = self._result_for_test(test, build,
+                                                   step_name).result_dict()
+                # TODO(crbug.com/1282507): Instead of grabbing the first
+                # artifact of each type, we should download artifacts across
+                # all retries and and check if they're all exactly the same.
+                fetch_urls = [
+                    artifacts[0]
+                    for artifacts in raw_result['artifacts'].values()
+                ]
                 args.extend(['--fetch-url', ','.join(fetch_urls)])
 
             rebaseline_command = [
@@ -511,15 +492,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         for test, build, step_name, _ in baseline_subset:
             # Use the suffixes information to determine whether to proceed with the optimize
             # step. Suffixes are not passed to the optimizer.
-            if resultDB:
-                suffixes = self._suffixes_for_actual_failures_resultdb(
-                    test, build)
-            else:
-                suffixes = self._suffixes_for_actual_failures(
-                    test, build, step_name)
-            if suffixes == set():
-                continue
-            test_set.add(test)
+            suffixes = self._suffixes_for_actual_failures(
+                test, build, step_name)
+            if suffixes:
+                test_set.add(test)
 
         # For real tests we will optimize all the virtual tests derived from
         # that. No need to include a virtual tests if we will also optimize the
@@ -732,18 +708,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
     def _web_tests_dir(self):
         return self._tool.port_factory.get().web_tests_dir()
 
-    def _suffixes_for_actual_failures_resultdb(self, test, build):
-        suffixes = set()
-        fetch_url_list = self.baseline_fetch_url_resultdb(test, build)
-        for artifact_fetch_url in fetch_url_list:
-            if 'actual_image' in artifact_fetch_url:
-                suffixes.add('png')
-            if 'actual_text' in artifact_fetch_url:
-                suffixes.add('txt')
-            if 'actual_audio' in artifact_fetch_url:
-                suffixes.add('wav')
-        return suffixes
-
     def _suffixes_for_actual_failures(self, test, build, step_name=None):
         """Gets the baseline suffixes for actual mismatch failures in some results.
 
@@ -787,11 +751,16 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return test_result.did_pass() and not test_result.did_run_as_expected()
 
     @memoized
-    def _result_for_test(self, test, build, step_name=None):
-        # We need full results to know if a test passed or was skipped.
-        # TODO(robertma): Make memoized support kwargs, and use full=True here.
-        results = self._tool.results_fetcher.fetch_results(
-            build, True, step_name)
+    def _result_for_test(self, test, build, step_name):
+        if self._resultdb_fetcher:
+            results = self._tool.results_fetcher.gather_results(
+                build, step_name)
+        else:
+            # We need full results to know if a test passed or was skipped.
+            # TODO(robertma): Make memoized support kwargs, and use full=True
+            # here.
+            results = self._tool.results_fetcher.fetch_results(
+                build, True, step_name)
         if not results:
             _log.debug('No results found for build %s', build)
             return None

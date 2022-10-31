@@ -290,23 +290,17 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
             step_names = results_fetcher.get_layout_test_step_names(build)
             unavailable_step_names = []
-            if self._resultdb_fetcher:
-                maybe_results = results_fetcher.fetch_results_from_resultdb_layout_tests(
-                    build, True)
-                if maybe_results:
-                    builds_to_results[build].append(maybe_results)
+            for step_name in step_names:
+                if self._resultdb_fetcher:
+                    maybe_result = results_fetcher.gather_results(
+                        build, step_name)
                 else:
-                    # The results don't have step-level granularity, so just
-                    # log all of them.
-                    unavailable_step_names.extend(step_names)
-            else:
-                for step_name in step_names:
                     maybe_result = results_fetcher.fetch_results(
                         build, False, step_name)
-                    if maybe_result:
-                        builds_to_results[build].append(maybe_result)
-                    else:
-                        unavailable_step_names.append(step_name)
+                if maybe_result:
+                    builds_to_results[build].append(maybe_result)
+                else:
+                    unavailable_step_names.append(step_name)
 
             if unavailable_step_names:
                 _log.warning('Failed to fetch some results for "%s".',
@@ -333,11 +327,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.info('Could not read test names from %s', filename)
         return self._make_test_baseline_set_for_tests(tests, builds_to_results)
 
-    def _test_exists(self, results, test):
-        if self._resultdb_fetcher:
-            return results.fail_result_exists_resultdb(test)
-        return results.result_for_test(test)
-
     def _make_test_baseline_set_for_tests(self, tests, builds_to_results):
         """Determines the set of test baselines to fetch from a list of tests.
 
@@ -354,7 +343,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             for step_results in builder_results:
                 # Check for bad user-supplied test names early to create a
                 # smaller test baseline set and send fewer bad requests.
-                if self._test_exists(step_results, test):
+                if step_results.result_for_test(test):
                     test_baseline_set.add(test, build,
                                           step_results.step_name())
         return test_baseline_set
@@ -387,12 +376,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         test_baseline_set = TestBaselineSet(self._tool, prefix_mode=False)
         for build, builder_results in builds_to_results.items():
             for step_results in builder_results:
-                if self._resultdb_fetcher:
-                    tests_to_rebaseline = self._tests_to_rebaseline_resultDB(
-                        build, step_results)
-                else:
-                    tests_to_rebaseline = self._tests_to_rebaseline(
-                        build, step_results)
+                tests_to_rebaseline = self._tests_to_rebaseline(
+                    build, step_results)
                 # Here we have a concrete list of tests so we don't need prefix lookup.
                 for test in tests_to_rebaseline:
                     if only_changed_tests and test not in tests_in_cl:
@@ -406,29 +391,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         finder = PathFinder(self._tool.filesystem)
         return self._tool.filesystem.relpath(
             finder.web_tests_dir(), finder.path_from_chromium_base()) + '/'
-
-    def _tests_to_rebaseline_resultDB(self, build, web_test_results):
-        """Fetches a list of tests that should be rebaselined for some build.
-
-        Args:
-            build: A Build instance.
-            web_test_results: A WebTestResults instance or None.
-
-        Returns:
-            A sorted list of tests to rebaseline for this build.
-        """
-        if web_test_results is None:
-            return []
-
-        failed_tests = web_test_results.failed_unexpected_resultdb()
-        failed_test_names = []
-        for result in failed_tests:
-            match = re.match('ninja://.*blink_(web|wpt)_tests/',
-                             result['testId'])
-            if match:
-                test_name = result['testId'][match.end():]
-                failed_test_names.append(test_name)
-        return failed_test_names
 
     def _tests_to_rebaseline(self, build, web_test_results):
         """Fetches a list of tests that should be rebaselined for some build.

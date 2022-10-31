@@ -102,15 +102,17 @@ class BuilderTest(LoggingTestCase):
                 'blink_web_tests%20on%20Intel%20GPU%20%28with%20patch%29/'
                 'layout-test-results/failing_results.json':
                 json.dumps({
-                    'passed': True
+                    'tests': {
+                        'test.html': {
+                            'actual': 'PASS'
+                        }
+                    },
                 }).encode('utf8', 'replace')
             })
         step_name = 'blink_web_tests on Intel GPU (with patch)'
         results = self.fetcher.fetch_results(Build('builder', 123), False,
                                              step_name)
-        self.assertEqual(
-            results._results,  # pylint: disable=protected-access
-            {'passed': True})
+        self.assertIsNot(results.result_for_test('test.html'), None)
         self.assertLog([])
 
     def test_fetch_results_without_build_number(self):
@@ -148,14 +150,16 @@ class BuilderTest(LoggingTestCase):
                 'testtype=webdriver_tests_suite+%28with+patch%29&'
                 'name=full_results.json':
                 json.dumps({
-                    'passed': True
+                    'tests': {
+                        'test.html': {
+                            'actual': 'PASS'
+                        }
+                    },
                 }).encode('utf8', 'replace'),
             })
         results = self.fetcher.fetch_webdriver_test_results(
             Build('bar-rel', 123), 'foo.chrome')
-        self.assertEqual(
-            results._results,  # pylint: disable=protected-access
-            {'passed': True})
+        self.assertIsNot(results.result_for_test('test.html'), None)
         self.assertLog([])
 
     def test_get_full_builder_url(self):

@@ -312,7 +312,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         host.results_fetcher.set_webdriver_test_results(
             Build('MOCK Try Trusty', 123, 'Build-123'), "tryserver.blink",
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'external': {
                         'wpt': {
@@ -793,7 +793,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def test_generate_failing_results_dict(self):
         updater = WPTExpectationsUpdater(self.mock_host())
-        web_test_list = WebTestResults(
+        web_test_list = WebTestResults.from_json(
             {
                 "tests": {
                     "external/wpt/test/name.html": {

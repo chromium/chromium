@@ -28,13 +28,14 @@
 
 import collections
 import json
-from typing import Optional
+from typing import List, Optional
 
 from blinkpy.common.memoized import memoized
 from blinkpy.web_tests.layout_package import json_results_generator
+from blinkpy.web_tests.models.typ_types import ResultType
 
 
-class WebTestResult(object):
+class WebTestResult:
     def __init__(self, test_name, result_dict):
         self._test_name = test_name
         self._result_dict = result_dict
@@ -127,22 +128,9 @@ def _flatten_test_results_trie(trie, sep: str = '/'):
 # FIXME: This should be unified with ResultsSummary or other NRWT web tests code
 # in the web_tests package.
 # This doesn't belong in common.net, but we don't have a better place for it yet.
-#
-# TODO(crbug.com/1213998): It's strange that this container holds two different
-# shapes of data (results JSON and ResultDB results list) and relies on callers
-# to not call an incompatible method. Hence, there is a lot of code of the form:
-#
-#   if options.resultDB:
-#       do_something_resultdb()
-#   else:
-#       do_something()
-#
-# The `WebTestResults.results_from*` factory methods need to be refactored to
-# normalize the raw data into an ordered dict of `WebTestResult` objects (sorted
-# by test name).
 class WebTestResults:
     @classmethod
-    def results_from_string(cls, string, step_name=None):
+    def results_from_string(cls, string, step_name=None) -> 'WebTestResults':
         """Creates a WebTestResults object from a test result JSON string.
 
         Args:
@@ -151,38 +139,62 @@ class WebTestResults:
         if not string:
             return None
         content_string = json_results_generator.strip_json_wrapper(string)
-        json_dict = json.loads(content_string)
-        if not json_dict:
-            return None
-        return cls(json_dict,
-                   step_name=step_name,
-                   interrupted=json_dict.get('interrupted', False),
-                   builder_name=json_dict.get('builder_name'))
+        return cls.from_json(json.loads(content_string), step_name=step_name)
 
     @classmethod
-    def results_from_resultdb(cls, rv, step_name=None):
-        """Creates a WebTestResults object from a resultDB RPC response data.
+    def from_json(cls, json_dict, **kwargs) -> 'WebTestResults':
+        sep = json_dict.get('sep', '/')
+        results = [
+            WebTestResult(test_name, fields) for test_name, fields in
+            _flatten_test_results_trie(json_dict['tests'], sep=sep)
+        ]
+        kwargs.setdefault('interrupted', json_dict.get('interrupted', False))
+        kwargs.setdefault('builder_name', json_dict.get('builder_name'))
+        kwargs.setdefault('chromium_revision',
+                          json_dict.get('chromium_revision'))
+        return cls(results, **kwargs)
 
-        Args:
-            rv: resultDB RPC response json containing web test result.
+    @classmethod
+    def from_rdb_responses(cls, test_results_by_name, artifacts_by_name,
+                           **kwargs):
+        """Creates a WebTestResults object from raw ResultDB RPC response data.
         """
-        if not rv:
-            return None
-        return cls(rv, step_name=step_name)
+        results = []
+        for test_name, raw_results in test_results_by_name.items():
+            actual = ' '.join(
+                cls._rdb_to_web_test_statuses[raw_result['status']]
+                for raw_result in raw_results)
+            is_unexpected = any(not raw_result.get('expected')
+                                for raw_result in raw_results)
+            artifacts = collections.defaultdict(list)
+            for artifact in artifacts_by_name[test_name]:
+                artifacts[artifact['artifactId']].append(artifact['fetchUrl'])
+            trie_leaf = {
+                'actual': actual,
+                'is_unexpected': is_unexpected,
+                'artifacts': dict(artifacts),
+            }
+            results.append(WebTestResult(test_name, trie_leaf))
+        return cls(results, **kwargs)
+
+    _rdb_to_web_test_statuses = {
+        'PASS': ResultType.Pass,
+        'FAIL': ResultType.Failure,
+        'CRASH': ResultType.Crash,
+        'ABORT': ResultType.Timeout,
+        'SKIP': ResultType.Skip,
+    }
 
     def __init__(self,
-                 results,
+                 results: List[WebTestResult],
                  chromium_revision: Optional[str] = None,
                  step_name: Optional[str] = None,
                  interrupted: bool = False,
                  builder_name: Optional[str] = None):
-        self._results = results
-        if isinstance(results, dict) and 'tests' in self._results:
-            sep = results.get('sep', '/')
-            results = [(test_name, WebTestResult(test_name, fields))
-                       for test_name, fields in _flatten_test_results_trie(
-                           self._results['tests'], sep=sep)]
-            self._results_by_name = collections.OrderedDict(sorted(results))
+        self._results_by_name = collections.OrderedDict([
+            (result.test_name(), result)
+            for result in sorted(results, key=WebTestResult.test_name)
+        ])
         self._chromium_revision = chromium_revision
         self._step_name = step_name
         self.interrupted = interrupted
@@ -194,8 +206,7 @@ class WebTestResults:
     @memoized
     def chromium_revision(self, git=None):
         """Returns the revision of the results in commit position number format."""
-        revision = self._chromium_revision or self._results.get(
-            'chromium_revision')
+        revision = self._chromium_revision
         if not revision or not revision.isdigit():
             assert git, 'git is required if the original revision is a git hash.'
             revision = git.commit_position_from_git_commit(revision)
@@ -213,25 +224,3 @@ class WebTestResults:
             result for result in self._results_by_name.values()
             if not result.did_run_as_expected()
         ]
-
-    def failed_unexpected_resultdb(self):
-        result_dict = {}
-        passed_test_id = set()
-        for result in self._results:
-            if result['status'] == 'FAIL':
-                result_dict[result['testId']] = result
-            elif result['status'] == 'PASS':
-                passed_test_id.add(result['testId'])
-        failed_results = [
-            result for result in result_dict.values()
-            if result['testId'] not in passed_test_id
-        ]
-        return failed_results
-
-    def fail_result_exists_resultdb(self, test):
-        for result in self._results:
-            if test in result[u'testId'] and result[u'status'] == u"FAIL":
-                return True
-
-    def test_results_resultdb(self):
-        return self._results

@@ -187,7 +187,7 @@ class BaseTestCase(unittest.TestCase):
         for builder in ['MOCK Win7', 'MOCK Win7 (dbg)', 'MOCK Mac10.11']:
             self.tool.results_fetcher.set_results(
                 Build(builder),
-                WebTestResults(
+                WebTestResults.from_json(
                     {
                         'tests': {
                             'userscripts': {
@@ -314,7 +314,7 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
         build = Build('MOCK Win7')
         self.tool.results_fetcher.set_results(
             build,
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'pixel.html': {
                         'expected': 'PASS',
@@ -363,7 +363,7 @@ class TestRebaseline(BaseTestCase):
     def test_rebaseline_test_passes_on_all_builders(self):
         self.tool.results_fetcher.set_results(
             Build('MOCK Win7'),
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'userscripts': {
                         'first-test.html': {
@@ -793,7 +793,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
         self._write('userscripts/skipped-test.html', 'Dummy test contents')
         self.tool.results_fetcher.set_results(
             Build('MOCK Mac10.11'),
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'userscripts': {
                         'skipped-test.html': {
@@ -805,7 +805,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
             }))
         self.tool.results_fetcher.set_results(
             Build('MOCK Win7'),
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'userscripts': {
                         'skipped-test.html': {
@@ -841,7 +841,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
         self._write('userscripts/flaky-test.html', 'Dummy test contents')
         self.tool.results_fetcher.set_results(
             Build('MOCK Mac10.11'),
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'userscripts': {
                         'flaky-test.html': {
@@ -875,7 +875,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
         test_baseline_set = TestBaselineSet(self.tool)
         self.tool.results_fetcher.set_results(
             Build('MOCK Mac10.11'),
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'userscripts': {
                         'all-pass.html': {
@@ -915,7 +915,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
         ]:
             self.tool.results_fetcher.set_results(
                 Build(builder),
-                WebTestResults({
+                WebTestResults.from_json({
                     'tests': {
                         'userscripts': {
                             'all-pass.html': {
@@ -946,7 +946,7 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
         test_baseline_set = TestBaselineSet(self.tool)
         self.tool.results_fetcher.set_results(
             Build('MOCK Mac10.11'),
-            WebTestResults({
+            WebTestResults.from_json({
                 'tests': {
                     'userscripts': {
                         'all-pass.html': {

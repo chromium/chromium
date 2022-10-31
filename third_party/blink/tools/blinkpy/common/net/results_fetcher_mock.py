@@ -28,6 +28,8 @@
 
 from collections import namedtuple
 
+from blinkpy.common.net.rpc import Build
+from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.net.results_fetcher import TestResultsFetcher
 
 BuilderStep = namedtuple('BuilderStep', ['build', 'step_name'])
@@ -49,6 +51,17 @@ class MockTestResultsFetcher(TestResultsFetcher):
         step = BuilderStep(build=build, step_name=step_name)
         self._canned_results[step] = results
 
+    def make_results_from_raw_rdb(self, test_results, artifacts,
+                                  **kwargs) -> WebTestResults:
+        return WebTestResults.from_rdb_responses(
+            self._group_test_results_by_test_name(test_results),
+            self._group_artifacts_by_test_name(artifacts),
+            **kwargs,
+        )
+
+    def gather_results(self, build: Build, step_name: str) -> WebTestResults:
+        return self.fetch_results(build, step_name=step_name)
+
     def fetch_results(self, build, full=False, step_name=None):
         step = BuilderStep(build=build, step_name=step_name)
         self.fetched_builds.append(step)
@@ -67,19 +80,6 @@ class MockTestResultsFetcher(TestResultsFetcher):
             if results:
                 rv.extend(results)
         return rv
-
-    def fetch_results_from_resultdb_layout_tests(self, build, predicate):
-        step = BuilderStep(build, step_name=None)
-        return self._canned_results.get(step)
-
-    def set_artifact_query_for_build(self, build, artifacts):
-        self._canned_artifacts_resultdb = artifacts
-
-    def query_artifact_for_build_test_results(self, build):
-        test_result_list = []
-        for test_results in self._canned_artifacts_resultdb.values():
-            test_result_list.extend(test_results)
-        return test_result_list
 
     def set_webdriver_test_results(self, build, m, results):
         self._webdriver_results[(build, m)] = results

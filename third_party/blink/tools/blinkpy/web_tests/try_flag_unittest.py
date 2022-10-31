@@ -70,7 +70,7 @@ class TryFlagTest(unittest.TestCase):
     def _setup_mock_results(self, results_fetcher):
         results_fetcher.set_results(
             self.linux_build,
-            WebTestResults(
+            WebTestResults.from_json(
                 {
                     'tests': {
                         'something': {
@@ -90,7 +90,7 @@ class TryFlagTest(unittest.TestCase):
                 step_name='blink_web_tests (with patch)'))
         results_fetcher.set_results(
             self.win_build,
-            WebTestResults(
+            WebTestResults.from_json(
                 {
                     'tests': {
                         'something': {
@@ -110,7 +110,7 @@ class TryFlagTest(unittest.TestCase):
                 step_name='blink_web_tests (with patch)'))
         results_fetcher.set_results(
             self.mac_build,
-            WebTestResults(
+            WebTestResults.from_json(
                 {
                     'tests': {
                         'something': {

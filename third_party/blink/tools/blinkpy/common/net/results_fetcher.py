@@ -26,11 +26,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import collections
 import logging
 import re
-import six.moves.urllib.request
-import six.moves.urllib.parse
-import six.moves.urllib.error
+import urllib.parse
 
 # pylint: disable=unused-import; `Build` is imported by other modules
 from blinkpy.common.memoized import memoized
@@ -46,19 +45,17 @@ TEST_RESULTS_SERVER = 'https://test-results.appspot.com'
 RESULTS_URL_BASE = '%s/data/layout_results' % TEST_RESULTS_SERVER
 RESULTS_SUMMARY_URL_BASE = 'https://storage.googleapis.com/chromium-layout-test-archives'
 
-PREDICATE_UNEXPECTED_RESULTS = {
-    "expectancy": "VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS",
-    "excludeExonerated": True
-}
 
-
-class TestResultsFetcher(object):
+class TestResultsFetcher:
     """This class represents an interface to test results for particular builds.
 
     This includes fetching web test results from Google Storage;
     for more information about the web test result format, see:
         https://www.chromium.org/developers/the-json-test-results-format
     """
+
+    _test_id_pattern = re.compile(
+        r'ninja://\S*blink_(web|wpt)_tests/(?P<name>\S+)')
 
     def __init__(self, web, luci_auth, builders=None):
         self.web = web
@@ -83,19 +80,72 @@ class TestResultsFetcher(object):
             url_base = self.builder_results_url_base(builder_name)
             if step_name:
                 return '%s/%s/%s/layout-test-results' % (
-                    url_base, build_number,
-                    six.moves.urllib.parse.quote(step_name))
+                    url_base, build_number, urllib.parse.quote(step_name))
             return '%s/%s/layout-test-results' % (url_base, build_number)
         return self.accumulated_results_url_base(builder_name)
 
     @memoized
-    def query_artifact_for_build_test_results(self, build):
-        """Returns a list of test results from ResultDB."""
-        return self._resultdb_client.query_artifacts([build.build_id], {
-            'followEdges': {
-                'testResults': True,
+    def gather_results(self, build: Build, step_name: str) -> WebTestResults:
+        """Gather all web test results on a given build step from ResultDB."""
+        assert build.build_id, '%s must set a build ID' % build
+        suite = step_name
+        if suite.endswith('(with patch)'):
+            suite = suite[:-len('(with patch)')].strip()
+
+        test_result_predicate = {
+            'expectancy': 'VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS',
+            'excludeExonerated': True,
+            'variant': {
+                'contains': {
+                    'def': {
+                        'test_suite': suite,
+                    },
+                },
             },
-        })
+        }
+        test_results = self._resultdb_client.query_test_results(
+            [build.build_id], test_result_predicate)
+        test_results_by_name = self._group_test_results_by_test_name(
+            test_results)
+        artifacts = self._resultdb_client.query_artifacts(
+            [build.build_id], {
+                'testResultPredicate': test_result_predicate,
+                'artifactIdRegexp': 'actual_.*'
+            })
+        artifacts_by_name = self._group_artifacts_by_test_name(artifacts)
+        # TODO(crbug.com/1213998): Determine how to set `interrupted`. This
+        # information may be available in Buildbucket:
+        #   https://source.chromium.org/chromium/_/chromium/infra/luci/luci-go/+/408fe93a2f6fb252e789058c6083d2b678934b24:buildbucket/proto/common.proto;l=150-157
+        return WebTestResults.from_rdb_responses(
+            test_results_by_name,
+            artifacts_by_name,
+            step_name=step_name,
+            builder_name=build.builder_name)
+
+    def _group_test_results_by_test_name(self, test_results):
+        test_results_by_name = collections.defaultdict(list)
+        for test_result in test_results:
+            test_id_match = self._test_id_pattern.fullmatch(
+                test_result['testId'])
+            if not test_id_match:
+                continue
+            test_results_by_name[test_id_match['name']].append(test_result)
+        return test_results_by_name
+
+    def _group_artifacts_by_test_name(self, artifacts):
+        artifact_name_pattern = re.compile(
+            r'invocations/[^/\s]+/tests/(?P<test_id>[^/\s]+)')
+        artifacts_by_name = collections.defaultdict(list)
+        for artifact in artifacts:
+            artifact_name_match = artifact_name_pattern.match(artifact['name'])
+            if not artifact_name_match:
+                continue
+            test_id = urllib.parse.unquote(artifact_name_match['test_id'])
+            test_id_match = self._test_id_pattern.fullmatch(test_id)
+            if not test_id_match:
+                continue
+            artifacts_by_name[test_id_match['name']].append(artifact)
+        return artifacts_by_name
 
     def get_full_builder_url(self, url_base, builder_name):
         """ Returns the url for a builder directory in google storage.
@@ -147,20 +197,6 @@ class TestResultsFetcher(object):
         return self.builder_results_url_base(
             builder_name) + '/results/layout-test-results'
 
-    @memoized
-    def fetch_results_from_resultdb_layout_tests(self, build,
-                                                 unexpected_results):
-        if unexpected_results:
-            predicate = PREDICATE_UNEXPECTED_RESULTS
-        else:
-            predicate = ""
-        rv = self.fetch_results_from_resultdb([build], predicate)
-        # Rebaselining should still work correctly on this object, even though
-        # it holds results for possibly multiple steps. ResultDB only exposes
-        # the test suite name (like 'blink_web_tests'), not the full step name
-        # with the '(with patch)' suffix.
-        return WebTestResults.results_from_resultdb(rv)
-
     def fetch_results_from_resultdb(self, builds, predicate):
         """Returns a list of test results from ResultDB."""
         build_ids = [build.build_id for build in builds]
@@ -208,7 +244,7 @@ class TestResultsFetcher(object):
             return None
 
         url = '%s/testfile?%s' % (TEST_RESULTS_SERVER,
-                                  six.moves.urllib.parse.urlencode(
+                                  urllib.parse.urlencode(
                                       [('buildnumber', build.build_number),
                                        ('master', master),
                                        ('builder', build.builder_name),
