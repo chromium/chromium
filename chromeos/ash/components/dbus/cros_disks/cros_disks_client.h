@@ -62,7 +62,7 @@ COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
 std::ostream& operator<<(std::ostream& out, DeviceType type);
 
 // Mount error code used by cros-disks.
-// These values are NOT the same as cros_disks::MountErrorType.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class MountError {
