@@ -47,6 +47,8 @@ user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
       return user_data_auth::AUTH_INTENT_DECRYPT;
     case AuthSessionIntent::kVerifyOnly:
       return user_data_auth::AUTH_INTENT_VERIFY_ONLY;
+    case AuthSessionIntent::kWebAuthn:
+      return user_data_auth::AUTH_INTENT_WEBAUTHN;
   }
 }
 
@@ -57,6 +59,8 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
       return AuthSessionIntent::kDecrypt;
     case user_data_auth::AUTH_INTENT_VERIFY_ONLY:
       return AuthSessionIntent::kVerifyOnly;
+    case user_data_auth::AUTH_INTENT_WEBAUTHN:
+      return AuthSessionIntent::kWebAuthn;
     default:
       NOTIMPLEMENTED() << "Other intents not implemented yet, intent: "
                        << intent;

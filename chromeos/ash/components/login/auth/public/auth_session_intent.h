@@ -26,11 +26,14 @@ enum class AuthSessionIntent {
   // scenarios that only require a boolean result: can the user authenticate or
   // not
   kVerifyOnly,
+  // Specific for the WebAuthN use case. Additionally to `kVerifyOnly`,
+  // instructs Cryptohome that is should release the WebAuthN secret.
+  kWebAuthn,
 };
 
 using AuthSessionIntents = base::EnumSet<AuthSessionIntent,
                                          AuthSessionIntent::kDecrypt,
-                                         AuthSessionIntent::kVerifyOnly>;
+                                         AuthSessionIntent::kWebAuthn>;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_SESSION_INTENT_H_

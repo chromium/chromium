@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/fake_extended_authenticator.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -57,7 +58,10 @@ class FakeInSessionAuthDialogController : public ash::WebAuthNDialogController {
 
 class InSessionAuthDialogClientTest : public testing::Test {
  public:
-  InSessionAuthDialogClientTest() = default;
+  InSessionAuthDialogClientTest() {
+    ash::UserDataAuthClient::InitializeFake();
+    client_ = std::make_unique<InSessionAuthDialogClient>();
+  }
   ~InSessionAuthDialogClientTest() override = default;
 
   void SetupActiveUser() {
@@ -98,8 +102,7 @@ class InSessionAuthDialogClientTest : public testing::Test {
       base::WrapUnique(fake_user_manager_)};
   std::unique_ptr<FakeInSessionAuthDialogController> fake_controller_{
       std::make_unique<FakeInSessionAuthDialogController>()};
-  std::unique_ptr<InSessionAuthDialogClient> client_{
-      std::make_unique<InSessionAuthDialogClient>()};
+  std::unique_ptr<InSessionAuthDialogClient> client_;
   scoped_refptr<ash::FakeExtendedAuthenticator> fake_authenticator_;
 };
 
