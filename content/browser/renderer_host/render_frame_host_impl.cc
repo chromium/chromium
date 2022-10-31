@@ -6547,17 +6547,12 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
               can_store.flattened_reasons);
   DCHECK(IsBackForwardCacheEnabled());
 
-  if (is_evicted_from_back_forward_cache_)
+  RenderFrameHostImpl* top_document = GetOutermostMainFrame();
+
+  if (top_document->is_evicted_from_back_forward_cache_)
     return;
 
   bool in_back_forward_cache = IsInBackForwardCache();
-
-  RenderFrameHostImpl* top_document = this;
-  while (RenderFrameHostImpl* parent =
-             top_document->GetParentOrOuterDocument()) {
-    top_document = parent;
-    DCHECK_EQ(top_document->IsInBackForwardCache(), in_back_forward_cache);
-  }
 
   // TODO(hajimehoshi): Record the 'race condition' by JavaScript execution when
   // |in_back_forward_cache| is false.

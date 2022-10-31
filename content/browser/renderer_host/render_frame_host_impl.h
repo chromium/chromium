@@ -4159,6 +4159,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   base::OneShotTimer subframe_unload_timer_;
 
   // BackForwardCache:
+
+  // Tracks whether we have we already posted a task to evict this. This should
+  // only ever be set/read on the outermost main frame.
   bool is_evicted_from_back_forward_cache_ = false;
   base::OneShotTimer back_forward_cache_eviction_timer_;
 
