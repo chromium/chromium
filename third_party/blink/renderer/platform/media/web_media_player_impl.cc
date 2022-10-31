@@ -2369,12 +2369,6 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
 void WebMediaPlayerImpl::OnDurationChange() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (frame_->IsAdFrame()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ads.Media.Duration", GetPipelineMediaDuration(),
-                               base::Milliseconds(1), base::Days(1),
-                               50 /* bucket_count */);
-  }
-
   if (ready_state_ == WebMediaPlayer::kReadyStateHaveNothing)
     return;
 
