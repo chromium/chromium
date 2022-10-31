@@ -109,7 +109,6 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   message_center::RichNotificationData notification_data;
   notification_data.priority = priority;
   current_notification_priority_ = priority;
-  notification_data.pinned = true;
 
   scoped_refptr<message_center::NotificationDelegate> delegate;
   // Don't show a button to unmute device if the microphone was muted by a HW
