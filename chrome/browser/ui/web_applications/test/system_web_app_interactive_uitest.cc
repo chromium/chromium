@@ -994,7 +994,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
       app_browser->tab_strip_model()->GetActiveWebContents(),
       "window.close();"));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 }
 
