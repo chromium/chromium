@@ -1713,7 +1713,7 @@ bool EventHandler::BestClickableNodeForHitTestResult(
   // adjustment only takes into account DOM nodes so a touch over a scrollbar
   // will be adjusted towards nearby nodes. This leads to things like textarea
   // scrollbars being untouchable.
-  if (result.GetScrollbar()) {
+  if (result.GetScrollbar() || result.IsOverResizer()) {
     target_node = nullptr;
     return false;
   }

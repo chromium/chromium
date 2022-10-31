@@ -81,6 +81,7 @@ HitTestResult::HitTestResult(const HitTestResult& other)
       inner_url_element_(other.URLElement()),
       scrollbar_(other.GetScrollbar()),
       is_over_embedded_content_view_(other.IsOverEmbeddedContentView()),
+      is_over_resizer_(other.is_over_resizer_),
       canvas_region_id_(other.CanvasRegionId()) {
   // Only copy the NodeSet in case of list hit test.
   list_based_test_result_ =
@@ -127,6 +128,7 @@ void HitTestResult::PopulateFromCachedResult(const HitTestResult& other) {
   is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
   cacheable_ = other.cacheable_;
   canvas_region_id_ = other.CanvasRegionId();
+  is_over_resizer_ = other.IsOverResizer();
 
   // Only copy the NodeSet in case of list hit test.
   list_based_test_result_ =
@@ -593,6 +595,7 @@ void HitTestResult::Append(const HitTestResult& other) {
     inner_url_element_ = other.URLElement();
     is_over_embedded_content_view_ = other.IsOverEmbeddedContentView();
     canvas_region_id_ = other.CanvasRegionId();
+    is_over_resizer_ = other.IsOverResizer();
   }
 
   if (other.list_based_test_result_) {

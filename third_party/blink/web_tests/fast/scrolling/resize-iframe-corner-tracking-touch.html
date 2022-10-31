@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  iframe {
+    border: blue 2px solid;
+  }
+
+</style>
+
+<iframe id="iframe1" src="resources/resize-corner-tracking-touch-iframe.html"
+        style="resize:both; width: 200px; height: 200px"></iframe>
+
+<script type="text/javascript">
+  async function touchDrag(target, offset, delta) {
+    const rect = target.getBoundingClientRect();
+    const x0 = rect.right + offset.x;
+    const y0 = rect.bottom + offset.y;
+    drag = {
+      start_x: x0,
+      start_y: y0,
+      end_x: x0 + delta.dx,
+      end_y: y0 + delta.dy
+    };
+    await touchDragTo(drag);
+
+    return waitForCompositorCommit();
+  }
+
+  async function touchpadScroll(target, offset, delta, device) {
+    var rect = target.getBoundingClientRect();
+    const precise_scroll_delta = true;
+    await smoothScrollWithXY(-delta.dx, -delta.dy,
+      rect.right + offset.x, rect.bottom + offset.y,
+      GestureSourceType.TOUCHPAD_INPUT, SPEED_INSTANT,
+      precise_scroll_delta);
+    return waitForCompositorCommit();
+  }
+
+  function assert_resize(target, oldBounds) {
+    const newBounds = target.getBoundingClientRect();
+    assert_true(newBounds.width != oldBounds.width &&
+      newBounds.height != oldBounds.height,
+      'Element failed to resize');
+  }
+
+  function assert_no_resize(target, oldBounds) {
+    const newBounds = target.getBoundingClientRect();
+    assert_true(newBounds.width == oldBounds.width &&
+      newBounds.height == oldBounds.height,
+      'Element unexpectedly resized');
+  }
+
+  function resetStyle(element_id, style) {
+    const element = document.getElementById(element_id);
+    element.style = style;
+  }
+
+  async function setupTest(scrollTop = 50) {
+    resetStyle('iframe1', 'resize:both; width: 200px; height: 200px;');
+
+    // Scroll the page first to test that resize works with a scrolled page.
+    document.scrollingElement.scrollTop = scrollTop;
+
+    return waitForCompositorCommit();
+  }
+
+  window.onload = () => {
+    promise_test(async () => {
+      await setupTest(/* scrollTop */ 150);
+
+      const iframe = document.getElementById("iframe1");
+      const oldBounds = iframe.getBoundingClientRect();
+
+
+      await touchDrag(iframe, {x: -6, y: -7}, {dx: -20, dy: -10});
+      assert_resize(iframe, oldBounds);
+    }, 'Touch drag inside the resizer area of iframe resizes the iframe.');
+
+    promise_test(async () => {
+      await setupTest(/* scrollTop */ 150);
+
+      const iframe = document.getElementById("iframe1");
+      const oldBounds = iframe.getBoundingClientRect();
+
+      // Do not require an exact hit on the resizer due to touch fuzzing.
+      await touchDrag(iframe, {x: -20, y: -20}, {dx: -20, dy: -10});
+      assert_resize(iframe, oldBounds);
+    }, 'Touch drag a little off the resizer area of an iframe will resize ' +
+    ' the iframe.');
+
+    promise_test(async () => {
+      await setupTest(/* scrollTop */ 150);
+
+      const iframe = document.getElementById("iframe1");
+      const rect = iframe.getBoundingClientRect();
+      const target = iframe.contentDocument.getElementById("textarea2");
+      const oldBounds = target.getBoundingClientRect();
+
+      await touchDrag(target, {x: rect.left - 6, y: rect.top - 7},
+        {dx: 20, dy: 10});
+      assert_resize(target, oldBounds);
+    }, 'Touch drag inside the resizer area of a textarea inside an iframe ' +
+    'will resize the textarea.');
+  };
+</script>

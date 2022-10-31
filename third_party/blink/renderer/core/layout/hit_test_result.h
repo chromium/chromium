@@ -151,6 +151,10 @@ class CORE_EXPORT HitTestResult {
   void SetIsOverEmbeddedContentView(bool b) {
     is_over_embedded_content_view_ = b;
   }
+  void SetIsOverResizer(bool is_over_resizer) {
+    is_over_resizer_ = is_over_resizer;
+  }
+  bool IsOverResizer() const { return is_over_resizer_; }
 
   bool IsSelected(const HitTestLocation& location) const;
   String Title(TextDirection&) const;
@@ -238,6 +242,11 @@ class CORE_EXPORT HitTestResult {
   // Returns true if we are over a EmbeddedContentView (and not in the
   // border/padding area of a LayoutEmbeddedContent for example).
   bool is_over_embedded_content_view_;
+  // This is true if the location is over the bottom right of a resizable
+  // object, where resize controls are located. See
+  // PaintLayerScrollableArea::IsAbsolutePointInResizeControl for how that is
+  // tested.
+  bool is_over_resizer_ = false;
 
   mutable Member<NodeSet> list_based_test_result_;
   String canvas_region_id_;

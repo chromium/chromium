@@ -277,7 +277,8 @@ void PaintChunker::CreateScrollHitTestChunk(
   auto& hit_test_data = chunk.EnsureHitTestData();
   hit_test_data.scroll_translation = scroll_translation;
   hit_test_data.scroll_hit_test_rect = rect;
-  if (id.type == DisplayItem::Type::kScrollbarHitTest) {
+  if (id.type == DisplayItem::Type::kScrollbarHitTest ||
+      id.type == DisplayItem::Type::kResizerScrollHitTest) {
     hit_test_data.touch_action_rects.push_back(
         TouchActionRect{rect, TouchAction::kNone});
   }

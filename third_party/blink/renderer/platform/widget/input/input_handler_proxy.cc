@@ -1315,6 +1315,15 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchStart(
     }
   }
 
+  // main_thread_touch_sequence_start_disposition_ will indicate that touchmoves
+  // in the sequence should be sent to the main thread if the touchstart event
+  // was blocking. We may change |result| from DROP_EVENT if there is a touchend
+  // listener so we need to update main_thread_touch_sequence_start_disposition_
+  // here (before the check for a touchend listener) so that we send touchmoves
+  // only IF we send the (blocking) touchstart.
+  if (!(result == DID_HANDLE || result == DROP_EVENT))
+    main_thread_touch_sequence_start_disposition_ = result;
+
   // If |result| is still DROP_EVENT look at the touch end handler as we may
   // not want to discard the entire touch sequence. Note this code is
   // explicitly after the assignment of the |touch_result_| in
@@ -1374,8 +1383,20 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchMove(
       touch_event.touch_start_or_first_touch_move) {
     bool is_touching_scrolling_layer;
     cc::TouchAction allowed_touch_action = cc::TouchAction::kAuto;
-    EventDisposition result = HitTestTouchEvent(
-        touch_event, &is_touching_scrolling_layer, &allowed_touch_action);
+    EventDisposition result;
+    bool is_main_thread_touch_sequence_with_blocking_start =
+        main_thread_touch_sequence_start_disposition_.has_value() &&
+        main_thread_touch_sequence_start_disposition_.value() == DID_NOT_HANDLE;
+    // If the touchmove occurs in a touch sequence that's being forwarded to
+    // the main thread, we can avoid the hit test since we want to also forward
+    // touchmoves in the sequence to the main thread.
+    if (is_main_thread_touch_sequence_with_blocking_start) {
+      touch_result_ = main_thread_touch_sequence_start_disposition_.value();
+      result = touch_result_.value();
+    } else {
+      result = HitTestTouchEvent(touch_event, &is_touching_scrolling_layer,
+                                 &allowed_touch_action);
+    }
     TRACE_EVENT_INSTANT2(
         "input", "Allowed TouchAction", TRACE_EVENT_SCOPE_THREAD, "TouchAction",
         cc::TouchActionToString(allowed_touch_action), "disposition", result);
@@ -1400,6 +1421,10 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchEnd(
   }
   if (touch_event.touches_length == 1)
     touch_result_.reset();
+
+  if (main_thread_touch_sequence_start_disposition_.has_value())
+    main_thread_touch_sequence_start_disposition_.reset();
+
   return DID_NOT_HANDLE;
 }
 

@@ -1963,8 +1963,10 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
   gfx::Rect resize_control_rect;
   if (GetLayoutBox()->CanResize()) {
     resize_control_rect = ResizerCornerRect(kResizerForPointer);
-    if (resize_control_rect.Contains(local_point))
+    if (resize_control_rect.Contains(local_point)) {
+      result.SetIsOverResizer(true);
       return true;
+    }
   }
   int resize_control_size = max(resize_control_rect.height(), 0);
 
