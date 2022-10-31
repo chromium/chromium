@@ -3607,6 +3607,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidEnterBackForwardCacheInternal();
   void WillLeaveBackForwardCacheInternal();
 
+  // Returns the BackForwardCacheImpl for the outermost main frame.
+  BackForwardCacheImpl& GetBackForwardCache();
+
   // Stores an override of this document's base URL when it does not match the
   // last committed URL or an inherited value (e.g., if a <base> element is
   // added). This is tracked for all frames, for the purpose of GetBaseUrl. This

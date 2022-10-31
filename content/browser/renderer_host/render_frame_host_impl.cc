@@ -2128,7 +2128,7 @@ void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
       BackForwardCacheImpl::GetTimeToLiveInBackForwardCache();
 
   back_forward_cache_eviction_timer_.SetTaskRunner(
-      frame_tree()->controller().GetBackForwardCache().GetTaskRunner());
+      GetBackForwardCache().GetTaskRunner());
 
   back_forward_cache_eviction_timer_.Start(
       FROM_HERE, evict_after,
@@ -6605,10 +6605,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
   // immediately, but destruction is delayed, so that callers don't have to
   // worry about use-after-free of |this|.
   top_document->is_evicted_from_back_forward_cache_ = true;
-  top_document->frame_tree()
-      ->controller()
-      .GetBackForwardCache()
-      .PostTaskToDestroyEvictedFrames();
+  GetBackForwardCache().PostTaskToDestroyEvictedFrames();
 }
 
 void RenderFrameHostImpl::
@@ -13696,16 +13693,21 @@ void RenderFrameHostImpl::
   }
 }
 
+BackForwardCacheImpl& RenderFrameHostImpl::GetBackForwardCache() {
+  return GetOutermostMainFrame()
+      ->frame_tree()
+      ->controller()
+      .GetBackForwardCache();
+}
+
 void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
   if (!IsInBackForwardCache())
     return;
 
   RenderFrameHostImpl* outermost_main_frame = GetOutermostMainFrame();
   BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
-      outermost_main_frame->frame_tree()
-          ->controller()
-          .GetBackForwardCache()
-          .GetCurrentBackForwardCacheEligibility(outermost_main_frame);
+      GetBackForwardCache().GetCurrentBackForwardCacheEligibility(
+          outermost_main_frame);
 
   TRACE_EVENT("navigation",
               "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
