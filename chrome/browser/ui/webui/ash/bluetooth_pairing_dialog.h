@@ -9,7 +9,10 @@
 
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -51,6 +54,17 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   std::string dialog_id_;
 
   base::DictionaryValue device_data_;
+};
+
+class BluetoothPairingDialogUI;
+
+// WebUIConfig for chrome://bluetooth-pairing
+class BluetoothPairingDialogUIConfig
+    : public content::DefaultWebUIConfig<BluetoothPairingDialogUI> {
+ public:
+  BluetoothPairingDialogUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIBluetoothPairingHost) {}
 };
 
 // A WebUI to host the Bluetooth device pairing web UI.

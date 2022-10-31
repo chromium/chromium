@@ -1005,8 +1005,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       base::FeatureList::IsEnabled(chromeos::features::kAudioUrl)) {
     return &NewWebUI<ash::AudioUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIBluetoothPairingHost)
-    return &NewWebUI<ash::BluetoothPairingDialogUI>;
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
     return &NewWebUI<ash::CertificateManagerDialogUI>;
   if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
