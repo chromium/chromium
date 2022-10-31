@@ -15,7 +15,7 @@
 namespace {
 
 bool IsObsoleteOsVersion() {
-  return base::win::GetVersion() < base::win::Version::WIN10;
+  return base::win::GetVersion() < base::win::Version::WIN7;
 }
 
 }  // namespace
@@ -27,11 +27,6 @@ bool ObsoleteSystem::IsObsoleteNowOrSoon() {
 
 // static
 std::u16string ObsoleteSystem::LocalizedObsoleteString() {
-  const auto version = base::win::GetVersion();
-  if (version == base::win::Version::WIN7)
-    return l10n_util::GetStringUTF16(IDS_WIN_7_OBSOLETE);
-  if (version == base::win::Version::WIN8_1)
-    return l10n_util::GetStringUTF16(IDS_WIN_8_OBSOLETE);
   return l10n_util::GetStringUTF16(IDS_WIN_XP_VISTA_OBSOLETE);
 }
 
@@ -42,8 +37,5 @@ bool ObsoleteSystem::IsEndOfTheLine() {
 
 // static
 const char* ObsoleteSystem::GetLinkURL() {
-  const auto version = base::win::GetVersion();
-  if (version < base::win::Version::WIN7)
-    return chrome::kWindowsXPVistaDeprecationURL;
-  return chrome::kWindows78DeprecationURL;
+  return chrome::kWindowsXPVistaDeprecationURL;
 }
