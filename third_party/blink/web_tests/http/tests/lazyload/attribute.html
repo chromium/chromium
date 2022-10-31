@@ -13,6 +13,13 @@
 </body>
 
 <script>
+  function callOnLoadOrIfAlreadyLoaded(image, callback) {
+    if (image.complete)
+      callback();
+    else
+      image.addEventListener("load", callback);
+  }
+
   var no_attribute_img = document.getElementById("no_attribute_img");
   var auto_attribute_img = document.getElementById("auto_attribute_img");
   var invalid_attribute_img = document.getElementById("invalid_attribute_img");
@@ -27,12 +34,12 @@
     window.addEventListener("load", t.step_func_done(function() {
       assert_false(is_image_fully_loaded(lazy_attribute_img));
     }));
-    lazy_attribute_img.addEventListener("load",
+    callOnLoadOrIfAlreadyLoaded(lazy_attribute_img,
       t.unreached_func("Load event should not be fired for below viewport image with loading=lazy"));
   }, "Test that <img> with loading=lazy or auto or no attribute or invalid value are loaded as a placeholder");
 
   async_test(function(t) {
-    eager_attribute_img.addEventListener("load",
+    callOnLoadOrIfAlreadyLoaded(eager_attribute_img,
       t.step_func_done(function() {
         assert_true(is_image_fully_loaded(eager_attribute_img));
       }));
@@ -40,38 +47,32 @@
 
 
  async_test(function(t) {
-    no_attribute_img.addEventListener("load",
+    callOnLoadOrIfAlreadyLoaded(no_attribute_img,
       t.step_func_done(function() {
         assert_true(is_image_fully_loaded(no_attribute_img));
       }));
   }, "Test that <img> with no loading attribute is fully loaded, and not a placeholder");
 
 async_test(function(t) {
-    invalid_attribute_img.addEventListener("load",
+    callOnLoadOrIfAlreadyLoaded(invalid_attribute_img,
       t.step_func_done(function() {
         assert_true(is_image_fully_loaded(invalid_attribute_img));
       }));
   }, "Test that <img> with invalid loading attribute is fully loaded, and not a placeholder");
 
  async_test(function(t) {
-    auto_attribute_img.addEventListener("load",
+    callOnLoadOrIfAlreadyLoaded(auto_attribute_img,
       t.step_func_done(function() {
         assert_true(is_image_fully_loaded(auto_attribute_img));
       }));
   }, "Test that <img> with loading=auto is fully loaded, and not a placeholder");
 
-
   async_test(function(t) {
-    var complete = 0;
-    var onload_callback = function() {
-      if (++complete == 1) {
-        // The four images with loading=lazy,auto or default or invalid attribute are loaded.
-        assert_true(is_image_fully_loaded(lazy_attribute_img));
-        t.done();
-      }
-      assert_true(this.getAttribute('loading') == "eager");
-    };
-    lazy_attribute_img.addEventListener("load", onload_callback);
+    lazy_attribute_img.addEventListener("load", t.step_func_done(function() {
+      assert_equals('eager', lazy_attribute_img.getAttribute('loading'));
+      assert_true(is_image_fully_loaded(lazy_attribute_img));
+      t.done();
+    }));
     window.addEventListener("load", t.step_func(function() {
       assert_equals("auto", auto_attribute_img.getAttribute('loading'));
       assert_equals("invalid-value-default", invalid_attribute_img.getAttribute('loading'));
