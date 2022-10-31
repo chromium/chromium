@@ -22,7 +22,7 @@
 namespace {
 
 // The size of the icon image.
-const CGFloat kIconImageWhatsNew = 22;
+const CGFloat kIconImageWhatsNew = 16;
 
 // The file name.
 NSString* const kfileName = @"whats_new_entries.plist";
@@ -52,7 +52,7 @@ UIColor* GenerateColor(NSString* color) {
   } else if ([color isEqualToString:@"yellow"]) {
     return [UIColor colorNamed:kYellow500Color];
   } else {
-    return [UIColor colorNamed:kPrimaryBackgroundColor];
+    return nil;
   }
 }
 

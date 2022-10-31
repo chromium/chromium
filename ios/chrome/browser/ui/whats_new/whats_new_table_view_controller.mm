@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_action_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_table_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -29,6 +30,7 @@ NSString* const kWhatsNewListViewID = @"kWhatsNewListViewId";
 const CGFloat kEstimatedTableViewRowHeight = 56;
 const CGFloat kEstimatedSectionHeaderHeight = 56;
 const CGFloat kEstimatedsectionFooterHeight = 0.0;
+const CGFloat kCellIconWidth = 64;
 
 // List of sections.
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -127,6 +129,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   if (item.type == ItemTypeHeader) {
     cell.separatorInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, CGFLOAT_MAX);
+  } else {
+    cell.separatorInset = UIEdgeInsetsMake(
+        0,
+        kTableViewHorizontalSpacing + kTableViewImagePadding + kCellIconWidth,
+        0, 0);
   }
   return cell;
 }

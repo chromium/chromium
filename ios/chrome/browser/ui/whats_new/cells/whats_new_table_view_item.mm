@@ -19,11 +19,13 @@ namespace {
 // The size of the space between text labels in the text stack view.
 const CGFloat kTextStackViewHorizontalSpacings = 6.0;
 // The size of the main background image.
-const CGFloat kMainBackgroundImageSize = 58;
+const CGFloat kMainBackgroundImageSize = 64;
 // The size of the icon background image.
 const CGFloat kIconBackgroundImageSize = 32;
 // The size of the icon.
-const CGFloat kIconSize = 50;
+const CGFloat kIconSize = 16;
+// The size of the space between the cells
+const CGFloat kTableViewCellVerticalSpacing = 25.5;
 
 }  // namespace
 
@@ -48,12 +50,15 @@ const CGFloat kIconSize = 50;
   cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
   cell.iconView.image = self.iconImage;
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
   if (self.iconBackgroundColor) {
     cell.iconBackgroundImageView.tintColor = self.iconBackgroundColor;
   } else {
     // Hide rounded corners background image view for icon when
     // iconBackgroundColor is empty.
     cell.iconBackgroundImageView.hidden = YES;
+    [cell updateImageConstraintWhenNoBackground];
   }
 }
 
@@ -65,6 +70,8 @@ const CGFloat kIconSize = 50;
 
 // View containing UILabels text and detailText.
 @property(nonatomic, strong) UIStackView* textStackView;
+// Image width constraint.
+@property(nonatomic, strong) NSLayoutConstraint* imageWidthAnchorConstraint;
 
 @end
 
@@ -87,7 +94,8 @@ const CGFloat kIconSize = 50;
     UIImage* backgroundImage = [[UIImage imageNamed:@"whats_new_icon_tile"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     mainBackgroundImageView.image = backgroundImage;
-    mainBackgroundImageView.tintColor = [UIColor colorNamed:kGrey100Color];
+    mainBackgroundImageView.tintColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
     [contentView addSubview:mainBackgroundImageView];
 
     // Icon's background view with rounded corners.
@@ -111,7 +119,10 @@ const CGFloat kIconSize = 50;
     // Text Label.
     _textLabel = [[UILabel alloc] init];
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    UIFont* font = [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+    UIFontMetrics* fontMetrics =
+        [UIFontMetrics metricsForTextStyle:UIFontTextStyleBody];
+    _textLabel.font = [fontMetrics scaledFontForFont:font];
     _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _textLabel.backgroundColor = UIColor.clearColor;
@@ -120,8 +131,8 @@ const CGFloat kIconSize = 50;
     // Detail text Label.
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+    _detailTextLabel.font = [[UIFont
+        preferredFontForTextStyle:UIFontTextStyleFootnote] fontWithSize:13];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
     _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _detailTextLabel.backgroundColor = UIColor.clearColor;
@@ -137,6 +148,9 @@ const CGFloat kIconSize = 50;
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_textStackView];
 
+    _imageWidthAnchorConstraint = [_iconBackgroundImageView.widthAnchor
+        constraintEqualToConstant:kIconBackgroundImageSize];
+
     [NSLayoutConstraint activateConstraints:@[
       // Main background constraints.
       [mainBackgroundImageView.leadingAnchor
@@ -150,8 +164,7 @@ const CGFloat kIconSize = 50;
           constraintEqualToAnchor:contentView.centerYAnchor],
 
       // Icon background constraints.
-      [_iconBackgroundImageView.widthAnchor
-          constraintEqualToConstant:kIconBackgroundImageSize],
+      _imageWidthAnchorConstraint,
       [_iconBackgroundImageView.heightAnchor
           constraintEqualToAnchor:_iconBackgroundImageView.widthAnchor],
 
@@ -174,9 +187,13 @@ const CGFloat kIconSize = 50;
     AddSameCenterConstraints(_iconBackgroundImageView, mainBackgroundImageView);
     AddSameConstraints(_iconView, iconContainerView);
     AddOptionalVerticalPadding(contentView, _textStackView,
-                               kTableViewTwoLabelsCellVerticalSpacing);
+                               kTableViewCellVerticalSpacing);
   }
   return self;
+}
+
+- (void)updateImageConstraintWhenNoBackground {
+  self.imageWidthAnchorConstraint.constant = kIconBackgroundImageSize;
 }
 
 #pragma mark - UITableViewCell
@@ -189,6 +206,7 @@ const CGFloat kIconSize = 50;
   self.iconView.image = nil;
   self.iconBackgroundImageView.tintColor = nil;
   self.iconBackgroundImageView.hidden = NO;
+  self.imageWidthAnchorConstraint.constant = kIconSize;
 }
 
 #pragma mark - Private
