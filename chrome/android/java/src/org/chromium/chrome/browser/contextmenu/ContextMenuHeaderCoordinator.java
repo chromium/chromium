@@ -34,7 +34,7 @@ class ContextMenuHeaderCoordinator {
 
     @VisibleForTesting
     static PropertyModel buildModel(Context context, String title, CharSequence url) {
-        boolean usePopupContextMenu = ContextMenuUtils.forcePopupStyleEnabled();
+        boolean usePopupContextMenu = ContextMenuUtils.usePopupContextMenuForContext(context);
 
         int monogramSizeDimen = usePopupContextMenu
                 ? R.dimen.context_menu_popup_header_monogram_size

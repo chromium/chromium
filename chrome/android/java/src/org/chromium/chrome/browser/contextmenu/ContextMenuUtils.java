@@ -10,8 +10,6 @@ import android.webkit.URLUtil;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -52,11 +50,6 @@ public final class ContextMenuUtils {
         }
         assert params.isAnchor();
         return "Link";
-    }
-
-    /** Whether to force using popup style for context menu. */
-    static boolean forcePopupStyleEnabled() {
-        return ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU);
     }
 
     /**

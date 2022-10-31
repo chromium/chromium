@@ -4290,24 +4290,6 @@
             ]
         }
     ],
-    "DragAndDropAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_MovementThreshold_60_20220802",
-                    "params": {
-                        "DragAndDropMovementThresholdDipParam": "60"
-                    },
-                    "enable_features": [
-                        "TouchDragAndContextMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "EarlyExitOnNoopClassOrStyleChange": [
         {
             "platforms": [

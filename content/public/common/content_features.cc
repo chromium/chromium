@@ -1118,7 +1118,12 @@ BASE_FEATURE(kThreadingOptimizationsOnIO,
 // cannot be started).
 BASE_FEATURE(kTouchDragAndContextMenu,
              "TouchDragAndContextMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(IS_ANDROID)
 // When the context menu is triggered, the browser allows motion in a small

@@ -26,10 +26,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -75,7 +75,8 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
 
         mTestValues = new TestValues();
-        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, false);
+        mTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES, false);
         FeatureList.setTestValues(mTestValues);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -132,7 +133,8 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithLink_Popup() throws IOException {
-        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
+        mTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES, true);
         doTestContextMenuViewWithLink("context_menu_with_link_popup");
     }
 
@@ -147,7 +149,8 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithImageLink_Popup() throws IOException {
-        mTestValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, true);
+        mTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES, true);
         doTestContextMenuViewWithImageLink("context_menu_with_image_link_popup");
     }
 

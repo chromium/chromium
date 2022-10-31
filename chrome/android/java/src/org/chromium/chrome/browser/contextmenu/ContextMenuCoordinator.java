@@ -302,7 +302,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             boolean isPopup, int topMarginPx, int bottomMarginPx, @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth, @Nullable View webContentView, Rect rect) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
-        boolean shouldRemoveScrim = isPopup && ContextMenuUtils.forcePopupStyleEnabled();
+        boolean shouldRemoveScrim = ContextMenuUtils.usePopupContextMenuForContext(activity);
         final ContextMenuDialog dialog = new ContextMenuDialog(activity,
                 R.style.ThemeOverlay_BrowserUI_AlertDialog, topMarginPx, bottomMarginPx, layout,
                 view, isPopup, shouldRemoveScrim, popupMargin, desiredPopupContentWidth,

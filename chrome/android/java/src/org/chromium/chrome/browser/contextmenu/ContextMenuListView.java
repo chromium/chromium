@@ -21,7 +21,7 @@ public class ContextMenuListView extends ListView {
 
     public ContextMenuListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mLimitedByScreenWidth = ContextMenuUtils.forcePopupStyleEnabled();
+        mLimitedByScreenWidth = ContextMenuUtils.usePopupContextMenuForContext(context);
     }
 
     @Override

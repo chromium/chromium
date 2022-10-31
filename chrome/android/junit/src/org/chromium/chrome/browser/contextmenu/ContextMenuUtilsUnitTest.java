@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.content_public.common.ContentFeatures;
 
 /** Unit tests for {@link ContextMenuUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,19 +38,6 @@ public class ContextMenuUtilsUnitTest {
     @After
     public void tearDown() {
         mActivity.finish();
-    }
-
-    @Test
-    @Features.EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    public void forcePopupWhenDragDropEnabled() {
-        assertTrue("ForcePopupStyle should be enabled.", ContextMenuUtils.forcePopupStyleEnabled());
-    }
-
-    @Test
-    @Features.DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    public void doNotForcePopupWhenDragDropDisabled() {
-        assertFalse(
-                "ForcePopupStyle should be disabled.", ContextMenuUtils.forcePopupStyleEnabled());
     }
 
     @Test
