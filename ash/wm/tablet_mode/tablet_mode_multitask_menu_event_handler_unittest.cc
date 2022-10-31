@@ -135,13 +135,8 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   chromeos::MultitaskMenuView* GetMultitaskMenuView(
       TabletModeMultitaskMenu* multitask_menu) const {
-    // The contents view of the widget is a `TabletModeMultitaskMenuView`
-    // class, which has one child that is the `MultitaskMenuView`.
-    views::View* contents_view =
-        multitask_menu->multitask_menu_widget()->GetContentsView();
-    EXPECT_EQ(1u, contents_view->children().size());
-
-    views::View* multitask_menu_view = contents_view->children().front();
+    views::View* multitask_menu_view =
+        multitask_menu->GetMultitaskMenuViewForTesting();
     EXPECT_EQ(chromeos::MultitaskMenuView::kViewClassName,
               multitask_menu_view->GetClassName());
     return static_cast<chromeos::MultitaskMenuView*>(multitask_menu_view);
@@ -393,9 +388,8 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ButtonFunctionality) {
   ShowMultitaskMenu(*window);
 
   // Press the primary half split button.
-  auto* half_button = GetMultitaskMenu()
-                          ->GetMultitaskMenuViewForTesting()
-                          ->half_button_for_testing();
+  auto* half_button =
+      GetMultitaskMenuView(GetMultitaskMenu())->half_button_for_testing();
   GetEventGenerator()->GestureTapAt(
       half_button->GetBoundsInScreen().left_center());
 

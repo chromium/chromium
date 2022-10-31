@@ -20,6 +20,7 @@ class MultitaskMenuView;
 namespace ash {
 
 class TabletModeMultitaskMenuEventHandler;
+class TabletModeMultitaskMenuView;
 
 // The container of the multitask menu. Creates and owns the multitask menu
 // widget.
@@ -71,6 +72,11 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
   // The window associated with this multitask menu.
   aura::Window* window_ = nullptr;
 
+  views::UniqueWidgetPtr multitask_menu_widget_ =
+      std::make_unique<views::Widget>();
+
+  raw_ptr<TabletModeMultitaskMenuView> multitask_menu_view_ = nullptr;
+
   // Window observer for `window_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
       this};
@@ -79,9 +85,6 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
       widget_observation_{this};
 
   display::ScopedOptionalDisplayObserver display_observer_{this};
-
-  views::UniqueWidgetPtr multitask_menu_widget_ =
-      std::make_unique<views::Widget>();
 
   base::WeakPtrFactory<TabletModeMultitaskMenu> weak_factory_{this};
 };

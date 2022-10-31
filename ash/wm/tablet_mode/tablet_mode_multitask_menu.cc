@@ -8,13 +8,11 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
-#include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/callback_helpers.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/wm/window_util.h"
-#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
@@ -25,17 +23,21 @@ namespace ash {
 
 namespace {
 
-constexpr int kMultitaskMenuVerticalPadding = 8;
+// The vertical position of the multitask menu on the window.
+constexpr int kVerticalPosition = 8;
+
+// Outset around the multitask menu widget to show shadows and extend touch hit
+// bounds. Vertical outset should be at least as big as `kVerticalPosition`
+// to show animations starting from the top of the window.
+constexpr gfx::Outsets kWidgetOutsets = gfx::Outsets::VH(kVerticalPosition, 5);
+
 constexpr int kBetweenButtonSpacing = 12;
 constexpr int kCornerRadius = 8;
-constexpr int kShadowElevation = 3;
 constexpr gfx::Insets kInsideBorderInsets(16);
 
 // The duration of the menu position animation.
 constexpr base::TimeDelta kPositionAnimationDurationMs =
     base::Milliseconds(250);
-// The duration of the menu opacity animation.
-constexpr base::TimeDelta kOpacityAnimationDurationMs = base::Milliseconds(150);
 
 }  // namespace
 
@@ -81,6 +83,9 @@ class TabletModeMultitaskMenuView : public views::View {
         views::BoxLayout::MainAxisAlignment::kCenter);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
   }
 
   TabletModeMultitaskMenuView(const TabletModeMultitaskMenuView&) = delete;
@@ -114,14 +119,30 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.parent = window->parent();
   params.name = "TabletModeMultitaskMenuWidget";
-  params.corner_radius = kCornerRadius;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.shadow_elevation = kShadowElevation;
 
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetVisibilityChangedAnimationsEnabled(false);
-  multitask_menu_widget_->SetContentsView(
+
+  // `clip_view` exists to paint to a layer so that it can clip descendent views
+  // which also paint to a layer. This clips the multitask menu so that it
+  // appears to be sliding out from the top, even if the window above it is
+  // stacked below it, which is the case when we are bottom stacked in portrait
+  // mode, and the wallpaper is visible in the top snapped section.
+  // `SetMasksToBounds` is recommended over `SetClipRect`, which is relative to
+  // the layer and would clip within its own bounds.
+  views::View* clip_view =
+      multitask_menu_widget_->SetContentsView(std::make_unique<views::View>());
+  clip_view->SetBorder(views::CreateEmptyBorder(kWidgetOutsets.ToInsets()));
+  clip_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  clip_view->layer()->SetFillsBoundsOpaquely(false);
+  clip_view->layer()->SetMasksToBounds(true);
+
+  multitask_menu_view_ = clip_view->AddChildView(
       std::make_unique<TabletModeMultitaskMenuView>(window_, callback));
+  multitask_menu_view_->SizeToPreferredSize();
+
+  // TODO(sophiewen): Add shadows on `multitask_menu_view_`.
+
   AnimateShow();
 
   widget_observation_.Observe(multitask_menu_widget_.get());
@@ -137,59 +158,57 @@ void TabletModeMultitaskMenu::AnimateShow() {
                                                    window_);
   multitask_menu_widget_->Show();
 
-  // Show the multitask menu on the top center of the window.
-  const gfx::Size widget_size =
-      multitask_menu_widget_->GetContentsView()->GetPreferredSize();
-  multitask_menu_window->SetBounds(gfx::Rect(
-      gfx::Point(window_->bounds().CenterPoint().x() - widget_size.width() / 2,
-                 window_->bounds().y() + kMultitaskMenuVerticalPadding),
-      widget_size));
-  const gfx::Transform transform = gfx::Transform::MakeTranslation(
-      0, -widget_size.height() - kMultitaskMenuVerticalPadding);
+  // Position the widget on the top center of the window and offset the view
+  // inside it.
+  const gfx::Size pref_size = multitask_menu_view_->GetPreferredSize();
+  gfx::Rect widget_bounds(
+      window_->bounds().CenterPoint().x() - pref_size.width() / 2,
+      window_->bounds().y() + kVerticalPosition, pref_size.width(),
+      pref_size.height());
 
+  views::View* clip_view = multitask_menu_widget_->GetContentsView();
+  clip_view->SetPreferredSize(pref_size);
+
+  multitask_menu_widget_->SetBounds(
+      gfx::Rect(widget_bounds.origin(), clip_view->GetPreferredSize()));
+
+  const gfx::Transform transform = gfx::Transform::MakeTranslation(
+      0, -pref_size.height() - kVerticalPosition);
+
+  ui::Layer* view_layer = multitask_menu_view_->layer();
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(base::TimeDelta())
-      .SetTransform(multitask_menu_window, transform)
-      .SetOpacity(multitask_menu_window, 0.f)
+      .SetTransform(view_layer, transform)
+      .SetOpacity(view_layer, 0.f)
       .Then()
       .SetDuration(kPositionAnimationDurationMs)
-      .SetTransform(multitask_menu_window, gfx::Transform(),
+      .SetTransform(view_layer, gfx::Transform(),
                     gfx::Tween::ACCEL_20_DECEL_100)
-      .SetOpacity(multitask_menu_window, 1.f, gfx::Tween::LINEAR);
+      .SetOpacity(view_layer, 1.f, gfx::Tween::LINEAR);
 }
 
 void TabletModeMultitaskMenu::AnimateClose() {
   DCHECK(multitask_menu_widget_);
-  auto* multitask_menu_window = multitask_menu_widget_->GetNativeWindow();
 
-  // The final menu bounds are offscreen.
-  const gfx::Size widget_size =
-      multitask_menu_widget_->GetContentsView()->GetPreferredSize();
-  multitask_menu_window->SetBounds(
-      gfx::Rect(multitask_menu_widget_->GetWindowBoundsInScreen().x(),
-                window_->bounds().y() - widget_size.height() -
-                    kMultitaskMenuVerticalPadding,
-                widget_size.width(), widget_size.height()));
+  // Since the widget gets destroyed after the animation, its bounds don't need
+  // to be set.
+  const gfx::Size pref_size = multitask_menu_view_->GetPreferredSize();
   const gfx::Transform transform = gfx::Transform::MakeTranslation(
-      0, widget_size.height() + kMultitaskMenuVerticalPadding);
+      0, -pref_size.height() - kVerticalPosition - kWidgetOutsets.height());
 
+  ui::Layer* view_layer = multitask_menu_view_->layer();
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&TabletModeMultitaskMenu::Reset,
                               weak_factory_.GetWeakPtr()))
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
-      .SetDuration(base::TimeDelta())
-      .SetTransform(multitask_menu_window, transform)
-      .SetOpacity(multitask_menu_window, 1.f)
-      .Then()
-      .SetDuration(kOpacityAnimationDurationMs)
-      .SetTransform(multitask_menu_window, gfx::Transform(),
-                    gfx::Tween::ACCEL_20_DECEL_100)
-      .SetOpacity(multitask_menu_window, 0.f, gfx::Tween::LINEAR);
+      .SetDuration(kPositionAnimationDurationMs)
+      .SetTransform(view_layer, transform, gfx::Tween::ACCEL_20_DECEL_100)
+      .SetOpacity(view_layer, 0.f, gfx::Tween::LINEAR);
 }
 
 void TabletModeMultitaskMenu::Reset() {
@@ -237,8 +256,7 @@ void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
 
 chromeos::MultitaskMenuView*
 TabletModeMultitaskMenu::GetMultitaskMenuViewForTesting() {
-  return static_cast<TabletModeMultitaskMenuView*>(
-             multitask_menu_widget_->GetContentsView())
+  return static_cast<TabletModeMultitaskMenuView*>(multitask_menu_view_)
       ->multitask_menu_view_for_testing();  // IN-TEST
 }
 
