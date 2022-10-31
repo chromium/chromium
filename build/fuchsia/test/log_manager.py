@@ -37,7 +37,7 @@ class LogManager(AbstractContextManager):
     def __enter__(self):
         if self._scoped_ffx_log:
             self._scoped_ffx_log.__enter__()
-            run_ffx_command(('daemon', 'stop'))
+            run_ffx_command(('daemon', 'stop'), check=False)
 
         return self
 

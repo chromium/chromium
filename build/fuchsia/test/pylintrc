@@ -7,7 +7,7 @@ disable=fixme,
 # This complains about TODOs, which are perfectly valid to have.
 
 # Suppression for invalid-name error for PRESUBMIT.py file.
-good-names=f,PRESUBMIT
+good-names=i,j,k,f,PRESUBMIT
 
 [REPORTS]
 

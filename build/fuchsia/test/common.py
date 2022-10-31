@@ -4,10 +4,12 @@
 """Common methods and variables used by Cr-Fuchsia testing infrastructure."""
 
 import json
+import logging
 import os
 import platform
 import re
 import subprocess
+import time
 
 from argparse import ArgumentParser
 from typing import Iterable, List, Optional
@@ -46,6 +48,50 @@ def set_ffx_isolate_dir(isolate_dir: str) -> None:
     _FFX_ISOLATE_DIR = isolate_dir
 
 
+def _get_daemon_status():
+    """Determines daemon status via `ffx daemon socket`.
+
+    Returns:
+      dict of status of the socket. Status will have a key Running or
+      NotRunning to indicate if the daemon is running.
+    """
+    status = json.loads(
+        run_ffx_command(['--machine', 'json', 'daemon', 'socket'],
+                        check=True,
+                        suppress_repair=True))
+    return status.get('pid', {}).get('status', {'NotRunning': True})
+
+
+def _is_daemon_running():
+    return 'Running' in _get_daemon_status()
+
+
+def _wait_for_daemon(start=True, timeout_seconds=100):
+    """Waits for daemon to reach desired state in a polling loop.
+
+    Sleeps for 5s between polls.
+
+    Args:
+      start: bool. Indicates to wait for daemon to start up. If False,
+        indicates waiting for daemon to die.
+      timeout_seconds: int. Number of seconds to wait for the daemon to reach
+        the desired status.
+    Raises:
+      TimeoutError: if the daemon does not reach the desired state in time.
+    """
+    wanted_status = 'start' if start else 'stop'
+    sleep_period_seconds = 5
+    attempts = int(timeout_seconds / sleep_period_seconds)
+    for i in range(attempts):
+        if _is_daemon_running() == start:
+            return
+        if i != attempts:
+            logging.info('Waiting for daemon to %s...', wanted_status)
+            time.sleep(sleep_period_seconds)
+
+    raise TimeoutError(f'Daemon did not {wanted_status} in time.')
+
+
 def _run_repair_command(output):
     """Scans |output| for a self-repair command to run and, if found, runs it.
 
@@ -61,6 +107,8 @@ def _run_repair_command(output):
 
     try:
         run_ffx_command(args, suppress_repair=True)
+        # Need the daemon to be up at the end of this.
+        _wait_for_daemon(start=True)
     except subprocess.CalledProcessError:
         return False  # Repair failed.
     return True  # Repair succeeded.
@@ -100,14 +148,26 @@ def run_ffx_command(cmd: Iterable[str],
     env = os.environ
     if _FFX_ISOLATE_DIR:
         env['FFX_ISOLATE_DIR'] = _FFX_ISOLATE_DIR
+
     try:
+        if not suppress_repair:
+            # If we want to repair, we need to capture output in STDOUT and
+            # STDERR. This could conflict with expectations of the caller.
+            output_captured = kwargs.get('capture_output') or (
+                kwargs.get('stdout') and kwargs.get('stderr'))
+            if not output_captured:
+                # Force output to combine into STDOUT.
+                kwargs['stdout'] = subprocess.PIPE
+                kwargs['stderr'] = subprocess.STDOUT
         return subprocess.run(ffx_cmd,
                               check=check,
                               encoding='utf-8',
                               env=env,
                               **kwargs)
     except subprocess.CalledProcessError as cpe:
-        if suppress_repair or not _run_repair_command(cpe.output):
+        logging.exception(cpe)
+        if suppress_repair or (cpe.output
+                               and not _run_repair_command(cpe.output)):
             raise
 
     # If the original command failed but a repair command was found and

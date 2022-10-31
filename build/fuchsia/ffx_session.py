@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 import common
 import log_manager
@@ -51,6 +52,49 @@ class FfxRunner():
     self._ffx = get_ffx_path()
     self._log_manager = log_manager
 
+  def _get_daemon_status(self):
+    """Determines daemon status via `ffx daemon socket`.
+
+    Returns:
+      dict of status of the socket. Status will have a key Running or
+      NotRunning to indicate if the daemon is running.
+    """
+    status = json.loads(
+        self.run_ffx(['--machine', 'json', 'daemon', 'socket'],
+                     check=True,
+                     suppress_repair=True))
+    if status.get('pid') and status.get('pid', {}).get('status', {}):
+      return status['pid']['status']
+    return {'NotRunning': True}
+
+  def _is_daemon_running(self):
+    return 'Running' in self._get_daemon_status()
+
+  def _wait_for_daemon(self, start=True, timeout_seconds=100):
+    """Waits for daemon to reach desired state in a polling loop.
+
+    Sleeps for 5s between polls.
+
+    Args:
+      start: bool. Indicates to wait for daemon to start up. If False,
+        indicates waiting for daemon to die.
+      timeout_seconds: int. Number of seconds to wait for the daemon to reach
+        the desired status.
+    Raises:
+      TimeoutError: if the daemon does not reach the desired state in time.
+    """
+    wanted_status = 'start' if start else 'stop'
+    sleep_period_seconds = 5
+    attempts = int(timeout_seconds / sleep_period_seconds)
+    for i in range(attempts):
+      if self._is_daemon_running() == start:
+        return
+      if i != attempts:
+        logging.info('Waiting for daemon to %s...', wanted_status)
+        time.sleep(sleep_period_seconds)
+
+    raise TimeoutError(f'Daemon did not {wanted_status} in time.')
+
   def _run_repair_command(self, output):
     """Scans `output` for a self-repair command to run and, if found, runs it.
 
@@ -77,6 +121,7 @@ class FfxRunner():
             ('--record', '--output-dir', self._log_manager.GetLogDirectory()))
       try:
         self.run_ffx(args, suppress_repair=True)
+        self._wait_for_daemon(start=True)
       except subprocess.CalledProcessError as cpe:
         return False  # Repair failed.
       return True  # Repair succeeded.
@@ -301,6 +346,8 @@ class FfxRunner():
   def daemon_stop(self):
     """Stops the ffx daemon."""
     self.run_ffx(['daemon', 'stop'], check=False, suppress_repair=True)
+    # Daemon should stop at this point.
+    self._wait_for_daemon(start=False)
 
 
 class FfxTarget():
