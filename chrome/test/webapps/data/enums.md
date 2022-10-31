@@ -18,8 +18,8 @@ The tables in this file are parsed as action templates for critical user journey
 
 ## Enums Table
 
-| #Enum Name | Values (* = default) |  |  |  |  |  |  |  |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| #Enum Name | Values (* = default) |  |  |  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Site | Standalone* | MinimalUi | NotPromotable | StandaloneNestedA | StandaloneNestedB | Wco | Isolated | FileHandler | NotInstalled | StandaloneNotStartUrl | Screenshots |
 | InstallableSite | Standalone* | MinimalUi | StandaloneNestedA | StandaloneNestedB | Wco | NotInstalled | StandaloneNotStartUrl | Screenshots |
 | Title | StandaloneOriginal | StandaloneUpdated |  |  |  |  |  |
