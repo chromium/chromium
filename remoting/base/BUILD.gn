@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//remoting/build/config/remoting_logging.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protobuf_http_client_messages_proto") {
@@ -345,4 +346,14 @@ source_set("unit_tests") {
     deps += [ "//third_party/breakpad:breakpad_handler" ]
     libs = [ "rpcrt4.lib" ]  # For UuidCreate in breakpad_win_unittest.cc.
   }
+}
+
+fuzzer_test("remoting_protobuf_http_stream_parser_fuzzer") {
+  sources = [ "protobuf_http_stream_parser_fuzzer.cc" ]
+  deps = [
+    ":base",
+    "//base",
+    "//base/test:test_support",
+    "//third_party/protobuf:protobuf_lite",
+  ]
 }
