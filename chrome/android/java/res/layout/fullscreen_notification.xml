@@ -5,20 +5,19 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<FrameLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fullscreen_notification"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center"
-    android:paddingTop="24dp">
+    android:paddingBottom="24dp">
     <TextView
         android:id="@+id/text"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:maxWidth="@dimen/fullscreen_notification_max_width"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom|center_horizontal"
         android:background="@drawable/pill_background"
         android:textAppearance="@style/TextAppearance.Toast"
         android:paddingStart="20dp"
@@ -27,4 +26,4 @@ found in the LICENSE file.
         android:paddingBottom="8dp"
         android:textAlignment="center"
         android:text="@string/immersive_fullscreen_api_notification"/>
-</LinearLayout>
+</FrameLayout>

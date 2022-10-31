@@ -669,7 +669,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         if (addView) {
             mActivity.addContentView(mNotificationToast,
                     new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
+                            ViewGroup.LayoutParams.MATCH_PARENT));
             // Ensure the toast is visible on bottom sheet CCT which is elevated for shadow effect.
             // Does no harm on other embedders.
             mNotificationToast.setElevation(mActivity.getResources().getDimensionPixelSize(
