@@ -1538,7 +1538,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       popup,
       "window.opener.location ='data:html/text;base64,'+btoa('payload');"));
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   histograms.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 1);
