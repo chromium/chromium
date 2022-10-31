@@ -30,6 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -77,14 +78,23 @@ GetProxyUrlFromCommandLine(const base::CommandLine& command_line) {
   }
 
   GURL url{switch_value};
+  url::Origin url_origin = url::Origin::Create(url);
 
-  if (!url.is_valid()) {
+  if (!url.is_valid() || url_origin.opaque()) {
     return base::unexpected(base::StrCat(
         {"Invalid URL provided to --", switches::kInstallIsolatedWebAppFromUrl,
          " flag: '", url.possibly_invalid_spec(), "'"}));
   }
 
-  return IsolationData{IsolationData::DevModeProxy{.proxy_url = url.spec()}};
+  if (url_origin.GetURL() != url) {
+    return base::unexpected(base::StrCat(
+        {"Non-origin URL provided to --",
+         switches::kInstallIsolatedWebAppFromUrl, " flag: '",
+         url.possibly_invalid_spec(), "'", ". Possible origin URL: '",
+         url_origin.Serialize(), "'."}));
+  }
+
+  return IsolationData{IsolationData::DevModeProxy{.proxy_url = url_origin}};
 }
 
 base::expected<absl::optional<IsolationData>, std::string>

@@ -25,6 +25,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -622,7 +623,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     IsolationDataContent content_types[] = {
         IsolationData::InstalledBundle{.path = path},
         IsolationData::DevModeBundle{.path = path},
-        IsolationData::DevModeProxy{.proxy_url = seed_str},
+        IsolationData::DevModeProxy{
+            .proxy_url = url::Origin::Create(
+                GURL(base::StrCat({"https://proxy-", seed_str, ".com/"})))},
     };
     static_assert(std::size(content_types) == kNumContentTypes);
 

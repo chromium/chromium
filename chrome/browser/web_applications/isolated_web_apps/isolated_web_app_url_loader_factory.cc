@@ -462,16 +462,9 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
     const network::ResourceRequest& resource_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  // Generate the proxy URL.
-  // TODO(b/248125557): Consider making DevModeProxy::proxy_url a url::Origin.
-  GURL proxy_url_base(dev_mode_proxy.proxy_url);
-  if (url::Origin::Create(proxy_url_base).GetURL() != proxy_url_base) {
-    LogErrorAndFail(base::StrCat({"Proxy base URL must be an origin: ",
-                                  proxy_url_base.possibly_invalid_spec()}),
-                    std::move(loader_client));
-    return;
-  }
-  GURL proxy_url = proxy_url_base.Resolve(resource_request.url.path());
+  DCHECK(!dev_mode_proxy.proxy_url.opaque());
+  GURL proxy_url =
+      dev_mode_proxy.proxy_url.GetURL().Resolve(resource_request.url.path());
 
   // Create a new ResourceRequest with the proxy URL.
   network::ResourceRequest proxy_request;

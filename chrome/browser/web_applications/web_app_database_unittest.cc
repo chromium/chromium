@@ -687,15 +687,17 @@ TEST_F(WebAppDatabaseProtoDataTest,
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      IsolationData(IsolationData::DevModeProxy{.proxy_url = "proxy"}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(IsolationData(
+      IsolationData::DevModeProxy{.proxy_url = url::Origin::Create(
+                                      GURL("https://proxy-example.com/"))}));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(
       web_app->isolation_data()->content,
-      VariantWith<IsolationData::DevModeProxy>(Field(
-          "proxy_url", &IsolationData::DevModeProxy::proxy_url, Eq("proxy"))));
+      VariantWith<IsolationData::DevModeProxy>(
+          Field("proxy_url", &IsolationData::DevModeProxy::proxy_url,
+                Eq(url::Origin::Create(GURL("https://proxy-example.com/"))))));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {

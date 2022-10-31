@@ -105,7 +105,7 @@ IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
 IsolationData CreateIsolationDataDevProxy(
     base::StringPiece dev_mode_proxy_url = "http://default-proxy-url.org/") {
   return IsolationData{IsolationData::DevModeProxy{
-      .proxy_url = std::string(dev_mode_proxy_url)}};
+      .proxy_url = url::Origin::Create(GURL(dev_mode_proxy_url))}};
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
@@ -580,16 +580,16 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 TEST_F(InstallIsolatedWebAppCommandTest, IsolationDataSentToFinalizer) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
 
-  EXPECT_THAT(
-      ExecuteCommand(Parameters{
-          .url_info = url_info,
-          .isolation_data =
-              IsolationData{
-                  IsolationData::DevModeProxy{
-                      .proxy_url = "http://some-testing-proxy-url.com/"},
-              },
-      }),
-      IsInstallationOk());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+                  .isolation_data =
+                      IsolationData{
+                          IsolationData::DevModeProxy{
+                              .proxy_url = url::Origin::Create(
+                                  GURL("http://some-testing-proxy-url.com/"))},
+                      },
+              }),
+              IsInstallationOk());
 
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
               Pointee(AllOf(Property(
@@ -598,7 +598,8 @@ TEST_F(InstallIsolatedWebAppCommandTest, IsolationDataSentToFinalizer) {
                       "content", &IsolationData::content,
                       VariantWith<IsolationData::DevModeProxy>(Field(
                           "proxy_url", &IsolationData::DevModeProxy::proxy_url,
-                          Eq("http://some-testing-proxy-url.com/")))))))));
+                          Eq(url::Origin::Create(GURL(
+                              "http://some-testing-proxy-url.com/")))))))))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -973,24 +974,25 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                 .isolation_data();
       }));
 
-  EXPECT_THAT(
-      ExecuteCommand(Parameters{
-          .url_info = url_info,
-          .url_loader = std::move(url_loader),
-          .isolation_data =
-              IsolationData{
-                  IsolationData::DevModeProxy{
-                      .proxy_url = "http://some-testing-proxy-url.com/"},
-              },
-      }),
-      IsInstallationOk());
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+                  .url_loader = std::move(url_loader),
+                  .isolation_data =
+                      IsolationData{
+                          IsolationData::DevModeProxy{
+                              .proxy_url = url::Origin::Create(
+                                  GURL("http://some-testing-proxy-url.com/"))},
+                      },
+              }),
+              IsInstallationOk());
 
   EXPECT_THAT(
       isolation_data,
       Optional(Field("content", &IsolationData::content,
                      VariantWith<IsolationData::DevModeProxy>(Field(
                          "proxy_url", &IsolationData::DevModeProxy::proxy_url,
-                         Eq("http://some-testing-proxy-url.com/"))))));
+                         Eq(url::Origin::Create(
+                             GURL("http://some-testing-proxy-url.com/"))))))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,

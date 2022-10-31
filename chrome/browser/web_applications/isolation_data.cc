@@ -63,8 +63,9 @@ base::Value IsolationData::AsDebugValue() const {
                                           bundle.path.LossyDisplayName());
                   },
                   [&value](const IsolationData::DevModeProxy& proxy) {
+                    DCHECK(!proxy.proxy_url.opaque());
                     value.SetByDottedPath("content.dev_mode_proxy.proxy_url",
-                                          proxy.proxy_url);
+                                          proxy.proxy_url.GetDebugString());
                   },
               },
               content);

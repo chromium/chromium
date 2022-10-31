@@ -38,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 namespace {
@@ -237,7 +238,8 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac";
   const GURL kDevAppOriginUrl = GURL("isolated-app://" + kDevWebBundleId);
   const GURL kDevAppStartUrl = GURL(kDevAppOriginUrl.spec() + "/ix.html");
-  const GURL kProxyUrl = GURL("https://proxy.example.com");
+  const url::Origin kProxyOrigin =
+      url::Origin::Create(GURL("https://proxy.example.com"));
 
  private:
   bool enable_isolated_web_apps_feature_flag_;
@@ -285,8 +287,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestFailsWithErrFailedIfAppNotLocallyInstalled) {
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kDevAppStartUrl, IsolationData{IsolationData::DevModeProxy{
-                           .proxy_url = kProxyUrl.spec()}});
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{.proxy_url = kProxyOrigin}});
   iwa->SetIsLocallyInstalled(false);
   RegisterWebApp(std::move(iwa));
 
@@ -305,9 +307,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, GetRequestsSucceed) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = kProxyUrl.spec()}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{.proxy_url = kProxyOrigin}}));
 
   CreateFactory();
 
@@ -320,9 +322,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, GetRequestsSucceed) {
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, HeadRequestsSucceed) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = kProxyUrl.spec()}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{.proxy_url = kProxyOrigin}}));
 
   CreateFactory();
 
@@ -336,9 +338,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, HeadRequestsSucceed) {
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        PostRequestsReturnMethodNotSupportedWhenAppIsInstalled) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = kProxyUrl.spec()}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{.proxy_url = kProxyOrigin}}));
 
   CreateFactory();
 
@@ -357,13 +359,14 @@ TEST_F(
     IsolatedWebAppURLLoaderFactoryTest,
     PostRequestsReturnMethodNotSupportedWhenAppIsInstalledAndThereIsPendingInstall) {
   RegisterWebApp(CreateIsolatedWebApp(
-      kDevAppStartUrl,
-      IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://installed-app-proxy-url.com"}}));
+      kDevAppStartUrl, IsolationData{IsolationData::DevModeProxy{
+                           .proxy_url = url::Origin::Create(
+                               GURL("http://installed-app-proxy-url.com"))}}));
 
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
       .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://pending-install-proxy-url.com"}});
+          .proxy_url = url::Origin::Create(
+              GURL("http://pending-install-proxy-url.com"))}});
 
   CreateFactory();
 
@@ -398,7 +401,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestFailsWithErrFailedIfStoragePartitionDoesNotExist) {
   RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
                                       IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = kProxyUrl.spec()}}),
+                                          .proxy_url = kProxyOrigin}}),
                  /*create_storage_partition=*/false);
 
   CreateFactory();
@@ -412,9 +415,9 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestUsesNonDefaultStoragePartition) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = kProxyUrl.spec()}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{.proxy_url = kProxyOrigin}}));
 
   CreateFactory();
 
@@ -425,25 +428,12 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   EXPECT_THAT(profile()->GetStoragePartitionCount(), Eq(2UL));
 }
 
-TEST_F(IsolatedWebAppURLLoaderFactoryTest, RequestFailsIfProxyUrlNotOrigin) {
-  RegisterWebApp(CreateIsolatedWebApp(
-      kDevAppStartUrl, IsolationData{IsolationData::DevModeProxy{
-                           .proxy_url = "http://example.com/foo"}}));
-
-  CreateFactory();
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = kDevAppStartUrl;
-  int status = CreateLoaderAndRun(std::move(request));
-
-  EXPECT_THAT(status, IsNetError(net::ERR_FAILED));
-}
-
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestSucceedsIfProxyUrlHasTrailingSlash) {
   RegisterWebApp(CreateIsolatedWebApp(
-      kDevAppStartUrl, IsolationData{IsolationData::DevModeProxy{
-                           .proxy_url = "http://example.com/"}}));
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com/"))}}));
 
   CreateFactory();
 
@@ -456,9 +446,10 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestSucceedsIfProxyUrlDoesNotHaveTrailingSlash) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -470,9 +461,10 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlQuery) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -485,9 +477,10 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlQuery) {
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlFragment) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -500,9 +493,10 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlDoesNotHaveUrlFragment) {
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlKeepsOriginUrlPath) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -515,9 +509,10 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlKeepsOriginUrlPath) {
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlRemovesOriginalRequestData) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -534,9 +529,10 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlRemovesOriginalRequestData) {
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        DoNotReturnGeneratedPageWhenNotInstallingApplication) {
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -556,11 +552,13 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        ReturnGeneratedPageWhenInstallingApplication) {
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
       .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://some-proxy-url.com"}});
+          .proxy_url =
+              url::Origin::Create(GURL("http://some-proxy-url.com"))}});
 
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -581,11 +579,13 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestsRedirectedToPendingInstallIsolationDataWhenAppIsInstalled) {
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
       .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://some-proxy-url.com"}});
+          .proxy_url =
+              url::Origin::Create(GURL("http://some-proxy-url.com"))}});
 
-  RegisterWebApp(CreateIsolatedWebApp(kDevAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
+  RegisterWebApp(CreateIsolatedWebApp(
+      kDevAppStartUrl,
+      IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("http://example.com"))}}));
 
   CreateFactory();
 
@@ -607,7 +607,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
       .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://some-proxy-url.com"}});
+          .proxy_url =
+              url::Origin::Create(GURL("http://some-proxy-url.com"))}});
 
   CreateFactory();
 

@@ -66,7 +66,7 @@ MATCHER_P(IsDevModeProxy,
   }
   const IsolationData::DevModeProxy* proxy =
       absl::get_if<IsolationData::DevModeProxy>(&arg.value().value().content);
-  if (proxy == nullptr || GURL(proxy->proxy_url) != GURL(proxy_url)) {
+  if (proxy == nullptr || !proxy->proxy_url.IsSameOriginWith(GURL(proxy_url))) {
     DescribeOptionalIsolationData(result_listener, arg);
     return false;
   }
@@ -247,6 +247,20 @@ TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
   EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateCommandLine("http://example.com", absl::nullopt)),
               IsDevModeProxy("http://example.com"));
+}
+
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
+       InstallsAppWhenProxyFlagWithPortValidAndBundleFlagAbsent) {
+  EXPECT_THAT(GetIsolationDataFromCommandLine(
+                  CreateCommandLine("http://example.com:12345", absl::nullopt)),
+              IsDevModeProxy("http://example.com:12345"));
+}
+
+TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,
+       ErrorWhenProxyFlagHasPathAndBundleFlagInValid) {
+  EXPECT_THAT(GetIsolationDataFromCommandLine(
+                  CreateCommandLine("http://example.com/path", absl::nullopt)),
+              HasErrorWithSubstr("Non-origin URL provided"));
 }
 
 TEST_F(InstallIsolatedWebAppFromCommandLineFlagTest,

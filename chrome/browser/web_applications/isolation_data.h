@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATION_DATA_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATION_DATA_H_
 
-#include <string>
-
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -34,7 +33,7 @@ struct IsolationData {
     bool operator==(const DevModeProxy& other) const;
     bool operator!=(const DevModeProxy& other) const;
 
-    std::string proxy_url;
+    url::Origin proxy_url;
   };
 
   explicit IsolationData(

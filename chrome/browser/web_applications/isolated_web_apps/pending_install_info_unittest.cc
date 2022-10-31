@@ -16,6 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace web_app {
 namespace {
@@ -83,12 +84,13 @@ TEST_F(PendingInstallInfoTest, DifferentInstancesForDifferentWebContents) {
 TEST_F(PendingInstallInfoTest, CanSetAndGetIsolationData) {
   auto& install_info =
       IsolatedWebAppPendingInstallInfo::FromWebContents(web_contents());
-  install_info.set_isolation_data(IsolationData{
-      IsolationData::DevModeProxy{.proxy_url = "some testing proxy url"}});
+  install_info.set_isolation_data(IsolationData{IsolationData::DevModeProxy{
+      .proxy_url = url::Origin::Create(GURL("https://example.com"))}});
 
-  EXPECT_THAT(install_info.isolation_data(),
-              Optional(Eq(IsolationData{IsolationData::DevModeProxy{
-                  .proxy_url = "some testing proxy url"}})));
+  EXPECT_THAT(
+      install_info.isolation_data(),
+      Optional(Eq(IsolationData{IsolationData::DevModeProxy{
+          .proxy_url = url::Origin::Create(GURL("https://example.com"))}})));
 }
 
 TEST_F(PendingInstallInfoTest, CanSetAndGetAnotherIsolationData) {
