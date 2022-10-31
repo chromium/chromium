@@ -23,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.compat.ApiHelperForM;
 
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,8 +84,30 @@ public abstract class ChildConnectionAllocator {
 
     /* package */ ConnectionFactory mConnectionFactory = new ConnectionFactoryImpl();
 
+    // Need to call an internal method to work around a framework bug.
+    @SuppressWarnings("PrivateApi")
+    private static void workAroundWebViewPackageVisibility() {
+        try {
+            Class wvus = Class.forName("android.webkit.WebViewUpdateService");
+            Method getWVPN = wvus.getDeclaredMethod("getCurrentWebViewPackageName");
+            // Calling this for the side effect of granting implicit visibility..
+            getWVPN.invoke(null);
+        } catch (Exception e) {
+            // Don't crash the host app; the workaround is only necessary in a few special cases,
+            // so failing is okay.
+            Log.w(TAG, "workAroundWebViewPackageVisibility failed", e);
+        }
+    }
+
     private static void checkServiceExists(
             Context context, String packageName, String serviceClassName) {
+        // On R+ it's possible for the app to lose visibility of the WebView package in rare cases;
+        // see crbug.com/1363832 - we attempt to get re-granted visibility here to work around it.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && !packageName.equals(context.getPackageName())) {
+            workAroundWebViewPackageVisibility();
+        }
+
         PackageManager packageManager = context.getPackageManager();
         // Check that the service exists.
         try {
