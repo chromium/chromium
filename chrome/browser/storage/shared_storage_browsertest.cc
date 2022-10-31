@@ -262,7 +262,7 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
         content::JsReplace("sharedStorage.worklet.addModule($1)",
                            module_script_url)));
 
-    add_module_console_observer.Wait();
+    ASSERT_TRUE(add_module_console_observer.Wait());
 
     EXPECT_LE(1u,
               content::GetAttachedSharedStorageWorkletHostsCount(
@@ -302,7 +302,7 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
         content::JsReplace("sharedStorage.worklet.addModule($1)",
                            module_script_url)));
 
-    add_module_console_observer.Wait();
+    EXPECT_TRUE(add_module_console_observer.Wait());
 
     EXPECT_LE(1u,
               content::GetAttachedSharedStorageWorkletHostsCount(
@@ -324,7 +324,7 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
         sharedStorage.run('test-operation');
       )");
 
-    script_console_observer.Wait();
+    EXPECT_TRUE(script_console_observer.Wait());
     EXPECT_EQ(1u, script_console_observer.messages().size());
 
     EXPECT_EQ(last_script_message,
@@ -348,7 +348,11 @@ class SharedStorageChromeBrowserTest : public PlatformBrowserTest {
       sharedStorage.run('remaining-budget-operation', {data: {}});
     )"));
 
-    budget_console_observer.Wait();
+    bool observed = budget_console_observer.Wait();
+    EXPECT_TRUE(observed);
+    if (!observed) {
+      return nan("");
+    }
 
     EXPECT_EQ(1u, budget_console_observer.messages().size());
     std::string console_message =
@@ -420,7 +424,7 @@ class SharedStoragePrefBrowserTest
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-    add_module_console_observer.Wait();
+    EXPECT_TRUE(add_module_console_observer.Wait());
 
     // Shared Storage is enabled in order to `addModule()`.
     EXPECT_EQ(1u, add_module_console_observer.messages().size());
@@ -464,7 +468,7 @@ class SharedStoragePrefBrowserTest
         content::JsReplace("sharedStorage.worklet.addModule($1)",
                            module_script_url)));
 
-    add_module_console_observer.Wait();
+    EXPECT_TRUE(add_module_console_observer.Wait());
 
     EXPECT_EQ(1u,
               content::GetAttachedSharedStorageWorkletHostsCount(
@@ -489,7 +493,7 @@ class SharedStoragePrefBrowserTest
         sharedStorage.run('test-operation');
       )");
 
-    script_console_observer.Wait();
+    EXPECT_TRUE(script_console_observer.Wait());
     EXPECT_EQ(1u, script_console_observer.messages().size());
 
     if (SuccessExpected()) {
@@ -542,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
     return;
   }
 
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
 
   // Privacy Sandbox is enabled and 3P cookies are allowed, so Shared Storage
   // should be allowed.
@@ -595,7 +599,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunOperation) {
     return;
   }
 
-  run_op_console_observer.Wait();
+  ASSERT_TRUE(run_op_console_observer.Wait());
 
   // Privacy Sandbox is enabled and 3P cookies are allowed, so Shared Storage
   // should be allowed.
@@ -653,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
     return;
   }
 
-  run_url_op_console_observer.Wait();
+  ASSERT_TRUE(run_url_op_console_observer.Wait());
 
   // Privacy Sandbox is enabled and 3P cookies are allowed, so Shared Storage
   // should be allowed.
@@ -2268,7 +2272,7 @@ class SharedStorageFencedFrameChromeBrowserTest
           {data: {'mockResult': 1}});
     )");
 
-    run_url_op_console_observer.Wait();
+    EXPECT_TRUE(run_url_op_console_observer.Wait());
 
     EXPECT_TRUE(run_url_op_result.error.empty());
     EXPECT_TRUE(
