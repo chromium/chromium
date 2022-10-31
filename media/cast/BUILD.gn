@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -149,14 +150,17 @@ source_set("encoding") {
     "encoding/vpx_quantizer_parser.h",
   ]
 
-  deps = [
-    ":common",
+  public_deps = [
     "//base",
     "//media",
     "//third_party/libaom:libaom_buildflags",
     "//third_party/libvpx",
-    "//third_party/opus",
     "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    ":common",
+    "//third_party/opus",
   ]
 
   # iOS and OS X encoders
@@ -532,4 +536,9 @@ if (is_linux || is_chromeos_lacros) {
       "//net",
     ]
   }
+}
+
+fuzzer_test("media_vpx_quantizer_parser_fuzzer") {
+  sources = [ "encoding/vpx_quantizer_parser_fuzzer.cc" ]
+  deps = [ ":encoding" ]
 }
