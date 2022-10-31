@@ -265,7 +265,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   self.followBrowserAgent = nullptr;
+
+  [self.destinationUsageHistory disconnect];
   self.destinationUsageHistory = nil;
+
   self.webState = nullptr;
   self.webStateList = nullptr;
 
