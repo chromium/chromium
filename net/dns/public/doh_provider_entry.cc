@@ -299,7 +299,7 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
       new DohProviderEntry(
           "Switch",
           MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
-              DohProviderSwitch, base::FEATURE_ENABLED_BY_DEFAULT),
+              DohProviderSwitch, base::FEATURE_DISABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"130.59.31.251", "130.59.31.248", "2001:620:0:ff::2",
            "2001:620:0:ff::3"},
