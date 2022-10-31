@@ -104,17 +104,14 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
       /* inline_context */ nullptr, selection_text_decoration);
 
   const NGTextDecorationOffset decoration_offset(style_, style_);
-  const auto& applied_text_decorations = style_.AppliedTextDecorations();
 
   // Paint text decorations except line through
-  PaintDecorationsExceptLineThrough(NGTextFragmentPaintInfo{},
-                                    decoration_offset, decoration_info,
-                                    ~TextDecorationLine::kNone, paint_info,
-                                    applied_text_decorations, text_style);
+  PaintDecorationsExceptLineThrough(
+      NGTextFragmentPaintInfo{}, decoration_offset, decoration_info,
+      ~TextDecorationLine::kNone, paint_info, text_style);
 
   // Paint line through if needed
-  PaintDecorationsOnlyLineThrough(decoration_info, paint_info,
-                                  applied_text_decorations, text_style);
+  PaintDecorationsOnlyLineThrough(decoration_info, paint_info, text_style);
 }
 
 void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,

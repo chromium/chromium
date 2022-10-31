@@ -222,10 +222,18 @@ class CORE_EXPORT NGHighlightPainter {
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
                                            const DocumentMarkerVector& markers);
-  void PaintOneSpellingGrammarDecoration(const DocumentMarker::MarkerType&,
+  void PaintOneSpellingGrammarDecoration(DocumentMarker::MarkerType,
                                          const StringView& text,
                                          unsigned paint_start_offset,
                                          unsigned paint_end_offset);
+  void PaintOneSpellingGrammarDecoration(
+      DocumentMarker::MarkerType,
+      const StringView& text,
+      unsigned paint_start_offset,
+      unsigned paint_end_offset,
+      const ComputedStyle& style,
+      const TextPaintStyle& text_style,
+      const AppliedTextDecoration* decoration_override);
   void ClipToPartDecorations(const NGHighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(
       const NGHighlightOverlay::HighlightPart&);
@@ -246,7 +254,7 @@ class CORE_EXPORT NGHighlightPainter {
   const absl::optional<AffineTransform> writing_mode_rotation_;
   const PhysicalRect& decoration_rect_;
   const PhysicalOffset& box_origin_;
-  const ComputedStyle& style_;
+  const ComputedStyle& originating_style_;
   const TextPaintStyle& originating_text_style_;
   SelectionPaintState* selection_;
   const LayoutObject* layout_object_;

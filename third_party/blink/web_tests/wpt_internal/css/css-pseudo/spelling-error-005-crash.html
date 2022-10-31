@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8">
+<title>CSS Pseudo-Elements Test: spelling error with unusual root element</title>
+<link rel="author" name="Delan Azabani" href="mailto:dazabani@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-ua-styles">
+<link rel="help" href="https://crbug.com/1359175">
+<meta name="assert" value="Checks that spelling errors in an SVG document will not cause a crash, even if this means there are no longer any default UA styles.">
+<body contenteditable spellcheck><svg><text y="42">quikc</text></svg>
+<script>
+    const range = new Range;
+    range.setStart(document.querySelector("text").firstChild, 0);
+    range.setEnd(document.querySelector("text").firstChild, 5);
+    internals.setMarker(document, range, "spelling");
+</script>

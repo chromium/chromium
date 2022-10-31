@@ -103,7 +103,6 @@ class CORE_EXPORT TextPainterBase {
 
   void PaintDecorationsOnlyLineThrough(TextDecorationInfo&,
                                        const PaintInfo&,
-                                       const Vector<AppliedTextDecoration>&,
                                        const TextPaintStyle&,
                                        const cc::PaintFlags* flags = nullptr);
 

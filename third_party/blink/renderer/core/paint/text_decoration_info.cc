@@ -67,23 +67,6 @@ inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   return true;
 }
 
-static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
-  for (const auto& decoration : style.AppliedTextDecorations()) {
-    ETextDecorationStyle decoration_style = decoration.Style();
-    if (decoration_style == ETextDecorationStyle::kDotted ||
-        decoration_style == ETextDecorationStyle::kDashed)
-      return true;
-  }
-  return false;
-}
-
-static TextDecorationLine ComputeUnionAllLines(const ComputedStyle& style) {
-  TextDecorationLine result = TextDecorationLine::kNone;
-  for (const auto& decoration : style.AppliedTextDecorations())
-    result |= decoration.Lines();
-  return result;
-}
-
 static float ComputeDecorationThickness(
     const TextDecorationThickness text_decoration_thickness,
     float computed_font_size,
@@ -288,6 +271,7 @@ TextDecorationInfo::TextDecorationInfo(
     const ComputedStyle& target_style,
     const NGInlinePaintContext* inline_context,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
+    const AppliedTextDecoration* decoration_override,
     const Font* font_override,
     MinimumThickness1 minimum_thickness1,
     float scaling_factor,
@@ -296,6 +280,7 @@ TextDecorationInfo::TextDecorationInfo(
     : target_style_(target_style),
       inline_context_(inline_context),
       selection_text_decoration_(selection_text_decoration),
+      decoration_override_(decoration_override),
       font_override_(font_override && font_override != &target_style.GetFont()
                          ? font_override
                          : nullptr),
@@ -305,20 +290,40 @@ TextDecorationInfo::TextDecorationInfo(
       width_(width),
       target_ascent_(GetAscent(target_style, font_override)),
       scaling_factor_(scaling_factor),
-      union_all_lines_(ComputeUnionAllLines(target_style)),
       use_decorating_box_(RuntimeEnabledFeatures::TextDecoratingBoxEnabled() &&
-                          inline_context && !font_override_ &&
-                          !decorating_box_style_override_ &&
+                          inline_context && !decoration_override_ &&
+                          !font_override_ && !decorating_box_style_override_ &&
                           !baseline_type_override_ &&
                           ShouldUseDecoratingBox(target_style)),
-      minimum_thickness_is_one_(minimum_thickness1),
-      antialias_(ShouldSetDecorationAntialias(target_style)) {
+      minimum_thickness_is_one_(minimum_thickness1) {
+  for (wtf_size_t i = 0; i < AppliedDecorationCount(); i++)
+    union_all_lines_ |= AppliedDecoration(i).Lines();
+  for (wtf_size_t i = 0; i < AppliedDecorationCount(); i++) {
+    if (AppliedDecoration(i).Style() == ETextDecorationStyle::kDotted ||
+        AppliedDecoration(i).Style() == ETextDecorationStyle::kDashed) {
+      antialias_ = true;
+      break;
+    }
+  }
+
   UpdateForDecorationIndex();
 }
 
+wtf_size_t TextDecorationInfo::AppliedDecorationCount() const {
+  if (HasDecorationOverride())
+    return 1;
+  return target_style_.AppliedTextDecorations().size();
+}
+
+const AppliedTextDecoration& TextDecorationInfo::AppliedDecoration(
+    wtf_size_t index) const {
+  if (HasDecorationOverride())
+    return *decoration_override_;
+  return target_style_.AppliedTextDecorations()[index];
+}
+
 void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
-  DCHECK_LT(decoration_index,
-            static_cast<int>(target_style_.AppliedTextDecorations().size()));
+  DCHECK_LT(decoration_index, static_cast<int>(AppliedDecorationCount()));
   if (decoration_index_ == decoration_index)
     return;
   decoration_index_ = decoration_index;
@@ -327,10 +332,8 @@ void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
 
 // Update cached properties of |this| for the |decoration_index_|.
 void TextDecorationInfo::UpdateForDecorationIndex() {
-  DCHECK_LT(decoration_index_,
-            static_cast<int>(target_style_.AppliedTextDecorations().size()));
-  applied_text_decoration_ =
-      &target_style_.AppliedTextDecorations()[decoration_index_];
+  DCHECK_LT(decoration_index_, static_cast<int>(AppliedDecorationCount()));
+  applied_text_decoration_ = &AppliedDecoration(decoration_index_);
   lines_ = applied_text_decoration_->Lines();
   has_underline_ = EnumHasFlags(lines_, TextDecorationLine::kUnderline);
   has_overline_ = EnumHasFlags(lines_, TextDecorationLine::kOverline);
@@ -344,7 +347,7 @@ void TextDecorationInfo::UpdateForDecorationIndex() {
   if (use_decorating_box_) {
     DCHECK(inline_context_);
     DCHECK_EQ(inline_context_->DecoratingBoxes().size(),
-              target_style_.AppliedTextDecorations().size());
+              AppliedDecorationCount());
     decorating_box_ = &inline_context_->DecoratingBoxes()[decoration_index_];
     decorating_box_style = &decorating_box_->Style();
 

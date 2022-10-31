@@ -33,7 +33,6 @@ void NGTextPainterBase::PaintDecorationsExceptLineThrough(
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
     const PaintInfo& paint_info,
-    const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
     const cc::PaintFlags* flags) {
   // Updating the graphics context and looping through applied decorations is
@@ -47,10 +46,8 @@ void NGTextPainterBase::PaintDecorationsExceptLineThrough(
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
 
-  for (wtf_size_t applied_decoration_index = 0;
-       applied_decoration_index < decorations.size();
-       ++applied_decoration_index) {
-    decoration_info.SetDecorationIndex(applied_decoration_index);
+  for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {
+    decoration_info.SetDecorationIndex(i);
     context.SetStrokeThickness(decoration_info.ResolvedThickness());
 
     if (decoration_info.HasSpellingOrGrammerError() &&

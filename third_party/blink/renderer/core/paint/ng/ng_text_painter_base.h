@@ -56,7 +56,6 @@ class CORE_EXPORT NGTextPainterBase : public TextPainterBase {
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,
-      const Vector<AppliedTextDecoration>& decorations,
       const TextPaintStyle& text_style,
       const cc::PaintFlags* flags = nullptr);
 

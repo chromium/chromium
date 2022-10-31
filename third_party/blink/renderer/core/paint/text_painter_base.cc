@@ -211,7 +211,6 @@ void TextPainterBase::DecorationsStripeIntercepts(
 void TextPainterBase::PaintDecorationsOnlyLineThrough(
     TextDecorationInfo& decoration_info,
     const PaintInfo& paint_info,
-    const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
     const cc::PaintFlags* flags) {
   // Updating the graphics context and looping through applied decorations is
@@ -224,10 +223,10 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
   UpdateGraphicsContext(context, text_style, state_saver);
 
   for (wtf_size_t applied_decoration_index = 0;
-       applied_decoration_index < decorations.size();
+       applied_decoration_index < decoration_info.AppliedDecorationCount();
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
-        decorations[applied_decoration_index];
+        decoration_info.AppliedDecoration(applied_decoration_index);
     TextDecorationLine lines = decoration.Lines();
     if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
       decoration_info.SetDecorationIndex(applied_decoration_index);

@@ -151,13 +151,10 @@ class CORE_EXPORT NGTextPainter : public NGTextPainterBase {
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,
-      const Vector<AppliedTextDecoration>& decorations,
       const TextPaintStyle& text_style);
-  void PaintSvgDecorationsOnlyLineThrough(
-      TextDecorationInfo& decoration_info,
-      const PaintInfo& paint_info,
-      const Vector<AppliedTextDecoration>& decorations,
-      const TextPaintStyle& text_style);
+  void PaintSvgDecorationsOnlyLineThrough(TextDecorationInfo& decoration_info,
+                                          const PaintInfo& paint_info,
+                                          const TextPaintStyle& text_style);
 
   const gfx::Rect visual_rect_;
   absl::optional<SvgTextPaintState> svg_text_paint_state_;

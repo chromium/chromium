@@ -51,6 +51,7 @@ class CORE_EXPORT TextDecorationInfo {
       const ComputedStyle& target_style,
       const NGInlinePaintContext* inline_context,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
+      const AppliedTextDecoration* decoration_override = nullptr,
       const Font* font_override = nullptr,
       MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
       float scaling_factor = 1.0f,
@@ -58,10 +59,9 @@ class CORE_EXPORT TextDecorationInfo {
       absl::optional<FontBaseline> baseline_type_override = absl::nullopt,
       const ComputedStyle* decorating_box_style = nullptr);
 
-  const AppliedTextDecoration& GetAppliedTextDecoration() const {
-    DCHECK(applied_text_decoration_);
-    return *applied_text_decoration_;
-  }
+  wtf_size_t AppliedDecorationCount() const;
+  const AppliedTextDecoration& AppliedDecoration(wtf_size_t) const;
+  bool HasDecorationOverride() const { return !!decoration_override_; }
 
   // Returns whether any of the decoration indices in AppliedTextDecoration
   // have any of the given lines.
@@ -191,6 +191,7 @@ class CORE_EXPORT TextDecorationInfo {
   // These "overrides" fields force using the specified style or font instead
   // of the one from the decorating box. Note that using them means that the
   // [decorating box] is not supported.
+  const AppliedTextDecoration* const decoration_override_ = nullptr;
   const Font* const font_override_ = nullptr;
   const ComputedStyle* const decorating_box_style_override_ = nullptr;
   const absl::optional<FontBaseline> baseline_type_override_;
@@ -214,7 +215,7 @@ class CORE_EXPORT TextDecorationInfo {
   // Ideally we would build a vector of the TextDecorationLine instances needing
   // ‘line-through’, but this is a rare case so better to avoid vector overhead.
   TextDecorationLine lines_ = TextDecorationLine::kNone;
-  const TextDecorationLine union_all_lines_ = TextDecorationLine::kNone;
+  TextDecorationLine union_all_lines_ = TextDecorationLine::kNone;
 
   ResolvedUnderlinePosition original_underline_position_ =
       ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
@@ -226,7 +227,7 @@ class CORE_EXPORT TextDecorationInfo {
   bool flip_underline_and_overline_ = false;
   bool use_decorating_box_ = false;
   const bool minimum_thickness_is_one_ = false;
-  const bool antialias_ = false;
+  bool antialias_ = false;
 
   struct LineData {
     STACK_ALLOCATED();
