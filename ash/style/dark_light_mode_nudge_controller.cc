@@ -26,7 +26,7 @@ PrefService* GetActiveUserPrefService() {
 void SetRemainingShownCount(int count) {
   PrefService* prefs = GetActiveUserPrefService();
   if (prefs)
-    prefs->SetInteger(prefs::kDarkLightModeNudge, count);
+    prefs->SetInteger(prefs::kDarkLightModeNudgeLeftToShowCount, count);
 }
 
 }  // namespace
@@ -38,7 +38,8 @@ DarkLightModeNudgeController::~DarkLightModeNudgeController() = default;
 // static
 int DarkLightModeNudgeController::GetRemainingShownCount() {
   const PrefService* prefs = GetActiveUserPrefService();
-  return prefs ? prefs->GetInteger(prefs::kDarkLightModeNudge) : 0;
+  return prefs ? prefs->GetInteger(prefs::kDarkLightModeNudgeLeftToShowCount)
+               : 0;
 }
 
 void DarkLightModeNudgeController::MaybeShowNudge() {

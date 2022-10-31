@@ -91,6 +91,10 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   const std::string& action_id = args[0].GetString();
 
+  // Set the nudge shown count to 0 once the user goes through the Dark / Light
+  // setup to avoiding triggering Dark / Light nudge after OOBE.
+  profile->GetPrefs()->SetInteger(prefs::kDarkLightModeNudgeLeftToShowCount, 0);
+
   if (action_id == kUserActionSelect) {
     const SelectedTheme selected_theme =
         static_cast<SelectedTheme>(args[1].GetInt());

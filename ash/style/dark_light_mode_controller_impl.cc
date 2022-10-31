@@ -112,7 +112,7 @@ void DarkLightModeControllerImpl::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kDarkModeEnabled,
                                 kDefaultDarkModeEnabled);
-  registry->RegisterIntegerPref(prefs::kDarkLightModeNudge,
+  registry->RegisterIntegerPref(prefs::kDarkLightModeNudgeLeftToShowCount,
                                 kDarkLightModeNudgeMaxShownCount);
 }
 

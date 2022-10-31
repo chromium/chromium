@@ -600,7 +600,8 @@ const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
 // entry points of dark/light mode ("Dark theme" inside quick settings or
 // personalization hub), which means the user already knows how to change the
 // color mode of the system.
-const char kDarkLightModeNudge[] = "ash.dark_light_mode.educational_nudge";
+const char kDarkLightModeNudgeLeftToShowCount[] =
+    "ash.dark_light_mode.educational_nudge";
 
 // An integer pref storing the type of automatic scheduling of turning on and
 // off the dark mode feature similar to `kNightLightScheduleType`, but

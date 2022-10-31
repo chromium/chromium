@@ -104,7 +104,12 @@ class ThemeSelectionScreenTest
 
 IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ProceedWithDefaultTheme) {
   ShowThemeSelectionScreen();
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   test::OobeJS().ClickOnPath(kNextButtonPath);
+  // Verify that remaining nudge shown count is 0 after proceeding with the
+  // default theme.
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kDarkLightModeNudgeLeftToShowCount));
   WaitForScreenExit();
 }
 
@@ -132,6 +137,12 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   } else if (selectedOption == kAutoThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 1);
   }
+
+  test::OobeJS().ClickOnPath(kNextButtonPath);
+  // Verify that remaining nudge shown count is 0 after user selects the theme.
+  EXPECT_EQ(0, profile->GetPrefs()->GetInteger(
+                   prefs::kDarkLightModeNudgeLeftToShowCount));
+  WaitForScreenExit();
 }
 
 IN_PROC_BROWSER_TEST_F(ThemeSelectionScreenTest, ToggleTabletMode) {
