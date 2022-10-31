@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -34,6 +35,28 @@ std::string GetNetworkName(const std::string& service_path) {
   if (!network)
     return std::string();
   return network->name();
+}
+
+base::Value::Dict ConvertAppToDict(ash::KioskAppManagerBase::App app) {
+  base::Value::Dict out_info;
+
+  if (app.name.empty())
+    app.name = l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
+
+  if (app.icon.isNull()) {
+    app.icon = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+        IDR_PRODUCT_LOGO_128);
+  }
+
+  // Display app domain if present.
+  if (!app.url.is_empty()) {
+    app.url = app.url.DeprecatedGetOriginAsURL();
+  }
+
+  out_info.Set("name", app.name);
+  out_info.Set("iconURL", webui::GetBitmapDataUrl(*app.icon.bitmap()));
+  out_info.Set("url", app.url.spec());
+  return out_info;
 }
 
 }  // namespace
@@ -74,9 +97,7 @@ void AppLaunchSplashScreenHandler::Show() {
   data.Set("shortcutEnabled",
            !KioskAppManager::Get()->GetDisableBailoutShortcut());
 
-  base::DictionaryValue app_info;
-  PopulateAppInfo(&app_info);
-  data.Set("appInfo", std::move(app_info));
+  data.Set("appInfo", ConvertAppToDict(delegate_->GetAppData()));
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
   ShowInWebUI(std::move(data));
@@ -199,30 +220,6 @@ void AppLaunchSplashScreenHandler::UpdateState(
   if (network_config_shown_) {
     ShowNetworkConfigureUI();
   }
-}
-
-void AppLaunchSplashScreenHandler::PopulateAppInfo(
-    base::DictionaryValue* out_info) {
-  DCHECK(delegate_);
-  KioskAppManagerBase::App app = delegate_->GetAppData();
-
-  if (app.name.empty())
-    app.name = l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
-
-  if (app.icon.isNull()) {
-    app.icon = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-        IDR_PRODUCT_LOGO_128);
-  }
-
-  // Display app domain if present.
-  if (!app.url.is_empty()) {
-    app.url = app.url.DeprecatedGetOriginAsURL();
-  }
-
-  out_info->SetStringKey("name", app.name);
-  out_info->SetStringKey("iconURL",
-                         webui::GetBitmapDataUrl(*app.icon.bitmap()));
-  out_info->SetStringKey("url", app.url.spec());
 }
 
 void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {

@@ -127,7 +127,6 @@ class AppLaunchSplashScreenHandler
   void UpdateState(NetworkError::ErrorReason reason) override;
 
  private:
-  void PopulateAppInfo(base::DictionaryValue* out_info);
   void SetLaunchText(const std::string& text);
   int GetProgressMessageFromState(AppLaunchState state);
   void HandleConfigureNetwork();
