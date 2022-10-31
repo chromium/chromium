@@ -199,31 +199,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.ActualInputBufferFrameSizeMac" units="units"
-    expires_after="2021-07-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Size (in audio frames) of native I/O buffers that is set by the audio
-    manager when calling AUAudioInputStream::Open(). I.e., it is the actual
-    buffer size and it can differ from the one that the client requested. Only
-    sampled when Media.Audio.InputStartupSuccessMac reports 'Failure'.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.AudioUnitRenderHasWorkedMac"
-    enum="BooleanEverWorked" expires_after="2021-07-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Stored in combination with Media.Audio.RenderFailsWhenBufferSizeChangesMac.
-    It is set to true if calls to AudioUnitRender has ever worked, i.e., we did
-    not start to see kAudioUnitErr_CannotDoInCurrentContext error messages
-    directly from start but there has been at least on successful call to
-    AudioUnitRender.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
     expires_after="2023-04-30">
   <owner>dalecurtis@chromium.org</owner>
@@ -649,16 +624,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.InputBufferSizeWasChangedMac"
-    enum="BooleanSuccess" expires_after="2020-04-05">
-  <owner>henrika@chromium.org</owner>
-  <summary>
-    Indicates if the size of the audio unit's IO buffer was changed when
-    starting an input audio stream. Only sampled when
-    Media.Audio.InputStartupSuccessMac reports 'Failure'.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.InputStartupSuccessMac" enum="BooleanSuccess"
     expires_after="2023-03-26">
   <owner>henrika@chromium.org</owner>
@@ -677,16 +642,6 @@ chromium-metrics-reviews@google.com.
     Indicates if the volume level of the audio session is set to zero when the
     input audio session starts. Sampled once when the stream starts but only on
     Windows platforms. See http://crbug.com/1014443.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.LogicalProcessorsMac" units="units"
-    expires_after="2021-07-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The number of logical processors/cores available on the Mac OSX device. Only
-    sampled when Media.Audio.InputStartupSuccessMac reports 'Failure'.
   </summary>
 </histogram>
 
@@ -863,16 +818,6 @@ chromium-metrics-reviews@google.com.
   <owner>tguilbert@chromium.org</owner>
   <summary>
     A path OutputDeviceMixerManager uses to create an output stream.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.PhysicalProcessorsMac" units="units"
-    expires_after="2021-07-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>webrtc-audio@google.com</owner>
-  <summary>
-    The number of physical processors/cores available on the Mac OSX device.
-    Only sampled when Media.Audio.InputStartupSuccessMac reports 'Failure'.
   </summary>
 </histogram>
 
@@ -1149,30 +1094,6 @@ chromium-metrics-reviews@google.com.
     error callback was ever received over IPC, and in that case whether the
     error occurred during or after stream creation. Expired in Apr 2020 and
     re-enabled in May 2021.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.RenderFailsWhenBufferSizeChangesMac"
-    enum="BooleanChanged" expires_after="2021-07-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    True if a call to AudioUnitRender failed with an error code of
-    kAudioUnitErr_CannotDoInCurrentContext (-10863) and the call was preceded
-    with a change in the native I/O buffer size. This value is logged while
-    input audio is active but it should be a very rare event.
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.RequestedInputBufferFrameSizeMac" units="units"
-    expires_after="2021-07-01">
-  <owner>henrika@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Size (in audio frames) the client has asked for when creating an
-    AUAudioInputStream object. It might not be able to fulfill this request. The
-    actual size is given by Media.Audio.ActualInputBufferFrameSizeMac. Only
-    sampled when Media.Audio.InputStartupSuccessMac reports 'Failure'.
   </summary>
 </histogram>
 

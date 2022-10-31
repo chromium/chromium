@@ -168,7 +168,7 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Verifies that Open(), Start(), Stop() and Close() are all called on the
   // creating thread which is the main browser thread (CrBrowserMain) on Mac.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerMac> manager_;
@@ -180,10 +180,6 @@ class MEDIA_EXPORT AUAudioInputStream
   // This may be different from what we ask for, so we use this for stats in
   // order to understand how often this happens and what are the typical values.
   size_t number_of_frames_provided_;
-
-  // The actual I/O buffer size for the input device connected to the active
-  // AUHAL audio unit.
-  size_t io_buffer_frame_size_;
 
   // Pointer to the object that will receive the recorded audio samples.
   raw_ptr<AudioInputCallback> sink_;
@@ -240,13 +236,6 @@ class MEDIA_EXPORT AUAudioInputStream
   // callbacks have started as intended after a successful call to Start().
   // This timer lives on the main browser thread.
   std::unique_ptr<base::OneShotTimer> input_callback_timer_;
-
-  // Set to true if the audio unit's IO buffer was changed when Open() was
-  // called.
-  bool buffer_size_was_changed_;
-
-  // Set to true once when AudioUnitRender() succeeds for the first time.
-  bool audio_unit_render_has_worked_;
 
   // Set to true when we've successfully called SuppressNoiseReduction to
   // disable ambient noise reduction.

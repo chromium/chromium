@@ -6,8 +6,6 @@
 #include <CoreAudio/AudioHardware.h>
 #include <CoreServices/CoreServices.h>
 #include <dlfcn.h>
-#include <mach-o/loader.h>
-#include <mach/mach.h>
 #include <memory>
 #include <string>
 
@@ -23,7 +21,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/mac/core_audio_util_mac.h"
@@ -124,40 +121,6 @@ static OSStatus GetInputDeviceStreamFormat(
   return result;
 }
 
-// Returns the number of physical processors on the device.
-static int NumberOfPhysicalProcessors() {
-  base::mac::ScopedMachSendRight mach_host(mach_host_self());
-  host_basic_info hbi = {};
-  mach_msg_type_number_t info_count = HOST_BASIC_INFO_COUNT;
-  kern_return_t kr =
-      host_info(mach_host.get(), HOST_BASIC_INFO,
-                reinterpret_cast<host_info_t>(&hbi), &info_count);
-
-  int n_physical_cores = 0;
-  if (kr != KERN_SUCCESS) {
-    n_physical_cores = 1;
-    LOG(ERROR) << "Failed to determine number of physical cores, assuming 1";
-  } else {
-    n_physical_cores = hbi.physical_cpu;
-  }
-  DCHECK_EQ(HOST_BASIC_INFO_COUNT, info_count);
-  return n_physical_cores;
-}
-
-// Adds extra system information to Media.AudioXXXMac UMA statistics.
-// Only called when it has been detected that audio callbacks does not start
-// as expected.
-static void AddSystemInfoToUMA() {
-  // Number of logical processors/cores on the current machine.
-  UMA_HISTOGRAM_COUNTS_1M("Media.Audio.LogicalProcessorsMac",
-                          base::SysInfo::NumberOfProcessors());
-  // Number of physical processors/cores on the current machine.
-  UMA_HISTOGRAM_COUNTS_1M("Media.Audio.PhysicalProcessorsMac",
-                          NumberOfPhysicalProcessors());
-  DVLOG(1) << "logical processors: " << base::SysInfo::NumberOfProcessors();
-  DVLOG(1) << "physical processors: " << NumberOfPhysicalProcessors();
-}
-
 // Finds the first subdevice, in an aggregate device, with output streams.
 static AudioDeviceID FindFirstOutputSubdevice(
     AudioDeviceID aggregate_device_id) {
@@ -210,7 +173,6 @@ AUAudioInputStream::AUAudioInputStream(
     : manager_(manager),
       input_params_(input_params),
       number_of_frames_provided_(0),
-      io_buffer_frame_size_(0),
       sink_(nullptr),
       audio_unit_(0),
       input_device_id_(audio_device_id),
@@ -220,8 +182,6 @@ AUAudioInputStream::AUAudioInputStream(
             kNumberOfBlocksBufferInFifo),
       got_input_callback_(false),
       input_callback_is_active_(false),
-      buffer_size_was_changed_(false),
-      audio_unit_render_has_worked_(false),
       noise_reduction_suppressed_(false),
       use_voice_processing_(voice_processing_mode ==
                             AudioManagerBase::VoiceProcessingMode::kEnabled),
@@ -232,6 +192,10 @@ AUAudioInputStream::AUAudioInputStream(
       log_callback_(log_callback) {
   DCHECK(manager_);
   CHECK(log_callback_ != AudioManager::LogCallback());
+  DVLOG(1) << __FUNCTION__ << " this " << this << " params "
+           << input_params.AsHumanReadableString()
+           << " use_voice_processing_: " << use_voice_processing_;
+
   if (use_voice_processing_) {
     DCHECK(input_params.channels() == 1 || input_params.channels() == 2);
     const bool got_default_device =
@@ -254,11 +218,11 @@ AUAudioInputStream::AUAudioInputStream(
       input_params.GetBytesPerFrame(kSampleFormat);
   format_.mReserved = 0;
 
-  DVLOG(1) << "ctor";
+  DVLOG(1) << __FUNCTION__ << " this " << this;
   DVLOG(1) << "device ID: 0x" << std::hex << audio_device_id;
   DVLOG(1) << "buffer size : " << input_params.frames_per_buffer();
   DVLOG(1) << "channels : " << input_params.channels();
-  DVLOG(1) << "desired output format: " << format_;
+  DVLOG(1) << "desired output format:\n" << format_;
 
   // Derive size (in bytes) of the buffers that we will render to.
   UInt32 data_byte_size =
@@ -279,14 +243,14 @@ AUAudioInputStream::AUAudioInputStream(
 }
 
 AUAudioInputStream::~AUAudioInputStream() {
-  DVLOG(1) << "~dtor";
+  DVLOG(1) << __FUNCTION__ << " this " << this;
   ReportAndResetStats();
 }
 
 // Obtain and open the AUHAL AudioOutputUnit for recording.
 AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DVLOG(1) << "Open";
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(1) << __FUNCTION__ << " this " << this;
   DCHECK(!audio_unit_);
 
   // Verify that we have a valid device. Send appropriate error code to
@@ -324,7 +288,9 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 }
 
 bool AUAudioInputStream::OpenAUHAL() {
-  // Start by obtaining an AudioOuputUnit using an AUHAL component description.
+  DVLOG(1) << __FUNCTION__ << " this " << this;
+
+  // Start by obtaining an AudioOutputUnit using an AUHAL component description.
 
   // Description for the Audio Unit we want to use (AUHAL in this case).
   // The kAudioUnitSubType_HALOutput audio unit interfaces to any audio device.
@@ -446,21 +412,13 @@ bool AUAudioInputStream::OpenAUHAL() {
   // Modify the IO buffer size if not already set correctly for the selected
   // device. The status of other active audio input and output streams is
   // involved in the final setting.
-  // TODO(henrika): we could make io_buffer_frame_size a member and add it to
-  // the UMA stats tied to the Media.Audio.InputStartupSuccessMac record.
-  size_t io_buffer_frame_size = 0;
-  if (!manager_->MaybeChangeBufferSize(
-          input_device_id_, audio_unit_, 1, input_params_.frames_per_buffer(),
-          &buffer_size_was_changed_, &io_buffer_frame_size)) {
+
+  if (!manager_->MaybeChangeBufferSize(input_device_id_, audio_unit_, 1,
+                                       input_params_.frames_per_buffer())) {
     result = kAudioUnitErr_FormatNotSupported;
     HandleError(result);
     return false;
   }
-
-  // Store current I/O buffer frame size for UMA stats stored in combination
-  // with failing input callbacks.
-  DCHECK(!io_buffer_frame_size_);
-  io_buffer_frame_size_ = io_buffer_frame_size;
 
   // If the requested number of frames is out of range, the closest valid buffer
   // size will be set instead. Check the current setting and log a warning for a
@@ -595,21 +553,12 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   // Modify the IO buffer size if not already set correctly for the selected
   // device. The status of other active audio input and output streams is
   // involved in the final setting.
-  // TODO(henrika): we could make io_buffer_frame_size a member and add it to
-  // the UMA stats tied to the Media.Audio.InputStartupSuccessMac record.
-  size_t io_buffer_frame_size = 0;
-  if (!manager_->MaybeChangeBufferSize(
-          input_device_id_, audio_unit_, 1, input_params_.frames_per_buffer(),
-          &buffer_size_was_changed_, &io_buffer_frame_size)) {
+  if (!manager_->MaybeChangeBufferSize(input_device_id_, audio_unit_, 1,
+                                       input_params_.frames_per_buffer())) {
     result = kAudioUnitErr_FormatNotSupported;
     HandleError(result);
     return false;
   }
-
-  // Store current I/O buffer frame size for UMA stats stored in combination
-  // with failing input callbacks.
-  DCHECK(!io_buffer_frame_size_);
-  io_buffer_frame_size_ = io_buffer_frame_size;
 
   // If the requested number of frames is out of range, the closest valid buffer
   // size will be set instead. Check the current setting and log a warning for a
@@ -668,8 +617,8 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
 }
 
 void AUAudioInputStream::Start(AudioInputCallback* callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DVLOG(1) << "Start";
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(1) << __FUNCTION__ << " this " << this;
   DCHECK(callback);
   DCHECK(!sink_);
   DLOG_IF(ERROR, !audio_unit_) << "Open() has not been called successfully";
@@ -691,7 +640,6 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
 
   sink_ = callback;
   last_success_time_ = base::TimeTicks::Now();
-  audio_unit_render_has_worked_ = false;
 
   // Don't disable built-in noise suppression when using VPAU.
   if (!use_voice_processing_ &&
@@ -722,9 +670,10 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
 }
 
 void AUAudioInputStream::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   deferred_start_cb_.Cancel();
-  DVLOG(1) << "Stop";
+  DVLOG(1) << __FUNCTION__ << " this " << this;
+  ;
   StopAgc();
   if (noise_reduction_suppressed_) {
     manager_->UnsuppressNoiseReduction(input_device_id_);
@@ -756,13 +705,13 @@ void AUAudioInputStream::Stop() {
   ReportAndResetStats();
   sink_ = nullptr;
   fifo_.Clear();
-  io_buffer_frame_size_ = 0;
   got_input_callback_ = false;
 }
 
 void AUAudioInputStream::Close() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DVLOG(1) << "Close";
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(1) << __FUNCTION__ << " this " << this;
+  ;
 
   // It is valid to call Close() before calling open or Start().
   // It is also valid to call Close() after Start() has been called.
@@ -797,7 +746,7 @@ double AUAudioInputStream::GetMaxVolume() {
 }
 
 void AUAudioInputStream::SetVolume(double volume) {
-  DVLOG(1) << "SetVolume(volume=" << volume << ")";
+  DVLOG(1) << __FUNCTION__ << " this " << this << " volume=" << volume << ")";
   DCHECK_GE(volume, 0.0);
   DCHECK_LE(volume, 1.0);
 
@@ -980,7 +929,6 @@ void AUAudioInputStream::ReinitializeVoiceProcessingAudioUnit() {
   // Most of these will be no-ops if the audio unit was opened but not started.
   SetInputCallbackIsActive(false);
   ReportAndResetStats();
-  io_buffer_frame_size_ = 0;
   got_input_callback_ = false;
 
   OpenVoiceProcessingAU();
@@ -1024,7 +972,8 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
     const AudioTimeStamp* time_stamp,
     UInt32 bus_number,
     UInt32 number_of_frames) {
-  TRACE_EVENT0("audio", "AUAudioInputStream::OnDataIsAvailable");
+  TRACE_EVENT1("audio", "AUAudioInputStream::OnDataIsAvailable", "frames",
+               number_of_frames);
 
   // Indicate that input callbacks have started.
   if (!got_input_callback_) {
@@ -1042,11 +991,9 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
   // See crbug/428706 for details.
   UInt32 new_size = number_of_frames * format_.mBytesPerFrame;
   AudioBuffer* audio_buffer = audio_buffer_list_.mBuffers;
-  bool new_buffer_size_detected = false;
   if (new_size != audio_buffer->mDataByteSize) {
-    new_buffer_size_detected = true;
-    DVLOG(1) << "New size of number_of_frames detected: " << number_of_frames;
-    io_buffer_frame_size_ = static_cast<size_t>(number_of_frames);
+    DVLOG(1) << __FUNCTION__ << " this " << this
+             << "New size of number_of_frames detected: " << number_of_frames;
     if (new_size > audio_buffer->mDataByteSize) {
       // This can happen if the device is unplugged during recording. We
       // allocate enough memory here to avoid depending on how CoreAudio
@@ -1089,10 +1036,7 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
     TRACE_EVENT_END0("audio", "AudioUnitRender");
   }
 
-  if (result == noErr) {
-    audio_unit_render_has_worked_ = true;
-  }
-  if (result) {
+  if (result != noErr) {
     TRACE_EVENT_INSTANT0("audio", "AudioUnitRender error",
                          TRACE_EVENT_SCOPE_THREAD);
     // Only upload UMA histograms for the case when AGC is enabled. The reason
@@ -1127,15 +1071,6 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
         HandleError(result);
       }
 
-      // Add some extra UMA stat to track down if we see this particular error
-      // in combination with a previous change of buffer size "on the fly".
-      if (result == kAudioUnitErr_CannotDoInCurrentContext &&
-          add_uma_histogram) {
-        UMA_HISTOGRAM_BOOLEAN("Media.Audio.RenderFailsWhenBufferSizeChangesMac",
-                              new_buffer_size_detected);
-        UMA_HISTOGRAM_BOOLEAN("Media.Audio.AudioUnitRenderHasWorkedMac",
-                              audio_unit_render_has_worked_);
-      }
     } else {
       // We have also seen kAudioUnitErr_NoConnection in some cases. Bailing
       // out for this error for now.
@@ -1279,7 +1214,7 @@ int AUAudioInputStream::GetNumberOfChannelsFromStream() {
 }
 
 bool AUAudioInputStream::IsRunning() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!audio_unit_)
     return false;
   UInt32 is_running = 0;
@@ -1289,7 +1224,7 @@ bool AUAudioInputStream::IsRunning() {
                            kAudioUnitScope_Global, 0, &is_running, &size);
   OSSTATUS_DLOG_IF(ERROR, error != noErr, error)
       << "AudioUnitGetProperty(kAudioOutputUnitProperty_IsRunning) failed";
-  DVLOG(1) << "IsRunning: " << is_running;
+  DVLOG(1) << " this " << this << " IsRunning: " << is_running;
   return (error == noErr && is_running);
 }
 
@@ -1324,7 +1259,7 @@ bool AUAudioInputStream::GetInputCallbackIsActive() {
 }
 
 void AUAudioInputStream::CheckInputStartupSuccess() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(IsRunning());
   // Only add UMA stat related to failing input audio for streams where
   // the AGC has been enabled, e.g. WebRTC audio input streams.
@@ -1333,20 +1268,16 @@ void AUAudioInputStream::CheckInputStartupSuccess() {
     // started in time as they should. If that is not the case, we have a
     // problem and the stream is considered dead.
     const bool input_callback_is_active = GetInputCallbackIsActive();
-    UMA_HISTOGRAM_BOOLEAN("Media.Audio.InputStartupSuccessMac",
-                          input_callback_is_active);
-    DVLOG(1) << "input_callback_is_active: " << input_callback_is_active;
-    if (!input_callback_is_active) {
-      // Now when we know that startup has failed for some reason, add extra
-      // UMA stats in an attempt to figure out the exact reason.
-      AddHistogramsForFailedStartup();
-    }
+    base::UmaHistogramBoolean("Media.Audio.InputStartupSuccessMac",
+                              input_callback_is_active);
+    DVLOG(1) << __FUNCTION__ << " this " << this
+             << "input_callback_is_active: " << input_callback_is_active;
   }
 }
 
 void AUAudioInputStream::CloseAudioUnit() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DVLOG(1) << "CloseAudioUnit";
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(1) << __FUNCTION__ << " this " << this;
   if (!audio_unit_)
     return;
   OSStatus result = AudioUnitUninitialize(audio_unit_);
@@ -1356,30 +1287,6 @@ void AUAudioInputStream::CloseAudioUnit() {
   OSSTATUS_DLOG_IF(ERROR, result != noErr, result)
       << "AudioComponentInstanceDispose() failed.";
   audio_unit_ = 0;
-}
-
-void AUAudioInputStream::AddHistogramsForFailedStartup() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  UMA_HISTOGRAM_BOOLEAN("Media.Audio.InputBufferSizeWasChangedMac",
-                        buffer_size_was_changed_);
-  // |input_params_.frames_per_buffer()| is set at construction and corresponds
-  // to the requested (by the client) number of audio frames per I/O buffer
-  // connected to the selected input device. Ideally, this size will be the same
-  // as the native I/O buffer size given by |io_buffer_frame_size_|.
-  base::UmaHistogramSparse("Media.Audio.RequestedInputBufferFrameSizeMac",
-                           input_params_.frames_per_buffer());
-  DVLOG(1) << "number_of_frames_: " << input_params_.frames_per_buffer();
-  // This value indicates the number of frames in the IO buffers connected to
-  // the selected input device. It has been set by the audio manger in Open()
-  // and can be the same as |input_params_.frames_per_buffer()|, which is the
-  // desired buffer size. These two values might differ if other streams are
-  // using the same device and any of these streams have asked for a smaller
-  // buffer size.
-  base::UmaHistogramSparse("Media.Audio.ActualInputBufferFrameSizeMac",
-                           io_buffer_frame_size_);
-  DVLOG(1) << "io_buffer_frame_size_: " << io_buffer_frame_size_;
-  // Add information about things like number of logical processors etc.
-  AddSystemInfoToUMA();
 }
 
 void AUAudioInputStream::UpdateCaptureTimestamp(
@@ -1407,8 +1314,8 @@ void AUAudioInputStream::ReportAndResetStats() {
     return;  // No stats gathered to report.
 
   // A value of 0 indicates that we got the buffer size we asked for.
-  UMA_HISTOGRAM_COUNTS_10000("Media.Audio.Capture.FramesProvided",
-                             number_of_frames_provided_);
+  base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
+                                number_of_frames_provided_);
 
   SystemGlitchReporter::Stats stats =
       glitch_reporter_.GetLongTermStatsAndReset();

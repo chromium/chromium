@@ -111,15 +111,11 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerBase {
   // lower than the current device buffer size. The buffer size can also be
   // modified under other conditions. See comments in the corresponding cc-file
   // for more details.
-  // |size_was_changed| is set to true if the device's buffer size was changed
-  // and |io_buffer_frame_size| contains the new buffer size.
   // Returns false if an error occurred.
   bool MaybeChangeBufferSize(AudioDeviceID device_id,
                              AudioUnit audio_unit,
                              AudioUnitElement element,
-                             size_t desired_buffer_size,
-                             bool* size_was_changed,
-                             size_t* io_buffer_frame_size);
+                             size_t desired_buffer_size);
 
   // Returns the latency for the given audio unit and device. Total latency is
   // the sum of the latency of the AudioUnit, device, and stream. If any one
