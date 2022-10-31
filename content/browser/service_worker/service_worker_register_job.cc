@@ -870,8 +870,7 @@ void ServiceWorkerRegisterJob::AddRegistrationToMatchingContainerHosts(
        !it->IsAtEnd(); it->Advance()) {
     ServiceWorkerContainerHost* container_host = it->GetContainerHost();
     DCHECK(container_host->IsContainerForClient());
-    if (container_host->key() != registration->key() ||
-        !blink::ServiceWorkerScopeMatches(
+    if (!blink::ServiceWorkerScopeMatches(
             registration->scope(), container_host->GetUrlForScopeMatch())) {
       continue;
     }
