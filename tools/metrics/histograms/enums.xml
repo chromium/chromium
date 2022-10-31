@@ -6462,6 +6462,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofillCreditCardMessage">
+  <obsolete>
+    Deprecated 10/2022. Will not launch save card Message UI.
+  </obsolete>
   <int value="0" label="Shown"/>
   <int value="1" label="Accepted"/>
   <int value="2" label="Denied"/>
@@ -6469,6 +6472,9 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AutofillCreditCardMessageDialogPrompt">
+  <obsolete>
+    Deprecated 10/2022. Will not launch save card Message UI.
+  </obsolete>
   <int value="0" label="Accepted"/>
   <int value="1" label="Denied"/>
   <int value="2" label="Ignored"/>

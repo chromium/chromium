@@ -1009,6 +1009,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.CreditCardMessage.DialogPrompt{SaveSituation}{DialogInteraction}"
     enum="AutofillCreditCardMessageDialogPrompt" expires_after="M110">
+  <obsolete>
+    Deprecated 10/2022. Will not launch save card Message UI.
+  </obsolete>
   <owner>lazzzis@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1034,6 +1037,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.CreditCardMessage.{SaveDestination}{SaveSituation}"
     enum="AutofillCreditCardMessage" expires_after="M110">
+  <obsolete>
+    Deprecated 10/2022. Will not launch save card Message UI.
+  </obsolete>
   <owner>lazzzis@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1063,8 +1069,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveSituation}"
-    enum="AutofillCreditCardSaveFlowResult" expires_after="M110">
-  <owner>lazzzis@google.com</owner>
+    enum="AutofillCreditCardSaveFlowResult" expires_after="2023-09-30">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
