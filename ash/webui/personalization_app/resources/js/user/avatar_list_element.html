@@ -22,8 +22,14 @@
   .image-container:hover {
     filter: brightness(0.94);
   }
-  .image-container img {
+  .image-border-container {
     border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    height: 62px;
+    width: 62px;
+  }
+  .image-container img {
+    background-size: 62px 62px;
     border-radius: 50%;
     height: 62px;
     width: 62px;
@@ -98,9 +104,11 @@
           title$="[[item.title]]"
           data-id$="[[item.defaultImageIndex]]">
         <paper-ripple class="circle"></paper-ripple>
-        <img class$="[[getImageClassForOption_(item)]]"
-            src="[[item.imgSrc]]">
-        <iron-icon icon$="[[item.icon]]"></iron-icon>
+        <div class="image-border-container">
+          <img class$="[[getImageClassForOption_(item)]]"
+              src="[[item.imgSrc]]" style$="[[getImgBackgroudStyle_(item.imgSrc)]]">
+          <iron-icon icon$="[[item.icon]]"></iron-icon>
+        </div>
       </div>
   </div>
   </template>

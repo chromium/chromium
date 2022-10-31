@@ -359,6 +359,16 @@ export class AvatarList extends WithPersonalizationStore {
         `${defaultClass} tast-selected-${camelToKebab(option.id)}` :
         defaultClass;
   }
+
+  /**
+   * Creates style string with static background image url. Static image loads
+   * faster and will provide a smooth experience when the animated image
+   * complete loading.
+   */
+  private getImgBackgroudStyle_(url: string): string {
+    // Append staticEncode attribute to the background image url.
+    return `background-image: url('` + url + `&staticEncode=true')`;
+  }
 }
 
 customElements.define(AvatarList.is, AvatarList);
