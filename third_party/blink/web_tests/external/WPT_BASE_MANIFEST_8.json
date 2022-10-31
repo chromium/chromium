@@ -313144,20 +313144,12 @@
        "1130f249e167d39118bfc9eb330b2690b2fa7cce",
        []
       ],
-      "cors-preflight-star.any-expected.txt": [
-       "81ee40d0a26563b01ecf3eb09844b80e1c9e7c7b",
-       []
-      ],
-      "cors-preflight-star.any.worker-expected.txt": [
-       "81ee40d0a26563b01ecf3eb09844b80e1c9e7c7b",
-       []
-      ],
       "cors-preflight.any-expected.txt": [
-       "1b8dda7c6abee93c55a25f6f22d0ac1b3555bd39",
+       "d82e2352d1c1a0fdea4530b98cbe1de96fd314b4",
        []
       ],
       "cors-preflight.any.worker-expected.txt": [
-       "1b8dda7c6abee93c55a25f6f22d0ac1b3555bd39",
+       "d82e2352d1c1a0fdea4530b98cbe1de96fd314b4",
        []
       ],
       "resources": {
@@ -317392,6 +317384,10 @@
         ],
         "wait-for-messages.js": [
          "62ddec49f1be2a4bb36618e1c1888e0af0bbe904",
+         []
+        ],
+        "xhtml-and-non-utf-8.xhtml": [
+         "3aacf33f1ceabb0ee7953736a5e8cb7c00a66ef7",
          []
         ]
        },
@@ -462723,6 +462719,13 @@
        },
        "javascript-url-global-scope.html": [
         "d3dd38ebed067c1897c1163d570d6c19ecbdf73c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "javascript-url-load-as-html.xhtml": [
+        "b23bef59175edea7ecd333f5da7329637b5f9b98",
         [
          null,
          {}
