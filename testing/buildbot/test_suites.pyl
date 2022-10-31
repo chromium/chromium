@@ -6576,7 +6576,7 @@
         ],
       },
       'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_X_16_1',
           'SIM_IPHONE_8_16_1',
@@ -6586,7 +6586,7 @@
         ]
       },
       'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_8_16_1',
           'SIM_IPHONE_X_16_1',
@@ -6759,7 +6759,7 @@
         ],
       },
       'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
           # Latest beta iOS version Sims
           'SIM_IPHONE_7_14_5',
@@ -6768,7 +6768,7 @@
         ]
       },
       'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
           # Latest beta iOS version Sims
           'SIM_IPHONE_X_14_5',
@@ -6870,7 +6870,7 @@
         ]
       },
       'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_6S_14_5',
           'SIM_IPHONE_7_14_5',
@@ -6879,7 +6879,7 @@
         ]
       },
       'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization', 'record_failed_tests'],
+        'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPHONE_6S_PLUS_14_5',
           'SIM_IPHONE_6S_14_5',
