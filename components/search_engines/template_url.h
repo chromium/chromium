@@ -425,7 +425,6 @@ class TemplateURLRef {
     GOOGLE_SEARCH_CLIENT,
     GOOGLE_SEARCH_FIELDTRIAL_GROUP,
     GOOGLE_SEARCH_VERSION,
-    GOOGLE_SEARCHBOX_STATS,
     GOOGLE_SESSION_TOKEN,
     GOOGLE_SUGGEST_CLIENT,
     GOOGLE_SUGGEST_REQUEST_ID,
@@ -525,6 +524,7 @@ class TemplateURLRef {
   // belongs to a PostParam, the PostParam will be replaced by the term data.
   // Otherwise, the term data will be inserted at the place that the
   // replacement points to.
+  // Can be called repeatedly with the same replacement.
   void HandleReplacement(const std::string& name,
                          const std::string& value,
                          const Replacement& replacement,

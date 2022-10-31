@@ -733,8 +733,6 @@ bool TemplateURLRef::ParseParameter(size_t start,
     replacements->push_back(Replacement(GOOGLE_PREFETCH_SOURCE, start));
   } else if (parameter == "google:RLZ") {
     replacements->push_back(Replacement(GOOGLE_RLZ, start));
-  } else if (parameter == "google:searchboxStats") {
-    replacements->push_back(Replacement(GOOGLE_SEARCHBOX_STATS, start));
   } else if (parameter == "google:searchClient") {
     replacements->push_back(Replacement(GOOGLE_SEARCH_CLIENT, start));
   } else if (parameter == "google:searchFieldtrialParameter") {
@@ -1051,7 +1049,7 @@ std::string TemplateURLRef::HandleReplacements(
         break;
       }
 
-      case GOOGLE_ASSISTED_QUERY_STATS:
+      case GOOGLE_ASSISTED_QUERY_STATS: {
         DCHECK(!replacement.is_post_param);
         if (!search_terms_args.assisted_query_stats.empty()) {
           DCHECK(search_terms_args.searchbox_stats.ByteSizeLong() > 0)
@@ -1078,10 +1076,7 @@ std::string TemplateURLRef::HandleReplacements(
                     search_terms_args.assisted_query_stats.length()));
           }
         }
-        break;
 
-      case GOOGLE_SEARCHBOX_STATS: {
-        DCHECK(!replacement.is_post_param);
         if (search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
           DCHECK(!search_terms_args.assisted_query_stats.empty())
               << "assisted_query_stats must be set when searchbox_stats is.";
