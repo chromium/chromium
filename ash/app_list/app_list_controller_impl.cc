@@ -858,7 +858,7 @@ void AppListControllerImpl::OnTabletModeStarted() {
       session_manager::SessionState::ACTIVE) {
     ShowHomeScreen();
   }
-  UpdateLauncherContainer();
+  UpdateFullscreenLauncherContainer();
 
   // If the app list is visible before the transition to tablet mode,
   // AppListPresenter relies on the active window change to detect the app list
@@ -888,7 +888,7 @@ void AppListControllerImpl::OnTabletModeEnded() {
                     ->GetShelfLayoutManager()
                     ->HasVisibleWindow());
   fullscreen_presenter_->OnTabletModeChanged(false);
-  UpdateLauncherContainer();
+  UpdateFullscreenLauncherContainer();
 
   // Dismiss the app list if the tablet mode ends.
   DismissAppList();
@@ -1538,7 +1538,7 @@ void AppListControllerImpl::OnAppListPageChanged(AppListState page) {
   if (!fullscreen_presenter_)
     return;
 
-  UpdateLauncherContainer();
+  UpdateFullscreenLauncherContainer();
 
   if (page == AppListState::kStateEmbeddedAssistant) {
     // ShowUi() will be no-op if the Assistant UI is already visible.
@@ -1869,13 +1869,14 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
                                        animation_settings_updater);
 }
 
-void AppListControllerImpl::UpdateLauncherContainer(
+void AppListControllerImpl::UpdateFullscreenLauncherContainer(
     absl::optional<int64_t> display_id) {
   aura::Window* window = fullscreen_presenter_->GetWindow();
   if (!window)
     return;
 
-  aura::Window* parent_window = GetContainerForDisplayId(display_id);
+  aura::Window* parent_window =
+      GetFullscreenLauncherContainerForDisplayId(display_id);
   if (parent_window && !parent_window->Contains(window)) {
     parent_window->AddChild(window);
     // Release focus if the launcher is moving behind apps, and there is app
@@ -1889,12 +1890,7 @@ void AppListControllerImpl::UpdateLauncherContainer(
   }
 }
 
-int AppListControllerImpl::GetContainerId() const {
-  return ShouldLauncherShowBehindApps() ? kShellWindowId_HomeScreenContainer
-                                        : kShellWindowId_AppListContainer;
-}
-
-aura::Window* AppListControllerImpl::GetContainerForDisplayId(
+aura::Window* AppListControllerImpl::GetFullscreenLauncherContainerForDisplayId(
     absl::optional<int64_t> display_id) {
   aura::Window* root_window = nullptr;
   if (display_id.has_value()) {
@@ -1903,12 +1899,9 @@ aura::Window* AppListControllerImpl::GetContainerForDisplayId(
     root_window = fullscreen_presenter_->GetWindow()->GetRootWindow();
   }
 
-  return root_window ? root_window->GetChildById(GetContainerId()) : nullptr;
-}
-
-bool AppListControllerImpl::ShouldLauncherShowBehindApps() const {
-  return IsTabletMode() &&
-         app_list_page_ != AppListState::kStateEmbeddedAssistant;
+  return root_window
+             ? root_window->GetChildById(GetFullscreenLauncherContainerId())
+             : nullptr;
 }
 
 void AppListControllerImpl::Shutdown() {
@@ -2005,6 +1998,13 @@ void AppListControllerImpl::OnReporterActivated() {
   FeatureDiscoveryDurationReporter::GetInstance()->MaybeActivateObservation(
       feature_discovery::TrackableFeature::
           kAppListReorderAfterSessionActivation);
+}
+
+int AppListControllerImpl::GetFullscreenLauncherContainerId() const {
+  const bool should_show_behind_apps =
+      app_list_page_ != AppListState::kStateEmbeddedAssistant;
+  return should_show_behind_apps ? kShellWindowId_HomeScreenContainer
+                                 : kShellWindowId_AppListContainer;
 }
 
 }  // namespace ash

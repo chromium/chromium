@@ -332,18 +332,12 @@ class ASH_EXPORT AppListControllerImpl
 
   void RecordShelfAppLaunched();
 
-  // Updates which container the launcher window should be in.
-  void UpdateLauncherContainer(
+  // Updates which container the fullscreen launcher window should be in.
+  void UpdateFullscreenLauncherContainer(
       absl::optional<int64_t> display_id = absl::nullopt);
 
-  // Gets the container which should contain the AppList.
-  int GetContainerId() const;
-
-  // Returns whether the launcher should show behinds apps or infront of them.
-  bool ShouldLauncherShowBehindApps() const;
-
-  // Returns the parent window of the applist for a |display_id|.
-  aura::Window* GetContainerForDisplayId(
+  // Returns the parent window of the `AppListView` for a |display_id|.
+  aura::Window* GetFullscreenLauncherContainerForDisplayId(
       absl::optional<int64_t> display_id = absl::nullopt);
 
   // Methods for recording the state of the app list before it changes in order
@@ -406,6 +400,9 @@ class ASH_EXPORT AppListControllerImpl
 
   // FeatureDiscoveryDurationReporter::ReporterObserver:
   void OnReporterActivated() override;
+
+  // Gets the container which should contain the fullscreen launcher.
+  int GetFullscreenLauncherContainerId() const;
 
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)

@@ -235,13 +235,14 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
 
   if (!view_) {
     AppListView* view = new AppListView(controller_);
-    view->InitView(controller_->GetContainerForDisplayId(display_id));
+    view->InitView(
+        controller_->GetFullscreenLauncherContainerForDisplayId(display_id));
     SetView(view);
     view_->GetWidget()->GetNativeWindow()->TrackOcclusionState();
   }
 
   OnVisibilityWillChange(GetTargetVisibility(), display_id);
-  controller_->UpdateLauncherContainer(display_id);
+  controller_->UpdateFullscreenLauncherContainer(display_id);
 
   // App list needs to know the new shelf layout in order to calculate its
   // UI layout when AppListView visibility changes.

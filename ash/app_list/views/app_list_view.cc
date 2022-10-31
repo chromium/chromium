@@ -728,20 +728,12 @@ void AppListView::SetChildViewsForStateTransition(
         AppListState::kStateApps, !is_side_shelf_);
   }
 
-  if (target_state == AppListViewState::kClosed) {
-    if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
-      if (app_list_state_ == AppListViewState::kFullscreenSearch)
-        search_box_view_->ClearSearchAndDeactivateSearchBox();
-
-      auto* contents_view = app_list_main_view_->contents_view();
-      if (contents_view->IsShowingEmbeddedAssistantUI())
-        contents_view->ShowEmbeddedAssistantUI(false);
-    } else if (is_side_shelf_) {
-      // Reset the search box to be shown again. This is done after the
-      // animation is complete normally, but there is no animation when
-      // |is_side_shelf_|.
-      search_box_view_->ClearSearchAndDeactivateSearchBox();
-    }
+  if (target_state == AppListViewState::kClosed && is_side_shelf_ &&
+      !app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
+    // Reset the search box to be shown again. This is done after the
+    // animation is complete normally, but there is no animation when
+    // |is_side_shelf_|.
+    search_box_view_->ClearSearchAndDeactivateSearchBox();
   }
 }
 

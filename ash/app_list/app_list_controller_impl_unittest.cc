@@ -1458,4 +1458,39 @@ TEST_F(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
   EXPECT_EQ(AssistantVisibility::kClosed, GetAssistantVisibility());
 }
 
+TEST_F(AppListControllerWithAssistantTest,
+       AppListWindowIsNotShowingOnTopOfOtherApps) {
+  CreateAppWindow();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  auto* home_screen_container = Shell::GetPrimaryRootWindow()->GetChildById(
+      kShellWindowId_HomeScreenContainer);
+  auto* app_list_window = Shell::Get()
+                              ->app_list_controller()
+                              ->fullscreen_presenter()
+                              ->GetView()
+                              ->GetWidget()
+                              ->GetNativeWindow();
+
+  // Default placement is in home screen container behind other app windows.
+  EXPECT_TRUE(home_screen_container->Contains(app_list_window));
+
+  // The app list window shows on top of other app windows when assistant UI is
+  // active.
+  ToggleAssistantUiWithAccelerator();
+  EXPECT_FALSE(home_screen_container->Contains(app_list_window));
+
+  // And stays there during tablet -> clamshell mode transition when assistant
+  // UI is active.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_FALSE(home_screen_container->Contains(app_list_window));
+
+  // Enter tablet mode again. App list window should return to its default
+  // position and shouldn't move during transition to clamshell mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_TRUE(home_screen_container->Contains(app_list_window));
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  EXPECT_TRUE(home_screen_container->Contains(app_list_window));
+}
+
 }  // namespace ash
