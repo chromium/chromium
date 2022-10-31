@@ -1081,7 +1081,11 @@ static void isConfigSupportedWithSoftwareOnly(
                           media::EncoderStatus status) {
     support->setSupported(status.is_ok());
     resolver->Resolve(support);
-    runner->DeleteSoon(FROM_HERE, std::move(encoder));
+    // This task runner may be destroyed without running tasks, so don't use
+    // DeleteSoon() which can leak the codec. See https://crbug.com/1376851.
+    runner->PostTask(FROM_HERE,
+                     base::BindOnce([](std::unique_ptr<media::VideoEncoder>) {},
+                                    std::move(encoder)));
   };
 
   auto* context = ExecutionContext::From(script_state);
