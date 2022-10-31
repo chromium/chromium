@@ -148,9 +148,9 @@ class CrashHandler : public Thread,
         context, kMachExceptionSimulated, path);
   }
 
-  void StartProcessingPendingReports() {
+  void StartProcessingPendingReports(UploadBehavior upload_behavior) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-    in_process_handler_.StartProcessingPendingReports();
+    in_process_handler_.StartProcessingPendingReports(upload_behavior);
   }
 
   void SetMachExceptionCallbackForTesting(void (*callback)()) {
@@ -439,10 +439,11 @@ void CrashpadClient::ProcessIntermediateDump(
 }
 
 // static
-void CrashpadClient::StartProcessingPendingReports() {
+void CrashpadClient::StartProcessingPendingReports(
+    UploadBehavior upload_behavior) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
-  crash_handler->StartProcessingPendingReports();
+  crash_handler->StartProcessingPendingReports(upload_behavior);
 }
 
 // static

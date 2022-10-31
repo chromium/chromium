@@ -56,8 +56,8 @@ TEST(CrashpadWerModule, Basic) {
   ASSERT_EQ(res, E_FAIL);
 
   // Dummy args for OutOfProcessExceptionEventCallback.
-  crashpad::WerRegistration registration;
   WER_RUNTIME_EXCEPTION_INFORMATION wer_ex;
+  wer_ex.dwSize = sizeof(WER_RUNTIME_EXCEPTION_INFORMATION);
   BOOL bClaimed = FALSE;
 
   // No context => skip.
@@ -65,6 +65,10 @@ TEST(CrashpadWerModule, Basic) {
   ASSERT_EQ(res, S_OK);
   ASSERT_EQ(bClaimed, FALSE);
 
+  // Following tests only make sense if building on SDK >= 19041 as
+  // bIsFatalField only exists after that.
+#if defined(NTDDI_WIN10_VB) && (WDK_NTDDI_VERSION >= NTDDI_WIN10_VB)
+  crashpad::WerRegistration registration;
   // Non-fatal exceptions are skipped.
   wer_ex.bIsFatal = FALSE;
   res = wref(&registration, &wer_ex, &bClaimed, nullptr, nullptr, nullptr);
@@ -77,7 +81,7 @@ TEST(CrashpadWerModule, Basic) {
   res = wref(&registration, &wer_ex, &bClaimed, nullptr, nullptr, nullptr);
   ASSERT_EQ(res, S_OK);
   ASSERT_EQ(bClaimed, FALSE);
-
+#endif  // defined(NTDDI_WIN10_VB) && WDK_NTDDI_VERSION >= NTDDI_WIN10_VB
   FreeLibrary(hMod);
 }
 

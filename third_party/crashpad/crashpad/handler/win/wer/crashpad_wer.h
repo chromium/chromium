@@ -37,7 +37,7 @@ namespace crashpad::wer {
 //! \return `true` if the target process was dumped by the crashpad handler then
 //! terminated, or `false` otherwise.
 bool ExceptionEvent(
-    DWORD* handled_exceptions,
+    const DWORD* handled_exceptions,
     size_t num_handled_exceptions,
     const PVOID pContext,
     const PWER_RUNTIME_EXCEPTION_INFORMATION pExceptionInformation);

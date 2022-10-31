@@ -43,5 +43,6 @@ source_set("crashpad_wer_test") {
     "../../../client:client",
     "../../../test:test",
     "../../../third_party/googletest:googletest",
+    "../../../util:util_registration_protocol",
   ]
 }

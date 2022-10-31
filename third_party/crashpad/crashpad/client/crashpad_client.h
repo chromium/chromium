@@ -39,6 +39,10 @@
 #include <ucontext.h>
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "client/upload_behavior_ios.h"
+#endif
+
 namespace crashpad {
 
 //! \brief The primary interface for an application to have Crashpad monitor
@@ -531,7 +535,12 @@ class CrashpadClient {
   //! on another thread. This method does not block.
   //!
   //! A handler must have already been installed before calling this method.
-  static void StartProcessingPendingReports();
+  //!
+  //! \param[in] upload_behavior Controls when the upload thread will run and
+  //!     process pending reports. By default, only uploads pending reports
+  //!     when the application is active.
+  static void StartProcessingPendingReports(
+      UploadBehavior upload_behavior = UploadBehavior::kUploadWhenAppIsActive);
 
   //! \brief Requests that the handler capture an intermediate dump even though
   //!     there hasn't been a crash. The intermediate dump will be converted

@@ -56,14 +56,14 @@ template <typename PhdrType>
 class ElfImageReader::ProgramHeaderTableSpecific
     : public ElfImageReader::ProgramHeaderTable {
  public:
-  ProgramHeaderTableSpecific<PhdrType>() {}
+  ProgramHeaderTableSpecific() {}
 
-  ProgramHeaderTableSpecific<PhdrType>(
+  ProgramHeaderTableSpecific(
       const ProgramHeaderTableSpecific<PhdrType>&) = delete;
   ProgramHeaderTableSpecific<PhdrType>& operator=(
       const ProgramHeaderTableSpecific<PhdrType>&) = delete;
 
-  ~ProgramHeaderTableSpecific<PhdrType>() {}
+  ~ProgramHeaderTableSpecific() {}
 
   bool Initialize(const ProcessMemoryRange& memory,
                   VMAddress address,

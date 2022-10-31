@@ -42,6 +42,7 @@ crashpad_static_library("client") {
       "ios_handler/prune_intermediate_dumps_and_crash_reports_thread.cc",
       "ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h",
       "simulate_crash_ios.h",
+      "upload_behavior_ios.h",
     ]
   }
 

@@ -154,6 +154,18 @@ boolean_t handler_forbidden_claimed_address(struct _malloc_zone_t* zone,
   return g_old_zone.claimed_address(zone, ptr);
 }
 
+#if defined(__IPHONE_16_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_1
+void handler_forbidden_try_free_default(struct _malloc_zone_t* zone,
+                                        void* ptr) {
+  if (is_handler_thread()) {
+    CRASHPAD_RAW_LOG(
+        "handler_forbidden_try_free_default allocator used in handler.");
+    exit(EXIT_FAILURE);
+  }
+  g_old_zone.try_free_default(zone, ptr);
+}
+#endif
+
 size_t handler_forbidden_size(struct _malloc_zone_t* zone, const void* ptr) {
   if (is_handler_thread()) {
     CRASHPAD_RAW_LOG("handler_forbidden_size allocator used in handler.");
@@ -246,6 +258,11 @@ void ReplaceZoneFunctions(malloc_zone_t* zone, const malloc_zone_t* functions) {
   zone->free_definite_size = functions->free_definite_size;
   zone->pressure_relief = functions->pressure_relief;
   zone->claimed_address = functions->claimed_address;
+#if defined(__IPHONE_16_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_1
+  if (zone->version >= 13 && functions->try_free_default) {
+    zone->try_free_default = functions->try_free_default;
+  }
+#endif
 
   // Restore protection if it was active.
   if (reprotection_start) {
@@ -285,7 +302,21 @@ void ReplaceAllocatorsWithHandlerForbidden() {
   new_functions.free_definite_size = handler_forbidden_free_definite_size;
   new_functions.pressure_relief = handler_forbidden_pressure_relief;
   new_functions.claimed_address = handler_forbidden_claimed_address;
+#if defined(__IPHONE_16_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_1
+  new_functions.try_free_default = handler_forbidden_try_free_default;
+#endif
   ReplaceZoneFunctions(default_zone, &new_functions);
+
+  vm_address_t* zones;
+  unsigned int count;
+  kern_return_t kr =
+      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &count);
+  if (kr != KERN_SUCCESS)
+    return;
+  for (unsigned int i = 0; i < count; ++i) {
+    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
+    ReplaceZoneFunctions(zone, &new_functions);
+  }
 
   malloc_zone_t* purgeable_zone = malloc_default_purgeable_zone();
   ReplaceZoneFunctions(purgeable_zone, &new_functions);

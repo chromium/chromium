@@ -36,17 +36,17 @@ HRESULT OutOfProcessExceptionEventCallback(
     PWSTR pwszEventName,
     PDWORD pchSize,
     PDWORD pdwSignatureCount) {
-  DWORD wanted_exceptions[] = {
+  static constexpr DWORD wanted_exceptions[] = {
       0xC0000602,  // STATUS_FAIL_FAST_EXCEPTION
       0xC0000409,  // STATUS_STACK_BUFFER_OVERRUN
   };
   // Default to not-claiming as bailing out is easier.
   *pbOwnershipClaimed = FALSE;
-  bool result =
-      crashpad::wer::ExceptionEvent(wanted_exceptions,
-                                    sizeof(wanted_exceptions) / sizeof(DWORD),
-                                    pContext,
-                                    pExceptionInformation);
+  bool result = crashpad::wer::ExceptionEvent(
+      wanted_exceptions,
+      sizeof(wanted_exceptions) / sizeof(wanted_exceptions[0]),
+      pContext,
+      pExceptionInformation);
 
   if (result) {
     *pbOwnershipClaimed = TRUE;
