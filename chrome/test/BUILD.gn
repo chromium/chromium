@@ -7137,6 +7137,7 @@ test("unit_tests") {
       "//chrome:packed_resources_integrity_hash",
       "//chrome/browser/autofill_assistant/password_change/vector_icons:vector_icons",
       "//chrome/browser/enterprise/connectors/analysis:features",
+      "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
