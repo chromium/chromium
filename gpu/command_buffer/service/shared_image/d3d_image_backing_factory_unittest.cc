@@ -1865,8 +1865,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
       shared_image_representation_factory_->ProduceOverlay(
           shared_image_refs[0]->mailbox());
 
-  auto scoped_read_access =
-      overlay_representation->BeginScopedReadAccess(/*needs_gl_image=*/true);
+  auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
   ASSERT_TRUE(scoped_read_access);
 
   auto* gl_image_d3d =
@@ -2081,8 +2080,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
         shared_image_representation_factory_->ProduceOverlay(
             shared_image_refs[0]->mailbox());
 
-    auto scoped_read_access =
-        overlay_representation->BeginScopedReadAccess(/*needs_gl_image=*/true);
+    auto scoped_read_access = overlay_representation->BeginScopedReadAccess();
     ASSERT_TRUE(scoped_read_access);
 
     auto* gl_image_memory =

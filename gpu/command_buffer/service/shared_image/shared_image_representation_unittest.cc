@@ -228,8 +228,7 @@ TEST_F(SharedImageRepresentationTest, OverlayClearing) {
 
   // We should not be able to begin read ccess.
   {
-    auto scoped_access =
-        representation->BeginScopedReadAccess(false /* needs_gl_image */);
+    auto scoped_access = representation->BeginScopedReadAccess();
     EXPECT_FALSE(scoped_access);
   }
   EXPECT_FALSE(representation->IsCleared());
@@ -240,8 +239,7 @@ TEST_F(SharedImageRepresentationTest, OverlayClearing) {
 
   // We can now begin read access.
   {
-    auto scoped_access =
-        representation->BeginScopedReadAccess(false /* needs_gl_image */);
+    auto scoped_access = representation->BeginScopedReadAccess();
     EXPECT_TRUE(scoped_access);
   }
   EXPECT_TRUE(representation->IsCleared());

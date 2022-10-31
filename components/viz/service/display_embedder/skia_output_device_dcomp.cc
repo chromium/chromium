@@ -74,7 +74,7 @@ class SkiaOutputDeviceDComp::OverlayData {
 
   gpu::OverlayImageRepresentation::ScopedReadAccess* BeginOverlayAccess() {
     DCHECK(representation_);
-    access_ = representation_->BeginScopedReadAccess(/*needs_gl_image=*/true);
+    access_ = representation_->BeginScopedReadAccess();
     DCHECK(access_);
     return access_.get();
   }

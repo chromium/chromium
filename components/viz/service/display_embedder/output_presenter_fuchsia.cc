@@ -71,8 +71,7 @@ void PresenterImageFuchsia::BeginPresent() {
     DCHECK(read_begin_fences_.empty());
 
     scoped_overlay_read_access_ =
-        overlay_representation_->BeginScopedReadAccess(
-            /*needs_gl_image=*/false);
+        overlay_representation_->BeginScopedReadAccess();
     DCHECK(scoped_overlay_read_access_);
 
     // Take ownership of acquire fence.

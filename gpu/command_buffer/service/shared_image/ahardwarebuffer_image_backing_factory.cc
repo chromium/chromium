@@ -246,11 +246,6 @@ class OverlayAHBImageRepresentation : public OverlayImageRepresentation {
     return gl_image_->GetAHardwareBuffer();
   }
 
-  gl::GLImage* GetGLImage() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
   raw_ptr<OverlayImage> gl_image_ = nullptr;
 };
 

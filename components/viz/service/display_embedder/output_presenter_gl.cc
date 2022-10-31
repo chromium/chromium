@@ -77,14 +77,8 @@ void PresenterImageGL::BeginPresent() {
   DCHECK(!sk_surface());
   DCHECK(!scoped_overlay_read_access_);
 
-#if defined(USE_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  const bool needs_gl_image = false;
-#else
-  const bool needs_gl_image = true;
-#endif  // defined(USE_OZONE)
-
   scoped_overlay_read_access_ =
-      overlay_representation_->BeginScopedReadAccess(needs_gl_image);
+      overlay_representation_->BeginScopedReadAccess();
   DCHECK(scoped_overlay_read_access_);
 }
 
@@ -120,7 +114,7 @@ gl::OverlayImage PresenterImageGL::GetOverlayImage(
 #elif BUILDFLAG(IS_ANDROID)
   return scoped_overlay_read_access_->GetAHardwareBufferFenceSync();
 #else
-  return scoped_overlay_read_access_->gl_image();
+  LOG(FATAL) << "GetOverlayImage() is not implemented on this platform".
 #endif
 }
 
@@ -383,8 +377,6 @@ void OutputPresenterGL::ScheduleOverlayPlane(
 #elif BUILDFLAG(IS_ANDROID)
   gl::OverlayImage overlay_image =
       access ? access->GetAHardwareBufferFenceSync() : nullptr;
-#else
-  auto* overlay_image = access ? access->gl_image() : nullptr;
 #endif
   // TODO(msisov): Once shared image factory allows creating a non backed
   // images and ScheduleOverlayPlane does not rely on GLImage, remove the if

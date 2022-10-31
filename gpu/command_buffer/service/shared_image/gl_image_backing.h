@@ -138,7 +138,10 @@ class OverlayGLImageRepresentation : public OverlayImageRepresentation {
  private:
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override;
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override;
+
+#if BUILDFLAG(IS_WIN)
   gl::GLImage* GetGLImage() override;
+#endif
 
   scoped_refptr<gl::GLImage> gl_image_;
 };

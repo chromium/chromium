@@ -266,11 +266,6 @@ bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
       static_cast<gl::GLImageIOSurface*>(gl_image_.get())->io_surface());
 }
 
-gl::GLImage* OverlayIOSurfaceRepresentation::GetGLImage() {
-  NOTREACHED();
-  return nullptr;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // IOSurfaceImageBacking
 

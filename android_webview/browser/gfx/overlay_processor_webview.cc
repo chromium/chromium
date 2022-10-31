@@ -68,7 +68,7 @@ class OverlayProcessorWebView::Manager
         return;
       }
 
-      read_access_ = representation_->BeginScopedReadAccess(false);
+      read_access_ = representation_->BeginScopedReadAccess();
       if (!read_access_) {
         LOG(ERROR) << "Couldn't access shared image for read.";
         return;

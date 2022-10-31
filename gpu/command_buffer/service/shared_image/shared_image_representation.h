@@ -488,11 +488,8 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
    public:
     ScopedReadAccess(base::PassKey<OverlayImageRepresentation> pass_key,
                      OverlayImageRepresentation* representation,
-                     gl::GLImage* gl_image,
                      gfx::GpuFenceHandle acquire_fence);
     ~ScopedReadAccess();
-
-    gl::GLImage* gl_image() const { return gl_image_; }
 
 #if BUILDFLAG(IS_ANDROID)
     AHardwareBuffer* GetAHardwareBuffer() {
@@ -510,6 +507,8 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
       return representation()->GetNativePixmap();
     }
 #elif BUILDFLAG(IS_WIN)
+    gl::GLImage* gl_image() { return representation()->GetGLImage(); }
+
     scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy() {
       return representation()->GetDCOMPSurfaceProxy();
     }
@@ -532,12 +531,11 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
     }
 
    private:
-    const raw_ptr<gl::GLImage, DanglingUntriaged> gl_image_;
     gfx::GpuFenceHandle acquire_fence_;
     gfx::GpuFenceHandle release_fence_;
   };
 
-  std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(bool needs_gl_image);
+  std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
 
  protected:
   friend class WrappedOverlayCompoundImageRepresentation;
@@ -563,16 +561,13 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
   scoped_refptr<gfx::NativePixmap> GetNativePixmap();
 #elif BUILDFLAG(IS_WIN)
   virtual scoped_refptr<gl::DCOMPSurfaceProxy> GetDCOMPSurfaceProxy();
+  virtual gl::GLImage* GetGLImage() = 0;
 #elif BUILDFLAG(IS_MAC)
   virtual gfx::ScopedIOSurface GetIOSurface() const;
   // Return true if the macOS WindowServer is currently using the underlying
   // storage for the image.
   virtual bool IsInUseByWindowServer() const;
 #endif
-
-  // TODO(penghuang): Refactor it to not depend on GL.
-  // Get the backing as GLImage for GLSurface::ScheduleOverlayPlane.
-  virtual gl::GLImage* GetGLImage() = 0;
 };
 
 #if BUILDFLAG(IS_ANDROID)

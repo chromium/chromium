@@ -156,10 +156,12 @@ class TestOverlayImageRepresentation : public OverlayImageRepresentation {
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
 
+#if BUILDFLAG(IS_WIN)
   gl::GLImage* GetGLImage() override {
     gl_image_ = base::MakeRefCounted<gl::GLImage>();
     return gl_image_.get();
   }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>

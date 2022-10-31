@@ -203,7 +203,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
 
   // First access should trigger upload from memory to GPU.
-  overlay_rep->BeginScopedReadAccess(false);
+  overlay_rep->BeginScopedReadAccess();
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
   // After GPU read access both should have latest content.
@@ -212,13 +212,13 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
 
   // Second access shouldn't trigger upload since no shared memory updates
   // happened.
-  overlay_rep->BeginScopedReadAccess(false);
+  overlay_rep->BeginScopedReadAccess();
   EXPECT_FALSE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
   // Notify compound backing of shared memory update. Next access should
   // trigger a new upload.
   compound_backing->Update(nullptr);
-  overlay_rep->BeginScopedReadAccess(false);
+  overlay_rep->BeginScopedReadAccess();
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 
   // Test that GLTexturePassthrough access causes upload.
@@ -292,6 +292,7 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
+#if BUILDFLAG(IS_WIN)
 TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
   auto backing = CreateCompoundBacking(/*allow_shm_overlays=*/true);
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
@@ -300,7 +301,7 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
 
   auto overlay_rep =
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
-  auto access = overlay_rep->BeginScopedReadAccess(/*needs_gl_image=*/true);
+  auto access = overlay_rep->BeginScopedReadAccess();
 
   // This should produce a GLImageMemory but there will still be no GPU backing.
   auto* gl_image = access->gl_image();
@@ -308,6 +309,7 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
   EXPECT_EQ(gl_image->GetType(), gl::GLImage::Type::MEMORY);
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 }
+#endif
 
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   auto backing = CreateCompoundBacking();

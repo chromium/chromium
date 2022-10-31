@@ -271,7 +271,9 @@ class WrappedOverlayCompoundImageRepresentation
   void EndReadAccess(gfx::GpuFenceHandle release_fence) final {
     return wrapped_->EndReadAccess(std::move(release_fence));
   }
+#if BUILDFLAG(IS_WIN)
   gl::GLImage* GetGLImage() final { return wrapped_->GetGLImage(); }
+#endif
 
  private:
   const SharedImageAccessStream access_stream_;

@@ -68,7 +68,10 @@ class OverlayImageRepresentationImpl : public OverlayImageRepresentation {
     return true;
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
+
+#if BUILDFLAG(IS_WIN)
   gl::GLImage* GetGLImage() override { return gl_image_.get(); }
+#endif
 
   scoped_refptr<gl::GLImage> gl_image_;
 };

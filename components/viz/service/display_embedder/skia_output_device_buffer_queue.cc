@@ -33,7 +33,6 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_fence.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -334,23 +333,11 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
     return nullptr;
   }
 
-#if defined(USE_OZONE) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  const bool needs_gl_image = false;
-#else
-  const bool needs_gl_image = true;
-#endif  // defined(USE_OZONE)
-
-  // TODO(penghuang): do not depend on GLImage.
-  auto shared_image_access =
-      shared_image->BeginScopedReadAccess(needs_gl_image);
+  auto shared_image_access = shared_image->BeginScopedReadAccess();
   if (!shared_image_access) {
     LOG(ERROR) << "Could not access SharedImage for read.";
     return nullptr;
   }
-
-  // TODO(penghuang): do not depend on GLImage.
-  DLOG_IF(FATAL, needs_gl_image && !shared_image_access->gl_image())
-      << "Cannot get GLImage.";
 
   bool result;
   std::tie(it, result) = overlays_.emplace(std::move(shared_image),

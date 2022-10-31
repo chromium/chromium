@@ -291,9 +291,11 @@ void OverlayGLImageRepresentation::EndReadAccess(
   gl_backing->SetReleaseFence(std::move(release_fence));
 }
 
+#if BUILDFLAG(IS_WIN)
 gl::GLImage* OverlayGLImageRepresentation::GetGLImage() {
   return gl_image_.get();
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // GLImageBacking

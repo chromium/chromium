@@ -106,23 +106,6 @@ class OzoneImageBacking::OverlayOzoneImageRepresentation
     ozone_backing->EndAccess(/*readonly=*/true, AccessStream::kOverlay,
                              std::move(release_fence));
   }
-
-  gl::GLImage* GetGLImage() override {
-    if (!gl_image_) {
-      gfx::BufferFormat buffer_format = viz::BufferFormat(format());
-      auto pixmap =
-          static_cast<OzoneImageBacking*>(backing())->GetNativePixmap();
-      gl_image_ = base::MakeRefCounted<gl::GLImageNativePixmap>(
-          pixmap->GetBufferSize(), buffer_format);
-      if (backing()->color_space().IsValid())
-        gl_image_->SetColorSpace(backing()->color_space());
-      gl_image_->InitializeForOverlay(pixmap);
-    }
-
-    return gl_image_.get();
-  }
-
-  scoped_refptr<gl::GLImageNativePixmap> gl_image_;
 };
 
 OzoneImageBacking::~OzoneImageBacking() = default;

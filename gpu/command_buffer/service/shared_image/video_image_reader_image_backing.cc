@@ -544,11 +544,6 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
     scoped_hardware_buffer_.reset();
   }
 
-  gl::GLImage* GetGLImage() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
   AHardwareBuffer* GetAHardwareBuffer() override {
     DCHECK(scoped_hardware_buffer_);
     return scoped_hardware_buffer_->buffer();

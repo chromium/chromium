@@ -61,10 +61,12 @@ void ExternalVkImageOverlayImageRepresentation::EndReadAccess(
   read_begin_semaphores_.clear();
 }
 
+#if BUILDFLAG(IS_WIN)
 gl::GLImage* ExternalVkImageOverlayImageRepresentation::GetGLImage() {
   NOTREACHED();
   return nullptr;
 }
+#endif
 
 void ExternalVkImageOverlayImageRepresentation::GetAcquireFence(
     gfx::GpuFenceHandle& fence) {

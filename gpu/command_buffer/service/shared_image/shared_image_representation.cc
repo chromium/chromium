@@ -338,10 +338,8 @@ bool OverlayImageRepresentation::IsInUseByWindowServer() const {
 OverlayImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<OverlayImageRepresentation> pass_key,
     OverlayImageRepresentation* representation,
-    gl::GLImage* gl_image,
     gfx::GpuFenceHandle acquire_fence)
     : ScopedAccessBase(representation),
-      gl_image_(gl_image),
       acquire_fence_(std::move(acquire_fence)) {}
 
 OverlayImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
@@ -349,7 +347,7 @@ OverlayImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
 }
 
 std::unique_ptr<OverlayImageRepresentation::ScopedReadAccess>
-OverlayImageRepresentation::BeginScopedReadAccess(bool needs_gl_image) {
+OverlayImageRepresentation::BeginScopedReadAccess() {
   if (!IsCleared()) {
     LOG(ERROR) << "Attempt to read from an uninitialized SharedImage";
     return nullptr;
@@ -363,7 +361,7 @@ OverlayImageRepresentation::BeginScopedReadAccess(bool needs_gl_image) {
 
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<OverlayImageRepresentation>(), this,
-      needs_gl_image ? GetGLImage() : nullptr, std::move(acquire_fence));
+      std::move(acquire_fence));
 }
 
 DawnImageRepresentation::ScopedAccess::ScopedAccess(
