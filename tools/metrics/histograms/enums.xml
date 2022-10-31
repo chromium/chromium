@@ -4401,9 +4401,9 @@ Unknown properties are collapsed to zero. -->
   <int value="19" label="Stop interface forwarding error (netd)"/>
   <int value="20" label="Start tethering error (netd)"/>
   <int value="21" label="Stop tethering error (netd)"/>
-  <int value="23" label="SNAT start error (netd)"/>
-  <int value="24" label="SNAT stop error (netd)"/>
-  <int value="25" label="Invalid PasspointConfiguration (wifi)"/>
+  <int value="22" label="SNAT start error (netd)"/>
+  <int value="23" label="SNAT stop error (netd)"/>
+  <int value="24" label="Invalid PasspointConfiguration (wifi)"/>
 </enum>
 
 <enum name="ArcNetworkEvent">
