@@ -9,6 +9,7 @@
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_highlight_layer.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -248,15 +249,10 @@ class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
         ::features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
   }
 
-  void TurnOnSelectToSpeak() override {
-    SelectToSpeakTest::TurnOnSelectToSpeak();
-
-    // Enable voice switching using chrome.storage API.
-    std::string script = R"(
-      chrome.storage.sync.set({voiceSwitching: true});
-      window.domAutomationController.send("done");
-    )";
-    RunJavaScriptInSelectToSpeakBackgroundPage(script);
+  void SetUpOnMainThread() override {
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kAccessibilitySelectToSpeakVoiceSwitching, true);
+    SelectToSpeakTest::SetUpOnMainThread();
   }
 
  private:
@@ -494,10 +490,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, LanguageBoundsIgnoredByDefault) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/1107958): Re-enable this test after fixing flakes.
-// TODO(crbug.com/950391): Re-enable this test before launching voice switching.
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithVoiceSwitching,
-                       DISABLED_BreaksAtLanguageBounds) {
+                       BreaksAtLanguageBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div>"
       "<span lang='en-US'>The first paragraph</span>"
