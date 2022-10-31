@@ -80,7 +80,7 @@ public class ContentShellActivity extends Activity {
 
         if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
             BrowserStartupController.getInstance().startBrowserProcessesSync(
-                    LibraryProcessType.PROCESS_BROWSER, false);
+                    LibraryProcessType.PROCESS_BROWSER, false, false);
         } else {
             BrowserStartupController.getInstance().startBrowserProcessesAsync(
                     LibraryProcessType.PROCESS_BROWSER, true, false,

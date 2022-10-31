@@ -324,7 +324,7 @@ public class ChromeBrowserInitializer {
                         }
                     });
         } else {
-            startChromeBrowserProcessesSync();
+            startChromeBrowserProcessesSync(delegate.shouldStartGpuProcess());
             tasks.start(true);
         }
     }
@@ -356,7 +356,7 @@ public class ChromeBrowserInitializer {
         }
     }
 
-    private void startChromeBrowserProcessesSync() {
+    private void startChromeBrowserProcessesSync(boolean startGpuProcess) {
         try {
             TraceEvent.begin("ChromeBrowserInitializer.startChromeBrowserProcessesSync");
             ThreadUtils.assertOnUiThread();
@@ -365,7 +365,8 @@ public class ChromeBrowserInitializer {
             StrictMode.setThreadPolicy(oldPolicy);
             LibraryPrefetcher.asyncPrefetchLibrariesToMemory();
             getBrowserStartupController().startBrowserProcessesSync(
-                    LibraryProcessType.PROCESS_BROWSER, /*singleProcess=*/false);
+                    LibraryProcessType.PROCESS_BROWSER, /*singleProcess=*/false,
+                    /*startGpuProcess=*/startGpuProcess);
             SigninCheckerProvider.get();
         } finally {
             TraceEvent.end("ChromeBrowserInitializer.startChromeBrowserProcessesSync");

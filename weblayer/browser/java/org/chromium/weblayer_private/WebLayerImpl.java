@@ -208,7 +208,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
 
         BrowserStartupController.getInstance().startBrowserProcessesSync(
                 LibraryProcessType.PROCESS_WEBLAYER,
-                /* singleProcess*/ false);
+                /*singleProcess=*/false, /*startGpuProcess=*/true);
 
         onNativeLoaded(appContext);
         // WARNING: loadAsync() may be in progress, and may call methods that this does as well.

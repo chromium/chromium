@@ -81,8 +81,8 @@ public class NativeBackgroundTaskTest {
                 final StartupCallback callback) {}
 
         @Override
-        public void startBrowserProcessesSync(
-                @LibraryProcessType int libraryProcessType, boolean singleProcess) {}
+        public void startBrowserProcessesSync(@LibraryProcessType int libraryProcessType,
+                boolean singleProcess, boolean startGpuProcess) {}
 
         @Override
         public boolean isFullBrowserStarted() {

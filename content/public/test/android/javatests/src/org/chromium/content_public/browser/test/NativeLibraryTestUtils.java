@@ -39,7 +39,7 @@ public class NativeLibraryTestUtils {
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         if (initBrowserProcess) {
             BrowserStartupController.getInstance().startBrowserProcessesSync(
-                    LibraryProcessType.PROCESS_BROWSER, false);
+                    LibraryProcessType.PROCESS_BROWSER, false, false);
         } else {
             LibraryLoader.getInstance().ensureInitialized();
         }

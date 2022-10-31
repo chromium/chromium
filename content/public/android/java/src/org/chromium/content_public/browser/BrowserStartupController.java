@@ -46,7 +46,8 @@ public interface BrowserStartupController {
      *                           LibraryProcessType.PROCESS_BROWSER,
      *                           LibraryProcessType.PROCESS_WEBVIEW or
      *                           LibraryProcessType.PROCESS_WEBLAYER.
-     * @param startGpuProcess Whether to start the GPU process if it is not started.
+     * @param startGpuProcess Whether to start the GPU process if it is not started. Only has
+     *                        effect if browser isn't already started.
      * @param startMinimalBrowser Whether browser startup will be paused after a minimal environment
      *                                is started.
      * @param callback the callback to be called when browser startup is complete.
@@ -67,9 +68,11 @@ public interface BrowserStartupController {
      *                           LibraryProcessType.PROCESS_WEBLAYER.
      * @param singleProcess true iff the browser should run single-process, ie. keep renderers in
      *                      the browser process
+     * @param startGpuProcess Whether to start the GPU process if it is not started. Only has
+     *                        effect if browser isn't already started.
      */
-    void startBrowserProcessesSync(
-            @LibraryProcessType int libraryProcessType, boolean singleProcess);
+    void startBrowserProcessesSync(@LibraryProcessType int libraryProcessType,
+            boolean singleProcess, boolean startGpuProcess);
 
     /**
      * @return Whether the browser process has been started in "Full Browser" mode successfully. See

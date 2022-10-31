@@ -204,7 +204,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // This is the first time we have been asked to start the browser process. We set the
             // flag that indicates that we have kicked off starting the browser process.
             mHasStartedInitializingBrowserProcess = true;
-            sShouldStartGpuProcessOnBrowserStartup = startGpuProcess;
+            sShouldStartGpuProcessOnBrowserStartup |= startGpuProcess;
 
             // Start-up at this point occurs before the first frame of the app is drawn. Although
             // contentStart() can be called eagerly, deferring it would allow a frame to be drawn,
@@ -236,10 +236,12 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     }
 
     @Override
-    public void startBrowserProcessesSync(
-            @LibraryProcessType int libraryProcessType, boolean singleProcess) {
+    public void startBrowserProcessesSync(@LibraryProcessType int libraryProcessType,
+            boolean singleProcess, boolean startGpuProcess) {
         assert !LibraryLoader.isBrowserProcessStartupBlockedForTesting();
         assertProcessTypeSupported(libraryProcessType);
+
+        sShouldStartGpuProcessOnBrowserStartup |= startGpuProcess;
 
         ServicificationStartupUma.getInstance().record(ServicificationStartupUma.getStartupMode(
                 mFullBrowserStartupDone, mMinimalBrowserStarted, false /* startMinimalBrowser */));

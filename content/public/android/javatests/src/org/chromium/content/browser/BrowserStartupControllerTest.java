@@ -337,7 +337,8 @@ public class BrowserStartupControllerTest {
         // Kick off the synchronous startup.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             try {
-                mController.startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false);
+                mController.startBrowserProcessesSync(
+                        LibraryProcessType.PROCESS_BROWSER, false, false);
             } catch (Exception e) {
                 Assert.fail("Browser should have started successfully");
             }
@@ -366,7 +367,8 @@ public class BrowserStartupControllerTest {
             // to do both these in a since Runnable instance. This avoids the
             // unpredictable race that happens in real situations.
             try {
-                mController.startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false);
+                mController.startBrowserProcessesSync(
+                        LibraryProcessType.PROCESS_BROWSER, false, true);
             } catch (Exception e) {
                 Assert.fail("Browser should have started successfully");
             }
@@ -389,7 +391,8 @@ public class BrowserStartupControllerTest {
         // Do a synchronous startup first.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             try {
-                mController.startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false);
+                mController.startBrowserProcessesSync(
+                        LibraryProcessType.PROCESS_BROWSER, false, true);
             } catch (Exception e) {
                 Assert.fail("Browser should have started successfully");
             }
@@ -667,7 +670,8 @@ public class BrowserStartupControllerTest {
         });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             try {
-                mController.startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false);
+                mController.startBrowserProcessesSync(
+                        LibraryProcessType.PROCESS_BROWSER, false, true);
             } catch (Exception e) {
                 Assert.fail("Browser should have started successfully");
             }
@@ -706,7 +710,8 @@ public class BrowserStartupControllerTest {
             }
 
             try {
-                mController.startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false);
+                mController.startBrowserProcessesSync(
+                        LibraryProcessType.PROCESS_BROWSER, false, true);
             } catch (Exception e) {
                 Assert.fail("Browser should have started successfully");
             }
@@ -738,7 +743,8 @@ public class BrowserStartupControllerTest {
         // Kick off the asynchronous startup requests.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             try {
-                mController.startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false);
+                mController.startBrowserProcessesSync(
+                        LibraryProcessType.PROCESS_BROWSER, false, true);
             } catch (Exception e) {
                 Assert.fail("Browser should have started successfully");
             }

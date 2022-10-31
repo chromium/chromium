@@ -168,7 +168,8 @@ public final class AwBrowserProcess {
                 try (ScopedSysTraceEvent e2 = ScopedSysTraceEvent.scoped(
                              "AwBrowserProcess.startBrowserProcessesSync")) {
                     BrowserStartupController.getInstance().startBrowserProcessesSync(
-                            LibraryProcessType.PROCESS_WEBVIEW, !multiProcess);
+                            LibraryProcessType.PROCESS_WEBVIEW, !multiProcess,
+                            /*startGpuProcess=*/false);
                 }
 
                 PowerMonitor.create();
