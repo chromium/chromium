@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
-
 import {ListSelectionModel} from './list_selection_model.js';
 
 /**
@@ -129,23 +127,13 @@ ListSelectionController.prototype = {
     sm.beginChange();
 
     if (index === -1) {
-      // On Mac we always clear the selection if the user clicks a blank area.
-      // On Windows, we only clear the selection if neither Shift nor Ctrl are
-      // pressed.
-      if (isMac || isChromeOS) {
-        sm.leadIndex = sm.anchorIndex = -1;
-        sm.unselectAll();
-      } else if (!isDown && !e.shiftKey && !e.ctrlKey) {
-        // Keep anchor and lead indexes. Note that this is intentionally
-        // different than on the Mac.
-        if (sm.multiple) {
-          sm.unselectAll();
-        }
-      }
+      // On CrOS we always clear the selection if the user clicks a blank area.
+      sm.leadIndex = sm.anchorIndex = -1;
+      sm.unselectAll();
     } else {
-      if (sm.multiple && (isMac ? e.metaKey : (e.ctrlKey && !e.shiftKey))) {
+      if (sm.multiple && (e.ctrlKey && !e.shiftKey)) {
         // Selection is handled at mouseUp on windows/linux, mouseDown on mac.
-        if (isMac ? isDown : !isDown) {
+        if (!isDown) {
           // Toggle the current one and make it anchor index.
           sm.setIndexSelected(index, !sm.getIndexSelected(index));
           sm.leadIndex = index;
@@ -225,8 +213,7 @@ ListSelectionController.prototype = {
     let prevent = true;
 
     // Ctrl/Meta+A
-    if (sm.multiple && e.keyCode === 65 &&
-        (isMac && e.metaKey || !isMac && e.ctrlKey)) {
+    if (sm.multiple && e.keyCode === 65 && e.ctrlKey) {
       sm.selectAll();
       e.preventDefault();
       return;
@@ -286,9 +273,6 @@ ListSelectionController.prototype = {
         } else {
           sm.selectRange(anchorIndex, newIndex);
         }
-      } else if (e.ctrlKey && !isMac && !isChromeOS) {
-        // Setting the lead index is done above.
-        // Mac does not allow you to change the lead.
       } else {
         if (sm.multiple) {
           sm.unselectAll();

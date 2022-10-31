@@ -6,7 +6,7 @@
  * @fileoverview This is a table column representation
  */
 
-import {dispatchPropertyChange, getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+import {dispatchPropertyChange, getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 /**

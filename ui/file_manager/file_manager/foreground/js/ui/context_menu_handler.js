@@ -6,7 +6,7 @@
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
-import {isWindows, isLinux, isMac, isLacros, dispatchPropertyChange} from 'chrome://resources/js/cr.m.js';
+import {dispatchPropertyChange} from 'chrome://resources/js/cr_deprecated.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
@@ -105,7 +105,7 @@ import {positionPopupAtPoint} from './position_util.js';
       // On windows we might hide the menu in a right mouse button up and if
       // that is the case we wait some short period before we allow the menu
       // to be shown again.
-      this.hideTimestamp_ = isWindows ? Date.now() : 0;
+      this.hideTimestamp_ = 0;
 
       const ev = new Event('hide');
       ev.element = originalContextElement;
@@ -171,13 +171,6 @@ import {positionPopupAtPoint} from './position_util.js';
         case 'mousedown':
           if (!this.menu.contains(e.target)) {
             this.hideMenu();
-            if (e.button === 0 /* Left button */ &&
-                (isLinux || isMac || isLacros)) {
-              // Emulate Mac and Linux, which swallow native 'mousedown' events
-              // that close menus.
-              e.preventDefault();
-              e.stopPropagation();
-            }
           } else {
             e.preventDefault();
           }

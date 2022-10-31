@@ -5,6 +5,9 @@
 import './strings.m.js';
 import 'chrome://file-manager/background/js/metrics_start.js';
 import './test_util_swa.js';
+// Imported for the side-effect of defining |window.webUIResponse|, which is
+// assumed to exist below.
+import 'chrome://resources/js/cr.m.js';
 
 import {background} from 'chrome://file-manager/background/js/file_manager_base.js';
 import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';

@@ -78,6 +78,7 @@ preprocess_if_expr("preprocess_src") {
   in_files = [
     "assert.js",
     "cr.m.js",
+    "cr_deprecated.js",
     "cr/event_target.js",
     "cr/ui.js",
     "load_time_data.m.js",
@@ -138,6 +139,7 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert",
     ":cr.m",
+    ":cr_deprecated",
     ":load_time_data.m",
     ":promise_resolver",
     ":util",
@@ -155,6 +157,10 @@ js_library("cr.m") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
+js_library("cr_deprecated") {
+  deps = [ ":assert" ]
+}
+
 js_library("load_time_data.m") {
 }
 
@@ -163,9 +169,5 @@ js_library("promise_resolver") {
 }
 
 js_library("util") {
-  deps = [
-    ":assert",
-    ":cr.m",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
+  deps = [ ":assert" ]
 }

@@ -6,7 +6,7 @@
  * @fileoverview This implements a table control.
  */
 
-import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
+import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr_deprecated.js';
 
 import {ArrayDataModel} from '../../../../common/js/array_data_model.js';
 import {List} from '../list.js';

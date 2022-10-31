@@ -6,7 +6,7 @@
  * @fileoverview This extends List for use in the table.
  */
 
-import {getPropertyDescriptor} from 'chrome://resources/js/cr.m.js';
+import {getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
 
 import {List} from '../list.js';
 import {ListItem} from '../list_item.js';

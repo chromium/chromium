@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent, isMac} from 'chrome://resources/js/cr.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
 import {toCssPx} from 'chrome://resources/js/cr/ui.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';

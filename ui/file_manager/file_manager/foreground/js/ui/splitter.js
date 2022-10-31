@@ -18,7 +18,7 @@
  *
  */
 
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
 
 /**

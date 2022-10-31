@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 import {define as crUiDefine, decorate} from 'chrome://resources/js/cr/ui.js';
 import {positionPopupAroundElement, AnchorType} from './position_util.js';
@@ -297,10 +296,7 @@ import {MenuItem} from './menu_item.js';
           'menuhide', {bubbles: true, cancelable: false, view: window});
       this.dispatchEvent(event);
 
-      // On windows we might hide the menu in a right mouse button up and if
-      // that is the case we wait some short period before we allow the menu
-      // to be shown again.
-      this.hideTimestamp_ = isWindows ? Date.now() : 0;
+      this.hideTimestamp_ = 0;
     },
 
     /**

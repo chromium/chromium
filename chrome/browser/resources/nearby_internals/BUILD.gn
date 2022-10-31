@@ -118,7 +118,6 @@ js_library("nearby_internals") {
     ":ui_trigger_list_object",
     ":ui_trigger_tab",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -130,7 +129,6 @@ js_library("logging_tab") {
     ":types",
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 

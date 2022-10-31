@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {getPropertyDescriptor, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {getPropertyDescriptor} from 'chrome://resources/js/cr_deprecated.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 import {$, appendParam} from 'chrome://resources/js/util.js';
 

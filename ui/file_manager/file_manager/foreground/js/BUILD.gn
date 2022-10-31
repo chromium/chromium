@@ -187,7 +187,7 @@ js_library("actions_model") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -252,7 +252,7 @@ js_unittest("banner_util_unittest") {
 
 js_library("mock_actions_model") {
   deps = [
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -401,7 +401,7 @@ js_library("directory_contents") {
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -441,7 +441,7 @@ js_library("directory_model") {
     "//ui/file_manager/file_manager/externs/ts:state",
     "//ui/file_manager/file_manager/externs/ts:store",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -707,7 +707,7 @@ js_library("file_selection") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -1117,7 +1117,7 @@ js_library("quick_view_controller") {
 
 js_library("quick_view_model") {
   deps = [
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -1215,7 +1215,7 @@ js_unittest("task_controller_unittest") {
 
 js_library("task_history") {
   deps = [
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -1262,7 +1262,7 @@ js_library("toolbar_controller") {
 js_library("webui_command_extender") {
   deps = [
     "ui:command",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

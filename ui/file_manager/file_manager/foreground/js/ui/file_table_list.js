@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {isMac} from 'chrome://resources/js/cr.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
@@ -756,8 +755,7 @@ filelist.handleKeyDown = function(e) {
   // Ctrl/Meta+A. Use keyCode=65 to use the same shortcut key regardless of
   // keyboard layout.
   const pressedKeyA = e.keyCode === 65 || e.key === 'a';
-  if (sm.multiple && pressedKeyA &&
-      (isMac && e.metaKey || !isMac && e.ctrlKey)) {
+  if (sm.multiple && pressedKeyA && e.ctrlKey) {
     this.filesView.a11y.speakA11yMessage(str('SELECTION_ALL_ENTRIES'));
     sm.setCheckSelectMode(true);
     sm.selectAll();

@@ -421,7 +421,7 @@ js_library("volume_manager_impl") {
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }

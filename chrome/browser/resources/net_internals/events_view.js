@@ -7,7 +7,7 @@
  * help users migrate to using net-export and the catapult netlog_viewer.
  */
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {$} from 'chrome://resources/js/util.js';
 
 import {DivView} from './view.js';

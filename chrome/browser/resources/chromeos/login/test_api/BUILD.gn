@@ -15,6 +15,7 @@ js_library("test_api.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util",
   ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
   extra_deps = [ ":modulize" ]
 }
 

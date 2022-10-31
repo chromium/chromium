@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';

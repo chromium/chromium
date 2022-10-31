@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from './assert.js';
-import {dispatchSimpleEvent} from './cr.m.js';
 
 /**
  * Alias for document.getElementById. Found elements must be HTMLElements.
@@ -146,7 +145,8 @@ export function ensureTransitionEndEvent(el, timeOut) {
   });
   window.setTimeout(function() {
     if (!fired) {
-      dispatchSimpleEvent(el, 'transitionend', true);
+      el.dispatchEvent(new CustomEvent('transitionend',
+            {bubbles: true, composed: true}));
     }
   }, timeOut);
 }

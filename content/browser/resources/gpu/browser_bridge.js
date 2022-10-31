@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
 
 /**
  * This class provides a 'bridge' for communicating between javascript and the

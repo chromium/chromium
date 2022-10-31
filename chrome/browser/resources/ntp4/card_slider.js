@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
-import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr_deprecated.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 
 import {TouchHandler} from './touch_handler.js';
