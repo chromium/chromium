@@ -65,13 +65,14 @@ class NGBlockLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
     return fragment->DumpFragmentTree(flags);
   }
 
-  scoped_refptr<ComputedStyle> MutableStyleForElement(Element* element) {
-    DCHECK(element->GetLayoutObject());
-    scoped_refptr<ComputedStyle> mutable_style =
-        ComputedStyle::Clone(element->GetLayoutObject()->StyleRef());
-    element->GetLayoutObject()->SetStyle(mutable_style,
-                                         LayoutObject::ApplyStyleChanges::kNo);
-    return mutable_style;
+  template <typename UpdateFunc>
+  void UpdateStyleForElement(Element* element, const UpdateFunc& update) {
+    auto* layout_object = element->GetLayoutObject();
+    ComputedStyleBuilder builder(layout_object->StyleRef());
+    update(builder);
+    layout_object->SetStyle(builder.TakeStyle(),
+                            LayoutObject::ApplyStyleChanges::kNo);
+    layout_object->SetNeedsLayout("");
   }
 };
 
@@ -562,9 +563,10 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
   const NGPhysicalBoxFragment* child_fragment = nullptr;
   const NGPhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& container_height) {
-    Element* container = GetDocument().getElementById("container");
-    MutableStyleForElement(container)->SetHeight(container_height);
-    container->GetLayoutObject()->SetNeedsLayout("");
+    UpdateStyleForElement(GetDocument().getElementById("container"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetHeight(container_height);
+                          });
     std::tie(fragment, std::ignore) = RunBlockLayoutAlgorithmForElement(
         GetDocument().getElementsByTagName("html")->item(0));
     ASSERT_EQ(1UL, fragment->Children().size());
@@ -614,9 +616,10 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
   PhysicalOffset child_offset;
   const NGPhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& container_padding_top) {
-    Element* container = GetDocument().getElementById("container");
-    MutableStyleForElement(container)->SetPaddingTop(container_padding_top);
-    container->GetLayoutObject()->SetNeedsLayout("");
+    UpdateStyleForElement(GetDocument().getElementById("container"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetPaddingTop(container_padding_top);
+                          });
     std::tie(fragment, std::ignore) = RunBlockLayoutAlgorithmForElement(
         GetDocument().getElementsByTagName("html")->item(0));
     ASSERT_EQ(1UL, fragment->Children().size());
@@ -900,23 +903,23 @@ TEST_F(NGBlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
                       const Length& zero_margin_bottom,
                       const Length& inflow_margin_top) {
     // Set the style of the elements we care about.
-    Element* zero_top = GetDocument().getElementById("zero-top");
-    MutableStyleForElement(zero_top)->SetMarginBottom(zero_top_margin_bottom);
-    zero_top->GetLayoutObject()->SetNeedsLayout("");
-    Element* zero_inner = GetDocument().getElementById("zero-inner");
-    scoped_refptr<ComputedStyle> zero_inner_style =
-        MutableStyleForElement(zero_inner);
-    zero_inner_style->SetMarginTop(zero_inner_margin_top);
-    zero_inner_style->SetMarginBottom(zero_inner_margin_bottom);
-    zero_inner->GetLayoutObject()->SetNeedsLayout("");
-    Element* zero_element = GetDocument().getElementById("zero");
-    MutableStyleForElement(zero_element)->SetMarginBottom(zero_margin_bottom);
-    zero_element->GetLayoutObject()->SetNeedsLayout("");
-
-    Element* inflow_element = GetDocument().getElementById("inflow");
-    MutableStyleForElement(inflow_element)->SetMarginTop(inflow_margin_top);
-    inflow_element->GetLayoutObject()->SetNeedsLayout("");
-
+    UpdateStyleForElement(GetDocument().getElementById("zero-top"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetMarginBottom(zero_top_margin_bottom);
+                          });
+    UpdateStyleForElement(GetDocument().getElementById("zero-inner"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetMarginTop(zero_inner_margin_top);
+                            builder.SetMarginBottom(zero_inner_margin_bottom);
+                          });
+    UpdateStyleForElement(GetDocument().getElementById("zero"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetMarginBottom(zero_margin_bottom);
+                          });
+    UpdateStyleForElement(GetDocument().getElementById("inflow"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetMarginTop(inflow_margin_top);
+                          });
     UpdateAllLifecyclePhasesForTest();
 
     LayoutNGBlockFlow* child;
@@ -1430,9 +1433,9 @@ TEST_F(NGBlockLayoutAlgorithmTest, PositionFragmentsWithClear) {
   PhysicalOffset adjoining_clearance_offset;
   const NGPhysicalBoxFragment* fragment = nullptr;
   auto run_with_clearance = [&](EClear clear_value) {
-    Element* el_with_clear = GetDocument().getElementById("clearance");
-    MutableStyleForElement(el_with_clear)->SetClear(clear_value);
-    el_with_clear->GetLayoutObject()->SetNeedsLayout("");
+    UpdateStyleForElement(
+        GetDocument().getElementById("clearance"),
+        [&](ComputedStyleBuilder& builder) { builder.SetClear(clear_value); });
     std::tie(fragment, std::ignore) = RunBlockLayoutAlgorithmForElement(
         GetDocument().getElementsByTagName("html")->item(0));
     ASSERT_EQ(1UL, fragment->Children().size());
@@ -2251,9 +2254,9 @@ TEST_F(NGBlockLayoutAlgorithmTest,
 
   const NGPhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& block_width) {
-    Element* new_fc_block = GetDocument().getElementById("new-fc");
-    MutableStyleForElement(new_fc_block)->SetWidth(block_width);
-    new_fc_block->GetLayoutObject()->SetNeedsLayout("");
+    UpdateStyleForElement(
+        GetDocument().getElementById("new-fc"),
+        [&](ComputedStyleBuilder& builder) { builder.SetWidth(block_width); });
     std::tie(fragment, std::ignore) = RunBlockLayoutAlgorithmForElement(
         GetDocument().getElementsByTagName("html")->item(0));
     ASSERT_EQ(1UL, fragment->Children().size());

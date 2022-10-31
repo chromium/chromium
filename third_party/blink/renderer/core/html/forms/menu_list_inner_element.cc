@@ -53,8 +53,8 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
   // But we only do that for the cases where html.css would otherwise use
   // center.
   if (parent_style.AlignItems().GetPosition() == ItemPosition::kCenter) {
-    style->SetMarginTop(Length());
-    style->SetMarginBottom(Length());
+    style_builder.SetMarginTop(Length());
+    style_builder.SetMarginBottom(Length());
     style_builder.SetAlignSelf(StyleSelfAlignmentData(
         ItemPosition::kStart, OverflowAlignment::kDefault));
   }
@@ -67,16 +67,16 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
   Length margin_end = Length::Fixed(
       theme.PopupInternalPaddingEnd(GetDocument().GetFrame(), parent_style));
   if (parent_style.IsLeftToRightDirection()) {
-    style->SetMarginLeft(margin_start);
-    style->SetMarginRight(margin_end);
+    style_builder.SetMarginLeft(margin_start);
+    style_builder.SetMarginRight(margin_end);
   } else {
-    style->SetMarginLeft(margin_end);
-    style->SetMarginRight(margin_start);
+    style_builder.SetMarginLeft(margin_end);
+    style_builder.SetMarginRight(margin_start);
   }
   style_builder.SetTextAlign(parent_style.GetTextAlign(true));
-  style->SetPaddingTop(
+  style_builder.SetPaddingTop(
       Length::Fixed(theme.PopupInternalPaddingTop(parent_style)));
-  style->SetPaddingBottom(
+  style_builder.SetPaddingBottom(
       Length::Fixed(theme.PopupInternalPaddingBottom(parent_style)));
 
   if (const ComputedStyle* option_style =
@@ -85,7 +85,7 @@ scoped_refptr<ComputedStyle> MenuListInnerElement::CustomStyleForLayoutObject(
     style_builder.SetUnicodeBidi(option_style->GetUnicodeBidi());
   }
 
-  return style;
+  return style_builder.TakeStyle();
 }
 
 }  // namespace blink

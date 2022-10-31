@@ -125,6 +125,13 @@ void ResetBorder(ComputedStyleBuilder& builder) {
   builder.ResetBorderBottomRightRadius();
 }
 
+void ResetPadding(ComputedStyleBuilder& builder) {
+  builder.ResetPaddingTop();
+  builder.ResetPaddingRight();
+  builder.ResetPaddingBottom();
+  builder.ResetPaddingLeft();
+}
+
 }  // namespace
 
 LayoutTheme& LayoutTheme::GetTheme() {
@@ -252,7 +259,7 @@ void LayoutTheme::AdjustStyle(const Element* element,
   // After this point, a Node must be non-null Element if
   // EffectiveAppearance() != kNoControlPart.
 
-  AdjustControlPartStyle(style, builder);
+  AdjustControlPartStyle(builder);
 
   // Call the appropriate style adjustment method based off the appearance
   // value.
@@ -421,20 +428,18 @@ bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
   return true;
 }
 
-void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style,
-                                      ComputedStyleBuilder& builder) const {
+void LayoutTheme::AdjustCheckboxStyle(ComputedStyleBuilder& builder) const {
   // padding - not honored by WinIE, needs to be removed.
-  style.ResetPadding();
+  ResetPadding(builder);
 
   // border - honored by WinIE, but looks terrible (just paints in the control
   // box and turns off the Windows XP theme) for now, we will not honor it.
   ResetBorder(builder);
 }
 
-void LayoutTheme::AdjustRadioStyle(ComputedStyle& style,
-                                   ComputedStyleBuilder& builder) const {
+void LayoutTheme::AdjustRadioStyle(ComputedStyleBuilder& builder) const {
   // padding - not honored by WinIE, needs to be removed.
-  style.ResetPadding();
+  ResetPadding(builder);
 
   // border - honored by WinIE, but looks terrible (just paints in the control
   // box and turns off the Windows XP theme) for now, we will not honor it.
@@ -807,15 +812,14 @@ bool LayoutTheme::SupportsCalendarPicker(const AtomicString& type) const {
          type == input_type_names::kMonth || type == input_type_names::kWeek;
 }
 
-void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style,
-                                         ComputedStyleBuilder& builder) {
+void LayoutTheme::AdjustControlPartStyle(ComputedStyleBuilder& builder) {
   // Call the appropriate style adjustment method based off the appearance
   // value.
-  switch (style.EffectiveAppearance()) {
+  switch (builder.EffectiveAppearance()) {
     case kCheckboxPart:
-      return AdjustCheckboxStyle(style, builder);
+      return AdjustCheckboxStyle(builder);
     case kRadioPart:
-      return AdjustRadioStyle(style, builder);
+      return AdjustRadioStyle(builder);
     case kPushButtonPart:
     case kSquareButtonPart:
     case kButtonPart:

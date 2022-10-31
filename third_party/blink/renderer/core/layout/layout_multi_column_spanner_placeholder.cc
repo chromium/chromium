@@ -9,15 +9,16 @@
 
 namespace blink {
 
-static void CopyMarginProperties(ComputedStyle& placeholder_style,
-                                 const ComputedStyle& spanner_style) {
+static void CopyMarginProperties(
+    ComputedStyleBuilder& placeholder_style_builder,
+    const ComputedStyle& spanner_style) {
   // We really only need the block direction margins, but there are no setters
   // for that in ComputedStyle. Just copy all margin sides. The inline ones
   // don't matter anyway.
-  placeholder_style.SetMarginLeft(spanner_style.MarginLeft());
-  placeholder_style.SetMarginRight(spanner_style.MarginRight());
-  placeholder_style.SetMarginTop(spanner_style.MarginTop());
-  placeholder_style.SetMarginBottom(spanner_style.MarginBottom());
+  placeholder_style_builder.SetMarginLeft(spanner_style.MarginLeft());
+  placeholder_style_builder.SetMarginRight(spanner_style.MarginRight());
+  placeholder_style_builder.SetMarginTop(spanner_style.MarginTop());
+  placeholder_style_builder.SetMarginBottom(spanner_style.MarginBottom());
 }
 
 LayoutMultiColumnSpannerPlaceholder*
@@ -73,7 +74,7 @@ void LayoutMultiColumnSpannerPlaceholder::UpdateProperties(
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           parent_style, EDisplay::kBlock);
-  CopyMarginProperties(*new_style_builder.MutableInternalStyle(),
+  CopyMarginProperties(new_style_builder,
                        layout_object_in_flow_thread_->StyleRef());
   SetStyle(new_style_builder.TakeStyle());
 }

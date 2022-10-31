@@ -2495,34 +2495,6 @@ bool ComputedStyle::ShouldForceColor(const StyleColor& unforced_color) const {
          !unforced_color.IsSystemColorIncludingDeprecated();
 }
 
-void ComputedStyle::SetMarginStart(const Length& margin) {
-  if (IsHorizontalWritingMode()) {
-    if (IsLeftToRightDirection())
-      SetMarginLeft(margin);
-    else
-      SetMarginRight(margin);
-  } else {
-    if (IsLeftToRightDirection())
-      SetMarginTop(margin);
-    else
-      SetMarginBottom(margin);
-  }
-}
-
-void ComputedStyle::SetMarginEnd(const Length& margin) {
-  if (IsHorizontalWritingMode()) {
-    if (IsLeftToRightDirection())
-      SetMarginRight(margin);
-    else
-      SetMarginLeft(margin);
-  } else {
-    if (IsLeftToRightDirection())
-      SetMarginBottom(margin);
-    else
-      SetMarginTop(margin);
-  }
-}
-
 bool ComputedStyle::StrokeDashArrayDataEquivalent(
     const ComputedStyle& other) const {
   return StrokeDashArray()->data == other.StrokeDashArray()->data;

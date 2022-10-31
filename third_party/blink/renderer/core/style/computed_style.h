@@ -1276,34 +1276,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Margin utility functions.
-  void SetMarginTop(const Length& v) {
-    if (MarginTop() != v) {
-      if (!v.IsZero() || v.IsAuto())
-        SetMayHaveMargin();
-      MutableMarginTopInternal() = v;
-    }
-  }
-  void SetMarginRight(const Length& v) {
-    if (MarginRight() != v) {
-      if (!v.IsZero() || v.IsAuto())
-        SetMayHaveMargin();
-      MutableMarginRightInternal() = v;
-    }
-  }
-  void SetMarginBottom(const Length& v) {
-    if (MarginBottom() != v) {
-      if (!v.IsZero() || v.IsAuto())
-        SetMayHaveMargin();
-      MutableMarginBottomInternal() = v;
-    }
-  }
-  void SetMarginLeft(const Length& v) {
-    if (MarginLeft() != v) {
-      if (!v.IsZero() || v.IsAuto())
-        SetMayHaveMargin();
-      MutableMarginLeftInternal() = v;
-    }
-  }
   bool HasMarginBeforeQuirk() const {
     return MayHaveMargin() && MarginBefore().Quirk();
   }
@@ -1332,8 +1304,6 @@ class ComputedStyle : public ComputedStyleBase,
   const Length& MarginAfterUsing(const ComputedStyle& other) const {
     return PhysicalMarginToLogical(other).After();
   }
-  void SetMarginStart(const Length&);
-  void SetMarginEnd(const Length&);
   bool MarginEqual(const ComputedStyle& other) const {
     return MarginTop() == other.MarginTop() &&
            MarginLeft() == other.MarginLeft() &&
@@ -1342,35 +1312,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Padding utility functions.
-  void SetPaddingTop(const Length& v) {
-    if (PaddingTop() != v) {
-      if (!v.IsZero())
-        SetMayHavePadding();
-      MutablePaddingTopInternal() = v;
-    }
-  }
-  void SetPaddingRight(const Length& v) {
-    if (PaddingRight() != v) {
-      if (!v.IsZero())
-        SetMayHavePadding();
-      MutablePaddingRightInternal() = v;
-    }
-  }
-  void SetPaddingBottom(const Length& v) {
-    if (PaddingBottom() != v) {
-      if (!v.IsZero())
-        SetMayHavePadding();
-      MutablePaddingBottomInternal() = v;
-    }
-  }
-  void SetPaddingLeft(const Length& v) {
-    if (PaddingLeft() != v) {
-      if (!v.IsZero())
-        SetMayHavePadding();
-      MutablePaddingLeftInternal() = v;
-    }
-  }
-
   const Length& PaddingBefore() const {
     return PhysicalPaddingToLogical().Before();
   }
@@ -1386,18 +1327,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   const Length& PaddingUnder() const {
     return PhysicalPaddingToLogical().Under();
-  }
-  void ResetPadding() {
-    SetPaddingTop(Length::Fixed());
-    SetPaddingBottom(Length::Fixed());
-    SetPaddingLeft(Length::Fixed());
-    SetPaddingRight(Length::Fixed());
-  }
-  void SetPadding(const LengthBox& b) {
-    SetPaddingTop(b.top_);
-    SetPaddingBottom(b.bottom_);
-    SetPaddingLeft(b.left_);
-    SetPaddingRight(b.right_);
   }
   bool PaddingEqual(const ComputedStyle& other) const {
     return PaddingTop() == other.PaddingTop() &&
@@ -2946,6 +2875,36 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetColumnWidthInternal(0);
   }
 
+  // margin-*
+  void SetMarginTop(const Length& v) {
+    if (MarginTop() != v) {
+      if (!v.IsZero() || v.IsAuto())
+        SetMayHaveMargin();
+      MutableMarginTopInternal() = v;
+    }
+  }
+  void SetMarginRight(const Length& v) {
+    if (MarginRight() != v) {
+      if (!v.IsZero() || v.IsAuto())
+        SetMayHaveMargin();
+      MutableMarginRightInternal() = v;
+    }
+  }
+  void SetMarginBottom(const Length& v) {
+    if (MarginBottom() != v) {
+      if (!v.IsZero() || v.IsAuto())
+        SetMayHaveMargin();
+      MutableMarginBottomInternal() = v;
+    }
+  }
+  void SetMarginLeft(const Length& v) {
+    if (MarginLeft() != v) {
+      if (!v.IsZero() || v.IsAuto())
+        SetMayHaveMargin();
+      MutableMarginLeftInternal() = v;
+    }
+  }
+
   // opacity
   void SetOpacity(float f) {
     float v = ClampTo<float>(f, 0, 1);
@@ -2962,6 +2921,36 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
 
   // orphans
   void SetOrphans(int16_t o) { SetOrphansInternal(ClampTo<int16_t>(o, 1)); }
+
+  // padding-*
+  void SetPaddingTop(const Length& v) {
+    if (PaddingTop() != v) {
+      if (!v.IsZero())
+        SetMayHavePadding();
+      MutablePaddingTopInternal() = v;
+    }
+  }
+  void SetPaddingRight(const Length& v) {
+    if (PaddingRight() != v) {
+      if (!v.IsZero())
+        SetMayHavePadding();
+      MutablePaddingRightInternal() = v;
+    }
+  }
+  void SetPaddingBottom(const Length& v) {
+    if (PaddingBottom() != v) {
+      if (!v.IsZero())
+        SetMayHavePadding();
+      MutablePaddingBottomInternal() = v;
+    }
+  }
+  void SetPaddingLeft(const Length& v) {
+    if (PaddingLeft() != v) {
+      if (!v.IsZero())
+        SetMayHavePadding();
+      MutablePaddingLeftInternal() = v;
+    }
+  }
 
   // perspective-origin
   void SetPerspectiveOriginX(const Length& v) {

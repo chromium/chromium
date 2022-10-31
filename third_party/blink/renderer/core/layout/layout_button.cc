@@ -74,15 +74,13 @@ void LayoutButton::UpdateAnonymousChildStyle(
 void LayoutButton::UpdateAnonymousChildStyle(
     const ComputedStyle& parent_style,
     ComputedStyleBuilder& child_style_builder) {
-  ComputedStyle* child_style = child_style_builder.MutableInternalStyle();
-
   child_style_builder.SetFlexGrow(1.0f);
   // min-width: 0; is needed for correct shrinking.
   child_style_builder.SetMinWidth(Length::Fixed(0));
   // Use margin:auto instead of align-items:center to get safe centering, i.e.
   // when the content overflows, treat it the same as align-items: flex-start.
-  child_style->SetMarginTop(Length());
-  child_style->SetMarginBottom(Length());
+  child_style_builder.SetMarginTop(Length());
+  child_style_builder.SetMarginBottom(Length());
   child_style_builder.SetFlexDirection(parent_style.FlexDirection());
   child_style_builder.SetJustifyContent(parent_style.JustifyContent());
   child_style_builder.SetFlexWrap(parent_style.FlexWrap());

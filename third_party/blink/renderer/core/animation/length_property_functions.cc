@@ -348,16 +348,16 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetLeft(value);
       return true;
     case CSSPropertyID::kMarginBottom:
-      style.SetMarginBottom(value);
+      builder.SetMarginBottom(value);
       return true;
     case CSSPropertyID::kMarginLeft:
-      style.SetMarginLeft(value);
+      builder.SetMarginLeft(value);
       return true;
     case CSSPropertyID::kMarginRight:
-      style.SetMarginRight(value);
+      builder.SetMarginRight(value);
       return true;
     case CSSPropertyID::kMarginTop:
-      style.SetMarginTop(value);
+      builder.SetMarginTop(value);
       return true;
     case CSSPropertyID::kMaxHeight:
       builder.SetMaxHeight(value);
@@ -375,16 +375,16 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       builder.SetOffsetDistance(value);
       return true;
     case CSSPropertyID::kPaddingBottom:
-      style.SetPaddingBottom(value);
+      builder.SetPaddingBottom(value);
       return true;
     case CSSPropertyID::kPaddingLeft:
-      style.SetPaddingLeft(value);
+      builder.SetPaddingLeft(value);
       return true;
     case CSSPropertyID::kPaddingRight:
-      style.SetPaddingRight(value);
+      builder.SetPaddingRight(value);
       return true;
     case CSSPropertyID::kPaddingTop:
-      style.SetPaddingTop(value);
+      builder.SetPaddingTop(value);
       return true;
     case CSSPropertyID::kR:
       builder.SetR(value);

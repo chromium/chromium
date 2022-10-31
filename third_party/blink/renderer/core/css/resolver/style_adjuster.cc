@@ -388,8 +388,13 @@ static void AdjustStyleForMarker(ComputedStyle& style,
     Document& document = parent_element.GetDocument();
     auto margins =
         ListMarker::InlineMarginsForInside(document, style, parent_style);
-    style.SetMarginStart(Length::Fixed(margins.first));
-    style.SetMarginEnd(Length::Fixed(margins.second));
+    LogicalToPhysicalSetter setter(style.GetWritingDirection(), builder,
+                                   &ComputedStyleBuilder::SetMarginTop,
+                                   &ComputedStyleBuilder::SetMarginRight,
+                                   &ComputedStyleBuilder::SetMarginBottom,
+                                   &ComputedStyleBuilder::SetMarginLeft);
+    setter.SetInlineStart(Length::Fixed(margins.first));
+    setter.SetInlineEnd(Length::Fixed(margins.second));
   } else {
     // Outside list markers should generate a block container.
     style.SetDisplay(EDisplay::kInlineBlock);

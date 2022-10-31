@@ -108,7 +108,6 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
     ComputedStyleBuilder& child_style_builder) const {
   // Inherit all properties listed here:
   // https://html.spec.whatwg.org/C/#anonymous-fieldset-content-box
-  ComputedStyle* child_style = child_style_builder.MutableInternalStyle();
 
   child_style_builder.SetAlignContent(StyleRef().AlignContent());
   child_style_builder.SetAlignItems(StyleRef().AlignItems());
@@ -121,10 +120,10 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetBorderTopRightRadius(
       StyleRef().BorderTopRightRadius());
 
-  child_style->SetPaddingTop(StyleRef().PaddingTop());
-  child_style->SetPaddingRight(StyleRef().PaddingRight());
-  child_style->SetPaddingBottom(StyleRef().PaddingBottom());
-  child_style->SetPaddingLeft(StyleRef().PaddingLeft());
+  child_style_builder.SetPaddingTop(StyleRef().PaddingTop());
+  child_style_builder.SetPaddingRight(StyleRef().PaddingRight());
+  child_style_builder.SetPaddingBottom(StyleRef().PaddingBottom());
+  child_style_builder.SetPaddingLeft(StyleRef().PaddingLeft());
 
   if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
     child_style_builder.SetColumnCount(StyleRef().ColumnCount());

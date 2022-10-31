@@ -3153,6 +3153,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "margin-left",
@@ -3172,6 +3173,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "margin-right",
@@ -3191,6 +3193,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "margin-top",
@@ -3210,6 +3213,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "marker-end",
@@ -3772,6 +3776,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "padding-left",
@@ -3790,6 +3795,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "padding-right",
@@ -3808,6 +3814,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "padding-top",
@@ -3826,6 +3833,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      readonly: true,
     },
     {
       name: "page",
