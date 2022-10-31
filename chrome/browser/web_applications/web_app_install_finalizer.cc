@@ -488,8 +488,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 
   InstallOsHooksOptions hooks_options;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   hooks_options.os_hooks[OsHookType::kUrlHandlers] = true;
 #else
   hooks_options.os_hooks[OsHookType::kUrlHandlers] = false;
