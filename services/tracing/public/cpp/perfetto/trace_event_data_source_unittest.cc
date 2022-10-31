@@ -38,6 +38,7 @@
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,6 +110,7 @@ class TraceEventDataSourceTest
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
         base::ThreadTaskRunnerHandle::Get());
+    TrackNameRecorder::GetInstance();
     CustomEventRecorder::GetInstance();  //->ResetForTesting();
     TraceEventMetadataSource::GetInstance()->ResetForTesting();
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -2517,8 +2519,6 @@ TEST_F(TraceEventDataSourceTest, HistogramSampleTraceConfigNotEmpty) {
   EXPECT_EQ(e_packet->track_event().chrome_histogram_sample().name_iid(),
             e_packet->interned_data().histogram_names()[0].iid());
   EXPECT_EQ(e_packet->interned_data().histogram_names()[0].name(), "Foo3.Bar3");
-
-  EXPECT_EQ(packet_index, GetFinalizedPacketCount());
 }
 
 TEST_F(TraceEventDataSourceTest, UserActionEvent) {
@@ -2637,13 +2637,21 @@ TEST_F(TraceEventDataSourceTest, SupportNullptrEventName) {
                         });
   const auto& packets = GetFinalizedPackets();
   ASSERT_GT(packets.size(), 0u);
-  const auto& last_packet = *packets.back();
-  EXPECT_TRUE(last_packet.has_track_event());
-  EXPECT_FALSE(last_packet.track_event().has_name_iid());
-  EXPECT_TRUE(last_packet.track_event().has_name());
-  EXPECT_EQ("EventName", last_packet.track_event().name());
-  EXPECT_TRUE(last_packet.has_interned_data());
-  EXPECT_EQ(0, last_packet.interned_data().event_names().size());
+
+  const perfetto::protos::TracePacket* track_event_packet = nullptr;
+  for (const auto& packet : packets) {
+    if (packet->has_track_event()) {
+      track_event_packet = packet.get();
+      break;
+    }
+  }
+  EXPECT_NE(track_event_packet, nullptr);
+
+  EXPECT_FALSE(track_event_packet->track_event().has_name_iid());
+  EXPECT_TRUE(track_event_packet->track_event().has_name());
+  EXPECT_EQ("EventName", track_event_packet->track_event().name());
+  EXPECT_TRUE(track_event_packet->has_interned_data());
+  EXPECT_EQ(0, track_event_packet->interned_data().event_names().size());
 }
 
 // TODO(eseckler): Add startup tracing unittests.

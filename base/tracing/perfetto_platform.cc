@@ -13,8 +13,6 @@
 #include "base/tracing/perfetto_task_runner.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -36,13 +34,9 @@ PerfettoPlatform::PerfettoPlatform(TaskRunnerType task_runner_type)
       deferred_task_runner_(new DeferredSequencedTaskRunner()),
       thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
-      }) {
-  ThreadIdNameManager::GetInstance()->AddObserver(this);
-}
+      }) {}
 
-PerfettoPlatform::~PerfettoPlatform() {
-  ThreadIdNameManager::GetInstance()->RemoveObserver(this);
-}
+PerfettoPlatform::~PerfettoPlatform() = default;
 
 void PerfettoPlatform::StartTaskRunner(
     scoped_refptr<SequencedTaskRunner> task_runner) {
@@ -109,19 +103,6 @@ std::string PerfettoPlatform::GetCurrentProcessName() {
          NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
   }
   return process_name;
-}
-
-void PerfettoPlatform::OnThreadNameChanged(const char* name) {
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  int process_id = trace_event::TraceLog::GetInstance()->process_id();
-  if (perfetto::Tracing::IsInitialized()) {
-    auto track = perfetto::ThreadTrack::Current();
-    auto desc = track.Serialize();
-    desc.mutable_thread()->set_thread_name(name);
-    desc.mutable_thread()->set_pid(process_id);
-    perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
-  }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 }  // namespace tracing

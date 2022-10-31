@@ -361,6 +361,7 @@ const Value* FindTraceEntry(const Value& trace_parsed,
   return nullptr;
 }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 std::vector<const Value*> FindTraceEntries(const Value& trace_parsed,
                                            const char* string_to_match) {
   std::vector<const Value*> hits;
@@ -373,6 +374,7 @@ std::vector<const Value*> FindTraceEntries(const Value& trace_parsed,
   }
   return hits;
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 constexpr const char kControlCharacters[] = "test_\001\002\003\n\r";
 
@@ -1391,7 +1393,12 @@ TEST_F(TraceEventTestFixture, DataCapturedManyThreads) {
   }
 }
 
-// Test that thread and process names show up in the trace
+// Test that thread and process names show up in the trace.
+// In SDK build, thread names are not tracked inside //base. Instead, there's
+// a special TrackNameRecorder component in //services that is tested in
+// services_unittests.
+// TODO(khokhlov): Verify if we need thread name support for unit-test tracing.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(TraceEventTestFixture, ThreadNames) {
   // Create threads before we enable tracing to make sure
   // that tracelog still captures them.
@@ -1459,6 +1466,7 @@ TEST_F(TraceEventTestFixture, ThreadNames) {
     }
   }
 }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // Test that the disabled trace categories are included/excluded from the
 // trace output correctly.

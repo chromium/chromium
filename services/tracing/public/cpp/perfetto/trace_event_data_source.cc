@@ -13,13 +13,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/debug/crash_logging.h"
 #include "base/debug/leak_annotations.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
-#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -42,6 +40,7 @@
 #include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 #include "services/tracing/public/cpp/perfetto/track_event_thread_local_event_sink.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
@@ -96,17 +95,6 @@ class SCOPED_LOCKABLE AutoLockWithDeferredTaskPosting {
   base::ScopedDeferTaskPosting defer_task_posting_;
   base::AutoLock autolock_;
 };
-
-absl::optional<uint64_t> GetTraceCrashId() {
-  static base::debug::CrashKeyString* key = base::debug::AllocateCrashKeyString(
-      "chrome-trace-id", base::debug::CrashKeySize::Size32);
-  if (!key) {
-    return absl::nullopt;
-  }
-  uint64_t id = base::RandUint64();
-  base::debug::SetCrashKeyString(key, base::NumberToString(id));
-  return id;
-}
 
 }  // namespace
 

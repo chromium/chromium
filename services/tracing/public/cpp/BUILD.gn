@@ -88,6 +88,8 @@ target(tracing_lib_type, "cpp") {
       "perfetto/traced_value_proto_writer.h",
       "perfetto/track_event_thread_local_event_sink.cc",
       "perfetto/track_event_thread_local_event_sink.h",
+      "perfetto/track_name_recorder.cc",
+      "perfetto/track_name_recorder.h",
       "stack_sampling/tracing_sampler_profiler.cc",
       "stack_sampling/tracing_sampler_profiler.h",
       "trace_event_agent.cc",

@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_id_name_manager.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
 #include "base/tracing/perfetto_platform.h"
@@ -19,13 +18,12 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // As per 'gn help check':
@@ -77,48 +75,6 @@ void OnPerfettoLogMessage(perfetto::base::LogMessageCallbackArgs args) {
   ::logging::LogMessage(args.filename, args.line, severity).stream()
       << args.message;
 }
-
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-// Set track descriptors for the current process and all its threads.
-// At this point tracing is already initialized, so for some threads (e.g.
-// created just before or concurrently with this function),
-// PerfettoPlatform::OnThreadNameChanged will also set the same descriptor.
-// This is not a problem because the Perfetto code is guarded by a lock
-// and the value of the descriptor is the same.
-void SetTrackDescriptors() {
-  int process_id = base::trace_event::TraceLog::GetInstance()->process_id();
-  std::string process_name =
-      base::trace_event::TraceLog::GetInstance()->process_name();
-
-  auto process_track = perfetto::ProcessTrack::Current();
-  auto process_track_desc = process_track.Serialize();
-  process_track_desc.mutable_process()->set_pid(process_id);
-  process_track_desc.mutable_process()->set_process_name(process_name);
-  perfetto::TrackEvent::SetTrackDescriptor(process_track,
-                                           std::move(process_track_desc));
-
-  const auto thread_ids = base::ThreadIdNameManager::GetInstance()->GetIds();
-  for (base::PlatformThreadId thread_id : thread_ids) {
-    const char* thread_name =
-        base::ThreadIdNameManager::GetInstance()->GetName(thread_id);
-    auto thread_track = perfetto::ThreadTrack::ForThread(thread_id);
-    auto thread_track_desc = thread_track.Serialize();
-    thread_track_desc.mutable_thread()->set_pid(process_id);
-    thread_track_desc.mutable_thread()->set_thread_name(thread_name);
-    perfetto::TrackEvent::SetTrackDescriptor(thread_track,
-                                             std::move(thread_track_desc));
-  }
-  // Main thread is special, it's not registered with ThreadIdNameManager.
-  const char* thread_name =
-      base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
-  auto thread_track = perfetto::ThreadTrack::Current();
-  auto thread_track_desc = thread_track.Serialize();
-  thread_track_desc.mutable_thread()->set_pid(process_id);
-  thread_track_desc.mutable_thread()->set_thread_name(thread_name);
-  perfetto::TrackEvent::SetTrackDescriptor(thread_track,
-                                           std::move(thread_track_desc));
-}
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace
 
@@ -376,7 +332,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   perfetto::TrackEvent::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
-  SetTrackDescriptors();
+  TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
