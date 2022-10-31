@@ -14,6 +14,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_bstr.h"
@@ -138,6 +140,19 @@ void ReadWin32Bios(const ComPtr<IWbemServices>& services,
   *bios_version = ReadStringMember(class_object, kVersion);
 }
 
+void ReadFirmwareType(absl::optional<Motherboard::BiosType>* bios_type) {
+  FIRMWARE_TYPE firmware_type = FirmwareTypeUnknown;
+  if (GetFirmwareType(&firmware_type)) {
+    if (firmware_type == FirmwareTypeBios) {
+      *bios_type = Motherboard::BiosType::kLegacy;
+    } else if (firmware_type == FirmwareTypeUefi) {
+      *bios_type = Motherboard::BiosType::kUefi;
+    } else {
+      *bios_type = absl::nullopt;
+    }
+  }
+}
+
 MotherboardDetails ReadMotherboardDetails() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -147,6 +162,7 @@ MotherboardDetails ReadMotherboardDetails() {
     return details;
   ReadWin32BaseBoard(services, &details.manufacturer, &details.model);
   ReadWin32Bios(services, &details.bios_manufacturer, &details.bios_version);
+  ReadFirmwareType(&details.bios_type);
   return details;
 }
 #endif
