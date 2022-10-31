@@ -8,12 +8,11 @@
 #include <set>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
-#include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
-#include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/policy_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
@@ -28,7 +27,10 @@
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
+#include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
 #include "chrome/browser/support_tool/ash/shill_data_collector.h"
+#include "chrome/browser/support_tool/ash/system_logs_data_collector.h"
+#include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
@@ -143,6 +145,11 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         break;
       case support_tool::CHROMEOS_SYSTEM_STATE:
         handler->AddDataCollector(std::make_unique<SystemStateDataCollector>());
+        break;
+      case support_tool::CHROMEOS_SYSTEM_LOGS:
+        // Set `requested_logs` as empty to request all log for now.
+        handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
+            /*requested_logs=*/std::set<base::FilePath>()));
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)

@@ -7360,6 +7360,7 @@ test("unit_tests") {
       "../browser/speech/tts_controller_delegate_impl_unittest.cc",
       "../browser/support_tool/ash/network_routes_data_collector_unittest.cc",
       "../browser/support_tool/ash/shill_data_collector_unittest.cc",
+      "../browser/support_tool/ash/system_logs_data_collector_unittest.cc",
       "../browser/support_tool/ash/system_state_data_collector_unittest.cc",
       "../browser/support_tool/ash/ui_hierarchy_data_collector_unittest.cc",
       "../browser/task_manager/providers/crosapi/crosapi_task_provider_ash_unittest.cc",
