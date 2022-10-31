@@ -517,7 +517,7 @@
             ]
         }
     ],
-    "ArcEnableTTSCacheSetup": [
+    "ArcEnableTTSCacheSetupRelaunch": [
         {
             "platforms": [
                 "chromeos"
@@ -526,12 +526,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ArcEnableTTSCacheSetup"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
                         "ArcEnableTTSCacheSetup"
                     ]
                 }
