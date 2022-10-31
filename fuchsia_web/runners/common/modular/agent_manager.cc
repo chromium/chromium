@@ -14,7 +14,11 @@ namespace cr_fuchsia {
 
 AgentManager::AgentManager(const sys::ServiceDirectory* incoming)
     : component_context_(
-          incoming->Connect<fuchsia::modular::ComponentContext>()) {}
+          incoming->Connect<fuchsia::modular::ComponentContext>()) {
+  component_context_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "ComponentContext disconnected.";
+  });
+}
 
 AgentManager::~AgentManager() = default;
 
