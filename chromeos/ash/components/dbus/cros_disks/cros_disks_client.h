@@ -45,13 +45,16 @@ COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
 std::ostream& operator<<(std::ostream& out, MountType type);
 
 // Type of device.
+// The numeric values must match cros_disks::DeviceMediaType.
 enum class DeviceType {
-  kUnknown,
-  kUSB,          // USB stick.
-  kSD,           // SD card.
-  kOpticalDisc,  // e.g. Optical disc excluding DVD.
-  kMobile,       // Storage on a mobile device (e.g. Android).
-  kDVD,          // DVD.
+  kUnknown = 0,
+  kUSB = 1,          // USB stick.
+  kSD = 2,           // SD card.
+  kOpticalDisc = 3,  // e.g. Optical disc excluding DVD.
+  kMobile = 4,       // Storage on a mobile device (e.g. Android).
+  kDVD = 5,          // DVD.
+
+  kMaxValue = 5,
 };
 
 // Output operator for logging.

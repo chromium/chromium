@@ -45,37 +45,11 @@ constexpr char kMountLabelOption[] = "mountlabel";
 
 CrosDisksClient* g_instance = nullptr;
 
-// Checks if retrieved media type is in boundaries of DeviceMediaType.
-bool IsValidMediaType(uint32_t type) {
-  return type < static_cast<uint32_t>(cros_disks::DEVICE_MEDIA_NUM_VALUES);
-}
-
-// Translates enum used in cros-disks to enum used in Chrome.
-// Note that we could just do static_cast, but this is less sensitive to
-// changes in cros-disks.
-DeviceType DeviceMediaTypeToDeviceType(uint32_t media_type_uint32) {
-  if (!IsValidMediaType(media_type_uint32))
+DeviceType ToDeviceType(uint32_t media_type) {
+  if (media_type > static_cast<uint32_t>(DeviceType::kMaxValue))
     return DeviceType::kUnknown;
 
-  cros_disks::DeviceMediaType media_type =
-      cros_disks::DeviceMediaType(media_type_uint32);
-
-  switch (media_type) {
-    case (cros_disks::DEVICE_MEDIA_UNKNOWN):
-      return DeviceType::kUnknown;
-    case (cros_disks::DEVICE_MEDIA_USB):
-      return DeviceType::kUSB;
-    case (cros_disks::DEVICE_MEDIA_SD):
-      return DeviceType::kSD;
-    case (cros_disks::DEVICE_MEDIA_OPTICAL_DISC):
-      return DeviceType::kOpticalDisc;
-    case (cros_disks::DEVICE_MEDIA_MOBILE):
-      return DeviceType::kMobile;
-    case (cros_disks::DEVICE_MEDIA_DVD):
-      return DeviceType::kDVD;
-    default:
-      return DeviceType::kUnknown;
-  }
+  return static_cast<DeviceType>(media_type);
 }
 
 MountError CrosDisksMountErrorToChromeMountError(
@@ -999,7 +973,7 @@ bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
   absl::optional<double> media_type_double =
       value.FindDoubleKey(cros_disks::kDeviceMediaType);
   if (media_type_double.has_value())
-    device_type_ = DeviceMediaTypeToDeviceType(media_type_double.value());
+    device_type_ = ToDeviceType(media_type_double.value());
 
   if (const base::Value* const mount_paths =
           value.FindListKey(cros_disks::kDeviceMountPaths);
