@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -163,7 +165,12 @@ public final class ReturnToChromeUtil {
         long tabSwitcherAfterMillis = TAB_SWITCHER_ON_RETURN_MS.getValue();
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME)
                 && TAB_SWITCHER_ON_RETURN_MS.getValue() != 0) {
-            tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
+            if (!StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL.getValue()) {
+                tabSwitcherAfterMillis =
+                        START_SURFACE_RETURN_TIME_SECONDS.getValue() * DateUtils.SECOND_IN_MILLIS;
+            } else {
+                tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
+            }
         }
 
         if (lastBackgroundedTimeMillis == -1) {
@@ -178,7 +185,7 @@ public final class ReturnToChromeUtil {
             return false;
         }
 
-        return System.currentTimeMillis() - lastBackgroundedTimeMillis > tabSwitcherAfterMillis;
+        return System.currentTimeMillis() - lastBackgroundedTimeMillis >= tabSwitcherAfterMillis;
     }
 
     /**
@@ -193,7 +200,7 @@ public final class ReturnToChromeUtil {
         // Sets the default value as 8 hours; 0 means showing immediately.
         return SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.START_RETURN_TIME_SEGMENTATION_RESULT_MS,
-                TAB_SWITCHER_ON_RETURN_MS.getDefaultValue());
+                START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue());
     }
 
     /**

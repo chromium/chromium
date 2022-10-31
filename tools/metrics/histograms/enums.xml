@@ -56732,6 +56732,7 @@ from previous Chrome versions.
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
   <int value="-2101626055" label="FeedPositionAndroid:disabled"/>
+  <int value="-2101437559" label="StartSurfaceReturnTime:disabled"/>
   <int value="-2101338272" label="EnablePciguardUi:disabled"/>
   <int value="-2101337189" label="AutofillOffNoServerData:disabled"/>
   <int value="-2101091929" label="MessagesForAndroidAdsBlocked:disabled"/>
@@ -59418,6 +59419,7 @@ from previous Chrome versions.
   <int value="-535662704" label="BundledConnectionHelp:enabled"/>
   <int value="-535226444" label="PictureInPictureV2:enabled"/>
   <int value="-535208779" label="enable-native-cups"/>
+  <int value="-535037237" label="StartSurfaceReturnTime:enabled"/>
   <int value="-534722229" label="LauncherNudgeShortInterval:enabled"/>
   <int value="-534525820" label="MediaAppPhotosIntegrationImage:enabled"/>
   <int value="-534470003" label="OmniboxOnDeviceHeadProviderIncognito:enabled"/>

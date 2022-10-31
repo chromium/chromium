@@ -3028,6 +3028,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-start-surface-return-time",
+    "owners": [ "hanxi", "clank-start" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-storage-pressure-event",
     "owners": [ "jarrydg", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 89
@@ -3110,7 +3115,7 @@
   {
     "name": "enable-tab-switcher-on-return",
     "owners": [ "memex-team@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 108
   },
   {
     "name": "enable-tab-to-gts-animation",

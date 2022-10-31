@@ -933,6 +933,9 @@ extern const char kTabSelectionEditorV2Description[];
 extern const char kTabSwitcherOnReturnName[];
 extern const char kTabSwitcherOnReturnDescription[];
 
+extern const char kStartSurfaceReturnTimeName[];
+extern const char kStartSurfaceReturnTimeDescription[];
+
 extern const char kHiddenNetworkMigrationName[];
 extern const char kHiddenNetworkMigrationDescription[];
 
