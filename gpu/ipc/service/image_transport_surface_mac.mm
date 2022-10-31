@@ -22,17 +22,11 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
 
   switch (gl::GetGLImplementation()) {
-    case gl::kGLImplementationDesktopGL:
-    case gl::kGLImplementationDesktopGLCoreProfile:
-      return base::WrapRefCounted<gl::GLSurface>(
-          new ImageTransportSurfaceOverlayMac(delegate));
-#if defined(USE_EGL)
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return base::WrapRefCounted<gl::GLSurface>(
           new ImageTransportSurfaceOverlayMacEGL(
               display->GetAs<gl::GLDisplayEGL>(), delegate));
-#endif
     case gl::kGLImplementationMockGL:
     case gl::kGLImplementationStubGL:
       return base::WrapRefCounted<gl::GLSurface>(new gl::GLSurfaceStub);

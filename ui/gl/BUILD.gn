@@ -414,18 +414,17 @@ component("gl") {
       "Quartz.framework",
     ]
 
-    if (use_egl) {
+    assert(use_egl)
+    data_deps += [
+      "//third_party/angle:libEGL",
+      "//third_party/angle:libGLESv2",
+      "//third_party/mesa_headers",
+    ]
+    if (enable_swiftshader) {
       data_deps += [
-        "//third_party/angle:libEGL",
-        "//third_party/angle:libGLESv2",
-        "//third_party/mesa_headers",
+        "//third_party/swiftshader/src/Vulkan:icd_file",
+        "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
       ]
-      if (enable_swiftshader) {
-        data_deps += [
-          "//third_party/swiftshader/src/Vulkan:icd_file",
-          "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
-        ]
-      }
     }
   }
   if (is_android) {
@@ -443,7 +442,9 @@ component("gl") {
   }
 }
 
-if (is_mac && use_egl) {
+if (is_mac) {
+  assert(use_egl)
+
   # We need to copy the ANGLE and SwiftShader libraries so that the
   # bundle_data dependencies have a "copy" target type. Otherwise for
   # "shared_library" target types it will try to link things into
