@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "builders", "os")
-load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 luci.bucket(
@@ -32,7 +31,7 @@ builders.builder(
     execution_timeout = 2 * time.hour,
     os = os.LINUX_DEFAULT,
     pool = "luci.chromium.try",
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = "flaky-reproducer-builder@chops-service-accounts.iam.gserviceaccount.com",
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.flakiness",
         category = "flakiness",
