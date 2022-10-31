@@ -697,6 +697,7 @@ source_set("subgraph") {
     "src/src/subgraph/prelu.c",
     "src/src/subgraph/sigmoid.c",
     "src/src/subgraph/softmax.c",
+    "src/src/subgraph/space-to-depth-2d.c",
     "src/src/subgraph/square-root.c",
     "src/src/subgraph/square.c",
     "src/src/subgraph/squared-difference.c",
