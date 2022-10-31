@@ -228,6 +228,11 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   // the locale being used.
   void SetTextAlignmentForLocaleTextDirection(std::string locale);
 
+  // Forces announcement of translation state and conditionally also accounces
+  // the translated text.
+  void AnnounceForAccessibility(
+      PartialTranslateBubbleModel::ViewState view_state);
+
   static PartialTranslateBubbleView* partial_translate_bubble_view_;
 
   raw_ptr<views::View> translate_view_waiting_ = nullptr;
@@ -253,6 +258,10 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   // Default source/target language without user interaction.
   size_t previous_source_language_index_;
   size_t previous_target_language_index_;
+
+  // Whether or not user changed target language and triggered translation from
+  // the advanced options.
+  bool target_language_changed_ = false;
 
   std::unique_ptr<ui::SimpleMenuModel> options_menu_model_;
   std::unique_ptr<views::MenuRunner> options_menu_runner_;
