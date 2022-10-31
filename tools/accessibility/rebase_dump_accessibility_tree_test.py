@@ -105,18 +105,22 @@ def Run():
   else:
     patchSetArg = '';
 
-  (_, tmppath) = tempfile.mkstemp()
-  print('Temp file: %s' % tmppath)
-  os.system('git cl try-results --json %s %s' % (tmppath, patchSetArg))
+  try:
+    (fd, tmppath) = tempfile.mkstemp()
+    print('Temp file: %s' % tmppath)
+    os.system('git cl try-results --json %s %s' % (tmppath, patchSetArg))
 
-  try_result = open(tmppath).read()
-  if len(try_result) < 1000:
-    print('Did not seem to get try bot data.')
-    print(try_result)
-    return
+    with open(tmppath) as file:
+      try_result = file.read()
+      if len(try_result) < 1000:
+        print('Did not seem to get try bot data.')
+        print(try_result)
+        return
+  finally:
+    os.close(fd)
+    os.unlink(tmppath)
 
   data = json.loads(try_result)
-  os.unlink(tmppath)
 
   for builder in data:
     print(builder['builder']['builder'], builder['status'])
@@ -144,7 +148,7 @@ def Run():
           'bb',
           'log',
           builder['id'],
-          '\'%s\'' % s_name,
+          '\"%s\"' % s_name,
       ]
       bb_command_expanded = ' '.join(bb_command)
       # print((BRIGHT_COLOR + '=> %s' + NORMAL_COLOR) % bb_command_expanded)
