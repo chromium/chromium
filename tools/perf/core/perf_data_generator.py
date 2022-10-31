@@ -376,12 +376,6 @@ FYI_BUILDERS = {
             'chromium_builder_perf', 'base_perftests'
         ],
     },
-    'fuchsia-builder-perf-fyi': {
-        'additional_compile_targets': [
-            'web_engine_shell_pkg', 'cast_runner_pkg', 'web_runner_pkg',
-            'chromium_builder_perf', 'base_perftests'
-        ],
-    },
     'fuchsia-builder-perf-x64': {
         'additional_compile_targets': ['chrome_pkg', 'base_perftests'],
     },

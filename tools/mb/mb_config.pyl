@@ -674,7 +674,6 @@
       'android_arm64-cfi-builder-perf-fyi': 'official_goma_minimal_symbols_android_thin_lto_opt_arm64',
       'chromeos-kevin-builder-perf-fyi': 'chromeos_kevin_include_unwind_tables_official',
       'fuchsia-builder-perf-arm64': 'official_goma_fuchsia_arm64_perf',
-      'fuchsia-builder-perf-fyi': 'official_goma_fuchsia_arm64_perf',
       'fuchsia-builder-perf-x64': 'official_goma_fuchsia_x64_perf',
     },
 
