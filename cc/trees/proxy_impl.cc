@@ -406,6 +406,7 @@ void ProxyImpl::OnHungCommit() {
   std::string debug_info = scheduler_->GetHungCommitDebugInfo();
   LOG(ERROR) << "commit hung: " << debug_info;
   base::debug::SetCrashKeyString(hung_commit_data, debug_info);
+  scheduler_->TraceHungCommitDebugInfo();
 }
 
 void ProxyImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
