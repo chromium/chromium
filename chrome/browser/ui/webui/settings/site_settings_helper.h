@@ -100,6 +100,17 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories();
 // Converts a SiteSettingSource to its string identifier.
 std::string SiteSettingSourceToString(const SiteSettingSource source);
 
+// Helper function to construct a dictionary for a File System exception.
+base::Value::Dict GetFileSystemExceptionForPage(
+    ContentSettingsType content_type,
+    Profile* profile,
+    const std::string& origin,
+    const base::FilePath& file_path,
+    const ContentSetting& setting,
+    const std::string& provider_name,
+    bool incognito,
+    bool is_embargoed = false);
+
 // Helper function to construct a dictionary for an exception.
 base::Value::Dict GetExceptionForPage(
     ContentSettingsType content_type,
@@ -145,6 +156,11 @@ ContentSetting GetContentSettingForOrigin(
     std::string* source_string,
     const extensions::ExtensionRegistry* extension_registry,
     std::string* display_name);
+
+// Returns URLs with granted entries from the File System Access API.
+void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
+                                 Profile* profile,
+                                 bool incognito);
 
 // Returns exceptions constructed from the policy-set allowed URLs
 // for the content settings |type| mic or camera.

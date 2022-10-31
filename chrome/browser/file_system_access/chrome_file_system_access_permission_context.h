@@ -161,6 +161,12 @@ class ChromeFileSystemAccessPermissionContext
 
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
 
+  // Dictionary key for the FILE_SYSTEM_ACCESS_CHOOSER_DATA setting.
+  // This key is defined in this header file because it is used both in
+  // the chrome_file_system_access_permission_context and the
+  // site_settings_helper, which displays File System Access permissions on the
+  // chrome://settings/content/filesystem UI.
+  static constexpr char kPermissionPathKey[] = "path";
   // This long after the handle has last been used, revoke the persisted
   // permission.
   static constexpr base::TimeDelta

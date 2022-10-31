@@ -92,7 +92,7 @@ constexpr base::TimeDelta kPermissionRevocationTimeout = base::Seconds(5);
 constexpr base::TimeDelta kPersistentPermissionSweepInterval = base::Hours(3);
 
 // Dictionary keys for the FILE_SYSTEM_ACCESS_CHOOSER_DATA setting.
-const char kPermissionPathKey[] = "path";
+// `kPermissionPathKey[] = "path"` is defined in the header file.
 const char kPermissionIsDirectoryKey[] = "is-directory";
 const char kPermissionWritableKey[] = "writable";
 const char kPermissionReadableKey[] = "readable";

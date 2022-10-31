@@ -9,9 +9,12 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -39,10 +42,12 @@ namespace site_settings {
 
 namespace {
 constexpr ContentSettingsType kContentType = ContentSettingsType::GEOLOCATION;
-constexpr ContentSettingsType kContentTypeNotifications =
-    ContentSettingsType::NOTIFICATIONS;
 constexpr ContentSettingsType kContentTypeCookies =
     ContentSettingsType::COOKIES;
+constexpr ContentSettingsType kContentTypeFileSystem =
+    ContentSettingsType::FILE_SYSTEM_WRITE_GUARD;
+constexpr ContentSettingsType kContentTypeNotifications =
+    ContentSettingsType::NOTIFICATIONS;
 }
 
 class SiteSettingsHelperTest : public testing::Test {
@@ -854,6 +859,69 @@ TEST_F(SiteSettingsHelperChooserExceptionTest,
                                    /*source=*/kPreferenceSource,
                                    /*incognito=*/false);
   }
+}
+
+// TODO(crbug.com/1373962): Remove this testing class when
+// Persistent Permissions is launched.
+class PersistentPermissionsSiteSettingsHelperTest
+    : public SiteSettingsHelperTest {
+ public:
+  PersistentPermissionsSiteSettingsHelperTest() {
+    // Enable Persisted Permissions.
+    feature_list_.InitAndEnableFeature(
+        features::kFileSystemAccessPersistentPermissions);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Confirms that the allowed URLs returned from `GetGrantedEntries` are
+// in accordance with File System Access Persisted Permissions.
+TEST_F(PersistentPermissionsSiteSettingsHelperTest,
+       ExceptionsGrantedViaPersistentPermissions) {
+  TestingProfile profile;
+  GURL origin("https://www.example.com/");
+  const url::Origin kTestOrigin = url::Origin::Create(origin);
+
+  const base::FilePath kTestPath =
+      base::FilePath(FILE_PATH_LITERAL("/foo/bar"));
+
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/b/"));
+
+  // Initialize and populate the `grants` object with permissions.
+  ChromeFileSystemAccessPermissionContext* context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(&profile);
+  auto empty_grants = context->GetPermissionGrants(kTestOrigin);
+  EXPECT_TRUE(empty_grants.file_write_grants.empty());
+
+  auto file_write_grant = context->GetWritePermissionGrant(
+      kTestOrigin, kTestPath,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile,
+      ChromeFileSystemAccessPermissionContext::UserAction::kSave);
+  auto file_read_grant = context->GetWritePermissionGrant(
+      kTestOrigin, kTestPath2,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile,
+      ChromeFileSystemAccessPermissionContext::UserAction::kSave);
+  auto populated_grants = context->GetPermissionGrants(kTestOrigin);
+  EXPECT_FALSE(populated_grants.file_write_grants.empty());
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(kContentTypeFileSystem, &profile,
+                                             /*extension_registry=*/nullptr,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
+
+  // |exceptions| size should be 2 to account for the file write grant
+  // and the file read grant. The display name and source of the
+  // grants should match the file path and the "default" source,
+  // respectively.
+  EXPECT_EQ(exceptions.size(), 2U);
+  ASSERT_EQ(exceptions[0].GetDict().Find("displayName")->GetString(), "/a/b/");
+  ASSERT_EQ(exceptions[0].GetDict().Find("source")->GetString(), "default");
+  ASSERT_EQ(exceptions[1].GetDict().Find("displayName")->GetString(),
+            "/foo/bar");
+  ASSERT_EQ(exceptions[1].GetDict().Find("source")->GetString(), "default");
 }
 
 }  // namespace site_settings

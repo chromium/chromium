@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -2970,6 +2971,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "enableMathMLCore",
       base::FeatureList::IsEnabled(blink::features::kMathMLCore));
+
+  html_source->AddBoolean(
+      "showPersistentPermissions",
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions));
 
   // The exception placeholder should not be translated. See crbug.com/1095878.
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");

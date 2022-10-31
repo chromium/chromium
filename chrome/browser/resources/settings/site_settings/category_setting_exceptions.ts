@@ -115,6 +115,8 @@ export class CategorySettingExceptionsElement extends
    * content setting of that type.
    */
   private computeShowAllowSiteList_(): boolean {
+    // TODO(crbug.com/1373962): This function should return true when Persistent
+    // Permissions is fully launched.
     return this.category !== ContentSettingsTypes.FILE_SYSTEM_WRITE;
   }
 
