@@ -77,6 +77,9 @@ class CORE_EXPORT AnnotationAgentImpl final
   // convert TextFragmentAnchor to use an async search.
   void Attach();
 
+  // Returns whether Attach() has been called at least once.
+  bool DidTryAttach() const { return did_try_attach_; }
+
   // Returns true if the agent has performed attachment and resulted in a valid
   // DOM Range. Note that Range is relocated, meaning that it will update in
   // response to changes in DOM. Hence, an AnnotationAgent that IsAttached may
@@ -133,6 +136,8 @@ class CORE_EXPORT AnnotationAgentImpl final
   // TODO(bokan): Once we have more of this implemented we'll use the type to
   // determine styling and context menu behavior.
   mojom::blink::AnnotationType type_;
+
+  bool did_try_attach_ = false;
 };
 
 }  // namespace blink

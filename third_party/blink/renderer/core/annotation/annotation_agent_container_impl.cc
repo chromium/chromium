@@ -80,6 +80,24 @@ void AnnotationAgentContainerImpl::Trace(Visitor* visitor) const {
   Supplement<Document>::Trace(visitor);
 }
 
+void AnnotationAgentContainerImpl::FinishedParsing() {
+  for (auto& agent : agents_) {
+    // TODO(crbug.com/1379741): Don't try attaching shared highlights like
+    // this. Their lifetime is currently owned by TextFragmentAnchor which is
+    // driven by the document lifecycle. Attach() itself may perform lifecycle
+    // updates and has safeguards to prevent reentrancy so it's important to
+    // not call Attach outside of that process. See also: comment in
+    // Document::ApplyScrollRestorationLogic. Eventually we'd like to move the
+    // lifecycle management of shared highlight annotations out of
+    // TextFragmentAnchor. When that happens we can remove this exception.
+    if (agent->GetType() == mojom::blink::AnnotationType::kSharedHighlight)
+      continue;
+
+    if (!agent->DidTryAttach())
+      agent->Attach();
+  }
+}
+
 AnnotationAgentImpl* AnnotationAgentContainerImpl::CreateUnboundAgent(
     mojom::blink::AnnotationType type,
     AnnotationSelector& selector) {
@@ -141,7 +159,14 @@ void AnnotationAgentContainerImpl::CreateAgent(
       *this, type, *selector, PassKey());
   agents_.insert(agent_impl);
   agent_impl->Bind(std::move(host_remote), std::move(agent_receiver));
-  agent_impl->Attach();
+
+  Document& document = *GetSupplementable();
+
+  // We may have received this message before the document finishes parsing.
+  // Postpone attachment for now; these agents will try attaching when the
+  // document finishes parsing.
+  if (document.HasFinishedParsing())
+    agent_impl->Attach();
 }
 
 void AnnotationAgentContainerImpl::CreateAgentFromSelection(

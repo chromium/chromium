@@ -2431,7 +2431,7 @@ bool Document::SetNeedsStyleRecalcForToggles() {
 
 void Document::ApplyScrollRestorationLogic() {
   DCHECK(View());
-  // This function in not re-entrant. However, the places that invoke this are
+  // This function is not re-entrant. However, the places that invoke this are
   // re-entrant. Specifically, UpdateStyleAndLayout() calls this, which in turn
   // can do a find-in-page for the scroll-to-text feature, which can cause
   // UpdateStyleAndLayout to happen with content-visibility, which gets back
@@ -7194,6 +7194,11 @@ void Document::FinishedParsing() {
   if (document_timing_.DomContentLoadedEventEnd().is_null())
     document_timing_.MarkDomContentLoadedEventEnd();
   SetParsingState(kFinishedParsing);
+
+  if (AnnotationAgentContainerImpl* container =
+          Supplement<Document>::From<AnnotationAgentContainerImpl>(*this)) {
+    container->FinishedParsing();
+  }
 
   // Ensure Custom Element callbacks are drained before DOMContentLoaded.
   // FIXME: Remove this ad-hoc checkpoint when DOMContentLoaded is dispatched in

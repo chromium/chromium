@@ -68,6 +68,7 @@ void AnnotationAgentImpl::Bind(
 
 void AnnotationAgentImpl::Attach() {
   DCHECK(!IsRemoved());
+  did_try_attach_ = true;
   Document& document = *owning_container_->GetSupplementable();
   selector_->FindRange(document, AnnotationSelector::kSynchronous,
                        WTF::BindOnce(&AnnotationAgentImpl::DidFinishAttach,

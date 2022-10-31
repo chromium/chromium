@@ -228,6 +228,47 @@ TEST_F(AnnotationAgentContainerImplTest, CreateBoundAgent) {
   EXPECT_FALSE(host.did_disconnect_);
 }
 
+// Test that creating an agent in a document that hasn't yet completed parsing
+// will cause agents to defer attachment and attempt it when the document
+// finishes parsing.
+TEST_F(AnnotationAgentContainerImplTest, DeferAttachmentUntilFinishedParsing) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Write(R"HTML(
+    <!DOCTYPE html>
+    <body>TEST PAGE</body>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ASSERT_FALSE(GetDocument().HasFinishedParsing());
+
+  MockAnnotationAgentHost host;
+  auto remote_receiver_pair = host.BindForCreateAgent();
+
+  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  ASSERT_TRUE(container);
+  container->CreateAgent(std::move(remote_receiver_pair.first),
+                         std::move(remote_receiver_pair.second),
+                         mojom::blink::AnnotationType::kUserNote,
+                         "MockAnnotationSelector");
+
+  // The agent should be created and bound.
+  EXPECT_EQ(GetAgentCount(*container), 1ul);
+  EXPECT_TRUE(host.agent_.is_connected());
+
+  // Attachment should not have been attempted yet.
+  host.FlushForTesting();
+  EXPECT_FALSE(host.did_finish_attachment_rect_);
+  EXPECT_FALSE(host.did_disconnect_);
+
+  request.Finish();
+  ASSERT_TRUE(GetDocument().HasFinishedParsing());
+
+  // Now that parsing finished, attachment should be completed.
+  host.FlushForTesting();
+  EXPECT_TRUE(host.did_finish_attachment_rect_);
+}
+
 // Test that an agent removing itself also removes it from its container.
 TEST_F(AnnotationAgentContainerImplTest, ManuallyRemoveAgent) {
   SimRequest request("https://example.com/test.html", "text/html");
