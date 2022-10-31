@@ -152,7 +152,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
         ui_test_utils::NavigateToURL(browser(), url);
     ASSERT_THAT(render_frame_host, NotNull());
 
-    console_observer.Wait();
+    ASSERT_TRUE(console_observer.Wait());
     EXPECT_THAT(render_frame_host->IsErrorDocument(), IsTrue());
     EXPECT_THAT(render_frame_host->GetLastCommittedURL(), Eq(url));
     EXPECT_THAT(console_observer.messages().size(), Eq(1ul))
