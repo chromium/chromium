@@ -182,6 +182,7 @@ source_set("app_list") {
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ui/vector_icons",
+    "//chromeos/ui/wm",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",

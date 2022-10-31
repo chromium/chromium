@@ -4,6 +4,7 @@
 
 #include "ash/wm/float/scoped_window_tucker.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -11,6 +12,7 @@
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
@@ -21,6 +23,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
+#include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -106,7 +109,6 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
   DCHECK(window_);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       window_->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
@@ -126,11 +128,27 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
           gfx::Insets(),
           gfx::Insets::VH(-kHorizontalTouchExtend, -kVerticalTouchExtend)));
 
+  // Activate the second most recent window if there is one, otherwise activate
+  // the app list.
+  auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  aura::Window* window_to_activate;
+  if (mru_windows.size() > 1u) {
+    DCHECK_EQ(window_, mru_windows.front());
+    window_to_activate = mru_windows[1];
+  } else {
+    window_to_activate = Shell::Get()->app_list_controller()->GetWindow();
+    DCHECK(window_to_activate);
+  }
+
+  wm::ActivateWindow(window_to_activate);
+
   Shell::Get()->activation_client()->AddObserver(this);
 }
 
 ScopedWindowTucker::~ScopedWindowTucker() {
   Shell::Get()->activation_client()->RemoveObserver(this);
+  wm::ActivateWindow(window_);
 }
 
 void ScopedWindowTucker::AnimateTuck(bool left) {

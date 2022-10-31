@@ -49,6 +49,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -67,6 +68,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "extensions/common/constants.h"
@@ -237,8 +239,17 @@ aura::Window* GetTopVisibleWindow() {
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           DesksMruType::kActiveDesk);
   for (auto* window : window_list) {
-    if (window->TargetVisibility() && !WindowState::Get(window)->IsMinimized())
-      return window;
+    if (!window->TargetVisibility() || WindowState::Get(window)->IsMinimized())
+      continue;
+
+    // Floated windows can be tucked offscreen in tablet mode. Their target
+    // visibility is true but the app list is fully visible under them.
+    if (chromeos::wm::features::IsFloatWindowEnabled() &&
+        WindowState::Get(window)->IsFloated()) {
+      continue;
+    }
+
+    return window;
   }
   return nullptr;
 }

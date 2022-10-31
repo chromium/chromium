@@ -11,7 +11,8 @@
 namespace ash {
 
 // Scoped class which makes modifications while a window is tucked. It owns a
-// tuck handle widget that will bring the hidden window back onscreen.
+// tuck handle widget that will bring the hidden window back onscreen. Users of
+// the class need to ensure that window outlives instance of this class.
 class ScopedWindowTucker : public wm::ActivationChangeObserver {
  public:
   // Creates an instance for `window` where `left` is the side of the screen

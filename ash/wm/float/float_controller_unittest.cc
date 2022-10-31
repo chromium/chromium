@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame/header_view.h"
@@ -1050,6 +1051,42 @@ TEST_F(TabletWindowFloatTest, UntuckWindowOnActivation) {
   EXPECT_TRUE(screen_util::GetDisplayBoundsInParent(window.get())
                   .Contains(window->bounds()));
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+}
+
+// Tests that the expected window gets activation after tucking a floated
+// window, and that on untucking the floated window, it gains activation.
+TEST_F(TabletWindowFloatTest, WindowActivationAfterTuckingUntucking) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> float_window = CreateFloatedWindow();
+
+  // Fling to tuck the window in the bottom right.
+  ASSERT_EQ(float_window.get(), window_util::GetActiveWindow());
+  FlingWindow(float_window.get(), /*left=*/false, /*up=*/false);
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_TRUE(
+      float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
+
+  // There are no other app windows, so the activation goes to the app list.
+  EXPECT_EQ(Shell::Get()->app_list_controller()->GetWindow(),
+            window_util::GetActiveWindow());
+
+  // Create another window and untuck the floated window.
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  views::Widget* tuck_handle_widget =
+      float_controller->GetTuckHandleWidget(float_window.get());
+  ASSERT_TRUE(tuck_handle_widget);
+  GetEventGenerator()->GestureTapAt(
+      tuck_handle_widget->GetWindowBoundsInScreen().CenterPoint());
+  ASSERT_FALSE(
+      float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
+  ASSERT_EQ(float_window.get(), window_util::GetActiveWindow());
+
+  // Tests that if tuck the floated window, the window underneath gets
+  // activation.
+  FlingWindow(float_window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(
+      float_controller->IsFloatedWindowTuckedForTablet(float_window.get()));
+  EXPECT_EQ(window2.get(), window_util::GetActiveWindow());
 }
 
 // Tests the functionality of tucking a window in tablet mode.
