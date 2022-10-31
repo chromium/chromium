@@ -1075,6 +1075,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Android.NonDefaultRdsPageLoad">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records on each page load when the User Agent is overridden with site
+    exception.
+  </summary>
+  <metric name="UserAgentType" enum="UserAgentRequestType">
+    <summary>
+      An enum that records the type of user agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Android.ScreenRotation">
   <owner>gangwu@chromium.org</owner>
   <owner>fgorski@chromium.org</owner>
