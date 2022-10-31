@@ -5,16 +5,19 @@
 import("//build/config/chromecast_build.gni")
 
 source_set("browser") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/cast_receiver/common",
+  ]
   public = [
     "public/application_client.h",
     "public/application_state_observer.h",
-    "public/runtime_application_state.h",
+    "public/runtime_application.h",
     "public/streaming_resolution_observer.h",
   ]
   sources = [
     "application_client.cc",
-    "runtime_application_state.cc",
+    "runtime_application.cc",
   ]
   friend = [ ":unit_tests" ]
 }

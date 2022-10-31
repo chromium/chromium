@@ -28,6 +28,8 @@ const cast::common::Dictionary::Entry* FindEntry(
 
 }  // namespace
 
+RuntimeApplicationBase::Delegate::~Delegate() = default;
+
 RuntimeApplicationBase::RuntimeApplicationBase(
     std::string cast_session_id,
     cast::common::ApplicationConfig app_config,
@@ -64,7 +66,7 @@ const std::string& RuntimeApplicationBase::GetCastSessionId() const {
   return cast_session_id_;
 }
 
-void RuntimeApplicationBase::Load(RuntimeApplication::StatusCallback callback) {
+void RuntimeApplicationBase::Load(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_application_running_ = true;

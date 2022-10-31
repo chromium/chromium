@@ -8,13 +8,12 @@
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/grpc_webui_controller_factory.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service_grpc.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 
 namespace chromecast {
 
 RuntimeApplicationServiceImpl::RuntimeApplicationServiceImpl(
-    std::unique_ptr<RuntimeApplication> runtime_application,
+    std::unique_ptr<RuntimeApplicationBase> runtime_application,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : runtime_application_(std::move(runtime_application)),
       task_runner_(std::move(task_runner)) {
@@ -28,7 +27,7 @@ RuntimeApplicationServiceImpl::~RuntimeApplicationServiceImpl() = default;
 
 void RuntimeApplicationServiceImpl::Load(
     const cast::runtime::LoadApplicationRequest& request,
-    RuntimeApplication::StatusCallback callback) {
+    StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!grpc_server_);
 
@@ -90,7 +89,7 @@ void RuntimeApplicationServiceImpl::Load(
 
 void RuntimeApplicationServiceImpl::Launch(
     const cast::runtime::LaunchApplicationRequest& request,
-    RuntimeApplication::StatusCallback callback) {
+    StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (request.core_application_service_info().grpc_endpoint().empty()) {
@@ -121,7 +120,7 @@ void RuntimeApplicationServiceImpl::Launch(
 
 void RuntimeApplicationServiceImpl::Stop(
     const cast::runtime::StopApplicationRequest& request,
-    RuntimeApplication::StatusCallback callback) {
+    StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   runtime_application_->Stop(std::move(callback));
 }

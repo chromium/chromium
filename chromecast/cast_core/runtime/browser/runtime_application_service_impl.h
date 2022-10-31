@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "chromecast/cast_core/grpc/grpc_server.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
+#include "components/cast_receiver/browser/public/runtime_application.h"
 #include "third_party/cast_core/public/src/proto/common/application_state.pb.h"
 #include "third_party/cast_core/public/src/proto/common/value.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
@@ -28,23 +29,25 @@ namespace chromecast {
 
 class MessagePortService;
 
-class RuntimeApplicationServiceImpl : public RuntimeApplication::Delegate {
+class RuntimeApplicationServiceImpl : public RuntimeApplicationBase::Delegate {
  public:
+  using StatusCallback = cast_receiver::RuntimeApplication::StatusCallback;
+
   RuntimeApplicationServiceImpl(
-      std::unique_ptr<RuntimeApplication> runtime_application,
+      std::unique_ptr<RuntimeApplicationBase> runtime_application,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~RuntimeApplicationServiceImpl() override;
 
   const std::string& app_id() const { return runtime_application_->GetAppId(); }
 
   void Load(const cast::runtime::LoadApplicationRequest& request,
-            RuntimeApplication::StatusCallback callback);
+            StatusCallback callback);
   void Launch(const cast::runtime::LaunchApplicationRequest& request,
-              RuntimeApplication::StatusCallback callback);
+              StatusCallback callback);
   void Stop(const cast::runtime::StopApplicationRequest& request,
-            RuntimeApplication::StatusCallback callback);
+            StatusCallback callback);
 
-  // RuntimeApplication::Delegate implementation:
+  // RuntimeApplicationBase::Delegate implementation:
   void NotifyApplicationStarted() override;
   void NotifyApplicationStopped(cast::common::StopReason::Type stop_reason,
                                 int32_t net_error_code) override;
@@ -55,7 +58,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplication::Delegate {
       std::vector<std::string> hosts) override;
 
  private:
-  // RuntimeApplicationService handlers:
+  // RuntimeApplicationBase handlers:
   void HandleSetUrlRewriteRules(
       cast::v2::SetUrlRewriteRulesRequest request,
       cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
@@ -82,7 +85,7 @@ class RuntimeApplicationServiceImpl : public RuntimeApplication::Delegate {
       GetAllBindingsCallback callback,
       cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
 
-  std::unique_ptr<RuntimeApplication> const runtime_application_;
+  std::unique_ptr<RuntimeApplicationBase> const runtime_application_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   absl::optional<cast::utils::GrpcServer> grpc_server_;

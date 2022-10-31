@@ -103,8 +103,6 @@ cast_source_set("core_service_bindings") {
 
 cast_source_set("streaming_receiver_session_client") {
   sources = [
-    "runtime_application.cc",
-    "runtime_application.h",
     "streaming_controller.h",
     "streaming_controller_base.cc",
     "streaming_controller_base.h",

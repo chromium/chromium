@@ -21,7 +21,7 @@ struct VideoTransformation;
 }  // namespace media
 
 namespace cast_receiver {
-class RuntimeApplicationState;
+class RuntimeApplication;
 }  // namespace cast_receiver
 
 namespace chromecast {
@@ -73,7 +73,7 @@ class CastRuntimeContentBrowserClient
    private:
     // cast_receiver::ApplicationStateObserver overrides:
     void OnForegroundApplicationChanged(
-        cast_receiver::RuntimeApplicationState* app_state) override;
+        cast_receiver::RuntimeApplication* app) override;
 
     // cast_receiver::StreamResolutionObserver overrides:
     //

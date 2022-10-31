@@ -41,8 +41,7 @@ bool WebRuntimeApplication::OnMessagePortMessage(cast::web::Message message) {
   return bindings_manager_->HandleMessage(std::move(message));
 }
 
-void WebRuntimeApplication::Launch(
-    RuntimeApplication::StatusCallback callback) {
+void WebRuntimeApplication::Launch(StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LOG(INFO) << "Launching application: " << *this;

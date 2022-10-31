@@ -24,7 +24,7 @@ class NetworkContext;
 
 namespace cast_receiver {
 
-class RuntimeApplicationState;
+class RuntimeApplication;
 
 // This class is responsible for providing all factory methods required for
 // creating the classes responsible for management and control of cast
@@ -68,7 +68,7 @@ class ApplicationClient : public StreamingResolutionObserver,
       const media::VideoTransformation& transformation) final;
 
   // ApplicationStateObserver implementation:
-  void OnForegroundApplicationChanged(RuntimeApplicationState* app_state) final;
+  void OnForegroundApplicationChanged(RuntimeApplication* app) final;
 
  private:
   base::ObserverList<StreamingResolutionObserver>

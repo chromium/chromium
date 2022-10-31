@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/cast_core_switches.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_service_impl.h"
 #include "chromecast/metrics/cast_event_builder_simple.h"
 #include "components/cast_receiver/browser/public/application_client.h"
@@ -166,7 +166,7 @@ void RuntimeServiceImpl::HandleLoadApplication(
       request.cast_session_id(), request.application_config(),
       base::BindOnce(
           [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::unique_ptr<RuntimeApplication> runtime_application) {
+             std::unique_ptr<RuntimeApplicationBase> runtime_application) {
             return std::make_unique<RuntimeApplicationServiceImpl>(
                 std::move(runtime_application), std::move(task_runner));
           },

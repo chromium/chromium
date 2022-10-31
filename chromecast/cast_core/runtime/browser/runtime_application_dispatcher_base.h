@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
+#include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
@@ -33,7 +34,7 @@ class RuntimeApplicationDispatcherBase : public RuntimeApplicationDispatcher {
  protected:
   using RuntimeApplicationPlatformFactory =
       base::OnceCallback<std::unique_ptr<TRuntimeApplicationPlatform>(
-          std::unique_ptr<RuntimeApplication>)>;
+          std::unique_ptr<RuntimeApplicationBase>)>;
 
   // Creates an application of |TRuntimeApplicationPlatform| type and adds to
   // the |loaded_apps_| list.
@@ -82,7 +83,7 @@ RuntimeApplicationDispatcherBase<TRuntimeApplicationPlatform>::
                       RuntimeApplicationPlatformFactory factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<RuntimeApplication> app;
+  std::unique_ptr<RuntimeApplicationBase> app;
   if (openscreen::cast::IsCastStreamingReceiverAppId(app_config.app_id())) {
     app = std::make_unique<StreamingRuntimeApplication>(
         session_id, std::move(app_config), web_service_, *application_client_);

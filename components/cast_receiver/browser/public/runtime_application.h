@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_RUNTIME_APPLICATION_STATE_H_
-#define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_RUNTIME_APPLICATION_STATE_H_
+#ifndef COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_RUNTIME_APPLICATION_H_
+#define COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_RUNTIME_APPLICATION_H_
 
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
-#include "components/cast_receiver/browser/public/runtime_application_state.h"
+#include <ostream>
+#include <string>
+
+#include "base/callback.h"
+#include "components/cast_receiver/common/public/status.h"
 
 namespace cast_receiver {
 
-// Provides accessors for information about a RuntimeApplication.
-//
-// TODO(crbug.com/1379082): Rename this class to RuntimeApplication.
-class RuntimeApplicationState {
+// Provides accessors for information about an application running in this
+// runtime.
+class RuntimeApplication {
  public:
-  virtual ~RuntimeApplicationState();
+  using StatusCallback = base::OnceCallback<void(cast_receiver::Status)>;
+
+  virtual ~RuntimeApplication();
 
   // Returns the display name of the application.
   virtual const std::string& GetDisplayName() const = 0;
@@ -34,9 +37,8 @@ class RuntimeApplicationState {
   virtual bool IsApplicationRunning() const = 0;
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         const RuntimeApplicationState& app_state);
+std::ostream& operator<<(std::ostream& os, const RuntimeApplication& app);
 
 }  // namespace cast_receiver
 
-#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_RUNTIME_APPLICATION_STATE_H_
+#endif  // COMPONENTS_CAST_RECEIVER_BROWSER_PUBLIC_RUNTIME_APPLICATION_H_

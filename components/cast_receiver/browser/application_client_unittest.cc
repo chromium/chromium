@@ -24,7 +24,7 @@ class MockApplicationStateObserver : public ApplicationStateObserver {
  public:
   ~MockApplicationStateObserver() override = default;
 
-  MOCK_METHOD1(OnForegroundApplicationChanged, void(RuntimeApplicationState*));
+  MOCK_METHOD1(OnForegroundApplicationChanged, void(RuntimeApplication*));
 };
 
 class ApplicationClientForTesting : public ApplicationClient {
