@@ -8,10 +8,6 @@
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_hardware_buffer_fence_sync.h"
-#endif
-
 namespace gl {
 
 gfx::Size GLImage::GetSize() {
@@ -100,13 +96,6 @@ bool GLImage::EmulatingRGB() const {
 GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-GLImage::GetAHardwareBuffer() {
-  return nullptr;
-}
-#endif
 
 scoped_refptr<gfx::NativePixmap> GLImage::GetNativePixmap() {
   return nullptr;

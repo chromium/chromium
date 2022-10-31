@@ -93,7 +93,7 @@ class OverlayImage final : public base::RefCounted<OverlayImage> {
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 
-    void SetReadFence(base::ScopedFD fence_fd, bool has_context) override {
+    void SetReadFence(base::ScopedFD fence_fd) override {
       DCHECK(!image_->end_read_fence_.is_valid());
       DCHECK(!image_->previous_end_read_fence_.is_valid());
 

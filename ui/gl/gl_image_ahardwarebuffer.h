@@ -12,12 +12,6 @@
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image_egl.h"
 
-namespace base {
-namespace android {
-class ScopedHardwareBufferFenceSync;
-}  // namespace android
-}  // namespace base
-
 namespace gl {
 
 class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
@@ -41,15 +35,11 @@ class GL_EXPORT GLImageAHardwareBuffer : public GLImageEGL {
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
-  std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-  GetAHardwareBuffer() override;
 
  protected:
   ~GLImageAHardwareBuffer() override;
 
  private:
-  class ScopedHardwareBufferFenceSyncImpl;
-
   base::android::ScopedHardwareBufferHandle handle_;
   unsigned internal_format_ = GL_RGBA;
   unsigned data_type_ = GL_UNSIGNED_BYTE;

@@ -91,7 +91,7 @@ class VideoImage : public base::RefCounted<VideoImage> {
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 
-    void SetReadFence(base::ScopedFD fence_fd, bool has_context) override {
+    void SetReadFence(base::ScopedFD fence_fd) override {
       image_->end_read_fence_ =
           gl::MergeFDs(std::move(image_->end_read_fence_), std::move(fence_fd));
     }
@@ -220,7 +220,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
     DCHECK(scoped_hardware_buffer_);
 
     base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
-    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd), true);
+    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd));
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;
   }
@@ -287,7 +287,7 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
     DCHECK(scoped_hardware_buffer_);
 
     base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
-    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd), true);
+    scoped_hardware_buffer_->SetReadFence(std::move(sync_fd));
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;
   }
@@ -395,8 +395,7 @@ class VideoImageReaderImageBacking::SkiaVkVideoImageRepresentation
     // Pass the end read access sync fd to the scoped hardware buffer. This
     // will make sure that the AImage associated with the hardware buffer will
     // be deleted only when the read access is ending.
-    scoped_hardware_buffer_->SetReadFence(android_backing()->TakeReadFence(),
-                                          true);
+    scoped_hardware_buffer_->SetReadFence(android_backing()->TakeReadFence());
     scoped_hardware_buffer_ = nullptr;
   }
 
@@ -534,13 +533,11 @@ class VideoImageReaderImageBacking::OverlayVideoImageRepresentation
     if (video_image_) {
       DCHECK(release_fence.is_null());
       if (scoped_hardware_buffer_) {
-        scoped_hardware_buffer_->SetReadFence(video_image_->TakeEndReadFence(),
-                                              true);
+        scoped_hardware_buffer_->SetReadFence(video_image_->TakeEndReadFence());
       }
       video_image_.reset();
     } else {
-      scoped_hardware_buffer_->SetReadFence(std::move(release_fence.owned_fd),
-                                            true);
+      scoped_hardware_buffer_->SetReadFence(std::move(release_fence.owned_fd));
     }
 
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());

@@ -99,7 +99,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
     texture_owner_->ReleaseRefOnImage(image_, std::move(read_fence_));
   }
 
-  void SetReadFence(base::ScopedFD fence_fd, bool has_context) final {
+  void SetReadFence(base::ScopedFD fence_fd) final {
     // Client can call this method multiple times for a hardware buffer. Hence
     // all the client provided sync_fd should be merged. Eg: BeginReadAccess()
     // can be called multiple times for a SharedImageVideo representation.

@@ -510,7 +510,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   transaction_ack_timeout_manager_.OnTransactionAck();
 
-  const bool has_context = context_->MakeCurrent(this);
+  context_->MakeCurrent(this);
   for (auto& surface_stat : transaction_stats.surface_stats) {
     auto it = released_resources.find(surface_stat.surface);
 
@@ -529,8 +529,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
     }
 
     if (surface_stat.fence.is_valid()) {
-      it->second.scoped_buffer->SetReadFence(std::move(surface_stat.fence),
-                                             has_context);
+      it->second.scoped_buffer->SetReadFence(std::move(surface_stat.fence));
     }
   }
 
