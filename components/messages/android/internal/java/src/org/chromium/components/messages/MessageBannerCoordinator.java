@@ -112,7 +112,13 @@ class MessageBannerCoordinator {
             }
             if (height < prevMessageDimens.getHeight()) {
                 verticalOffset = prevMessageDimens.getHeight() - height;
+            } else if (height > prevMessageDimens.getHeight()) {
+                mView.resizeForStackingAnimation(prevMessageDimens.getTitleHeight(),
+                        prevMessageDimens.getDescriptionHeight(),
+                        prevMessageDimens.getPrimaryButtonLineCount());
             }
+        } else if (fromIndex == Position.BACK && toIndex == Position.FRONT) {
+            mView.resetForStackingAnimation();
         }
         return mMediator.show(fromIndex, toIndex, verticalOffset, () -> {
             if (toIndex != Position.FRONT) {

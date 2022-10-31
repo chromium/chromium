@@ -4,6 +4,7 @@
 
 package org.chromium.components.messages;
 
+import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
@@ -75,6 +77,8 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSecondaryButton = findViewById(R.id.message_secondary_button);
         mDivider = findViewById(R.id.message_divider);
         mSecondaryButton.setOnClickListener((View v) -> { handleSecondaryButtonClick(); });
+        LinearLayout mainContent = findViewById(R.id.message_main_content);
+        mainContent.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         // Elevation does not work on low end device.
         if (SysUtils.isLowEndDevice()) {
             setBackgroundResource(R.drawable.popup_bg);
@@ -265,6 +269,61 @@ public class MessageBannerView extends BoundedLinearLayout {
         setLayoutParams(params);
     }
 
+    int getTitleHeightForAnimation() {
+        return mTitle.getHeight();
+    }
+
+    int getTitleMeasuredHeightForAnimation() {
+        return mTitle.getMeasuredHeight();
+    }
+
+    int getDescriptionHeightForAnimation() {
+        return mDescription.getHeight();
+    }
+
+    int getDescriptionMeasuredHeightForAnimation() {
+        return mDescription.getMeasuredHeight();
+    }
+
+    int getPrimaryButtonLineCountForAnimation() {
+        return mPrimaryButton.getLineCount();
+    }
+
+    void resizeForStackingAnimation(
+            int titleHeight, int descriptionHeight, int primaryButtonLineCount) {
+        if (titleHeight != mTitle.getMeasuredHeight()) {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mTitle.getLayoutParams();
+            params.height = titleHeight;
+            mTitle.setLayoutParams(params);
+        }
+
+        if (descriptionHeight != mDescription.getMeasuredHeight()) {
+            var params = (LinearLayout.LayoutParams) mDescription.getLayoutParams();
+            params.height = descriptionHeight;
+            mDescription.setLayoutParams(params);
+        }
+
+        mPrimaryButton.setMaxLines(primaryButtonLineCount);
+        mPrimaryButton.setEllipsize(TextUtils.TruncateAt.END);
+    }
+
+    void resetForStackingAnimation() {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mTitle.getLayoutParams();
+        if (params.height != LayoutParams.WRAP_CONTENT) {
+            params.height = LayoutParams.WRAP_CONTENT;
+            mTitle.setLayoutParams(params);
+        }
+
+        params = (LinearLayout.LayoutParams) mDescription.getLayoutParams();
+        if (params.height != LayoutParams.WRAP_CONTENT) {
+            params.height = LayoutParams.WRAP_CONTENT;
+            mDescription.setLayoutParams(params);
+        }
+
+        mPrimaryButton.setMaxLines(Integer.MAX_VALUE);
+        mPrimaryButton.setEllipsize(null);
+    }
+
     /**
      * Overriding onMeasure for set a proper height for primary button. By design, the primary
      * button should fill all the remaining vertical space. If it includes very long text which
@@ -277,8 +336,8 @@ public class MessageBannerView extends BoundedLinearLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int containerHeight = getMeasuredHeight();
         int btnWidth = mPrimaryButton.getMeasuredWidth();
-        var wSpec = MeasureSpec.makeMeasureSpec(btnWidth, MeasureSpec.EXACTLY);
-        var hSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        int wSpec = MeasureSpec.makeMeasureSpec(btnWidth, MeasureSpec.EXACTLY);
+        int hSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         mPrimaryButton.measure(wSpec, hSpec);
         int measuredHeight = mPrimaryButton.getMeasuredHeight();
         mPrimaryButton.setMinHeight(Math.max(measuredHeight, containerHeight));

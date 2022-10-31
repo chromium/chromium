@@ -40,6 +40,31 @@ public class MessageDimens {
         return mView.getWidth();
     }
 
+    int getTitleHeight() {
+        assert mView instanceof MessageBannerView;
+        if (!mView.isLaidOut()) {
+            if (!mIsMeasured) measure();
+            return ((MessageBannerView) mView).getTitleMeasuredHeightForAnimation();
+        }
+        return ((MessageBannerView) mView).getTitleHeightForAnimation();
+    }
+    int getDescriptionHeight() {
+        assert mView instanceof MessageBannerView;
+        if (!mView.isLaidOut()) {
+            if (!mIsMeasured) measure();
+            return ((MessageBannerView) mView).getDescriptionMeasuredHeightForAnimation();
+        }
+        return ((MessageBannerView) mView).getDescriptionHeightForAnimation();
+    }
+
+    int getPrimaryButtonLineCount() {
+        assert mView instanceof MessageBannerView;
+        if (!mView.isLaidOut()) {
+            if (!mIsMeasured) measure();
+        }
+        return ((MessageBannerView) mView).getPrimaryButtonLineCountForAnimation();
+    }
+
     private void measure() {
         int maxWidth = Math.min(mView.getRootView().getWidth(),
                 mView.getResources().getDimensionPixelSize(R.dimen.message_max_width));
