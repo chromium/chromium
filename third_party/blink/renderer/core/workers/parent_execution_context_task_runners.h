@@ -49,6 +49,9 @@ class CORE_EXPORT ParentExecutionContextTaskRunners final
 
   void ContextDestroyed() LOCKS_EXCLUDED(lock_) override;
 
+  void InitializeTaskRunnersForContext(ExecutionContext& context)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   base::Lock lock_;
   TaskRunnerHashMap task_runners_ GUARDED_BY(lock_);
 };
