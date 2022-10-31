@@ -28,20 +28,12 @@ int64_t GetFileSizeBlocking(const base::FilePath& file_path) {
 SiteDataSizeCollector::SiteDataSizeCollector(
     const base::FilePath& default_storage_partition_path,
     scoped_refptr<browsing_data::CookieHelper> cookie_helper,
-    scoped_refptr<browsing_data::DatabaseHelper> database_helper,
     scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
-    scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
-    scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
-    scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
-    scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
+    scoped_refptr<BrowsingDataQuotaHelper> quota_helper)
     : default_storage_partition_path_(default_storage_partition_path),
       cookie_helper_(std::move(cookie_helper)),
-      database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
-      indexed_db_helper_(std::move(indexed_db_helper)),
-      file_system_helper_(std::move(file_system_helper)),
-      service_worker_helper_(std::move(service_worker_helper)),
-      cache_storage_helper_(std::move(cache_storage_helper)),
+      quota_helper_(std::move(quota_helper)),
       in_flight_operations_(0),
       total_bytes_(0) {}
 
@@ -62,39 +54,15 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
                        weak_ptr_factory_.GetWeakPtr()));
     in_flight_operations_++;
   }
-  if (database_helper_.get()) {
-    database_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnDatabaseModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
   if (local_storage_helper_.get()) {
     local_storage_helper_->StartFetching(
         base::BindOnce(&SiteDataSizeCollector::OnLocalStorageModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
     in_flight_operations_++;
   }
-  if (indexed_db_helper_.get()) {
-    indexed_db_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnIndexedDBModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
-  if (file_system_helper_.get()) {
-    file_system_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnFileSystemModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
-  if (service_worker_helper_.get()) {
-    service_worker_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnServiceWorkerModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
-  if (cache_storage_helper_.get()) {
-    cache_storage_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnCacheStorageModelInfoLoaded,
+  if (quota_helper_.get()) {
+    quota_helper_->StartFetching(
+        base::BindOnce(&SiteDataSizeCollector::OnQuotaModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
     in_flight_operations_++;
   }
@@ -119,15 +87,6 @@ void SiteDataSizeCollector::OnCookiesModelInfoLoaded(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SiteDataSizeCollector::OnDatabaseModelInfoLoaded(
-    const DatabaseInfoList& database_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& database_info : database_info_list)
-    total_size += database_info.total_size_bytes;
-  OnStorageSizeFetched(total_size);
-}
-
 void SiteDataSizeCollector::OnLocalStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -137,41 +96,12 @@ void SiteDataSizeCollector::OnLocalStorageModelInfoLoaded(
   OnStorageSizeFetched(total_size);
 }
 
-void SiteDataSizeCollector::OnIndexedDBModelInfoLoaded(
-    const std::list<content::StorageUsageInfo>& indexed_db_info_list) {
+void SiteDataSizeCollector::OnQuotaModelInfoLoaded(
+    const QuotaStorageUsageInfoList& quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   int64_t total_size = 0;
-  for (const auto& indexed_db_info : indexed_db_info_list)
-    total_size += indexed_db_info.total_size_bytes;
-  OnStorageSizeFetched(total_size);
-}
-
-void SiteDataSizeCollector::OnFileSystemModelInfoLoaded(
-    const FileSystemInfoList& file_system_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& file_system_info : file_system_info_list) {
-    for (const auto& usage : file_system_info.usage_map)
-      total_size += usage.second;
-  }
-  OnStorageSizeFetched(total_size);
-}
-
-void SiteDataSizeCollector::OnServiceWorkerModelInfoLoaded(
-    const ServiceWorkerUsageInfoList& service_worker_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& service_worker_info : service_worker_info_list)
-    total_size += service_worker_info.total_size_bytes;
-  OnStorageSizeFetched(total_size);
-}
-
-void SiteDataSizeCollector::OnCacheStorageModelInfoLoaded(
-      const CacheStorageUsageInfoList& cache_storage_info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& cache_storage_info : cache_storage_info_list)
-    total_size += cache_storage_info.total_size_bytes;
+  for (const auto& quota_info : quota_storage_info_list)
+    total_size += quota_info.temporary_usage + quota_info.syncable_usage;
   OnStorageSizeFetched(total_size);
 }
 

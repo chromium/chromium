@@ -18,19 +18,15 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
+#include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "components/browsing_data/content/database_helper.h"
-#include "components/browsing_data/content/file_system_helper.h"
-#include "components/browsing_data/content/indexed_db_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
-#include "components/browsing_data/content/service_worker_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -220,16 +216,8 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
         storage_partition->GetPath(),
         new browsing_data::CookieHelper(storage_partition,
                                         base::NullCallback()),
-        new browsing_data::DatabaseHelper(profile_),
         new browsing_data::LocalStorageHelper(profile_),
-        new browsing_data::IndexedDBHelper(storage_partition),
-        base::MakeRefCounted<browsing_data::FileSystemHelper>(
-            storage_partition->GetFileSystemContext(),
-            browsing_data_file_system_util::GetAdditionalFileSystemTypes(),
-            storage_partition->GetNativeIOContext()),
-        new browsing_data::ServiceWorkerHelper(
-            storage_partition->GetServiceWorkerContext()),
-        new browsing_data::CacheStorageHelper(storage_partition));
+        BrowsingDataQuotaHelper::Create(profile_));
   }
   site_data_size_collector_->Fetch(
       base::BindOnce(&BrowsingDataSizeCalculator::OnGetBrowsingDataSize,
