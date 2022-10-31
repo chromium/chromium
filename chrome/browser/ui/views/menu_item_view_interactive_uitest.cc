@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -362,4 +363,10 @@ using MenuItemViewTestRemoveWithSubmenu1 = MenuItemViewTestRemoveWithSubmenu<1>;
 VIEW_TEST(MenuItemViewTestRemoveWithSubmenu0, RemoveItemWithSubmenu0)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestRemoveWithSubmenu1, RemoveItemWithSubmenu1)
+// TODO(https://crbug.com/1379761): Flaky on Wayland.
+#if defined(USE_OZONE)
+#define MAYBE_RemoveItemWithSubmenu1 DISABLED_RemoveItemWithSubmenu1
+#else
+#define MAYBE_RemoveItemWithSubmenu1 RemoveItemWithSubmenu1
+#endif
+VIEW_TEST(MenuItemViewTestRemoveWithSubmenu1, MAYBE_RemoveItemWithSubmenu1)
