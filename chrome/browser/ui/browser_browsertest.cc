@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
     confirm_observer.SetPattern("*confirm*suppressed*");
     second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"confirm('Activate!');", base::NullCallback());
-    confirm_observer.Wait();
+    ASSERT_TRUE(confirm_observer.Wait());
   }
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
     prompt_observer.SetPattern("*prompt*suppressed*");
     second_tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         u"prompt('Activate!');", base::NullCallback());
-    prompt_observer.Wait();
+    ASSERT_TRUE(prompt_observer.Wait());
   }
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
