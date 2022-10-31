@@ -400,20 +400,20 @@
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
       'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script_reclient',
-      'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
-      'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
-      'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
+      'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
+      'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
+      'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64_reclient',
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_reclient',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios-wpt-fyi-rel': 'ios_simulator_debug_static_bot_xctest',
+      'ios-wpt-fyi-rel': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios16-sdk-device': 'ios_device_release_static_bot_xctest_reclient',
-      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
+      'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
@@ -452,7 +452,7 @@
       'mac-arm64-on-arm64-rel-reclient': 'mac_arm64_release_bot_reclient',
       'mac-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'mac-code-coverage': 'clang_code_coverage_reclient',
-      'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
+      'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-hermetic-upgrade-rel': 'release_bot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
       'mac-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
@@ -2961,6 +2961,10 @@
       'cronet_ios', 'debug_static_bot', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
+    'ios_cronet_xctest_arm64_reclient': [
+      'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+    ],
+
     'ios_cronet_xctest_reclient': [
       'cronet_ios', 'debug_static_bot_reclient', 'ios_deployment_target_11_0', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
@@ -2992,6 +2996,10 @@
 
     'ios_simulator_debug_static_bot_xctest_arm64': [
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+    ],
+
+    'ios_simulator_debug_static_bot_xctest_arm64_reclient': [
+        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
     'ios_simulator_debug_static_bot_xctest_reclient': [

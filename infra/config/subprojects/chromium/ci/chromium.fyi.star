@@ -535,8 +535,6 @@ ci.builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -591,8 +589,6 @@ fyi_ios_builder(
             config = "ios",
         ),
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
@@ -763,8 +759,6 @@ fyi_ios_builder(
             config = "ios",
         ),
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 # This is launching & collecting entirely isolated tests.
@@ -1872,8 +1866,6 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     schedule = "0 1,5,9,13,17,21 * * *",
     triggered_by = [],
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_ios_builder(
@@ -1924,8 +1916,6 @@ fyi_ios_builder(
     os = os.MAC_12,
     cpu = cpu.ARM64,
     schedule = "0 1,5,9,13,17,21 * * *",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_ios_builder(
@@ -1994,8 +1984,6 @@ fyi_ios_builder(
     os = os.MAC_DEFAULT,
     schedule = "0 0,4,8,12,16,20 * * *",
     triggered_by = [],
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 fyi_ios_builder(
@@ -2051,8 +2039,6 @@ fyi_ios_builder(
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
     xcode = xcode.x14betabots,
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.builder(
