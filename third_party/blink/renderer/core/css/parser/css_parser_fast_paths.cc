@@ -1597,13 +1597,21 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
   const bool is_rotate =
       ToASCIILower(pos[0]) == 'r' && ToASCIILower(pos[1]) == 'o' &&
       ToASCIILower(pos[2]) == 't' && ToASCIILower(pos[3]) == 'a' &&
-      ToASCIILower(pos[4]) == 't' && ToASCIILower(pos[5]) == 'e' &&
-      pos[6] == '(';
+      ToASCIILower(pos[4]) == 't' && ToASCIILower(pos[5]) == 'e';
 
   if (is_rotate) {
-    pos += 7;
+    CSSValueID rotate_value_id = CSSValueID::kInvalid;
+    if (pos[6] == '(') {
+      pos += 7;
+      rotate_value_id = CSSValueID::kRotate;
+    } else if (ToASCIILower(pos[6]) == 'z' && pos[7] == '(') {
+      pos += 8;
+      rotate_value_id = CSSValueID::kRotateZ;
+    } else {
+      return nullptr;
+    }
     CSSFunctionValue* transform_value =
-        MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kRotate);
+        MakeGarbageCollected<CSSFunctionValue>(rotate_value_id);
     if (!ParseTransformRotateArgument(pos, end, transform_value))
       return nullptr;
     return transform_value;
