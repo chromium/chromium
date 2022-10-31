@@ -148,6 +148,12 @@ async function expectBeacon(uuid, options) {
         return await res.json();
       },
       (res) => {
+        if (expectedCount == 0) {
+          // If expecting no beacon, we should try to wait as long as possible.
+          // So always returning false here until `poll()` decides to terminate
+          // itself.
+          return false;
+        }
         return res.data.length == expectedCount;
       });
   if (!options || !options.data) {
