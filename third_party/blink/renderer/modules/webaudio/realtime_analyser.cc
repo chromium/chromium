@@ -185,14 +185,8 @@ void RealtimeAnalyser::GetByteTimeDomainData(DOMUint8Array* destination_array) {
       double scaled_value = 128 * (value + 1);
 
       // Clip to valid range.
-      if (scaled_value < 0) {
-        scaled_value = 0;
-      }
-      if (scaled_value > UCHAR_MAX) {
-        scaled_value = UCHAR_MAX;
-      }
-
-      destination[i] = static_cast<unsigned char>(scaled_value);
+      destination[i] =
+          static_cast<unsigned char>(ClampTo(scaled_value, 0, UCHAR_MAX));
     }
   }
 }
@@ -266,9 +260,7 @@ void RealtimeAnalyser::DoFFTAnalysis() {
 
   // A value of 0 does no averaging with the previous result.  Larger values
   // produce slower, but smoother changes.
-  double k = smoothing_time_constant_;
-  k = std::max(0.0, k);
-  k = std::min(1.0, k);
+  const double k = ClampTo(smoothing_time_constant_, 0.0, 1.0);
 
   // Convert the analysis data from complex to magnitude and average with the
   // previous result.
@@ -309,14 +301,8 @@ void RealtimeAnalyser::ConvertToByteData(DOMUint8Array* destination_array) {
           UCHAR_MAX * (db_mag - min_decibels) * range_scale_factor;
 
       // Clip to valid range.
-      if (scaled_value < 0) {
-        scaled_value = 0;
-      }
-      if (scaled_value > UCHAR_MAX) {
-        scaled_value = UCHAR_MAX;
-      }
-
-      destination[i] = static_cast<unsigned char>(scaled_value);
+      destination[i] =
+          static_cast<unsigned char>(ClampTo(scaled_value, 0, UCHAR_MAX));
     }
   }
 }
