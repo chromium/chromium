@@ -5972,11 +5972,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "request-desktop-site-zoom",
-    "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "restore-session-from-cache",
     "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
     // Needed for manual testing of native session restore flow on iOS.

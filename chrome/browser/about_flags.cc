@@ -9620,13 +9620,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(browser_ui::kRequestDesktopSiteExceptionsDowngrade)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"request-desktop-site-zoom",
-     flag_descriptions::kRequestDesktopSiteZoomName,
-     flag_descriptions::kRequestDesktopSiteZoomDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRequestDesktopSiteZoom)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-web-hid-on-extension-service-worker",
      flag_descriptions::kEnableWebHidOnExtensionServiceWorkerName,

@@ -525,7 +525,6 @@ public abstract class ChromeFeatureList {
     public static final String REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC =
             "RequestDesktopSiteOptInControlSynthetic";
     public static final String REQUEST_DESKTOP_SITE_FOR_TABLETS = "RequestDesktopSiteForTablets";
-    public static final String REQUEST_DESKTOP_SITE_ZOOM = "RequestDesktopSiteZoom";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SAFE_MODE_FOR_CACHED_FLAGS = "SafeModeForCachedFlags";
     public static final String SCREENSHOTS_FOR_ANDROID_V2 = "ScreenshotsForAndroidV2";

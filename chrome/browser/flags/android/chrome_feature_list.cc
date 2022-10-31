@@ -287,7 +287,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRequestDesktopSiteOptInControlSynthetic,
     &kRequestDesktopSiteOptInSynthetic,
     &kRequestDesktopSiteDefaultsDowngrade,
-    &kRequestDesktopSiteZoom,
     &kSafeModeForCachedFlags,
     &kSearchEnginePromoExistingDevice,
     &kSearchEnginePromoExistingDeviceV2,
@@ -942,10 +941,6 @@ BASE_FEATURE(kRequestDesktopSiteOptInSynthetic,
 
 BASE_FEATURE(kRequestDesktopSiteDefaultsDowngrade,
              "RequestDesktopSiteDefaultsDowngrade",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRequestDesktopSiteZoom,
-             "RequestDesktopSiteZoom",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafeModeForCachedFlags,

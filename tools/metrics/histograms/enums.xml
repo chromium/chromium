@@ -57343,7 +57343,6 @@ from previous Chrome versions.
       label="AutofillUseImprovedLabelDisambiguation:enabled"/>
   <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
-  <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
   <int value="-2129013032" label="DocumentTransition:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
@@ -64456,7 +64455,6 @@ from previous Chrome versions.
   <int value="2095740699" label="OmniboxPedalsBatch3:disabled"/>
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>
-  <int value="2097465503" label="RequestDesktopSiteZoom:disabled"/>
   <int value="2097585272" label="ProductivityLauncherImageSearch:enabled"/>
   <int value="2098059607" label="WifiSyncAllowDeletes:disabled"/>
   <int value="2098114768" label="DocumentPictureInPictureAPI:disabled"/>

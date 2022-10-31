@@ -3980,11 +3980,6 @@ const char kRequestDesktopSiteForTabletsDescription[] =
     " On tablets with small screens a mobile site will be requested by "
     "default.";
 
-const char kRequestDesktopSiteZoomName[] =
-    "Default zoom for request desktop site on Android.";
-const char kRequestDesktopSiteZoomDescription[] =
-    "Apply default page zoom on the desktop version of websites.";
-
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[] =
     "Revoke site-level notification permission on Android";
 const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =
