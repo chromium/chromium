@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       web_contents(), "openWindow()", &opened_window));
   EXPECT_FALSE(opened_window);
-  console_observer.Wait();
+  ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(blocked_content::kAbusiveEnforceMessage,
             console_observer.GetMessageAt(0u));
 }
