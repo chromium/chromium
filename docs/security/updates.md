@@ -118,11 +118,6 @@ Chrome will ship patches on iOS to mitigate issues in Webkit. In the event of a
 Chrome on iOS specific security flaw, Chrome will note the fix in the release
 notes for the corresponding desktop release.
 
-**What do you mean by "corresponding release"?** The channel and first three
-segments of the full [version number][chrome-versions] are the same. To look at
-current and previous version numbers for all platforms and channels, see the
-[Chromium Release Dashboard][rel-dash].
-
 [release-cycle]: https://chromium.googlesource.com/chromium/src/+/main/docs/process/release_cycle.md
 [ent-rel-notes]: https://support.google.com/chrome/a/answer/7679408
 [update-strategy]: https://support.google.com/chrome/a/answer/9982578
