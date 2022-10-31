@@ -365,6 +365,9 @@ class TabDragController : public views::WidgetObserver,
       TabDragContext* target_context,
       const gfx::Point& point_in_screen);
 
+  // Returns the drag image to be used for the system drag and drop session.
+  gfx::ImageSkia GetDragImageForSystemDnD();
+
   // Starts a regular drag session as a fallback if RunMoveLoop() is not
   // supported and no drag session is currently running.
   Liveness StartSystemDragAndDropSessionIfNecessary(

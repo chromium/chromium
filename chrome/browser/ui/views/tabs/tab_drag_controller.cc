@@ -56,6 +56,7 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
@@ -79,6 +80,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "components/remote_cocoa/browser/window.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "ui/aura/client/drag_drop_client.h"
 #endif
 
 #if defined(USE_AURA)
@@ -245,6 +250,18 @@ void OffsetX(int x_offset, std::vector<gfx::Rect>* rects) {
 bool IsWindowDragUsingSystemDragDropAllowed() {
   return base::FeatureList::IsEnabled(
       features::kAllowWindowDragUsingSystemDragDrop);
+}
+
+void UpdateSystemDnDDragImage(TabDragContext* attached_context,
+                              const gfx::ImageSkia& image) {
+#if BUILDFLAG(IS_LINUX)
+  aura::Window* root_window =
+      attached_context->GetWidget()->GetNativeWindow()->GetRootWindow();
+  if (aura::client::GetDragDropClient(root_window)) {
+    aura::client::GetDragDropClient(root_window)
+        ->UpdateDragImage(image, {-image.height() / 2, -image.width() / 2});
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace
@@ -1007,6 +1024,9 @@ TabDragController::Liveness TabDragController::ContinueDragging(
       }
       current_state_ = DragState::kDraggingTabs;
       MoveAttached(point_in_screen, true);
+      // Hide the drag image while attached.
+      UpdateSystemDnDDragImage(attached_context_, {});
+
       // Set |tab_strip_changed| to true so that |attached_context_| is
       // activated later on.
       tab_strip_changed = true;
@@ -1136,24 +1156,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
   return DRAG_BROWSER_RESULT_CONTINUE;
 }
 
-TabDragController::Liveness
-TabDragController::StartSystemDragAndDropSessionIfNecessary(
-    const gfx::Point& point_in_screen) {
-  DCHECK(IsWindowDragUsingSystemDragDropAllowed());
-  DCHECK(ui::ResourceBundle::HasSharedInstance());
-  current_state_ = DragState::kDraggingUsingSystemDragAndDrop;
-
-  if (system_drag_and_drop_session_running_)
-    return Liveness::ALIVE;
-  system_drag_and_drop_session_running_ = true;
-
-  auto data_provider = ui::OSExchangeDataProviderFactory::CreateProvider();
-  // Set data in a format that is accepted by TabStrip so that a drop can
-  // happen.
-  base::Pickle pickle;
-  data_provider->SetPickledData(
-      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag), pickle);
-
+gfx::ImageSkia TabDragController::GetDragImageForSystemDnD() {
   // The width has the same value, as the logo image is square-shaped.
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetAttachedBrowserWidget()->GetNativeWindow());
@@ -1164,11 +1167,38 @@ TabDragController::StartSystemDragAndDropSessionIfNecessary(
   gfx::ImageSkia drag_image =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PRODUCT_LOGO_256);
-  drag_image = gfx::ImageSkiaOperations::CreateResizedImage(
+  return gfx::ImageSkiaOperations::CreateResizedImage(
       drag_image, skia::ImageOperations::RESIZE_BEST, drag_image_size);
+}
+
+TabDragController::Liveness
+TabDragController::StartSystemDragAndDropSessionIfNecessary(
+    const gfx::Point& point_in_screen) {
+  DCHECK(IsWindowDragUsingSystemDragDropAllowed());
+  DCHECK(ui::ResourceBundle::HasSharedInstance());
+  current_state_ = DragState::kDraggingUsingSystemDragAndDrop;
+
+  if (system_drag_and_drop_session_running_) {
+    // Show the drag image again.
+    gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
+    UpdateSystemDnDDragImage(attached_context_, drag_image);
+
+    return Liveness::ALIVE;
+  }
+
+  system_drag_and_drop_session_running_ = true;
+
+  auto data_provider = ui::OSExchangeDataProviderFactory::CreateProvider();
+  // Set data in a format that is accepted by TabStrip so that a drop can
+  // happen.
+  base::Pickle pickle;
+  data_provider->SetPickledData(
+      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag), pickle);
+
+  gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
   data_provider->SetDragImage(
       drag_image,
-      gfx::Vector2d(-drag_image_height / 2, -drag_image_height / 2));
+      gfx::Vector2d(-drag_image.height() / 2, -drag_image.width() / 2));
 
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   GetAttachedBrowserWidget()->RunShellDrag(
