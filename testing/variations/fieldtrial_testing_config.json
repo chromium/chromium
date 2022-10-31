@@ -8663,6 +8663,30 @@
             ]
         }
     ],
+    "Prerender2DesktopOmniboxTriggers": [
+        {
+            "platforms": [
+                "windows",
+                "chromeos",
+                "chromeos_lacros",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDUI_20221031",
+                    "enable_features": [
+                        "OmniboxTriggerForPrerender2"
+                    ],
+                    "disable_features": [
+                        "OmniboxTriggerForNoStatePrefetch",
+                        "Prerender2Holdback",
+                        "SupportSearchSuggestionForPrerender2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
