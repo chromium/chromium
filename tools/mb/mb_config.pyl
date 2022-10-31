@@ -824,7 +824,7 @@
       'linux-autofill-captured-sites-rel': 'release_bot_reclient',
       'linux-finch-smoke-chrome': 'official_reclient',
       'linux-password-manager-captured-sites-rel': 'release_bot_reclient',
-      'lorenz-graph-dbg': 'android_debug_static_external_bot',
+      'lorenz-graph-dbg': 'android_debug_static_external_bot_reclient',
       'mac-arm64-finch-smoke-chrome': 'official_goma_mac_arm',
       'mac-autofill-captured-sites-rel': 'release_bot',
       # b/248132996: for siso experiments.
@@ -1578,8 +1578,8 @@
       'android', 'debug_static_bot_reclient', 'x86', 'webview_shell',
     ],
 
-    'android_debug_static_external_bot': [
-      'android', 'debug_static_bot', 'android_external'
+    'android_debug_static_external_bot_reclient': [
+      'android', 'debug_static_bot_reclient', 'android_external'
     ],
 
     'android_debug_trybot_arm64': [

@@ -77,7 +77,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-arm64-finch-smoke-chrome": {
