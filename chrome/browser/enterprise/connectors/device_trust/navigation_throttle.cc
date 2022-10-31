@@ -36,6 +36,8 @@ namespace {
 constexpr char kErrorPropertyName[] = "error";
 constexpr char kSpecificErrorCodePropertyName[] = "code";
 
+constexpr base::TimeDelta kDeviceTrustTimeout = base::Minutes(1);
+
 const std::string CreateErrorJsonString(
     const DeviceTrustResponse& dt_response) {
   DCHECK(dt_response.error);
@@ -161,9 +163,10 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       // Create callback for `ReplyChallengeResponseAndResume` which will
       // be called after the challenge response is created. With this
       // we can defer the navigation to unblock the main thread.
+      const base::TimeTicks start_time = base::TimeTicks::Now();
       DeviceTrustCallback resume_navigation_callback = base::BindOnce(
           &DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume,
-          weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now());
+          weak_ptr_factory_.GetWeakPtr(), start_time);
 
       // Call `DeviceTrustService::BuildChallengeResponse` which is one step on
       // the chain that builds the challenge response. In this chain we post a
@@ -185,6 +188,14 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
               },
               weak_ptr_factory_.GetWeakPtr(), challenge,
               std::move(resume_navigation_callback)));
+
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&DeviceTrustNavigationThrottle::OnResponseTimedOut,
+                         weak_ptr_factory_.GetWeakPtr(), start_time),
+          kDeviceTrustTimeout);
+
+      is_resumed_ = false;
       return DEFER;
     }
   }
@@ -194,6 +205,11 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
     base::TimeTicks start_time,
     const DeviceTrustResponse& dt_response) {
+  if (is_resumed_) {
+    return;
+  }
+  is_resumed_ = true;
+
   // Make a copy to allow mutations.
   auto copied_dt_response = dt_response;
 
@@ -217,6 +233,23 @@ void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
         kVerifiedAccessResponseHeader, copied_dt_response.challenge_response);
   }
 
+  Resume();
+}
+
+void DeviceTrustNavigationThrottle::OnResponseTimedOut(
+    base::TimeTicks start_time) {
+  if (is_resumed_) {
+    return;
+  }
+  is_resumed_ = true;
+
+  LogAttestationResponseLatency(start_time, /*success=*/false);
+
+  DeviceTrustResponse timeout_response;
+  timeout_response.error = DeviceTrustError::kTimeout;
+
+  navigation_handle()->SetRequestHeader(
+      kVerifiedAccessResponseHeader, CreateErrorJsonString(timeout_response));
   Resume();
 }
 

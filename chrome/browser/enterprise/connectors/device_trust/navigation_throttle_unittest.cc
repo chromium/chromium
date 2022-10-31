@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
@@ -39,6 +40,8 @@ using ::testing::Return;
 
 namespace {
 
+constexpr base::TimeDelta kTimeoutTime = base::Minutes(2);
+
 base::Value::List GetTrustedUrls() {
   base::Value::List trusted_urls;
   trusted_urls.Append("https://www.example.com");
@@ -47,7 +50,8 @@ base::Value::List GetTrustedUrls() {
 }
 
 constexpr char kChallenge[] = R"({"challenge": "encrypted_challenge_string"})";
-constexpr char kChallengeResponse[] = "sample response";
+constexpr char kChallengeResponse[] =
+    R"({"challengeResponse": "sample response"})";
 constexpr char kLatencyHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.ResponseLatency.%s";
 constexpr char kFunnelHistogramName[] =
@@ -116,11 +120,13 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
                 test::MockDeviceTrustService::DeviceTrustCallback callback) {
               std::move(callback).Run(response);
             });
+    EXPECT_CALL(test_handle, RemoveRequestHeader("X-Device-Trust"));
     EXPECT_CALL(test_handle,
                 SetRequestHeader("X-Verified-Access-Challenge-Response",
                                  expected_json));
     EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
-    histogram_tester_.ExpectUniqueSample(kFunnelHistogramName, 1, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kFunnelHistogramName, DTAttestationFunnelStep::kChallengeReceived, 1);
     run_loop.Run();
     histogram_tester_.ExpectTotalCount(
         base::StringPrintf(kLatencyHistogramName,
@@ -201,7 +207,13 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestReplyValidChallengeResponse) {
   std::string valid_challenge_json = kChallengeResponse;
   TestReplyChallengeResponseAndResume(test_response_valid,
                                       valid_challenge_json);
-  histogram_tester_.ExpectBucketCount(kFunnelHistogramName, 3, 1);
+  histogram_tester_.ExpectBucketCount(
+      kFunnelHistogramName, DTAttestationFunnelStep::kChallengeResponseSent, 1);
+
+  // Advance time and make sure that the timeout code doesn't get triggered.
+  task_environment_.FastForwardBy(kTimeoutTime);
+  histogram_tester_.ExpectTotalCount(
+      base::StringPrintf(kLatencyHistogramName, "Failure"), 0);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest,
@@ -211,14 +223,6 @@ TEST_F(DeviceTrustNavigationThrottleTest,
   std::string unknown_error_json = "{\"error\":\"unknown\"}";
   TestReplyChallengeResponseAndResume(test_response_unknown,
                                       unknown_error_json);
-}
-
-TEST_F(DeviceTrustNavigationThrottleTest,
-       TestReplyEmptyChallengeResponseKnownError) {
-  DeviceTrustResponse test_response_timeout = {"", DeviceTrustError::kTimeout,
-                                               absl::nullopt};
-  std::string timeout_json = "{\"error\":\"timeout\"}";
-  TestReplyChallengeResponseAndResume(test_response_timeout, timeout_json);
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest,
@@ -249,6 +253,50 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestChallengeNotFromIdp) {
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest().action());
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
+  content::MockNavigationHandle test_handle(GURL("https://www.example.com/"),
+                                            main_frame());
+  test_handle.set_response_headers(GetHeaderChallenge(kChallenge));
+  auto throttle = CreateThrottle(&test_handle);
+
+  base::RunLoop run_loop;
+  throttle->set_resume_callback_for_testing(run_loop.QuitClosure());
+
+  test::MockDeviceTrustService::DeviceTrustCallback captured_callback;
+  EXPECT_CALL(mock_device_trust_service_, BuildChallengeResponse(kChallenge, _))
+      .WillOnce(
+          [&captured_callback](
+              const std::string& serialized_challenge,
+              test::MockDeviceTrustService::DeviceTrustCallback callback) {
+            captured_callback = std::move(callback);
+          });
+
+  std::string timeout_json = "{\"error\":\"timeout\"}";
+  EXPECT_CALL(test_handle, RemoveRequestHeader("X-Device-Trust"));
+  EXPECT_CALL(
+      test_handle,
+      SetRequestHeader("X-Verified-Access-Challenge-Response", timeout_json));
+
+  EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
+  histogram_tester_.ExpectUniqueSample(
+      kFunnelHistogramName, DTAttestationFunnelStep::kChallengeReceived, 1);
+
+  task_environment_.FastForwardBy(kTimeoutTime);
+
+  run_loop.Run();
+
+  // Mimic as if the challenge response generation succeeded after the
+  // timeout.
+  ASSERT_TRUE(captured_callback);
+  std::move(captured_callback)
+      .Run({kChallengeResponse, absl::nullopt, absl::nullopt});
+
+  histogram_tester_.ExpectTotalCount(
+      base::StringPrintf(kLatencyHistogramName, "Failure"), 1);
+  histogram_tester_.ExpectTotalCount(
+      base::StringPrintf(kLatencyHistogramName, "Success"), 0);
 }
 
 }  // namespace enterprise_connectors

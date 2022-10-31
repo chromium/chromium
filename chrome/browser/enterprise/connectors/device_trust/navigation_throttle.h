@@ -60,6 +60,13 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   void ReplyChallengeResponseAndResume(base::TimeTicks start_time,
                                        const DeviceTrustResponse& dt_response);
 
+  // Invoked when generation of the challenge response timed out.
+  void OnResponseTimedOut(base::TimeTicks start_time);
+
+  // Only set to true when a challenge response (or timeout) resumed the
+  // throttled navigation.
+  bool is_resumed_{false};
+
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };
 
