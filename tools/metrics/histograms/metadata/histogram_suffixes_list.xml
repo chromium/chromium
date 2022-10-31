@@ -890,9 +890,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
   <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
+  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
   <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
+  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -927,9 +929,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
   <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
+  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
   <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
+  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
@@ -964,9 +968,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.PrePaint.UpdateTime"/>
   <affected-histogram name="Blink.ProxyCommit.UpdateTime"/>
   <affected-histogram name="Blink.ScrollDocumentUpdate.UpdateTime"/>
+  <affected-histogram name="Blink.ServiceDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.Style.UpdateTime"/>
   <affected-histogram name="Blink.StyleAndLayout.UpdateTime"/>
   <affected-histogram name="Blink.UpdateViewportIntersection.UpdateTime"/>
+  <affected-histogram name="Blink.UserDrivenDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
