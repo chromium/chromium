@@ -113,7 +113,6 @@ double ProcessMetrics::GetPlatformIndependentCPUUsage(
 
   TimeDelta cpu_time_delta = cumulative_cpu - last_cumulative_cpu_;
   TimeDelta time_delta = time - last_cpu_time_;
-  DCHECK(!time_delta.is_zero());
   if (time_delta.is_zero())
     return 0;
 
