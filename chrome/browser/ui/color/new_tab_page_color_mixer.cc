@@ -115,6 +115,12 @@ void AddNewTabPageComprehensiveColors(ui::ColorMixer& mixer) {
   mixer[kColorNewTabPageButtonBackground] = SelectBasedOnWhiteNtpBackground(
       {ui::kColorFrameActive}, element_background_color);
   mixer[kColorNewTabPageButtonForeground] = themed_foreground_color;
+  mixer[kColorNewTabPageControlBackgroundHovered] = SelectBasedOnDarkInput(
+      element_background_color,
+      ui::SetAlpha({gfx::kGoogleGrey200},
+                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE),
+      ui::SetAlpha({gfx::kGoogleGrey900},
+                   /* 10% opacity */ 0.1 * SK_AlphaOPAQUE));
   mixer[kColorNewTabPageLogo] = element_background_color;
   mixer[kColorNewTabPageLink] = SelectBasedOnWhiteNtpBackground(
       ui::PickGoogleColor({ui::kColorFrameActive}, element_background_color,
