@@ -22,6 +22,12 @@ class NoopLockDescription : public LockDescription {
   ~NoopLockDescription();
 };
 
+class NoopLock {
+ public:
+  NoopLock() = default;
+  ~NoopLock() = default;
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_

@@ -26,7 +26,7 @@ class WebContents;
 
 namespace web_app {
 
-class WebAppInstallManager;
+class WebAppProvider;
 class WebAppLockManager;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
@@ -43,7 +43,7 @@ class WebAppCommandManager {
  public:
   using PassKey = base::PassKey<WebAppCommandManager>;
 
-  explicit WebAppCommandManager(Profile* profile);
+  explicit WebAppCommandManager(Profile* profile, WebAppProvider* provider);
   ~WebAppCommandManager();
 
   // Enqueues the given command in the queue corresponding to the command's
@@ -64,7 +64,6 @@ class WebAppCommandManager {
   // running and queued commands.
   base::Value ToDebugValue();
 
-  void SetSubsystems(WebAppInstallManager* install_manager);
   void LogToInstallManager(base::Value);
 
   // Returns whether an installation is already scheduled with the same web
@@ -84,6 +83,11 @@ class WebAppCommandManager {
   }
 
   WebAppLockManager& lock_manager() const { return *lock_manager_; }
+
+  // Only used by `WebAppLockManager` to give web contents access to certain
+  // locks.
+  content::WebContents* EnsureWebContentsCreated(
+      base::PassKey<WebAppLockManager>);
 
  protected:
   friend class WebAppCommand;
@@ -110,6 +114,7 @@ class WebAppCommandManager {
   SEQUENCE_CHECKER(command_sequence_checker_);
 
   raw_ptr<Profile> profile_;
+  raw_ptr<WebAppProvider> provider_;
 
   // TODO(https://crbug.com/1329934): Figure out better ownership of this.
   // Perhaps set as subsystem?
@@ -121,7 +126,6 @@ class WebAppCommandManager {
 
   std::unique_ptr<WebAppLockManager> lock_manager_;
 
-  raw_ptr<WebAppInstallManager> install_manager_;
   std::map<WebAppCommand::Id, std::unique_ptr<WebAppCommand>> commands_{};
 
   std::unique_ptr<base::RunLoop> run_loop_for_testing_;

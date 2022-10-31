@@ -10,6 +10,7 @@
 
 namespace web_app {
 
+class OsIntegrationManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
@@ -28,7 +29,9 @@ class FullSystemLockDescription : public LockDescription {
 
 class FullSystemLock : public AppLock {
  public:
-  FullSystemLock(WebAppRegistrar& registrar, WebAppSyncBridge& sync_bridge);
+  FullSystemLock(WebAppRegistrar& registrar,
+                 WebAppSyncBridge& sync_bridge,
+                 OsIntegrationManager& os_integration_manager);
   ~FullSystemLock();
 };
 

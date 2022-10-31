@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,10 +55,12 @@ base::Value CreateLogValue(const WebAppCommand& command,
 
 }  // namespace
 
-WebAppCommandManager::WebAppCommandManager(Profile* profile)
+WebAppCommandManager::WebAppCommandManager(Profile* profile,
+                                           WebAppProvider* provider)
     : profile_(profile),
+      provider_(provider),
       url_loader_(std::make_unique<WebAppUrlLoader>()),
-      lock_manager_(std::make_unique<WebAppLockManager>()) {}
+      lock_manager_(std::make_unique<WebAppLockManager>(*provider_)) {}
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
@@ -141,8 +144,8 @@ void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
           *command->lock_description().app_ids().begin());
     }
     url_loader_error.SetStringKey("!stage", "OnWebContentsReady");
-    install_manager_->TakeCommandErrorLog(PassKey(),
-                                          std::move(url_loader_error));
+    provider_->install_manager().TakeCommandErrorLog(
+        PassKey(), std::move(url_loader_error));
   }
 
   std::move(start_command).Run();
@@ -221,13 +224,8 @@ base::Value WebAppCommandManager::ToDebugValue() {
   return base::Value(std::move(state));
 }
 
-void WebAppCommandManager::SetSubsystems(
-    WebAppInstallManager* install_manager) {
-  install_manager_ = install_manager;
-}
-
 void WebAppCommandManager::LogToInstallManager(base::Value log) {
-  install_manager_->TakeCommandErrorLog(PassKey(), std::move(log));
+  provider_->install_manager().TakeCommandErrorLog(PassKey(), std::move(log));
 }
 
 bool WebAppCommandManager::IsInstallingForWebContents(
@@ -285,6 +283,11 @@ void WebAppCommandManager::AddValueToLog(base::Value value) {
   command_debug_log_.push_front(std::move(value));
   if (command_debug_log_.size() > kMaxLogLength)
     command_debug_log_.resize(kMaxLogLength);
+}
+
+content::WebContents* WebAppCommandManager::EnsureWebContentsCreated(
+    base::PassKey<WebAppLockManager>) {
+  return EnsureWebContentsCreated();
 }
 
 content::WebContents* WebAppCommandManager::EnsureWebContentsCreated() {

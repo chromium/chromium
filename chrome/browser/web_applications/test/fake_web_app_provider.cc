@@ -95,7 +95,7 @@ void FakeWebAppProvider::SetRegistrar(
 void FakeWebAppProvider::SetDatabaseFactory(
     std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory) {
   CheckNotStarted();
-  database_factory_ = std::move(database_factory_);
+  database_factory_ = std::move(database_factory);
 }
 
 void FakeWebAppProvider::SetSyncBridge(
@@ -187,6 +187,11 @@ AbstractWebAppDatabaseFactory& FakeWebAppProvider::GetDatabaseFactory() const {
   return *database_factory_;
 }
 
+WebAppInstallManager& FakeWebAppProvider::GetInstallManager() const {
+  DCHECK(install_manager_);
+  return *install_manager_;
+}
+
 void FakeWebAppProvider::StartWithSubsystems() {
   CheckNotStarted();
   SetRunSubsystemStartupTasks(true);
@@ -224,7 +229,7 @@ void FakeWebAppProvider::SetDefaultFakeSubsystems() {
 
   SetWebAppPolicyManager(std::make_unique<WebAppPolicyManager>(profile_));
 
-  SetCommandManager(std::make_unique<WebAppCommandManager>(profile_));
+  SetCommandManager(std::make_unique<WebAppCommandManager>(profile_, this));
 
   SetPreinstalledWebAppManager(
       std::make_unique<PreinstalledWebAppManager>(profile_));

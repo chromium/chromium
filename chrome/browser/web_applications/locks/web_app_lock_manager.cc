@@ -3,18 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include <memory>
 
 #include "base/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
@@ -95,7 +100,8 @@ GetLockRequestsForLock(const LockDescription& lock) {
 
 }  // namespace
 
-WebAppLockManager::WebAppLockManager() = default;
+WebAppLockManager::WebAppLockManager(WebAppProvider& provider)
+    : provider_(provider) {}
 WebAppLockManager::~WebAppLockManager() = default;
 
 bool WebAppLockManager::IsSharedWebContentsLockFree() {
@@ -115,6 +121,78 @@ void WebAppLockManager::AcquireLock(LockDescription& lock_description,
   lock_manager_.AcquireLocks(std::move(requests),
                              lock_description.holder_->AsWeakPtr(),
                              std::move(on_lock_acquired), options);
+}
+
+template <>
+void WebAppLockManager::AcquireLock(
+    LockDescription& lock_description,
+    base::OnceCallback<void(std::unique_ptr<NoopLock>)> on_lock_acquired) {
+  CHECK(lock_description.type() == LockDescription::Type::kNoOp);
+
+  auto lock = std::make_unique<NoopLock>();
+
+  AcquireLock(lock_description,
+              base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
+}
+
+template <>
+void WebAppLockManager::AcquireLock(
+    LockDescription& lock_description,
+    base::OnceCallback<void(std::unique_ptr<SharedWebContentsLock>)>
+        on_lock_acquired) {
+  CHECK(lock_description.type() ==
+        LockDescription::Type::kBackgroundWebContents);
+
+  auto lock = std::make_unique<SharedWebContentsLock>(
+      *provider_->command_manager().EnsureWebContentsCreated(PassKey()));
+
+  AcquireLock(lock_description,
+              base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
+}
+
+template <>
+void WebAppLockManager::AcquireLock(
+    LockDescription& lock_description,
+    base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired) {
+  CHECK(lock_description.type() == LockDescription::Type::kApp);
+
+  auto lock = std::make_unique<AppLock>(provider_->registrar(),
+                                        provider_->sync_bridge(),
+                                        provider_->os_integration_manager());
+
+  AcquireLock(lock_description,
+              base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
+}
+
+template <>
+void WebAppLockManager::AcquireLock(
+    LockDescription& lock_description,
+    base::OnceCallback<void(std::unique_ptr<SharedWebContentsWithAppLock>)>
+        on_lock_acquired) {
+  CHECK(lock_description.type() == LockDescription::Type::kAppAndWebContents);
+
+  auto lock = std::make_unique<SharedWebContentsWithAppLock>(
+      *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
+      provider_->registrar(), provider_->sync_bridge(),
+      provider_->os_integration_manager());
+
+  AcquireLock(lock_description,
+              base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
+}
+
+template <>
+void WebAppLockManager::AcquireLock(
+    LockDescription& lock_description,
+    base::OnceCallback<void(std::unique_ptr<FullSystemLock>)>
+        on_lock_acquired) {
+  CHECK(lock_description.type() == LockDescription::Type::kFullSystem);
+
+  auto lock = std::make_unique<FullSystemLock>(
+      provider_->registrar(), provider_->sync_bridge(),
+      provider_->os_integration_manager());
+
+  AcquireLock(lock_description,
+              base::BindOnce(std::move(on_lock_acquired), std::move(lock)));
 }
 
 std::unique_ptr<SharedWebContentsWithAppLockDescription>

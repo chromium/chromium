@@ -62,8 +62,8 @@ class LockDescription {
     kMaxValue = kApp,
   };
 
-  // LockDescription owns the lockholder for `WebAppLockManager` to ensure
-  // LockDescription only request lock once. Can change?
+  // TODO(https://crbug.com/1375870): move to be held by lock after all commands
+  // are migrated to hold a lock.
   std::unique_ptr<content::PartitionedLockHolder> holder_;
   const base::flat_set<AppId> app_ids_{};
   const Type type_;

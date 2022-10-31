@@ -14,7 +14,8 @@ FullSystemLockDescription::FullSystemLockDescription()
 FullSystemLockDescription::~FullSystemLockDescription() = default;
 
 FullSystemLock::FullSystemLock(WebAppRegistrar& registrar,
-                               WebAppSyncBridge& sync_bridge)
-    : AppLock(registrar, sync_bridge) {}
+                               WebAppSyncBridge& sync_bridge,
+                               OsIntegrationManager& os_integration_manager)
+    : AppLock(registrar, sync_bridge, os_integration_manager) {}
 FullSystemLock::~FullSystemLock() = default;
 }  // namespace web_app

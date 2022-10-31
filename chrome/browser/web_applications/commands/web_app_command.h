@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_WEB_APP_COMMAND_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -77,6 +79,7 @@ class WebAppCommand {
 
   using LockAcquiredCallback =
       base::OnceCallback<void(base::OnceClosure start_command)>;
+
   // Triggered by the WebAppCommandManager. Request lock and start the command
   // after the lock is acquired.
   // TODO(https://crbug.com/1375870): remove the implementation here after all
@@ -112,7 +115,7 @@ class WebAppCommand {
       CommandResult result,
       base::OnceClosure call_after_destruction);
 
-  WebAppCommandManager* command_manager() const { return command_manager_; }
+  virtual WebAppCommandManager* command_manager() const;
 
   // If the `lock()` includes the lock for the kBackgroundWebContents, then this
   // will be populated when `Start()` is called.
@@ -127,7 +130,7 @@ class WebAppCommand {
   friend class WebAppCommandManager;
 
   // Start called by the WebAppCommandManager.
-  void StartWithManager(WebAppCommandManager* command_manager);
+  void PrepareForStart(WebAppCommandManager* command_manager);
 
   // Triggered after lock is acquired. Signals that this command can
   // start its operations. When this command is complete, it should call
@@ -149,6 +152,37 @@ class WebAppCommand {
   raw_ptr<content::WebContents, DegradeToNoOpWhenMTE> shared_web_contents_;
 
   base::WeakPtrFactory<WebAppCommand> weak_factory_{this};
+};
+
+template <typename LockType>
+class WebAppCommandTemplate : public WebAppCommand {
+ public:
+  WebAppCommandTemplate() = default;
+  ~WebAppCommandTemplate() override = default;
+
+  virtual void StartWithLock(std::unique_ptr<LockType> lock) = 0;
+
+ protected:
+  WebAppCommandManager* command_manager() const override {
+    return command_manager_;
+  }
+
+ private:
+  //  TODO(https://crbug.com/1375870): remove after all commands are migrated to
+  //  use the template.
+  void Start() override {}
+
+  void RequestLock(WebAppCommandManager* command_manager,
+                   WebAppLockManager* lock_manager,
+                   LockAcquiredCallback on_lock_acquired) override;
+
+  void PrepareForStart(WebAppCommandManager* command_manager,
+                       LockAcquiredCallback on_lock_acquired,
+                       std::unique_ptr<LockType> lock);
+
+  raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
+
+  base::WeakPtrFactory<WebAppCommandTemplate> weak_factory_{this};
 };
 
 }  // namespace web_app

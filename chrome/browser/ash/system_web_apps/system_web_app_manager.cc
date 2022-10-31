@@ -242,7 +242,8 @@ SystemWebAppManager::~SystemWebAppManager() {
   // SystemWebAppManager lifetime matches WebAppProvider lifetime (see
   // BrowserContextDependencyManager) but we reset pointers to
   // system_app_delegates_ for integrity with DCHECKs.
-  ConnectProviderToSystemWebAppDelegateMap(nullptr);
+  if (provider_->is_registry_ready())
+    ConnectProviderToSystemWebAppDelegateMap(nullptr);
 }
 
 // static

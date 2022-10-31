@@ -197,9 +197,7 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
                                        const base::FilePath& web_apps_directory,
                                        const IconId& icon_id) {
   base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
-
   auto icon_data = base::MakeRefCounted<base::RefCountedString>();
-
   if (!utils->ReadFileToString(icon_file, &icon_data->data())) {
     return {.error_log = {CreateError(
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};

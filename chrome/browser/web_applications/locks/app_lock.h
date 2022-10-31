@@ -12,6 +12,7 @@
 
 namespace web_app {
 
+class OsIntegrationManager;
 class WebAppRegistrar;
 class WebAppSyncBridge;
 
@@ -29,15 +30,21 @@ class AppLockDescription : public LockDescription {
 
 class AppLock {
  public:
-  AppLock(WebAppRegistrar& registrar, WebAppSyncBridge& sync_bridge);
+  AppLock(WebAppRegistrar& registrar,
+          WebAppSyncBridge& sync_bridge,
+          OsIntegrationManager& os_integration_manager);
   ~AppLock();
 
   WebAppRegistrar& registrar() { return *registrar_; }
   WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
+  OsIntegrationManager& os_integration_manager() {
+    return *os_integration_manager_;
+  }
 
  private:
   raw_ref<WebAppRegistrar> registrar_;
   raw_ref<WebAppSyncBridge> sync_bridge_;
+  raw_ref<OsIntegrationManager> os_integration_manager_;
 };
 
 }  // namespace web_app

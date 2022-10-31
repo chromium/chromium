@@ -193,7 +193,8 @@ class WebAppSyncBridgeTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    command_manager_ = std::make_unique<WebAppCommandManager>(profile());
+    command_manager_ = std::make_unique<WebAppCommandManager>(
+        profile(), FakeWebAppProvider::Get(profile()));
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
     registrar_mutable_ = std::make_unique<WebAppRegistrarMutable>(profile());
     sync_bridge_ = std::make_unique<WebAppSyncBridge>(

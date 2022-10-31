@@ -12,8 +12,12 @@ AppLockDescription::AppLockDescription(base::flat_set<AppId> app_ids)
     : LockDescription(std::move(app_ids), LockDescription::Type::kApp) {}
 AppLockDescription::~AppLockDescription() = default;
 
-AppLock::AppLock(WebAppRegistrar& registrar, WebAppSyncBridge& sync_bridge)
-    : registrar_(registrar), sync_bridge_(sync_bridge) {}
+AppLock::AppLock(WebAppRegistrar& registrar,
+                 WebAppSyncBridge& sync_bridge,
+                 OsIntegrationManager& os_integration_manager)
+    : registrar_(registrar),
+      sync_bridge_(sync_bridge),
+      os_integration_manager_(os_integration_manager) {}
 AppLock::~AppLock() = default;
 
 }  // namespace web_app

@@ -8,33 +8,27 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
+class AppLock;
 class AppLockDescription;
 class LockDescription;
-class WebAppRegistrar;
-class WebAppSyncBridge;
-class OsIntegrationManager;
 enum class Result;
 
 // UpdateFileHandlerCommand updates file handler registration to match with the
 // app's setting or user choice.
-class UpdateFileHandlerCommand : public WebAppCommand {
+class UpdateFileHandlerCommand : public WebAppCommandTemplate<AppLock> {
  public:
   // Updates the File Handling API approval state for the given app. If
   // necessary, it also updates the registration with the OS.
   static std::unique_ptr<UpdateFileHandlerCommand> CreateForPersistUserChoice(
       const AppId& app_id,
       bool allowed,
-      base::OnceClosure callback,
-      WebAppRegistrar* registrar,
-      WebAppSyncBridge* sync_bridge,
-      OsIntegrationManager* os_integration_manager);
+      base::OnceClosure callback);
 
   // Updates the file handler registration with the OS to match the app's
   // settings. Note that this tries to avoid extra work by no-oping if the
@@ -48,13 +42,10 @@ class UpdateFileHandlerCommand : public WebAppCommand {
   // the entire set of OS-registered file handlers (and other OS hooks).
   static std::unique_ptr<UpdateFileHandlerCommand> CreateForUpdate(
       const AppId& app_id,
-      base::OnceClosure callback,
-      WebAppRegistrar* registrar,
-      WebAppSyncBridge* sync_bridge,
-      OsIntegrationManager* os_integration_manager);
+      base::OnceClosure callback);
   ~UpdateFileHandlerCommand() override;
 
-  void Start() override;
+  void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
   LockDescription& lock_description() const override;
 
@@ -66,22 +57,16 @@ class UpdateFileHandlerCommand : public WebAppCommand {
  private:
   UpdateFileHandlerCommand(const AppId& app_id,
                            absl::optional<bool> user_choice_to_remember,
-                           base::OnceClosure callback,
-                           WebAppRegistrar* registrar,
-                           WebAppSyncBridge* sync_bridge,
-                           OsIntegrationManager* os_integration_manager);
+                           base::OnceClosure callback);
   void OnFileHandlerUpdated(bool file_handling_enabled, Result result);
   void ReportResultAndDestroy(CommandResult result);
 
   std::unique_ptr<AppLockDescription> lock_description_;
+  std::unique_ptr<AppLock> lock_;
 
   const AppId app_id_;
   absl::optional<bool> user_choice_to_remember_;
   base::OnceClosure callback_;
-
-  raw_ptr<WebAppRegistrar> registrar_;
-  raw_ptr<WebAppSyncBridge> sync_bridge_;
-  raw_ptr<OsIntegrationManager> os_integration_manager_;
 
   base::Value::Dict debug_info_;
 

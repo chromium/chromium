@@ -94,6 +94,7 @@ class FakeWebAppProvider : public WebAppProvider {
   WebAppIconManager& GetIconManager() const;
   WebAppCommandManager& GetCommandManager() const;
   AbstractWebAppDatabaseFactory& GetDatabaseFactory() const;
+  WebAppInstallManager& GetInstallManager() const;
 
   // Starts this WebAppProvider and its subsystems. It does not wait for systems
   // to be ready.

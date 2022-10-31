@@ -88,7 +88,8 @@ class WebAppRegistrarTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    command_manager_ = std::make_unique<WebAppCommandManager>(profile());
+    command_manager_ = std::make_unique<WebAppCommandManager>(
+        profile(), FakeWebAppProvider::Get(profile()));
     registrar_mutable_ = std::make_unique<WebAppRegistrarMutable>(profile());
     sync_bridge_ = std::make_unique<WebAppSyncBridge>(
         registrar_mutable_.get(), mock_processor_.CreateForwardingProcessor());

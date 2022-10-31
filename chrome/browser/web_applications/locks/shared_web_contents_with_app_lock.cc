@@ -20,9 +20,10 @@ SharedWebContentsWithAppLockDescription::
 SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
     content::WebContents& shared_web_contents,
     WebAppRegistrar& registrar,
-    WebAppSyncBridge& sync_bridge)
+    WebAppSyncBridge& sync_bridge,
+    OsIntegrationManager& os_integration_manager)
     : SharedWebContentsLock(shared_web_contents),
-      AppLock(registrar, sync_bridge) {}
+      AppLock(registrar, sync_bridge, os_integration_manager) {}
 
 SharedWebContentsWithAppLock::~SharedWebContentsWithAppLock() = default;
 

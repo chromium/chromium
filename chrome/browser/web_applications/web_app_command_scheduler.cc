@@ -68,8 +68,7 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
 
   provider_->command_manager().ScheduleCommand(
       UpdateFileHandlerCommand::CreateForPersistUserChoice(
-          app_id, allowed, std::move(callback), &provider_->registrar(),
-          &provider_->sync_bridge(), &provider_->os_integration_manager()));
+          app_id, allowed, std::move(callback)));
 }
 
 void WebAppCommandScheduler::UpdateFileHandlerOsIntegration(
@@ -88,9 +87,7 @@ void WebAppCommandScheduler::UpdateFileHandlerOsIntegration(
   }
 
   provider_->command_manager().ScheduleCommand(
-      UpdateFileHandlerCommand::CreateForUpdate(
-          app_id, std::move(callback), &provider_->registrar(),
-          &provider_->sync_bridge(), &provider_->os_integration_manager()));
+      UpdateFileHandlerCommand::CreateForUpdate(app_id, std::move(callback)));
 }
 
 void WebAppCommandScheduler::ScheduleManifestUpdateDataFetch(

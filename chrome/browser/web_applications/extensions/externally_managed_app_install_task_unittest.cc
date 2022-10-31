@@ -309,7 +309,8 @@ class ExternallyManagedAppInstallTaskTest
             registrar.get());
     install_finalizer_ = install_finalizer.get();
 
-    auto command_manager = std::make_unique<WebAppCommandManager>(profile());
+    auto command_manager = std::make_unique<WebAppCommandManager>(
+        profile(), FakeWebAppProvider::Get(profile()));
     command_manager_ = command_manager.get();
 
     auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(

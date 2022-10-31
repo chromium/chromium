@@ -6,6 +6,11 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 
@@ -31,12 +36,16 @@ void WebAppCommand::SignalCompletionAndSelfDestruct(
   DCHECK_CALLED_ON_VALID_SEQUENCE(command_sequence_checker_);
   // Surround the check in an if-statement to avoid evaluating the debug value
   // every time.
-  if (!command_manager_) {
-    CHECK(command_manager_)
+  if (!command_manager()) {
+    CHECK(command_manager())
         << "Command was never started: " << ToDebugValue().DebugString();
   }
-  command_manager_->OnCommandComplete(this, result,
-                                      std::move(completion_callback));
+  command_manager()->OnCommandComplete(this, result,
+                                       std::move(completion_callback));
+}
+
+WebAppCommandManager* WebAppCommand::command_manager() const {
+  return command_manager_;
 }
 
 void WebAppCommand::RequestLock(WebAppCommandManager* command_manager,
@@ -45,11 +54,11 @@ void WebAppCommand::RequestLock(WebAppCommandManager* command_manager,
   lock_manager->AcquireLock(
       lock_description(),
       base::BindOnce(std::move(on_lock_acquired),
-                     base::BindOnce(&WebAppCommand::StartWithManager,
+                     base::BindOnce(&WebAppCommand::PrepareForStart,
                                     AsWeakPtr(), command_manager)));
 }
 
-void WebAppCommand::StartWithManager(WebAppCommandManager* command_manager) {
+void WebAppCommand::PrepareForStart(WebAppCommandManager* command_manager) {
   command_manager_ = command_manager;
   Start();
 }
@@ -57,5 +66,35 @@ void WebAppCommand::StartWithManager(WebAppCommandManager* command_manager) {
 base::WeakPtr<WebAppCommand> WebAppCommand::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
+
+template <typename LockType>
+void WebAppCommandTemplate<LockType>::RequestLock(
+    WebAppCommandManager* command_manager,
+    WebAppLockManager* lock_manager,
+    LockAcquiredCallback on_lock_acquired) {
+  lock_manager->AcquireLock(
+      lock_description(),
+      base::BindOnce(&WebAppCommandTemplate::PrepareForStart,
+                     weak_factory_.GetWeakPtr(), command_manager,
+                     std::move(on_lock_acquired)));
+}
+
+template <typename LockType>
+void WebAppCommandTemplate<LockType>::PrepareForStart(
+    WebAppCommandManager* command_manager,
+    LockAcquiredCallback on_lock_acquired,
+    std::unique_ptr<LockType> lock) {
+  command_manager_ = command_manager;
+
+  std::move(on_lock_acquired)
+      .Run(base::BindOnce(&WebAppCommandTemplate::StartWithLock,
+                          weak_factory_.GetWeakPtr(), std::move(lock)));
+}
+
+template class WebAppCommandTemplate<NoopLock>;
+template class WebAppCommandTemplate<SharedWebContentsLock>;
+template class WebAppCommandTemplate<AppLock>;
+template class WebAppCommandTemplate<SharedWebContentsWithAppLock>;
+template class WebAppCommandTemplate<FullSystemLock>;
 
 }  // namespace web_app
