@@ -5,8 +5,10 @@
 #include "fuchsia_web/runners/cast/test/cast_runner_launcher.h"
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
+#include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
+#include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/memorypressure/cpp/fidl.h>
@@ -77,6 +79,21 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
                     Storage{.name = "cache", .path = "/cache"},
                 },
             .source = ParentRef(),
+            .targets = {ChildRef{kCastRunnerService}}});
+
+  // Provide a fake Cast "agent", providing some necessary services.
+  static constexpr char kFakeCastAgentName[] = "fake-cast-agent";
+  fake_cast_agent_.emplace();
+  realm_builder.AddLocalChild(kFakeCastAgentName, &fake_cast_agent_.value());
+  realm_builder.AddRoute(
+      Route{.capabilities =
+                {
+                    Protocol{chromium::cast::CorsExemptHeaderProvider::Name_},
+                    Protocol{fuchsia::camera3::DeviceWatcher::Name_},
+                    Protocol{fuchsia::legacymetrics::MetricsRecorder::Name_},
+                    Protocol{fuchsia::media::Audio::Name_},
+                },
+            .source = ChildRef{kFakeCastAgentName},
             .targets = {ChildRef{kCastRunnerService}}});
 
   // Either route the fake AudioDeviceEnumerator or the system one.

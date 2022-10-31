@@ -43,8 +43,6 @@ source_set("common") {
     "//url",
   ]
   public_deps = [
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app",

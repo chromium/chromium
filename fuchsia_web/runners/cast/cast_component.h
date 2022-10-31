@@ -5,10 +5,7 @@
 #ifndef FUCHSIA_WEB_RUNNERS_CAST_CAST_COMPONENT_H_
 #define FUCHSIA_WEB_RUNNERS_CAST_CAST_COMPONENT_H_
 
-#include <fuchsia/camera3/cpp/fidl.h>
-#include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
-#include <lib/fidl/cpp/binding.h>
 
 #include <memory>
 #include <string>
@@ -25,10 +22,6 @@
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia_web/runners/common/web_component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace fuchsia::legacymetrics {
-class MetricsRecorder;
-}
 
 namespace cr_fuchsia {
 class AgentManager;
@@ -84,14 +77,6 @@ class CastComponent final : public WebComponent,
 
   ~CastComponent() override;
 
-  void SetOnDestroyedCallback(base::OnceClosure on_destroyed);
-
-  void ConnectMetricsRecorder(
-      fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request);
-  void ConnectAudio(fidl::InterfaceRequest<fuchsia::media::Audio> request);
-  void ConnectDeviceWatcher(
-      fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request);
-
   bool HasWebPermission(fuchsia::web::PermissionType permission_type) const;
 
   const std::string& agent_url() const {
@@ -129,7 +114,6 @@ class CastComponent final : public WebComponent,
   void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
 
   const bool is_headless_;
-  base::OnceClosure on_destroyed_;
 
   std::unique_ptr<cr_fuchsia::AgentManager> agent_manager_;
   chromium::cast::ApplicationConfig application_config_;

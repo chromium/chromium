@@ -4,7 +4,6 @@
 
 #include "fuchsia_web/runners/cast/cast_component.h"
 
-#include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <algorithm>
@@ -92,27 +91,6 @@ CastComponent::CastComponent(base::StringPiece debug_name,
 }
 
 CastComponent::~CastComponent() = default;
-
-void CastComponent::SetOnDestroyedCallback(base::OnceClosure on_destroyed) {
-  on_destroyed_ = std::move(on_destroyed);
-}
-
-void CastComponent::ConnectMetricsRecorder(
-    fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request) {
-  startup_context()->svc()->Connect(std::move(request));
-}
-
-void CastComponent::ConnectAudio(
-    fidl::InterfaceRequest<fuchsia::media::Audio> request) {
-  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
-                                        std::move(request));
-}
-
-void CastComponent::ConnectDeviceWatcher(
-    fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
-  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
-                                        std::move(request));
-}
 
 bool CastComponent::HasWebPermission(
     fuchsia::web::PermissionType permission_type) const {
@@ -226,8 +204,6 @@ void CastComponent::StartComponent() {
 void CastComponent::DestroyComponent(int64_t exit_code,
                                      fuchsia::sys::TerminationReason reason) {
   DCHECK(!constructor_active_);
-
-  std::move(on_destroyed_).Run();
 
   // If the component EXITED then pass the |exit_code| to the Agent, to allow it
   // to distinguish graceful termination from crashes.

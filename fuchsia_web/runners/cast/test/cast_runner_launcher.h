@@ -13,6 +13,7 @@
 
 #include "fuchsia_web/common/test/fake_feedback_service.h"
 #include "fuchsia_web/runners/cast/test/cast_runner_features.h"
+#include "fuchsia_web/runners/cast/test/fake_cast_agent.h"
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,11 +30,17 @@ class CastRunnerLauncher {
 
   std::unique_ptr<sys::ServiceDirectory> StartCastRunner();
 
+  // May only be called after StartCastRunner().
+  FakeCastAgent& fake_cast_agent() { return *fake_cast_agent_; }
+
  private:
   const CastRunnerFeatures runner_features_;
-  absl::optional<FakeFeedbackService> fake_feedback_service_;
+
   absl::optional<media::FakeAudioDeviceEnumeratorLocalComponent>
       fake_audio_device_enumerator_;
+  absl::optional<FakeCastAgent> fake_cast_agent_;
+  absl::optional<FakeFeedbackService> fake_feedback_service_;
+
   absl::optional<::component_testing::RealmRoot> realm_root_;
 };
 

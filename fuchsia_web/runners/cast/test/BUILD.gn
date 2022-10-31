@@ -9,23 +9,29 @@ source_set("integration") {
   public = [
     "cast_runner_features.h",
     "cast_runner_launcher.h",
+    "fake_cast_agent.h",
   ]
   sources = [
     "cast_runner_features.cc",
     "cast_runner_launcher.cc",
+    "fake_cast_agent.cc",
   ]
   public_deps = [
     "//fuchsia_web/common/test:test_support",
     "//media/fuchsia/audio:test_support_components",
     "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]
   deps = [
     "//base",
+    "//fuchsia_web/common",
     "//fuchsia_web/runners:cast_runner_core",
     "//fuchsia_web/runners/cast/fidl",
     "//media/fuchsia/audio:test_support",
+    "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",

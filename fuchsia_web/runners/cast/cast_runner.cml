@@ -42,13 +42,28 @@
       path: "/config/data",
     },
     {
+      // Capabilities used by the Runner itself.
       protocol: [
-        // Capabilities to be passed to WebEngine instances.
+        "chromium.cast.ApplicationConfigManager",
+        "chromium.cast.CorsExemptHeaderProvider",
+        // "fuchsia.feedback.CrashReportingProductRegister",
+      ]
+    },
+    {
+      // Capabilities used by the WebInstanceHost.
+      protocol: [
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
+        "fuchsia.sys.Environment",
+        "fuchsia.sys.Loader",
+      ]
+    },
+    {
+      // Capabilities to be passed to WebEngine instances.
+      protocol: [
         "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
-        "fuchsia.feedback.ComponentDataRegister",
-        "fuchsia.feedback.CrashReportingProductRegister",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.input.virtualkeyboard.ControllerCreator",
@@ -65,8 +80,6 @@
         "fuchsia.posix.socket.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.settings.Display",
-        "fuchsia.sys.Environment",
-        "fuchsia.sys.Loader",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
         "fuchsia.ui.input3.Keyboard",
@@ -81,6 +94,7 @@
         "fuchsia.media.drm.PlayReady",
         "fuchsia.media.drm.Widevine",
         "fuchsia.tracing.perfetto.ProducerConnector",
+        // "fuchsia.tracing.provider.Registry",
       ],
       availability: "optional"
     },
