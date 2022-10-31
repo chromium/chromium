@@ -6,26 +6,16 @@ package org.chromium.testing.local;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 /**
- * A custom Robolectric Junit4 Test Runner with minimal Chromium-specific settings. Most test cases
- * should prefer {@link org.chromium.base.test.BaseRobolectricTestRunner} in order to initialize
- * base globals.
+ * Most test cases should prefer {@link org.chromium.base.test.BaseRobolectricTestRunner}
+ * in order to initialize base globals.
+ * ParameterizedRobolectricTestRunner does not pick up settings from this class, so configuring
+ * defaults via command-line flags / .properties files is what we've moved to instead of setting
+ * things here.
  */
 public class LocalRobolectricTestRunner extends RobolectricTestRunner {
-    public static final int DEFAULT_SDK = 28;
-
     public LocalRobolectricTestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
-    }
-
-    @Override
-    protected Config buildGlobalConfig() {
-        return new Config.Builder()
-                .setSdk(DEFAULT_SDK)
-                // Shadows to fix robolectric shortcomings.
-                .setShadows(new Class[] {CustomShadowApplicationPackageManager.class})
-                .build();
     }
 }

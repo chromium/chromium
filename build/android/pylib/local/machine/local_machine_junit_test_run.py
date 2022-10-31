@@ -227,9 +227,14 @@ def AddPropertiesJar(cmd_list, temp_dir, resource_apk):
   properties_jar_path = os.path.join(temp_dir, 'properties.jar')
   with zipfile.ZipFile(properties_jar_path, 'w') as z:
     z.writestr('com/android/tools/test_config.properties',
-               'android_resource_apk=%s' % resource_apk)
-    z.writestr('robolectric.properties',
-               'application = android.app.Application')
+               'android_resource_apk=%s\n' % resource_apk)
+    props = [
+        'application = android.app.Application',
+        'sdk = 28',
+        ('shadows = org.chromium.testing.local.'
+         'CustomShadowApplicationPackageManager'),
+    ]
+    z.writestr('robolectric.properties', '\n'.join(props))
 
   for cmd in cmd_list:
     cmd.extend(['--classpath', properties_jar_path])

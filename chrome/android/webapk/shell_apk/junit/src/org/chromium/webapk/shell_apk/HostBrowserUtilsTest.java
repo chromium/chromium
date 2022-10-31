@@ -20,7 +20,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.lang.annotation.Retention;
@@ -32,7 +31,7 @@ import java.util.List;
 
 /** Tests for HostBrowserUtils. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = LocalRobolectricTestRunner.DEFAULT_SDK, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class HostBrowserUtilsTest {
     @IntDef({DefaultBrowserWebApkSupport.YES, DefaultBrowserWebApkSupport.NO})
     @Retention(RetentionPolicy.SOURCE)
