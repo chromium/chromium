@@ -495,7 +495,6 @@ TEST_P(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
 }
 
 TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -565,11 +564,6 @@ TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
                 GURL(kURL), net::SiteForCookies::FromUrl(GURL(kURL)),
                 url::Origin::Create(GURL(kURL)),
                 net::SamePartyContext::Type::kSameParty));
-
-  // No histogram samples should have been recorded.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 }
 
 class SamePartyCookieSettingsTest : public CookieSettingsTest {
@@ -584,7 +578,6 @@ class SamePartyCookieSettingsTest : public CookieSettingsTest {
 };
 
 TEST_P(SamePartyCookieSettingsTest, IsPrivacyModeEnabled) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -610,15 +603,9 @@ TEST_P(SamePartyCookieSettingsTest, IsPrivacyModeEnabled) {
       settings.IsPrivacyModeEnabled(GURL(kFPSMemberURL), net::SiteForCookies(),
                                     url::Origin::Create(GURL(kFPSOwnerURL)),
                                     net::SamePartyContext::Type::kSameParty));
-
-  // No histogram samples should have been recorded.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 }
 
 TEST_P(CookieSettingsTest, IsCookieAccessible) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -629,9 +616,6 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *non_sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   // SameParty cookies are not considered first-party, so they should be
   // inaccessible in cross-site contexts.
@@ -641,9 +625,6 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 
   // If the SameParty cookie is blocked by a site-specific setting, it should
   // still be inaccessible.
@@ -652,15 +633,9 @@ TEST_P(CookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  // It wasn't the third-party cookie blocking setting this time, so we don't
-  // record the metric.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 }
 
 TEST_P(SamePartyCookieSettingsTest, IsCookieAccessible) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -671,9 +646,6 @@ TEST_P(SamePartyCookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *non_sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   // SameParty cookies are considered first-party, so they should be accessible,
   // even in cross-site contexts.
@@ -683,9 +655,6 @@ TEST_P(SamePartyCookieSettingsTest, IsCookieAccessible) {
   EXPECT_TRUE(settings.IsCookieAccessible(
       *sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 
   // If the SameParty cookie is blocked by a site-specific setting, it should
   // not be accessible.
@@ -694,11 +663,6 @@ TEST_P(SamePartyCookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  // It wasn't blocked by third-party cookie blocking settings, so we shouldn't
-  // record the metric.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 
   // If the SameParty cookie is blocked by the global default setting (i.e. if
   // the user has blocked all cookies), it should not be accessible.
@@ -707,11 +671,6 @@ TEST_P(SamePartyCookieSettingsTest, IsCookieAccessible) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *sameparty_cookie, GURL(kFPSMemberURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kFPSOwnerURL))));
-  // It wasn't blocked by third-party cookie blocking settings, so we shouldn't
-  // record the metric.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 }
 
 TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
@@ -777,7 +736,6 @@ TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
 }
 
 TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -831,11 +789,6 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
                           net::CookieInclusionStatus::ExclusionReason::
                               EXCLUDE_USER_PREFERENCES}),
                   _, _, _))));
-
-  // One SameParty cookie was blocked due to 3P cookie blocking settings.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 }
 
 TEST_P(CookieSettingsTest,
@@ -880,7 +833,6 @@ TEST_P(CookieSettingsTest,
 }
 
 TEST_P(SamePartyCookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -961,14 +913,6 @@ TEST_P(SamePartyCookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
                           net::CookieInclusionStatus::ExclusionReason::
                               EXCLUDE_SECURE_ONLY}),
                   _, _, _))));
-
-  // 2 SameParty cookies were allowed (by user's settings, not by the cookie
-  // store), despite 3P cookie blocking being enabled. Note that
-  // `excluded_invalid_sameparty` is not in a same-party context, so we do not
-  // record metrics for it.
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              ElementsAre(base::Bucket(/*min=*/0, /*count=*/2)));
 }
 
 namespace {

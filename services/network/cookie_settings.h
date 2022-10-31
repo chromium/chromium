@@ -227,12 +227,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   // Returns true iff a cookie with the given `is_same_party` property should be
   // accessible in a context with the given
-  // `third_party_blocking_outcome`. Records metrics iff `record_metrics`
-  // is true.
+  // `third_party_blocking_outcome`.
   bool IsAllowedSamePartyCookie(
       bool is_same_party,
-      ThirdPartyBlockingOutcome third_party_blocking_outcome,
-      bool record_metrics) const;
+      ThirdPartyBlockingOutcome third_party_blocking_outcome) const;
 
   // Returns true iff a cookie with the given `is_partitioned` property should
   // be accessible in a context with the given
@@ -253,15 +251,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   //
   // `is_same_party` should reflect whether the context is same-party *and*
   // whether the (real or hypothetical) cookie is SameParty.
-  //
-  // `record_metrics` indicates whether metrics should be recorded for this
-  // call. I.e., whether we are checking access to a real cookie, or a
-  // hypothetical one.
   bool IsHypotheticalCookieAllowed(
       const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
       bool is_same_party,
-      bool is_partitioned,
-      bool record_metrics) const;
+      bool is_partitioned) const;
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;

@@ -12623,11 +12623,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="HTTPS"/>
 </enum>
 
-<enum name="BooleanHTTPVsJS">
-  <int value="0" label="JS"/>
-  <int value="1" label="HTTP"/>
-</enum>
-
 <enum name="BooleanHung">
   <int value="0" label="Is not hung"/>
   <int value="1" label="Is hung"/>

@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.ComputeContext.Latency"
-    units="microseconds" expires_after="M110">
+    units="microseconds" expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>chrome-first-party-sets@chromium.org</owner>
   <summary>
@@ -353,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.DelayedQueriesCount" units="queries"
-    expires_after="2023-03-12">
+    expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.EnqueueingDelay.{QueryType}"
-    units="microseconds" expires_after="M110">
+    units="microseconds" expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.FindOwner.Latency" units="microseconds"
-    expires_after="2023-03-12">
+    expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>chrome-first-party-sets@chromium.org</owner>
   <summary>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.InitializationDuration.{Landmark}2"
-    units="ms" expires_after="M110">
+    units="ms" expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.MostDelayedQueryDelta2" units="ms"
-    expires_after="2023-03-26">
+    expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization"
-    units="queries" expires_after="2023-10-13">
+    units="queries" expires_after="M115">
   <owner>kaklilu@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <owner>chrome-first-party-sets@chromium.org</owner>
@@ -510,18 +510,6 @@ chromium-metrics-reviews@google.com.
     whether it was used correctly (must have a __Host- prefix and must not have
     the SameParty attribute). Logged whenever a cookie is created from a string
     (from a Set-Cookie header or a write to document.cookie).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.IsSamePartyValid" enum="BooleanValid"
-    expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    If a cookie had the SameParty attribute, this histogram logs whether it was
-    used correctly (i.e., also had Secure and did not have SameSite=Strict).
-    Logged every time a cookie with SameParty is created from a string (i.e.
-    when it is set via Set-Cookie or document.cookie write).
   </summary>
 </histogram>
 
@@ -614,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.PerFirstPartySetCount" units="cookies"
-    expires_after="M110">
+    expires_after="M115">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -750,126 +738,6 @@ chromium-metrics-reviews@google.com.
     The same-site context of a request, i.e. the relationship between the
     request and the navigational environment. Logged on every request to access
     a cookie.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"
-    enum="BooleanBlocked" expires_after="2023-03-12">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records whether access to a SameParty cookie in a same-party
-    (but cross-site) context, when the user has blocked 3rd-party cookies, was
-    blocked.
-
-    Recorded once per cookie access attempt if the context is same-party but
-    cross-site, the cookie is SameParty, and the user has blocked 3rd party
-    cookies.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameParty.ReadExclusionDecidedBySameParty"
-    enum="Boolean" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records whether enforcement of the SameParty attribute was
-    the only reason for a cookie's exclusion (from a read).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SameParty.SetExclusionDecidedBySameParty"
-    enum="Boolean" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records whether enforcement of the SameParty attribute was
-    the only reason for a cookie's exclusion (from a write).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartyCookieSameSiteAttributeValue"
-    enum="CookieSameSiteString" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The value of a SameParty cookie's SameSite attribute, if any. This is logged
-    once per attempt to create a SameParty cookie, regardless of success, upon
-    parsing of the SameSite attribute from a string.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartyReadIncluded.InclusionUnderSameSite"
-    enum="BooleanIncluded" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records, for each cookie with the SameParty attribute that is
-    read, whether the access would have been allowed by the cookie's SameSite
-    attribute (if SameParty had not been specified).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartyReadIncluded.IsHTTP" enum="BooleanHTTPVsJS"
-    expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records, for each cookie with the SameParty attribute that is
-    read, whether the access was over HTTP/HTTPS (as opposed to JS).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartyReadIncluded.PartyContextSize"
-    units="registrable domains" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records, for each cookie with the SameParty attribute that is
-    read, how large the party-context was. I.e., how many distinct registrable
-    domains needed to be treated as a single party in order for the cookie to
-    &quot;work&quot;.
-
-    A value of 0 indicates that the party context was nullopt either because its
-    size was too large, or because the party context did not need to be
-    computed.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartySetIncluded.InclusionUnderSameSite"
-    enum="BooleanIncluded" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records, for each cookie with the SameParty attribute that is
-    set, whether the access would have been allowed by the cookie's SameSite
-    attribute (if SameParty had not been specified).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartySetIncluded.IsHTTP" enum="BooleanHTTPVsJS"
-    expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records, for each cookie that is set with the SameParty
-    attribute, whether the access was over HTTP/HTTPS (as opposed to JS).
-  </summary>
-</histogram>
-
-<histogram name="Cookie.SamePartySetIncluded.PartyContextSize"
-    units="registrable domains" expires_after="M110">
-  <owner>cfredric@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    This histogram records, for each cookie that is set with the SameParty
-    attribute, how large the party-context was. I.e., how many distinct
-    registrable domains needed to be treated as a single party in order for the
-    cookie to &quot;work&quot;.
-
-    A value of 0 indicates that the party context was nullopt either because its
-    size was too large, or because the party context did not need to be
-    computed.
   </summary>
 </histogram>
 

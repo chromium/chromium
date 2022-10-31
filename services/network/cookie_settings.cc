@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -126,7 +125,7 @@ bool CookieSettings::IsCookieAccessible(
           GetFirstPartyURL(site_for_cookies,
                            base::OptionalToPtr(top_frame_origin)),
           IsThirdPartyRequest(url, site_for_cookies), QueryReason::kCookies),
-      cookie.IsSameParty(), cookie.IsPartitioned(), /*record_metrics=*/true);
+      cookie.IsSameParty(), cookie.IsPartitioned());
 }
 
 bool CookieSettings::ShouldAlwaysAllowCookies(
@@ -161,16 +160,13 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
   // the 1P to use cookies.
   //
   // Otherwise, the PrivacySetting should be kStateAllowed.
-  //
-  // We don't record metrics here, since this isn't actually accessing a cookie.
   CookieSettingWithMetadata metadata = GetCookieSettingWithMetadata(
       url, site_for_cookies, base::OptionalToPtr(top_frame_origin),
       QueryReason::kCookies);
   if (IsHypotheticalCookieAllowed(metadata,
                                   same_party_cookie_context_type ==
                                       SamePartyCookieContextType::kSameParty,
-                                  /*is_partitioned*/ false,
-                                  /*record_metrics=*/false)) {
+                                  /*is_partitioned*/ false)) {
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;
   }
 
@@ -364,22 +360,15 @@ bool CookieSettings::IsCookieAllowed(
           !cookie.access_result.status.HasExclusionReason(
               net::CookieInclusionStatus::
                   EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT),
-      cookie.cookie.IsPartitioned(),
-      /*record_metrics=*/true);
+      cookie.cookie.IsPartitioned());
 }
 
 bool CookieSettings::IsAllowedSamePartyCookie(
     bool is_same_party,
-    ThirdPartyBlockingOutcome third_party_blocking_outcome,
-    bool record_metrics) const {
+    ThirdPartyBlockingOutcome third_party_blocking_outcome) const {
   bool blocked_by_3p_but_same_party =
       is_same_party &&
       third_party_blocking_outcome != ThirdPartyBlockingOutcome::kIrrelevant;
-  if (record_metrics && blocked_by_3p_but_same_party) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting",
-        !sameparty_cookies_considered_first_party_);
-  }
 
   return sameparty_cookies_considered_first_party_ &&
          blocked_by_3p_but_same_party;
@@ -409,13 +398,12 @@ bool CookieSettings::IsThirdPartyCookieBlockedInSamePartySites(
 bool CookieSettings::IsHypotheticalCookieAllowed(
     const CookieSettingWithMetadata& setting_with_metadata,
     bool is_same_party,
-    bool is_partitioned,
-    bool record_metrics) const {
+    bool is_partitioned) const {
   DCHECK(!is_partitioned || !is_same_party);
   return IsAllowed(setting_with_metadata.cookie_setting) ||
          IsAllowedSamePartyCookie(
-             is_same_party, setting_with_metadata.third_party_blocking_outcome,
-             record_metrics) ||
+             is_same_party,
+             setting_with_metadata.third_party_blocking_outcome) ||
          IsAllowedPartitionedCookie(
              is_partitioned,
              setting_with_metadata.third_party_blocking_outcome);

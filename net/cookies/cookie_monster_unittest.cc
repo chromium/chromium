@@ -1918,8 +1918,6 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
       cm.get(), https_www_bar_.url(), "__Host-O=P; secure; path=/; partitioned",
       options, absl::nullopt, absl::nullopt, cookie_partition_key3));
 
-  base::HistogramTester histogram_tester;
-
   const Time last_access_date(GetFirstCookieAccessDate(cm.get()));
 
   base::PlatformThread::Sleep(kAccessDelay);
@@ -1982,13 +1980,6 @@ TEST_F(CookieMonsterTest, GetAllCookiesForURL) {
       GetAllCookiesForURL(cm.get(), https_www_bar_.url(),
                           CookiePartitionKeyCollection()),
       ElementsAre(MatchesCookieNameDomain("G", https_www_bar_.Format(".%D"))));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Cookie.SamePartyReadIncluded.IsHTTP"),
-      testing::ElementsAre(base::Bucket(1 /* min */, 1 /* samples */)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SamePartyReadIncluded.PartyContextSize"),
-              testing::ElementsAre(base::Bucket(0 /* min */, 1 /* samples */)));
 
   // Reading after a short wait should not update the access date.
   EXPECT_EQ(last_access_date, GetFirstCookieAccessDate(cm.get()));
@@ -3997,8 +3988,6 @@ TEST_F(CookieMonsterTest, SetSamePartyCookies) {
   GURL https_foo_url("https://www.foo.com/foo");
   GURL http_foo_url("http://www.foo.com/foo");
 
-  base::HistogramTester histogram_tester;
-
   // A non-SameParty cookie can be created from either a URL with a secure or
   // insecure scheme.
   EXPECT_TRUE(
@@ -4034,12 +4023,6 @@ TEST_F(CookieMonsterTest, SetSamePartyCookies) {
   EXPECT_TRUE(CreateAndSetCookieReturnStatus(&cm, https_url,
                                              "A=C; Secure; path=/; SameParty")
                   .IsInclude());
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Cookie.SamePartySetIncluded.IsHTTP"),
-      testing::ElementsAre(base::Bucket(0 /* min */, 3 /* samples */)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SamePartySetIncluded.PartyContextSize"),
-              testing::ElementsAre(base::Bucket(0 /* min */, 3 /* samples */)));
 }
 
 // Tests the behavior of "Leave Secure Cookies Alone" in

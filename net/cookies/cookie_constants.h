@@ -327,8 +327,7 @@ StringToCookieSameSite(const std::string& same_site,
                        CookieSameSiteString* samesite_string = nullptr);
 
 NET_EXPORT void RecordCookieSameSiteAttributeValueHistogram(
-    CookieSameSiteString value,
-    bool is_cookie_same_party = false);
+    CookieSameSiteString value);
 
 // This function reduces the 65535 available TCP port values down to a <100
 // potentially interesting values that cookies could be set by or sent to. This

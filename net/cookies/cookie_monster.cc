@@ -1228,11 +1228,6 @@ void CookieMonster::FilterCookiesWithOptions(
                                             same_party_attribute_enabled_)});
 
     if (!access_result.status.IsInclude()) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Cookie.SameParty.ReadExclusionDecidedBySameParty",
-          access_result.status.HasOnlyExclusionReason(
-              CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT));
-
       if (options.return_excluded_cookies())
         excluded_cookies->push_back({*cookie_ptr, access_result});
       continue;
@@ -1266,15 +1261,6 @@ void CookieMonster::FilterCookiesWithOptions(
           "Cookie.Port.ReadDiffersFromSet.DomainSet",
           IsCookieSentToSamePortThatSetIt(url, cookie_ptr->SourcePort(),
                                           cookie_ptr->SourceScheme()));
-    }
-
-    if (cookie_ptr->IsSameParty()) {
-      UMA_HISTOGRAM_BOOLEAN("Cookie.SamePartyReadIncluded.IsHTTP",
-                            !options.exclude_httponly());
-      UMA_HISTOGRAM_EXACT_LINEAR(
-          "Cookie.SamePartyReadIncluded.PartyContextSize",
-          options.full_party_context_size(),
-          1 + IsolationInfo::kPartyContextMaxSize);
     }
 
     included_cookies->push_back({*cookie_ptr, access_result});
@@ -1571,14 +1557,6 @@ void CookieMonster::SetCanonicalCookie(
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "SetCookie() key: " << key << " cc: " << cc->DebugString();
 
-    if (cc->IsSameParty()) {
-      UMA_HISTOGRAM_BOOLEAN("Cookie.SamePartySetIncluded.IsHTTP",
-                            !options.exclude_httponly());
-      UMA_HISTOGRAM_EXACT_LINEAR("Cookie.SamePartySetIncluded.PartyContextSize",
-                                 options.full_party_context_size(),
-                                 1 + IsolationInfo::kPartyContextMaxSize);
-    }
-
     if (cc->IsEffectivelySameSiteNone()) {
       UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes",
                                  NameValueSizeBytes(*cc));
@@ -1653,11 +1631,6 @@ void CookieMonster::SetCanonicalCookie(
 
     UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceSchemeName",
                               GetSchemeNameEnum(source_url));
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Cookie.SameParty.SetExclusionDecidedBySameParty",
-        access_result.status.HasOnlyExclusionReason(
-            CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT));
   }
 
   // TODO(chlily): Log metrics.

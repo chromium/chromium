@@ -610,10 +610,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
         CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
   }
 
-  // Collect metrics on whether usage of SameParty attribute is correct.
-  if (parsed_cookie.IsSameParty())
-    UMA_HISTOGRAM_BOOLEAN("Cookie.IsSamePartyValid", is_same_party_valid);
-
   bool partition_has_nonce = CookiePartitionKey::HasNonce(cookie_partition_key);
   bool is_partitioned_valid =
       IsCookiePartitionedValid(url, parsed_cookie, partition_has_nonce);
@@ -659,8 +655,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
-  RecordCookieSameSiteAttributeValueHistogram(samesite_string,
-                                              parsed_cookie.IsSameParty());
+  RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
   UMA_HISTOGRAM_BOOLEAN("Cookie.ControlCharacterTruncation",
                         parsed_cookie.HasTruncatedNameOrValue());
@@ -1124,9 +1119,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
             CookieInclusionStatus::WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE);
       }
       if (status.IsInclude()) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Cookie.SamePartyReadIncluded.InclusionUnderSameSite",
-            included_by_samesite);
         if (!included_by_samesite) {
           status.AddWarningReason(
               CookieInclusionStatus::
@@ -1326,9 +1318,6 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
             CookieInclusionStatus::WARN_SAMEPARTY_EXCLUSION_OVERRULED_SAMESITE);
       }
       if (access_result.status.IsInclude()) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Cookie.SamePartySetIncluded.InclusionUnderSameSite",
-            included_by_samesite);
         if (!included_by_samesite) {
           access_result.status.AddWarningReason(
               CookieInclusionStatus::
