@@ -995,10 +995,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     }
     return &NewWebUI<ash::cloud_upload::CloudUploadUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIAccountManagerErrorHost)
-    return &NewWebUI<ash::AccountManagerErrorUI>;
-  if (url.host_piece() == chrome::kChromeUIAccountMigrationWelcomeHost)
-    return &NewWebUI<ash::AccountMigrationWelcomeUI>;
   if (url.host_piece() == chrome::kChromeUIParentAccessHost)
     return &NewWebUI<ash::ParentAccessUI>;
   if (url.host_piece() == chrome::kChromeUIAudioHost &&
