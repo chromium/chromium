@@ -86,6 +86,18 @@ bool IsGooglePhotosUrl(const GURL& url) {
 
 }  // namespace
 
+void SanitizedImageSource::DataDecoderDelegate::DecodeImage(
+    const std::string& data,
+    DecodeImageCallback callback) {
+  base::span<const uint8_t> bytes = base::make_span(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+
+  data_decoder::DecodeImage(
+      &data_decoder_, bytes, data_decoder::mojom::ImageCodec::kDefault,
+      /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(), std::move(callback));
+}
+
 void SanitizedImageSource::DataDecoderDelegate::DecodeAnimation(
     const std::string& data,
     DecodeAnimationCallback callback) {
@@ -267,15 +279,21 @@ void SanitizedImageSource::OnImageLoaded(
     return;
   }
 
+  if (request_attributes.static_encode) {
+    data_decoder_delegate_->DecodeImage(
+        *body,
+        base::BindOnce(&SanitizedImageSource::EncodeAndReplyStaticImage,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   data_decoder_delegate_->DecodeAnimation(
       *body,
       base::BindOnce(&SanitizedImageSource::OnAnimationDecoded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(request_attributes), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SanitizedImageSource::OnAnimationDecoded(
-    RequestAttributes request_attributes,
     content::URLDataSource::GotDataCallback callback,
     std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -287,7 +305,7 @@ void SanitizedImageSource::OnAnimationDecoded(
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Re-encode static image as PNG and send to requester.
-  if (request_attributes.static_encode || mojo_frames.size() == 1) {
+  if (mojo_frames.size() == 1) {
     EncodeAndReplyStaticImage(std::move(callback), mojo_frames[0]->bitmap);
     return;
   }

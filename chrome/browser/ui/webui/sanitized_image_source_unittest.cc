@@ -48,6 +48,9 @@ MATCHER_P(MemoryEq, other, "Eq matcher for base::RefCountedMemory contents") {
 class MockDataDecoderDelegate
     : public SanitizedImageSource::DataDecoderDelegate {
  public:
+  MOCK_METHOD2(DecodeImage,
+               void(const std::string& data,
+                    SanitizedImageSource::DecodeImageCallback callback));
   MOCK_METHOD2(DecodeAnimation,
                void(const std::string& data,
                     SanitizedImageSource::DecodeAnimationCallback callback));
@@ -358,16 +361,11 @@ TEST_F(SanitizedImageSourceTest, AnimatedImageWithStaticEncode) {
 
   // Set up expectations and mock data.
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
-  EXPECT_CALL(*mock_data_decoder_delegate_,
-              DecodeAnimation(test_body, testing::_))
+  EXPECT_CALL(*mock_data_decoder_delegate_, DecodeImage(test_body, testing::_))
       .Times(1)
       .WillOnce([](const std::string&,
-                   SanitizedImageSource::DecodeAnimationCallback callback) {
-        std::vector<AnimationFramePtr> frames;
-        frames.push_back(MakeImageFrame(SK_ColorRED));
-        frames.push_back(MakeImageFrame(SK_ColorBLUE));
-        frames.push_back(MakeImageFrame(SK_ColorGREEN));
-        std::move(callback).Run(std::move(frames));
+                   SanitizedImageSource::DecodeImageCallback callback) {
+        std::move(callback).Run(std::move(MakeImageFrame(SK_ColorRED)->bitmap));
       });
   auto image =
       gfx::Image::CreateFrom1xBitmap(MakeImageFrame(SK_ColorRED)->bitmap);
