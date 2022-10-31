@@ -26,6 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import collections
 import json
 from typing import Optional
 
@@ -113,6 +114,16 @@ class WebTestResult(object):
                 or self.is_missing_audio())
 
 
+def _flatten_test_results_trie(trie, sep: str = '/'):
+    if 'actual' in trie:
+        yield '', trie
+        return
+    for component, child in trie.items():
+        for suffix, leaf in _flatten_test_results_trie(child, sep=sep):
+            test_name = component + sep + suffix if suffix else component
+            yield test_name, leaf
+
+
 # FIXME: This should be unified with ResultsSummary or other NRWT web tests code
 # in the web_tests package.
 # This doesn't belong in common.net, but we don't have a better place for it yet.
@@ -160,12 +171,18 @@ class WebTestResults:
         return cls(rv, step_name=step_name)
 
     def __init__(self,
-                 parsed_json,
+                 results,
                  chromium_revision: Optional[str] = None,
                  step_name: Optional[str] = None,
                  interrupted: bool = False,
                  builder_name: Optional[str] = None):
-        self._results = parsed_json
+        self._results = results
+        if isinstance(results, dict) and 'tests' in self._results:
+            sep = results.get('sep', '/')
+            results = [(test_name, WebTestResult(test_name, fields))
+                       for test_name, fields in _flatten_test_results_trie(
+                           self._results['tests'], sep=sep)]
+            self._results_by_name = collections.OrderedDict(sorted(results))
         self._chromium_revision = chromium_revision
         self._step_name = step_name
         self.interrupted = interrupted
@@ -177,49 +194,25 @@ class WebTestResults:
     @memoized
     def chromium_revision(self, git=None):
         """Returns the revision of the results in commit position number format."""
-        revision = self._chromium_revision or self._results['chromium_revision']
-        if not revision.isdigit():
+        revision = self._chromium_revision or self._results.get(
+            'chromium_revision')
+        if not revision or not revision.isdigit():
             assert git, 'git is required if the original revision is a git hash.'
             revision = git.commit_position_from_git_commit(revision)
         return int(revision)
 
     def result_for_test(self, test):
-        parts = test.split('/')
-        tree = self._test_result_tree()
-        for part in parts:
-            if part not in tree:
-                return None
-            tree = tree[part]
-        return WebTestResult(test, tree)
+        return self._results_by_name.get(test)
 
     def for_each_test(self, handler):
-        WebTestResults._for_each_test(self._test_result_tree(), handler, '')
-
-    @staticmethod
-    def _for_each_test(tree, handler, prefix=''):
-        for key in tree:
-            new_prefix = (prefix + '/' + key) if prefix else key
-            if 'actual' not in tree[key]:
-                WebTestResults._for_each_test(tree[key], handler, new_prefix)
-            else:
-                handler(WebTestResult(new_prefix, tree[key]))
-
-    def _test_result_tree(self):
-        return self._results['tests']
-
-    def _filter_tests(self, result_filter):
-        """Returns WebTestResult objects for tests which pass the given filter."""
-        results = []
-
-        def add_if_passes(result):
-            if result_filter(result):
-                results.append(result)
-
-        WebTestResults._for_each_test(self._test_result_tree(), add_if_passes)
-        return sorted(results, key=lambda r: r.test_name())
+        for result in self._results_by_name.values():
+            handler(result)
 
     def didnt_run_as_expected_results(self):
-        return self._filter_tests(lambda r: not r.did_run_as_expected())
+        return [
+            result for result in self._results_by_name.values()
+            if not result.did_run_as_expected()
+        ]
 
     def failed_unexpected_resultdb(self):
         result_dict = {}
