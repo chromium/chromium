@@ -33,7 +33,9 @@ static float ComputeEdgeSlice(const Length& slice,
     DCHECK(slice.IsPercent());
     resolved = FloatValueForLength(slice, maximum);
   }
-  return std::min(maximum, resolved);
+  resolved = std::min(maximum, resolved);
+  // Round-trip via LayoutUnit to flush out any "excess" precision.
+  return LayoutUnit::FromFloatRound(resolved).ToFloat();
 }
 
 // Scale the width of the |start| and |end| edges using |scale_factor|.

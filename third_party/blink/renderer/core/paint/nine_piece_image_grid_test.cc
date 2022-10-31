@@ -495,9 +495,25 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
   nine_piece.SetFill(true);
 
   constexpr float zoom = 2.2f;
-  gfx::SizeF image_size(3 * zoom, 3 * zoom);
-  gfx::Rect border_image_area(0, 0, 220, 220);
-  gfx::Outsets border_widths(33);
+  const gfx::SizeF image_size(3 * zoom, 3 * zoom);
+  const gfx::Rect border_image_area(0, 0, 220, 220);
+  const gfx::Outsets border_widths(33);
+
+  const float kSliceWidth = 2.203125f;  // 2.2f rounded to nearest LayoutUnit
+  const float kSliceMiddleWidth =
+      image_size.width() - kSliceWidth - kSliceWidth;
+  // Relative locations of the "inside" of a certain edge.
+  const float kSliceTop = kSliceWidth;
+  const float kSliceRight = image_size.width() - kSliceWidth;
+  const float kSliceBottom = image_size.height() - kSliceWidth;
+  const float kSliceLeft = kSliceWidth;
+
+  const float kTileScaleX = border_widths.left() / kSliceWidth;
+  const float kTileScaleY = border_widths.top() / kSliceWidth;
+  const float kTileMiddleScale =
+      (border_image_area.width() - border_widths.left() -
+       border_widths.right()) /
+      kSliceMiddleWidth;
 
   NinePieceImageGrid grid(nine_piece, image_size, gfx::Vector2dF(zoom, zoom),
                           zoom, border_image_area, border_widths);
@@ -511,27 +527,33 @@ TEST_F(NinePieceImageGridTest, NinePieceImagePainting_ZoomedNarrowSlices) {
     ENinePieceImageRule horizontal_rule;
     ENinePieceImageRule vertical_rule;
   } expected_pieces[kMaxPiece] = {
-      {true, true, gfx::RectF(0, 0, 33, 33), gfx::RectF(0, 0, 2.2f, 2.2f), 0, 0,
+      {true, true, gfx::RectF(0, 0, 33, 33),
+       gfx::RectF(0, 0, kSliceWidth, kSliceWidth), 0, 0, kStretchImageRule,
+       kStretchImageRule},
+      {true, true, gfx::RectF(0, 187, 33, 33),
+       gfx::RectF(0, kSliceBottom, kSliceWidth, kSliceWidth), 0, 0,
        kStretchImageRule, kStretchImageRule},
-      {true, true, gfx::RectF(0, 187, 33, 33), gfx::RectF(0, 4.4f, 2.2f, 2.2f),
-       0, 0, kStretchImageRule, kStretchImageRule},
-      {true, false, gfx::RectF(0, 33, 33, 154), gfx::RectF(0, 2.2f, 2.2f, 2.2f),
-       15, 15, kStretchImageRule, kStretchImageRule},
-      {true, true, gfx::RectF(187, 0, 33, 33), gfx::RectF(4.4f, 0, 2.2f, 2.2f),
-       0, 0, kStretchImageRule, kStretchImageRule},
+      {true, false, gfx::RectF(0, 33, 33, 154),
+       gfx::RectF(0, kSliceTop, kSliceWidth, kSliceMiddleWidth), kTileScaleX,
+       kTileScaleY, kStretchImageRule, kStretchImageRule},
+      {true, true, gfx::RectF(187, 0, 33, 33),
+       gfx::RectF(kSliceRight, 0, kSliceWidth, kSliceWidth), 0, 0,
+       kStretchImageRule, kStretchImageRule},
       {true, true, gfx::RectF(187, 187, 33, 33),
-       gfx::RectF(4.4f, 4.4f, 2.2f, 2.2f), 0, 0, kStretchImageRule,
-       kStretchImageRule},
+       gfx::RectF(kSliceRight, kSliceBottom, kSliceWidth, kSliceWidth), 0, 0,
+       kStretchImageRule, kStretchImageRule},
       {true, false, gfx::RectF(187, 33, 33, 154),
-       gfx::RectF(4.4f, 2.2f, 2.2f, 2.2f), 15, 15, kStretchImageRule,
-       kStretchImageRule},
-      {true, false, gfx::RectF(33, 0, 154, 33), gfx::RectF(2.2f, 0, 2.2f, 2.2f),
-       15, 15, kStretchImageRule, kStretchImageRule},
+       gfx::RectF(kSliceRight, kSliceTop, kSliceWidth, kSliceMiddleWidth),
+       kTileScaleX, kTileScaleY, kStretchImageRule, kStretchImageRule},
+      {true, false, gfx::RectF(33, 0, 154, 33),
+       gfx::RectF(kSliceLeft, 0, kSliceMiddleWidth, kSliceWidth), kTileScaleX,
+       kTileScaleY, kStretchImageRule, kStretchImageRule},
       {true, false, gfx::RectF(33, 187, 154, 33),
-       gfx::RectF(2.2f, 4.4f, 2.2f, 2.2f), 15, 15, kStretchImageRule,
-       kStretchImageRule},
+       gfx::RectF(kSliceLeft, kSliceBottom, kSliceMiddleWidth, kSliceWidth),
+       kTileScaleX, kTileScaleY, kStretchImageRule, kStretchImageRule},
       {true, false, gfx::RectF(33, 33, 154, 154),
-       gfx::RectF(2.2f, 2.2f, 2.2f, 2.2f), 70, 70, kStretchImageRule,
+       gfx::RectF(kSliceLeft, kSliceTop, kSliceMiddleWidth, kSliceMiddleWidth),
+       kTileMiddleScale, kTileMiddleScale, kStretchImageRule,
        kStretchImageRule},
   };
 
