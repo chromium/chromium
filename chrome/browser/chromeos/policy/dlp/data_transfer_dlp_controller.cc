@@ -51,6 +51,12 @@ bool IsVM(const ui::EndpointType type) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+// Returns true if `endpoint` has no value or its type is kDefault.
+bool IsNullEndpoint(const absl::optional<ui::DataTransferEndpoint>& endpoint) {
+  return !endpoint.has_value() ||
+         endpoint->type() == ui::EndpointType::kDefault;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Map ui::EndpointType to DlpRulesManager::Component for VMs.
 DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
@@ -443,9 +449,9 @@ bool DataTransferDlpController::ShouldSkipReporting(
   // In theory, there is no need to check for data source and destination if
   // |kSkipReportingTimeout| is shorter than human reaction time.
   bool is_same_src = data_src ? *data_src == last_reported_.data_src
-                              : !last_reported_.data_src.has_value();
+                              : IsNullEndpoint(last_reported_.data_src);
   bool is_same_dst = data_dst ? *data_dst == last_reported_.data_dst
-                              : !last_reported_.data_dst.has_value();
+                              : IsNullEndpoint(last_reported_.data_dst);
   if (is_same_src && is_same_dst) {
     base::TimeDelta time_diff = curr_time - last_reported_.time;
     base::UmaHistogramTimes(
