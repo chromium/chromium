@@ -1871,6 +1871,8 @@ component("ash") {
     "system/user/login_status.h",
     "system/video_conference/vc_tray.cc",
     "system/video_conference/vc_tray.h",
+    "system/video_conference/video_conference_tray_controller.cc",
+    "system/video_conference/video_conference_tray_controller.h",
     "system/virtual_keyboard/virtual_keyboard_observer.h",
     "system/virtual_keyboard/virtual_keyboard_tray.cc",
     "system/virtual_keyboard/virtual_keyboard_tray.h",

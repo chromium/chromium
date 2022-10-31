@@ -217,6 +217,7 @@ class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class TrayAction;
 class UserMetricsRecorder;
+class VideoConferenceTrayController;
 class VideoActivityNotifier;
 class VideoDetector;
 class WallpaperControllerImpl;
@@ -643,6 +644,11 @@ class ASH_EXPORT Shell : public SessionObserver,
   TrayAction* tray_action() { return tray_action_.get(); }
 
   UserMetricsRecorder* metrics() { return user_metrics_recorder_.get(); }
+
+  VideoConferenceTrayController* video_conference_tray_controller() {
+    return video_conference_tray_controller_.get();
+  }
+
   VideoDetector* video_detector() { return video_detector_.get(); }
   WallpaperControllerImpl* wallpaper_controller() {
     return wallpaper_controller_.get();
@@ -909,6 +915,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
   std::unique_ptr<TrayAction> tray_action_;
+  std::unique_ptr<VideoConferenceTrayController>
+      video_conference_tray_controller_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
   std::unique_ptr<WindowRestoreController> window_restore_controller_;

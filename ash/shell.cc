@@ -156,6 +156,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/tray_action/tray_action.h"
@@ -911,6 +912,11 @@ Shell::~Shell() {
   // Depends on |focus_controller_|, so must be destroyed before.
   window_tree_host_manager_.reset();
 
+  // The UI has been destructed, so it's now OK to destruct the video conference
+  // UI controller.
+  if (features::IsVcControlsUiEnabled())
+    video_conference_tray_controller_.reset();
+
   // The desks controller is destroyed after the window tree host manager and
   // before the focus controller. At this point it is guaranteed that querying
   // the active desk is no longer needed.
@@ -1402,6 +1408,15 @@ void Shell::Init(
   // hosts the WM mode tray button.
   if (features::IsWmModeEnabled())
     wm_mode_controller_ = std::make_unique<WmModeController>();
+
+  // This controller MUST be initialized before the UI is constructed. The
+  // video conferencing views will have their own reference to this controller,
+  // may be observers of it, and will assume it exists for as long as they
+  // themselves exist.
+  if (features::IsVcControlsUiEnabled()) {
+    video_conference_tray_controller_ =
+        std::make_unique<VideoConferenceTrayController>();
+  }
 
   window_tree_host_manager_->InitHosts();
 
