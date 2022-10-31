@@ -70,6 +70,8 @@ class LayoutMedia : public LayoutImage {
     return "LayoutMedia";
   }
 
+  LayoutUnit ComputePanelWidth(const LayoutRect& media_width) const;
+
  protected:
   void UpdateLayout() override;
 
@@ -105,9 +107,12 @@ class LayoutMedia : public LayoutImage {
     return false;
   }
 
-  LayoutUnit ComputePanelWidth(const LayoutRect& media_width) const;
-
   LayoutObjectChildList children_;
+};
+
+template <>
+struct DowncastTraits<LayoutMedia> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsMedia(); }
 };
 
 }  // namespace blink
