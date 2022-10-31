@@ -9,7 +9,7 @@
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.m.js';
-import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_adaptive_dialog.m.js';

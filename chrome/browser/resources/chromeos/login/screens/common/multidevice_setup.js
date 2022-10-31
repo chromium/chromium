@@ -8,7 +8,7 @@
 import '//resources/ash/common/multidevice_setup/mojo_api.js';
 import '//resources/ash/common/multidevice_setup/multidevice_setup_shared.css.js';
 import '//resources/ash/common/multidevice_setup/multidevice_setup.js';
-import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_next_button.js';
 import '../../components/buttons/oobe_text_button.m.js';
 import '../../components/common_styles/common_styles.m.js';
 import '../../components/throbber_notice.js';

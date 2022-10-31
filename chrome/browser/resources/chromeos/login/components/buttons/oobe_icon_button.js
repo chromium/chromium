@@ -2,19 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '../common_styles/common_styles.m.js';
-import '../hd_iron_icon.js';
-import '../oobe_vars/oobe_custom_vars_css.m.js';
-
-import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {OobeBaseButton} from './oobe_base_button.js';
-
 /**
+ *   @fileoverview
  *   Material design button that shows an icon and displays text.
  *
  *   Example:
@@ -37,6 +26,17 @@ import {OobeBaseButton} from './oobe_base_button.js';
  *                        label-for-aria value.
  *
  */
+
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '../common_styles/common_styles.m.js';
+import '../hd_iron_icon.js';
+import '../oobe_vars/oobe_custom_vars_css.m.js';
+
+import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {OobeBaseButton} from './oobe_base_button.js';
 
 /** @polymer */
 export class OobeIconButton extends OobeBaseButton {

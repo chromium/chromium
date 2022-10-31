@@ -12,7 +12,7 @@ import '//resources/ash/common/quick_unlock/pin_keyboard.js';
 import '//resources/cr_elements/icons.html.js';
 import './oobe_icons.m.js';
 import './buttons/oobe_back_button.m.js';
-import './buttons/oobe_next_button.m.js';
+import './buttons/oobe_next_button.js';
 import './common_styles/common_styles.m.js';
 import './common_styles/oobe_dialog_host_styles.m.js';
 import './dialogs/oobe_adaptive_dialog.m.js';

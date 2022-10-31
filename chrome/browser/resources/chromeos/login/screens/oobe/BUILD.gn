@@ -108,7 +108,7 @@ js_library("enterprise_enrollment.m") {
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/buttons:oobe_back_button.m",
-    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button.m",
     "../common:offline_ad_login",
     "//ui/webui/resources/js:cr.m",
@@ -178,7 +178,7 @@ js_library("update") {
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_back_button.m",
-    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
