@@ -252,7 +252,8 @@ bool FlatlandSysmemBufferCollection::Initialize(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     VkDevice vk_device,
-    size_t min_buffer_count) {
+    size_t min_buffer_count,
+    bool register_with_flatland_allocator) {
   DCHECK(IsNativePixmapConfigSupported(format, usage));
   DCHECK(!collection_);
   DCHECK(!vk_buffer_collection_);
@@ -301,10 +302,9 @@ bool FlatlandSysmemBufferCollection::Initialize(
     }
   }
 
-  return InitializeInternal(
-      sysmem_allocator, flatland_allocator, std::move(collection_token),
-      /*register_with_flatland_allocator=*/usage == gfx::BufferUsage::SCANOUT,
-      min_buffer_count);
+  return InitializeInternal(sysmem_allocator, flatland_allocator,
+                            std::move(collection_token),
+                            register_with_flatland_allocator, min_buffer_count);
 }
 
 void FlatlandSysmemBufferCollection::InitializeForTesting(
@@ -589,10 +589,12 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
   auto image_constraints_info = InitializeImageConstraintsInfo(
       image_create_info, /* allow_protected_memory */ true);
 
-  if (vkSetBufferCollectionImageConstraintsFUCHSIA(
-          vk_device_, vk_buffer_collection_,
-          &image_constraints_info->image_constraints) != VK_SUCCESS) {
-    DLOG(ERROR) << "vkSetBufferCollectionConstraintsFUCHSIA() failed";
+  auto result = vkSetBufferCollectionImageConstraintsFUCHSIA(
+      vk_device_, vk_buffer_collection_,
+      &image_constraints_info->image_constraints);
+  if (result != VK_SUCCESS) {
+    DLOG(ERROR) << "vkSetBufferCollectionConstraintsFUCHSIA() failed:"
+                << result;
     return false;
   }
 

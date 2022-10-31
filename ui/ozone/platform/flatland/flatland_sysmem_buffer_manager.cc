@@ -73,7 +73,7 @@ FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
           sysmem_allocator_.get(), flatland_allocator_.get(),
           flatland_surface_factory_, std::move(service_handle),
           /*token_channel=*/zx::channel(), size, format, usage, vk_device,
-          /*min_buffer_count=*/1)) {
+          /*min_buffer_count=*/1, usage == gfx::BufferUsage::SCANOUT)) {
     return nullptr;
   }
 
@@ -93,12 +93,14 @@ FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    size_t min_buffer_count) {
+    size_t min_buffer_count,
+    bool register_with_flatland_allocator) {
   auto result = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
   if (!result->Initialize(sysmem_allocator_.get(), flatland_allocator_.get(),
                           flatland_surface_factory_, std::move(service_handle),
                           std::move(sysmem_token), size, format, usage,
-                          vk_device, min_buffer_count)) {
+                          vk_device, min_buffer_count,
+                          register_with_flatland_allocator)) {
     return nullptr;
   }
   RegisterCollection(result);

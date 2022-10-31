@@ -214,10 +214,10 @@ void VulkanImplementationFlatland::RegisterSysmemBufferCollection(
     gfx::BufferUsage usage,
     gfx::Size size,
     size_t min_buffer_count,
-    bool register_with_image_pipe) {
+    bool register_with_flatland_allocator) {
   flatland_sysmem_buffer_manager_->ImportSysmemBufferCollection(
       device, std::move(service_handle), std::move(sysmem_token), size, format,
-      usage, min_buffer_count);
+      usage, min_buffer_count, register_with_flatland_allocator);
 }
 
 }  // namespace ui

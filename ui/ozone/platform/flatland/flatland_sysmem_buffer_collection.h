@@ -50,8 +50,8 @@ class FlatlandSysmemBufferCollection
   // collection is created. |size| may be empty. In that case |token_handle|
   // must not be null and the image size is determined by the other sysmem
   // participants.
-  // If usage has SCANOUT, |token_handle| gets duplicated and registered with
-  // the Scenic Allocator.
+  // If |register_with_flatland_allocator| is true, |token_handle| gets
+  // duplicated and registered with the Flatland Allocator.
   bool Initialize(fuchsia::sysmem::Allocator_Sync* sysmem_allocator,
                   fuchsia::ui::composition::Allocator* flatland_allocator,
                   FlatlandSurfaceFactory* flatland_surface_factory,
@@ -61,7 +61,8 @@ class FlatlandSysmemBufferCollection
                   gfx::BufferFormat format,
                   gfx::BufferUsage usage,
                   VkDevice vk_device,
-                  size_t min_buffer_count);
+                  size_t min_buffer_count,
+                  bool register_with_flatland_allocator);
 
   // Does minimum initialization needed for tests based on |usage|.
   void InitializeForTesting(zx::eventpair handle, gfx::BufferUsage usage);

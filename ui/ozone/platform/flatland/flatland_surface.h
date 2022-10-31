@@ -105,7 +105,7 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
 
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);
 
-  void RemoveBufferCollection(FlatlandPixmapId pixmap_id);
+  void RemovePixmapResources(FlatlandPixmapId pixmap_id);
 
   void OnPresentComplete(zx_time_t actual_presentation_time);
 

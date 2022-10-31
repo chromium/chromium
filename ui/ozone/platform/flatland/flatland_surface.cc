@@ -153,9 +153,8 @@ void FlatlandSurface::Present(
     flatland_.flatland()->SetTranslation(transform_id, translation);
     flatland_.flatland()->SetImageDestinationSize(
         image_id, GfxSizeToFuchsiaSize(rounded_bounds.size()));
-    const gfx::Size image_size = overlay.pixmap->GetBufferSize();
     gfx::RectF crop_rect = overlay.overlay_plane_data.crop_rect;
-    crop_rect.Scale(image_size.width(), image_size.height());
+    crop_rect.Scale(rounded_bounds.width(), rounded_bounds.height());
     const auto rounded_crop_rect = gfx::ToRoundedRect(crop_rect);
     fuchsia::math::Rect clip_rect = {
         rounded_crop_rect.x(), rounded_crop_rect.y(), rounded_crop_rect.width(),
@@ -259,7 +258,7 @@ void FlatlandSurface::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
       fit::bind_member(this, &FlatlandSurface::OnGetLayout));
 }
 
-void FlatlandSurface::RemoveBufferCollection(FlatlandPixmapId ids) {
+void FlatlandSurface::RemovePixmapResources(FlatlandPixmapId ids) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = pixmap_ids_to_flatland_ids_.find(ids);
@@ -295,7 +294,6 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
 
   const auto& handle =
       static_cast<FlatlandSysmemNativePixmap*>(pixmap)->PeekHandle();
-  DCHECK_EQ(handle.buffer_index, 0u);
   FlatlandSysmemBufferCollection* collection =
       static_cast<FlatlandSysmemNativePixmap*>(pixmap)
           ->sysmem_buffer_collection();
@@ -322,6 +320,7 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
   if (!is_primary_plane) {
     transform_id = flatland_.NextTransformId();
     flatland_.flatland()->CreateTransform(transform_id);
+    flatland_.flatland()->SetContent(transform_id, image_id);
   }
 
   // Add Flatland ids to |buffer_collection_to_image_id_|.
@@ -329,7 +328,7 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
                                                .transform_id = transform_id};
   pixmap_ids_to_flatland_ids_[ids] = flatland_ids;
   collection->AddOnReleasedCallback(
-      base::BindOnce(&FlatlandSurface::RemoveBufferCollection,
+      base::BindOnce(&FlatlandSurface::RemovePixmapResources,
                      weak_ptr_factory_.GetWeakPtr(), ids));
 
   return flatland_ids;
