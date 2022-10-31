@@ -574,9 +574,9 @@
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': 'gpu_fyi_tests_dx12vk_debug_trybot_reclient',
       'GPU FYI XR Win x64 Builder': 'gpu_fyi_tests_release_trybot_reclient',
       'Linux FYI GPU TSAN Release': 'gpu_fyi_tests_release_trybot_tsan_reclient',
-      'gpu-fyi-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
-      'gpu-fyi-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
-      'gpu-fyi-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
+      'gpu-fyi-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot_reclient',
+      'gpu-fyi-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot_reclient',
+      'gpu-fyi-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot_reclient',
     },
 
     'chromium.infra.codesearch': {
@@ -2690,6 +2690,10 @@
       'gpu_tests', 'chromeos_device', 'jacuzzi', 'release_trybot',
     ],
 
+    'gpu_tests_chromeos_jacuzzi_release_trybot_reclient': [
+      'gpu_tests', 'chromeos_device_reclient', 'jacuzzi', 'release_trybot_reclient',
+    ],
+
     'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols': [
       'gpu_tests', 'chromeos_kevin', 'release_trybot_dcheck_off', 'no_symbols',
     ],
@@ -2702,13 +2706,20 @@
       'gpu_tests', 'chromeos_kevin_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
     ],
 
-
     'gpu_tests_chromeos_octopus_release_trybot': [
       'gpu_tests', 'chromeos_device', 'octopus', 'release_trybot',
     ],
 
+    'gpu_tests_chromeos_octopus_release_trybot_reclient': [
+      'gpu_tests', 'chromeos_device_reclient', 'octopus', 'release_trybot_reclient',
+    ],
+
     'gpu_tests_chromeos_zork_release_trybot': [
       'gpu_tests', 'chromeos_device', 'zork', 'release_trybot',
+    ],
+
+    'gpu_tests_chromeos_zork_release_trybot_reclient': [
+      'gpu_tests', 'chromeos_device_reclient', 'zork', 'release_trybot_reclient',
     ],
 
     'gpu_tests_debug_bot': [

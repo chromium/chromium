@@ -255,7 +255,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-chromeos-octopus-exp": {
@@ -269,7 +269,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-chromeos-zork-exp": {
@@ -283,7 +283,7 @@
       "ozone_platform_headless": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

@@ -5,7 +5,7 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -289,8 +289,6 @@ ci.gpu.linux_builder(
         short_name = "jcz",
     ),
     list_view = "chromium.gpu.experimental",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
@@ -345,8 +343,6 @@ ci.gpu.linux_builder(
         short_name = "oct",
     ),
     list_view = "chromium.gpu.experimental",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
@@ -372,8 +368,6 @@ ci.gpu.linux_builder(
         short_name = "zrk",
     ),
     list_view = "chromium.gpu.experimental",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
