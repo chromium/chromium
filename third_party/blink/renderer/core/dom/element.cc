@@ -4246,7 +4246,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   return &shadow_root;
 }
 
-void Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
+bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
                                           ShadowRootType type,
                                           FocusDelegation focus_delegation,
                                           SlotAssignmentMode slot_assignment) {
@@ -4264,8 +4264,9 @@ void Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError, error_message));
-    return;
+    return false;
   }
+
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
@@ -4275,13 +4276,16 @@ void Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
   // to element internals" to true.
   shadow_root.SetAvailableToElementInternals(true);
 
-  // 13.2. Append the declarative template element's DocumentFragment to the
-  // newly-created shadow root.
-  shadow_root.ParserTakeAllChildrenFrom(
-      *template_element->DeclarativeShadowContent());
-  // 13.3. Remove the declarative template element from the document.
-  if (template_element->parentNode())
-    template_element->parentNode()->ParserRemoveChild(*template_element);
+  if (!RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled()) {
+    // 13.2. Append the declarative template element's DocumentFragment to the
+    // newly-created shadow root.
+    shadow_root.ParserTakeAllChildrenFrom(
+        *template_element->DeclarativeShadowContent());
+    // 13.3. Remove the declarative template element from the document.
+    if (template_element->parentNode())
+      template_element->parentNode()->ParserRemoveChild(*template_element);
+  }
+  return true;
 }
 
 ShadowRoot& Element::CreateUserAgentShadowRoot() {

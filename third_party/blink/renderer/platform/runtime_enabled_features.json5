@@ -2590,6 +2590,11 @@
       status: "experimental",
     },
     {
+      name: "StreamingDeclarativeShadowDOM",
+      status: "experimental",
+      base_feature: "StreamingDeclarativeShadowDOM",
+    },
+    {
       name: "StrictMimeTypesForWorkers",
       status: "experimental"
     },

@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -943,11 +944,16 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     return DeclarativeShadowRootType::kNone;
   }
 
+  bool streaming =
+      RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled();
   String shadow_mode = type_attribute->Value();
-  if (EqualIgnoringASCIICase(shadow_mode, "open"))
-    return DeclarativeShadowRootType::kOpen;
-  if (EqualIgnoringASCIICase(shadow_mode, "closed"))
-    return DeclarativeShadowRootType::kClosed;
+  if (EqualIgnoringASCIICase(shadow_mode, "open")) {
+    return streaming ? DeclarativeShadowRootType::kStreamingOpen
+                     : DeclarativeShadowRootType::kOpen;
+  } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
+    return streaming ? DeclarativeShadowRootType::kStreamingClosed
+                     : DeclarativeShadowRootType::kClosed;
+  }
 
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kOther,
@@ -1008,21 +1014,25 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
       } else {
         DCHECK(shadow_host_stack_item);
         DCHECK(shadow_host_stack_item->IsElementNode());
-        bool delegates_focus = template_stack_item->GetAttributeItem(
-            html_names::kShadowrootdelegatesfocusAttr);
-        // TODO(crbug.com/1063157): Add an attribute for imperative slot
-        // assignment.
-        bool manual_slotting = false;
-        shadow_host_stack_item->GetElement()->AttachDeclarativeShadowRoot(
-            template_element,
+        if (template_element->GetDeclarativeShadowRootType() ==
+                DeclarativeShadowRootType::kOpen ||
             template_element->GetDeclarativeShadowRootType() ==
-                    DeclarativeShadowRootType::kOpen
-                ? ShadowRootType::kOpen
-                : ShadowRootType::kClosed,
-            delegates_focus ? FocusDelegation::kDelegateFocus
-                            : FocusDelegation::kNone,
-            manual_slotting ? SlotAssignmentMode::kManual
-                            : SlotAssignmentMode::kNamed);
+                DeclarativeShadowRootType::kClosed) {
+          auto focus_delegation = template_stack_item->GetAttributeItem(
+                                      html_names::kShadowrootdelegatesfocusAttr)
+                                      ? FocusDelegation::kDelegateFocus
+                                      : FocusDelegation::kNone;
+          // TODO(crbug.com/1063157): Add an attribute for imperative slot
+          // assignment.
+          auto slot_assignment_mode = SlotAssignmentMode::kNamed;
+          shadow_host_stack_item->GetElement()->AttachDeclarativeShadowRoot(
+              template_element,
+              template_element->GetDeclarativeShadowRootType() ==
+                      DeclarativeShadowRootType::kOpen
+                  ? ShadowRootType::kOpen
+                  : ShadowRootType::kClosed,
+              focus_delegation, slot_assignment_mode);
+        }
       }
     }
   }

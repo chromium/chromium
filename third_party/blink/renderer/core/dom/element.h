@@ -652,7 +652,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
-  void AttachDeclarativeShadowRoot(HTMLTemplateElement*,
+  // Returns true if the attachment was successful.
+  bool AttachDeclarativeShadowRoot(HTMLTemplateElement*,
                                    ShadowRootType,
                                    FocusDelegation,
                                    SlotAssignmentMode);

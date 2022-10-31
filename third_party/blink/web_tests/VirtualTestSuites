@@ -766,6 +766,14 @@
     "args": ["--disable-features=OffsetParentNewSpecBehavior"]
   },
   {
+    "prefix": "streaming-declarative-shadow-dom-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/shadow-dom/declarative"
+    ],
+    "args": ["--disable-features=StreamingDeclarativeShadowDOM"]
+  },
+  {
     "prefix": "document-domain-disabled-by-default",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

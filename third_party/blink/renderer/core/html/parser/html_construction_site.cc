@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
@@ -743,11 +744,56 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
     DeclarativeShadowRootType declarative_shadow_root_type) {
+  // Regardless of the state of the StreamingDeclarativeShadowDOM feature, the
+  // template element is always created. If the feature is enabled, and if the
+  // template is a valid declarative Shadow Root (has a valid attribute value
+  // and parent element), then the template is only added to the stack of open
+  // elements, but is not attached to the DOM tree.
   auto* template_element = To<HTMLTemplateElement>(
       CreateElement(token, html_names::xhtmlNamespaceURI));
   template_element->SetDeclarativeShadowRootType(declarative_shadow_root_type);
-  AttachLater(CurrentNode(), template_element);
-  open_elements_.Push(HTMLStackItem::Create(template_element, token));
+  HTMLStackItem* template_stack_item =
+      HTMLStackItem::Create(template_element, token);
+  bool should_attach_template = true;
+  if (declarative_shadow_root_type ==
+          DeclarativeShadowRootType::kStreamingOpen ||
+      declarative_shadow_root_type ==
+          DeclarativeShadowRootType::kStreamingClosed) {
+    DCHECK(RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled());
+    // Attach the shadow root now
+    auto focus_delegation = template_stack_item->GetAttributeItem(
+                                html_names::kShadowrootdelegatesfocusAttr)
+                                ? FocusDelegation::kDelegateFocus
+                                : FocusDelegation::kNone;
+    // TODO(crbug.com/1063157): Add an attribute for imperative slot
+    // assignment.
+    auto slot_assignment_mode = SlotAssignmentMode::kNamed;
+    HTMLStackItem* shadow_host_stack_item =
+        open_elements_.TopRecord()->StackItem();
+    Element* host = shadow_host_stack_item->GetElement();
+    ShadowRootType type = declarative_shadow_root_type ==
+                                  DeclarativeShadowRootType::kStreamingOpen
+                              ? ShadowRootType::kOpen
+                              : ShadowRootType::kClosed;
+    bool success = host->AttachDeclarativeShadowRoot(
+        template_element, type, focus_delegation, slot_assignment_mode);
+    if (success) {
+      DCHECK(host->AuthorShadowRoot());
+      should_attach_template = false;
+      template_element->SetDeclarativeShadowRoot(*host->AuthorShadowRoot());
+    } else {
+      // If the shadow root attachment fails, e.g. if the host element isn't a
+      // valid shadow host, then we leave should_attach_template true, so that
+      // a "normal" template element gets attached to the DOM tree.
+      template_element->SetDeclarativeShadowRootType(
+          DeclarativeShadowRootType::kNone);
+    }
+  }
+  if (should_attach_template) {
+    // Attach a normal template element, set as a declarative shadow root.
+    AttachLater(CurrentNode(), template_element);
+  }
+  open_elements_.Push(template_stack_item);
 }
 
 void HTMLConstructionSite::InsertHTMLElement(AtomicHTMLToken* token) {
