@@ -74,7 +74,7 @@ class EnrollmentScreenUnitTest : public testing::Test {
   // Creates the EnrollmentScreen and sets required parameters.
   void SetUpEnrollmentScreen(const policy::EnrollmentConfig& config) {
     enrollment_screen_ = std::make_unique<EnrollmentScreen>(
-        &mock_view_,
+        mock_view_.AsWeakPtr(),
         base::BindRepeating(&EnrollmentScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));
 

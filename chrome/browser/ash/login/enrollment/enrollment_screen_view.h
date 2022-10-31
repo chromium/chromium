@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chromeos/ash/components/dbus/authpolicy/active_directory_info.pb.h"
@@ -19,16 +20,16 @@ class EnrollmentStatus;
 }  // namespace policy
 
 namespace ash {
-class EnrollmentScreen;
 
 // Interface class for the enterprise enrollment screen view.
-class EnrollmentScreenView {
+class EnrollmentScreenView
+    : public base::SupportsWeakPtr<EnrollmentScreenView> {
  public:
   // This defines the interface for controllers which will be called back when
   // something happens on the UI.
   class Controller {
    public:
-    virtual ~Controller() {}
+    virtual ~Controller() = default;
 
     virtual void OnLoginDone(const std::string& user,
                              int license_type,
@@ -48,9 +49,10 @@ class EnrollmentScreenView {
     virtual void OnIdentifierEntered(const std::string& email) = 0;
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"enterprise-enrollment"};
+  inline constexpr static StaticOobeScreenId kScreenId{"enterprise-enrollment",
+                                                       "OAuthEnrollmentScreen"};
 
-  virtual ~EnrollmentScreenView() {}
+  virtual ~EnrollmentScreenView() = default;
 
   enum class FlowType {
     kEnterprise,
@@ -86,12 +88,6 @@ class EnrollmentScreenView {
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
-
-  // Binds |screen| to the view.
-  virtual void Bind(ash::EnrollmentScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Shows the signin screen.
   virtual void ShowSigninScreen() = 0;

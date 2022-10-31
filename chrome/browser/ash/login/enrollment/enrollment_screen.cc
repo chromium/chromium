@@ -14,6 +14,7 @@
 #include "base/check_is_test.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/timer/elapsed_timer.h"
@@ -130,10 +131,10 @@ EnrollmentScreen* EnrollmentScreen::Get(ScreenManager* manager) {
       manager->GetScreen(EnrollmentScreenView::kScreenId));
 }
 
-EnrollmentScreen::EnrollmentScreen(EnrollmentScreenView* view,
+EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
                                    const ScreenExitCallback& exit_callback)
     : BaseScreen(EnrollmentScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   retry_policy_.num_errors_to_ignore = 0;
   retry_policy_.initial_delay_ms = kInitialDelayMS;
@@ -143,8 +144,6 @@ EnrollmentScreen::EnrollmentScreen(EnrollmentScreenView* view,
   retry_policy_.entry_lifetime_ms = -1;
   retry_policy_.always_use_initial_delay = true;
   retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
-  if (view_)
-    view_->Bind(this);
 
   ad_migration_utils::CheckChromadMigrationOobeFlow(
       base::BindOnce(&EnrollmentScreen::UpdateChromadMigrationOobeFlow,
@@ -155,13 +154,6 @@ EnrollmentScreen::~EnrollmentScreen() {
   DCHECK(!enrollment_helper_ || g_browser_process->IsShuttingDown() ||
          browser_shutdown::IsTryingToQuit() ||
          DBusThreadManager::Get()->IsUsingFakes());
-  if (view_)
-    view_->Unbind();
-}
-
-void EnrollmentScreen::OnViewDestroyed(EnrollmentScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void EnrollmentScreen::SetEnrollmentConfig(
@@ -813,7 +805,8 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
   }
 }
 
-void EnrollmentScreen::OnUserActionDeprecated(const std::string& action_id) {
+void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelTPMCheck) {
     OnCancel();
     return;
@@ -822,7 +815,7 @@ void EnrollmentScreen::OnUserActionDeprecated(const std::string& action_id) {
     OnCancel();
     return;
   }
-  BaseScreen::OnUserActionDeprecated(action_id);
+  BaseScreen::OnUserAction(args);
 }
 
 void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {

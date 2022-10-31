@@ -81,8 +81,6 @@ class EnrollmentScreenHandler
   void SetGaiaButtonsType(GaiaButtonsType buttons_type) override;
   void Show() override;
   void Hide() override;
-  void Bind(ash::EnrollmentScreen* screen) override;
-  void Unbind() override;
   void ShowSigninScreen() override;
   void ShowSkipConfirmationDialog() override;
   void ShowUserError(const std::string& email) override;
@@ -103,7 +101,7 @@ class EnrollmentScreenHandler
   void Shutdown() override;
 
   // Implements BaseScreenHandler:
-  void InitializeDeprecated() override;
+  void InitAfterJavascriptAllowed() override;
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::Value::Dict* parameters) override;
@@ -222,7 +220,6 @@ class EnrollmentScreenHandler
       scoped_network_observation_{this};
 
   ErrorScreen* error_screen_ = nullptr;
-  ash::EnrollmentScreen* screen_ = nullptr;
 
   std::string signin_partition_name_;
 

@@ -60,7 +60,7 @@ class EnrollmentScreen
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
   using TpmStatusCallback = chromeos::TpmManagerClient::TakeOwnershipCallback;
-  EnrollmentScreen(EnrollmentScreenView* view,
+  EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
                    const ScreenExitCallback& exit_callback);
 
   EnrollmentScreen(const EnrollmentScreen&) = delete;
@@ -69,10 +69,6 @@ class EnrollmentScreen
   ~EnrollmentScreen() override;
 
   static EnrollmentScreen* Get(ScreenManager* manager);
-
-  // Called when `view` has been destroyed. If this instance is destroyed before
-  // the `view` it should call view->Unbind().
-  void OnViewDestroyed(EnrollmentScreenView* view);
 
   // Setup how this screen will handle enrollment.
   void SetEnrollmentConfig(const policy::EnrollmentConfig& enrollment_config);
@@ -113,7 +109,7 @@ class EnrollmentScreen
   void OnBrowserRestart();
 
   // Used for testing.
-  EnrollmentScreenView* GetView() { return view_; }
+  EnrollmentScreenView* GetView() { return view_.get(); }
 
   void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
     exit_callback_ = callback;
@@ -134,7 +130,7 @@ class EnrollmentScreen
   void ShowImpl() override;
   void HideImpl() override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Expose the exit_callback to test screen overrides.
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
@@ -242,7 +238,7 @@ class EnrollmentScreen
   // Hands Off flow or Chromad Migration.
   bool IsAutomaticEnrollmentFlow();
 
-  EnrollmentScreenView* view_;
+  base::WeakPtr<EnrollmentScreenView> view_;
   ScreenExitCallback exit_callback_;
   absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;
