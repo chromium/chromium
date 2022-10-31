@@ -6939,6 +6939,10 @@ class RenderFrameHostImplBrowsingContextStateNameTest
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowsingContextStateNameTest,
                        MAYBE_BlockNameUpdateForBackForwardCache) {
+  // This test specifically wants to test with BackForwardCache enabled, so skip
+  // it if BackForwardCache is disabled.
+  if (!IsBackForwardCacheEnabled())
+    return;
   const bool disable_frame_name_update = base::FeatureList::IsEnabled(
       features::kDisableFrameNameUpdateOnNonCurrentRenderFrameHost);
 

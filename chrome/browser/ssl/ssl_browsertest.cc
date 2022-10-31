@@ -119,6 +119,7 @@
 #include "components/variations/variations_params_manager.h"
 #include "components/variations/variations_switches.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -6274,6 +6275,13 @@ IN_PROC_BROWSER_TEST_F(
   helper =
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           tab);
+  // Currently the interstitial is only displayed when back/forward cache is
+  // enabled, so return early when the feature is disabled.
+  // TODO(https://crbug.com/1375961): Fix this.
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    EXPECT_FALSE(helper->IsDisplayingInterstitial());
+    return;
+  }
   EXPECT_TRUE(helper->IsDisplayingInterstitial());
   EXPECT_EQ(helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
                 ->GetTypeForTesting(),

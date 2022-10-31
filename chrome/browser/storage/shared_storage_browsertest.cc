@@ -2093,8 +2093,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageChromeBrowserTest, WorkletTiming) {
                                      "Finished script"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
-  EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                     GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      https_server()->GetURL(kCrossOriginHost, kSimplePagePath)));
   WaitForHistograms(
       {kTimingDocumentAddModuleHistogram, kTimingDocumentRunHistogram,
        kTimingWorkletSetHistogram, kTimingWorkletAppendHistogram,
