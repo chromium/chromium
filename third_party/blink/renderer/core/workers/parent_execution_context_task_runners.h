@@ -17,8 +17,7 @@
 
 namespace blink {
 
-// Represents a set of task runners of the parent execution context, or default
-// task runners for the current thread if no execution context is available.
+// Represents a set of task runners of the parent execution context.
 class CORE_EXPORT ParentExecutionContextTaskRunners final
     : public GarbageCollected<ParentExecutionContextTaskRunners>,
       public ExecutionContextLifecycleObserver {
@@ -26,16 +25,9 @@ class CORE_EXPORT ParentExecutionContextTaskRunners final
   // Returns task runners associated with a given context. This must be called
   // on the context's context thread, that is, the thread where the context was
   // created.
-  static ParentExecutionContextTaskRunners* Create(ExecutionContext*);
+  static ParentExecutionContextTaskRunners* Create(ExecutionContext&);
 
-  // Returns default task runners of the current thread. This can be called from
-  // any threads. This must be used only for shared workers, service workers and
-  // tests that don't have a parent frame.
-  static ParentExecutionContextTaskRunners* Create();
-
-  // ExecutionContext could be nullptr if the worker is not associated with a
-  // particular context.
-  explicit ParentExecutionContextTaskRunners(ExecutionContext*);
+  explicit ParentExecutionContextTaskRunners(ExecutionContext& context);
 
   ParentExecutionContextTaskRunners(const ParentExecutionContextTaskRunners&) =
       delete;

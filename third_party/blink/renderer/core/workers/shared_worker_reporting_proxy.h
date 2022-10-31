@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_SHARED_WORKER_REPORTING_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_SHARED_WORKER_REPORTING_PROXY_H_
 
-#include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -20,8 +20,7 @@ class SharedWorkerReportingProxy final
     : public GarbageCollected<SharedWorkerReportingProxy>,
       public WorkerReportingProxy {
  public:
-  SharedWorkerReportingProxy(WebSharedWorkerImpl*,
-                             ParentExecutionContextTaskRunners*);
+  explicit SharedWorkerReportingProxy(WebSharedWorkerImpl*);
   SharedWorkerReportingProxy(const SharedWorkerReportingProxy&) = delete;
   SharedWorkerReportingProxy& operator=(const SharedWorkerReportingProxy&) =
       delete;
@@ -49,8 +48,7 @@ class SharedWorkerReportingProxy final
   // Not owned because this outlives the reporting proxy.
   WebSharedWorkerImpl* worker_;
 
-  Member<ParentExecutionContextTaskRunners>
-      parent_execution_context_task_runners_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
 
 }  // namespace blink

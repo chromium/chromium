@@ -26,6 +26,7 @@ class MainThreadTaskRunnerRestricted {
   friend class ParkableStringManager;
   friend class RendererResourceCoordinatorImpl;
   friend class SharedGpuContext;
+  friend class SharedWorkerReportingProxy;
   friend class ThreadedIconLoader;
   friend class V8WorkerMemoryReporter;
   friend class WebGLWebCodecsVideoFrame;

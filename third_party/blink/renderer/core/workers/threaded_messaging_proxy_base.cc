@@ -32,7 +32,7 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
     ExecutionContext* execution_context)
     : execution_context_(execution_context),
       parent_execution_context_task_runners_(
-          ParentExecutionContextTaskRunners::Create(execution_context_.Get())),
+          ParentExecutionContextTaskRunners::Create(*execution_context)),
       terminate_sync_load_event_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),

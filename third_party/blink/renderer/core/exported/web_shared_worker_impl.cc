@@ -83,9 +83,7 @@ WebSharedWorkerImpl::WebSharedWorkerImpl(
     const blink::SharedWorkerToken& token,
     CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase> host,
     WebSharedWorkerClient* client)
-    : reporting_proxy_(MakeGarbageCollected<SharedWorkerReportingProxy>(
-          this,
-          ParentExecutionContextTaskRunners::Create())),
+    : reporting_proxy_(MakeGarbageCollected<SharedWorkerReportingProxy>(this)),
       worker_thread_(
           std::make_unique<SharedWorkerThread>(*reporting_proxy_, token)),
       host_(std::move(host)),
