@@ -267,8 +267,9 @@ struct FormFieldData {
   // The signature of the field's renderer form, that is, the signature of the
   // FormData that contained this field when it was received by the
   // AutofillDriver (see ContentAutofillRouter and internal::FormForest
-  // for details on the distinction between renderer and browser forms). The
-  // value is only set in ContentAutofillDriver and null on iOS.
+  // for details on the distinction between renderer and browser forms).
+  // Currently, the value is only set in ContentAutofillDriver; it's null on iOS
+  // and in the Password Manager.
   // This value is written and read only in the browser for voting of
   // cross-frame forms purposes. It is therefore not sent via mojo.
   FormSignature host_form_signature;

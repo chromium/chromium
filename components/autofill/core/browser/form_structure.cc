@@ -446,7 +446,10 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
   // flattened into `this` (see the function's documentation for details).
   std::vector<std::pair<FormGlobalId, FormSignature>> subforms;
   for (const auto& field : *this) {
-    if (field->host_form_signature != form_signature()) {
+    // Autofill on iOS and the Password Manager in general have a null
+    // FormFieldData::host_form_signature.
+    if (field->host_form_signature &&
+        field->host_form_signature != form_signature()) {
       subforms.emplace_back(field->renderer_form_id(),
                             field->host_form_signature);
     }
