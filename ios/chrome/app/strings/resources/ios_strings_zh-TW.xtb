@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
 <translation id="1242044645101871359">重新登入</translation>
 <translation id="1254117744268754948">選擇資料夾</translation>
+<translation id="1254424942107648268">尋找上一個相符的項目</translation>
 <translation id="1258491128795710625">新功能</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -187,6 +188,7 @@
 <translation id="2473876017985765807">你已儲存過 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="2476359652512522418">未選取</translation>
 <translation id="2482878487686419369">通知</translation>
+<translation id="2496626742194544812">前往第一個分頁</translation>
 <translation id="2500374554657206846">儲存密碼的選項</translation>
 <translation id="2523363575747517183">這個網站不斷嘗試開啟其他應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
@@ -202,6 +204,7 @@
 <translation id="2647269890314209800">使用中的 Cookie</translation>
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2664621323652615289">停止</translation>
 <translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式，使用儲存至 Google 密碼管理員的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
@@ -356,6 +359,7 @@
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3818293389945649617">尋找下一個相符的項目</translation>
 <translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -385,6 +389,7 @@
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4063300985191096908">前往「動態饋給」</translation>
 <translation id="408404951701638773">現在使用搜尋列更加方便了</translation>
+<translation id="4092655288299341041">顯示說明資訊</translation>
 <translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
 <translation id="411254640334432676">下載失敗。</translation>
 <translation id="4112644173421521737">搜尋</translation>
@@ -770,6 +775,7 @@
 <translation id="6859944681507688231">如要掃描 QR 圖碼或信用卡，請在設定中啟用相機。</translation>
 <translation id="6867369562105931222">密碼</translation>
 <translation id="6869389390665537774">系統會顯示造訪過的網頁，你也可以將這些網頁從歷史記錄中清除</translation>
+<translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6882836635272038266">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制。</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
@@ -875,11 +881,13 @@
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7839985698273989086">離線版網頁</translation>
 <translation id="7840771868269352570">系統將移除所選項目。</translation>
+<translation id="7845466610722898">顯示閱讀清單</translation>
 <translation id="784551991304901159">如要查看內容，請從選單中選取「開啟」</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="785938070103630874">開啟密碼、付款方式或地址等等</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
+<translation id="7879275349003161544">顯示下載內容</translation>
 <translation id="7884694604461143138">在歷史記錄中搜尋 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
 <translation id="7911190106180361398">貴機構不允許你同步處理任何內容。</translation>
@@ -991,6 +999,7 @@
 <translation id="8741995161408053644">您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的各種瀏覽記錄。</translation>
 <translation id="8750037785291841318">這裡會顯示你的分頁</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
+<translation id="8763613688786959833">前往下一個分頁</translation>
 <translation id="8764015330924122850">取消追蹤 <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">網址無效</translation>
 <translation id="8787968206789828143">在網路上搜尋</translation>

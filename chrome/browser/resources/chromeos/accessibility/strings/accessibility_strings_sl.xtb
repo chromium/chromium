@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Velikost: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ukaz s preslednico</translation>
 <translation id="1923956950274750765">Srednje močna vijoličasta</translation>
+<translation id="1928535370180099152">označi prejšnji znak</translation>
 <translation id="1928932365747995741">Ni prejšnjega besedilnega polja, ki ga je mogoče urejati</translation>
 <translation id="1964135212174907577">Naslednji predmet</translation>
 <translation id="1966649499058910679">Označi vsako besedo, ko je izgovorjena</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Vklop ali izklop govora</translation>
 <translation id="2390264819538553347">Če želite nadaljevati, pritisnite tipko Enter, če se želite vrniti, pritisnite vračalko.</translation>
 <translation id="2398579267367951220">Vnesite, če želite iskati na strani. Pritisnite tipko Enter, če želite skočiti na rezultat, puščični tipki gor in dol, če želite brskati po rezultatih, vnašajte naprej, če želite spremeniti iskanje, ali pritisnite tipko Escape, če želite preklicati.</translation>
+<translation id="2407047351320112166">označi naslednji znak</translation>
 <translation id="240709722712693803">Vijoličnomodra</translation>
 <translation id="2410298923485357543">Uporabite naraven glas, ko je naprava povezana v splet.</translation>
 <translation id="2416512023405990736">Neizbrano potrditveno polje</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Prejšnje polje obrazca</translation>
 <translation id="3393605254399152980">Povlecite z enim prstom, če želite slišati, česa se dotaknete</translation>
 <translation id="3406283310380167331">Prikaz seznama obrazcev</translation>
+<translation id="3407726812456125464">Poslušanje izbranega besedila</translation>
 <translation id="3414400929511680526">Ledeno modra</translation>
 <translation id="3418936350470374046">Ni celice spodaj</translation>
 <translation id="3419269701801640163">prilepi</translation>

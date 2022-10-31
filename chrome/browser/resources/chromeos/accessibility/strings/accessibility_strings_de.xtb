@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Größe <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akkord mit <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Mittlere Orchideenfarbe</translation>
+<translation id="1928535370180099152">vorheriges Zeichen markieren</translation>
 <translation id="1928932365747995741">Kein vorheriges bearbeitbares Textfeld</translation>
 <translation id="1964135212174907577">Nächstes Objekt</translation>
 <translation id="1966649499058910679">Jedes Wort hervorheben, das gerade gesprochen wird</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Sprachausgabe aktivieren oder deaktivieren</translation>
 <translation id="2390264819538553347">Drücke die Eingabetaste, um zur nächsten Seite, oder die Rücktaste, um zur vorigen Seite zu gelangen.</translation>
 <translation id="2398579267367951220">Gib etwas ein, um die Seite zu durchsuchen. Drücke die Eingabetaste, um zu den Ergebnissen zu springen und drücke auf den Aufwärts- bzw. Abwärtspfeil, um zwischen den Ergebnissen hin- und herzuspringen. Außerdem kannst du noch mehr eingeben, um die Suche zu ändern, oder die Suche über die Esc-Taste abbrechen.</translation>
+<translation id="2407047351320112166">nächstes Zeichen markieren</translation>
 <translation id="240709722712693803">Blauviolett</translation>
 <translation id="2410298923485357543">Natürliche Stimme verwenden, wenn das Gerät online ist</translation>
 <translation id="2416512023405990736">Ein nicht angeklicktes Kästchen</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Vorheriges Formularfeld</translation>
 <translation id="3393605254399152980">Ziehe einen Finger, um zu hören, was du berührst</translation>
 <translation id="3406283310380167331">Formularliste anzeigen</translation>
+<translation id="3407726812456125464">Ausgewählten Text vorlesen lassen</translation>
 <translation id="3414400929511680526">Eisblau</translation>
 <translation id="3418936350470374046">Keine Zelle unterhalb</translation>
 <translation id="3419269701801640163">Einfügen</translation>

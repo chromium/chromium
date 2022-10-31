@@ -3660,6 +3660,7 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{打开全部书签(&amp;O)}=1{打开书签(&amp;O)}other{打开全部（{COUNT} 个）书签(&amp;O)}}</translation>
 <translation id="4397372003838952832">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
+<translation id="4397844455100743910">详细了解权限请求。</translation>
 <translation id="439817266247065935">您的设备未正常关闭。要使用 Linux 应用，请重启 Linux。</translation>
 <translation id="4400367121200150367">一律不保存密码的网站将显示在这里</translation>
 <translation id="4400632832271803360">按住启动器键可切换顶行键的行为</translation>
@@ -4027,6 +4028,7 @@
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">此帐号由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="4735506354605317060">圆圈指针</translation>
+<translation id="4735793370946506039">详细了解增强型安全浏览。</translation>
 <translation id="4735803855089279419">系统未能识别此设备的设备标识符。</translation>
 <translation id="4736292055110123391">将您的书签、密码、历史记录等信息同步到您的所有设备上</translation>
 <translation id="473775607612524610">更新</translation>
@@ -4055,6 +4057,7 @@
 <translation id="4765524037138975789">{MONTHS,plural, =1{此设备将被保存 1 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {MONTHS} 个月，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="4766598565665644999">所有扩展程序都可以读取和更改 <ph name="HOST" /></translation>
+<translation id="4767427586072640478">详细了解已停用的扩展程序。</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4773112038801431077">升级 Linux</translation>

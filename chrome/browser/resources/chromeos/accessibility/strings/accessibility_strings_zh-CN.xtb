@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">大小：<ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> 并击</translation>
 <translation id="1923956950274750765">中兰紫色</translation>
+<translation id="1928535370180099152">突出显示上一个字符</translation>
 <translation id="1928932365747995741">没有上一个可编辑的文本字段</translation>
 <translation id="1964135212174907577">下一个对象</translation>
 <translation id="1966649499058910679">突出显示每个正被读出的字词</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">开启或关闭语音</translation>
 <translation id="2390264819538553347">要前进，请按 Enter 键；要后退，请按退格键。</translation>
 <translation id="2398579267367951220">输入文字即可在页面中搜索。按 Enter 键可跳至搜索结果，按向上箭头或向下箭头可浏览搜索结果，继续输入文字可更改搜索内容，按 Esc 键可取消搜索。</translation>
+<translation id="2407047351320112166">突出显示下一个字符</translation>
 <translation id="240709722712693803">蓝紫色</translation>
 <translation id="2410298923485357543">在设备已联网时使用自然语音</translation>
 <translation id="2416512023405990736">未选中的复选框</translation>

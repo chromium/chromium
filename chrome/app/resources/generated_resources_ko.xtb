@@ -5158,6 +5158,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5799508265798272974">Linux 가상 머신: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">마지막 다운로드 이후 대상 파일이 잘렸거나 삭제되었습니다.</translation>
 <translation id="5800351251499368110">측면 패널의 검색을 닫습니다. 측면 패널에 검색이 열려 있습니다.</translation>
+<translation id="5801051031414037185">휴대전화 설정</translation>
 <translation id="5801568494490449797">환경설정</translation>
 <translation id="5804241973901381774">권한</translation>
 <translation id="5805268472388605531">키보드 키를 길게 누르면 악센트 기호와 특수문자가 표시됩니다</translation>
@@ -5449,6 +5450,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6072442788591997866">이 기기에서는 <ph name="APP_NAME" /> 앱이 허용되지 않습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6073903501322152803">접근성 기능 추가</translation>
+<translation id="6075075631258766703">전화번호 확인</translation>
 <translation id="6075731018162044558">시스템이 이 기기에 대한 장기 API 액세스 토큰을 획득하지 못했습니다.</translation>
 <translation id="6075907793831890935">이름이 <ph name="HOSTNAME" />인 기기와 데이터 교환</translation>
 <translation id="6076175485108489240">위치를 사용합니다. 위치 정보 액세스 권한이 있는 앱 및 서비스가 기기의 위치를 사용하도록 허용합니다. Google에서는 위치 정확도와 위치 기반 서비스를 개선하기 위해 위치 데이터를 주기적으로 수집하여 익명으로 사용할 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>

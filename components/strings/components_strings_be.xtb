@@ -36,6 +36,7 @@
 <translation id="1058479211578257048">Захаванне картак...</translation>
 <translation id="1060320201901229167">Канверт Kaku 5</translation>
 <translation id="10614374240317010">Ніколі не захоўваліся</translation>
+<translation id="1064054731605354900">A3x5</translation>
 <translation id="106701514854093668">Закладкі на працоўным стале</translation>
 <translation id="1068672505746868501">Ніколі не перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Гібрыдныя аўтамабілі і аўтамабілі на альтэрнатыўных відах паліва</translation>
@@ -51,6 +52,7 @@
 <translation id="1100782917270858593">Кнопка "Працягнуць пошук". Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Enter</translation>
 <translation id="1101672080107056897">Памылковае дзеянне</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
+<translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Выберыце дазвол для <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Антыкварыят і прадметы калекцыяніравання</translation>
 <translation id="1113869188872983271">&amp;Адрабіць змяненне парадку</translation>
@@ -93,6 +95,7 @@
 <translation id="121201262018556460">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў сертыфікат, які змяшчае слабы ключ. Магчыма, зламыснік узламаў закрыты ключ, і сервер можа быць не тым серверам, які вам патрэбны (магчыма, вы абменьваецеся данымі са зламыснікам).</translation>
 <translation id="1219129156119358924">Бяспека сістэмы</translation>
 <translation id="1222060260947439312">Правы латок</translation>
+<translation id="1224330468394120478">A3x6</translation>
 <translation id="1225570101506606926">Більярд</translation>
 <translation id="1225607422885279949">Google будзе знаходзіць для вас скідкі</translation>
 <translation id="1227224963052638717">Невядомая палітыка.</translation>
@@ -401,6 +404,7 @@
 <translation id="1945968466830820669">Вы можаце страціць доступ да ўліковага запісу арганізацыі, або ў вас могуць скрасці асабістыя даныя. Chromium рэкамендуе змяніць пароль.</translation>
 <translation id="1946849748901605102">12 x 15 цаляў</translation>
 <translation id="1947454675006758438">Скаба зверху справа</translation>
+<translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">Пошук і абарона прылады, а таксама выдаленне даных з яе</translation>
 <translation id="1958218078413065209">Ваш рэзультат: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Дапамагаць павысіць бяспеку ў інтэрнэце для ўсіх карыстальнікаў, адпраўляючы <ph name="BEGIN_WHITEPAPER_LINK" />URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і змесціва старонак<ph name="END_WHITEPAPER_LINK" /> у Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Палітыка прыватнасці<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -469,6 +473,7 @@
 <translation id="2122719317867821810">Гэта палітыка працуе належным чынам, але перавызначае канфліктуючае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
+<translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Мужчынскае адзенне</translation>
 <translation id="213826338245044447">Мабільныя закладкі</translation>
 <translation id="214556005048008348">Скасаваць плацеж</translation>
@@ -706,6 +711,7 @@
 <translation id="277499241957683684">Адсутнічае запіс прылады</translation>
 <translation id="2775884851269838147">Першая старонка для друку</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">Падключэнне скінута.</translation>
 <translation id="2791176355335562114">Трацьце менш часу на аплату</translation>
 <translation id="2792012897584536778">Адміністратары гэтай прылады наладзілі сертыфікаты бяспекі, якія могуць дазволіць ім бачыць змесціва вэб-сайтаў, якія вы наведваеце.</translation>
@@ -760,6 +766,7 @@
 <translation id="2949183777371959169">Не прымяняецца, паколькі машына не зарэгістравана ў сістэме кіравання браўзерам Chrome праз воблака.</translation>
 <translation id="2951588413176968965">Мая паштовая скрынка</translation>
 <translation id="2952820037279740115">Закрыць усе вокны ў рэжыме інкогніта</translation>
+<translation id="2952904171810469095">A2x5</translation>
 <translation id="295526156371527179">Увага: гэта палітыка не была аб'яднана як слоўнік згодна з параметрамі, бо яна не з'яўляецца слоўнікам.</translation>
 <translation id="2955913368246107853">Закрыць панэль пошуку</translation>
 <translation id="2958544468932521864">Крыкет</translation>
@@ -890,6 +897,7 @@
 <translation id="3303176609391916566">30 x 42 цалі</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3304073249511302126">пошук прылад Bluetooth</translation>
+<translation id="3304777285002411338">A2x3</translation>
 <translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
 <translation id="3308738399950580893">рэклама</translation>
@@ -904,6 +912,7 @@
 <translation id="3340978935015468852">налады</translation>
 <translation id="3342366525167526994">Бодзі-арт</translation>
 <translation id="3345782426586609320">Вочы</translation>
+<translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Змяніць налады проксі-сервера...</translation>
 <translation id="3359565626472459400">Шлюб</translation>
 <translation id="3360103848165129075">Аркуш апрацоўшчыка плацяжоў</translation>
@@ -990,6 +999,7 @@
 <translation id="3567901620846335314">100 x 150 мм</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" />, <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
+<translation id="3575168918110434329">A4x7</translation>
 <translation id="3576616784287504635">Убудаваная старонка на сайце <ph name="SITE" /> кажа</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3577902790357386792">Гімнастыка</translation>
@@ -1107,6 +1117,7 @@
 <translation id="3831915413245941253">Даменам <ph name="ENROLLMENT_DOMAIN" /> былі ўсталяваны пашырэнні для дадатковых функцый. Пашырэнні маюць доступ да некаторых вашых даных.</translation>
 <translation id="3832522519263485449">Некалькі дзірак злева</translation>
 <translation id="3835233591525155343">Выкарыстанне вамі прылады</translation>
+<translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новы дакумент Google, націсніце Tab, затым Enter</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3853684360927654006">Калькулятар надзейнасці пароля</translation>
@@ -1193,6 +1204,7 @@
 <translation id="4114146879518089587">Перайсці на сайт</translation>
 <translation id="4116663294526079822">Заўсёды дазваляць на гэтым сайце</translation>
 <translation id="4116701314593212016">JIS B7</translation>
+<translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Вобласць прымянення палітыкі не падтрымліваецца.</translation>
 <translation id="4121428309786185360">Заканчэнне тэрміну дзеяння:</translation>
 <translation id="4123572138124678573">Тры дзіркі знізу</translation>
@@ -1256,6 +1268,7 @@
 <translation id="4235360514405112390">Сапраўдны</translation>
 <translation id="4250431568374086873">Ваша падключэнне да гэтага сайта не цалкам бяспечнае</translation>
 <translation id="4250680216510889253">Не</translation>
+<translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Нататка</translation>
 <translation id="425582637250725228">Магчыма, унесеныя змены не будуць захаваны.</translation>
 <translation id="425869179292622354">Абараніць яе, выкарыстоўваючы віртуальную картку?</translation>
@@ -1314,6 +1327,7 @@
 <translation id="4372948949327679948">Чакаецца значэнне тыпу "<ph name="VALUE_TYPE" />".</translation>
 <translation id="4377125064752653719">Вы спрабавалі перайсці на сайт <ph name="DOMAIN" />, але сервер выдаў сертыфікат, які быў адкліканы выдаўцом. Гэта азначае, што ўліковым даным бяспекі, якія выдаў сервер, нельга давяраць. Магчыма, вы абменьваецеся данымі са зламыснікам.</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
+<translation id="4384395682990721132">A4x3</translation>
 <translation id="4386413576162606861">Ролевыя гульні</translation>
 <translation id="4390472908992056574">Мяжа</translation>
 <translation id="4393632246160856858">Тавары для догляду пазногцяў</translation>
@@ -1390,6 +1404,7 @@
 <translation id="4622292761762557753">Усё роўна перанесці</translation>
 <translation id="4627675673814409125">Гэту палітыку нельга задаць на ўзроўні профілю Chrome, таму яна будзе ігнаравацца.</translation>
 <translation id="4628948037717959914">Фота</translation>
+<translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">З вяртаннем грошай</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
 <translation id="4638670630777875591">Рэжым інкогніта ў браўзеры Chromium</translation>
@@ -1559,6 +1574,7 @@
 <translation id="5031870354684148875">Пра Перакладчык Google</translation>
 <translation id="503498442187459473"><ph name="HOST" /> запытвае доступ да камеры і мікрафона</translation>
 <translation id="5035135400558156732">Догляд саду</translation>
+<translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Памер шрыфту</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
@@ -1640,6 +1656,7 @@
 <translation id="5229588705416009823">Маштабныя шматкарыстальніцкія гульні</translation>
 <translation id="5230733896359313003">Адрас дастаўкі</translation>
 <translation id="5230815978613972521">B8</translation>
+<translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
 <translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
 <translation id="5242889659037569123">Багаж і турыстычныя аксесуары</translation>
@@ -1700,6 +1717,7 @@
 <translation id="5363309033720083897">Адміністратар дазволіў гэты паслядоўны порт</translation>
 <translation id="5363713372507812442">Шляхі пошуку</translation>
 <translation id="5371425731340848620">Абнавіць картку</translation>
+<translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Ваш гадзіннік спазняецца", або "Ваш гадзіннік спяшаецца", або "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">Кнопка "Стварыць прэзентацыю". Каб хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі", націсніце Enter</translation>
 <translation id="5385857628869214740">Гумар</translation>
@@ -1869,6 +1887,7 @@
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5838278095973806738">Раім не ўводзіць на гэтым сайце ніякай канфідэнцыяльнай інфармацыі (пароляў, даных крэдытных картак і інш.), бо гэту інфармацыю могуць украсці зламыснікі.</translation>
 <translation id="5851548754964597211">Спіс укладак</translation>
+<translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5862579898803147654">Укладчык 8</translation>
 <translation id="5863847714970149516">Старонка, на якую вы збіраецеся перайсці, можа спагнаць з вас грошы</translation>
@@ -1992,6 +2011,7 @@
 <translation id="6177128806592000436">Ваша падключэнне да гэтага сайта небяспечнае</translation>
 <translation id="6177531123306197852">Канверт C2</translation>
 <translation id="6180316780098470077">Інтэрвал паміж спробамі</translation>
+<translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Жаночае адзенне</translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
 <translation id="6195371403461054755">Геалогія</translation>
@@ -2075,10 +2095,12 @@
 <translation id="6404511346730675251">Змяніце закладку</translation>
 <translation id="6405181733356710802">Перайсці ў праграму <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Увядзіце тэрмін дзеяння і код CVC з карткі <ph name="CREDIT_CARD" /></translation>
+<translation id="6411107829285739505">A4x8</translation>
 <translation id="6415778972515849510">Chromium можа дапамагчы абараніць ваш Уліковы запіс Google і змяніць ваш пароль.</translation>
 <translation id="6425092077175753609">Матэрыял</translation>
 <translation id="6427730057873428458">Згіб "вароты"</translation>
 <translation id="6428450836711225518">Спраўдзіце свой нумар тэлефона</translation>
+<translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Змяніць пароль Google</translation>
 <translation id="6431119592588449664">Справаздача запампавана</translation>
 <translation id="6433490469411711332">Змена кантактных звестак</translation>
@@ -2090,6 +2112,7 @@
 <translation id="6447842834002726250">Файлы cookie</translation>
 <translation id="6450212216969386944">Канверт Chou 40</translation>
 <translation id="6451458296329894277">Пацвердзіце паўторную адпраўку формы</translation>
+<translation id="6452889436791091116">ISO ID-1</translation>
 <translation id="6456955391422100996">Рэклама выдалена.</translation>
 <translation id="6457206614190510200">Брашуроўка скобамі па спінцы</translation>
 <translation id="6457455098507772300">Абвесткі пра зніжэнне цаны будуць паказвацца на працоўным стале як усплывальныя апавяшчэнні</translation>
@@ -2186,6 +2209,7 @@
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="6718612893943028815">Выкарыстоўваць камеру?</translation>
 <translation id="6721678857435001674">Даведацца пра марку і мадэль ключа бяспекі</translation>
+<translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Даныя былі зашыфраваны з дапамогай <ph name="BEGIN_LINK" />фразы-пароля для сінхранізацыі<ph name="END_LINK" /> <ph name="TIME" />. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
 <translation id="674375294223700098">Невядомая памылка сертыфіката сервера.</translation>
@@ -2225,6 +2249,7 @@
 <translation id="6846340164947227603">Выкарыстаць нумар віртуальнай карткі...</translation>
 <translation id="6852204201400771460">Перазагрузіць праграму?</translation>
 <translation id="6857776781123259569">Кіраваць паролямі...</translation>
+<translation id="6858034839887287663">A2x4</translation>
 <translation id="6864189428899665393">267 x 389 мм</translation>
 <translation id="686485648936420384">Спажывецкія рэсурсы</translation>
 <translation id="6865412394715372076">Гэту картку спраўдзіць пакуль што не ўдаецца</translation>
@@ -2259,6 +2284,7 @@
 <translation id="6946722113367118030">У задуменні</translation>
 <translation id="6948051842255602737">Гульня скончана, ваш рэзультат: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Выберыце адрас, каб убачыць спосабы і ўмовы атрымання</translation>
+<translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">Скід пароля</translation>
 <translation id="6950684638814147129">Памылка аналізу значэння JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Скінуць усе</translation>
@@ -2312,6 +2338,7 @@
 <translation id="7068733155164172741">Увядзіце <ph name="OTP_LENGTH" />-значны код</translation>
 <translation id="70705239631109039">Ваша падключэнне не цалкам бяспечнае</translation>
 <translation id="7075452647191940183">Запыт занадта вялікі</translation>
+<translation id="7078665357168027058">RA3</translation>
 <translation id="7079718277001814089">Гэты сайт змяшчае шкоднае ПЗ</translation>
 <translation id="7081308185095828845">На жаль, гэта функцыя на прыладзе недаступная</translation>
 <translation id="7083258188081898530">Латок 9</translation>
@@ -2375,6 +2402,7 @@
 <translation id="7238585580608191973">Лічбавы адбітак SHA-256</translation>
 <translation id="7240120331469437312">Альтэрнатыўнае імя суб'екта сертыфіката</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# супадзенне}one{# супадзенне}few{# супадзенні}many{# супадзенняў}other{# супадзення}}</translation>
 <translation id="724691107663265825">Сайт, на які вы збіраецеся перайсці, змяшчае шкоднае ПЗ</translation>
 <translation id="724975217298816891">Каб абнавіць даныя карткі, увядзіце дату заканчэння тэрміну дзеяння і код CVC з карткі <ph name="CREDIT_CARD" />. Пасля вашага пацвярджэння даныя вашай карткі будуць абагулены з гэтым сайтам.</translation>
@@ -2467,6 +2495,7 @@
 <translation id="7445762425076701745">Не ўдалося цалкам праверыць сапраўднасць сервера, да якога вы падключыліся. Вы падключыліся да сервера па назве, сапраўднай толькі ў вашай сетцы. Знешні цэнтр сертыфікацыі не можа спраўдзіць прыналежнасць гэтай назвы. Некаторыя цэнтры сертыфікацыі ўсё роўна выдаюць сертыфікаты на такія назвы, таму ўпэўніцца, што вы падключаны да патрэбнага вэб-сайта, а не зламысніка, немагчыма.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
 <translation id="7455133967321480974">Выкарыстоўваць глабальныя стандартныя налады (заблакіраваць)</translation>
+<translation id="745640750744109667">A0x3</translation>
 <translation id="7460618730930299168">Паказана не тое, што выбіралі вы. Працягнуць?</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="7463075493919226237">Аўстралійскі футбол</translation>
@@ -2537,6 +2566,7 @@
 <translation id="7591288787774558753">Абагуліць канфідэнцыяльнае змесціва?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> запытвае дазвол выкарыстоўваць файлы cookie і даныя сайта <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертыфікат сервера парушае абмежаванні для імён.</translation>
+<translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Менш за <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> пакуль што не можа апрацаваць гэты запыт.</translation>
 <translation id="7600965453749440009">Ніколі не перакладаць з мовы: <ph name="LANGUAGE" /></translation>
@@ -2725,6 +2755,7 @@
 <translation id="8092254339843485299">6 x 8 цаляў</translation>
 <translation id="8092774999298748321">Насычаны ліловы</translation>
 <translation id="8094917007353911263">Сетка, якую вы выкарыстоўваеце, можа запатрабаваць ад вас наведаць <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Несапраўдныя карткі выдалены</translation>
 <translation id="8100666323495101203">Ваша арганізацыя пазначыла, што сайт <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> можа парушаць правілы. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2883,6 +2914,7 @@
 <translation id="8539500321752640291">Даць 2 дазволы?</translation>
 <translation id="8541158209346794904">Прылада Bluetooth</translation>
 <translation id="8542014550340843547">Тры скабы знізу</translation>
+<translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Вы можаце <ph name="BEGIN_ERROR_LINK" />паведаміць аб праблеме<ph name="END_ERROR_LINK" /> або, калі ўсведамляеце рызыку для сваёй бяспекі, <ph name="BEGIN_LINK" />можаце наведаць гэты небяспечны сайт<ph name="END_LINK" />.</translation>
 <translation id="854892890027593466">Канверт C6/C5</translation>
 <translation id="8553387990086529628">Турыстычныя маршруты</translation>
@@ -2951,6 +2983,7 @@
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – ваш код для <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Дадаць гэту ўкладку ў закладкі</translation>
 <translation id="8751426954251315517">Паўтарыце спробу пазней</translation>
+<translation id="8755125092386286553">A4x9</translation>
 <translation id="8757526089434340176">Прапанова Google Pay даступная</translation>
 <translation id="8758885506338294482">Кіберспартыўныя спаборніцтвы</translation>
 <translation id="8759274551635299824">Тэрмін дзеяння гэтай карткі скончыўся</translation>
@@ -3017,6 +3050,7 @@
 <translation id="893332455753468063">Дадаць імя</translation>
 <translation id="8942355029279167844">Адміністратар дазволіў праграме "<ph name="APP_NAME" />" збіраць даныя дыягностыкі дзеля ўдасканалення работы прадукту. Дадатковая інфармацыя – па спасылцы <ph name="BEGIN_LINK" /> https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лайм</translation>
+<translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон і ўрад</translation>
 <translation id="8957210676456822347">Аўтарызацыя праз партал узаемадзеяння</translation>
 <translation id="8962950042226115166">Падазроны сайт</translation>

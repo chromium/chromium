@@ -239,6 +239,7 @@
 <translation id="121384500095351701">無法安全下載此檔案</translation>
 <translation id="1215411991991485844">已新增背景應用程式</translation>
 <translation id="1216542092748365687">移除指紋</translation>
+<translation id="1216891999012841486">進一步瞭解如何修正更新錯誤</translation>
 <translation id="1217114730239853757">係咪要啟用 ChromeOS Flex 內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="1217483152325416304">系統即將刪除您的本機資料</translation>
 <translation id="1217668622537098248">完成後還原至先前的按左鍵操作</translation>
@@ -3689,6 +3690,7 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{開啟所有書籤(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟全部 {COUNT} 個書籤(&amp;O)}}</translation>
 <translation id="4397372003838952832">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
+<translation id="4397844455100743910">進一步了解存取要求。</translation>
 <translation id="439817266247065935">您的裝置先前未正確關閉。如要使用 Linux 應用程式，請重新啟動 Linux。</translation>
 <translation id="4400367121200150367">永不儲存密碼的網站會在這裡顯示</translation>
 <translation id="4400632832271803360">按住啟動器鍵，即可切換最上排按鍵的執行動作</translation>
@@ -4058,6 +4060,7 @@
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理</translation>
 <translation id="4735506354605317060">圓形指標</translation>
+<translation id="4735793370946506039">進一步了解強化安全瀏覽功能。</translation>
 <translation id="4735803855089279419">糟糕！系統無法確定此裝置的裝置識別碼。</translation>
 <translation id="4736292055110123391">將您的書籤、密碼、記錄等資料同步至所有裝置</translation>
 <translation id="473775607612524610">更新</translation>
@@ -4086,6 +4089,7 @@
 <translation id="4765524037138975789">{MONTHS,plural, =1{系統會記住此裝置，在 1 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {MONTHS} 個月內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="4765582662863429759">允許「Android 訊息」由您的手機轉送短訊至 Chromebook</translation>
 <translation id="4766598565665644999">所有擴充程式都可以讀取並變更 <ph name="HOST" /></translation>
+<translation id="4767427586072640478">進一步了解已經停用嘅擴充程式。</translation>
 <translation id="4768332406694066911">您具備下列組織的識別憑證</translation>
 <translation id="4770119228883592393">要求咗權限，㩒 ⌘ + Option + 向下箭咀就可以回覆</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
@@ -4992,6 +4996,7 @@
 <translation id="5632059346822207074">要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
+<translation id="5633149627228920745">進一步瞭解系統需求</translation>
 <translation id="563371367637259496">流動網絡</translation>
 <translation id="5634446357546764049">查看近期旅行等活動的回憶</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
@@ -8341,6 +8346,7 @@
 <translation id="8785622406424941542">觸控筆</translation>
 <translation id="8786824282808281903">當子女看到此圖示時，可以使用指紋識別身份或核准購物交易。</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
+<translation id="8791157330927639737">進一步瞭解如何更新</translation>
 <translation id="8791534160414513928">將「不追蹤」要求與瀏覽流量一併傳送</translation>
 <translation id="879413103056696865">開啟熱點時，您的 <ph name="PHONE_NAME" /> 將會：</translation>
 <translation id="8795916974678578410">開啟新視窗</translation>

@@ -410,6 +410,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1388253969141979417">Allowed to use your microphone</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> will restart when updates are complete.</translation>
 <translation id="1389601498324964367">Quota-managed storage</translation>
+<translation id="1390113502208199250">You will have to factory reset this device to use Chrome Education upgrade features.</translation>
 <translation id="139013308650923562">Allowed to use fonts installed on your device</translation>
 <translation id="1390548061267426325">Open as a Standard Tab</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> is not authorised to print to <ph name="PRINTER_NAME" />. Please contact your administrator.</translation>
@@ -480,6 +481,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1436784010935106834">Removed</translation>
 <translation id="1437986450143295708">Describe the issue in detail</translation>
 <translation id="1439671507542716852">long-term support</translation>
+<translation id="1440090277117135316">School enrolment complete</translation>
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
@@ -2413,6 +2415,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3170072451822350649">You may also skip signing in and <ph name="LINK_START" />browse as Guest<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">New tab to the left</translation>
 <translation id="3177909033752230686">Page Language:</translation>
+<translation id="3177914167275935955">Your device includes a Chrome Education upgrade, but your username is not associated with a Google for Education account. Please create a Google for Education account by visiting g.co/workspace/edusignup on a secondary device.</translation>
 <translation id="3179982752812949580">Text font</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3182749001423093222">Spell check</translation>
@@ -4086,6 +4089,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4762489666082647806">Pointer colour</translation>
 <translation id="4762718786438001384">Device disk space critically low</translation>
 <translation id="4763408175235639573">The following cookies were set when you viewed this page</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> isn't a valid Google for Education account. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{This device will be saved for one month and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {MONTHS} months and you can connect without a code next time. This is set by your administrator.}}</translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="4766598565665644999">All extensions can read and change <ph name="HOST" /></translation>
@@ -4747,6 +4751,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5407167491482639988">Unintelligible</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">From your Google Account</translation>
+<translation id="5411022484772257615">Couldn't complete school enrolment</translation>
 <translation id="5413640305322530561">Learn more about diagnostic and usage data</translation>
 <translation id="5414198321558177633">Refreshing profile list. This may take a few minutes.</translation>
 <translation id="5414566801737831689">Read the icons of the websites that you visit</translation>
@@ -5533,6 +5538,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6130692320435119637">Add Wi-Fi</translation>
 <translation id="6130887916931372608">Keyboard key</translation>
+<translation id="6132714462430777655">Skip school enrolment?</translation>
 <translation id="6135823405800500595">Ensure that your phone is nearby and unlocked, and that Bluetooth and Wi-Fi are turned on</translation>
 <translation id="6135826623269483856">Not allowed to manage windows on all your displays</translation>
 <translation id="6136114942382973861">Close downloads bar</translation>
@@ -6755,6 +6761,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7310598146671372464">Failed to log in. The server does not support specified Kerberos encryption types. Please contact your administrator.</translation>
 <translation id="7311089766378749632">Requesting to read and change <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
+<translation id="7317831949569936035">School enrolment</translation>
 <translation id="7320213904474460808">Default to network</translation>
 <translation id="7321545336522791733">Server unreachable</translation>
 <translation id="7323315405936922211">Cursor area size</translation>

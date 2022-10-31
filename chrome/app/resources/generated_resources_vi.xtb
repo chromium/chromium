@@ -239,6 +239,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="121384500095351701">Không thể tải tệp này xuống một cách an toàn</translation>
 <translation id="1215411991991485844">Đã thêm ứng dụng nền mới</translation>
 <translation id="1216542092748365687">Xóa vân tay</translation>
+<translation id="1216891999012841486">Tìm hiểu thêm về cách khắc phục các lỗi cập nhật</translation>
 <translation id="1217114730239853757">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không? Nếu có, hãy nhấn phím cách.</translation>
 <translation id="1217483152325416304">Dữ liệu trên thiết bị của bạn sắp bị xóa</translation>
 <translation id="1217668622537098248">Trở về hành động nhấp chuột trái sau khi thực hiện hành động khác</translation>
@@ -1954,6 +1955,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="274318651891194348">Đang tìm kiếm bàn phím</translation>
 <translation id="2743301740238894839">Bắt đầu</translation>
 <translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
+<translation id="274362947316498129">Một ứng dụng đang cố truy cập vào <ph name="DEVICE_NAME" />. Hãy tắt nút chuyển quyền riêng tư của <ph name="DEVICE_NAME" /> để cho phép truy cập.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">Tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy yêu cầu chủ sở hữu tệp khắc phục vấn đề.</translation>
 <translation id="2749756011735116528">Đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
@@ -3126,6 +3128,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3851428669031642514">Tải tập lệnh không an toàn</translation>
 <translation id="3852215160863921508">Hỗ trợ nhập</translation>
+<translation id="3853549894831560772">Đã bật <ph name="DEVICE_NAME" /></translation>
 <translation id="3854599674806204102">Chọn một tùy chọn</translation>
 <translation id="3854967233147778866">Đề xuất dịch trang web xuất hiện ở các ngôn ngữ khác</translation>
 <translation id="3854976556788175030">Khay giấy ra đã đầy</translation>
@@ -3459,6 +3462,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4163560723127662357">Bàn phím không xác định</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> không thuộc về một tổ chức hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu bạn là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> đang cố truy cập vào <ph name="DEVICE_NAME" />. Hãy tắt nút chuyển quyền riêng tư của <ph name="DEVICE_NAME" /> để cho phép truy cập.</translation>
 <translation id="4167393659000039775">Google không chịu trách nhiệm đối với mọi dữ liệu bị mất và có thể <ph name="DEVICE_OS" /> sẽ không hoạt động trên một số kiểu thiết bị chưa được chứng nhận. Tìm hiểu thêm tại g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Các trang web thường sử dụng JavaScript để hiển thị những tính năng tương tác, như trò chơi điện tử hoặc biểu mẫu web</translation>
 <translation id="4168015872538332605">Một số cài đặt thuộc về <ph name="PRIMARY_EMAIL" /> đang được chia sẻ với bạn. Những cài đặt này chỉ ảnh hưởng đến tài khoản của bạn khi sử dụng đăng nhập nhiều tài khoản.</translation>
@@ -3922,6 +3926,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> đã gặp lỗi</translation>
 <translation id="4610637590575890427">Có phải ý bạn là chuyển đến <ph name="SITE" /> không?</translation>
 <translation id="4611114513649582138">Kết nối dữ liệu có sẵn</translation>
+<translation id="4612841084470706111">Cấp quyền truy cập vào tất cả trang web được yêu cầu.</translation>
 <translation id="4613144866899789710">Đang hủy quá trình cài đặt Linux...</translation>
 <translation id="4613271546271159013">Tiện ích đã thay đổi trang nào sẽ được hiển thị khi bạn mở một thẻ mới.</translation>
 <translation id="4615586811063744755">chưa chọn cookie nào</translation>
@@ -4993,6 +4998,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5632059346822207074">Đã yêu cầu quyền. Hãy nhấn tổ hợp phím Ctrl + Mũi tên tiến để phản hồi</translation>
 <translation id="5632566673632479864">Tài khoản <ph name="EMAIL" /> của bạn không còn được phép làm tài khoản chính nữa. Vì tài khoản này do <ph name="DOMAIN" /> quản lý, nên dấu trang, lịch sử, mật khẩu và các tùy chọn cài đặt khác sẽ bị xóa khỏi thiết bị này.</translation>
 <translation id="5632592977009207922">Đang tải xuống, còn <ph name="PERCENT_REMAINING" />%</translation>
+<translation id="5633149627228920745">Tìm hiểu thêm về yêu cầu hệ thống</translation>
 <translation id="563371367637259496">Di động</translation>
 <translation id="5634446357546764049">Xem lại kỷ niệm về các chuyến đi mới đây và nhiều ảnh khác</translation>
 <translation id="5635312199252507107">Cho phép trên một số trang web cụ thể</translation>
@@ -5685,6 +5691,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6291949900244949761">Hỏi khi một trang web muốn truy cập vào các thiết bị USB (khuyên dùng)</translation>
 <translation id="6291953229176937411">&amp;Hiển thị trong Trình tìm kiếm</translation>
 <translation id="6292699686837272722">Các thẻ sẽ thu gọn theo chiều rộng có kích thước trung bình</translation>
+<translation id="6293862149782163840">Đã tắt <ph name="DEVICE_NAME" /></translation>
 <translation id="6294759976468837022">Tốc độ tự động quét</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6295855836753816081">Đang lưu...</translation>
@@ -8341,6 +8348,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8785622406424941542">Bút cảm ứng</translation>
 <translation id="8786824282808281903">Khi biểu tượng này xuất hiện, con bạn có thể dùng vân tây để nhận dạng hoặc phê duyệt các giao dịch mua.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Nhóm chưa có tên – 1 thẻ}other{Nhóm chưa có tên – # thẻ}}</translation>
+<translation id="8791157330927639737">Tìm hiểu thêm về việc cập nhật</translation>
 <translation id="8791534160414513928">Gửi yêu cầu "Không theo dõi" kèm theo lưu lượng duyệt web của bạn</translation>
 <translation id="879413103056696865">Khi điểm phát sóng bật, <ph name="PHONE_NAME" /> của bạn sẽ:</translation>
 <translation id="8795916974678578410">Cửa sổ mới</translation>
@@ -8496,6 +8504,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8940081510938872932">Máy tính của bạn hiện đang thực hiện quá nhiều tác vụ.  Hãy thử lại sau.</translation>
 <translation id="8940381019874223173">Từ Google Photos của bạn</translation>
 <translation id="8941173171815156065">Thu hồi quyền '<ph name="PERMISSION" />'</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> đã tắt</translation>
 <translation id="894191600409472540">Tạo mật khẩu mạnh</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Sử dụng pin nhanh hơn (hiện tại là <ph name="BATTERY_PERCENTAGE" />%)</translation>

@@ -1372,6 +1372,7 @@
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ја преведете страницава со „Преведи на Google“</translation>
 <translation id="4514308731478712184">Исклучи ги „Патувања“</translation>
 <translation id="4515275063822566619">Картичките и адресите се од Chrome и од вашата сметка на Google (<ph name="ACCOUNT_EMAIL" />). Со нив може да управувате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
+<translation id="4520048001084013693">Преземањето на датотекава е блокирано со правило на администраторот</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Плик Monarch</translation>
 <translation id="4521916730539354575">Лева фиока</translation>
@@ -2363,6 +2364,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">Не може да се испорача на оваа адреса. Изберете друга.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">Блокирано прикачување</translation>
 <translation id="7132939140423847331">Администраторот забранил копирање на податоциве.</translation>
 <translation id="7135130955892390533">Прикажи го статусот</translation>
 <translation id="7138472120740807366">Метод на достава</translation>
@@ -2593,6 +2595,7 @@
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7659327900411729175">Плик Kaku 8</translation>
 <translation id="7659878911471462949">Солзи радосници</translation>
+<translation id="766014026101194726">{0,plural, =1{Прикачувањето на датотекава е блокирано со правило на администраторот}one{Прикачувањето на # датотека е блокирано со правило на администраторот}other{Прикачувањето на # датотеки е блокирано со правило на администраторот}}</translation>
 <translation id="7662298039739062396">Поставка контролирана од екстензија</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Не е дозволено во „Инкогнито“</translation>
@@ -2687,6 +2690,7 @@
 <translation id="7939744324936979484">Фолк и традиционална музика</translation>
 <translation id="7941628148012649605">Плик Chou 4</translation>
 <translation id="7942349550061667556">Црвена</translation>
+<translation id="7943397946612013052">Блокирано преземање</translation>
 <translation id="7943893128817522649">Може да прашува за да презема повеќе датотеки автоматски</translation>
 <translation id="7947285636476623132">Проверете ја годината на истекување и обидете се повторно</translation>
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да дознаете за функциите на Chrome</translation>

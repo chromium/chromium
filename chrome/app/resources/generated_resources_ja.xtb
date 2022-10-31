@@ -3648,6 +3648,7 @@
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{すべてを開く(&amp;O)}=1{ブックマークを開く(&amp;O)}other{すべて（{COUNT} 個）を開く(&amp;O)}}</translation>
 <translation id="4397372003838952832">このパスワードを覚えておく必要はありません。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
+<translation id="4397844455100743910">アクセス リクエストの詳細。</translation>
 <translation id="439817266247065935">デバイスは正しく終了しませんでした。Linux アプリを使用するには、Linux を再起動してください。</translation>
 <translation id="4400367121200150367">パスワードを保存していないサイトがここに表示されます</translation>
 <translation id="4400632832271803360">キーボードの最上段にあるキーの動作を切り替えるには、ランチャー キーを押したままにします</translation>
@@ -4011,6 +4012,7 @@
 <translation id="4733793249294335256">保存先</translation>
 <translation id="473546211690256853">このアカウントは <ph name="DOMAIN" /> によって管理されています。</translation>
 <translation id="4735506354605317060">円ポインタ</translation>
+<translation id="4735793370946506039">セーフ ブラウジング保護強化機能の詳細。</translation>
 <translation id="4735803855089279419">このデバイスのデバイス識別子を特定できませんでした。</translation>
 <translation id="4736292055110123391">すべてのデバイスでブックマーク、パスワード、履歴、その他の設定を同期する</translation>
 <translation id="473775607612524610">更新</translation>
@@ -4039,6 +4041,7 @@
 <translation id="4765524037138975789">{MONTHS,plural, =1{このデバイスは 1 か月間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {MONTHS} か月間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="4765582662863429759">スマートフォンから Chromebook へのテキストの伝達を Android メッセージに許可します</translation>
 <translation id="4766598565665644999">すべての拡張機能が <ph name="HOST" /> の読み取りと変更を行えます</translation>
+<translation id="4767427586072640478">無効になっている拡張機能の詳細。</translation>
 <translation id="4768332406694066911">次の機関から発行された、あなたを識別する証明書があります</translation>
 <translation id="4770119228883592393">権限がリクエストされました。対応するには、⌘+option+下矢印キーを押してください</translation>
 <translation id="4773112038801431077">Linux のアップグレード</translation>
@@ -5107,6 +5110,7 @@
 <translation id="5799508265798272974">Linux 仮想マシン: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">対象ファイルは前回のダウンロード後に一部または全体が削除されました。</translation>
 <translation id="5800351251499368110">サイドパネルの検索を閉じます。サイドパネルの検索が開いています。</translation>
+<translation id="5801051031414037185">スマートフォンを設定</translation>
 <translation id="5801568494490449797">設定</translation>
 <translation id="5804241973901381774">権限</translation>
 <translation id="5805268472388605531">キーボードのキーを長押しすると、アクセント記号と特殊文字が表示されます</translation>
@@ -5396,6 +5400,7 @@
 <translation id="6072442788591997866"><ph name="APP_NAME" /> はこのデバイスで許可されていません。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6073903501322152803">ユーザー補助機能を追加</translation>
+<translation id="6075075631258766703">スマートフォンを確認</translation>
 <translation id="6075731018162044558">このデバイスの長期 API アクセス トークンを取得できませんでした。</translation>
 <translation id="6075907793831890935">デバイス <ph name="HOSTNAME" /> とのデータ交換</translation>
 <translation id="6076175485108489240">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがデバイスの位置情報を使用することを許可します。Google は位置情報を定期的に収集し、これを匿名のデータとして、位置情報の精度向上や位置情報に基づくサービスの改善に使用することがあります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>

@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">サイズ: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> コード</translation>
 <translation id="1923956950274750765">ミディアム オーキッド</translation>
+<translation id="1928535370180099152">前の文字を選択</translation>
 <translation id="1928932365747995741">前の編集可能テキスト フィールドはありません</translation>
 <translation id="1964135212174907577">次のオブジェクト</translation>
 <translation id="1966649499058910679">話されている単語を強調表示する</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">読み上げの有効と無効を切り替えます</translation>
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
 <translation id="2398579267367951220">ページ内を検索するには入力してください。見つかった結果に移動するには、Enter キーを押します。結果を 1 つずつ確認するには、上矢印または下矢印キーを押します。違う語句を検索する場合は、その語句を入力します。キャンセルする場合は、Esc キーを押します。</translation>
+<translation id="2407047351320112166">次の文字を選択</translation>
 <translation id="240709722712693803">ブルー バイオレット</translation>
 <translation id="2410298923485357543">デバイスがオンラインのときは自然な音声を使用する</translation>
 <translation id="2416512023405990736">チェックボックスがオフ</translation>
@@ -381,6 +383,7 @@
 <translation id="3389259863310851658">前のフォーム フィールド</translation>
 <translation id="3393605254399152980">テキストを読み上げるには 1 本の指でドラッグします</translation>
 <translation id="3406283310380167331">フォーム リストを表示</translation>
+<translation id="3407726812456125464">選択したテキストの音声を聞きます</translation>
 <translation id="3414400929511680526">アリスブルー</translation>
 <translation id="3418936350470374046">下にセルはありません</translation>
 <translation id="3419269701801640163">貼り付け</translation>

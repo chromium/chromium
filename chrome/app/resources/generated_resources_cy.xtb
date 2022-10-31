@@ -3688,6 +3688,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4394049700291259645">Analluogi</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Agor pob un}=1{&amp;Agor nod tudalen}two{&amp;Agor pob un ({COUNT})}few{&amp;Agor pob un ({COUNT})}many{&amp;Agor pob un ({COUNT})}other{&amp;Agor pob un ({COUNT})}}</translation>
 <translation id="4397372003838952832">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i <ph name="GOOGLE_PASSWORD_MANAGER" /> ar gyfer <ph name="EMAIL" />.</translation>
+<translation id="4397844455100743910">Dysgu rhagor am geisiadau mynediad.</translation>
 <translation id="439817266247065935">Ni wnaeth eich dyfais gau yn iawn. Ailgychwynnwch Linux i ddefnyddio apiau Linux.</translation>
 <translation id="4400367121200150367">Bydd gwefannau nad ydynt byth yn cadw cyfrineiriau yn ymddangos yma</translation>
 <translation id="4400632832271803360">Daliwch yr allwedd Lansiwr i newid ymddygiad bysellau'r rhes uchaf</translation>
@@ -4056,6 +4057,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4733793249294335256">Lleoliad</translation>
 <translation id="473546211690256853">Rheolir y cyfrif hwn gan <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Pwyntydd cylchol</translation>
+<translation id="4735793370946506039">Dysgu rhagor am Gwell Pori'n Ddiogel.</translation>
 <translation id="4735803855089279419">Gwnaeth y system fethu â phenodi'r dynodwyr dyfais ar gyfer y ddyfais hon.</translation>
 <translation id="4736292055110123391">Gallwch gysoni eich nodau tudalen, eich cyfrineiriau, eich hanes, a rhagor ar eich holl ddyfeisiau</translation>
 <translation id="473775607612524610">Diweddaru</translation>
@@ -4084,6 +4086,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Bydd y ddyfais hon yn cael ei chadw am 1 mis a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}zero{Bydd y ddyfais hon yn cael ei chadw am {MONTHS} mis a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}two{Bydd y ddyfais hon yn cael ei chadw am {MONTHS} fis a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}few{Bydd y ddyfais hon yn cael ei chadw am {MONTHS} mis a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}many{Bydd y ddyfais hon yn cael ei chadw am {MONTHS} mis a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}other{Bydd y ddyfais hon yn cael ei chadw am {MONTHS} mis a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}}</translation>
 <translation id="4765582662863429759">Yn caniatáu i Negeseuon Android drosglwyddo testunau o'ch ffôn i'ch Chromebook</translation>
 <translation id="4766598565665644999">Gall pob estyniad ddarllen a newid <ph name="HOST" /></translation>
+<translation id="4767427586072640478">Dysgu rhagor am estyniadau sydd wedi'u hanalluogi.</translation>
 <translation id="4768332406694066911">Mae gennych dystysgrifau gan y sefydliadau hyn sy'n eich adnabod chi</translation>
 <translation id="4770119228883592393">Gofynnwyd am ganiatâd, pwyswch ⌘ + Option + Saeth i lawr i ymateb</translation>
 <translation id="4773112038801431077">Uwchraddio Linux</translation>
@@ -5161,6 +5164,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5799508265798272974">Peiriant Rhithwir Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5800020978570554460">Cafodd y ffeil cyrchfan ei chwtogi neu ei dileu ers ei lawrlwytho ddiwethaf.</translation>
 <translation id="5800351251499368110">Cau chwilio yn y panel ochr. Mae chwilio ar agor yn y panel ochr.</translation>
+<translation id="5801051031414037185">Gosod ffôn</translation>
 <translation id="5801568494490449797">Dewisiadau</translation>
 <translation id="5804241973901381774">Caniatadau</translation>
 <translation id="5805268472388605531">Pwyswch a daliwch fysellau bysellfwrdd i weld acenion a nodau arbennig</translation>
@@ -5452,6 +5456,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6072442788591997866">Ni chaniateir <ph name="APP_NAME" /> ar y ddyfais hon. Cysylltwch â'ch gweinyddwr. Cod gwall: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stopio recordio</translation>
 <translation id="6073903501322152803">Ychwanegu nodweddion hygyrchedd</translation>
+<translation id="6075075631258766703">Dilysu ffôn</translation>
 <translation id="6075731018162044558">Wps!  Gwnaeth y system fethu â chael y tocyn mynediad API hirdymor ar gyfer y ddyfais hon.</translation>
 <translation id="6075907793831890935">Cyfnewid data gyda'r ddyfais o'r enw <ph name="HOSTNAME" /></translation>
 <translation id="6076175485108489240">Defnyddio lleoliad. Caniatáu apiau a gwasanaethau sydd â'r caniatâd Lleoliad ddefnyddio lleoliad y ddyfais hon. Mae'n bosib y bydd Google yn casglu data lleoliad o bryd i'w gilydd ac yn defnyddio'r data hyn mewn ffordd anhysbys i wella cywirdeb lleoliad a gwasanaethau sy'n seiliedig ar leoliad. <ph name="BEGIN_LINK1" />Dysgu rhagor<ph name="END_LINK1" /></translation>

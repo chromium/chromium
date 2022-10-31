@@ -1939,6 +1939,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="274318651891194348">A pesquisar teclado…</translation>
 <translation id="2743301740238894839">Iniciar</translation>
 <translation id="2743387203779672305">Copiar para a área de transferência</translation>
+<translation id="274362947316498129">Uma app está a tentar aceder à <ph name="DEVICE_NAME" />. Desative o interruptor de privacidade da <ph name="DEVICE_NAME" /> para permitir o acesso.</translation>
 <translation id="2745080116229976798">Subordinação qualificada Microsoft</translation>
 <translation id="2747266560080989517">Este ficheiro tem conteúdo sensível ou perigoso. Peça ao proprietário para corrigir.</translation>
 <translation id="2749756011735116528">Iniciar sessão no <ph name="PRODUCT_NAME" /></translation>
@@ -3112,6 +3113,7 @@ Pretende pará-lo?</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3851428669031642514">Carregar scripts não seguros</translation>
 <translation id="3852215160863921508">Assistência de introdução</translation>
+<translation id="3853549894831560772">A <ph name="DEVICE_NAME" /> está ativada</translation>
 <translation id="3854599674806204102">Escolha uma opção</translation>
 <translation id="3854967233147778866">Proponha a tradução de Websites noutros idiomas</translation>
 <translation id="3854976556788175030">O tabuleiro de saída está cheio</translation>
@@ -3445,6 +3447,7 @@ Pretende pará-lo?</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> não pertence a uma entidade válida. Contacte o seu administrador. Se for um administrador, pode configurar a sua entidade ao visitar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
+<translation id="4167212649627589331">A app <ph name="APP_NAME" /> está a tentar aceder à <ph name="DEVICE_NAME" />. Desative o interruptor de privacidade da <ph name="DEVICE_NAME" /> para permitir o acesso.</translation>
 <translation id="4167393659000039775">A Google não é responsável por qualquer perda de dados e o <ph name="DEVICE_OS" /> pode não funcionar em modelos não certificados. Saiba mais em g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Normalmente, os sites utilizam JavaScript para apresentar funcionalidades interativas como videojogos ou formulários Web.</translation>
 <translation id="4168015872538332605">Algumas definições pertencentes a <ph name="PRIMARY_EMAIL" /> estão a ser partilhadas consigo. Estas definições afetam apenas a sua conta quando utilizar o início de sessão integrado.</translation>
@@ -3907,6 +3910,7 @@ Pretende pará-lo?</translation>
 <translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro.</translation>
 <translation id="4610637590575890427">Pretendia aceder a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Ligação de dados disponível</translation>
+<translation id="4612841084470706111">Conceder acesso a todos os sites pedidos.</translation>
 <translation id="4613144866899789710">A cancelar a instalação do Linux…</translation>
 <translation id="4613271546271159013">Uma extensão alterou a página que é apresentada quando abre um novo separador.</translation>
 <translation id="4615586811063744755">nenhum cookie selecionado</translation>
@@ -5671,6 +5675,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6291949900244949761">Perguntar quando um site pretender aceder a dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">Mo&amp;strar no Finder</translation>
 <translation id="6292699686837272722">Os separadores são reduzidos para uma largura média</translation>
+<translation id="6293862149782163840">A rede da <ph name="DEVICE_NAME" /> está desativada</translation>
 <translation id="6294759976468837022">Velocidade da análise automática</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">A guardar...</translation>
@@ -8482,6 +8487,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8940081510938872932">O seu computador está a executar demasiadas operações neste momento. Tente mais tarde.</translation>
 <translation id="8940381019874223173">A partir do Google Fotos</translation>
 <translation id="8941173171815156065">Revogar a autorização "<ph name="PERMISSION" />"</translation>
+<translation id="8941688920560496412">A rede da <ph name="DEVICE_NAME" /> está desativada</translation>
 <translation id="894191600409472540">Crie palavras-passe fortes</translation>
 <translation id="894360074127026135">Step-Up Internacional Netscape</translation>
 <translation id="8944099748578356325">Utilizar a bateria mais rapidamente (atualmente, <ph name="BATTERY_PERCENTAGE" />%)</translation>

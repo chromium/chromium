@@ -307,6 +307,7 @@
 <translation id="2673968385134502798">משחקים</translation>
 <translation id="2678852583403169292">תפריט הקראה</translation>
 <translation id="2689613560355655046">שולחן עבודה וירטואלי 8</translation>
+<translation id="2695132445805301912">הצגת מקשים וקליקים</translation>
 <translation id="2695305337569143674">אינטרנט</translation>
 <translation id="2697697418792422688">צפייה בהגדרות המקלדת. בחרת את <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2700493154570097719">בחירת מקלדת</translation>
@@ -1122,6 +1123,7 @@
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7313193732017069507">הרחבת המצלמה</translation>
 <translation id="731589979057211264">מצב קבוצת המדפים פועל.</translation>
+<translation id="7340731148882810149">תפריט קליקים אוטומטיים</translation>
 <translation id="7346909386216857016">בסדר, הבנתי</translation>
 <translation id="7348093485538360975">מקלדת על המסך</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
@@ -1301,6 +1303,7 @@
 <translation id="826107067893790409">‏יש להקיש על Enter כדי לבטל את הנעילה בשביל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}many{שינוי המכשיר לגרסה קודמת בתוך # שעות}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
+<translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
 <translation id="8284362522226889623">יש להחליק ימינה בעזרת ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הקודם</translation>
 <translation id="828708037801473432">כבויה</translation>
 <translation id="8297006494302853456">חלש</translation>

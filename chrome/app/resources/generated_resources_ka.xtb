@@ -237,6 +237,7 @@
 <translation id="121384500095351701">ამ ფაილის უსაფრთხოდ ჩამოტვირთვა ვერ მოხერხდება</translation>
 <translation id="1215411991991485844">დამატებულია ახალი ფონური პროგრამა</translation>
 <translation id="1216542092748365687">თითის ანაბეჭდის ამოშლა</translation>
+<translation id="1216891999012841486">შეიტყვეთ მეტი განახლებასთან დაკავშირებული შეცდომების გასწორების შესახებ</translation>
 <translation id="1217114730239853757">გსურთ, გაააქტიუროთ ChromeVox, ChromeOS Flex-ში ჩაშენებული ეკრანის წამკითხველი? ამისთვის დააჭირეთ შორისის კლავიშს.</translation>
 <translation id="1217483152325416304">თქვენი ადგილობრივი მონაცემები მალე წაიშლება</translation>
 <translation id="1217668622537098248">ქმედების შემდეგ მარცხენა დაწკაპუნებაზე დაბრუნება</translation>
@@ -407,6 +408,7 @@
 <translation id="1388253969141979417">თქვენი მიკროფონის გამოყენება დაშვებულია</translation>
 <translation id="1388728792929436380">განახლებების დასრულების შემდეგ <ph name="DEVICE_TYPE" /> გადაიტვირთება.</translation>
 <translation id="1389601498324964367">კვოტირებული მეხსიერება</translation>
+<translation id="1390113502208199250">Chrome Education Upgrade-ის ფუნქციების გამოსაყენებლად დაგჭირდებათ ქარხნული პარამეტრების დაბრუნება ამ მოწყობილობაზე.</translation>
 <translation id="139013308650923562">დაშვებულია თქვენს მოწყობილობაზე დაინსტალირებული შრიფტების გამოყენება</translation>
 <translation id="1390548061267426325">ჩვეულებრივი ჩანართის სახით გახსნა</translation>
 <translation id="1390907927270446471">მომხმარებელს (<ph name="PROFILE_USERNAME" />) არ აქვს <ph name="PRINTER_NAME" />-ის მეშვეობით ამობეჭდვის უფლება. მიმართეთ თქვენს ადმინისტრატორს.</translation>
@@ -477,6 +479,7 @@
 <translation id="1436784010935106834">წაშლილი</translation>
 <translation id="1437986450143295708">დეტალურად აღწერეთ პრობლემა</translation>
 <translation id="1439671507542716852">გრძელვადიანი მხარდაჭერა</translation>
+<translation id="1440090277117135316">სასწავლებელში რეგისტრაცია დასრულდა</translation>
 <translation id="144283815522798837">არჩეულია <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">აქტიური Kerberos ბილეთის დაყენება</translation>
 <translation id="1444628761356461360">ამ პარამეტრს მართავს აპარატის მფლობელი. <ph name="OWNER_EMAIL" />.</translation>
@@ -1939,6 +1942,7 @@
 <translation id="274318651891194348">მიმდინარეობს კლავიატურის ძიება</translation>
 <translation id="2743301740238894839">დაწყება</translation>
 <translation id="2743387203779672305">კოპირება გაცვლის ბუფერში</translation>
+<translation id="274362947316498129">აპი ცდილობს წვდომას <ph name="DEVICE_NAME" />-ზე. წვდომის დასაშვებად გამორთეთ <ph name="DEVICE_NAME" />-ის კონფიდენციალურობის გადამრთველი.</translation>
 <translation id="2745080116229976798">Microsoft-ის კვალიფიცირებული სუბორდინაცია</translation>
 <translation id="2747266560080989517">ეს ფაილი შეიცავს სენსიტიურ ან სახიფათო კონტენტს. სთხოვეთ მის მფლობელს აღნიშნულის გამოსწორება.</translation>
 <translation id="2749756011735116528">შედით <ph name="PRODUCT_NAME" />-ში</translation>
@@ -2396,6 +2400,7 @@
 <translation id="3170072451822350649">შეგიძლიათ ასევე გამოტოვოთ შესვლის ეტაპი და <ph name="LINK_START" />დაათვალიეროთ სტუმრის სტატუსით<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">ახალი ჩანართი მარცხნივ</translation>
 <translation id="3177909033752230686">გვერდის ენა:</translation>
+<translation id="3177914167275935955">თქვენს მოწყობილობას მოჰყვება Chrome Education Upgrade, თუმცა თქვენი მომხმარებლის სახელი არ არის დაკავშირებული Google for Education ანგარიშთან. შექმენით Google for Education ანგარიში — ამისთვის გადადით მისამართზე g.co/workspace/edusignup მეორეული მოწყობილობიდან.</translation>
 <translation id="3179982752812949580">ტექსტის შრიფტი</translation>
 <translation id="3181954750937456830">Safe Browsing (თქვენ და თქვენს მოწყობილობებს გიცავთ სახიფათო საიტებისგან)</translation>
 <translation id="3182749001423093222">მართლწერის შემოწმება</translation>
@@ -3111,6 +3116,7 @@
 <translation id="385051799172605136">უკან</translation>
 <translation id="3851428669031642514">გადმოწერე არა საიმედო სკრიპტები</translation>
 <translation id="3852215160863921508">დახმარება შეყვანისას</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> ჩართულია</translation>
 <translation id="3854599674806204102">აირჩიეთ ვარიანტი</translation>
 <translation id="3854967233147778866">სხვა ენებზე ხელმისაწვდომი ვებსაიტების თარგმნის შემოთავაზება</translation>
 <translation id="3854976556788175030">გამომავალი ლანგარი სავსეა</translation>
@@ -3444,6 +3450,7 @@
 <translation id="4163560723127662357">უცნობი კლავიატურა</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> არ ეკუთვნის სწორ ორგანიზაციას. დაუკავშირდით თქვენს ადმინისტრატორს. თუ ადმინისტრატორი ხართ, ორგანიზაციის დასაყენებლად გადადით მისამართზე g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> ცდილობს წვდომას <ph name="DEVICE_NAME" />-ზე. წვდომის დასაშვებად გამორთეთ <ph name="DEVICE_NAME" />-ის კონფიდენციალურობის გადამრთველი.</translation>
 <translation id="4167393659000039775">Google პასუხს არ აგებს მონაცემთა დაკარგვაზე, ხოლო <ph name="DEVICE_OS" /> შეიძლება არ მუშაობდეს არასერტიფიცირებულ მოდელებზე. დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">როგორც წესი, საიტების მიერ JavaScript გამოიყენება ისეთი ინტერაქტიური ფუნქციების საჩვენებლად, როგორიცაა, მაგალითად, ვიდეოთამაშები ან ვებ-ფორმები</translation>
 <translation id="4168015872538332605">გაგიზიარეთ ზოგიერთი პარამეტრი რომელიც.მიეკუთვნება <ph name="PRIMARY_EMAIL" />. ეს პარამეტრები იმოქმედებს თქვენს ანგარიშზე მხოლოდ მაშინ, როდესაც გამოყენებთ მრავლობით შესვლას.</translation>
@@ -3906,6 +3913,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-ს შეექმნა ხარვეზი</translation>
 <translation id="4610637590575890427">ხომ არ გსურდათ <ph name="SITE" />-ზე შესვლა?</translation>
 <translation id="4611114513649582138">ხელმისაწვდომია მობილური ინტერნეტი</translation>
+<translation id="4612841084470706111">წვდომის მინიჭება ყველა მოთხოვნილი საიტისთვის.</translation>
 <translation id="4613144866899789710">მიმდინარეობს Linux-ის ინსტალაციის გაუქმება...</translation>
 <translation id="4613271546271159013">გაფართოებამ შეცვალა გვერდი, რომელიც გამოჩნდება ახალი ჩანართის გახსნისას.</translation>
 <translation id="4615586811063744755">ქუქი-ჩანაწერი არჩეული არ არის</translation>
@@ -4065,6 +4073,7 @@
 <translation id="4762489666082647806">მიმთითებლის ფერი</translation>
 <translation id="4762718786438001384">მოწყობილობის დისკზე ხელმისაწვდომი მეხსიერება კრიტიკულად არასაკმარისია</translation>
 <translation id="4763408175235639573">ამ გვერდის დათვალიერებისას შეიქმნა შემდეგი ქუქი-ჩანაწერები</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> არ არის სწორი Google for Education ანგარიში. დაუკავშირდით თქვენს ადმინისტრატორს. თუ ადმინისტრატორი ხართ, ორგანიზაციის დასაყენებლად გადადით მისამართზე g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{ეს მოწყობილობა შეინახება 1 თვის განმავლობაში. შემდეგში დაკავშირება კოდის გარეშე შეგეძლებათ. აღნიშნული დადგენილია თქვენი ადმინისტრატორის მიერ.}other{ეს მოწყობილობა შეინახება {MONTHS} თვის განმავლობაში. შემდეგში დაკავშირება კოდის გარეშე შეგეძლებათ. აღნიშნული დადგენილია თქვენი ადმინისტრატორის მიერ.}}</translation>
 <translation id="4765582662863429759">საშუალებას აძლევს Android Messages-ს, მოახდინოს ტექსტური შეტყობინებების რეტრანსლირება ტელეფონიდან თქვენს Chromebook-ში</translation>
 <translation id="4766598565665644999">ყველა გაფართოებას შეუძლია <ph name="HOST" />-ის წაკითხვა და შეცვლა</translation>
@@ -4726,6 +4735,7 @@
 <translation id="5407167491482639988">გარჩევა შეუძლებელია</translation>
 <translation id="5408750356094797285">მასშტაბი: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">თქვენი Google ანგარიშიდან</translation>
+<translation id="5411022484772257615">სასწავლებელში რეგისტრაცია ვერ შესრულდა</translation>
 <translation id="5413640305322530561">შეიტყვეთ მეტი დიაგნოსტიკური და გამოყენების მონაცემების შესახებ</translation>
 <translation id="5414198321558177633">მიმდინარეობს პროფილების სიის განახლება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="5414566801737831689">მონახულებული ვებგვერდების სიმბოლოების წაკითხვა</translation>
@@ -4977,6 +4987,7 @@
 <translation id="5632059346822207074">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშთა კომბინაციას Ctrl + წინ</translation>
 <translation id="5632566673632479864">თქვენი ანგარიში (<ph name="EMAIL" />) აღარ დაიშვება ძირითადი ანგარიშის სახით. ვინაიდან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები წაიშლება ამ მოწყობილობიდან.</translation>
 <translation id="5632592977009207922">მიმდინარეობს ჩამოტვირთვა, დარჩენილია <ph name="PERCENT_REMAINING" />%</translation>
+<translation id="5633149627228920745">შეიტყვეთ მეტი სისტემური მოთხოვნების შესახებ</translation>
 <translation id="563371367637259496">მობილური</translation>
 <translation id="5634446357546764049">გაიხსენეთ თქვენი ბოლოდროინდელი მოგზაურობები და არა მხოლოდ</translation>
 <translation id="5635312199252507107">კონკრეტულ საიტებზე დაშვება</translation>
@@ -5511,6 +5522,7 @@
 <translation id="6129953537138746214">ინტერვალი</translation>
 <translation id="6130692320435119637">Wi-Fi ქსელის დამატება</translation>
 <translation id="6130887916931372608">კლავიატურის კლავიში</translation>
+<translation id="6132714462430777655">გსურთ, გამოტოვოთ სასწავლებელში რეგისტრაცია?</translation>
 <translation id="6135823405800500595">დარწმუნდით, რომ ტელეფონი ახლოს გაქვთ, განბლოკილია და მასზე ჩართულია Bluetooth/Wi-Fi</translation>
 <translation id="6135826623269483856">აკრძალული აქვს ფანჯრების მართვა თქვენს ყველა ეკრანზე</translation>
 <translation id="6136114942382973861">ჩამოტვირთვების ზოლის დახურვა</translation>
@@ -5669,6 +5681,7 @@
 <translation id="6291949900244949761">საიტების მიერ USB-მოწყობილობებზე წვდომის მოთხოვნა (რეკომენდებულია)</translation>
 <translation id="6291953229176937411">ჩ&amp;ვენება მაძიებელში</translation>
 <translation id="6292699686837272722">ჩანართები შევიწროვდება საშუალო სიგანეზე</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> გამორთულია</translation>
 <translation id="6294759976468837022">ავტომატური სკანირების სიჩქარე</translation>
 <translation id="6295158916970320988">ყველა საიტი</translation>
 <translation id="6295855836753816081">მიმდინარეობს შენახვა…</translation>
@@ -6732,6 +6745,7 @@
 <translation id="7310598146671372464">შესვლა ვერ მოხერხდა. Kerberos დაშიფვრის მითითებული ტიპები მხარდაუჭერელია სერვერის მიერ. დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="7311089766378749632">ითხოვს, წაიკითხოს და შეცვალოს <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
+<translation id="7317831949569936035">სასწავლებელში რეგისტრაცია</translation>
 <translation id="7320213904474460808">ნაგულისხმევი ქსელი</translation>
 <translation id="7321545336522791733">სერვერი მიუწვდომელია</translation>
 <translation id="7323315405936922211">კურსორის არის ზომა</translation>
@@ -8324,6 +8338,7 @@
 <translation id="8785622406424941542">სტილუსი</translation>
 <translation id="8786824282808281903">როცა თქვენი ბავშვი ამ ხატულას დაინახავს, თითის ანაბეჭდის მეშვეობით შეძლებს ვინაობის ან შენაძენების დადასტურებას.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{უსახელო ჯგუფი — 1 ჩანართი}other{უსახელო ჯგუფი — # ჩანართი}}</translation>
+<translation id="8791157330927639737">შეიტყვეთ მეტი განახლების შესახებ</translation>
 <translation id="8791534160414513928">თქვენი ბრაუზერის საშუალებით „არ მიაკვლიო“ მოთხოვნის გაგზავნა</translation>
 <translation id="879413103056696865">უსადენო ქსელის ჩართვისას თქვენს <ph name="PHONE_NAME" />-ში მოხდება:</translation>
 <translation id="8795916974678578410">ახალი ფანჯარა</translation>
@@ -8479,6 +8494,7 @@
 <translation id="8940081510938872932">თქვენს კომპიუტერი ძალიან ბევრ რამეს აკეთებს ახლა. სცადეთ მოგვიანებით.</translation>
 <translation id="8940381019874223173">თქვენი Google Photos-იდან</translation>
 <translation id="8941173171815156065">ნებართვის „<ph name="PERMISSION" />“ გაუქმება</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> გამორთულია</translation>
 <translation id="894191600409472540">შექმენით ძლიერი პაროლები</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">ბატარეის უფრო სწრაფად მოხმარება (ამჟამინდელი დონე: <ph name="BATTERY_PERCENTAGE" />%)</translation>
