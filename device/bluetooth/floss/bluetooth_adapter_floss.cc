@@ -31,6 +31,10 @@
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/devicetype.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace floss {
 
 namespace {
@@ -954,7 +958,10 @@ BluetoothAdapterFloss::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BluetoothAdapterFloss::SetStandardChromeOSAdapterName() {
-  NOTIMPLEMENTED();
+  DCHECK(IsPresent());
+  std::string alias = ash::GetDeviceBluetoothName(GetAddress());
+  FlossDBusManager::Get()->GetAdapterClient()->SetName(base::DoNothing(),
+                                                       alias);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
