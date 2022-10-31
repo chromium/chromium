@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -25,10 +25,11 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using base::test::TestFuture;
 
 namespace extensions {
 
@@ -50,11 +51,14 @@ class ExtensionFunctionalTest : public ExtensionBrowserTest {
     installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedInTest);
 
-    observer_->Watch(NOTIFICATION_CRX_INSTALLER_DONE,
-                     content::Source<CrxInstaller>(installer.get()));
-
+    TestFuture<absl::optional<CrxInstallError>> installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const absl::optional<CrxInstallError>&>());
     installer->InstallCrx(path);
-    observer_->Wait();
+
+    const absl::optional<CrxInstallError>& error = installer_done_future.Get();
+    EXPECT_FALSE(error);
 
     size_t num_after = registry->enabled_extensions().size();
     EXPECT_EQ(num_before + 1, num_after);
