@@ -16,35 +16,29 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import './kerberos_accounts.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../router.js';
 import {routes} from '../os_route.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsKerberosPageElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+import {getTemplate} from './kerberos_page.html.js';
 
-/** @polymer */
+const SettingsKerberosPageElementBase =
+    WebUiListenerMixin(I18nMixin(PolymerElement));
+
 class SettingsKerberosPageElement extends SettingsKerberosPageElementBase {
   static get is() {
     return 'settings-kerberos-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -60,9 +54,16 @@ class SettingsKerberosPageElement extends SettingsKerberosPageElementBase {
     };
   }
 
-  /** @private */
-  onKerberosAccountsTap_() {
+  private focusConfig_: Map<string, string>;
+
+  private onKerberosAccountsTap_(): void {
     Router.getInstance().navigateTo(routes.KERBEROS_ACCOUNTS_V2);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-kerberos-page': SettingsKerberosPageElement;
   }
 }
 

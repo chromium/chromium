@@ -353,7 +353,6 @@ group("generate_web_components") {
 
     # Sub-folder targets
     "internet_page:web_components",
-    "kerberos_page:web_components",
     "multidevice_page:web_components",
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",
@@ -376,7 +375,6 @@ group("closure_compile_module") {
     ":closure_compile_local_module",
     "device_page:closure_compile_module",
     "internet_page:closure_compile_module",
-    "kerberos_page:closure_compile_module",
     "multidevice_page:closure_compile_module",
     "os_a11y_page:closure_compile_module",
     "os_apps_page:closure_compile_module",

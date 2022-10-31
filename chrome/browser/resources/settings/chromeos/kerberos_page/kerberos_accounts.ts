@@ -18,40 +18,34 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../settings_shared.css.js';
 import './kerberos_add_account_dialog.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {cast, castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {getImage} from '../icon.js';
 import {recordSettingChange} from '../metrics_recorder.js';
-import {Account} from '../os_people_page/account_manager_browser_proxy.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
+import {getTemplate} from './kerberos_accounts.html.js';
 import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosErrorType} from './kerberos_accounts_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsKerberosAccountsElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      RouteObserverBehavior,
-      WebUIListenerBehavior,
-    ],
-    PolymerElement);
+const SettingsKerberosAccountsElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          I18nMixinInterface & WebUiListenerMixinInterface &
+          RouteObserverMixinInterface,
+    };
 
-/** @polymer */
 class SettingsKerberosAccountsElement extends
     SettingsKerberosAccountsElementBase {
   static get is() {
@@ -59,14 +53,13 @@ class SettingsKerberosAccountsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * List of Accounts.
-       * @private {!Array<!KerberosAccount>}
        */
       accounts_: {
         type: Array,
@@ -77,7 +70,6 @@ class SettingsKerberosAccountsElement extends
 
       /**
        * Whether dark mode is currently active.
-       * @private
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -86,14 +78,11 @@ class SettingsKerberosAccountsElement extends
 
       /**
        * The targeted account for menu and other operations.
-       * @private {?KerberosAccount}
        */
       selectedAccount_: Object,
 
-      /** @private */
       showAddAccountDialog_: Boolean,
 
-      /** @private */
       addAccountsAllowed_: {
         type: Boolean,
         value() {
@@ -101,7 +90,6 @@ class SettingsKerberosAccountsElement extends
         },
       },
 
-      /** @private */
       accountToastText_: {
         type: String,
         value: '',
@@ -109,7 +97,6 @@ class SettingsKerberosAccountsElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -123,23 +110,29 @@ class SettingsKerberosAccountsElement extends
     };
   }
 
+  private accountToastText_: string;
+  private accounts_: KerberosAccount[];
+  private addAccountsAllowed_: boolean;
+  private isDarkModeActive_: boolean;
+  private selectedAccount_: KerberosAccount|null;
+  private showAddAccountDialog_: boolean;
+
+  private browserProxy_: KerberosAccountsBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!KerberosAccountsBrowserProxy} */
     this.browserProxy_ = KerberosAccountsBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUIListener(
         'kerberos-accounts-changed', this.refreshAccounts_.bind(this));
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     // Grab account list and - when done - pop up the reauthentication dialog if
@@ -157,13 +150,7 @@ class SettingsKerberosAccountsElement extends
     });
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   * @protected
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.KERBEROS_ACCOUNTS_V2) {
       return;
@@ -173,45 +160,31 @@ class SettingsKerberosAccountsElement extends
   }
 
   /**
-   * @return {string} the icon to use for the error badge.
-   * @private
+   * @return The icon to use for the error badge.
    */
-  getErrorBadgeIcon_() {
+  private getErrorBadgeIcon_(): string {
     return this.isDarkModeActive_ ?
         'chrome://os-settings/images/error_badge_dark.svg' :
         'chrome://os-settings/images/error_badge.svg';
   }
 
-  /**
-   * @param {string} iconUrl
-   * @return {string} A CSS image-set for multiple scale factors.
-   * @private
-   */
-  getIconImageSet_(iconUrl) {
+  private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAddAccountClick_(event) {
+  private onAddAccountClick_(): void {
     this.selectedAccount_ = null;
     this.showAddAccountDialog_ = true;
   }
 
-  /**
-   * @param {!CustomEvent<!{model: !{item: !Account}}>} event
-   * @private
-   */
-  onReauthenticationClick_(event) {
+  private onReauthenticationClick_(event: DomRepeatEvent<KerberosAccount>):
+      void {
     this.selectedAccount_ = event.model.item;
     this.showAddAccountDialog_ = true;
   }
 
-  /** @private */
-  onAddAccountDialogClosed_() {
-    if (this.shadowRoot.querySelector('kerberos-add-account-dialog')
+  private onAddAccountDialogClosed_(): void {
+    if (this.shadowRoot!.querySelector('kerberos-add-account-dialog')!
             .accountWasRefreshed) {
       this.showToast_('kerberosAccountsAccountRefreshedTip');
     }
@@ -222,11 +195,7 @@ class SettingsKerberosAccountsElement extends
     this.closeActionMenu_();
   }
 
-  /**
-   * @return {!Promise}
-   * @private
-   */
-  refreshAccounts_() {
+  private refreshAccounts_(): Promise<void> {
     return this.browserProxy_.getAccounts().then(accounts => {
       this.accounts_ = accounts;
     });
@@ -234,36 +203,29 @@ class SettingsKerberosAccountsElement extends
 
   /**
    * Opens the Account actions menu.
-   * @param {!{model: !{item: !KerberosAccount}, target: !HTMLElement}}
-   *      event
-   * @private
    */
-  onAccountActionsMenuButtonClick_(event) {
+  private onAccountActionsMenuButtonClick_(
+      event: DomRepeatEvent<KerberosAccount>): void {
     this.selectedAccount_ = event.model.item;
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .showAt(event.target);
+    const target = cast(event.target, HTMLElement);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(target);
   }
 
   /**
    * Closes action menu and resets action menu model.
-   * @private
    */
-  closeActionMenu_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private closeActionMenu_(): void {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.selectedAccount_ = null;
   }
 
   /**
    * Removes |this.selectedAccount_|.
-   * @private
    */
-  onRemoveAccountClick_() {
-    this.browserProxy_
-        .removeAccount(
-            /** @type {!KerberosAccount} */ (this.selectedAccount_))
+  private onRemoveAccountClick_(): void {
+    this.browserProxy_.removeAccount(castExists(this.selectedAccount_))
         .then(error => {
-          if (error === KerberosErrorType.kNone) {
+          if (error === KerberosErrorType.NONE) {
             this.showToast_('kerberosAccountsAccountRemovedTip');
           } else {
             console.error('Unexpected error removing account: ' + error);
@@ -275,31 +237,33 @@ class SettingsKerberosAccountsElement extends
 
   /**
    * Sets |this.selectedAccount_| as active Kerberos account.
-   * @private
    */
-  onSetAsActiveAccountClick_() {
-    this.browserProxy_.setAsActiveAccount(
-        /** @type {!KerberosAccount} */ (this.selectedAccount_));
+  private onSetAsActiveAccountClick_(): void {
+    this.browserProxy_.setAsActiveAccount(castExists(this.selectedAccount_));
     recordSettingChange();
     this.closeActionMenu_();
   }
 
   /**
    * Opens the reauth dialog for |this.selectedAccount_|.
-   * @private
    */
-  onRefreshNowClick_() {
+  private onRefreshNowClick_(): void {
     this.showAddAccountDialog_ = true;
   }
 
   /**
    * Pops up a toast with localized text |label|.
-   * @param {string} label Name of the localized label string.
-   * @private
+   * @param label Name of the localized label string.
    */
-  showToast_(label) {
+  private showToast_(label: string): void {
     this.accountToastText_ = this.i18n(label);
-    this.shadowRoot.querySelector('#account-toast').show();
+    this.shadowRoot!.querySelector<CrToastElement>('#account-toast')!.show();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-kerberos-accounts': SettingsKerberosAccountsElement;
   }
 }
 

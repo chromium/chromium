@@ -696,8 +696,9 @@ suite('KerberosAddAccountTests', function() {
 
     // Cause a validation error.
     browserProxy.validateConfigResult = {
-      error: KerberosErrorType.kBadConfig,
-      errorInfo: {code: KerberosConfigErrorCode.kKeyNotSupported, lineIndex: 0},
+      error: KerberosErrorType.BAD_CONFIG,
+      errorInfo:
+          {code: KerberosConfigErrorCode.KEY_NOT_SUPPORTED, lineIndex: 0},
     };
 
     // Clicking the action button (aka 'Save') validates the config.
@@ -734,8 +735,9 @@ suite('KerberosAddAccountTests', function() {
   test('ValidateConfigurationOnAdvancedClick', async () => {
     // Cause a validation error.
     browserProxy.validateConfigResult = {
-      error: KerberosErrorType.kBadConfig,
-      errorInfo: {code: KerberosConfigErrorCode.kKeyNotSupported, lineIndex: 0},
+      error: KerberosErrorType.BAD_CONFIG,
+      errorInfo:
+          {code: KerberosConfigErrorCode.KEY_NOT_SUPPORTED, lineIndex: 0},
     };
 
     // Validating happens on "Advanced" click.
@@ -801,57 +803,57 @@ suite('KerberosAddAccountTests', function() {
 
   // addAccount: KerberosErrorType.kNetworkProblem spawns a general error.
   test('AddAccountError_NetworkProblem', async () => {
-    await checkAddAccountError(KerberosErrorType.kNetworkProblem, generalError);
+    await checkAddAccountError(KerberosErrorType.NETWORK_PROBLEM, generalError);
   });
 
   // addAccount: KerberosErrorType.kParsePrincipalFailed spawns a username
   // error.
   test('AddAccountError_ParsePrincipalFailed', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kParsePrincipalFailed, username.$.error);
+        KerberosErrorType.PARSE_PRINCIPAL_FAILED, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.kBadPrincipal spawns a username error.
+  // addAccount: KerberosErrorType.BAD_PRINCIPAL spawns a username error.
   test('AddAccountError_BadPrincipal', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kBadPrincipal, username.$.error);
+        KerberosErrorType.BAD_PRINCIPAL, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.kDuplicatePrincipalName spawns a username
+  // addAccount: KerberosErrorType.DUPLICATE_PRINCIPAL_NAME spawns a username
   // error.
   test('AddAccountError_DuplicatePrincipalName', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kDuplicatePrincipalName, username.$.error);
+        KerberosErrorType.DUPLICATE_PRINCIPAL_NAME, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.kContactingKdcFailed spawns a username
+  // addAccount: KerberosErrorType.CONTACTING_KDC_FAILED spawns a username
   // error.
   test('AddAccountError_ContactingKdcFailed', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kContactingKdcFailed, username.$.error);
+        KerberosErrorType.CONTACTING_KDC_FAILED, username.$.error);
   });
 
-  // addAccount: KerberosErrorType.kBadPassword spawns a password error.
+  // addAccount: KerberosErrorType.BAD_PASSWORD spawns a password error.
   test('AddAccountError_BadPassword', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kBadPassword, password.$.error);
+        KerberosErrorType.BAD_PASSWORD, password.$.error);
   });
 
-  // addAccount: KerberosErrorType.kPasswordExpired spawns a password error.
+  // addAccount: KerberosErrorType.PASSWORD_EXPIRED spawns a password error.
   test('AddAccountError_PasswordExpired', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kPasswordExpired, password.$.error);
+        KerberosErrorType.PASSWORD_EXPIRED, password.$.error);
   });
 
-  // addAccount: KerberosErrorType.kKdcDoesNotSupportEncryptionType spawns a
-  // general error.
+  // addAccount: KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE spawns
+  // a general error.
   test('AddAccountError_KdcDoesNotSupportEncryptionType', async () => {
     await checkAddAccountError(
-        KerberosErrorType.kKdcDoesNotSupportEncryptionType, generalError);
+        KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE, generalError);
   });
 
-  // addAccount: KerberosErrorType.kUnknown spawns a general error.
+  // addAccount: KerberosErrorType.UNKNOWN spawns a general error.
   test('AddAccountError_Unknown', async () => {
-    await checkAddAccountError(KerberosErrorType.kUnknown, generalError);
+    await checkAddAccountError(KerberosErrorType.UNKNOWN, generalError);
   });
 });

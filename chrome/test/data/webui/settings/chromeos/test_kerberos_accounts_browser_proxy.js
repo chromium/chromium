@@ -51,12 +51,12 @@ export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy {
     ]);
 
     // Simulated error from an addAccount call.
-    this.addAccountError = KerberosErrorType.kNone;
+    this.addAccountError = KerberosErrorType.NONE;
 
     // Simulated error from a validateConfig call.
     this.validateConfigResult = {
-      error: KerberosErrorType.kNone,
-      errorInfo: {code: KerberosConfigErrorCode.kNone},
+      error: KerberosErrorType.NONE,
+      errorInfo: {code: KerberosConfigErrorCode.NONE},
     };
   }
 
@@ -77,7 +77,7 @@ export class TestKerberosAccountsBrowserProxy extends TestBrowserProxy {
   /** @override */
   removeAccount(account) {
     this.methodCalled('removeAccount', account);
-    return Promise.resolve(KerberosErrorType.kNone);
+    return Promise.resolve(KerberosErrorType.NONE);
   }
 
   /** @override */
