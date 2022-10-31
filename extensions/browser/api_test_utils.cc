@@ -127,6 +127,20 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
       function, std::move(parsed_args), std::move(dispatcher), flags);
 }
 
+absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
+    scoped_refptr<ExtensionFunction> function,
+    base::Value::List args,
+    std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
+    RunFunctionFlags flags) {
+  RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
+  EXPECT_TRUE(function->GetError().empty())
+      << "Unexpected error: " << function->GetError();
+  const base::Value::List* results = function->GetResultList();
+  if (!results || results->empty())
+    return absl::nullopt;
+  return (*results)[0].Clone();
+}
+
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     std::unique_ptr<base::ListValue> args,

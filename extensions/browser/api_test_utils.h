@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -79,6 +80,12 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     const std::string& args,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
     RunFunctionFlags flags);
+absl::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
+    scoped_refptr<ExtensionFunction> function,
+    base::Value::List args,
+    std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
+    RunFunctionFlags flags);
+// DEPRECATED. Use the version above.
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     std::unique_ptr<base::ListValue> args,
