@@ -196,7 +196,14 @@ class ChromeFileSystemAccessPermissionContext
   class PermissionGrantImpl;
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
 
-  void DidConfirmSensitiveDirectoryAccess(
+  // Checks whether the file or directory at `path` corresponds to a directory
+  // Chrome considers sensitive (i.e. system files). Calls `callback` with
+  // whether the path is on the blocklist.
+  void CheckPathAgainstBlocklist(PathType path_type,
+                                 const base::FilePath& path,
+                                 HandleType handle_type,
+                                 base::OnceCallback<void(bool)> callback);
+  void DidCheckPathAgainstBlocklist(
       const url::Origin& origin,
       const base::FilePath& path,
       HandleType handle_type,

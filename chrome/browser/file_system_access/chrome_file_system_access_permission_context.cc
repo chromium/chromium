@@ -439,6 +439,18 @@ base::StringPiece GetGrantKeyFromGrantType(GrantType type) {
                                    : kPermissionReadableKey;
 }
 
+bool FileHasDangerousExtension(const url::Origin& origin,
+                               const base::FilePath& path,
+                               Profile* profile) {
+  safe_browsing::DownloadFileType::DangerLevel danger_level =
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          path, origin.GetURL(), profile->GetPrefs());
+  // See https://crbug.com/1320877#c4 for justification for why we show the
+  // prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as DANGEROUS.
+  return danger_level == safe_browsing::DownloadFileType::DANGEROUS ||
+         danger_level == safe_browsing::DownloadFileType::ALLOW_ON_USER_GESTURE;
+}
+
 }  // namespace
 
 ChromeFileSystemAccessPermissionContext::Grants::Grants() = default;
@@ -1183,25 +1195,34 @@ void ChromeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto after_blocklist_check_callback = base::BindOnce(
+      &ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist,
+      GetWeakPtr(), origin, path, handle_type, user_action, frame_id,
+      std::move(callback));
+  CheckPathAgainstBlocklist(path_type, path, handle_type,
+                            std::move(after_blocklist_check_callback));
+}
+
+void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
+    PathType path_type,
+    const base::FilePath& path,
+    HandleType handle_type,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(https://crbug.com/1009970): Figure out what external paths should be
   // blocked. We could resolve the external path to a local path, and check for
   // blocked directories based on that, but that doesn't work well. Instead we
   // should have a separate Chrome OS only code path to block for example the
   // root of certain external file systems.
   if (path_type == PathType::kExternal) {
-    DidConfirmSensitiveDirectoryAccess(origin, path, handle_type, user_action,
-                                       frame_id, std::move(callback),
-                                       /*should_block=*/false);
+    std::move(callback).Run(/*should_block=*/false);
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShouldBlockAccessToPath, path, handle_type),
-      base::BindOnce(&ChromeFileSystemAccessPermissionContext::
-                         DidConfirmSensitiveDirectoryAccess,
-                     GetWeakPtr(), origin, path, handle_type, user_action,
-                     frame_id, std::move(callback)));
+      std::move(callback));
 }
 
 void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
@@ -1226,50 +1247,42 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
 }
 
-void ChromeFileSystemAccessPermissionContext::
-    DidConfirmSensitiveDirectoryAccess(
-        const url::Origin& origin,
-        const base::FilePath& path,
-        HandleType handle_type,
-        UserAction user_action,
-        content::GlobalRenderFrameHostId frame_id,
-        base::OnceCallback<void(SensitiveEntryResult)> callback,
-        bool should_block) {
+void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
+    const url::Origin& origin,
+    const base::FilePath& path,
+    HandleType handle_type,
+    UserAction user_action,
+    content::GlobalRenderFrameHostId frame_id,
+    base::OnceCallback<void(SensitiveEntryResult)> callback,
+    bool should_block) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!should_block) {
-    // If attempting to save a file with a dangerous extension, prompt the user
-    // to make them confirm they actually want to save the file.
-    if (user_action == UserAction::kSave) {
-      safe_browsing::DownloadFileType::DangerLevel danger_level =
-          safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-              path, origin.GetURL(),
-              Profile::FromBrowserContext(profile_)->GetPrefs());
-      // See https://crbug.com/1320877#c4 for justification for why we show the
-      // prompt if `danger_level` is ALLOW_ON_USER_GESTURE as well as DANGEROUS.
-      if (danger_level == safe_browsing::DownloadFileType::DANGEROUS ||
-          danger_level ==
-              safe_browsing::DownloadFileType::ALLOW_ON_USER_GESTURE) {
-        auto result_callback =
-            BindResultCallbackToCurrentSequence(std::move(callback));
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ShowFileSystemAccessDangerousFileDialogOnUIThread,
-                           frame_id, origin, path, std::move(result_callback)));
-        return;
-      }
-    }
-    std::move(callback).Run(SensitiveEntryResult::kAllowed);
+
+  if (should_block) {
+    auto result_callback =
+        BindResultCallbackToCurrentSequence(std::move(callback));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
+                       frame_id, origin, path, handle_type,
+                       std::move(result_callback)));
     return;
   }
 
-  auto result_callback =
-      BindResultCallbackToCurrentSequence(std::move(callback));
+  // If attempting to save a file with a dangerous extension, prompt the user
+  // to make them confirm they actually want to save the file.
+  if (handle_type == HandleType::kFile && user_action == UserAction::kSave &&
+      FileHasDangerousExtension(origin, path,
+                                Profile::FromBrowserContext(profile_))) {
+    auto result_callback =
+        BindResultCallbackToCurrentSequence(std::move(callback));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ShowFileSystemAccessDangerousFileDialogOnUIThread,
+                       frame_id, origin, path, std::move(result_callback)));
+    return;
+  }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread,
-                     frame_id, origin, path, handle_type,
-                     std::move(result_callback)));
+  std::move(callback).Run(SensitiveEntryResult::kAllowed);
 }
 
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
