@@ -23,7 +23,7 @@ import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
-import {FileTasks} from './file_tasks.js';
+import {ComboButtonItem, FileTasks, TaskMenuButtonItemType, TaskPickerType} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
@@ -107,18 +107,18 @@ export class TaskController {
 
     // 'select' event from ComboButton has the item as event.item.
     // 'activate' event from MenuButton has the item as event.target.data.
-    const item: FileTasks.ComboButtonItem =
+    const item: ComboButtonItem =
         (event as any).item || (event.target as any).data;
     try {
       const tasks = await this.getFileTasks();
       switch (item.type) {
-        case FileTasks.TaskMenuButtonItemType.ShowMenu:
+        case TaskMenuButtonItemType.ShowMenu:
           this.ui_.taskMenuButton.showMenu(false);
           break;
-        case FileTasks.TaskMenuButtonItemType.RunTask:
+        case TaskMenuButtonItemType.RunTask:
           tasks.execute(item.task);
           break;
-        case FileTasks.TaskMenuButtonItemType.ChangeDefaultTask:
+        case TaskMenuButtonItemType.ChangeDefaultTask:
           const selection = this.selectionHandler_.selection;
           const extensions = [];
 
@@ -144,7 +144,7 @@ export class TaskController {
               loadTimeData.getString('CHANGE_DEFAULT_MENU_ITEM'),
               strf('CHANGE_DEFAULT_CAPTION', format),
               this.changeDefaultTask_.bind(this, selection),
-              FileTasks.TaskPickerType.ChangeDefault);
+              TaskPickerType.ChangeDefault);
           break;
         default:
           assertNotReached('Unknown task.');
@@ -325,7 +325,7 @@ export class TaskController {
     }
     const tasks = await FileTasks.create(
         this.volumeManager_, this.metadataModel_, this.directoryModel_,
-        this.ui_, this.fileTransferController_, selection.entries,
+        this.ui_, this.fileTransferController_!, selection.entries,
         this.taskHistory_, this.crostini_, this.progressCenter_);
 
     if (this.selectionHandler_.selection !== selection) {
@@ -402,7 +402,7 @@ export class TaskController {
   async getEntryFileTasks(entry: FileEntry): Promise<FileTasks> {
     return FileTasks.create(
         this.volumeManager_, this.metadataModel_, this.directoryModel_,
-        this.ui_, this.fileTransferController_, [entry], this.taskHistory_,
+        this.ui_, this.fileTransferController_!, [entry], this.taskHistory_,
         this.crostini_, this.progressCenter_);
   }
 

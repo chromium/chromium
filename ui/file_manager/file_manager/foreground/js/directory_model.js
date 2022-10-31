@@ -1216,7 +1216,7 @@ export class DirectoryModel extends EventTarget {
    * Creates an object which could say whether directory has changed while it
    * has been active or not. Designed for long operations that should be
    * cancelled if the used change current directory.
-   * @return {Object} Created object.
+   * @return {!DirectoryChangeTracker} Created object.
    */
   createDirectoryChangeTracker() {
     const tracker = {
@@ -1676,3 +1676,23 @@ export class DirectoryModel extends EventTarget {
     }
   }
 }
+
+/**
+ * Used to track asynchronous directory change use like:
+ * const tracker = directoryModel.createDirectoryChangeTracker();
+ * tracker.start();
+ * try {
+ *    ... async code here ...
+ *    if (tracker.hasChanged) {
+ *      // This code shouldn't continue anymore.
+ *    }
+ * } finally {
+ *     tracker.stop();
+ * }
+ * @typedef {{
+ *   start: function(),
+ *   stop: function(),
+ *   hasChanged: boolean,
+ * }}
+ */
+export let DirectoryChangeTracker;

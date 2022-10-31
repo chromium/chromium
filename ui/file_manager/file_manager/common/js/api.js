@@ -278,3 +278,11 @@ export async function getMimeType(entry) {
   return promisify(
       chrome.fileManagerPrivate.getMimeType, util.unwrapEntry(entry));
 }
+
+/**
+ * @param {!Array<!Entry|!FilesAppEntry>} entries
+ * @return {!Promise<chrome.fileManagerPrivate.ResultingTasks>}
+ */
+export async function getFileTasks(entries) {
+  return promisify(chrome.fileManagerPrivate.getFileTasks, entries);
+}

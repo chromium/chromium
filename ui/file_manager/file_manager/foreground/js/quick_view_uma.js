@@ -10,7 +10,7 @@ import {metrics} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {FileTasks} from './file_tasks.js';
+import {UMA_INDEX_KNOWN_EXTENSIONS} from './file_tasks.js';
 
 /**
  * UMA exporter for Quick View.
@@ -47,10 +47,10 @@ export class QuickViewUma {
       extension = 'directory';
     } else if (extension === '') {
       extension = 'no extension';
-    } else if (FileTasks.UMA_INDEX_KNOWN_EXTENSIONS.indexOf(extension) < 0) {
+    } else if (UMA_INDEX_KNOWN_EXTENSIONS.indexOf(extension) < 0) {
       extension = 'unknown extension';
     }
-    metrics.recordEnum(name, extension, FileTasks.UMA_INDEX_KNOWN_EXTENSIONS);
+    metrics.recordEnum(name, extension, UMA_INDEX_KNOWN_EXTENSIONS);
   }
 
   /**

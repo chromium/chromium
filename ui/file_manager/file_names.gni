@@ -119,7 +119,6 @@ static_js_files = [
   "file_manager/foreground/js/file_manager.js",
   "file_manager/foreground/js/file_manager_commands.js",
   "file_manager/foreground/js/file_selection.js",
-  "file_manager/foreground/js/file_tasks.js",
   "file_manager/foreground/js/file_transfer_controller.js",
   "file_manager/foreground/js/file_type_filters_controller.js",
   "file_manager/foreground/js/file_watcher.js",
@@ -271,6 +270,7 @@ ts_files = [
   "file_manager/widgets/xf_select.ts",
 
   # Foreground.
+  "file_manager/foreground/js/file_tasks.ts",
   "file_manager/foreground/js/task_controller.ts",
 ]
 

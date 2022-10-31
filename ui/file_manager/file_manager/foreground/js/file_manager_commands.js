@@ -28,7 +28,7 @@ import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
-import {FileTasks} from './file_tasks.js';
+import {TaskPickerType} from './file_tasks.js';
 import {HoldingSpaceUtil} from './holding_space_util.js';
 import {PathComponent} from './path_component.js';
 import {Command} from './ui/command.js';
@@ -1845,7 +1845,7 @@ CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
               fileManager.ui.defaultTaskPicker, str('OPEN_WITH_BUTTON_LABEL'),
               '', task => {
                 tasks.execute(task);
-              }, FileTasks.TaskPickerType.OpenWith);
+              }, TaskPickerType.OpenWith);
         })
         .catch(error => {
           if (error) {

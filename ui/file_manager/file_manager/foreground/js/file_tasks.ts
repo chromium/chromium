@@ -1,10 +1,16 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * This file is checked via TS, so we suppress Closure checks.
+ * @suppress {checkTypes}
+ */
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {FileType} from '../../common/js/file_type.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -19,8 +25,9 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
 import {constants} from './constants.js';
-import {DirectoryModel} from './directory_model.js';
+import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileTransferController} from './file_transfer_controller.js';
+import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {TaskHistory} from './task_history.js';
 import {ComboButton} from './ui/combobutton.js';
@@ -39,121 +46,65 @@ const OfficeFileHandlersHistogramValues = {
   QUICK_OFFICE: 2,
 };
 
+type TaskResultType = chrome.fileManagerPrivate.TaskResult;
 /**
  * Represents a collection of available tasks to execute for a specific list
  * of entries.
  */
 export class FileTasks {
-  /**
-   * @param {!VolumeManager} volumeManager
-   * @param {!MetadataModel} metadataModel
-   * @param {!DirectoryModel} directoryModel
-   * @param {!FileManagerUI} ui
-   * @param {?FileTransferController} fileTransferController
-   * @param {!Array<!Entry>} entries
-   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks
-   * @param {?chrome.fileManagerPrivate.FileTask} defaultTask
-   * @param {!TaskHistory} taskHistory
-   * @param {!Crostini} crostini
-   * @param {!ProgressCenter} progressCenter
-   */
+  /** Mutex used to serialize password dialogs. */
+  private mutex_: AsyncQueue;
+
   constructor(
-      volumeManager, metadataModel, directoryModel, ui, fileTransferController,
-      entries, resultingTasks, defaultTask, taskHistory, crostini,
-      progressCenter) {
-    /** @private @const {!VolumeManager} */
-    this.volumeManager_ = volumeManager;
-
-    /** @private @const {!MetadataModel} */
-    this.metadataModel_ = metadataModel;
-
-    /** @private @const {!DirectoryModel} */
-    this.directoryModel_ = directoryModel;
-
-    /** @private @const {!FileManagerUI} */
-    this.ui_ = ui;
-
-    /** @private @const {?FileTransferController} */
-    this.fileTransferController_ = fileTransferController;
-
-    /** @private @const {!Array<!Entry>} */
-    this.entries_ = entries;
-
-    /** @private @const {!chrome.fileManagerPrivate.ResultingTasks} */
-    this.resultingTasks_ = resultingTasks;
-
-    /** @private @const {?chrome.fileManagerPrivate.FileTask} */
-    this.defaultTask_ = defaultTask;
-
-    /** @private @const {!TaskHistory} */
-    this.taskHistory_ = taskHistory;
-
-    /** @private @const {!Crostini} */
-    this.crostini_ = crostini;
-
-    /** @private @const {!ProgressCenter} */
-    this.progressCenter_ = progressCenter;
-
-    /**
-     * Mutex used to serialize password dialogs.
-     * @private @const {!AsyncQueue}
-     */
+      private volumeManager_: VolumeManager,
+      private metadataModel_: MetadataModel,
+      private directoryModel_: DirectoryModel, private ui_: FileManagerUI,
+      private fileTransferController_: FileTransferController,
+      private entries_: Entry[],
+      private resultingTasks_: chrome.fileManagerPrivate.ResultingTasks,
+      private defaultTask_: chrome.fileManagerPrivate.FileTask|null,
+      private taskHistory_: TaskHistory,
+      private progressCenter_: ProgressCenter) {
     this.mutex_ = new AsyncQueue();
-  }
-
-  /**
-   * @return {!Array<!Entry>}
-   */
-  get entries() {
-    return this.entries_;
   }
 
   /**
    * Creates an instance of FileTasks for the specified list of entries with
    * mime types.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @param {!MetadataModel} metadataModel
-   * @param {!DirectoryModel} directoryModel
-   * @param {!FileManagerUI} ui
-   * @param {?FileTransferController} fileTransferController
-   * @param {!Array<!Entry>} entries
-   * @param {!TaskHistory} taskHistory
-   * @param {!Crostini} crostini
-   * @param {!ProgressCenter} progressCenter
-   * @return {!Promise<!FileTasks>}
    */
   static async create(
-      volumeManager, metadataModel, directoryModel, ui, fileTransferController,
-      entries, taskHistory, crostini, progressCenter) {
-    /** @type {!chrome.fileManagerPrivate.ResultingTasks} */
-    let resultingTasks = {tasks: []};
+      volumeManager: VolumeManager, metadataModel: MetadataModel,
+      directoryModel: DirectoryModel, ui: FileManagerUI,
+      fileTransferController: FileTransferController, entries: Entry[],
+      taskHistory: TaskHistory, crostini: Crostini,
+      progressCenter: ProgressCenter): Promise<FileTasks> {
+    let resultingTasks: chrome.fileManagerPrivate.ResultingTasks = {
+      tasks: [],
+      policyDefaultHandlerStatus: undefined,
+    };
 
     // Cannot use fake entries with getFileTasks.
     entries = entries.filter(e => !util.isFakeEntry(e));
     if (entries.length !== 0) {
-      resultingTasks = await new Promise(
-          fulfill => chrome.fileManagerPrivate.getFileTasks(entries, fulfill));
+      resultingTasks = await getFileTasks(entries);
       if (!resultingTasks || !resultingTasks.tasks) {
-        throw new Error(
-            'Cannot get file tasks: ' + chrome.runtime.lastError.message);
+        throw new Error('Cannot get file tasks.');
       }
     }
 
-    // Linux package installation is currently only supported for a single file
-    // which is inside the Linux container, or in a shareable volume.
+    // Linux package installation is currently only supported for a single
+    // file which is inside the Linux container, or in a shareable volume.
     // TODO(timloh): Instead of filtering these out, we probably should show a
-    // dialog with an error message, similar to when attempting to run Crostini
-    // tasks with non-Crostini entries.
+    // dialog with an error message, similar to when attempting to run
+    // Crostini tasks with non-Crostini entries.
     if (entries.length !== 1 ||
-        !(isCrostiniEntry(entries[0], volumeManager) ||
+        !(isCrostiniEntry(entries[0]!, volumeManager) ||
           crostini.canSharePath(
-              constants.DEFAULT_CROSTINI_VM, entries[0],
+              constants.DEFAULT_CROSTINI_VM, entries[0]!,
               false /* persist */))) {
       resultingTasks.tasks = resultingTasks.tasks.filter(
-          task => !util.descriptorEqual(
-              task.descriptor,
-              FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
+          (task: chrome.fileManagerPrivate.FileTask) => !util.descriptorEqual(
+              task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
 
     resultingTasks.tasks =
@@ -164,33 +115,26 @@ export class FileTasks {
     return new FileTasks(
         volumeManager, metadataModel, directoryModel, ui,
         fileTransferController, entries, resultingTasks, defaultTask,
-        taskHistory, crostini, progressCenter);
+        taskHistory, progressCenter);
   }
 
-  /**
-   * Gets task items.
-   * @return {!Array<!chrome.fileManagerPrivate.FileTask>}
-   */
-  getTaskItems() {
+  get entries(): Entry[] {
+    return this.entries_;
+  }
+
+  /** Gets task items.  */
+  getTaskItems(): chrome.fileManagerPrivate.FileTask[] {
     return this.resultingTasks_.tasks;
   }
 
-  /**
-   * Gets the policy default handler status.
-   * @return {!chrome.fileManagerPrivate.PolicyDefaultHandlerStatus|undefined}
-   */
-  getPolicyDefaultHandlerStatus() {
+  /** Gets the policy default handler status.  */
+  getPolicyDefaultHandlerStatus():
+      chrome.fileManagerPrivate.PolicyDefaultHandlerStatus|undefined {
     return this.resultingTasks_.policyDefaultHandlerStatus;
   }
 
-  /**
-   * Returns whether the system is currently offline.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @return {boolean} True if the network status is offline.
-   * @private
-   */
-  static isOffline_(volumeManager) {
+  /** Returns whether the system is currently offline. */
+  private static isOffline_(volumeManager: VolumeManager): boolean {
     const connection = volumeManager.getDriveConnectionState();
     return connection.type ==
         chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
@@ -201,12 +145,12 @@ export class FileTasks {
   /**
    * Records a metric, as well as recording online and offline versions of it.
    *
-   * @param {!VolumeManager} volumeManager
-   * @param {string} name Metric name.
-   * @param {!*} value Enum value.
-   * @param {!Array<*>} values Array of valid values.
+   * @param name Metric name.
+   * @param value Enum value.
+   * @param values Array of valid values.
    */
-  static recordEnumWithOnlineAndOffline_(volumeManager, name, value, values) {
+  private static recordEnumWithOnlineAndOffline_(
+      volumeManager: VolumeManager, name: string, value: any, values: any[]) {
     metrics.recordEnum(name, value, values);
     if (FileTasks.isOffline_(volumeManager)) {
       metrics.recordEnum(name + '.Offline', value, values);
@@ -217,41 +161,33 @@ export class FileTasks {
 
   /**
    * Returns ViewFileType enum or 'other' for the given entry.
-   * @param {!Entry} entry The entry for which ViewFileType is computed.
-   * @return {string} A ViewFileType enum or 'other'.
+   * @return A ViewFileType enum or 'other'.
    */
-  static getViewFileType(entry) {
+  static getViewFileType(entry: Entry): string {
     let extension = FileType.getExtension(entry).toLowerCase();
-    if (FileTasks.UMA_INDEX_KNOWN_EXTENSIONS.indexOf(extension) < 0) {
+    if (UMA_INDEX_KNOWN_EXTENSIONS.indexOf(extension) < 0) {
       extension = 'other';
     }
     return extension;
   }
 
-  /**
-   * Records trial of opening file grouped by extensions.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @param {!Array<!Entry>} entries The entries to be opened.
-   * @private
-   */
-  static recordViewingFileTypeUMA_(volumeManager, entries) {
+  /** Records trial of opening file grouped by extensions.  */
+  private static recordViewingFileTypeUMA_(
+      volumeManager: VolumeManager, entries: Entry[]) {
     for (const entry of entries) {
       FileTasks.recordEnumWithOnlineAndOffline_(
           volumeManager, 'ViewingFileType', FileTasks.getViewFileType(entry),
-          FileTasks.UMA_INDEX_KNOWN_EXTENSIONS);
+          UMA_INDEX_KNOWN_EXTENSIONS as string[]);
     }
   }
 
   /**
    * Records trial of opening file grouped by root types.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @param {?VolumeManagerCommon.RootType} rootType The type of the root where
-   *     entries are being opened.
-   * @private
+   * @param rootType The type of the root where entries are being opened.
    */
-  static recordViewingRootTypeUMA_(volumeManager, rootType) {
+  private static recordViewingRootTypeUMA_(
+      volumeManager: VolumeManager,
+      rootType: VolumeManagerCommon.RootType|null) {
     if (rootType !== null) {
       FileTasks.recordEnumWithOnlineAndOffline_(
           volumeManager, 'ViewingRootType', rootType,
@@ -262,12 +198,12 @@ export class FileTasks {
   /**
    * Records the elapsed time for mounting a ZIP file as a ZipMountTime
    * histogram value.
-   *
-   * @param {?VolumeManagerCommon.RootType} rootType The type of the root where
-   *     the ZIP file has been mounted from.
-   * @param {number} time Time to be recorded in milliseconds.
+   * @param rootType The type of the root where the ZIP file has been mounted
+   *     from.
+   * @param time Time to be recorded in milliseconds.
    */
-  static recordZipMountTimeUMA_(rootType, time) {
+  private static recordZipMountTimeUMA_(
+      rootType: VolumeManagerCommon.RootType|null, time: number) {
     let root;
     switch (rootType) {
       case VolumeManagerCommon.RootType.MY_FILES:
@@ -285,15 +221,13 @@ export class FileTasks {
 
   /**
    * Records trial of opening Office file grouped by file handlers.
-   *
-   * @param {!VolumeManager} volumeManager
-   * @param {!Array<!Entry>} entries The entries to be opened.
-   * @param {?VolumeManagerCommon.RootType} rootType The type of the root where
-   *     entries are being opened.
-   * @param {?chrome.fileManagerPrivate.FileTask} task FileTask.
-   * @private
+   * @param entries The entries to be opened.
+   * @param rootType The type of the root where entries are being opened.
    */
-  static recordOfficeFileHandlerUMA_(volumeManager, entries, rootType, task) {
+  private static recordOfficeFileHandlerUMA_(
+      volumeManager: VolumeManager, entries: Entry[],
+      rootType: VolumeManagerCommon.RootType|null,
+      task: chrome.fileManagerPrivate.FileTask|null) {
     if (!task) {
       return;
     }
@@ -335,14 +269,9 @@ export class FileTasks {
         Object.keys(OfficeFileHandlersHistogramValues).length);
   }
 
-  /**
-   * Returns true if the descriptor is for an internal task.
-   *
-   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
-   * @return {boolean} True if the task descriptor is for an internal task.
-   * @private
-   */
-  static isInternalTask_(descriptor) {
+  /** Returns true if the descriptor is for an internal task.  */
+  private static isInternalTask_(
+      descriptor: chrome.fileManagerPrivate.FileTaskDescriptor): boolean {
     const {appId, taskType, actionId} = descriptor;
     if (!isFilesAppId(appId)) {
       return false;
@@ -364,19 +293,17 @@ export class FileTasks {
     }
   }
 
-
   /**
    * Annotates tasks returned from the API.
-   *
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks Input tasks from
-   *     the API.
-   * @param {!Array<!Entry>} entries List of entries for the tasks.
-   * @return {!Array<!chrome.fileManagerPrivate.FileTask>} Annotated tasks.
+   * @param tasks Input tasks from the API.
+   * @param entries List of entries for the tasks.
    * @private
    */
-  static annotateTasks_(tasks, entries) {
+  private static annotateTasks_(
+      tasks: chrome.fileManagerPrivate.FileTask[],
+      entries: Entry[]): chrome.fileManagerPrivate.FileTask[] {
     const result = [];
-    for (const task of tasks) {
+    for (const task of (tasks as AnnotatedTask[])) {
       const {appId, taskType, actionId} = task.descriptor;
       const parsedActionId = parseActionId(actionId);
 
@@ -395,7 +322,7 @@ export class FileTasks {
           if (entries.length > 1) {
             task.iconType = 'generic';
           } else {  // Use specific icon.
-            task.iconType = FileType.getIcon(entries[0]);
+            task.iconType = FileType.getIcon(entries[0]!);
           }
           task.title = loadTimeData.getString('TASK_OPEN');
         } else if (parsedActionId === 'open-hosted-gdoc') {
@@ -445,30 +372,26 @@ export class FileTasks {
     return result;
   }
 
-
-
   /**
    * Show dialog when user opens or drags a file with PluginVM and the file
    * is not in PvmSharedDir or shared with PluginVM. The dialog tells the
    * user to move or copy the file to PvmSharedDir and offers an action to do
    * that.
    *
-   * @param {!Array<!Entry>} entries Selected entries to be moved or copied.
-   * @param {!VolumeManager} volumeManager
-   * @param {!MetadataModel} metadataModel
-   * @param {!FileManagerUI} ui FileManager UI to show dialog.
-   * @param {string} moveMessage Message if files are local and can be moved.
-   * @param {string} copyMessage Message if files should be copied.
-   * @param {?FileTransferController} fileTransferController
-   * @param {!DirectoryModel} directoryModel
+   * @param entries Selected entries to be moved or copied.
+   * @param ui FileManager UI to show dialog.
+   * @param moveMessage Message if files are local and can be moved.
+   * @param copyMessage Message if files should be copied.
    */
   static showPluginVmNotSharedDialog(
-      entries, volumeManager, metadataModel, ui, moveMessage, copyMessage,
-      fileTransferController, directoryModel) {
+      entries: Entry[], volumeManager: VolumeManager,
+      metadataModel: MetadataModel, ui: FileManagerUI, moveMessage: string,
+      copyMessage: string, fileTransferController: FileTransferController|null,
+      directoryModel: DirectoryModel) {
     assert(entries.length > 0);
-    const isMyFiles = isMyFilesEntry(entries[0], volumeManager);
+    const isMyFiles = isMyFilesEntry(entries[0]!, volumeManager);
     const dialog = new FilesConfirmDialog(ui.element);
-    dialog.setOkLabel(strf(
+    dialog.setOkLabel(str(
         isMyFiles ? 'CONFIRM_MOVE_BUTTON_LABEL' : 'CONFIRM_COPY_BUTTON_LABEL'));
     dialog.show(isMyFiles ? moveMessage : copyMessage, async () => {
       if (!fileTransferController) {
@@ -489,29 +412,27 @@ export class FileTasks {
 
   /**
    * Executes default task.
-   *
-   * @param {function(boolean, Array<!Entry>)=} opt_callback Called when the
-   *     default task is executed, or the error is occurred.
+   * @param {function()=} callback Called when the default task is executed, or
+   *     the error is occurred.
    */
-  executeDefault(opt_callback) {
+  executeDefault(callback?: (isDefault: boolean, entries: Entry[]) => void) {
     FileTasks.recordViewingFileTypeUMA_(this.volumeManager_, this.entries_);
     FileTasks.recordViewingRootTypeUMA_(
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
     FileTasks.recordOfficeFileHandlerUMA_(
         this.volumeManager_, this.entries_,
         this.directoryModel_.getCurrentRootType(), this.defaultTask_);
-    this.executeDefaultInternal_(opt_callback);
+    this.executeDefaultInternal_(callback);
   }
 
   /**
    * Executes default task.
-   *
-   * @param {function(boolean, Array<!Entry>)=} opt_callback Called when the
-   *     default task is executed, or the error is occurred.
-   * @private
+   * @param callback Called when the default task is executed, or the error is
+   *     occurred.
    */
-  executeDefaultInternal_(opt_callback) {
-    const callback = opt_callback || ((arg1, arg2) => {});
+  private executeDefaultInternal_(
+      callback?: (isDefault: boolean, entries: Entry[]) => void) {
+    callback = callback || ((_0: boolean, _1: Entry[]) => {});
 
     if (this.defaultTask_) {
       this.executeInternal_(this.defaultTask_);
@@ -540,7 +461,7 @@ export class FileTasks {
           this.ui_.defaultTaskPicker, str('OPEN_WITH_BUTTON_LABEL'),
           '', task => {
             this.execute(task);
-          }, FileTasks.TaskPickerType.OpenWith);
+          }, TaskPickerType.OpenWith);
       return;
     }
 
@@ -550,7 +471,7 @@ export class FileTasks {
       return;
     }
 
-    const filename = this.entries_[0].name;
+    const filename = this.entries_[0]!.name;
     const extension = util.splitExtension(filename)[1] || null;
 
     const showAlert = () => {
@@ -575,14 +496,14 @@ export class FileTasks {
       const text = strf(textMessageId, str('NO_TASK_FOR_FILE_URL'));
       const title = titleMessageId ? str(titleMessageId) : filename;
       this.ui_.alertDialog.showHtml(title, text, null, null, null);
-      callback(false, this.entries_);
+      callback!(false, this.entries_);
     };
 
     const onViewFilesFailure = () => {
       showAlert();
     };
 
-    const onViewFiles = result => {
+    const onViewFiles = (result: TaskResultType) => {
       if (chrome.runtime.lastError) {
         // Suppress the Unchecked runtime.lastError console message
         console.debug(chrome.runtime.lastError.message);
@@ -591,7 +512,7 @@ export class FileTasks {
       }
       switch (result) {
         case 'opened':
-          callback(true, this.entries_);
+          callback!(true, this.entries_);
           break;
         case 'message_sent':
           util.isTeleported(window).then(teleported => {
@@ -599,10 +520,10 @@ export class FileTasks {
               this.ui_.showOpenInOtherDesktopAlert(this.entries_);
             }
           });
-          callback(true, this.entries_);
+          callback!(true, this.entries_);
           break;
         case 'empty':
-          callback(true, this.entries_);
+          callback!(true, this.entries_);
           break;
         case 'failed':
           onViewFilesFailure();
@@ -621,12 +542,8 @@ export class FileTasks {
     });
   }
 
-  /**
-   * Executes a single task.
-   *
-   * @param {chrome.fileManagerPrivate.FileTask} task FileTask.
-   */
-  execute(task) {
+  /** Executes a single task.  */
+  execute(task: chrome.fileManagerPrivate.FileTask) {
     FileTasks.recordViewingFileTypeUMA_(this.volumeManager_, this.entries_);
     FileTasks.recordViewingRootTypeUMA_(
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
@@ -636,29 +553,24 @@ export class FileTasks {
     this.executeInternal_(task);
   }
 
-  /**
-   * The core implementation to execute a single task.
-   *
-   * @param {chrome.fileManagerPrivate.FileTask} task FileTask.
-   * @private
-   */
-  executeInternal_(task) {
-    const onFileManagerPrivateExecuteTask = result => {
+  /** The core implementation to execute a single task. */
+  private executeInternal_(task: chrome.fileManagerPrivate.FileTask) {
+    const onFileManagerPrivateExecuteTask = (result: TaskResultType) => {
       if (chrome.runtime.lastError) {
         console.warn(
             'Unable to execute task: ' + chrome.runtime.lastError.message);
         return;
       }
-      const taskResult = chrome.fileManagerPrivate.TaskResult;
+      const TaskResult = chrome.fileManagerPrivate.TaskResult;
       switch (result) {
-        case taskResult.MESSAGE_SENT:
+        case TaskResult.MESSAGE_SENT:
           util.isTeleported(window).then((teleported) => {
             if (teleported) {
               this.ui_.showOpenInOtherDesktopAlert(this.entries_);
             }
           });
           break;
-        case taskResult.FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
+        case TaskResult.FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
           const moveMessage = strf(
               'UNABLE_TO_OPEN_WITH_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE',
               task.title);
@@ -677,7 +589,7 @@ export class FileTasks {
       this.taskHistory_.recordTaskExecuted(task.descriptor);
       let msg;
       if (this.entries_.length === 1) {
-        msg = strf('OPEN_A11Y', this.entries_[0].name);
+        msg = strf('OPEN_A11Y', this.entries_[0]!.name);
       } else {
         msg = strf('OPEN_A11Y_PLURAL', this.entries_.length);
       }
@@ -693,23 +605,22 @@ export class FileTasks {
 
   /**
    * Ensures that the all files are available right now.
-   *
    * Must not call before initialization.
-   * @param {function()} callback Called when checking is completed and all
-   *     files are available. Otherwise not called.
-   * @private
+   * @param callback Called when checking is completed and all files are
+   *     available. Otherwise not called.
    */
-  checkAvailability_(callback) {
-    const areAll = (entries, props, name) => {
-      let okEntriesNum = 0;
-      for (let i = 0; i < entries.length; i++) {
-        // If got no properties, we safely assume that item is available.
-        if (props[i] && (props[i][name] || entries[i].isDirectory)) {
-          okEntriesNum++;
-        }
-      }
-      return okEntriesNum === props.length;
-    };
+  private checkAvailability_(callback: () => void) {
+    const areAll =
+        (entries: Entry[], props: MetadataItem[], name: keyof MetadataItem) => {
+          let okEntriesNum = 0;
+          for (let i = 0; i < entries.length; i++) {
+            // If got no properties, we safely assume that item is available.
+            if (props[i] && (props[i]![name] || entries[i]?.isDirectory)) {
+              okEntriesNum++;
+            }
+          }
+          return okEntriesNum === props.length;
+        };
 
     const containsDriveEntries = this.entries_.some(entry => {
       const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
@@ -731,7 +642,7 @@ export class FileTasks {
 
     if (isDriveOffline) {
       this.metadataModel_.get(this.entries_, ['availableOffline', 'hosted'])
-          .then(props => {
+          .then((props: MetadataItem[]) => {
             if (areAll(this.entries_, props, 'availableOffline')) {
               callback();
               return;
@@ -739,7 +650,7 @@ export class FileTasks {
 
             this.ui_.alertDialog.showHtml(
                 loadTimeData.getString('OFFLINE_HEADER'),
-                props[0].hosted ?
+                props[0]!.hosted ?
                     loadTimeData.getStringF(
                         this.entries_.length === 1 ?
                             'HOSTED_OFFLINE_MESSAGE' :
@@ -758,7 +669,7 @@ export class FileTasks {
 
     if (isOnMetered) {
       this.metadataModel_.get(this.entries_, ['availableWhenMetered', 'size'])
-          .then(props => {
+          .then((props: MetadataItem[]) => {
             if (areAll(this.entries_, props, 'availableWhenMetered')) {
               callback();
               return;
@@ -766,8 +677,8 @@ export class FileTasks {
 
             let sizeToDownload = 0;
             for (let i = 0; i !== this.entries_.length; i++) {
-              if (!props[i].availableWhenMetered) {
-                sizeToDownload += props[i].size;
+              if (!props[i]!.availableWhenMetered) {
+                sizeToDownload += (props[i]!.size || 0);
               }
             }
             this.ui_.confirmDialog.show(
@@ -776,7 +687,7 @@ export class FileTasks {
                         'CONFIRM_MOBILE_DATA_USE' :
                         'CONFIRM_MOBILE_DATA_USE_PLURAL',
                     util.bytesToString(sizeToDownload)),
-                callback, null, null);
+                callback);
           });
       return;
     }
@@ -787,11 +698,9 @@ export class FileTasks {
   /**
    * Executes an internal task, which is a task Files app handles internally
    * without calling into fileManagerPrivate to execute it.
-   *
-   * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
-   * @private
    */
-  executeInternalTask_(descriptor) {
+  private executeInternalTask_(
+      descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {
     const parsedActionId = parseActionId(descriptor.actionId);
     if (parsedActionId === 'mount-archive') {
       this.mountArchives_();
@@ -811,35 +720,29 @@ export class FileTasks {
         util.makeTaskID(descriptor));
   }
 
-  /**
-   * Install a Linux Package in the Linux container.
-   * @private
-   */
-  installLinuxPackageInternal_() {
+  /** Install a Linux Package in the Linux container.  */
+  private installLinuxPackageInternal_() {
     assert(this.entries_.length === 1);
     this.ui_.installLinuxPackageDialog.showInstallLinuxPackageDialog(
-        this.entries_[0]);
+        this.entries_[0]!);
   }
 
   /**
    * Imports a Crostini Image File (.tini). This overrides the existing Linux
    * apps and files.
-   * @private
    */
-  importCrostiniImageInternal_() {
+  private importCrostiniImageInternal_() {
     assert(this.entries_.length === 1);
     this.ui_.importCrostiniImageDialog.showImportCrostiniImageDialog(
-        this.entries_[0]);
+        this.entries_[0]!);
   }
 
   /**
    * Mounts an archive file. Asks for password and retries if necessary.
-   * @param {string} url URL of the archive file to moumt.
-   * @return {!Promise<!VolumeInfo>}
-   * @private
+   * @param url URL of the archive file to mount.
    */
-  async mountArchive_(url) {
-    const filename = util.extractFilePath(url).split('/').pop();
+  private async mountArchive_(url: string): Promise<VolumeInfo> {
+    const filename = util.extractFilePath(url)?.split('/').pop() || '';
 
     const item = new ProgressCenterItem();
     item.id = 'Mounting: ' + url;
@@ -885,8 +788,8 @@ export class FileTasks {
       while (true) {
         // Ask for password.
         do {
-          password =
-              await this.ui_.passwordDialog.askForPassword(filename, password);
+          const dialog = this.ui_.passwordDialog as FilesPasswordDialog;
+          password = await dialog.askForPassword(filename, password);
         } while (!password);
 
         // Display progress panel.
@@ -915,12 +818,11 @@ export class FileTasks {
   /**
    * Mounts an archive file and changes directory. Asks for password if
    * necessary. Displays error message if necessary.
-   * @param {Object} tracker
-   * @param {string} url URL of the archive file to moumt.
-   * @return {!Promise<void>} a promise that is never rejected.
-   * @private
+   * @param url URL of the archive file to moumt.
+   * @return a promise that is never rejected.
    */
-  async mountArchiveAndChangeDirectory_(tracker, url) {
+  private async mountArchiveAndChangeDirectory_(
+      tracker: DirectoryChangeTracker, url: string): Promise<void> {
     try {
       const startTime = Date.now();
       const volumeInfo = await this.mountArchive_(url);
@@ -950,7 +852,7 @@ export class FileTasks {
         return;
       }
 
-      const filename = util.extractFilePath(url).split('/').pop();
+      const filename = util.extractFilePath(url)?.split('/').pop() || '';
       const item = new ProgressCenterItem();
       item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
@@ -966,16 +868,13 @@ export class FileTasks {
     }
   }
 
-  /**
-   * Mounts the selected archive(s). Asks for password if necessary.
-   * @private
-   */
-  async mountArchives_() {
+  /** Mounts the selected archive(s). Asks for password if necessary. */
+  private async mountArchives_() {
     const tracker = this.directoryModel_.createDirectoryChangeTracker();
     tracker.start();
     try {
       this.entries_.forEach(entry => entry.getMetadata(metadata => {
-        const extension = entry.name.split('.').pop().toLowerCase();
+        const extension = entry.name.split('.').pop()?.toLowerCase();
         metrics.recordSmallCount(
             `ArchiveSize.${extension}`,
             Math.ceil(metadata.size / 104857600));  // Each unit = 100MiB
@@ -994,22 +893,18 @@ export class FileTasks {
   /**
    * Displays the list of tasks in a open task picker combobutton..
    *
-   * @param {!ComboButton} openCombobutton The open task picker
-   *     combobutton.
-   * @public
+   * @param openCombobutton The open task picker combobutton.
    */
-  display(openCombobutton) {
+  display(openCombobutton: ComboButton) {
     this.updateOpenComboButton_(openCombobutton, this.getTaskItems());
   }
 
   /**
    * Setup a task picker combobutton based on the given tasks. The combobutton
    * is not shown if there are no tasks, or if any entry is a directory.
-   *
-   * @param {!ComboButton} combobutton
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
    */
-  updateOpenComboButton_(combobutton, tasks) {
+  private updateOpenComboButton_(
+      combobutton: ComboButton, tasks: chrome.fileManagerPrivate.FileTask[]) {
     combobutton.hidden =
         tasks.length == 0 || this.entries_.some(e => e.isDirectory);
     if (tasks.length == 0) {
@@ -1024,7 +919,7 @@ export class FileTasks {
           FileTasks.createComboButtonItem_(this.defaultTask_, str('TASK_OPEN'));
     } else {
       combobutton.defaultItem = {
-        type: FileTasks.TaskMenuButtonItemType.ShowMenu,
+        type: TaskMenuButtonItemType.ShowMenu,
         label: str('OPEN_WITH_BUTTON_LABEL'),
       };
     }
@@ -1043,7 +938,7 @@ export class FileTasks {
       if (this.defaultTask_) {
         combobutton.addSeparator();
         const changeDefaultMenuItem = combobutton.addDropDownItem({
-          type: FileTasks.TaskMenuButtonItemType.ChangeDefaultTask,
+          type: TaskMenuButtonItemType.ChangeDefaultTask,
           label: str('CHANGE_DEFAULT_MENU_ITEM'),
         });
         changeDefaultMenuItem.classList.add('change-default');
@@ -1065,13 +960,11 @@ export class FileTasks {
   /**
    * Creates sorted array of available task descriptions such as title and icon.
    *
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks Tasks to create
-   *     items.
-   * @return {!Array<!FileTasks.ComboButtonItem>} Created array can be used to
-   *     feed combobox, menus and so on.
-   * @private
+   * @param tasks Tasks to create items.
+   * @return Created array can be used to feed combobox, menus and so on.
    */
-  createItems_(tasks) {
+  private createItems_(tasks: chrome.fileManagerPrivate.FileTask[]):
+      ComboButtonItem[] {
     const items = [];
 
     // Create items.
@@ -1110,23 +1003,23 @@ export class FileTasks {
   /**
    * Creates combobutton item based on task.
    *
-   * @param {!chrome.fileManagerPrivate.FileTask} task Task to convert.
-   * @param {string=} opt_title Title.
-   * @param {boolean=} opt_bold Make a menu item bold.
-   * @param {boolean=} opt_isDefault Mark the item as default item.
-   * @return {!FileTasks.ComboButtonItem} Item appendable to combobutton
-   *     drop-down list.
-   * @private
+   * @param task Task to convert.
+   * @param bold Make a menu item bold.
+   * @param isDefault Mark the item as default item.
+   * @return Item appendable to combobutton drop-down list.
    */
-  static createComboButtonItem_(task, opt_title, opt_bold, opt_isDefault) {
+  private static createComboButtonItem_(
+      task: chrome.fileManagerPrivate.FileTask, title?: string, bold?: boolean,
+      isDefault?: boolean): ComboButtonItem {
     return {
-      type: FileTasks.TaskMenuButtonItemType.RunTask,
-      label: opt_title || task.title,
+      type: TaskMenuButtonItemType.RunTask,
+      label: title || task.title,
       iconUrl: task.iconUrl || '',
-      iconType: task.iconType || '',
+      // iconType is injected by annotate_().
+      iconType: (task as AnnotatedTask).iconType || '',
       task: task,
-      bold: opt_bold || false,
-      isDefault: opt_isDefault || false,
+      bold: bold || false,
+      isDefault: isDefault || false,
       isGenericFileHandler: /** @type {boolean} */ (task.isGenericFileHandler),
     };
   }
@@ -1134,17 +1027,16 @@ export class FileTasks {
   /**
    * Shows modal task picker dialog with currently available list of tasks.
    *
-   * @param {DefaultTaskDialog} taskDialog Task dialog to show
-   *     and update.
-   * @param {string} title Title to use.
-   * @param {string} message Message to use.
-   * @param {function(!chrome.fileManagerPrivate.FileTask)} onSuccess Callback
-   *     to pass selected task.
-   * @param {FileTasks.TaskPickerType} pickerType Task picker type.
+   * @param taskDialog Task dialog to show and update.
+   * @param onSuccess Callback to pass selected task.
+   * @param pickerType Task picker type.
    */
-  showTaskPicker(taskDialog, title, message, onSuccess, pickerType) {
+  showTaskPicker(
+      taskDialog: DefaultTaskDialog, title: string, message: string,
+      onSuccess: (task: chrome.fileManagerPrivate.FileTask) => void,
+      pickerType: TypeTaskPickerType) {
     let items = this.createItems_(this.getTaskItems());
-    if (pickerType == FileTasks.TaskPickerType.ChangeDefault) {
+    if (pickerType === TaskPickerType.ChangeDefault) {
       items = items.filter(item => !item.isGenericFileHandler);
     }
 
@@ -1152,7 +1044,7 @@ export class FileTasks {
     if (this.defaultTask_) {
       for (let j = 0; j < items.length; j++) {
         if (util.descriptorEqual(
-                items[j].task.descriptor, this.defaultTask_.descriptor)) {
+                items[j]!.task.descriptor, this.defaultTask_.descriptor)) {
           defaultIdx = j;
         }
       }
@@ -1168,13 +1060,13 @@ export class FileTasks {
    * Gets the default task from tasks. In case there is no such task (i.e. all
    * tasks are generic file handlers), then return null.
    *
-   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks The list
-   *     of tasks from where to choose the default task.
-   * @param {!TaskHistory} taskHistory
-   * @return {?chrome.fileManagerPrivate.FileTask} the default task, or null if
-   *     no default task found.
+   * @param resultingTasks The list of tasks from where to choose the default
+   *     task.
+   * @return the default task, or null if no default task found.
    */
-  static getDefaultTask(resultingTasks, taskHistory) {
+  static getDefaultTask(
+      resultingTasks: chrome.fileManagerPrivate.ResultingTasks,
+      taskHistory: TaskHistory): chrome.fileManagerPrivate.FileTask|null {
     const {tasks, policyDefaultHandlerStatus} = resultingTasks;
 
     // If policy assignment is incorrect, then no default should be set.
@@ -1206,7 +1098,7 @@ export class FileTasks {
     }
 
     // 2. Most recently executed or sole non-generic task.
-    const latest = nonGenericTasks[0];
+    const latest = nonGenericTasks[0]!;
     if (nonGenericTasks.length == 1 ||
         taskHistory.getLastExecutedTime(latest.descriptor)) {
       return latest;
@@ -1215,53 +1107,46 @@ export class FileTasks {
     return null;
   }
 
-  /**
-   * @param {!VolumeManager} volumeManager
-   */
-  static async getPvmSharedDir_(volumeManager) {
-    return new Promise((resolve, reject) => {
-      volumeManager
-          .getCurrentProfileVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS)
-          .fileSystem.root.getDirectory(
-              'PvmDefault', {create: false},
-              (dir) => {
-                resolve(dir);
-              },
-              (...args) => {
-                reject(new Error(`Error getting PvmDefault dir: ${args}`));
-              });
-    });
+  private static async getPvmSharedDir_(volumeManager: VolumeManager):
+      Promise<DirectoryEntry> {
+    const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+        VolumeManagerCommon.VolumeType.DOWNLOADS);
+    if (!volumeInfo) {
+      throw new Error(`Error getting PvmDefault dir`);
+    }
+    return await getDirectory(
+        volumeInfo.fileSystem.root, 'PvmDefault', {create: false});
   }
 }
 
-/**
- * The task descriptor of 'Install Linux package'.
- * @const {!chrome.fileManagerPrivate.FileTaskDescriptor}
- */
-FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
+/** The task descriptor of 'Install Linux package'. */
+const INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
   appId: LEGACY_FILES_EXTENSION_ID,
   taskType: 'app',
   actionId: 'install-linux-package',
-};
+} as const;
 
 /**
  * Available tasks in task menu button.
  * @enum {string}
  */
-FileTasks.TaskMenuButtonItemType = {
+export const TaskMenuButtonItemType = {
   ShowMenu: 'ShowMenu',
   RunTask: 'RunTask',
   ChangeDefaultTask: 'ChangeDefaultTask',
-};
+} as const;
+type TypeTaskMenuButtonItemType =
+    typeof TaskMenuButtonItemType[keyof typeof TaskMenuButtonItemType];
 
 /**
  * Dialog types to show a task picker.
  * @enum {string}
  */
-FileTasks.TaskPickerType = {
+export const TaskPickerType = {
   ChangeDefault: 'ChangeDefault',
   OpenWith: 'OpenWith',
-};
+} as const;
+type TypeTaskPickerType = typeof TaskPickerType[keyof typeof TaskPickerType];
 
 /**
  * List of file extensions to record in UMA.
@@ -1270,10 +1155,8 @@ FileTasks.TaskPickerType = {
  * to the end of this list.
  *
  * The list must also match the FileBrowser ViewFileType entry in enums.xml.
- *
- * @const {!Array<string>}
  */
-FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
+export const UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
   'other',     '.3ga',         '.3gp',
   '.aac',      '.alac',        '.asf',
   '.avi',      '.bmp',         '.csv',
@@ -1302,86 +1185,49 @@ FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
   '.tini',
 ]);
 
-/**
- * List of Office file extensions
- * @const {Set<string>}
- */
+/** Office file extensions. */
 const OFFICE_EXTENSIONS =
     new Set(['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']);
 
-/**
- * The number of menu-item entries in the top level menu.
- * @const {number}
- */
-const NUM_TOP_LEVEL_ENTRIES = 6;
+export interface ComboButtonItem {
+  type: TypeTaskMenuButtonItemType;
+  label: string;
+  iconUrl?: string;
+  iconType: string;
+  task: chrome.fileManagerPrivate.FileTask;
+  bold: boolean;
+  isDefault: boolean;
+  isGenericFileHandler?: boolean;
+}
 
-/**
- * Don't split the menu if the number of entries is smaller
- * than this. e.g. with 7 entries it'd be poor to show a
- * sub-menu with a single entry.
- * @const {number}
- */
-const MAX_NON_SPLIT_ENTRIES = 10;
+export interface AnnotatedTask extends chrome.fileManagerPrivate.FileTask {
+  iconType: string;
+}
 
-/**
- * @typedef {{
- *   type: !FileTasks.TaskMenuButtonItemType,
- *   label: string,
- *   iconUrl: (string|undefined),
- *   iconType: string,
- *   task: !chrome.fileManagerPrivate.FileTask,
- *   bold: boolean,
- *   isDefault: boolean,
- *   isGenericFileHandler: (boolean|undefined),
- * }}
- */
-FileTasks.ComboButtonItem;
-
-/**
- * @param {string} appId
- * @return {boolean} Whether the appId belongs to Files app (legacy or SWA).
- */
-function isFilesAppId(appId) {
+function isFilesAppId(appId: string): boolean {
   return appId === LEGACY_FILES_EXTENSION_ID || appId === SWA_APP_ID;
 }
 
-/**
- * @param {!Entry} entry
- * @return {boolean}
- */
-function hasOfficeExtension(entry) {
+function hasOfficeExtension(entry: Entry): boolean {
   return OFFICE_EXTENSIONS.has(FileType.getExtension(entry));
 }
 
 /**
  * The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID, just the
  * sub-string compatible with the extension/legacy e.g.: "view-pdf".
- *
- * @param {string} actionId
- * @return {string}
  */
-export function parseActionId(actionId) {
+export function parseActionId(actionId: string): string {
   const swaUrl = SWA_FILES_APP_URL.toString() + '?';
   return actionId.replace(swaUrl, '');
 }
 
-/**
- * @param {!Entry} entry
- * @param {!VolumeManager} volumeManager
- * @return {boolean} True if the entry is from crostini.
- */
-function isCrostiniEntry(entry, volumeManager) {
+function isCrostiniEntry(entry: Entry, volumeManager: VolumeManager): boolean {
   const location = volumeManager.getLocationInfo(entry);
   return !!location &&
       location.rootType === VolumeManagerCommon.RootType.CROSTINI;
 }
 
-/**
- * @param {!Entry} entry
- * @param {!VolumeManager} volumeManager
- * @return {boolean} True if the entry is from MyFiles.
- */
-function isMyFilesEntry(entry, volumeManager) {
+function isMyFilesEntry(entry: Entry, volumeManager: VolumeManager): boolean {
   const location = volumeManager.getLocationInfo(entry);
   return !!location &&
       location.rootType === VolumeManagerCommon.RootType.DOWNLOADS;

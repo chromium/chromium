@@ -46,7 +46,6 @@ group("js_modules") {
     ":file_manager",
     ":file_manager_commands",
     ":file_selection",
-    ":file_tasks",
     ":file_transfer_controller",
     ":file_type_filters_controller",
     ":file_watcher",
@@ -124,7 +123,6 @@ js_type_check("closure_compile_jsmodules") {
     ":file_manager_commands",
     ":file_rename",
     ":file_selection",
-    ":file_tasks",
     ":file_transfer_controller",
     ":file_type_filters_controller",
     ":file_watcher",
@@ -582,7 +580,6 @@ js_library("file_manager") {
     ":empty_folder_controller",
     ":file_manager_commands",
     ":file_selection",
-    ":file_tasks",
     ":file_transfer_controller",
     ":file_type_filters_controller",
     ":folder_shortcuts_data_model",
@@ -659,7 +656,6 @@ js_library("file_manager_commands") {
     ":constants",
     ":directory_model",
     ":file_selection",
-    ":file_tasks",
     ":holding_space_util",
     ":path_component",
     ":webui_command_extender",
@@ -689,7 +685,6 @@ js_library("file_manager_commands") {
 js_unittest("file_manager_commands_unittest") {
   deps = [
     ":file_manager_commands",
-    ":file_tasks",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -717,42 +712,9 @@ js_library("file_selection") {
   ]
 }
 
-js_library("file_tasks") {
-  deps = [
-    ":constants",
-    ":directory_model",
-    ":file_transfer_controller",
-    ":task_history",
-    "metadata:metadata_model",
-    "ui:combobutton",
-    "ui:default_task_dialog",
-    "ui:file_manager_ui",
-    "ui:files_confirm_dialog",
-    "ui:files_menu",
-    "ui:menu",
-    "ui:multi_menu_button",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:url_constants",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr:ui",
-  ]
-}
-
 js_unittest("file_tasks_unittest") {
   deps = [
     ":directory_model",
-    ":file_tasks",
     ":file_transfer_controller",
     ":task_history",
     "metadata:metadata_model",
@@ -1129,7 +1091,6 @@ js_library("quick_view_controller") {
     ":constants",
     ":file_manager_commands",
     ":file_selection",
-    ":file_tasks",
     ":metadata_box_controller",
     ":quick_view_model",
     ":quick_view_uma",
@@ -1163,7 +1124,6 @@ js_library("quick_view_model") {
 
 js_library("quick_view_uma") {
   deps = [
-    ":file_tasks",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:metrics",

@@ -153,8 +153,12 @@ ts_library("build_ts") {
   in_files = static_js_files + generated_js_files + ts_files +
              ts_generated_templates + image_loader_static_js_files
 
-  definitions =
-      [ "$preprocess_folder/file_manager/externs/file_manager_private.js" ]
+  definitions = [
+    "$preprocess_folder/file_manager/externs/file_manager_private.js",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
   foreach(_file, generate_definitions_js_files) {
     definitions +=
         [ "$target_gen_dir/" + string_replace(_file, ".js", ".d.ts") ]
