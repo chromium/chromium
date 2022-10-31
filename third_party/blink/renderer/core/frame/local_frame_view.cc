@@ -4457,9 +4457,8 @@ void LocalFrameView::SetIntersectionObservationState(
 }
 
 void LocalFrameView::SetVisualViewportOrOverlayNeedsRepaint() {
-  LocalFrameView* root = GetFrame().LocalFrameRoot().View();
-  DCHECK(root);
-  root->visual_viewport_or_overlay_needs_repaint_ = true;
+  if (LocalFrameView* root = GetFrame().LocalFrameRoot().View())
+    root->visual_viewport_or_overlay_needs_repaint_ = true;
 }
 
 bool LocalFrameView::VisualViewportOrOverlayNeedsRepaintForTesting() const {
