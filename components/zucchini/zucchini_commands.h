@@ -51,4 +51,7 @@ zucchini::status::Code MainMatch(MainParams params);
 // Command Function: Compute CRC-32 of a file.
 zucchini::status::Code MainCrc32(MainParams params);
 
+// Command Function: Compute suffix array of a file.
+zucchini::status::Code MainSuffixArray(MainParams params);
+
 #endif  // COMPONENTS_ZUCCHINI_ZUCCHINI_COMMANDS_H_

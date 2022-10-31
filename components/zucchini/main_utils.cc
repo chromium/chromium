@@ -76,6 +76,7 @@ constexpr Command kCommands[] = {
     {"match", "-match <old_file> <new_file> [-impose=#+#=#+#,#+#=#+#,...]", 2,
      &MainMatch},
     {"crc32", "-crc32 <file>", 1, &MainCrc32},
+    {"suffix-array", "-suffix-array <file>", 1, &MainSuffixArray},
 };
 
 /******** GetPeakMemoryMetrics ********/
