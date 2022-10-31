@@ -1,0 +1,18 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_REQUEST_FORWARD_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_REQUEST_FORWARD_H_
+
+#include "cc/document_transition/document_transition_request.h"
+
+namespace cc {
+class DocumentTransitionRequest;
+}
+
+namespace blink {
+using DocumentTransitionRequest = cc::DocumentTransitionRequest;
+}
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_REQUEST_FORWARD_H_
