@@ -37,7 +37,7 @@ const char kFileSystemType[] = "exfat";
 const int kBusNumber = 2;
 const int kDeviceNumber = 3;
 const uint64_t kDeviceSize = 16005464064;
-const uint32_t kDeviceMediaType = cros_disks::DEVICE_MEDIA_SD;
+const uint32_t kDeviceMediaType = static_cast<uint32_t>(ash::DeviceType::kSD);
 
 // Appends a boolean entry to a dictionary of type "a{sv}"
 void AppendBoolDictEntry(dbus::MessageWriter* array_writer,

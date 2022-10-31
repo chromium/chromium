@@ -50,7 +50,7 @@ TEST(CrosDisksClientTest, DiskInfo) {
   const bool kDeviceIsOnBootDevice = true;
   const bool kDeviceIsOnRemovableDevice = true;
   const bool kDeviceIsReadOnly = true;
-  const uint32_t kDeviceMediaType = cros_disks::DEVICE_MEDIA_SD;
+  const uint32_t kDeviceMediaType = static_cast<uint32_t>(ash::DeviceType::kSD);
   const std::string kMountPath = "/media/removable/UNTITLED";
   const bool kDevicePresentationHide = false;
   const uint64_t kDeviceSize = 16005464064;
