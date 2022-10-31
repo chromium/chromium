@@ -1717,27 +1717,28 @@ TEST_F(HidReportDescriptorTest, ValidateCollections_JabraLink380c) {
   ValidateCollections(TestReportDescriptors::JabraLink380c());
 }
 
-TEST_F(HidReportDescriptorTest, InvalidReportSizeIgnored) {
-  // Report size can be at most 32 bits. Make sure a report item with invalid
-  // size does not affect the maximum report size. The descriptor below
-  // describes a report with one 64-bit constant field.
+TEST_F(HidReportDescriptorTest, InvalidReportSizePermitted) {
+  // Report size can be at most 32 bits. However, some devices specify larger
+  // sizes. Make sure an invalid report is still reflected in the maximum
+  // report size. The descriptor below describes a report with one 128-bit
+  // constant field.
   static const uint8_t kInvalidReportSizeDescriptor[] = {
       0xA0,        // Collection
       0x95, 0x01,  //   Report Count (1)
-      0x75, 0x40,  //   Report Size (64)
+      0x75, 0x80,  //   Report Size (128)
       0x90         //   Output
   };
   auto report_descriptor_data = base::make_span(kInvalidReportSizeDescriptor);
   auto info = HidCollectionInfo::New();
   info->usage = HidUsageAndPage::New(0, 0);
   AddTopCollectionInfo(std::move(info));
-  // Maximum report sizes should not be affected by the invalid report item.
-  ValidateDetails(false, 0, 0, 0, report_descriptor_data);
+  // Maximum report sizes should include the invalid report.
+  ValidateDetails(false, 0, 16, 0, report_descriptor_data);
 
   // The report item with invalid size should still be included in the
   // collection info.
   auto* top = AddTopCollection(0, kCollectionTypePhysical);
-  SetReportSizeAndCount(64, 1);
+  SetReportSizeAndCount(128, 1);
   AddReportConstant(top, kOutput, kNonNullableArray);
   ValidateCollections(report_descriptor_data);
 }

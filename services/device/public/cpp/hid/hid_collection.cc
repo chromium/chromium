@@ -8,7 +8,9 @@
 #include <limits>
 #include <utility>
 
+#include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/hid/hid_item_state_table.h"
 
 namespace device {
@@ -230,10 +232,14 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
       uint64_t report_bits = 0;
       for (const auto& item : report.second) {
         uint64_t report_size = item->GetReportSize();
-        // Skip reports with items that have invalid report sizes.
+        // Report size can be at most 32 bits, but some devices specify larger
+        // sizes. Warn if the size is too large, but still allow the report to
+        // affect the maximum report size.
         if (report_size > kMaxItemReportSizeBits) {
-          report_bits = 0;
-          break;
+          LOG(WARNING) << base::StringPrintf(
+              "encountered report item with invalid report size (%" PRIu64
+              ">%u)",
+              report_size, kMaxItemReportSizeBits);
         }
         // Report size and report count are both 32-bit values. A 64-bit integer
         // type is needed to avoid overflow when computing the product.
