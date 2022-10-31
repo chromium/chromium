@@ -141,7 +141,7 @@ declare_args() {
   # Set to true to enable using the ML inliner in LLVM. This currently only
   # enables the ML inliner when targeting Android.
   # Currently the ML inliner is only supported on linux hosts
-  use_ml_inliner = false  # To enable: host_os == "linux" && is_android
+  use_ml_inliner = host_os == "linux" && is_android
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
