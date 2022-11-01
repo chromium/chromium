@@ -20,7 +20,7 @@ import org.chromium.base.test.util.Feature;
  * Unit tests for the {@link NfcBlocklist} class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
 public class NfcBlocklistTest {
     // Static historical bytes
     private static final byte[] YUBIKEY_NEO_HISTORICAL_BYTES = new byte[] {

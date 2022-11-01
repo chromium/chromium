@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 7.4.0-alpha10" type="baseline" client="" dependencies="true" name="" variant="all" version="7.4.0-alpha10">
+<issues format="6" by="lint 8.0.0-alpha06" type="baseline" client="" dependencies="true" name="" variant="all" version="8.0.0-alpha06">
 
     <issue
         id="LintError"
-        message="../../android_webview/tools/system_webview_shell/lint-baseline.xml (relative to /usr/local/google/home/chesterchen/chromium/src/out/Emulator_avd) does not exist"
+        message="../../android_webview/tools/system_webview_shell/lint-baseline.xml (relative to /usr/local/google/code/clankium/src/out/Lint-Default) does not exist"
         errorLine1="  &lt;baseline file=&quot;../../android_webview/tools/system_webview_shell/lint-baseline.xml&quot;/>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -18,8 +18,8 @@
         errorLine1="    public void onRequestPermissionsResult(int requestCode,"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="569"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="625"
             column="17"/>
     </issue>
 
@@ -30,7 +30,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
-            line="165"
+            line="187"
             column="29"/>
     </issue>
 
@@ -40,8 +40,8 @@
         errorLine1="            TracingController tracingController = TracingController.getInstance();"
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="660"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="744"
             column="51"/>
     </issue>
 
@@ -51,8 +51,8 @@
         errorLine1="            WebSettingsCompat.setForceDark("
         errorLine2="            ^">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="681"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="765"
             column="13"/>
     </issue>
 
@@ -62,8 +62,8 @@
         errorLine1="            WebSettingsCompat.setForceDark("
         errorLine2="            ^">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="686"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="770"
             column="13"/>
     </issue>
 
@@ -73,8 +73,8 @@
         errorLine1="            WebSettingsCompat.setForceDark(mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="691"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="775"
             column="13"/>
     </issue>
 
@@ -84,7 +84,7 @@
         errorLine1="        final TracingController tracingController = TracingController.getInstance();"
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewTracingActivity.java"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewTracingActivity.java"
             line="100"
             column="53"/>
     </issue>
@@ -95,7 +95,7 @@
         errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/task/AsyncTask.java"
+            file="../../base/android/java/src/org/chromium/base/task/AsyncTask.java"
             line="314"
             column="62"/>
     </issue>
@@ -106,7 +106,7 @@
         errorLine1="                    GET_STATUS_UMA_HISTOGRAM, status, Status.NUM_ENTRIES);"
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/task/AsyncTask.java"
+            file="../../base/android/java/src/org/chromium/base/task/AsyncTask.java"
             line="352"
             column="62"/>
     </issue>
@@ -117,7 +117,7 @@
         errorLine1="                mHistogramName, notification, Notification.NUM_ENTRIES);"
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/memory/MemoryPressureUma.java"
+            file="../../base/android/java/src/org/chromium/base/memory/MemoryPressureUma.java"
             line="110"
             column="60"/>
     </issue>
@@ -128,7 +128,7 @@
         errorLine1="            config.setLocale(Locale.forLanguageTag(languageTag));"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/LocaleUtils.java"
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
             line="267"
             column="13"/>
     </issue>
@@ -139,7 +139,7 @@
         errorLine1="            return pm.queryIntentActivities(intent, flags);"
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/PackageManagerUtils.java"
+            file="../../base/android/java/src/org/chromium/base/PackageManagerUtils.java"
             line="63"
             column="23"/>
     </issue>
@@ -150,7 +150,7 @@
         errorLine1="                return res.getDrawable(id, null);"
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="311"
             column="24"/>
     </issue>
@@ -158,12 +158,23 @@
     <issue
         id="HardcodedDebugMode"
         message="Avoid hardcoding the debug mode; leaving it out allows debug and release builds to automatically assign one"
-        errorLine1="  &lt;application android:icon=&quot;@drawable/ic_launcher&quot; android:label=&quot;@string/app_name&quot; android:theme=&quot;@style/ShellTheme&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:debuggable=&quot;true&quot;>"
-        errorLine2="                                                                                                                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="  &lt;application android:icon=&quot;@drawable/ic_launcher&quot; android:label=&quot;@string/app_name&quot; android:theme=&quot;@style/ShellTheme&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:debuggable=&quot;true&quot;>"
+        errorLine2="                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
-            line="47"
-            column="181"/>
+            line="69"
+            column="224"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="    @RequiresApi(Build.VERSION_CODES.N)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="120"
+            column="5"/>
     </issue>
 
     <issue
@@ -172,52 +183,96 @@
         errorLine1="    @RequiresApi(Build.VERSION_CODES.M)"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="144"
             column="5"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="220"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="269"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="284"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="293"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="364"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="375"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
             line="423"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) return;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="436"
             column="13"/>
     </issue>
 
@@ -227,162 +282,294 @@
         errorLine1="@RequiresApi(Build.VERSION_CODES.M)"
         errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/compat/ApiHelperForM.java"
-            line="37"
+            file="../../base/android/java/src/org/chromium/base/compat/ApiHelperForM.java"
+            line="38"
             column="1"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="@RequiresApi(Build.VERSION_CODES.N)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/compat/ApiHelperForN.java"
+            line="36"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="    @RequiresApi(Build.VERSION_CODES.N)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/process_launcher/BindService.java"
+            line="66"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/BuildInfo.java"
-            line="202"
+            file="../../base/android/java/src/org/chromium/base/BuildInfo.java"
+            line="212"
             column="17"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java"
+            line="320"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java"
+            file="../../base/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java"
             line="31"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.KITKAT) return false;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ContentUriUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ContentUriUtils.java"
             line="251"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.N) return false;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ContentUriUtils.java"
+            line="279"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ContextUtils.java"
+            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
             line="187"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="@RequiresApi(api = VERSION_CODES.N)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java"
+            line="23"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="    @RequiresApi(api = VERSION_CODES.N)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/jank_tracker/FrameMetricsListener.java"
+            line="41"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (!mutable &amp;&amp; Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/IntentUtils.java"
-            line="514"
+            file="../../base/android/java/src/org/chromium/base/IntentUtils.java"
+            line="492"
             column="25"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="@RequiresApi(api = VERSION_CODES.N)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/jank_tracker/JankActivityTracker.java"
+            line="25"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="            Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/jank_tracker/JankTrackerImpl.java"
+            line="19"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        assert !isInZipFile() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java"
-            line="812"
+            file="../../base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java"
+            line="827"
             column="34"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (BuildConfig.IS_UBSAN &amp;&amp; Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java"
-            line="1027"
+            file="../../base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java"
+            line="1071"
             column="37"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/LocaleUtils.java"
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
             line="135"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="    @RequiresApi(Build.VERSION_CODES.N)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
+            line="169"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
+            line="218"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
+            line="264"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
+            line="276"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 24"
+        errorLine1="    @RequiresApi(Build.VERSION_CODES.N)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
+            line="286"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.LOLLIPOP) return;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/PathUtils.java"
+            file="../../base/android/java/src/org/chromium/base/PathUtils.java"
             line="91"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.LOLLIPOP) return 0;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/PowerMonitor.java"
+            file="../../base/android/java/src/org/chromium/base/PowerMonitor.java"
             line="99"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/base/android/java/src/org/chromium/base/task/SingleThreadTaskRunnerImpl.java"
-            line="100"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (appContext != null &amp;&amp; Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/SysUtils.java"
-            line="186"
+            file="../../base/android/java/src/org/chromium/base/SysUtils.java"
+            line="185"
             column="35"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="405"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="446"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="                if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="458"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="514"
             column="21"/>
     </issue>
 
@@ -392,64 +579,42 @@
         errorLine1="    @RequiresApi(Build.VERSION_CODES.M)"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="513"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="569"
             column="5"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
+        message="Unnecessary; SDK_INT is never &lt; 24"
         errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.M) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="533"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="589"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="804"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="899"
             column="13"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
+        message="Unnecessary; SDK_INT is always >= 24"
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="823"
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
+            line="926"
             column="13"/>
-    </issue>
-
-    <issue
-        id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is never &lt; 23"
-        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.LOLLIPOP) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewPackageHelper.java"
-            line="37"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 23"
-        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewPackageHelper.java"
-            line="81"
-            column="17"/>
     </issue>
 
     <issue
@@ -458,8 +623,8 @@
         errorLine1="                    assert reachesWindowCallback(activity.getWindow().getCallback());"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/ApplicationStatus.java"
-            line="301"
+            file="../../base/android/java/src/org/chromium/base/ApplicationStatus.java"
+            line="351"
             column="28"/>
     </issue>
 
@@ -469,7 +634,7 @@
         errorLine1="        assert isSupported();"
         errorLine2="               ~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/RadioUtils.java"
+            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
             line="80"
             column="16"/>
     </issue>
@@ -480,7 +645,7 @@
         errorLine1="        assert isSupported();"
         errorLine2="               ~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/RadioUtils.java"
+            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
             line="105"
             column="16"/>
     </issue>
@@ -491,7 +656,7 @@
         errorLine1="        assert isSupported();"
         errorLine2="               ~~~~~~~~~~~~~">
         <location
-            file="$SRC/base/android/java/src/org/chromium/base/RadioUtils.java"
+            file="../../base/android/java/src/org/chromium/base/RadioUtils.java"
             line="131"
             column="16"/>
     </issue>
@@ -500,7 +665,7 @@
         id="IconMissingDensityFolder"
         message="Missing density variation folders in `../../android_webview/tools/system_webview_shell/apk/res`: drawable-hdpi, drawable-xhdpi, drawable-xxhdpi">
         <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/res"/>
+            file="../../android_webview/tools/system_webview_shell/apk/res"/>
     </issue>
 
 </issues>

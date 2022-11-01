@@ -61,7 +61,7 @@ void SetCurrentThreadName(const std::string& thread_name) {
 
 std::string GetCurrentThreadName() {
   std::string result(kPthreadNameMaxLen, '\0');
-#if BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 24
+#if BUILDFLAG(IS_ANDROID) && __ANDROID_API__ < 26
   static constexpr char kGetThreadNameFunctionName[] = "prctl";
   PCHECK(prctl(PR_GET_NAME, result.data()) == 0) << "prctl(PR_GET_NAME)";
 #else

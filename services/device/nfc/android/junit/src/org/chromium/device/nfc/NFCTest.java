@@ -71,7 +71,7 @@ import java.util.List;
  * Unit tests for NfcImpl and NdefMessageUtils classes.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
 public class NFCTest {
     private TestNfcDelegate mDelegate;
     private int mNextWatchId;

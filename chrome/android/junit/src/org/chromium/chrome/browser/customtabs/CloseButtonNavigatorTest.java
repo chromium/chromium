@@ -51,7 +51,7 @@ import java.util.Stack;
  * Tests for {@link CloseButtonNavigator}.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(sdk = Build.VERSION_CODES.M, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
 public class CloseButtonNavigatorTest {
     @Parameters
     public static Collection<Object[]> data() {

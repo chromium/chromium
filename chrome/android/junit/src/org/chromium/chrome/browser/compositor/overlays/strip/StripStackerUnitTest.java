@@ -25,7 +25,7 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link StripStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M, qualifiers = "sw600dp")
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.N, qualifiers = "sw600dp")
 public class StripStackerUnitTest {
     private static final float TAB_WIDTH = 25;
     private static final float CACHED_TAB_WIDTH = 30;

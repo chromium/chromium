@@ -50,3 +50,4 @@ Local Modifications:
  - MultiprocessExec.MultiprocessExec is disabled entirely on the Mac.
    https://crbug.com/1341377
  - SystemSnapshotLinux.Basic is disabled on Android: https://crbug.com/1362091
+ - Updated ANDROID_API from 24 to 26: https://crbug.com/1379422
