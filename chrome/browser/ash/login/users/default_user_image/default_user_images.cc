@@ -345,13 +345,28 @@ const int kHistogramSpecialImagesMaxCount = 10;
 const int kHistogramImagesCount =
     kDefaultImagesCount + kHistogramSpecialImagesMaxCount;
 
-GURL GetDefaultImageUrl(int index) {
+ui::ResourceScaleFactor GetAdjustedScaleFactorForDefaultImage(
+    int index,
+    ui::ResourceScaleFactor scale_factor) {
+  ui::ResourceScaleFactor max_scale_factor =
+      GetMaximumScaleFactorForDefaultImage(index);
+  if (max_scale_factor == ui::k100Percent)
+    return max_scale_factor;
+
+  return scale_factor;
+}
+
+GURL GetDefaultImageUrl(
+    int index,
+    ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
   DCHECK(index >= 0 && index < kDefaultImagesCount);
 
   if (ash::features::IsAvatarsCloudMigrationEnabled()) {
-    // TODO(b/244369871): Support 1x/2x images based on pixel density.
+    ui::ResourceScaleFactor adjusted_scale_factor =
+        GetAdjustedScaleFactorForDefaultImage(index, scale_factor);
     auto scale_factor_prefix =
-        GetUrlPrefixForScaleFactor(GetMaximumScaleFactorForDefaultImage(index));
+        GetUrlPrefixForScaleFactor(adjusted_scale_factor);
+
     return GURL(base::StrCat({kGstaticImagePrefix, scale_factor_prefix,
                               kDefaultImageInfo[index].path}));
   }
@@ -387,7 +402,9 @@ bool IsInCurrentImageSet(int index) {
          kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
-DefaultUserImage GetDefaultUserImage(int index) {
+DefaultUserImage GetDefaultUserImage(
+    int index,
+    ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
   DCHECK(IsValidIndex(index));
   int description_message_id = kDefaultImageInfo[index].description_message_id;
   std::u16string title = description_message_id
@@ -395,7 +412,7 @@ DefaultUserImage GetDefaultUserImage(int index) {
                              : std::u16string();
 
   return {index, std::move(title),
-          default_user_image::GetDefaultImageUrl(index),
+          default_user_image::GetDefaultImageUrl(index, scale_factor),
           GetDeprecatedDefaultImageSourceInfo(index)};
 }
 

@@ -14,6 +14,7 @@
 #include "ash/public/cpp/default_user_image.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
 namespace gfx {
@@ -53,10 +54,20 @@ extern const int kHistogramSpecialImagesMaxCount;
 // Number of possible histogram values for user images.
 extern const int kHistogramImagesCount;
 
+// Returns the effective scale factor for a default user image with the
+// specified index. This accounts for some default user images only being
+// available in limited resolutions.
+ui::ResourceScaleFactor GetAdjustedScaleFactorForDefaultImage(
+    int index,
+    ui::ResourceScaleFactor scale_factor);
+
 // Returns the URL to a default user image with the specified index. If the
 // index is invalid, returns the default user image for index 0 (anonymous
-// avatar image).
-GURL GetDefaultImageUrl(int index);
+// avatar image). The resource URL will take into account the `scale_factor`
+// requested and the available resolutions for the image index. The image
+// resolution default is 2x except for images without available 2x versions.
+GURL GetDefaultImageUrl(int index,
+                        ui::ResourceScaleFactor scale_factor = ui::k200Percent);
 
 // Returns bitmap of default user image with specified index.
 const gfx::ImageSkia& GetDefaultImageDeprecated(int index);
@@ -73,7 +84,12 @@ bool IsValidIndex(int index);
 // Returns true if `index` is a in the current set of default images.
 bool IsInCurrentImageSet(int index);
 
-DefaultUserImage GetDefaultUserImage(int index);
+// Returns the default user image at the specified `index` with the
+// specified `scale_factor` when possible (otherwise, with the max
+// available resolution).
+DefaultUserImage GetDefaultUserImage(
+    int index,
+    ui::ResourceScaleFactor scale_factor = ui::k200Percent);
 
 // Returns a vector of current |DefaultUserImage|.
 std::vector<DefaultUserImage> GetCurrentImageSet();
