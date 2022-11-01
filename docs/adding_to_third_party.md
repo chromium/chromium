@@ -43,8 +43,8 @@ have experience from Windows of the binary size impacting successful patch rate 
 as constraints from the Android Ecosystem where APKs included in the system image have hard
 limits on their size due to allocation size of the system partition. For more details and
 guidelines on size increases see
-[//docs/speed/binary_size/binary_size_explainer.md](binary_size_explainer) and Googlers can
-additionally check [go/chrome-binary-size](go/chrome-binary-size)
+[//docs/speed/binary_size/binary_size_explainer.md](speed/binary_size/binary_size_explainer.md) and Googlers can
+additionally check [go/chrome-binary-size](https://goto.google.com/chrome-binary-size)
 
 ## Get the code
 
@@ -214,7 +214,7 @@ Non-Googlers can email one of the people in
   licensing matters. These reviewers may not be able to +1 a change so look for
   verbal approval in the comments. (This list does not receive or deliver
   email, so only use it as a reviewer, not for other communication. Internally,
-  see [cl/221704656](https://cl/221704656) for details about how
+  see [cl/221704656](http://cl/221704656) for details about how
   this is configured.). If you have questions about the third-party process,
   ask one of the [//third_party/OWNERS](../third_party/OWNERS) instead.
 * Lastly, if all other steps are complete, get a positive code review from a
