@@ -2544,12 +2544,6 @@ const char kSafetyCheckUnusedSitePermissionsDescription[] =
     "When enabled, adds the unused sites permission module to Safety Check on "
     "desktop. The module will be shown depending on the browser state.";
 
-const char kSamePartyCookiesConsideredFirstPartyName[] =
-    "Consider SameParty cookies to be first-party.";
-const char kSamePartyCookiesConsideredFirstPartyDescription[] =
-    "If enabled, SameParty cookies will not be blocked even if third-party "
-    "cookies are blocked.";
-
 const char kPartitionedCookiesName[] = "Partitioned cookies";
 const char kPartitionedCookiesDescription[] =
     "Controls if the Partitioned cookie attribute is enabled.";

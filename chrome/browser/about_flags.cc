@@ -8802,12 +8802,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubFeatureSetupErrorHandling)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"sameparty-cookies-considered-first-party",
-     flag_descriptions::kSamePartyCookiesConsideredFirstPartyName,
-     flag_descriptions::kSamePartyCookiesConsideredFirstPartyDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kSamePartyCookiesConsideredFirstParty)},
-
     {"partitioned-cookies", flag_descriptions::kPartitionedCookiesName,
      flag_descriptions::kPartitionedCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPartitionedCookies)},
