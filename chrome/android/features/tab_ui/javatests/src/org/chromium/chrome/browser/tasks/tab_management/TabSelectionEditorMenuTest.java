@@ -167,6 +167,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
+        // TODO(crbug/1379188): Override another test is leaking theme state.
+        getActivity().setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
         ChromeFeatureList.sTabSelectionEditorV2.setForTesting(true);
         MockitoAnnotations.initMocks(this);
 
