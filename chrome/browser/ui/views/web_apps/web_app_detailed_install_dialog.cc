@@ -124,8 +124,6 @@ class ScrollButton : public views::ImageButton {
         },
         this));
 
-    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-
     ink_drop_container_ =
         AddChildView(std::make_unique<views::InkDropContainerView>());
   }
