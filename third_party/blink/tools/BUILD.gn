@@ -26,7 +26,11 @@ group("wpt_tests_isolate") {
 
     # The web_tests/wpt_internal directory contains internal WPTs
     "//third_party/blink/web_tests/wpt_internal/",
+
+    # Configuration files
     "//third_party/blink/web_tests/wptrunner.blink.ini",
+    "//third_party/blink/web_tests/FlagSpecificConfig",
+    "//third_party/blink/web_tests/SmokeTests/",
 
     # Include the root vpython spec.
     "//.vpython3",
