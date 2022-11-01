@@ -39,7 +39,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/system/video_conference/vc_tray.h"
+#include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
@@ -125,7 +125,8 @@ void StatusAreaWidget::Initialize() {
       shelf_, TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea));
 
   if (features::IsVcControlsUiEnabled())
-    vc_tray_ = AddTrayButton(std::make_unique<VcTray>(shelf_));
+    video_conference_tray_ =
+        AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
 
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
@@ -294,7 +295,7 @@ void StatusAreaWidget::LogVisiblePodCountMetric() {
       case TrayBackgroundViewCatalogName::kLogoutButton:
       case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
       case TrayBackgroundViewCatalogName::kWmMode:
-      case TrayBackgroundViewCatalogName::kVcTray:
+      case TrayBackgroundViewCatalogName::kVideoConferenceTray:
         if (!tray_button->GetVisible())
           continue;
         visible_pod_count += 1;

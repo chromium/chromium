@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/video_conference/vc_tray.h"
+#include "ash/system/video_conference/video_conference_tray.h"
 
 #include <string>
 
@@ -32,40 +32,48 @@ namespace ash {
 // microphone, and screen sharing.
 // Note that it's safe to use `base::Unretained()` in IconButton since callback
 // is destroyed with `this`.
-class VcTrayButton : public IconButton {
+class VideoConferenceTrayButton : public IconButton {
  public:
-  VcTrayButton(const gfx::VectorIcon* icon, const int accessible_name_id)
-      : IconButton(base::BindRepeating(&VcTrayButton::ToggleButton,
+  VideoConferenceTrayButton(const gfx::VectorIcon* icon,
+                            const int accessible_name_id)
+      : IconButton(base::BindRepeating(&VideoConferenceTrayButton::ToggleButton,
                                        base::Unretained(this)),
                    IconButton::Type::kMedium,
                    icon,
                    accessible_name_id,
                    /*is_togglable=*/true,
                    /*has_border=*/true) {}
-  VcTrayButton(const VcTrayButton&) = delete;
-  VcTrayButton& operator=(const VcTrayButton&) = delete;
-  ~VcTrayButton() override = default;
+  VideoConferenceTrayButton(const VideoConferenceTrayButton&) = delete;
+  VideoConferenceTrayButton& operator=(const VideoConferenceTrayButton&) =
+      delete;
+  ~VideoConferenceTrayButton() override = default;
 
  private:
   void ToggleButton() { SetToggled(!toggled()); }
 };
 
-VcTray::VcTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kVcTray) {
-  audio_icon_ = tray_container()->AddChildView(std::make_unique<VcTrayButton>(
-      &kPrivacyIndicatorsMicrophoneIcon, IDS_PRIVACY_NOTIFICATION_TITLE_MIC));
-  camera_icon_ = tray_container()->AddChildView(std::make_unique<VcTrayButton>(
-      &kPrivacyIndicatorsCameraIcon, IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA));
+VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
+    : TrayBackgroundView(shelf,
+                         TrayBackgroundViewCatalogName::kVideoConferenceTray) {
+  audio_icon_ = tray_container()->AddChildView(
+      std::make_unique<VideoConferenceTrayButton>(
+          &kPrivacyIndicatorsMicrophoneIcon,
+          IDS_PRIVACY_NOTIFICATION_TITLE_MIC));
+  camera_icon_ = tray_container()->AddChildView(
+      std::make_unique<VideoConferenceTrayButton>(
+          &kPrivacyIndicatorsCameraIcon,
+          IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA));
   screen_share_icon_ = tray_container()->AddChildView(
-      std::make_unique<VcTrayButton>(&kPrivacyIndicatorsScreenShareIcon,
-                                     IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
+      std::make_unique<VideoConferenceTrayButton>(
+          &kPrivacyIndicatorsScreenShareIcon,
+          IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
   expand_indicator_ =
       tray_container()->AddChildView(std::make_unique<views::ImageView>());
 }
 
-VcTray::~VcTray() = default;
+VideoConferenceTray::~VideoConferenceTray() = default;
 
-void VcTray::ShowBubble() {
+void VideoConferenceTray::ShowBubble() {
   TrayBubbleView::InitParams init_params;
   init_params.delegate = GetWeakPtr();
   init_params.parent_window = GetBubbleWindowContainer();
@@ -95,7 +103,7 @@ void VcTray::ShowBubble() {
   UpdateExpandIndicator();
 }
 
-void VcTray::CloseBubble() {
+void VideoConferenceTray::CloseBubble() {
   SetIsActive(false);
   UpdateExpandIndicator();
 
@@ -103,50 +111,51 @@ void VcTray::CloseBubble() {
   shelf()->UpdateAutoHideState();
 }
 
-TrayBubbleView* VcTray::GetBubbleView() {
+TrayBubbleView* VideoConferenceTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
-views::Widget* VcTray::GetBubbleWidget() const {
+views::Widget* VideoConferenceTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->bubble_widget() : nullptr;
 }
 
-std::u16string VcTray::GetAccessibleNameForTray() {
+std::u16string VideoConferenceTray::GetAccessibleNameForTray() {
   // TODO(b/253646076): Finish this function.
   return std::u16string();
 }
 
-void VcTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
+void VideoConferenceTray::HideBubbleWithView(
+    const TrayBubbleView* bubble_view) {
   if (bubble_ && bubble_->bubble_view() == bubble_view)
     CloseBubble();
 }
 
-void VcTray::ClickedOutsideBubble() {
+void VideoConferenceTray::ClickedOutsideBubble() {
   CloseBubble();
 }
 
-void VcTray::HandleLocaleChange() {
+void VideoConferenceTray::HandleLocaleChange() {
   // TODO(b/253646076): Finish this function.
 }
 
-void VcTray::UpdateLayout() {
+void VideoConferenceTray::UpdateLayout() {
   TrayBackgroundView::UpdateLayout();
 
   // Updates expand indicator for shelf alignment change.
   UpdateExpandIndicator();
 }
 
-void VcTray::OnThemeChanged() {
+void VideoConferenceTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
 
   UpdateExpandIndicator();
 }
 
-void VcTray::UpdateAfterLoginStatusChange() {
+void VideoConferenceTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
 }
 
-void VcTray::UpdateExpandIndicator() {
+void VideoConferenceTray::UpdateExpandIndicator() {
   auto image = gfx::CreateVectorIcon(
       kUnifiedMenuExpandIcon,
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
@@ -177,7 +186,7 @@ void VcTray::UpdateExpandIndicator() {
       gfx::ImageSkiaOperations::CreateRotatedImage(image, rotation));
 }
 
-BEGIN_METADATA(VcTray, TrayBackgroundView)
+BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)
 END_METADATA
 
 }  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_VC_TRAY_H_
-#define ASH_SYSTEM_VIDEO_CONFERENCE_VC_TRAY_H_
+#ifndef ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_H_
+#define ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_H_
 
 #include <string>
 
@@ -25,14 +25,14 @@ class TrayBubbleWrapper;
 
 // This class represents the VC Controls tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
-class ASH_EXPORT VcTray : public TrayBackgroundView {
+class ASH_EXPORT VideoConferenceTray : public TrayBackgroundView {
  public:
-  METADATA_HEADER(VcTray);
+  METADATA_HEADER(VideoConferenceTray);
 
-  explicit VcTray(Shelf* shelf);
-  VcTray(const VcTray&) = delete;
-  VcTray& operator=(const VcTray&) = delete;
-  ~VcTray() override;
+  explicit VideoConferenceTray(Shelf* shelf);
+  VideoConferenceTray(const VideoConferenceTray&) = delete;
+  VideoConferenceTray& operator=(const VideoConferenceTray&) = delete;
+  ~VideoConferenceTray() override;
 
   // TrayBackgroundView:
   void CloseBubble() override;
@@ -48,7 +48,7 @@ class ASH_EXPORT VcTray : public TrayBackgroundView {
   void UpdateAfterLoginStatusChange() override;
 
  private:
-  friend class VcTrayTest;
+  friend class VideoConferenceTrayTest;
 
   // Updates the orientation of the expand indicator, based on shelf alignment
   // and whether the bubble is opened.
@@ -66,4 +66,4 @@ class ASH_EXPORT VcTray : public TrayBackgroundView {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_VC_TRAY_H_
+#endif  // ASH_SYSTEM_VIDEO_CONFERENCE_VIDEO_CONFERENCE_TRAY_H_
