@@ -156,7 +156,9 @@
 
   .checkbox-label {
     color: var(--cros-text-color-primary);
+    font-size: 13px;
     line-height: 20px;
+    margin-top: -2px;
   }
 
   cr-dialog::part(dialog) {
@@ -233,6 +235,11 @@
 
   #screenshotCheckbox:focus {
     --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
+  }
+
+  cr-checkbox {
+    align-items: flex-start;
+    padding-top: 2px;
   }
 </style>
 <div id="container">
@@ -316,7 +323,8 @@
         <!-- System Information -->
         <div id="sysInfoContainer" class="checkbox-field-container">
           <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
-            <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></div>
+            <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"
+                class="checkbox-label"></div>
           </cr-checkbox>
         </div>
         <!-- Assistant Logs (Googler Internal Only) -->
