@@ -8,7 +8,7 @@
     cursor: pointer;
     display: flex;
     height: 40px;
-    margin-block-end: 6px;
+    margin: 3px;
     padding-block-end: 6px;
     padding-block-start: 6px;
     padding-inline-end: 9px;
@@ -19,9 +19,8 @@
     outline: none;
   }
 
-  :host(:focus) #wrapper,
-  :host([is-selected]:focus) #wrapper {
-    border-color: var(--cros-color-secondary);
+  :host(:focus) #wrapper {
+    box-shadow: 0 0 0 2px var(--cros-focus-aura-color);
   }
 
   :host([is-selected]) #wrapper {
