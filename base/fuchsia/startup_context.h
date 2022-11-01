@@ -5,15 +5,17 @@
 #ifndef BASE_FUCHSIA_STARTUP_CONTEXT_H_
 #define BASE_FUCHSIA_STARTUP_CONTEXT_H_
 
+#include <fuchsia/component/runner/cpp/fidl.h>
+#include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
+
 #include <memory>
 
 #include "base/base_export.h"
 
 namespace sys {
-class ComponentContext;
 class ServiceDirectory;
 class OutgoingDirectory;
 }  // namespace sys
@@ -25,10 +27,15 @@ namespace base {
 // directories, resolve launch URL etc).
 // Embedders may derived from StartupContext to e.g. add bound pointers to
 // embedder-specific services, as required.
-class BASE_EXPORT StartupContext {
+class BASE_EXPORT StartupContext final {
  public:
+  explicit StartupContext(
+      ::fuchsia::component::runner::ComponentStartInfo start_info);
+  ~StartupContext();
+
+  // TODO(https://crbug.com/1065707): Remove this overload once the CFv1
+  // Runner implementations are removed.
   explicit StartupContext(::fuchsia::sys::StartupInfo startup_info);
-  virtual ~StartupContext();
 
   StartupContext(const StartupContext&) = delete;
   StartupContext& operator=(const StartupContext&) = delete;
@@ -56,11 +63,6 @@ class BASE_EXPORT StartupContext {
   }
 
  private:
-  // TODO(https://crbug.com/933834): Remove these when we migrate to the new
-  // component manager APIs.
-  ::fuchsia::sys::ServiceProviderPtr additional_services_;
-  std::unique_ptr<sys::OutgoingDirectory> additional_services_directory_;
-
   std::unique_ptr<sys::ComponentContext> component_context_;
 
   // Used to store outgoing directory until ServeOutgoingDirectory() is called.

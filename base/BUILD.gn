@@ -1938,6 +1938,7 @@ mixed_component("base") {
     # by public //base headers, which requires they be on the include path.
     # TODO(https://crbug.com/841171): Move these back to |deps|.
     public_deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
