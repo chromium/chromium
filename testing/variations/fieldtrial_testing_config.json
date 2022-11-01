@@ -4742,6 +4742,22 @@
             ]
         }
     ],
+    "FullscreenPromosManager": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FullscreenPromosManager",
+                        "IOSNewPostRestoreExperience"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
