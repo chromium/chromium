@@ -992,9 +992,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CreditCardInfoBar{AutofillCreditCardInfoBarSaveType}"
-    enum="AutofillCreditCardInfoBar" expires_after="2022-12-12">
-  <owner>battre@chromium.org</owner>
+    enum="AutofillCreditCardInfoBar" expires_after="2023-09-30">
   <owner>jsaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
@@ -1093,7 +1093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CreditCardsDeletedForDisuse" units="units"
-    expires_after="2022-12-12">
+    expires_after="2023-09-30">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -3376,7 +3376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
-    expires_after="2022-12-12">
+    expires_after="2023-09-30">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
