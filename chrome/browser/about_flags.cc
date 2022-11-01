@@ -8362,11 +8362,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kGetDisplayMediaSetAutoSelectAllScreens)},
 
-    {"enable-vaapi-av1-decode-acceleration",
-     flag_descriptions::kVaapiAV1DecoderName,
-     flag_descriptions::kVaapiAV1DecoderDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
-
     {"default-chrome-apps-migration",
      flag_descriptions::kDefaultChromeAppsMigrationName,
      flag_descriptions::kDefaultChromeAppsMigrationDescription, kOsCrOS,

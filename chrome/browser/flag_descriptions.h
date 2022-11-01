@@ -3602,9 +3602,6 @@ extern const char kGetDisplayMediaSetDescription[];
 extern const char kGetDisplayMediaSetAutoSelectAllScreensName[];
 extern const char kGetDisplayMediaSetAutoSelectAllScreensDescription[];
 
-extern const char kVaapiAV1DecoderName[];
-extern const char kVaapiAV1DecoderDescription[];
-
 extern const char kIntentChipSkipsPickerName[];
 extern const char kIntentChipSkipsPickerDescription[];
 

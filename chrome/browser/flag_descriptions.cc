@@ -6272,10 +6272,6 @@ const char kGetDisplayMediaSetAutoSelectAllScreensDescription[] =
     "When enabled, the autoSelectAllScreens attribute is available for usage "
     "with the GetDisplayMediaSet API.";
 
-const char kVaapiAV1DecoderName[] = "VA-API decode acceleration for AV1";
-const char kVaapiAV1DecoderDescription[] =
-    "Enable or disable decode acceleration of AV1 videos using the VA-API.";
-
 const char kIntentChipSkipsPickerName[] =
     "Link capturing intent chip skips the intent picker bubble";
 const char kIntentChipSkipsPickerDescription[] =

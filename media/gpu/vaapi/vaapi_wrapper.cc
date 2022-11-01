@@ -629,7 +629,7 @@ bool IsVAProfileSupported(VAProfile va_profile) {
 bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
   if (!IsModeEncoding(mode)) {
     return va_profile == VAProfileAV1Profile0 &&
-           !base::FeatureList::IsEnabled(kVaapiAV1Decoder);
+           !base::FeatureList::IsEnabled(kChromeOSHWAV1Decoder);
   }
 
   // TODO(posciak): Remove once VP8 encoding is to be enabled by default.

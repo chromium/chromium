@@ -46,13 +46,9 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
   // there is no intersection between the enabled and disabled set.
   std::vector<base::test::FeatureRef> combined_enabled_features(
       enabled_features);
-  combined_enabled_features.push_back(media::kVp9kSVCHWDecoding);
   std::vector<base::test::FeatureRef> combined_disabled_features(
       disabled_features);
 #if BUILDFLAG(USE_VAAPI)
-  // TODO(b/172217032): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiAV1Decoder);
-
   // Disable this feature so that the decoder test can test a
   // resolution which is denied for the sake of performance. See
   // b/171041334.
