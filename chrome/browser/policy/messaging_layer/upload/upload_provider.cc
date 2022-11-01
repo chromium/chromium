@@ -17,9 +17,9 @@
 #include "base/thread_annotations.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/status.pb.h"
 #include "components/reporting/util/backoff_settings.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/status.pb.h"
 #include "components/reporting/util/statusor.h"
 #include "net/base/backoff_entry.h"
 

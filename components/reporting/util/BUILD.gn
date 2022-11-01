@@ -26,14 +26,6 @@ static_library("file") {
   ]
 }
 
-proto_library("status_proto") {
-  # Generate JS so it can be used by chrome extensions
-  generate_javascript = true
-
-  proto_in_dir = "//"
-  sources = [ "status.proto" ]
-}
-
 static_library("status") {
   sources = [
     "status.cc",
@@ -41,7 +33,7 @@ static_library("status") {
     "statusor.cc",
     "statusor.h",
   ]
-  public_deps = [ ":status_proto" ]
+  public_deps = [ "//components/reporting/proto:status_proto" ]
   deps = [ "//base" ]
 }
 
@@ -100,11 +92,11 @@ source_set("unit_tests") {
     ":file",
     ":status",
     ":status_macros",
-    ":status_proto",
     ":task_runner_context",
     ":test_callbacks_support",
     "//base",
     "//base/test:test_support",
+    "//components/reporting/proto:status_proto",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -41,7 +41,7 @@ proto_library("interface_proto") {
   proto_deps = [
     ":record_constants",
     ":record_proto",
-    "//components/reporting/util:status_proto",
+    "//components/reporting/proto:status_proto",
   ]
 }
 
@@ -55,7 +55,7 @@ proto_library("health_proto") {
 
   deps = [
     ":record_constants",
-    "//components/reporting/util:status_proto",
+    "//components/reporting/proto:status_proto",
   ]
 }
 
@@ -88,4 +88,12 @@ proto_library("pipeline_id_proto") {
   proto_in_dir = "//"
 
   sources = [ "synced/pipeline_id.proto" ]
+}
+
+proto_library("status_proto") {
+  # Generate JS so it can be used by chrome extensions
+  generate_javascript = true
+
+  proto_in_dir = "//"
+  sources = [ "synced/status.proto" ]
 }

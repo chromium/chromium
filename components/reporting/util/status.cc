@@ -11,7 +11,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "components/reporting/util/status.pb.h"
+#include "components/reporting/proto/synced/status.pb.h"
 
 namespace reporting {
 namespace error {

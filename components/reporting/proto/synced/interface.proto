@@ -10,7 +10,7 @@ package reporting;
 
 import "components/reporting/proto/synced/record_constants.proto";
 import "components/reporting/proto/synced/record.proto";
-import "components/reporting/util/status.proto";
+import "components/reporting/proto/synced/status.proto";
 
 // ------------ CLIENT/USER REQUEST AND RESPONSES -----------------
 // EnqueueRecordRequest enqueues records for encryption,

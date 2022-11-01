@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "components/reporting/util/status.pb.h"
+#include "components/reporting/proto/synced/status.pb.h"
 
 namespace reporting {
 namespace error {

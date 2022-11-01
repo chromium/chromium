@@ -9,7 +9,7 @@ option optimize_for = LITE_RUNTIME;
 package reporting;
 
 import "components/reporting/proto/synced/record_constants.proto";
-import "components/reporting/util/status.proto";
+import "components/reporting/proto/synced/status.proto";
 
 // Information about records being removed from a storage queue.
 message StorageDequeue {
