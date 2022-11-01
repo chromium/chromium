@@ -939,8 +939,9 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
         &WebMediaPlayerImpl::OnDataSourceRedirected, weak_this_));
     mb_data_source_->SetPreload(preload_);
     mb_data_source_->SetIsClientAudioElement(client_->IsAudioElement());
-    mb_data_source_->Initialize(
-        base::BindOnce(&WebMediaPlayerImpl::DataSourceInitialized, weak_this_));
+
+    mb_data_source_->Initialize(base::BindOnce(
+        &WebMediaPlayerImpl::MultiBufferDataSourceInitialized, weak_this_));
   }
 }
 
@@ -1941,7 +1942,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
                                           .SchemeIsCryptographic();
     bool manifest_url_is_cryptographic =
         loaded_url_.SchemeIsCryptographic() &&
-        mb_data_source_->GetUrlAfterRedirects().SchemeIsCryptographic();
+        data_source_->GetUrlAfterRedirects().SchemeIsCryptographic();
     UMA_HISTOGRAM_BOOLEAN(
         "Media.WebMediaPlayerImpl.HLS.IsMixedContent",
         frame_url_is_cryptographic && !manifest_url_is_cryptographic);
@@ -1949,7 +1950,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     renderer_factory_selector_->SetBaseRendererType(
         media::RendererType::kMediaPlayer);
 
-    loaded_url_ = mb_data_source_->GetUrlAfterRedirects();
+    loaded_url_ = data_source_->GetUrlAfterRedirects();
     DCHECK(data_source_);
     data_source_->Stop();
     mb_data_source_ = nullptr;
@@ -2749,9 +2750,6 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (observer_ && mb_data_source_)
-    observer_->OnDataSourceInitialized(mb_data_source_->GetUrlAfterRedirects());
-
   if (!success) {
     SetNetworkState(WebMediaPlayer::kNetworkStateFormatError);
     media_metrics_provider_->OnError(media::PIPELINE_ERROR_NETWORK);
@@ -2763,11 +2761,19 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
     return;
   }
 
-  // No point in preloading data as we'll probably just throw it away anyways.
-  if (IsStreaming() && preload_ > media::DataSource::METADATA)
-    data_source_->SetPreload(media::DataSource::METADATA);
-
   StartPipeline();
+}
+
+void WebMediaPlayerImpl::MultiBufferDataSourceInitialized(bool success) {
+  DVLOG(1) << __func__;
+  DCHECK(data_source_);
+  if (observer_)
+    observer_->OnDataSourceInitialized(data_source_->GetUrlAfterRedirects());
+
+  // No point in preloading data as we'll probably just throw it away anyways.
+  if (success && IsStreaming() && preload_ > media::DataSource::METADATA)
+    data_source_->SetPreload(media::DataSource::METADATA);
+  DataSourceInitialized(success);
 }
 
 void WebMediaPlayerImpl::OnDataSourceRedirected() {
@@ -3985,7 +3991,7 @@ void WebMediaPlayerImpl::OnSimpleWatchTimerTick() {
 }
 
 GURL WebMediaPlayerImpl::GetSrcAfterRedirects() {
-  return mb_data_source_ ? mb_data_source_->GetUrlAfterRedirects() : GURL();
+  return data_source_ ? data_source_->GetUrlAfterRedirects() : GURL();
 }
 
 void WebMediaPlayerImpl::UpdateSmoothnessHelper() {

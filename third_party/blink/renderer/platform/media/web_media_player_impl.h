@@ -392,8 +392,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
               CorsMode cors_mode,
               bool is_cache_disabled);
 
-  // Called after asynchronous initialization of a data source completed.
+  // Called after synchronous initialization of a data source completes.
   void DataSourceInitialized(bool success);
+
+  // Called after asynchronous initialization of a multibuffer data source
+  // completes.
+  void MultiBufferDataSourceInitialized(bool success);
 
   // Called if the |MultiBufferDataSource| is redirected.
   void OnDataSourceRedirected();
