@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/mac/mac_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -365,18 +366,13 @@ void PermissionWizard::Impl::OnPermissionCheckResult(bool result) {
 }
 
 - (void)onLaunchA11y:(id)sender {
-  // Launch the Security and Preferences pane with Accessibility selected.
-  [[NSWorkspace sharedWorkspace]
-      openURL:[NSURL
-                  URLWithString:@"x-apple.systempreferences:com.apple."
-                                @"preference.security?Privacy_Accessibility"]];
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_Accessibility);
 }
 
 - (void)onLaunchScreenRecording:(id)sender {
-  [[NSWorkspace sharedWorkspace]
-      openURL:[NSURL
-                  URLWithString:@"x-apple.systempreferences:com.apple."
-                                @"preference.security?Privacy_ScreenCapture"]];
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_ScreenRecording);
 }
 
 - (void)onNext:(id)sender {

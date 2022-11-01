@@ -4,15 +4,13 @@
 
 #include "chrome/browser/printing/printer_manager_dialog.h"
 
-#import <AppKit/AppKit.h>
+#include "base/mac/mac_util.h"
 
 namespace printing {
 
-static NSString* kPrintAndFaxPrefPane =
-    @"/System/Library/PreferencePanes/PrintAndFax.prefPane";
-
 void PrinterManagerDialog::ShowPrinterManagerDialog() {
-  [[NSWorkspace sharedWorkspace] openFile:kPrintAndFaxPrefPane];
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrintersScanners);
 }
 
 }  // namespace printing

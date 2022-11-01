@@ -8,8 +8,7 @@
 
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
-#include "base/mac/scoped_aedesc.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -35,23 +34,8 @@ void ValidateFontFamily(PrefService* prefs, const char* family_pref_name) {
 namespace settings_utils {
 
 void ShowNetworkProxySettings(content::WebContents* web_contents) {
-  NSArray* itemsToOpen =
-      @[ [NSURL fileURLWithPath:@"/System/Library/PreferencePanes/"
-                                @"Network.prefPane"] ];
-
-  const char* proxyPrefCommand = "Proxies";
-  base::mac::ScopedAEDesc<> openParams;
-  OSStatus status =
-      AECreateDesc('ptru', proxyPrefCommand, strlen(proxyPrefCommand),
-                   openParams.OutPointer());
-  OSSTATUS_LOG_IF(ERROR, status != noErr, status)
-      << "Failed to create open params";
-
-  LSLaunchURLSpec launchSpec = {0};
-  launchSpec.itemURLs = (CFArrayRef)itemsToOpen;
-  launchSpec.passThruParams = openParams;
-  launchSpec.launchFlags = kLSLaunchAsync | kLSLaunchDontAddToRecents;
-  LSOpenFromURLSpec(&launchSpec, NULL);
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kNetwork_Proxies);
 }
 
 void ShowManageSSLCertificates(content::WebContents* web_contents) {

@@ -4,17 +4,13 @@
 
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
 
-#import <AppKit/AppKit.h>
+#include "base/mac/mac_util.h"
 
 namespace captions {
 
-static NSString* kCaptionSettingsUrlString =
-    @"x-apple.systempreferences:com.apple.preference.universalaccess?"
-    @"Captioning";
-
 void CaptionSettingsDialog::ShowCaptionSettingsDialog() {
-  [[NSWorkspace sharedWorkspace]
-      openURL:[NSURL URLWithString:kCaptionSettingsUrlString]];
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kAccessibility_Captions);
 }
 
 }  // namespace captions

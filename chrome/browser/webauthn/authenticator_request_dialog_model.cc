@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -358,13 +357,8 @@ void AuthenticatorRequestDialogModel::PowerOnBleAdapter() {
 #if BUILDFLAG(IS_MAC)
 void AuthenticatorRequestDialogModel::OpenBlePreferences() {
   DCHECK_EQ(current_step(), Step::kBlePermissionMac);
-
-  base::LaunchOptions opts;
-  opts.disclaim_responsibility = true;
-  base::LaunchProcess({"open",
-                       "x-apple.systempreferences:com.apple.preference."
-                       "security?Privacy_Bluetooth"},
-                      opts);
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
 }
 #endif  // IS_MAC
 

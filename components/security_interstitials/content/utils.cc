@@ -20,6 +20,10 @@
 #include "components/security_interstitials/content/android/jni_headers/DateAndTimeSettingsHelper_jni.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/path_service.h"
@@ -74,13 +78,8 @@ void LaunchDateAndTimeSettings() {
   options.allow_new_privs = true;
   base::LaunchProcess(command, options);
 
-#elif BUILDFLAG(IS_APPLE)
-  base::CommandLine command(base::FilePath("/usr/bin/open"));
-  command.AppendArg("/System/Library/PreferencePanes/DateAndTime.prefPane");
-
-  base::LaunchOptions options;
-  options.wait = false;
-  base::LaunchProcess(command, options);
+#elif BUILDFLAG(IS_MAC)
+  base::mac::OpenSystemSettingsPane(base::mac::SystemSettingsPane::kDateTime);
 
 #elif BUILDFLAG(IS_WIN)
   base::FilePath path;

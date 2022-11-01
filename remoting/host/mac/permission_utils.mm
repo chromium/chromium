@@ -62,11 +62,8 @@ void ShowAccessibilityPermissionDialog() {
   [alert setAlertStyle:NSAlertStyleWarning];
   [alert_window makeKeyWindow];
   if ([alert runModal] == NSAlertFirstButtonReturn) {
-    // Launch the Security and Preferences pane with Accessibility selected.
-    [[NSWorkspace sharedWorkspace]
-        openURL:
-            [NSURL URLWithString:@"x-apple.systempreferences:com.apple."
-                                 @"preference.security?Privacy_Accessibility"]];
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity_Accessibility);
   }
 }
 
@@ -101,11 +98,8 @@ void ShowScreenRecordingPermissionDialog() {
   [alert setAlertStyle:NSAlertStyleWarning];
   [alert_window makeKeyWindow];
   if ([alert runModal] == NSAlertFirstButtonReturn) {
-    // Launch the Security and Preferences pane with Accessibility selected.
-    [[NSWorkspace sharedWorkspace]
-        openURL:
-            [NSURL URLWithString:@"x-apple.systempreferences:com.apple."
-                                 @"preference.security?Privacy_ScreenCapture"]];
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity_ScreenRecording);
   }
 }
 

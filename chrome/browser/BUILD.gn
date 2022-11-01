@@ -6200,7 +6200,7 @@ static_library("browser") {
     allow_circular_includes_from += [ "//chrome/browser/apps/app_shim" ]
     sources += [
       "accessibility/caption_settings_dialog.h",
-      "accessibility/caption_settings_dialog_mac.mm",
+      "accessibility/caption_settings_dialog_mac.cc",
       "app_controller_mac.h",
       "app_controller_mac.mm",
       "apps/intent_helper/mac_intent_picker_helpers.h",
@@ -6908,7 +6908,7 @@ static_library("browser") {
       ]
     }
     if (is_mac) {
-      sources += [ "printing/printer_manager_dialog_mac.mm" ]
+      sources += [ "printing/printer_manager_dialog_mac.cc" ]
     }
     if (is_chromeos_lacros) {
       sources += [

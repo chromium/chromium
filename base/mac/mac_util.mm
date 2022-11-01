@@ -20,6 +20,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
+#include "base/mac/scoped_aedesc.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/mac/scoped_nsobject.h"
@@ -483,6 +484,106 @@ std::string GetPlatformSerialNumber() {
   }
 
   return base::SysCFStringRefToUTF8(serial_number_cfstring);
+}
+
+void OpenSystemSettingsPane(SystemSettingsPane pane) {
+  NSString* url = nil;
+  NSString* pane_file = nil;
+  NSData* subpane_data = nil;
+  switch (pane) {
+    case SystemSettingsPane::kAccessibility_Captions:
+      url = @"x-apple.systempreferences:com.apple.preference.universalaccess?"
+            @"Captioning";
+      break;
+    case SystemSettingsPane::kDateTime:
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.preference.datetime";
+      } else {
+        pane_file = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
+      }
+      break;
+    case SystemSettingsPane::kNetwork_Proxies:
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.preference.network?"
+              @"Proxies";
+      } else {
+        pane_file = @"/System/Library/PreferencePanes/Network.prefPane";
+        subpane_data = [@"Proxies" dataUsingEncoding:NSASCIIStringEncoding];
+      }
+      break;
+    case SystemSettingsPane::kPrintersScanners:
+      if (IsAtLeastOS13()) {
+        url = @"x-apple.systempreferences:com.apple.preference.printfax";
+      } else {
+        pane_file = @"/System/Library/PreferencePanes/PrintAndFax.prefPane";
+      }
+      break;
+    case SystemSettingsPane::kPrivacySecurity_Accessibility:
+      url = @"x-apple.systempreferences:com.apple.preference.security?"
+            @"Privacy_Accessibility";
+      break;
+    case SystemSettingsPane::kPrivacySecurity_Bluetooth:
+      url = @"x-apple.systempreferences:com.apple.preference.security?"
+            @"Privacy_Bluetooth";
+      break;
+    case SystemSettingsPane::kPrivacySecurity_Camera:
+      url = @"x-apple.systempreferences:com.apple.preference.security?"
+            @"Privacy_Camera";
+      break;
+    case SystemSettingsPane::kPrivacySecurity_Extensions_Sharing:
+      if (IsAtLeastOS13()) {
+        // See ShareKit, -[SHKSharingServicePicker openAppExtensionsPrefpane].
+        url = @"x-apple.systempreferences:com.apple.ExtensionPreferences?"
+              @"Sharing";
+      } else {
+        // This is equivalent to the implementation of AppKit's
+        // +[NSSharingServicePicker openAppExtensionsPrefPane].
+        pane_file = @"/System/Library/PreferencePanes/Extensions.prefPane";
+        NSDictionary* subpane_dict = @{
+          @"action" : @"revealExtensionPoint",
+          @"protocol" : @"com.apple.share-services"
+        };
+        subpane_data = [NSPropertyListSerialization
+            dataWithPropertyList:subpane_dict
+                          format:NSPropertyListXMLFormat_v1_0
+                         options:0
+                           error:nil];
+      }
+      break;
+    case SystemSettingsPane::kPrivacySecurity_LocationServices:
+      url = @"x-apple.systempreferences:com.apple.preference.security?"
+            @"Privacy_LocationServices";
+      break;
+    case SystemSettingsPane::kPrivacySecurity_Microphone:
+      url = @"x-apple.systempreferences:com.apple.preference.security?"
+            @"Privacy_Microphone";
+      break;
+    case SystemSettingsPane::kPrivacySecurity_ScreenRecording:
+      url = @"x-apple.systempreferences:com.apple.preference.security?"
+            @"Privacy_ScreenCapture";
+      break;
+  }
+
+  DCHECK(url != nil ^ pane_file != nil);
+
+  if (url) {
+    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:url]];
+    return;
+  }
+
+  NSArray* pane_file_urls = @[ [NSURL fileURLWithPath:pane_file] ];
+
+  LSLaunchURLSpec launchSpec = {0};
+  launchSpec.itemURLs = NSToCFCast(pane_file_urls);
+  if (subpane_data) {
+    base::scoped_nsobject<NSAppleEventDescriptor> descriptor(
+        [[NSAppleEventDescriptor alloc] initWithDescriptorType:'ptru'
+                                                          data:subpane_data]);
+    launchSpec.passThruParams = descriptor.get().aeDesc;
+  }
+  launchSpec.launchFlags = kLSLaunchAsync | kLSLaunchDontAddToRecents;
+
+  LSOpenFromURLSpec(&launchSpec, nullptr);
 }
 
 }  // namespace base::mac

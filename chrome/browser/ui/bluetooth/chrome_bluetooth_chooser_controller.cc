@@ -33,16 +33,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "base/mac/mac_util.h"
 #endif
 
 namespace {
-
-#if BUILDFLAG(IS_MAC)
-static constexpr char kBluetoothSettingsUri[] =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_"
-    "Bluetooth";
-#endif
 
 Browser* GetBrowser() {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(
@@ -62,10 +56,7 @@ ChromeBluetoothChooserController::ChromeBluetoothChooserController(
           CreateExtensionAwareChooserTitle(
               owner,
               IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_ORIGIN,
-              IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)) {
-  web_contents_ =
-      content::WebContents::FromRenderFrameHost(owner)->GetWeakPtr();
-}
+              IDS_BLUETOOTH_DEVICE_CHOOSER_PROMPT_EXTENSION_NAME)) {}
 
 ChromeBluetoothChooserController::~ChromeBluetoothChooserController() = default;
 
@@ -86,11 +77,8 @@ void ChromeBluetoothChooserController::OpenAdapterOffHelpUrl() const {
 
 void ChromeBluetoothChooserController::OpenPermissionPreferences() const {
 #if BUILDFLAG(IS_MAC)
-  if (web_contents_) {
-    ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-        GURL(kBluetoothSettingsUri), web_contents_.get(),
-        content::WeakDocumentPtr());
-  }
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
 #else
   NOTREACHED();
 #endif

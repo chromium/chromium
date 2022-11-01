@@ -25,7 +25,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/download/download_request_limiter.h"
-#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -86,6 +85,7 @@
 #include "ui/resources/grit/ui_resources.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -104,18 +104,6 @@ using device::LocationSystemPermissionStatus;
 namespace {
 
 using QuietUiReason = permissions::PermissionRequestManager::QuietUiReason;
-
-#if BUILDFLAG(IS_MAC)
-static constexpr char kCameraSettingsURI[] =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_"
-    "Camera";
-static constexpr char kMicSettingsURI[] =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_"
-    "Microphone";
-static constexpr char kLocationSettingsURI[] =
-    "x-apple.systempreferences:com.apple.preference.security?Privacy_"
-    "LocationServices";
-#endif  // BUILDFLAG(IS_MAC)
 
 // Returns a boolean indicating whether the setting should be managed by the
 // user (i.e. it is not controlled by policy). Also takes a (nullable) out-param
@@ -905,11 +893,11 @@ void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
     DCHECK(ShouldShowSystemMediaPermissions());
 
     if (CameraAccessed()) {
-      ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-          GURL(kCameraSettingsURI), web_contents(), content::WeakDocumentPtr());
+      base::mac::OpenSystemSettingsPane(
+          base::mac::SystemSettingsPane::kPrivacySecurity_Camera);
     } else if (MicrophoneAccessed()) {
-      ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-          GURL(kMicSettingsURI), web_contents(), content::WeakDocumentPtr());
+      base::mac::OpenSystemSettingsPane(
+          base::mac::SystemSettingsPane::kPrivacySecurity_Microphone);
     }
     return;
 #endif  // BUILDFLAG(IS_MAC)
@@ -1286,8 +1274,8 @@ void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
           "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
     }
 
-    ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-        GURL(kLocationSettingsURI), web_contents(), content::WeakDocumentPtr());
+    base::mac::OpenSystemSettingsPane(
+        base::mac::SystemSettingsPane::kPrivacySecurity_LocationServices);
     return;
 #endif  // BUILDFLAG(IS_MAC)
   }
