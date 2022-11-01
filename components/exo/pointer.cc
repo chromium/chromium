@@ -497,11 +497,13 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
 
   TRACE_EXO_INPUT_EVENT(event);
 
+  bool needs_frame = false;
+
   const auto& details = event->pointer_details();
   if (stylus_delegate_ && last_pointer_type_ != details.pointer_type) {
     last_pointer_type_ = details.pointer_type;
     stylus_delegate_->OnPointerToolChange(details.pointer_type);
-    delegate_->OnPointerFrame();
+    needs_frame |= true;
   }
 
   if (event->IsMouseEvent()) {
@@ -545,19 +547,16 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
           ignore_motion = true;
         }
       }
-      bool needs_frame =
-          !ignore_motion &&
-          HandleRelativePointerMotion(event->time_stamp(), location_in_root,
-                                      ordinal_motion);
+      needs_frame |= !ignore_motion &&
+                     HandleRelativePointerMotion(
+                         event->time_stamp(), location_in_root, ordinal_motion);
       if (capture_window_) {
         if (ShouldMoveToCenter())
           MoveCursorToCenterOfActiveDisplay();
       } else if (event->type() != ui::ET_MOUSE_EXITED && !ignore_motion) {
         delegate_->OnPointerMotion(event->time_stamp(), location_in_target);
-        needs_frame = true;
+        needs_frame |= true;
       }
-      if (needs_frame)
-        delegate_->OnPointerFrame();
       location_in_root_ = location_in_root;
     }
   }
@@ -578,7 +577,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       delegate_->OnPointerButton(event->time_stamp(),
                                  event->changed_button_flags(),
                                  event->type() == ui::ET_MOUSE_PRESSED);
-      delegate_->OnPointerFrame();
+      needs_frame |= true;
       break;
     }
     case ui::ET_SCROLL: {
@@ -592,21 +591,21 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
           event->time_stamp(),
           gfx::Vector2dF(scroll_event->x_offset(), scroll_event->y_offset()),
           false);
-      delegate_->OnPointerFrame();
+      needs_frame |= true;
       break;
     }
     case ui::ET_MOUSEWHEEL: {
       delegate_->OnPointerScroll(
           event->time_stamp(),
           static_cast<ui::MouseWheelEvent*>(event)->offset(), true);
-      delegate_->OnPointerFrame();
+      needs_frame |= true;
       break;
     }
     case ui::ET_SCROLL_FLING_START: {
       // Fling start in chrome signals the lifting of fingers after scrolling.
       // In wayland terms this signals the end of a scroll sequence.
       delegate_->OnPointerScrollStop(event->time_stamp());
-      delegate_->OnPointerFrame();
+      needs_frame |= true;
       break;
     }
     case ui::ET_SCROLL_FLING_CANCEL: {
@@ -636,7 +635,6 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   }
 
   if (stylus_delegate_) {
-    bool needs_frame = false;
     // Report the force value when either:
     // - switching from a device that supports force to one that doesn't or
     //   vice-versa (since force is NaN if the device doesn't support it), OR
@@ -656,8 +654,6 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       stylus_delegate_->OnPointerTilt(event->time_stamp(), last_tilt_);
       needs_frame = true;
     }
-    if (needs_frame)
-      delegate_->OnPointerFrame();
   }
 
   last_event_type_ = event->type();
@@ -667,6 +663,9 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     event->SetHandled();
     event->StopPropagation();
   }
+
+  if (needs_frame)
+    delegate_->OnPointerFrame();
 }
 
 void Pointer::OnScrollEvent(ui::ScrollEvent* event) {
