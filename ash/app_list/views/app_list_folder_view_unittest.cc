@@ -11,21 +11,19 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 
-class AppListFolderViewProductivityLauncherTest : public AshTestBase {
+class AppListFolderViewTest : public AshTestBase {
  public:
-  AppListFolderViewProductivityLauncherTest() = default;
-  ~AppListFolderViewProductivityLauncherTest() override = default;
+  AppListFolderViewTest() = default;
+  ~AppListFolderViewTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -37,13 +35,11 @@ class AppListFolderViewProductivityLauncherTest : public AshTestBase {
         /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
   }
 
-  base::test::ScopedFeatureList feature_list_{features::kProductivityLauncher};
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
 };
 
-TEST_F(AppListFolderViewProductivityLauncherTest,
-       ScrollViewSizeIsCappedForLargeFolders) {
+TEST_F(AppListFolderViewTest, ScrollViewSizeIsCappedForLargeFolders) {
   // Create a large number of apps, more than a 4 rows.
   app_list_test_model_->CreateAndPopulateFolderWithApps(30);
 
@@ -65,8 +61,7 @@ TEST_F(AppListFolderViewProductivityLauncherTest,
   EXPECT_LT(scroll_view->height(), tile_height * 5);
 }
 
-TEST_F(AppListFolderViewProductivityLauncherTest,
-       CloseFolderMakesA11yAnnouncement) {
+TEST_F(AppListFolderViewTest, CloseFolderMakesA11yAnnouncement) {
   // Create a folder with a couple items.
   app_list_test_model_->CreateAndPopulateFolderWithApps(2);
 

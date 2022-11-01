@@ -9,10 +9,8 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/controls/label.h"
@@ -48,18 +46,7 @@ class AppListItemViewTest : public AshTestBase {
   std::unique_ptr<SearchModel> search_model_;
 };
 
-// Tests with ProductivityLauncher enabled.
-class AppListItemViewProductivityLauncherTest : public AppListItemViewTest {
- public:
-  AppListItemViewProductivityLauncherTest() {
-    feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
-  ~AppListItemViewProductivityLauncherTest() override = default;
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AppListItemViewProductivityLauncherTest, NewInstallDot) {
+TEST_F(AppListItemViewTest, NewInstallDot) {
   AppListItem* item = CreateAppListItem("Google Buzz");
   ASSERT_FALSE(item->is_new_install());
 
@@ -89,7 +76,7 @@ TEST_F(AppListItemViewProductivityLauncherTest, NewInstallDot) {
       "New install");
 }
 
-TEST_F(AppListItemViewProductivityLauncherTest, LabelInsetWithNewInstallDot) {
+TEST_F(AppListItemViewTest, LabelInsetWithNewInstallDot) {
   AppListItem* long_item = CreateAppListItem("Very very very very long name");
   long_item->SetIsNewInstall(true);
   AppListItem* short_item = CreateAppListItem("Short");

@@ -56,9 +56,7 @@ class ProductivityLauncherSearchViewTest
  public:
   ProductivityLauncherSearchViewTest()
       : AshTestBase((base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
-        test_under_tablet_(GetParam()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+        test_under_tablet_(GetParam()) {}
   ProductivityLauncherSearchViewTest(
       const ProductivityLauncherSearchViewTest&) = delete;
   ProductivityLauncherSearchViewTest& operator=(
@@ -164,7 +162,6 @@ class ProductivityLauncherSearchViewTest
 
  private:
   const bool test_under_tablet_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // An extension of ProductivityLauncherSearchViewTest to test launcher image
