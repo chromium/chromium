@@ -651,7 +651,7 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   aura::client::SetDragDropDelegate(content_window_, this);
 
   if (params.type != Widget::InitParams::TYPE_TOOLTIP) {
-    tooltip_manager_ = std::make_unique<TooltipManagerAura>(GetWidget());
+    tooltip_manager_ = std::make_unique<TooltipManagerAura>(this);
     tooltip_controller_ = std::make_unique<corewm::TooltipController>(
         desktop_window_tree_host_->CreateTooltip(),
         wm::GetActivationClient(host_->window()));
@@ -1276,7 +1276,7 @@ void DesktopNativeWidgetAura::OnMouseEvent(ui::MouseEvent* event) {
   DCHECK(content_window_->IsVisible());
   if (tooltip_manager_.get())
     tooltip_manager_->UpdateTooltip();
-  TooltipManagerAura::UpdateTooltipManagerForCapture(GetWidget());
+  TooltipManagerAura::UpdateTooltipManagerForCapture(this);
   native_widget_delegate_->OnMouseEvent(event);
   // WARNING: we may have been deleted.
 }
