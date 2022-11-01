@@ -154,10 +154,8 @@ declare global {
           id: number, reason: PlaintextReason): Promise<string>;
       export function requestCredentialDetails(id: number):
           Promise<PasswordUiEntry>;
-      export function getSavedPasswordList(
-          callback: (entries: PasswordUiEntry[]) => void): void;
-      export function getPasswordExceptionList(
-          callback: (entries: ExceptionEntry[]) => void): void;
+      export function getSavedPasswordList(): Promise<PasswordUiEntry[]>;
+      export function getPasswordExceptionList(): Promise<ExceptionEntry[]>;
       export function movePasswordsToAccount(ids: number[]): void;
       export function importPasswords(toStore: PasswordStoreSet):
           Promise<ImportResults>;

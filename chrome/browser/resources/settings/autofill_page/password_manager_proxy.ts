@@ -41,10 +41,9 @@ export interface PasswordManagerProxy {
 
   /**
    * Request the list of saved passwords.
-   * TODO(https://crbug.com/919483): Return a promise instead of taking a
-   * callback argument.
+   * @return A promise that resolves with the list of saved passwords.
    */
-  getSavedPasswordList(callback: SavedPasswordListChangedListener): void;
+  getSavedPasswordList(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 
   /**
    * Log that the Passwords page was accessed from the Chrome Settings WebUI.
@@ -115,10 +114,9 @@ export interface PasswordManagerProxy {
 
   /**
    * Request the list of password exceptions.
-   * TODO(https://crbug.com/919483): Return a promise instead of taking a
-   * callback argument.
+   * @return A promise that resolves with the list of password exceptions.
    */
-  getExceptionList(callback: PasswordExceptionListChangedListener): void;
+  getExceptionList(): Promise<chrome.passwordsPrivate.ExceptionEntry[]>;
 
   /**
    * Should remove the password exception and notify that the list has changed.
@@ -376,8 +374,8 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
         listener);
   }
 
-  getSavedPasswordList(callback: SavedPasswordListChangedListener) {
-    chrome.passwordsPrivate.getSavedPasswordList(callback);
+  getSavedPasswordList() {
+    return chrome.passwordsPrivate.getSavedPasswordList();
   }
 
   recordPasswordsPageAccessInSettings() {
@@ -422,8 +420,8 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
         listener);
   }
 
-  getExceptionList(callback: PasswordExceptionListChangedListener) {
-    chrome.passwordsPrivate.getPasswordExceptionList(callback);
+  getExceptionList() {
+    return chrome.passwordsPrivate.getPasswordExceptionList();
   }
 
   removeException(id: number) {

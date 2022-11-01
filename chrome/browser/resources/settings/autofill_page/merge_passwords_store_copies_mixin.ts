@@ -50,7 +50,7 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
             this.notifySplices('savedPasswords', passwordList);
           };
 
-          PasswordManagerImpl.getInstance().getSavedPasswordList(
+          PasswordManagerImpl.getInstance().getSavedPasswordList().then(
               this.setSavedPasswordsListener_);
           PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
               this.setSavedPasswordsListener_);

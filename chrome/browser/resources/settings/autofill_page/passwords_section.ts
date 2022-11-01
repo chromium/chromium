@@ -359,7 +359,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
 
     // Request initial data.
-    this.passwordManager_.getExceptionList(this.setPasswordExceptionsListener_);
+    this.passwordManager_.getExceptionList().then(
+        this.setPasswordExceptionsListener_);
 
     // Listen for changes.
     this.passwordManager_.addExceptionListChangedListener(

@@ -105,6 +105,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getInsecureCredentials',
       'getPasswordCheckStatus',
       'getUrlCollection',
+      'getSavedPasswordList',
       'importPasswords',
       'isAccountStoreDefault',
       'isOptedInForAccountStorage',
@@ -160,9 +161,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.actual_.listening.passwords--;
   }
 
-  getSavedPasswordList(callback: SavedPasswordListChangedListener) {
+  getSavedPasswordList() {
+    this.methodCalled('getSavedPasswordList');
     this.actual_.requested.passwords++;
-    callback(this.data.passwords);
+    return Promise.resolve(this.data.passwords);
   }
 
   recordPasswordsPageAccessInSettings() {}
@@ -188,9 +190,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     this.actual_.listening.exceptions--;
   }
 
-  getExceptionList(callback: PasswordExceptionListChangedListener) {
+  getExceptionList() {
     this.actual_.requested.exceptions++;
-    callback(this.data.exceptions);
+    return Promise.resolve(this.data.exceptions);
   }
 
   removeException(id: number) {

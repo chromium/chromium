@@ -150,19 +150,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   getSavedPasswordList() {
-    return new Promise<chrome.passwordsPrivate.PasswordUiEntry[]>(resolve => {
-      chrome.passwordsPrivate.getSavedPasswordList(passwords => {
-        resolve(chrome.runtime.lastError ? [] : passwords);
-      });
-    });
+    return chrome.passwordsPrivate.getSavedPasswordList().catch(() => []);
   }
 
   getBlockedSitesList() {
-    return new Promise<BlockedSite[]>(resolve => {
-      chrome.passwordsPrivate.getPasswordExceptionList(exceptions => {
-        resolve(chrome.runtime.lastError ? [] : exceptions);
-      });
-    });
+    return chrome.passwordsPrivate.getPasswordExceptionList().catch(() => []);
   }
 
   getPasswordCheckStatus() {
