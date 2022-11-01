@@ -2004,7 +2004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationClicked"
-    enum="MultiDeviceSetupNotification" expires_after="2023-02-01">
+    enum="MultiDeviceSetupNotification" expires_after="2023-04-30">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2014,7 +2014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationDismissed"
-    enum="MultiDeviceSetupNotification" expires_after="2023-02-01">
+    enum="MultiDeviceSetupNotification" expires_after="2023-04-30">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2025,7 +2025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDeviceSetup_NotificationShown"
-    enum="MultiDeviceSetupNotification" expires_after="2023-02-01">
+    enum="MultiDeviceSetupNotification" expires_after="2023-04-30">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

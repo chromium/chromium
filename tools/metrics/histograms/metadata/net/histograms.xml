@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.PrefetchFirstReuseTime" units="ms"
-    expires_after="2023-03-01">
+    expires_after="2023-04-30">
   <owner>nrosenthal@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.PrefetchReuseState" enum="PrefetchReuseState"
-    expires_after="2023-03-01">
+    expires_after="2023-04-30">
   <owner>nrosenthal@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.PrefetchReuseTime" units="ms"
-    expires_after="2023-03-01">
+    expires_after="2023-04-30">
   <owner>nrosenthal@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1355,7 +1355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.DNS.UI.DropdownSelectionEvent"
-    enum="DohProviderId" expires_after="2023-02-26">
+    enum="DohProviderId" expires_after="2023-04-30">
 <!-- Name completed by histogram_suffixes
    name="DnsDropdownSelectionEvent" -->
 
@@ -1732,7 +1732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.HttpJob.TotalTime.TLS13.Google" units="ms"
-    expires_after="2023-02-26">
+    expires_after="2023-04-30">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -1911,7 +1911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkChangeNotifier.NewConnectionCost"
-    enum="NetworkConnectionCost" expires_after="2023-02-26">
+    enum="NetworkConnectionCost" expires_after="2023-04-30">
   <owner>fbeaufort@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1921,7 +1921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NetworkChangeNotifier.NewConnectionType"
-    enum="NetworkConnectionType" expires_after="2023-02-26">
+    enum="NetworkConnectionType" expires_after="2023-04-30">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

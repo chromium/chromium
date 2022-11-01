@@ -3,6 +3,7 @@ Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
+
 <!--
 This file is used to generate a comprehensive list of histograms owned
 by the Performance Controls team along with a detailed description for
@@ -41,7 +42,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.BatterySaver.SettingsChangeMode"
-    enum="BatterySaverModeState" expires_after="2023-03-01">
+    enum="BatterySaverModeState" expires_after="2023-04-30">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -52,7 +53,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.BubbleAction"
-    enum="HighEfficiencyBubbleActionType" expires_after="2023-03-01">
+    enum="HighEfficiencyBubbleActionType" expires_after="2023-04-30">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -89,7 +90,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.HighEfficiency.SettingsChangeExceptionList"
-    enum="HighEfficiencyModeExceptionListAction" expires_after="2023-03-01">
+    enum="HighEfficiencyModeExceptionListAction" expires_after="2023-04-30">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -101,7 +102,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.HighEfficiency.SettingsChangeMode"
-    enum="BooleanEnabled" expires_after="2023-03-01">
+    enum="BooleanEnabled" expires_after="2023-04-30">
   <owner>charlesmeng@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
