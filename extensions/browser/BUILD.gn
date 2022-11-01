@@ -1012,3 +1012,12 @@ fuzzer_test("extension_file_highlighter_fuzzer") {
     "//base",
   ]
 }
+
+fuzzer_test("extension_web_request_form_data_parser_fuzzer") {
+  sources = [ "api/web_request/form_data_parser_fuzzer.cc" ]
+  deps = [
+    ":browser",
+    "//base",
+    "//net",
+  ]
+}
