@@ -88,7 +88,12 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   wm::CompoundEventFilter* root_window_event_filter() {
     return root_window_event_filter_.get();
   }
+
   aura::WindowTreeHost* host() { return host_.get(); }
+
+  DesktopWindowTreeHost* desktop_window_tree_host_for_testing() {
+    return desktop_window_tree_host_.get();
+  }
 
   aura::Window* content_window() { return content_window_; }
 

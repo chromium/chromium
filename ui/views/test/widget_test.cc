@@ -77,6 +77,17 @@ Widget* WidgetTest::CreateTopLevelPlatformWidget() {
   return widget;
 }
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget() {
+  Widget* widget = new Widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.native_widget = CreatePlatformDesktopNativeWidgetImpl(
+      widget, kStubCapture, base::DoNothing());
+  widget->Init(std::move(params));
+  return widget;
+}
+#endif
+
 Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget() {
   Widget* widget = new Widget;
   Widget::InitParams params =

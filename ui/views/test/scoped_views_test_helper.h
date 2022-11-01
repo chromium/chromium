@@ -36,8 +36,15 @@ class ScopedViewsTestHelper {
   // the RootWindow. Everywhere else, null.
   gfx::NativeWindow GetContext();
 
-  // Simulate an OS-level destruction of the native window held by |widget|.
+  // Simulate an OS-level destruction of the native window held by non-desktop
+  // |widget|.
   void SimulateNativeDestroy(Widget* widget);
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // Simulate an OS-level destruction of the native window held by desktop
+  // |widget|.
+  void SimulateDesktopNativeDestroy(Widget* widget);
+#endif
 
   TestViewsDelegate* test_views_delegate() {
     return test_views_delegate_.get();

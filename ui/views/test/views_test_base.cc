@@ -141,6 +141,12 @@ void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
   test_helper_->SimulateNativeDestroy(widget);
 }
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+void ViewsTestBase::SimulateDesktopNativeDestroy(Widget* widget) {
+  test_helper_->SimulateDesktopNativeDestroy(widget);
+}
+#endif
+
 #if !BUILDFLAG(IS_MAC)
 int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
   return 0;

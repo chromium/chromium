@@ -92,8 +92,15 @@ class ViewsTestBase : public PlatformTest {
 
   bool HasCompositingManager() const;
 
-  // Simulate an OS-level destruction of the native window held by |widget|.
+  // Simulate an OS-level destruction of the native window held by non-desktop
+  // |widget|.
   void SimulateNativeDestroy(Widget* widget);
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // Simulate an OS-level destruction of the native window held by desktop
+  // |widget|.
+  void SimulateDesktopNativeDestroy(Widget* widget);
+#endif
 
   // Get the system reserved height at the top of the screen. On Mac, this
   // includes the menu bar and title bar.

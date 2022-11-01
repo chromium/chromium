@@ -80,14 +80,22 @@ class WidgetTest : public ViewsTestBase {
   ~WidgetTest() override;
 
   // Create Widgets with |native_widget| in InitParams set to an instance of
-  // platform specific widget type that has stubbled capture calls.
+  // platform specific widget type that has stubbled capture calls. This will
+  // create a non-desktop widget.
   Widget* CreateTopLevelPlatformWidget();
   Widget* CreateTopLevelFramelessPlatformWidget();
   Widget* CreateChildPlatformWidget(gfx::NativeView parent_native_view);
 
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // Create Widgets with |native_widget| in InitParams set to an instance of
+  // platform specific widget type that has stubbled capture calls. This will
+  // create a desktop widget.
+  Widget* CreateTopLevelPlatformDesktopWidget();
+#endif
+
   // Create Widgets initialized without a |native_widget| set in InitParams.
   // Depending on the test environment, ViewsDelegate::OnBeforeWidgetInit() may
-  // still provide one.
+  // provide a desktop or non-desktop NativeWidget.
   Widget* CreateTopLevelNativeWidget();
   Widget* CreateChildNativeWidgetWithParent(Widget* parent);
 
