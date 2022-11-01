@@ -141,10 +141,8 @@ js_library("mock_crostini") {
     ":crostini",
     "//ui/file_manager/file_manager/externs/background:crostini",
   ]
-  visibility += [
-    "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest",
-    "//ui/file_manager/file_manager/foreground/js:task_controller_unittest",
-  ]
+  visibility +=
+      [ "//ui/file_manager/file_manager/foreground/js:file_tasks_unittest" ]
 }
 
 js_unittest("crostini_unittest") {

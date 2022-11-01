@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertNotReached} from 'chrome://webui-test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
@@ -20,36 +21,32 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {DirectoryModel} from './directory_model.js';
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.js';
 import {FileSelectionHandler} from './file_selection.js';
+import {FileTasks} from './file_tasks.js';
+import {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {TaskController} from './task_controller.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 
-/**
- * Mock metrics.
- * @param {string} name
- * @param {*} value
- * @param {Array<*>|number=} valid
- */
-metrics.recordEnum = function(name, value, valid) {};
 
-/**
- * Mock chrome APIs.
- * @type {!Object}
- */
-let mockChrome;
+/** Mock metrics. */
+metrics.recordEnum = function(
+    _name: string, _value: any, _valid?: any[]|number) {};
+
+/** Mock chrome APIs.  */
+let mockChrome: any;
 
 // Set up test components.
 export function setUp() {
   // Mock LoadTimeData strings.
-  window.loadTimeData.getBoolean = key => false;
-  window.loadTimeData.getString = id => id;
+  loadTimeData.getBoolean = (_key: string) => false;
+  loadTimeData.getString = (id: string) => id;
 
   // Mock chrome APIs.
   mockChrome = {
     commandLinePrivate: {
-      hasSwitch: function(name, callback) {
+      hasSwitch: function(_name: string, callback: (v: boolean) => void) {
         callback(false);
       },
     },
@@ -59,13 +56,13 @@ export function setUp() {
     },
     storage: {
       onChanged: {
-        addListener: function(callback) {},
+        addListener: function(_callback: EventListener) {},
       },
       local: {
-        get: function(key, callback) {
+        get: function(_key: string, callback: (v: any) => void) {
           callback({});
         },
-        set: function(value) {},
+        set: function(_value: any) {},
       },
     },
   };
@@ -83,16 +80,11 @@ export function setUp() {
   decorate('command', Command);
 }
 
-/**
- * Returns a task controller.
- * @param {!FileSelectionHandler} fileSelectionHandler
- * @return {!TaskController}
- */
-function createTaskController(fileSelectionHandler) {
+function createTaskController(fileSelectionHandler: FileSelectionHandler):
+    TaskController {
   const taskController = new TaskController(
-      DialogType.FULL_PAGE,
-      /** @type {!VolumeManager} */ ({
-        getLocationInfo: function(entry) {
+      DialogType.FULL_PAGE, {
+        getLocationInfo: function(_entry: Entry) {
           return VolumeManagerCommon.RootType.DRIVE;
         },
         getDriveConnectionState: function() {
@@ -103,21 +95,19 @@ function createTaskController(fileSelectionHandler) {
             volumeType: VolumeManagerCommon.VolumeType.DRIVE,
           };
         },
-      }),
-      /** @type {!FileManagerUI} */ ({
+      } as unknown as VolumeManager,
+      {
         taskMenuButton: document.createElement('button'),
         fileContextMenu: {
           defaultActionMenuItem: document.createElement('div'),
         },
-        speakA11yMessage: text => {},
-      }),
-      new MockMetadataModel({}),
-      /** @type {!DirectoryModel} */ ({
+        speakA11yMessage: (_text: string) => {},
+      } as unknown as FileManagerUI,
+      new MockMetadataModel({}) as unknown as MetadataModel, {
         getCurrentRootType: () => null,
-      }),
-      fileSelectionHandler,
-      /** @type {!MetadataUpdateController} */ ({}), createCrostiniForTest(),
-      /** @type {!ProgressCenter} */ ({}));
+      } as unknown as DirectoryModel,
+      fileSelectionHandler, {} as unknown as MetadataUpdateController,
+      createCrostiniForTest(), {} as unknown as ProgressCenter);
 
   return taskController;
 }
@@ -139,9 +129,9 @@ function setupFileManagerPrivate() {
     },
     getFileTaskCalledCount_: 0,
     onIOTaskProgressStatus: {
-      addListener: function(callback) {},
+      addListener: function(_callback: EventListener) {},
     },
-    getFileTasks: function(entries, callback) {
+    getFileTasks: function(_entries: Entry[], callback: (tasks: any) => void) {
       mockChrome.fileManagerPrivate.getFileTaskCalledCount_++;
       const fileTasks = ([
         /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
@@ -172,8 +162,9 @@ function setupFileManagerPrivate() {
 /**
  * Tests that executeEntryTask() runs the expected task.
  */
-export function testExecuteEntryTask(callback) {
-  const selectionHandler = new FakeFileSelectionHandler();
+export function testExecuteEntryTask(callback: () => void) {
+  const selectionHandler =
+      new FakeFileSelectionHandler() as unknown as FileSelectionHandler;
 
   const fileSystem = new MockFileSystem('volumeId');
   fileSystem.entries['/test.png'] =
@@ -184,9 +175,9 @@ export function testExecuteEntryTask(callback) {
   taskController.executeEntryTask(testEntry);
 
   reportPromise(
-      new Promise(resolve => {
+      new Promise<chrome.fileManagerPrivate.FileTaskDescriptor>((resolve) => {
         mockChrome.fileManagerPrivate.executeTask = resolve;
-      }).then(descriptor => {
+      }).then((descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) => {
         assert(util.descriptorEqual(
             {appId: 'handler-extension-id', taskType: 'file', actionId: 'play'},
             descriptor));
@@ -198,13 +189,15 @@ export function testExecuteEntryTask(callback) {
  * Tests that getFileTasks() does not call .fileManagerPrivate.getFileTasks()
  * multiple times when the selected entries are not changed.
  */
-export function testGetFileTasksShouldNotBeCalledMultipleTimes(callback) {
+export function testGetFileTasksShouldNotBeCalledMultipleTimes(
+    callback: () => void) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
   selectionHandler.updateSelection(
       [MockFileEntry.create(fileSystem, '/test.png')], ['image/png']);
-  const taskController = createTaskController(selectionHandler);
+  const taskController =
+      createTaskController(selectionHandler as unknown as FileSelectionHandler);
 
   assert(mockChrome.fileManagerPrivate.getFileTaskCalledCount_ === 0);
 
@@ -235,13 +228,15 @@ export function testGetFileTasksShouldNotBeCalledMultipleTimes(callback) {
  * correspond to FileSelectionHandler.selection at the time getFileTasks() is
  * called.
  */
-export function testGetFileTasksShouldNotReturnObsoletePromise(callback) {
+export function testGetFileTasksShouldNotReturnObsoletePromise(
+    callback: () => void) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
   selectionHandler.updateSelection(
       [MockFileEntry.create(fileSystem, '/test.png')], ['image/png']);
-  const taskController = createTaskController(selectionHandler);
+  const taskController =
+      createTaskController(selectionHandler as unknown as FileSelectionHandler);
 
   taskController.getFileTasks()
       .then(tasks => {
@@ -267,13 +262,15 @@ export function testGetFileTasksShouldNotReturnObsoletePromise(callback) {
  * Tests that changing the file selection during a getFileTasks() call causes
  * the getFileTasks() promise to reject.
  */
-export function testGetFileTasksShouldNotCacheRejectedPromise(callback) {
+export function testGetFileTasksShouldNotCacheRejectedPromise(
+    callback: () => void) {
   const selectionHandler = new FakeFileSelectionHandler();
 
   const fileSystem = new MockFileSystem('volumeId');
   selectionHandler.updateSelection(
       [MockFileEntry.create(fileSystem, '/test.png')], ['image/png']);
-  const taskController = createTaskController(selectionHandler);
+  const taskController =
+      createTaskController(selectionHandler as unknown as FileSelectionHandler);
 
   // Setup the selection handler computeAdditionalCallback to change the file
   // selection during the getFileTasks() call.
@@ -283,7 +280,7 @@ export function testGetFileTasksShouldNotCacheRejectedPromise(callback) {
   };
 
   taskController.getFileTasks().then(
-      tasks => {
+      (_tasks: FileTasks) => {
         assertNotReached('Fail: getFileTasks promise should be rejected');
         callback();
       },

@@ -298,6 +298,9 @@ ts_test_files = [
   "file_manager/widgets/xf_dlp_restriction_details_dialog_unittest.ts",
   "file_manager/widgets/xf_nudge_unittest.ts",
   "file_manager/widgets/xf_select_unittest.ts",
+
+  # Foreground:
+  "file_manager/foreground/js/task_controller_unittest.ts",
 ]
 
 ts_generated_templates = []
@@ -400,7 +403,6 @@ unittest_files = [
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
-  "file_manager/foreground/js/task_controller_unittest.js",
   "file_manager/foreground/js/thumbnail_loader_unittest.js",
   "file_manager/foreground/js/directory_contents_unittest.js",
   "file_manager/foreground/js/file_list_model_unittest.js",

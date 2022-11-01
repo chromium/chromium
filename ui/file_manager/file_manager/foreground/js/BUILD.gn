@@ -1188,31 +1188,6 @@ js_unittest("spinner_controller_unittest") {
   ]
 }
 
-js_unittest("task_controller_unittest") {
-  deps = [
-    ":directory_model",
-    ":fake_file_selection_handler",
-    ":file_selection",
-    ":metadata_update_controller",
-    "metadata:mock_metadata",
-    "ui:command",
-    "ui:file_manager_ui",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_crostini",
-    "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:metrics",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr:ui",
-  ]
-}
-
 js_library("task_history") {
   deps = [
     "//ui/webui/resources/js:cr_deprecated",
@@ -1285,7 +1260,6 @@ js_test_type_check("js_test_type_check") {
     ":path_component_unittest",
     ":providers_model_unittest",
     ":spinner_controller_unittest",
-    ":task_controller_unittest",
     ":thumbnail_loader_unittest",
   ]
 
