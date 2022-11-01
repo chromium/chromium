@@ -18,18 +18,18 @@
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
-#include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/tray/tri_view.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -38,10 +38,12 @@ namespace ash {
 namespace {
 
 // The paddings in `close_button_container_`.
-constexpr gfx::Insets kCloseButtonContainerInsets{15};
+const auto kCloseButtonContainerInsets = gfx::Insets(15);
+const auto kCloseButtonContainerInsetsJelly = gfx::Insets::TLBR(8, 16, 8, 26);
 
 // The paddings in `CalendarEventListView`.
 constexpr auto kContentInsets = gfx::Insets::TLBR(0, 0, 20, 0);
+constexpr auto kContentInsetsJelly = gfx::Insets::TLBR(0, 16, 20, 16);
 
 // The insets for `CalendarEmptyEventListView` label.
 constexpr auto kOpenGoogleCalendarInsets = gfx::Insets::VH(6, 16);
@@ -51,6 +53,10 @@ constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 80);
 
 // Border thickness for `CalendarEmptyEventListView`.
 constexpr int kOpenGoogleCalendarBorderThickness = 1;
+
+constexpr auto kEventListViewCornerRadius =
+    gfx::RoundedCornersF(0, 0, kBubbleCornerRadius, kBubbleCornerRadius);
+constexpr auto kEventListViewCornerRadiusJelly = gfx::RoundedCornersF(12);
 
 }  // namespace
 
@@ -111,25 +117,21 @@ CalendarEventListView::CalendarEventListView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  // Set up background color.
-  auto* color_provider = AshColorProvider::Get();
-  SkColor background_color = color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kOpaque);
-  SetBackground(views::CreateSolidBackground(background_color));
   SetPaintToLayer();
-
   // Set the bottom corners to be rounded so that `CalendarEventListView` is
   // contained in `CalendarView`.
-  layer()->SetRoundedCornerRadius(
-      {0, 0, kBubbleCornerRadius, kBubbleCornerRadius});
+  layer()->SetRoundedCornerRadius(features::IsCalendarJellyEnabled()
+                                      ? kEventListViewCornerRadiusJelly
+                                      : kEventListViewCornerRadius);
 
   views::BoxLayout* button_layout = close_button_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
-  close_button_container_->SetBorder(
-      views::CreateEmptyBorder(kCloseButtonContainerInsets));
+  close_button_container_->SetBorder(views::CreateEmptyBorder(
+      features::IsCalendarJellyEnabled() ? kCloseButtonContainerInsetsJelly
+                                         : kCloseButtonContainerInsets));
 
   auto* close_button =
       new IconButton(views::Button::PressedCallback(base::BindRepeating(
@@ -150,8 +152,11 @@ CalendarEventListView::CalendarEventListView(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  content_view_->SetBorder(views::CreateEmptyBorder(kContentInsets));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      features::IsCalendarJellyEnabled() ? 2 : 0));
+  content_view_->SetBorder(views::CreateEmptyBorder(
+      features::IsCalendarJellyEnabled() ? kContentInsetsJelly
+                                         : kContentInsets));
 
   UpdateListItems();
 
@@ -161,6 +166,16 @@ CalendarEventListView::CalendarEventListView(
 }
 
 CalendarEventListView::~CalendarEventListView() = default;
+
+void CalendarEventListView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  auto color = features::IsCalendarJellyEnabled()
+                   ? GetColorProvider()->GetColor(static_cast<ui::ColorId>(
+                         cros_tokens::kCrosSysSysOnBase))
+                   : AshColorProvider::Get()->GetBaseLayerColor(
+                         AshColorProvider::BaseLayerType::kOpaque);
+  SetBackground(views::CreateSolidBackground(color));
+}
 
 void CalendarEventListView::OnSelectedDateUpdated() {
   UpdateListItems();
@@ -190,9 +205,12 @@ void CalendarEventListView::UpdateListItems() {
       return a.start_time().date_time() < b.start_time().date_time();
     });
 
-    for (const google_apis::calendar::CalendarEvent& event : events) {
+    for (SingleDayEventList::iterator it = events.begin(); it != events.end();
+         ++it) {
       auto* event_entry =
-          content_view_->AddChildView(CreateCalendarEventListItemView(event));
+          content_view_->AddChildView(CreateCalendarEventListItemView(
+              /*event=*/*it, /*is_first_in_list=*/it == events.begin(),
+              /*is_last_in_list=*/it->id() == events.rbegin()->id()));
       // Needs to repaint the `content_view_`'s children.
       event_entry->InvalidateLayout();
     }
@@ -232,11 +250,14 @@ void CalendarEventListView::UpdateListItems() {
 
 std::unique_ptr<views::View>
 CalendarEventListView::CreateCalendarEventListItemView(
-    const google_apis::calendar::CalendarEvent& event) {
+    const google_apis::calendar::CalendarEvent& event,
+    const bool is_first_in_list,
+    const bool is_last_in_list) {
   if (features::IsCalendarJellyEnabled()) {
     return std::make_unique<CalendarEventListItemViewJelly>(
-        calendar_view_controller_, event);
+        calendar_view_controller_, event, is_first_in_list, is_last_in_list);
   }
+
   return std::make_unique<CalendarEventListItemView>(calendar_view_controller_,
                                                      event);
 }

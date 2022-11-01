@@ -15,11 +15,11 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-namespace views {
-class Label;
-}  // namespace views
-
 namespace ash {
+
+// Label ID's.
+constexpr int kSummaryLabelID = 100;
+constexpr int kTimeLabelID = 101;
 
 class CalendarViewController;
 
@@ -30,7 +30,9 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
 
   CalendarEventListItemViewJelly(
       CalendarViewController* calendar_view_controller,
-      google_apis::calendar::CalendarEvent event);
+      google_apis::calendar::CalendarEvent event,
+      const bool round_top_corners,
+      const bool round_bottom_corners);
   CalendarEventListItemViewJelly(const CalendarEventListItemViewJelly& other) =
       delete;
   CalendarEventListItemViewJelly& operator=(
@@ -48,14 +50,6 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
 
   // Unowned.
   CalendarViewController* const calendar_view_controller_;
-
-  // Owned by the views hierarchy.
-  // The summary (title) of the meeting event.
-  views::Label* const summary_;
-
-  // Owned by the views hierarchy.
-  // The start time and end time of a meeting event.
-  views::Label* const time_range_;
 
   // The URL for the meeting event.
   const GURL event_url_;

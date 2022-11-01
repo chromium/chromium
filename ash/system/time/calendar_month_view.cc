@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_month_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -21,6 +22,7 @@
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -116,8 +118,16 @@ void CalendarDateCellView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // Gray-out the date that is not in the current month.
-  SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()
-                                   : calendar_utils::GetPrimaryTextColor());
+  if (features::IsCalendarJellyEnabled()) {
+    SetEnabledTextColors(
+        grayed_out_ ? GetColorProvider()->GetColor(static_cast<ui::ColorId>(
+                          cros_tokens::kCrosSysDisabled))
+                    : GetColorProvider()->GetColor(static_cast<ui::ColorId>(
+                          cros_tokens::kCrosSysOnPrimaryContainer)));
+  } else {
+    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetDisabledTextColor()
+                                     : calendar_utils::GetPrimaryTextColor());
+  }
 }
 
 // Draws the background for this date. Note that this includes not only the
@@ -129,17 +139,27 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
     return;
 
   const AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor bg_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
-  const SkColor border_color = color_provider->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor);
+  const SkColor bg_color =
+      features::IsCalendarJellyEnabled()
+          ? GetColorProvider()->GetColor(
+                static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryContainer))
+          : color_provider->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::
+                    kControlBackgroundColorActive);
+  const SkColor border_color =
+      features::IsCalendarJellyEnabled()
+          ? GetColorProvider()->GetColor(
+                static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryContainer))
+          : color_provider->GetControlsLayerColor(
+                AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   const gfx::Rect content = GetContentsBounds();
   const gfx::Point center(
       (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
       (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
 
-  if (views::View::HasFocus()) {
+  if (views::View::HasFocus() ||
+      (features::IsCalendarJellyEnabled() && is_selected_)) {
     cc::PaintFlags highlight_border;
     highlight_border.setColor(border_color);
     highlight_border.setAntiAlias(true);
@@ -272,18 +292,20 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
   if (grayed_out_)
     return;
 
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  if (is_today_) {
-    const SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
-    SetEnabledTextColors(text_color);
-  } else if (is_selected_) {
-    const SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorProminent);
-    SetEnabledTextColors(text_color);
-  } else {
-    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
-                                     : calendar_utils::GetPrimaryTextColor());
+  if (!features::IsCalendarJellyEnabled()) {
+    const AshColorProvider* color_provider = AshColorProvider::Get();
+    if (is_today_) {
+      const SkColor text_color = color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
+      SetEnabledTextColors(text_color);
+    } else if (is_selected_) {
+      SetEnabledTextColors(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorProminent));
+    } else {
+      SkColor text_color = grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                       : calendar_utils::GetPrimaryTextColor();
+      SetEnabledTextColors(text_color);
+    }
   }
   MaybeDrawEventsIndicator(canvas);
 }
@@ -317,11 +339,14 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   if (event_number_ == 0)
     return;
 
+  const SkColor jelly_color = GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnPrimaryContainer));
   const SkColor indicator_color =
-      is_today_ ? AshColorProvider::Get()->GetBaseLayerColor(
-                      AshColorProvider::BaseLayerType::kTransparent90)
-                : AshColorProvider::Get()->GetControlsLayerColor(
-                      AshColorProvider::ControlsLayerType::kFocusRingColor);
+      features::IsCalendarJellyEnabled() ? jelly_color
+      : is_today_ ? AshColorProvider::Get()->GetBaseLayerColor(
+                        AshColorProvider::BaseLayerType::kTransparent90)
+                  : AshColorProvider::Get()->GetControlsLayerColor(
+                        AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   const float indicator_radius = is_selected_ ? kEventsPresentRoundedRadius * 2
                                               : kEventsPresentRoundedRadius;

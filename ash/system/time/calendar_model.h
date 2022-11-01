@@ -140,9 +140,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   bool ShouldInsertEvent(
       const google_apis::calendar::CalendarEvent* event) const;
 
-  // Checks if the event spans more than one day.
-  bool IsMultiDayEvent(const google_apis::calendar::CalendarEvent* event) const;
-
   // Inserts a single `event` that spans more than one day in the EventCache.
   void InsertMultiDayEvent(const google_apis::calendar::CalendarEvent* event,
                            const base::Time start_of_month);
@@ -158,25 +155,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
       SingleMonthEventMap& month,
       const google_apis::calendar::CalendarEvent* event,
       const base::Time start_time_midnight);
-
-  // Returns the `start_time` of `event` adjusted by time difference, to ensure
-  // that each event is stored by its local time, e.g. an event that starts at
-  // 2022-05-31 22:00:00.000 PST (2022-06-01 05:00:00.000 UTC) is stored in the
-  // map for 05-2022.
-  base::Time GetStartTimeAdjusted(
-      const google_apis::calendar::CalendarEvent* event) const;
-
-  // Returns the `end_time` of `event` adjusted by time difference.
-  base::Time GetEndTimeAdjusted(
-      const google_apis::calendar::CalendarEvent* event) const;
-
-  // Returns midnight on the day of the start time of `event`.
-  base::Time GetStartTimeMidnightAdjusted(
-      const google_apis::calendar::CalendarEvent* event) const;
-
-  // Returns midnight on the day of the end time of `event`.
-  base::Time GetEndTimeMidnightAdjusted(
-      const google_apis::calendar::CalendarEvent* event) const;
 
   // Frees up months of events as needed to keep us within storage limits.
   void PruneEventCache();

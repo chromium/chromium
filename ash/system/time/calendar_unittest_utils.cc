@@ -29,9 +29,16 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
   google_apis::calendar::DateTime start_time_date, end_time_date;
   event->set_id(id);
   event->set_summary(summary);
-  bool result = base::Time::FromString(start_time, &start_time_base);
+  bool result;
+  if (all_day_event)
+    result = base::Time::FromUTCString(start_time, &start_time_base);
+  else
+    result = base::Time::FromString(start_time, &start_time_base);
   DCHECK(result);
-  result = base::Time::FromString(end_time, &end_time_base);
+  if (all_day_event)
+    result = base::Time::FromUTCString(end_time, &end_time_base);
+  else
+    result = base::Time::FromString(end_time, &end_time_base);
   DCHECK(result);
   start_time_date.set_date_time(start_time_base);
   end_time_date.set_date_time(end_time_base);

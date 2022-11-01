@@ -306,6 +306,64 @@ int GetDayOfWeekInt(const base::Time date) {
   return local_date_exploded.day_of_week + 1;
 }
 
+bool IsMultiDayEvent(const google_apis::calendar::CalendarEvent* event) {
+  DCHECK(event);
+  return (GetStartTimeMidnightAdjusted(event) <
+          GetEndTimeMidnightAdjusted(event));
+}
+
+base::Time GetStartTimeAdjusted(
+    const google_apis::calendar::CalendarEvent* event) {
+  base::Time start_time = event->start_time().date_time();
+  return start_time + GetTimeDifference(start_time);
+}
+
+base::Time GetEndTimeAdjusted(
+    const google_apis::calendar::CalendarEvent* event) {
+  base::Time end_time = event->end_time().date_time();
+  return end_time + GetTimeDifference(end_time);
+}
+
+ASH_EXPORT base::Time GetStartTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event) {
+  return GetStartTimeAdjusted(event).UTCMidnight();
+}
+
+ASH_EXPORT base::Time GetEndTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event) {
+  return GetEndTimeAdjusted(event).UTCMidnight();
+}
+
+ASH_EXPORT const std::tuple<base::Time, base::Time> GetStartAndEndTime(
+    const google_apis::calendar::CalendarEvent* event,
+    const base::Time& selected_date,
+    const base::Time& selected_date_midnight,
+    const base::Time& selected_date_midnight_utc) {
+  const base::Time selected_last_minute =
+      calendar_utils::GetNextDayMidnight(selected_date_midnight) -
+      base::Minutes(1);
+  const base::TimeDelta time_difference =
+      calendar_utils::GetTimeDifference(selected_date);
+  const base::Time selected_last_minute_utc =
+      selected_last_minute - time_difference;
+
+  // If it's an "all day" event, then we want to display 00:00 - 23:59 for the
+  // event. The formatter we use will apply timezone changes to the given
+  // `base::Time` which are set to UTC midnight in the response, so we need to
+  // negate the timezone, so when the formatter formats, it will make the dates
+  // midnight in the local timezone.
+  if (event->all_day_event())
+    return std::make_tuple(selected_date_midnight_utc,
+                           selected_last_minute_utc);
+
+  base::Time start_time = calendar_utils::GetMaxTime(
+      event->start_time().date_time(), selected_date_midnight_utc);
+  base::Time end_time = calendar_utils::GetMinTime(
+      event->end_time().date_time(), selected_last_minute_utc);
+
+  return std::make_tuple(start_time, end_time);
+}
+
 }  // namespace calendar_utils
 
 }  // namespace ash

@@ -210,7 +210,7 @@ class CalendarModelTest : public AshTestBase {
 
   base::Time GetStartTimeMidnightAdjusted(
       const google_apis::calendar::CalendarEvent* event) {
-    return calendar_model_->GetStartTimeMidnightAdjusted(event);
+    return calendar_utils::GetStartTimeMidnightAdjusted(event);
   }
 
   bool EventsPresentAtIndex(std::vector<base::Time>& months, int index) {

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -244,6 +245,36 @@ ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
 // different for different languages. If cannot find this local's day in a week,
 // returns its time exploded's `day_of_week`;
 ASH_EXPORT int GetDayOfWeekInt(const base::Time date);
+
+// Checks if the event spans more than one day.
+ASH_EXPORT bool IsMultiDayEvent(
+    const google_apis::calendar::CalendarEvent* event);
+
+// Returns the `start_time` of `event` adjusted by time difference, to ensure
+// that each event is stored by its local time, e.g. an event that starts at
+// 2022-05-31 22:00:00.000 PST (2022-06-01 05:00:00.000 UTC) is stored in the
+// map for 05-2022.
+base::Time GetStartTimeAdjusted(
+    const google_apis::calendar::CalendarEvent* event);
+
+// Returns the `end_time` of `event` adjusted by time difference.
+base::Time GetEndTimeAdjusted(
+    const google_apis::calendar::CalendarEvent* event);
+
+// Returns midnight on the day of the start time of `event`.
+ASH_EXPORT base::Time GetStartTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event);
+
+// Returns midnight on the day of the end time of `event`.
+ASH_EXPORT base::Time GetEndTimeMidnightAdjusted(
+    const google_apis::calendar::CalendarEvent* event);
+
+// Gets the event start and end times accounting for timezone.
+const std::tuple<base::Time, base::Time> GetStartAndEndTime(
+    const google_apis::calendar::CalendarEvent* event,
+    const base::Time& selected_date,
+    const base::Time& selected_date_midnight,
+    const base::Time& selected_date_midnight_utc);
 
 }  // namespace calendar_utils
 

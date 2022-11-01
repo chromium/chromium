@@ -20,13 +20,24 @@ void SetDefaultLocale(const std::string& lang) {
   ash::DateHelper::GetInstance()->ResetForTesting();
 }
 
+std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
+    const char* start_time,
+    const char* end_time,
+    bool all_day_event = false) {
+  return calendar_test_utils::CreateEvent(
+      "id_7", "summary_7", start_time, end_time,
+      google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
+      google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
+      all_day_event);
+}
+
 }  // namespace
 
-using CalendarUtilsUnittest = AshTestBase;
+using CalendarUtilsUnitTest = AshTestBase;
 
 // Tests the time difference calculation with different timezones and
 // considering daylight savings.
-TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
+TEST_F(CalendarUtilsUnitTest, GetTimeDifference) {
   // Create a date: Aug,1st 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -51,7 +62,7 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date2));
 }
 
-TEST_F(CalendarUtilsUnittest, DateFormatter) {
+TEST_F(CalendarUtilsUnitTest, DateFormatter) {
   // Create a date: Aug 1, 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -79,7 +90,7 @@ TEST_F(CalendarUtilsUnittest, DateFormatter) {
   EXPECT_EQ(u"August 2021", calendar_utils::GetMonthNameAndYear(date));
 }
 
-TEST_F(CalendarUtilsUnittest, DateFormatterClockTimes) {
+TEST_F(CalendarUtilsUnitTest, DateFormatterClockTimes) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Using "en" locale as other languages format their hours differently.
@@ -123,7 +134,7 @@ TEST_F(CalendarUtilsUnittest, DateFormatterClockTimes) {
   EXPECT_EQ(u"00", calendar_utils::GetMinutes(midnight));
 }
 
-TEST_F(CalendarUtilsUnittest, HoursAndMinutesInDifferentLocales) {
+TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Create AM time: 9:05 GMT.
@@ -177,7 +188,7 @@ TEST_F(CalendarUtilsUnittest, HoursAndMinutesInDifferentLocales) {
   SetDefaultLocale("en");
 }
 
-TEST_F(CalendarUtilsUnittest, LocalesWithUniqueNumerals) {
+TEST_F(CalendarUtilsUnitTest, LocalesWithUniqueNumerals) {
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Create time: 23:03 GMT.
@@ -204,7 +215,7 @@ TEST_F(CalendarUtilsUnittest, LocalesWithUniqueNumerals) {
   SetDefaultLocale("en");
 }
 
-TEST_F(CalendarUtilsUnittest, IntervalFormatter) {
+TEST_F(CalendarUtilsUnitTest, IntervalFormatter) {
   base::Time date1;
   base::Time date2;
   base::Time date3;
@@ -229,7 +240,7 @@ TEST_F(CalendarUtilsUnittest, IntervalFormatter) {
       calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date3));
 }
 
-TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
+TEST_F(CalendarUtilsUnitTest, TimezoneChanged) {
   // Create a date: Aug,1st 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 3:00 GMT", &date));
@@ -251,7 +262,7 @@ TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
   EXPECT_EQ(u"July 31, 2021", calendar_utils::GetMonthDayYear(date));
 }
 
-TEST_F(CalendarUtilsUnittest, GetMonthsBetween) {
+TEST_F(CalendarUtilsUnitTest, GetMonthsBetween) {
   base::Time start_date, end_date;
 
   ASSERT_TRUE(base::Time::FromString("23 Oct 2009 11:00 GMT", &start_date));
@@ -322,7 +333,7 @@ TEST_F(CalendarUtilsUnittest, GetMonthsBetween) {
   EXPECT_EQ(calendar_utils::GetMonthsBetween(start_date, end_date), -1);
 }
 
-TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
+TEST_F(CalendarUtilsUnitTest, GetFetchStartEndTimes) {
   base::Time date, expected_start, expected_end;
   std::pair<base::Time, base::Time> fetch;
 
@@ -363,7 +374,7 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   EXPECT_EQ(fetch.second, expected_end);
 }
 
-TEST_F(CalendarUtilsUnittest, MinMaxTime) {
+TEST_F(CalendarUtilsUnitTest, MinMaxTime) {
   base::Time date_1;
   base::Time date_2;
   base::Time date_3;
@@ -376,6 +387,49 @@ TEST_F(CalendarUtilsUnittest, MinMaxTime) {
   EXPECT_EQ(date_2, calendar_utils::GetMaxTime(date_1, date_2));
   EXPECT_EQ(date_3, calendar_utils::GetMaxTime(date_1, date_3));
   EXPECT_EQ(date_4, calendar_utils::GetMinTime(date_1, date_4));
+}
+
+TEST_F(
+    CalendarUtilsUnitTest,
+    GivenAnEventWithAStartAndEndTime_WhenGetStartAndEndTimesIsCalled_ThenReturnDatesAdjustedForLocalTimezone) {
+  const char* start_time_string = "22 Nov 2021 23:30 GMT";
+  const char* end_time_string = "23 Nov 2021 0:30 GMT";
+  const auto event = CreateEvent(start_time_string, end_time_string);
+  base::Time expected_start, expected_end;
+  ash::system::ScopedTimezoneSettings timezone_settings(u"PST");
+
+  EXPECT_TRUE(base::Time::FromString(start_time_string, &expected_start));
+  EXPECT_TRUE(base::Time::FromString(end_time_string, &expected_end));
+
+  const auto [actual_start, actual_end] = calendar_utils::GetStartAndEndTime(
+      event.get(), expected_start, expected_start.UTCMidnight(),
+      expected_start.LocalMidnight());
+
+  EXPECT_EQ(actual_start, expected_start);
+  EXPECT_EQ(actual_end, expected_end);
+}
+
+TEST_F(
+    CalendarUtilsUnitTest,
+    GivenAnAllDayEvent_WhenGetStartAndEndTimesIsCalled_ThenReturnDatesAdjustedForLocalMidnight) {
+  const char* start_time_string = "22 Nov 2021 00:00 UTC";
+  const char* end_time_string = "23 Nov 2021 00:00 UTC";
+  // After getting the date, it should have been adjusted to 23:59 local time,
+  // so 07:59 UTC with PST timezone.
+  const char* expected_end_string = "23 Nov 2021 07:59 UTC";
+  const auto event = CreateEvent(start_time_string, end_time_string, true);
+  base::Time expected_start, expected_end;
+  ash::system::ScopedTimezoneSettings timezone_settings(u"PST");
+
+  EXPECT_TRUE(base::Time::FromString(start_time_string, &expected_start));
+  EXPECT_TRUE(base::Time::FromUTCString(expected_end_string, &expected_end));
+
+  const auto [actual_start, actual_end] = calendar_utils::GetStartAndEndTime(
+      event.get(), expected_start, expected_start.UTCMidnight(),
+      expected_start.LocalMidnight());
+
+  EXPECT_EQ(actual_start, expected_start);
+  EXPECT_EQ(actual_end, expected_end);
 }
 
 }  // namespace ash

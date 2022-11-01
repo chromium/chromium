@@ -43,7 +43,9 @@ class ASH_EXPORT CalendarEventListView
   void UpdateListItems();
 
   std::unique_ptr<views::View> CreateCalendarEventListItemView(
-      const google_apis::calendar::CalendarEvent& event);
+      const google_apis::calendar::CalendarEvent& event,
+      bool is_first_in_list,
+      bool is_last_in_list);
 
   // Owned by `CalendarView`.
   CalendarViewController* calendar_view_controller_;
@@ -55,6 +57,9 @@ class ASH_EXPORT CalendarEventListView
   // The content of the `scroll_view_`, which carries a list of
   // `CalendarEventListItemView`. Owned by `CalendarEventListView`.
   views::View* const content_view_;
+
+  // views::View:
+  void OnThemeChanged() override;
 
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>

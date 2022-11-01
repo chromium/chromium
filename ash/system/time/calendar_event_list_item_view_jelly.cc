@@ -7,36 +7,39 @@
 #include <string>
 #include <tuple>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
-#include "ash/system/tray/tray_popup_utils.h"
-#include "ash/system/tray/tri_view.h"
+#include "ash/system/time/event_date_formatter_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/view.h"
 
 namespace ash {
 namespace {
 
-// The paddings for `CalendarEventListItemViewJelly`.
-constexpr auto kEventListItemInsets = gfx::Insets::VH(0, 20);
-
-// Paddings in this view.
-constexpr int kEntryHorizontalPadding = 20;
+// The paddings for `CalendarEventListViewItemJelly`.
+constexpr auto kEventListItemDotOffset = 12;
+constexpr auto kEventListItemInsets =
+    gfx::Insets::TLBR(6, kEventListItemDotOffset, 6, 12);
+constexpr auto kEventListItemHorizontalChildSpacing = 8;
 
 // Radius of the event color dot.
 constexpr int kColorDotRadius = 4;
@@ -53,17 +56,6 @@ std::map<std::string, std::string> kEventHexColorCodes = {
     {"5", "fbd75b"}, {"6", "ffb878"},  {"7", "46d6db"}, {"8", "e1e1e1"},
     {"9", "5484ed"}, {"10", "51b749"}, {"11", "dc2127"}};
 
-// Sets up the event label.
-void SetUpLabel(views::Label* label,
-                gfx::ElideBehavior elide_behavior,
-                gfx::HorizontalAlignment horizontal_alignment) {
-  label->SetHorizontalAlignment(horizontal_alignment);
-  label->SetAutoColorReadabilityEnabled(false);
-  label->SetElideBehavior(elide_behavior);
-  label->SetSubpixelRenderingEnabled(false);
-  label->SetTextContext(CONTEXT_CALENDAR_DATE);
-}
-
 // Renders an Event color dot.
 class CalendarEventListItemDot : public views::View {
  public:
@@ -72,12 +64,13 @@ class CalendarEventListItemDot : public views::View {
     std::string hex_code =
         kEventHexColorCodes[color_id.empty() ? kDefaultColorId : color_id];
     base::HexStringToInt(hex_code, &color_);
-    SetPreferredSize(gfx::Size(kColorDotViewSize, kColorDotViewSize));
+    SetPreferredSize(gfx::Size(kColorDotViewSize,
+                               kColorDotViewSize + kEventListItemDotOffset));
   }
-  ~CalendarEventListItemDot() override = default;
   CalendarEventListItemDot(const CalendarEventListItemDot& other) = delete;
   CalendarEventListItemDot& operator=(const CalendarEventListItemDot& other) =
       delete;
+  ~CalendarEventListItemDot() override = default;
 
   // Draws the circle for the event color dot.
   void OnPaint(gfx::Canvas* canvas) override {
@@ -94,82 +87,62 @@ class CalendarEventListItemDot : public views::View {
   int color_;
 };
 
-// Gets the event start and end times accounting for timezone.
-const std::tuple<base::Time, base::Time> GetStartAndEndTime(
-    const google_apis::calendar::CalendarEvent* event,
-    CalendarViewController* calendar_view_controller) {
-  const base::Time selected_midnight =
-      calendar_view_controller->selected_date_midnight();
-  const base::Time selected_midnight_utc =
-      calendar_view_controller->selected_date_midnight_utc();
-  const base::Time selected_last_minute =
-      calendar_utils::GetNextDayMidnight(selected_midnight) - base::Minutes(1);
-  const base::TimeDelta time_difference = calendar_utils::GetTimeDifference(
-      calendar_view_controller->selected_date().value());
-  const base::Time selected_last_minute_utc =
-      selected_last_minute - time_difference;
-
-  // If it's an "all day" event, then we want to display 00:00 - 23:59 for the
-  // event. The formatter we use will apply timezone changes to the given
-  // `base::Time` which are set to UTC midnight in the response, so we need to
-  // negate the timezone, so when the formatter formats, it will make the dates
-  // midnight in the local timezone.
-  if (event->all_day_event())
-    return std::make_tuple(selected_midnight_utc, selected_last_minute_utc);
-
-  base::Time start_time = calendar_utils::GetMaxTime(
-      event->start_time().date_time(), selected_midnight_utc);
-  base::Time end_time = calendar_utils::GetMinTime(
-      event->end_time().date_time(), selected_last_minute_utc);
-
-  return std::make_tuple(start_time, end_time);
+// Creates and returns a label containing the event summary.
+views::Builder<views::Label> CreateSummaryLabel(
+    const std::string& event_summary,
+    const std::u16string& tooltip_text) {
+  return views::Builder<views::Label>(
+             bubble_utils::CreateLabel(
+                 bubble_utils::TypographyStyle::kButton1,
+                 event_summary.empty()
+                     ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
+                     : base::UTF8ToUTF16(event_summary)))
+      .SetID(kSummaryLabelID)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false)
+      .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
+      .SetSubpixelRenderingEnabled(false)
+      .SetTextContext(CONTEXT_CALENDAR_DATE)
+      .SetTooltipText(tooltip_text);
 }
 
-bool Is12HourClock() {
-  return Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
-         base::k12HourClock;
-}
-
-const std::tuple<std::u16string, std::u16string>
-GetStartAndEndTimeAccessibleNames(base::Time start_time, base::Time end_time) {
-  if (Is12HourClock()) {
-    return std::make_tuple(calendar_utils::GetTwelveHourClockTime(start_time),
-                           calendar_utils::GetTwelveHourClockTime(end_time));
-  }
-
-  return std::make_tuple(calendar_utils::GetTwentyFourHourClockTime(start_time),
-                         calendar_utils::GetTwentyFourHourClockTime(end_time));
-}
-
-// Returns a string containing the event start and end times "nn:nn - nn:nn".
-const std::u16string GetFormattedInterval(base::Time start_time,
-                                          base::Time end_time) {
-  if (Is12HourClock()) {
-    return calendar_utils::FormatTwelveHourClockTimeInterval(start_time,
-                                                             end_time);
-  }
-
-  return calendar_utils::FormatTwentyFourHourClockTimeInterval(start_time,
-                                                               end_time);
+// Creates and returns a label containing the event time.
+views::Builder<views::Label> CreateTimeLabel(
+    const std::u16string& title,
+    const std::u16string& tooltip_text) {
+  return views::Builder<views::Label>(
+             bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kBody1,
+                                       title))
+      .SetID(kTimeLabelID)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false)
+      .SetElideBehavior(gfx::ElideBehavior::NO_ELIDE)
+      .SetSubpixelRenderingEnabled(false)
+      .SetTextContext(CONTEXT_CALENDAR_DATE)
+      .SetTooltipText(tooltip_text);
 }
 
 }  // namespace
 
 CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
     CalendarViewController* calendar_view_controller,
-    google_apis::calendar::CalendarEvent event)
+    google_apis::calendar::CalendarEvent event,
+    const bool round_top_corners,
+    const bool round_bottom_corners)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       calendar_view_controller_(calendar_view_controller),
-      summary_(AddChildView(std::make_unique<views::Label>())),
-      time_range_(AddChildView(std::make_unique<views::Label>())),
       event_url_(event.html_link()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
   DCHECK(calendar_view_controller_->selected_date().has_value());
 
-  auto [start_time, end_time] =
-      GetStartAndEndTime(&event, calendar_view_controller);
-  auto [start_time_accessible_name, end_time_accessible_name] =
-      GetStartAndEndTimeAccessibleNames(start_time, end_time);
+  const auto [start_time, end_time] = calendar_utils::GetStartAndEndTime(
+      &event, calendar_view_controller->selected_date().value(),
+      calendar_view_controller->selected_date_midnight(),
+      calendar_view_controller->selected_date_midnight_utc());
+  const auto [start_time_accessible_name, end_time_accessible_name] =
+      event_date_formatter_util::GetStartAndEndTimeAccessibleNames(start_time,
+                                                                   end_time);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
   SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION,
@@ -177,49 +150,55 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
       calendar_utils::GetTimeZone(start_time),
       base::UTF8ToUTF16(event.summary())));
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetBorder(views::CreateEmptyBorder(kEventListItemInsets));
 
-  auto formatted_interval = GetFormattedInterval(start_time, end_time);
-  auto tooltip_text = l10n_util::GetStringFUTF16(
+  // Conditionally round the items corners depending upon where it sits in the
+  // list.
+  const int top_radius = round_top_corners ? 12 : 0;
+  const int bottom_radius = round_bottom_corners ? 12 : 0;
+  const gfx::RoundedCornersF item_corner_radius = gfx::RoundedCornersF(
+      top_radius, top_radius, bottom_radius, bottom_radius);
+  SetPaintToLayer();
+  layer()->SetRoundedCornerRadius(item_corner_radius);
+
+  auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, kEventListItemInsets,
+      kEventListItemHorizontalChildSpacing);
+  horizontal_layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  std::u16string formatted_time_text;
+  if (calendar_utils::IsMultiDayEvent(&event) || event.all_day_event()) {
+    formatted_time_text = event_date_formatter_util::GetMultiDayText(
+        &event, calendar_view_controller->selected_date_midnight(),
+        calendar_view_controller->selected_date_midnight_utc());
+  } else {
+    formatted_time_text =
+        event_date_formatter_util::GetFormattedInterval(start_time, end_time);
+  }
+  const auto tooltip_text = l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, base::UTF8ToUTF16(event.summary()),
-      formatted_interval);
+      formatted_time_text);
 
-  SetUpLabel(time_range_, gfx::NO_ELIDE,
-             gfx::HorizontalAlignment::ALIGN_CENTER);
-  time_range_->SetText(formatted_interval);
-  time_range_->SetTooltipText(tooltip_text);
-
-  SetUpLabel(summary_, gfx::ElideBehavior::ELIDE_TAIL,
-             gfx::HorizontalAlignment::ALIGN_LEFT);
-  summary_->SetText(event.summary().empty()
-                        ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
-                        : base::UTF8ToUTF16(event.summary()));
-  summary_->SetTooltipText(tooltip_text);
-  summary_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(0, kEntryHorizontalPadding)));
-
-  // Creates a `TriView` which carries the `color_dot`, `summary_`
-  // and `time_range_`.
-  TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
-  tri_view->SetMinSize(
-      TriView::Container::START,
-      gfx::Size(kColorDotViewSize,
-                tri_view->GetMinSize(TriView::Container::START).height()));
-  tri_view->AddView(TriView::Container::START,
-                    AddChildView(std::make_unique<CalendarEventListItemDot>(
-                        event.color_id())));
-  tri_view->AddView(TriView::Container::CENTER, summary_);
-  tri_view->AddView(TriView::Container::END, time_range_);
-
-  AddChildView(tri_view);
+  AddChildView(
+      views::Builder<views::View>()
+          .SetLayoutManager(std::move(horizontal_layout_manager))
+          .AddChild(views::Builder<views::View>(
+              std::make_unique<CalendarEventListItemDot>(event.color_id())))
+          .AddChild(
+              views::Builder<views::View>()
+                  .SetLayoutManager(std::make_unique<views::BoxLayout>(
+                      views::BoxLayout::Orientation::kVertical))
+                  .AddChild(CreateSummaryLabel(event.summary(), tooltip_text))
+                  .AddChild(CreateTimeLabel(formatted_time_text, tooltip_text)))
+          .Build());
 }
 
 CalendarEventListItemViewJelly::~CalendarEventListItemViewJelly() = default;
 
 void CalendarEventListItemViewJelly::OnThemeChanged() {
   views::View::OnThemeChanged();
-  summary_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
-  time_range_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
+  SetBackground(views::CreateSolidBackground(GetColorProvider()->GetColor(
+      static_cast<ui::ColorId>(cros_tokens::kCrosSysSurface))));
 }
 
 bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
