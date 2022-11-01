@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -149,6 +150,7 @@ bool MojoVideoEncodeAccelerator::Initialize(
       std::move(media_log_pending_receiver));
 
   bool result = false;
+  base::ScopedAllowBaseSyncPrimitives allow;
   vea_->Initialize(config, std::move(vea_client_remote),
                    std::move(media_log_pending_remote), &result);
   return result;

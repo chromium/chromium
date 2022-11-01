@@ -242,6 +242,7 @@ class AudioInputDevice;
 class AudioOutputDevice;
 class BlockingUrlProtocol;
 class FileVideoCaptureDeviceFactory;
+class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
 }  // namespace media
 namespace memory_instrumentation {
@@ -599,6 +600,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class location::nearby::chrome::SubmittableExecutor;
   friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
+  friend class media::MojoVideoEncodeAccelerator;
   friend class mojo::core::ScopedIPCSupport;
   friend class net::MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
   friend class rlz_lib::FinancialPing;
