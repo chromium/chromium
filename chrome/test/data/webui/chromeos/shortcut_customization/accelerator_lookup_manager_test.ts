@@ -8,6 +8,7 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {Accelerator, AcceleratorInfo, AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('acceleratorLookupManagerTest', function() {
@@ -39,9 +40,9 @@ suite('acceleratorLookupManagerTest', function() {
 
   function replaceAndVerify(
       source: AcceleratorSource, action: number, oldAccel: Accelerator,
-      newAccel: Accelerator) {
+      newAccelInfo: AcceleratorInfo) {
     const uuid = getManager().getAcceleratorIdFromReverseLookup(oldAccel);
-    getManager().replaceAccelerator(source, action, oldAccel, newAccel);
+    getManager().replaceAccelerator(source, action, oldAccel, newAccelInfo);
 
     // Verify that the old accelerator is no longer part of the reverse
     // lookup.
@@ -49,17 +50,21 @@ suite('acceleratorLookupManagerTest', function() {
         undefined, getManager().getAcceleratorIdFromReverseLookup(oldAccel));
     // Verify the replacement accelerator is in the reverse lookup.
     assertEquals(
-        uuid, getManager().getAcceleratorIdFromReverseLookup(newAccel));
+        uuid,
+        getManager().getAcceleratorIdFromReverseLookup(
+            newAccelInfo.accelerator));
   }
 
   function addAndVerify(
-      source: AcceleratorSource, action: number, newAccel: Accelerator) {
-    getManager().addAccelerator(source, action, newAccel);
+      source: AcceleratorSource, action: number,
+      newAccelInfo: AcceleratorInfo) {
+    getManager().addAccelerator(source, action, newAccelInfo);
 
     // Verify that the new accelerator is in the reverse lookup.
     assertEquals(
         `${source}-${action}`,
-        getManager().getAcceleratorIdFromReverseLookup(newAccel));
+        getManager().getAcceleratorIdFromReverseLookup(
+            newAccelInfo.accelerator));
   }
 
   test('AcceleratorLookupDefaultFake', () => {
@@ -78,7 +83,7 @@ suite('acceleratorLookupManagerTest', function() {
           continue;
         }
         for (const [action, accelInfos] of Object.entries(accelMap)) {
-          const actualAccels = getManager().getAccelerators(source, action);
+          const actualAccels = getManager().getAcceleratorInfos(source, action);
           assertDeepEquals(accelInfos, actualAccels);
         }
       }
@@ -127,11 +132,12 @@ suite('acceleratorLookupManagerTest', function() {
           getManager().getAcceleratorIdFromReverseLookup(expectedNewAccel));
 
       replaceAndVerify(
-          AcceleratorSource.kAsh, expectedAction, oldAccel, expectedNewAccel);
+          AcceleratorSource.kAsh, expectedAction, oldAccel,
+          createEmptyAccelInfoFromAccel(expectedNewAccel));
 
       // Check that the accelerator got updated in the lookup.
-      let lookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      let lookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, expectedAction);
       // Replacing a default shortcut should not remove the default. Expect
       // a new accelerator to be added instead.
       assertEquals(2, lookup.length);
@@ -153,11 +159,11 @@ suite('acceleratorLookupManagerTest', function() {
               expectedNewDefaultAccel));
       replaceAndVerify(
           AcceleratorSource.kAsh, expectedAction, expectedNewAccel,
-          expectedNewDefaultAccel);
+          createEmptyAccelInfoFromAccel(expectedNewDefaultAccel));
 
       // Check that the accelerator got updated in the lookup.
-      lookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      lookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, expectedAction);
       // Expect only one accelerator since the previous accelerator has been
       // removed but the default accelerator has been re-enabled.
       assertEquals(1, lookup.length);
@@ -188,11 +194,11 @@ suite('acceleratorLookupManagerTest', function() {
 
       replaceAndVerify(
           AcceleratorSource.kAsh, newDeskAction, oldNewDeskAccel,
-          overridenAccel);
+          createEmptyAccelInfoFromAccel(overridenAccel));
 
       // Verify that the New Desk shortcut now has the ALT + ']' accelerator.
-      const newDeskLookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+      const newDeskLookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, newDeskAction);
       assertEquals(2, newDeskLookup.length);
       assertEquals(
           JSON.stringify(overridenAccel),
@@ -200,7 +206,7 @@ suite('acceleratorLookupManagerTest', function() {
 
       // There should still be 1 accelerator for snapWindowRight, but the
       // default should be disabled.
-      const snapWindowRightLookup = getManager().getAccelerators(
+      const snapWindowRightLookup = getManager().getAcceleratorInfos(
           AcceleratorSource.kAsh, snapWindowRightAction);
       assertEquals(1, snapWindowRightLookup.length);
       assertEquals(
@@ -229,11 +235,13 @@ suite('acceleratorLookupManagerTest', function() {
           undefined,
           getManager().getAcceleratorIdFromReverseLookup(expectedNewAccel));
 
-      addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
+      addAndVerify(
+          AcceleratorSource.kAsh, expectedAction,
+          createEmptyAccelInfoFromAccel(expectedNewAccel));
 
       // Check that the accelerator got updated in the lookup.
-      const lookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      const lookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, expectedAction);
       assertEquals(2, lookup.length);
       assertEquals(
           JSON.stringify(expectedNewAccel),
@@ -259,11 +267,13 @@ suite('acceleratorLookupManagerTest', function() {
       // Replace New Desk shortcut with Alt+']'.
       const newDeskAction = 2;
 
-      addAndVerify(AcceleratorSource.kAsh, newDeskAction, overridenAccel);
+      addAndVerify(
+          AcceleratorSource.kAsh, newDeskAction,
+          createEmptyAccelInfoFromAccel(overridenAccel));
 
       // Verify that the New Desk shortcut now has the ALT + ']' accelerator.
-      const newDeskLookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+      const newDeskLookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, newDeskAction);
       assertEquals(2, newDeskLookup.length);
       assertEquals(
           JSON.stringify(overridenAccel),
@@ -271,7 +281,7 @@ suite('acceleratorLookupManagerTest', function() {
 
       // Replacing a default accelerator should not remove it but rather disable
       // it.
-      const snapWindowRightLookup = getManager().getAccelerators(
+      const snapWindowRightLookup = getManager().getAcceleratorInfos(
           AcceleratorSource.kAsh, snapWindowRightAction);
       assertEquals(1, snapWindowRightLookup.length);
       assertEquals(
@@ -290,8 +300,8 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedAction = 1;
 
       // Initially there is only one accelerator for Snap Window Right.
-      const lookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      const lookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, expectedAction);
       assertEquals(1, lookup.length);
 
       // Remove the accelerator.
@@ -321,8 +331,8 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedAction = 1;
 
       // Initially there is only one accelerator for Snap Window Right.
-      const lookup =
-          getManager().getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      const lookup = getManager().getAcceleratorInfos(
+          AcceleratorSource.kAsh, expectedAction);
       assertEquals(1, lookup.length);
 
       const expectedNewAccel: Accelerator = {
@@ -336,7 +346,9 @@ suite('acceleratorLookupManagerTest', function() {
           undefined,
           getManager().getAcceleratorIdFromReverseLookup(expectedNewAccel));
 
-      addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
+      addAndVerify(
+          AcceleratorSource.kAsh, expectedAction,
+          createEmptyAccelInfoFromAccel(expectedNewAccel));
 
       // Check that the accelerator got updated in the lookup.
       assertEquals(2, lookup.length);

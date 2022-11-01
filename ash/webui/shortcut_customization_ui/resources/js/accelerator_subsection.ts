@@ -101,7 +101,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     const tempAccelContainer: Accelerator[] = [];
     layoutInfos!.forEach((value) => {
       const acceleratorInfos =
-          this.lookupManager_.getAccelerators(value.source, value.action);
+          this.lookupManager_.getAcceleratorInfos(value.source, value.action);
       acceleratorInfos!.filter((accel) => {
         // Hide accelerators that are default and disabled.
         return !(

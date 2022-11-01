@@ -11,8 +11,8 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
-import {areAcceleratorsEqual} from './shortcut_utils.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -49,15 +49,6 @@ function getModifierString(modifier: Modifier): string {
     default:
       return '';
   }
-}
-
-function createEmptyAcceleratorInfo(): AcceleratorInfo {
-  return {
-    accelerator: {modifiers: 0, key: 0, keyDisplay: ''},
-    type: AcceleratorType.kDefault,
-    state: AcceleratorState.kEnabled,
-    locked: false,
-  };
 }
 
 /**
@@ -241,17 +232,17 @@ export class AcceleratorViewElement extends PolymerElement {
     this.set(
         'pendingAcceleratorInfo_.accelerator', this.keystrokeToAccelerator_(e));
 
-    const pendingAccelerator = this.pendingAcceleratorInfo_.accelerator;
     // New shortcut matches the current shortcut, end capture.
     if (areAcceleratorsEqual(
-            pendingAccelerator, this.acceleratorInfo.accelerator)) {
+            this.pendingAcceleratorInfo_.accelerator,
+            this.acceleratorInfo.accelerator)) {
       this.endCapture_();
       return;
     }
 
     // Only process valid accelerators.
-    if (this.isValidDefaultAccelerator_(pendingAccelerator)) {
-      this.processPendingAccelerator_(pendingAccelerator);
+    if (this.isValidDefaultAccelerator_(this.pendingAcceleratorInfo_)) {
+      this.processPendingAccelerator_(this.pendingAcceleratorInfo_);
     }
   }
 
@@ -259,7 +250,7 @@ export class AcceleratorViewElement extends PolymerElement {
    * Checks that |pendingAccelerator_| is not a pre-existing shortcut. Sets the
    * error message if there is a conflict.
    */
-  private processPendingAccelerator_(pendingAccelerator: Accelerator) {
+  private processPendingAccelerator_(pendingAccelInfo: AcceleratorInfo) {
     // Reset status state when processing the new accelerator.
     this.statusMessage = '';
     this.hasError = false;
@@ -268,17 +259,18 @@ export class AcceleratorViewElement extends PolymerElement {
     // replace a pre-existing accelerator. Check that the new accelerator
     // matches the |acceleratorOnHold_|, otherwise reset its value.
     if (this.acceleratorOnHold_ !== '') {
-      if (this.acceleratorOnHold_ === JSON.stringify(pendingAccelerator)) {
+      if (this.acceleratorOnHold_ ===
+          JSON.stringify(pendingAccelInfo.accelerator)) {
         // User re-pressed the shortcut, send a request to replace the
         // accelerator.
-        this.requestUpdateAccelerator_(pendingAccelerator);
+        this.requestUpdateAccelerator_(pendingAccelInfo);
         return;
       }
       this.acceleratorOnHold_ = '';
     }
 
     const foundId = this.lookupManager_.getAcceleratorIdFromReverseLookup(
-        pendingAccelerator);
+        pendingAccelInfo.accelerator);
 
     // Pre-existing shortcut, update the error message.
     if (foundId !== undefined) {
@@ -292,7 +284,7 @@ export class AcceleratorViewElement extends PolymerElement {
       // Cannot override a locked action.
       if (!this.shortcutProvider_.isMutable(conflictSource) ||
           this.lookupManager_.isAcceleratorLocked(
-              conflictSource, conflictAction, pendingAccelerator)) {
+              conflictSource, conflictAction, pendingAccelInfo.accelerator)) {
         // TODO(jimmyxgong): i18n this string.
         this.statusMessage = 'Shortcut is used by \"' + conflictAccelName +
             '\". Press a new shortcut to replace.';
@@ -313,7 +305,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }
 
     // No conflicts, request replacement.
-    this.requestUpdateAccelerator_(pendingAccelerator);
+    this.requestUpdateAccelerator_(pendingAccelInfo);
   }
 
   /**
@@ -417,27 +409,28 @@ export class AcceleratorViewElement extends PolymerElement {
     return e.ctrlKey || e.altKey || e.metaKey;
   }
 
-  private isValidDefaultAccelerator_(accelerator: Accelerator): boolean {
+  private isValidDefaultAccelerator_(accelInfo: AcceleratorInfo): boolean {
     // A valid default accelerator is on that has modifier(s) and a key.
-    return accelerator.modifiers > 0 && accelerator.keyDisplay !== '';
+    return accelInfo.accelerator.modifiers > 0 &&
+        accelInfo.accelerator.keyDisplay !== '';
   }
 
   private showEditView_(): boolean {
     return this.viewState !== ViewState.VIEW;
   }
 
-  private requestUpdateAccelerator_(newAccelerator: Accelerator) {
+  private requestUpdateAccelerator_(newAcceleratorInfo: AcceleratorInfo) {
     if (this.viewState === ViewState.EDIT) {
       this.shortcutProvider_
           .replaceAccelerator(
               this.source, this.action, this.acceleratorInfo.accelerator,
-              newAccelerator)
+              newAcceleratorInfo.accelerator)
           .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
             if (result === AcceleratorConfigResult.SUCCESS) {
               this.lookupManager_.replaceAccelerator(
                   this.source, this.action, this.acceleratorInfo.accelerator,
-                  newAccelerator);
+                  newAcceleratorInfo);
               this.fireUpdateEvent_();
             }
           });
@@ -445,12 +438,13 @@ export class AcceleratorViewElement extends PolymerElement {
 
     if (this.viewState === ViewState.ADD) {
       this.shortcutProvider_
-          .addUserAccelerator(this.source, this.action, newAccelerator)
+          .addUserAccelerator(
+              this.source, this.action, newAcceleratorInfo.accelerator)
           .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
             if (result === AcceleratorConfigResult.SUCCESS) {
               this.lookupManager_.addAccelerator(
-                  this.source, this.action, newAccelerator);
+                  this.source, this.action, newAcceleratorInfo);
               this.fireUpdateEvent_();
             }
           });

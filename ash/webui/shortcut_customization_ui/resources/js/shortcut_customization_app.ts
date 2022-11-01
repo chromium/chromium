@@ -171,7 +171,7 @@ export class ShortcutCustomizationAppElement extends
     this.$.navigationPanel.notifyEvent('updateSubsections');
     const updatedAccels =
         this.acceleratorLookupManager_
-            .getAccelerators(e.detail.source, e.detail.action)
+            .getAcceleratorInfos(e.detail.source, e.detail.action)
             ?.filter((accel) => {
               // Hide accelerators that are default and disabled.
               return !(
