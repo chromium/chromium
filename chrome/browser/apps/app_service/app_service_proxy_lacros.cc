@@ -254,27 +254,6 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
       launch_source, std::move(window_info), base::DoNothing());
 }
 
-void AppServiceProxyLacros::LaunchAppWithUrlForBind(const std::string& app_id,
-                                                    int32_t event_flags,
-                                                    GURL url,
-                                                    LaunchSource launch_source,
-                                                    WindowInfoPtr window_info) {
-  LaunchAppWithIntent(
-      app_id, event_flags,
-      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info), base::DoNothing());
-}
-
-void AppServiceProxyLacros::LaunchAppWithUrl(
-    const std::string& app_id,
-    int32_t event_flags,
-    GURL url,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  LaunchAppWithIntent(app_id, event_flags, apps_util::CreateIntentFromUrl(url),
-                      launch_source, std::move(window_info), {});
-}
-
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   if (!remote_crosapi_app_service_proxy_) {

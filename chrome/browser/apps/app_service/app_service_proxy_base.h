@@ -190,20 +190,6 @@ class AppServiceProxyBase : public KeyedService,
                         GURL url,
                         LaunchSource launch_source,
                         WindowInfoPtr window_info = nullptr);
-  // TODO(crbug.com/1253250): Will be replaced with LaunchAppWithUrl once the
-  // mojom LaunchAppWithUrl interface is removed.
-  void LaunchAppWithUrlForBind(const std::string& app_id,
-                               int32_t event_flags,
-                               GURL url,
-                               LaunchSource launch_source,
-                               WindowInfoPtr window_info = nullptr);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void LaunchAppWithUrl(const std::string& app_id,
-                        int32_t event_flags,
-                        GURL url,
-                        apps::mojom::LaunchSource launch_source,
-                        apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Launches an app for the given |params.app_id|. The |params| can also
   // contain other param such as launch container, window diposition, etc.

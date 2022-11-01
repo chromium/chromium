@@ -554,22 +554,12 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
     if (update.InstallSource() == apps::InstallSource::kPlayStore) {
       GURL url("https://play.google.com/store/apps/details?id=" +
                update.PublisherId());
-      if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-        proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
-                                apps::LaunchSource::kFromChromeInternal);
-      } else {
-        proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
-                                apps::mojom::LaunchSource::kFromChromeInternal);
-      }
+      proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
+                              apps::LaunchSource::kFromChromeInternal);
     } else if (update.InstallSource() == apps::InstallSource::kChromeWebStore) {
       GURL url("https://chrome.google.com/webstore/detail/" + update.AppId());
-      if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-        proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
-                                apps::LaunchSource::kFromChromeInternal);
-      } else {
-        proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
-                                apps::mojom::LaunchSource::kFromChromeInternal);
-      }
+      proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
+                              apps::LaunchSource::kFromChromeInternal);
     }
   });
 #endif

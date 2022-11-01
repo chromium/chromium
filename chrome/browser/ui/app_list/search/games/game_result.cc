@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -107,13 +106,8 @@ void GameResult::Open(int event_flags) {
                                /*exclude_browser_tab_apps=*/true);
     for (const auto& app_id : app_ids) {
       if (kAllowedLaunchAppIds.contains(app_id)) {
-        if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-          proxy->LaunchAppWithUrl(app_id, event_flags, launch_url_,
-                                  apps::LaunchSource::kFromAppListQuery);
-        } else {
-          proxy->LaunchAppWithUrl(app_id, event_flags, launch_url_,
-                                  apps::mojom::LaunchSource::kFromAppListQuery);
-        }
+        proxy->LaunchAppWithUrl(app_id, event_flags, launch_url_,
+                                apps::LaunchSource::kFromAppListQuery);
         return;
       }
     }

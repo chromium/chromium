@@ -85,17 +85,10 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
 
   // No FLH app installed, so try to launch Play Store to FLH app install page.
   if (registry.GetAppType(arc::kPlayStoreAppId) != apps::AppType::kUnknown) {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->LaunchAppWithUrl(
-          arc::kPlayStoreAppId, ui::EF_NONE,
-          GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
-          apps::LaunchSource::kFromChromeInternal);
-    } else {
-      proxy->LaunchAppWithUrl(
-          arc::kPlayStoreAppId, ui::EF_NONE,
-          GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
-          apps::mojom::LaunchSource::kFromChromeInternal);
-    }
+    proxy->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE,
+        GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+        apps::LaunchSource::kFromChromeInternal);
     return;
   }
 

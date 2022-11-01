@@ -28,9 +28,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -230,20 +228,12 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
     auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
 
     // TODO(crbug.com/853604): Distinguish the source from link and omnibox.
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->LaunchAppWithUrl(
-          launch_name,
-          GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                        /*prefer_container=*/true),
-          url, LaunchSource::kFromLink,
-          std::make_unique<WindowInfo>(display::kDefaultDisplayId));
-    } else {
-      proxy->LaunchAppWithUrl(launch_name,
-                              GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                                            /*prefer_container=*/true),
-                              url, mojom::LaunchSource::kFromLink,
-                              apps::MakeWindowInfo(display::kDefaultDisplayId));
-    }
+    proxy->LaunchAppWithUrl(
+        launch_name,
+        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                      /*prefer_container=*/true),
+        url, LaunchSource::kFromLink,
+        std::make_unique<WindowInfo>(display::kDefaultDisplayId));
     CloseOrGoBack(web_contents);
   }
 }

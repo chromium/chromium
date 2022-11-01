@@ -35,8 +35,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -261,28 +259,18 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
                                             : LaunchSource::kFromOmnibox;
   GURL redirected_url =
       RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    // The tab may have been closed, which runs async and causes the browser
-    // window to be refocused. Post a task to launch the app to ensure launching
-    // happens after the tab closed, otherwise the opened app window might be
-    // inactivated.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AppServiceProxy::LaunchAppWithUrlForBind, proxy->GetWeakPtr(),
-            preferred_app_id.value(),
-            GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                          /*prefer_container=*/true),
-            redirected_url, launch_source,
-            std::make_unique<WindowInfo>(display::kDefaultDisplayId)));
-  } else {
-    proxy->LaunchAppWithUrl(
-        preferred_app_id.value(),
-        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                      /*prefer_container=*/true),
-        redirected_url, ConvertLaunchSourceToMojomLaunchSource(launch_source),
-        apps::MakeWindowInfo(display::kDefaultDisplayId));
-  }
+  // The tab may have been closed, which runs async and causes the browser
+  // window to be refocused. Post a task to launch the app to ensure launching
+  // happens after the tab closed, otherwise the opened app window might be
+  // inactivated.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AppServiceProxy::LaunchAppWithUrl, proxy->GetWeakPtr(),
+                     preferred_app_id.value(),
+                     GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                                   /*prefer_container=*/true),
+                     redirected_url, launch_source,
+                     std::make_unique<WindowInfo>(display::kDefaultDisplayId)));
 
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));

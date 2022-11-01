@@ -451,27 +451,6 @@ void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,
       launch_source, std::move(window_info), base::DoNothing());
 }
 
-void AppServiceProxyBase::LaunchAppWithUrlForBind(const std::string& app_id,
-                                                  int32_t event_flags,
-                                                  GURL url,
-                                                  LaunchSource launch_source,
-                                                  WindowInfoPtr window_info) {
-  LaunchAppWithIntent(
-      app_id, event_flags,
-      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info), base::DoNothing());
-}
-
-void AppServiceProxyBase::LaunchAppWithUrl(
-    const std::string& app_id,
-    int32_t event_flags,
-    GURL url,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  LaunchAppWithIntent(app_id, event_flags, apps_util::CreateIntentFromUrl(url),
-                      launch_source, std::move(window_info), {});
-}
-
 void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
                                               LaunchCallback callback) {
   auto app_type = app_registry_cache_.GetAppType(params.app_id);
