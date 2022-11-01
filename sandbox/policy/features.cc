@@ -19,12 +19,6 @@ BASE_FEATURE(kNetworkServiceSandbox,
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
-// Emergency "off switch" for new Windows KTM security mitigation,
-// sandbox::MITIGATION_KTM_COMPONENT.
-BASE_FEATURE(kWinSboxDisableKtmComponent,
-             "WinSboxDisableKtmComponent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Experiment for Windows sandbox security mitigation,
 // sandbox::MITIGATION_EXTENSION_POINT_DISABLE.
 BASE_FEATURE(kWinSboxDisableExtensionPoints,

@@ -89,8 +89,6 @@ base::Value::List FetchSandboxFeatures() {
       FeatureToValue(sandbox::policy::features::kSharedSandboxPolicies));
   features.Append(FeatureToValue(
       sandbox::policy::features::kWinSboxDisableExtensionPoints));
-  features.Append(
-      FeatureToValue(sandbox::policy::features::kWinSboxDisableKtmComponent));
   return features;
 }
 

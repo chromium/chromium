@@ -16,11 +16,6 @@ SandboxFeatureTest::SandboxFeatureTest() {
   else
     disabled_features.push_back(features::kRendererAppContainer);
 
-  if (::testing::get<TestParameter::kEnableKtmMitigation>(GetParam()))
-    enabled_features.push_back(features::kWinSboxDisableKtmComponent);
-  else
-    disabled_features.push_back(features::kWinSboxDisableKtmComponent);
-
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
@@ -47,16 +42,14 @@ MitigationFlags SandboxFeatureTest::GetExpectedMitigationFlags() {
       ::sandbox::MITIGATION_NONSYSTEM_FONT_DISABLE |
       ::sandbox::MITIGATION_IMAGE_LOAD_NO_REMOTE |
       ::sandbox::MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
-      ::sandbox::MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION;
+      ::sandbox::MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
+      ::sandbox::MITIGATION_KTM_COMPONENT;
 
 #if !defined(NACL_WIN64)
   // Win32k mitigation is only set on the operating systems it's available on
   if (base::win::GetVersion() >= base::win::Version::WIN8)
     flags = flags | ::sandbox::MITIGATION_WIN32K_DISABLE;
 #endif
-
-  if (::testing::get<TestParameter::kEnableKtmMitigation>(GetParam()))
-    flags = flags | ::sandbox::MITIGATION_KTM_COMPONENT;
 
   return flags;
 }
