@@ -89,9 +89,9 @@ HEADER = headers.header(
                     alt = "Chrome perf dashboard",
                 ),
                 headers.link(
-                    text = "flake-portal",
+                    text = "LUCI Analysis",
                     branch_selector = branches.ALL_BRANCHES,
-                    url = "https://analysis.chromium.org/p/chromium/flake-portal",
+                    url = "https://luci-analysis.appspot.com",
                     alt = "New flake portal",
                 ),
                 headers.link(

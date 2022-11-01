@@ -168,7 +168,7 @@ Use `--help` for more ways to select and run tests.
 
 ## How to deal with flaky tests
 
-Go to [Flake Portal] to find reports about flaky tests in your projects.
+Go to [LUCI Analysis] to find reports about flaky tests in your projects.
 
 * [Addressing Flaky GTests](./gtest_flake_tips.md)
 * [Addressing Flaky Web Tests](./web_tests_addressing_flake.md)
@@ -188,7 +188,7 @@ test]" has instructions on how to disable a flaky test.
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
 [Web Tests]: ./web_tests.md
 [crbug/611756]: https://bugs.chromium.org/p/chromium/issues/detail?id=611756
-[Flake Portal]: https://analysis.chromium.org/p/chromium/flake-portal
+[LUCI Analysis]: https://luci-analysis.appspot.com/
 [Write Fuzz Target]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#write-fuzz-target
 [Telemetry: Run benchmarks locally]: https://chromium.googlesource.com/catapult/+/HEAD/telemetry/docs/run_benchmarks_locally.md
 [Run fuzz target locally]: https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md#build-and-run-fuzz-target-locally
