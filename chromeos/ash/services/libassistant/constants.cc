@@ -19,6 +19,9 @@ namespace ash::libassistant {
 const base::FilePath::CharType kAssistantBaseDirPath[] =
     FILE_PATH_LITERAL("/home/chronos/user/" ASSISTANT_DIR_STRING);
 
+const base::FilePath::CharType kLibAssistantSocketPath[] =
+    FILE_PATH_LITERAL("/run/libassistant");
+
 const char kLibAssistantDlcRootPath[] =
     "/run/imageloader/assistant-dlc/package/root";
 

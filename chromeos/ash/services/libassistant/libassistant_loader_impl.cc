@@ -107,16 +107,12 @@ void LibassistantLoaderImpl::LoadBlocking(const std::string& root_path) {
   // Since we are not in the main thread, we can call the blocking method.
   DCHECK(!entry_point_);
 
-#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
   // If the gRPC socket files exist, libassistant gRPC server could not start
   // because the binding to the new socket files will fail, with error message
   // that the files already exist.
-  // This cleanup is only needed for running the sandbox on gLinux.
-  // On a real device, these files will be cleaned up on the OS side when Chrome
-  // starts.
   DVLOG(3) << "Clean up temporary libassistant directory.";
   base::DeletePathRecursively(base::FilePath(kLibAssistantSocketPath));
-#endif
+
   base::FilePath path = GetLibassisantPath(root_path);
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
   OnLibraryLoaded(std::move(library));
