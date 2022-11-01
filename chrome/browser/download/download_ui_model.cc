@@ -314,11 +314,11 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
       return l10n_util::GetStringFUTF16(
           IDS_PROMPT_DOWNLOAD_BLOCKED_PASSWORD_PROTECTED, filename, offset);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
-      return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING, filename, offset);
+      return l10n_util::GetStringUTF16(
+          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
-      return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED, filename, offset);
+      return l10n_util::GetStringUTF16(
+          IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED);
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return l10n_util::GetStringFUTF16(IDS_PROMPT_DEEP_SCANNING, filename,
                                         offset);

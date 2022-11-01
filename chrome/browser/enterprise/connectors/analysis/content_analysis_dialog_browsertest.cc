@@ -942,7 +942,9 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
       std::make_unique<MockDelegate>(), FinalContentAnalysisResult::WARNING);
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
-            u"This data has sensitive or dangerous content");
+            u"This data or your device doesn’t meet some of your organization’s"
+            u" security policies. Check with your admin on what needs to be "
+            u"fixed.");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestOpenInBlockState) {
@@ -950,8 +952,9 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestOpenInBlockState) {
       std::make_unique<MockDelegate>(), FinalContentAnalysisResult::FAILURE);
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
-            u"This data has sensitive or dangerous content. Remove this "
-            u"content and try again.");
+            u"This data or your device doesn’t meet some of your organization’s"
+            u" security policies. Check with your admin on what needs to be "
+            u"fixed.");
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,

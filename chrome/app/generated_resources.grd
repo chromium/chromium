@@ -1957,11 +1957,11 @@ are declared in tools/grit/grit_rule.gni.
       </message>
       <message name="IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING"
         desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to warn the user">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> has sensitive content
+        Your organization's policies aren't met
       </message>
       <message name="IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED"
         desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to block the file">
-        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> has sensitive or dangerous content. Ask its owner to fix.
+        Your organization's policies aren't met
       </message>
       <message name="IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_OPENED_DANGEROUS"
         desc="Message shown in the download shelf when a download is finished being scanned, and issues were found">
@@ -2016,10 +2016,10 @@ are declared in tools/grit/grit_rule.gni.
         This file is dangerous
       </message>
       <message name="IDS_BLOCK_REASON_SENSITIVE_CONTENT_WARNING" desc="Message shown to the user on chrome://downloads page to explain this download is showing a warning because it contains sensitive content">
-        This file has sensitive content
+        Your organization's policies aren't met
       </message>
       <message name="IDS_SENSITIVE_CONTENT_BLOCKED_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this download is blocked because it contains sensitive content">
-        This file has sensitive or dangerous content. Ask its owner to fix.
+        Your organization's policies aren't met
       </message>
       <message name="IDS_BLOCKED_TOO_LARGE_DESCRIPTION" desc="Message shown to the user on chrome://downloads page to explain this download is blocked because it is too large for deep scanning">
         This file is too big for a security check. You can open files up to 50 MB.
@@ -13328,18 +13328,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAILURE_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of uploaded data when it doesn't comply with enterprise security policies">
       {NUM_FILES, plural,
-        =0 {This data has sensitive or dangerous content. Remove this content and try again.}
-        =1 {This file has sensitive or dangerous content. Remove this content and try again.}
-       other {These files have sensitive or dangerous content. Remove this content and try again.}}
+        =0 {This data or your device doesn’t meet some of your organization’s security policies. Check with your admin on what needs to be fixed.}
+        =1 {This file or your device doesn’t meet some of your organization’s security policies. Check with your admin on what needs to be fixed.}
+      other {These files don't meet some of your organization’s security policies. Check with your admin on what needs to be fixed.}}
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of uploaded data when it doesn't comply with enterprise security policies to warn the user and allow them to proceed or not">
       {NUM_FILES, plural,
-        =0 {This data has sensitive or dangerous content}
-        =1 {This file has sensitive or dangerous content}
-      other {These files have sensitive or dangerous content}}
+        =0 {This data or your device doesn’t meet some of your organization’s security policies. Check with your admin on what needs to be fixed.}
+        =1 {This file or your device doesn’t meet some of your organization’s security policies. Check with your admin on what needs to be fixed.}
+      other {These files don't meet some of your organization’s security policies. Check with your admin on what needs to be fixed.}}
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_PRINT_WARNING_MESSAGE" desc="Message shown in tab modal dialog after performing a deep scan of a printed document when it doesn't comply with enterprise security policies">
-        This document has sensitive content.
+        This document or your device doesn’t meet some of your organization’s security policies. Check with your admin on what needs to be fixed.
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_TIMEOUT_MESSAGE" desc="Message shown in tab modal dialog after a deep scan times out.">
       Something went wrong. Scanning could not be completed. Please try again.
