@@ -706,6 +706,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mStartSurfaceToolbarCoordinator.onStartSurfaceStateChanged(
                 newState, requestToShow, newLayoutType);
         updateToolbarLayoutVisibility();
+        updateButtonVisibility();
     }
 
     /**
