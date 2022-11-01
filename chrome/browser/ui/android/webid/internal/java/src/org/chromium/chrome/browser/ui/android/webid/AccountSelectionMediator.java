@@ -373,6 +373,13 @@ class AccountSelectionMediator {
         properties.mIdpForDisplay = idpForDisplay;
         properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl();
         properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl();
+        properties.mTermsOfServiceClickRunnable = () -> {
+            RecordHistogram.recordBooleanHistogram(
+                    "Blink.FedCm.SignUp.TermsOfServiceClicked", true);
+        };
+        properties.mPrivacyPolicyClickRunnable = () -> {
+            RecordHistogram.recordBooleanHistogram("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
+        };
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

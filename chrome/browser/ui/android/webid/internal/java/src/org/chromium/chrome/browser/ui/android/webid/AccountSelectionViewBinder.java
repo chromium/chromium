@@ -143,13 +143,15 @@ class AccountSelectionViewBinder {
         }
     }
 
-    static SpanApplier.SpanInfo createLink(Context context, GURL url, String tag) {
+    static SpanApplier.SpanInfo createLink(
+            Context context, String tag, GURL url, Runnable clickRunnable) {
         if (GURL.isEmptyOrInvalid(url)) return null;
 
         String startTag = "<" + tag + ">";
         String endTag = "</" + tag + ">";
         Callback<View> onClickCallback = v -> {
             CustomTabActivity.showInfoPage(context, url.getSpec());
+            clickRunnable.run();
         };
         return new SpanApplier.SpanInfo(
                 startTag, endTag, new NoUnderlineClickableSpan(context, onClickCallback));
@@ -167,10 +169,10 @@ class AccountSelectionViewBinder {
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
             Context context = view.getContext();
-            SpanApplier.SpanInfo privacyPolicySpan =
-                    createLink(context, properties.mPrivacyPolicyUrl, "link_privacy_policy");
-            SpanApplier.SpanInfo termsOfServiceSpan =
-                    createLink(context, properties.mTermsOfServiceUrl, "link_terms_of_service");
+            SpanApplier.SpanInfo privacyPolicySpan = createLink(context, "link_privacy_policy",
+                    properties.mPrivacyPolicyUrl, properties.mPrivacyPolicyClickRunnable);
+            SpanApplier.SpanInfo termsOfServiceSpan = createLink(context, "link_terms_of_service",
+                    properties.mTermsOfServiceUrl, properties.mTermsOfServiceClickRunnable);
 
             int consentTextId;
             if (privacyPolicySpan == null && termsOfServiceSpan == null) {

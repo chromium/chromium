@@ -952,6 +952,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.SignUp.PrivacyPolicyClicked" enum="BooleanHit"
+    expires_after="M120">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded each time that the privacy-policy link in the FedCM prompt is
+    clicked.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.SignUp.TermsOfServiceClicked" enum="BooleanHit"
+    expires_after="M120">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded each time that the terms-of-service link in the FedCM prompt is
+    clicked.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Status.Csp" enum="FedCmCspStatus"
     expires_after="M120">
   <owner>cbiesinger@chromium.org</owner>

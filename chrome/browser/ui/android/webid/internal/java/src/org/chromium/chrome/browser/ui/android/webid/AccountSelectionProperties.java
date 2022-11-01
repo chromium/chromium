@@ -84,6 +84,8 @@ class AccountSelectionProperties {
             public String mIdpForDisplay;
             public GURL mTermsOfServiceUrl;
             public GURL mPrivacyPolicyUrl;
+            public Runnable mTermsOfServiceClickRunnable;
+            public Runnable mPrivacyPolicyClickRunnable;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =
