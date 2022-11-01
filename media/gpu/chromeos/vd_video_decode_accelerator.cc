@@ -536,13 +536,12 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                                            gmb_handle));
   auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
   CHECK(buffer_format);
-  // Usage is SCANOUT_VDA_WRITE because we are just wrapping the dmabuf in a
-  // GpuMemoryBuffer. This buffer is just for decoding purposes, so having
-  // the dmabufs mmapped is not necessary.
+  // Usage is SCANOUT_CPU_READ_WRITE because we may need to map the buffer in
+  // order to use the LibYUVImageProcessorBackend.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
           std::move(gmb_handle), layout_->coded_size(), *buffer_format,
-          gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+          gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, base::NullCallback());
   if (!gpu_memory_buffer) {
     VLOGF(1) << "Failed to create GpuMemoryBuffer. format: "
              << gfx::BufferFormatToString(*buffer_format)
