@@ -383,12 +383,12 @@ bool CreateSpatialLayersConfig(
   return true;
 }
 
-class PendingFrame {
+struct FrameInfo {
  public:
-  PendingFrame(const base::TimeDelta& media_timestamp,
-               int32_t rtp_timestamp,
-               int64_t capture_time_ms,
-               const std::vector<gfx::Size>& resolutions)
+  FrameInfo(const base::TimeDelta& media_timestamp,
+            int32_t rtp_timestamp,
+            int64_t capture_time_ms,
+            const std::vector<gfx::Size>& resolutions)
       : media_timestamp_(media_timestamp),
         rtp_timestamp_(rtp_timestamp),
         capture_time_ms_(capture_time_ms),
@@ -595,8 +595,9 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // The underlying VEA to perform encoding on.
   std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;
 
-  // Metadata for pending frames, matched to encoded frames using timestamps.
-  WTF::Deque<PendingFrame> pending_frames_;
+  // Metadata for frames passed to Encode(), matched to encoded frames using
+  // timestamps.
+  WTF::Deque<FrameInfo> submitted_frames_;
 
   // Indicates that timestamp match failed and we should no longer attempt
   // matching.
@@ -1046,8 +1047,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   absl::optional<std::vector<gfx::Size>> expected_resolutions;
   if (!failed_timestamp_match_) {
     // Pop timestamps until we have a match.
-    while (!pending_frames_.empty()) {
-      auto& front_frame = pending_frames_.front();
+    while (!submitted_frames_.empty()) {
+      auto& front_frame = submitted_frames_.front();
       const bool end_of_picture = !metadata.vp9 || metadata.vp9->end_of_picture;
       if (front_frame.media_timestamp_ == metadata.timestamp) {
         rtp_timestamp = front_frame.rtp_timestamp_;
@@ -1076,19 +1077,19 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
                 media::VideoEncodeAccelerator::kPlatformFailureError);
             return;
           }
-          pending_frames_.pop_front();
+          submitted_frames_.pop_front();
         }
         break;
       }
       // Timestamp does not match front of the pending frames list.
       if (end_of_picture)
-        pending_frames_.pop_front();
+        submitted_frames_.pop_front();
     }
     DCHECK(rtp_timestamp.has_value());
   }
   if (!rtp_timestamp.has_value() || !capture_timestamp_ms.has_value()) {
     failed_timestamp_match_ = true;
-    pending_frames_.clear();
+    submitted_frames_.clear();
     const int64_t current_time_ms =
         rtc::TimeMicros() / base::Time::kMicrosecondsPerMillisecond;
     // RTP timestamp can wrap around. Get the lower 32 bits.
@@ -1444,11 +1445,11 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
   }
 
   if (!failed_timestamp_match_) {
-    DCHECK(!base::Contains(pending_frames_, timestamp,
-                           &PendingFrame::media_timestamp_));
-    pending_frames_.emplace_back(timestamp, next_frame->timestamp(),
-                                 next_frame->render_time_ms(),
-                                 ActiveSpatialResolutions());
+    DCHECK(!base::Contains(submitted_frames_, timestamp,
+                           &FrameInfo::media_timestamp_));
+    submitted_frames_.emplace_back(timestamp, next_frame->timestamp(),
+                                   next_frame->render_time_ms(),
+                                   ActiveSpatialResolutions());
   }
   video_encoder_->Encode(frame, next_frame_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
@@ -1502,11 +1503,11 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput() {
   }
 
   if (!failed_timestamp_match_) {
-    DCHECK(!base::Contains(pending_frames_, frame->timestamp(),
-                           &PendingFrame::media_timestamp_));
-    pending_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
-                                 next_frame->render_time_ms(),
-                                 ActiveSpatialResolutions());
+    DCHECK(!base::Contains(submitted_frames_, frame->timestamp(),
+                           &FrameInfo::media_timestamp_));
+    submitted_frames_.emplace_back(frame->timestamp(), next_frame->timestamp(),
+                                   next_frame->render_time_ms(),
+                                   ActiveSpatialResolutions());
   }
   video_encoder_->Encode(frame, next_frame_keyframe);
   async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
