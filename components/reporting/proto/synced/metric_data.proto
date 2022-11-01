@@ -397,6 +397,9 @@ message DisplayStatus {
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 message TelemetryData {
+  // Indicates whether the telemetry data was collected in response to an event.
+  optional bool is_event_driven = 8;
+
   // At least one of the following telemetry should be present.
 
   // Networks telemetry data.
