@@ -22,9 +22,6 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
