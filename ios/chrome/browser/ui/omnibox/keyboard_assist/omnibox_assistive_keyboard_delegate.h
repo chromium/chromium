@@ -13,17 +13,12 @@
 @protocol LensCommands;
 @class OmniboxTextFieldIOS;
 @protocol QRScannerCommands;
-class TemplateURLService;
 
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol OmniboxAssistiveKeyboardDelegate
 
 // The layout guide center for the current scene.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
-
-// The templateURLService used by this mediator to extract whether the default
-// search engine is Google.
-@property(nonatomic, assign) TemplateURLService* templateURLService;
 
 // Notifies the delegate that the Voice Search button was tapped.
 - (void)keyboardAccessoryVoiceSearchTapped:(id)sender;

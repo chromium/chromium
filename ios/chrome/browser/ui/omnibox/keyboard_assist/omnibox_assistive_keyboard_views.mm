@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 
 #import "base/check.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_input_assistant_items.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
@@ -14,10 +15,11 @@
 #error "This file requires ARC support."
 #endif
 
-void ConfigureAssistiveKeyboardViews(
+OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     UITextField* textField,
     NSString* dotComTLD,
-    id<OmniboxAssistiveKeyboardDelegate> delegate) {
+    id<OmniboxAssistiveKeyboardDelegate> delegate,
+    TemplateURLService* templateURLService) {
   DCHECK(dotComTLD);
   NSArray<NSString*>* buttonTitles = @[ @":", @"-", @"/", dotComTLD ];
 
@@ -29,11 +31,16 @@ void ConfigureAssistiveKeyboardViews(
   } else {
     textField.inputAssistantItem.leadingBarButtonGroups = @[];
     textField.inputAssistantItem.trailingBarButtonGroups = @[];
-    UIView* keyboardAccessoryView =
-        [[OmniboxKeyboardAccessoryView alloc] initWithButtons:buttonTitles
-                                                     delegate:delegate
-                                                  pasteTarget:textField];
+    OmniboxKeyboardAccessoryView* keyboardAccessoryView =
+        [[OmniboxKeyboardAccessoryView alloc]
+               initWithButtons:buttonTitles
+                      delegate:delegate
+                   pasteTarget:textField
+            templateURLService:templateURLService];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [textField setInputAccessoryView:keyboardAccessoryView];
+    return keyboardAccessoryView;
   }
+
+  return nil;
 }

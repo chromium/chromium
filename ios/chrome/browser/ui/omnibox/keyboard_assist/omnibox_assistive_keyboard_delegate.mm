@@ -26,7 +26,6 @@
 
 @synthesize applicationCommandsHandler = _applicationCommandsHandler;
 @synthesize browserCommandsHandler = _browserCommandsHandler;
-@synthesize templateURLService = _templateURLService;
 @synthesize layoutGuideCenter = _layoutGuideCenter;
 @synthesize qrScannerCommandsHandler = _qrScannerCommandsHandler;
 @synthesize omniboxTextField = _omniboxTextField;

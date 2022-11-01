@@ -48,8 +48,8 @@
 
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
-                    pasteTarget:
-                        (id<UIPasteConfigurationSupporting>)pasteTarget {
+                    pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
+             templateURLService:(TemplateURLService*)templateURLService {
   self = [super initWithFrame:CGRectZero
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
@@ -58,10 +58,8 @@
     _pasteTarget = pasteTarget;
     self.translatesAutoresizingMaskIntoConstraints = NO;
     self.allowsSelfSizing = YES;
+    self.templateURLService = templateURLService;
     [self addSubviews];
-
-    _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
-        self, delegate.templateURLService);
   }
   return self;
 }
@@ -101,7 +99,7 @@
   // Voice search, camera/Lens search and paste search.
   BOOL useLens = ios::provider::IsLensSupported() &&
                  base::FeatureList::IsEnabled(kEnableLensInKeyboard) &&
-                 [self isGoogleSearchEngine:_delegate.templateURLService];
+                 [self isGoogleSearchEngine:self.templateURLService];
   NSArray<UIControl*>* leadingControls =
       OmniboxAssistiveKeyboardLeadingControls(_delegate, self.pasteTarget,
                                               useLens);
@@ -175,11 +173,14 @@
   [_delegate keyPressed:[button currentTitle]];
 }
 
-#pragma mark - UIView overrides
+#pragma mark - Setters
 
-- (void)didMoveToSuperview {
-  [super didMoveToSuperview];
-  if (!self.superview) {
+- (void)setTemplateURLService:(TemplateURLService*)templateURLService {
+  _templateURLService = templateURLService;
+  if (_templateURLService) {
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
+  } else {
     _searchEngineObserver.reset();
   }
 }

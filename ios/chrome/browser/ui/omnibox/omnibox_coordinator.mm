@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
+#import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_return_key_forwarding_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
@@ -76,6 +77,10 @@
 // Helper that starts ZPS prefetch when the user opens a NTP.
 @property(nonatomic, strong)
     ZeroSuggestPrefetchHelper* zeroSuggestPrefetchHelper;
+
+// The keyboard accessory view. Will be nil if the app is running on an iPad.
+@property(nonatomic, strong)
+    OmniboxKeyboardAccessoryView* keyboardAccessoryView;
 
 @end
 
@@ -141,14 +146,13 @@
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   self.keyboardDelegate.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.keyboardDelegate.templateURLService = templateURLService;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.keyboardDelegate.browserCommandsHandler =
       static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
   self.keyboardDelegate.omniboxTextField = self.textField;
-  ConfigureAssistiveKeyboardViews(self.textField, kDotComTLD,
-                                  self.keyboardDelegate);
+  self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
+      self.textField, kDotComTLD, self.keyboardDelegate, templateURLService);
 
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
     self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
@@ -164,6 +168,12 @@
   self.editController = nil;
   self.viewController = nil;
   self.mediator.templateURLService = nullptr;  // Unregister the observer.
+  if (self.keyboardAccessoryView) {
+    // Unregister the observer.
+    self.keyboardAccessoryView.templateURLService = nil;
+  }
+
+  self.keyboardAccessoryView = nil;
   self.mediator = nil;
   self.returnDelegate = nil;
   self.zeroSuggestPrefetchHelper = nil;

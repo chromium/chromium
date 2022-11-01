@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
+class TemplateURLService;
+
 // Accessory View above the keyboard.
 // Shows keys that are shortcuts to commonly used characters or strings,
 // and buttons to start Voice Search, Camera Search or Paste Search.
@@ -20,12 +22,17 @@
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
+             templateURLService:(TemplateURLService*)templateURLService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
 - (instancetype)initWithFrame:(CGRect)frame
                inputViewStyle:(UIInputViewStyle)inputViewStyle NS_UNAVAILABLE;
+
+// The templateURLService used by this view to determine whether or not
+// Google is the default search engine.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
 
 @end
 
