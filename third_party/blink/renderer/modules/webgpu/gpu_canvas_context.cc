@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_texture_alpha_clearer.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -262,7 +263,7 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           transferable_resource.mailbox_holder.texture_target,
           /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
           GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
-          Thread::Current()->GetDeprecatedTaskRunner(),
+          ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback),
           /*supports_display_compositing=*/true,
           transferable_resource.is_overlay_candidate));
