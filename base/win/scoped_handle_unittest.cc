@@ -27,13 +27,13 @@ namespace win {
 namespace {
 
 std::string FailureMessage(const std::string& msg) {
-#if !defined(DEBUG) && defined(OFFICIAL_BUILD)
+#if defined(NDEBUG) && defined(OFFICIAL_BUILD)
   // Official release builds strip all fatal messages for saving binary size,
   // see base/check.h.
   return "";
 #else
   return msg;
-#endif  // !defined(DEBUG) && defined(OFFICIAL_BUILD)
+#endif  // defined(NDEBUG) && defined(OFFICIAL_BUILD)
 }
 
 // Death tests don't seem to work on Windows 7 32-bit native with hooks enabled.
