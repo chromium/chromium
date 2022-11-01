@@ -245,13 +245,6 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
   return true;
 }
 
-bool GLImageNativePixmap::InitializeForOverlay(
-    scoped_refptr<gfx::NativePixmap> pixmap) {
-  DCHECK(!pixmap_);
-  pixmap_ = pixmap;
-  return true;
-}
-
 bool GLImageNativePixmap::InitializeFromTexture(uint32_t texture_id) {
   if (GLInternalFormat(format_) == GL_NONE) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
