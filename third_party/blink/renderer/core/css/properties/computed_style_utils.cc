@@ -1745,9 +1745,9 @@ CSSValue* ValueForTimingDelay(const Timing::Delay& delay) {
         delay.relative_offset * 100.0,
         CSSPrimitiveValue::UnitType::kPercentage));
   } else {
-    list->Append(
-        *CSSNumericLiteralValue::Create(delay.AsTimeValue().InSecondsF(),
-                                        CSSPrimitiveValue::UnitType::kSeconds));
+    return CSSNumericLiteralValue::Create(
+        delay.AsTimeValue().InSecondsF(),
+        CSSPrimitiveValue::UnitType::kSeconds);
   }
   return list;
 }
@@ -1765,14 +1765,14 @@ CSSValue* ValueForTimingDelayList(const Vector<Timing::Delay>& delay_list) {
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayStart(
     const CSSTimingData* timing_data) {
   if (!timing_data)
-    return ValueForTimingDelay(CSSTimingData::InitialDelayStart());
+    return ValueForTimingDelayList({CSSTimingData::InitialDelayStart()});
   return ValueForTimingDelayList(timing_data->DelayStartList());
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDelayEnd(
     const CSSTimingData* timing_data) {
   if (!timing_data)
-    return ValueForTimingDelay(CSSTimingData::InitialDelayEnd());
+    return ValueForTimingDelayList({CSSTimingData::InitialDelayEnd()});
   return ValueForTimingDelayList(timing_data->DelayEndList());
 }
 
