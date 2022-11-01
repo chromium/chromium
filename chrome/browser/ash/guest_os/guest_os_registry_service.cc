@@ -499,7 +499,6 @@ GuestOsRegistryService::GuestOsRegistryService(Profile* profile)
       base_icon_path_(profile->GetPath().AppendASCII(kCrostiniIconFolder)),
       clock_(base::DefaultClock::GetInstance()),
       svg_icon_transcoder_(std::make_unique<apps::SvgIconTranscoder>(profile)) {
-  RecordStartupMetrics();
 }
 
 GuestOsRegistryService::~GuestOsRegistryService() = default;
@@ -582,24 +581,6 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
   }
   return absl::make_optional<Registration>(
       app_id, base::Value(pref_registration->Clone()));
-}
-
-void GuestOsRegistryService::RecordStartupMetrics() {
-  const base::Value::Dict& apps =
-      prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
-
-  base::flat_map<int, int> num_apps;
-
-  for (const auto item : apps) {
-    absl::optional<bool> no_display =
-        item.second.FindBoolKey(guest_os::prefs::kAppNoDisplayKey);
-    if (no_display && no_display.value()) {
-      continue;
-    }
-
-    VmType vm_type = VmTypeFromPref(item.second);
-    num_apps[static_cast<int>(vm_type)]++;
-  }
 }
 
 base::FilePath GuestOsRegistryService::GetAppPath(

@@ -247,9 +247,6 @@ class GuestOsRegistryService : public KeyedService {
                                    const std::string& container_name);
 
  private:
-  // Run start up tasks for the registry (e.g. recording metrics).
-  void RecordStartupMetrics();
-
   // Construct path to app local data.
   base::FilePath GetAppPath(const std::string& app_id) const;
   // Called to request an icon from the container.
