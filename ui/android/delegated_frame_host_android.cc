@@ -282,6 +282,7 @@ void DelegatedFrameHostAndroid::DetachFromCompositor() {
     return;
   registered_parent_compositor_->RemoveChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = nullptr;
+  content_to_visible_time_request_ = nullptr;
 }
 
 bool DelegatedFrameHostAndroid::IsPrimarySurfaceEvicted() const {

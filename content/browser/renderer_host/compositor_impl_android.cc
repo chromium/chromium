@@ -1013,6 +1013,8 @@ void CompositorImpl::PreserveChildSurfaceControls() {
 
 void CompositorImpl::RequestPresentationTimeForNextFrame(
     PresentationTimeCallback callback) {
+  if (!host_)
+    return;
   host_->RequestPresentationTimeForNextFrame(std::move(callback));
 }
 
