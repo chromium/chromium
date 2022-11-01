@@ -81,8 +81,7 @@ void OcclusionTracker::LeaveLayer(
 static gfx::Rect ScreenSpaceClipRectInTargetSurface(
     const RenderSurfaceImpl* target_surface,
     const gfx::Rect& screen_space_clip_rect) {
-  gfx::Transform inverse_screen_space_transform(
-      gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse_screen_space_transform;
   if (!target_surface->screen_space_transform().GetInverse(
           &inverse_screen_space_transform))
     return target_surface->content_rect();
@@ -147,9 +146,7 @@ void OcclusionTracker::EnterRenderTarget(
       new_occlusion_immune_ancestor &&
       new_occlusion_immune_ancestor != old_occlusion_immune_ancestor;
 
-  gfx::Transform inverse_new_target_screen_space_transform(
-      // Note carefully, not used if screen space transform is uninvertible.
-      gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse_new_target_screen_space_transform;
   bool have_transform_from_screen_to_new_target =
       new_target_surface->screen_space_transform().GetInverse(
           &inverse_new_target_screen_space_transform);

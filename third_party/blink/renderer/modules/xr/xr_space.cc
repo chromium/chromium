@@ -58,8 +58,7 @@ absl::optional<TransformationMatrix> XRSpace::NativeFromMojo() const {
   if (!mojo_from_native)
     return absl::nullopt;
 
-  DCHECK(mojo_from_native->IsInvertible());
-  return mojo_from_native->Inverse();
+  return mojo_from_native->GetCheckedInverse();
 }
 
 bool XRSpace::EmulatedPosition() const {

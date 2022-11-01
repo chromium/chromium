@@ -211,13 +211,6 @@ struct SkRectToString {
   return ::testing::AssertionSuccess();
 }
 
-Transform InvertAndCheck(const Transform& transform) {
-  Transform result(Transform::kSkipInitialization);
-  bool inverted_successfully = transform.GetInverse(&result);
-  DCHECK(inverted_successfully);
-  return result;
-}
-
 ::testing::AssertionResult AssertBoxFloatEqual(const char* lhs_expr,
                                                const char* rhs_expr,
                                                const BoxF& lhs,

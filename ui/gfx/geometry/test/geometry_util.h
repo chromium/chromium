@@ -101,10 +101,6 @@ struct DecomposedTransform;
     const DecomposedTransform& rhs,
     float abs_error);
 
-// Should be used in test code only, for convenience. Production code should use
-// the gfx::Transform::GetInverse() API.
-Transform InvertAndCheck(const Transform& transform);
-
 #define EXPECT_BOXF_EQ(a, b) \
   EXPECT_PRED_FORMAT2(::gfx::AssertBoxFloatEqual, a, b)
 

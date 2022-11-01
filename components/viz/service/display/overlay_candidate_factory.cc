@@ -596,10 +596,10 @@ void OverlayCandidateFactory::AssignDamage(const DrawQuad* quad,
                                            OverlayCandidate& candidate) const {
   auto& transform = quad->shared_quad_state->quad_to_target_transform;
   auto damage_rect = GetDamageRect(quad, candidate);
-  auto transformed_damage = damage_rect;
-  gfx::Transform inv;
-  if (transform.GetInverse(&inv)) {
-    transformed_damage = inv.MapRect(transformed_damage);
+  gfx::RectF transformed_damage;
+  if (absl::optional<gfx::RectF> transformed =
+          transform.InverseMapRect(damage_rect)) {
+    transformed_damage = *transformed;
     // The quad's |rect| is in content space. To get to buffer space we need
     // to remove the |rect|'s pixel offset.
     auto buffer_damage_origin =

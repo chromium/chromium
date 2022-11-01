@@ -3378,17 +3378,15 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     // We cannot handle rotation with clip rect or mask filter.
     DCHECK(
         shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment());
-    quad_to_target_transform_inverse.emplace(
-        gfx::Transform::kSkipInitialization);
+    quad_to_target_transform_inverse.emplace();
     // Flatten before inverting, since we're interested in how points
     // with z=0 in local space map to the clip rect, not in how the clip
     // rect at z=0 in device space maps to some other z in local space.
     gfx::Transform flat_quad_to_target_transform(
         shared_quad_state->quad_to_target_transform);
     flat_quad_to_target_transform.FlattenTo2d();
-    bool result = flat_quad_to_target_transform.GetInverse(
-        &*quad_to_target_transform_inverse);
-    DCHECK(result) << "flat_quad_to_target_transform.GetInverse() failed";
+    quad_to_target_transform_inverse =
+        flat_quad_to_target_transform.GetCheckedInverse();
   }
 
   // The |clip_rect| is in the device coordinate and with all transforms

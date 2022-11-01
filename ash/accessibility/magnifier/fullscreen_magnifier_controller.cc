@@ -793,10 +793,8 @@ bool FullscreenMagnifierController::ProcessGestures() {
           display::Screen::GetScreen()->GetDisplayNearestWindow(root_window_);
       gfx::Transform rotation_transform;
       rotation_transform.Rotate(display.PanelRotationAsDegree());
-      gfx::Transform rotation_inverse_transform;
-      const bool result =
-          rotation_transform.GetInverse(&rotation_inverse_transform);
-      DCHECK(result);
+      gfx::Transform rotation_inverse_transform =
+          rotation_transform.GetCheckedInverse();
       gfx::PointF scroll = rotation_inverse_transform.MapPoint(
           gfx::PointF(details.scroll_x(), details.scroll_y()));
 

@@ -425,7 +425,7 @@ TEST_P(PaintChunksToCcLayerTest, OpacityEffectSpaceInversion) {
                    cc::PaintOpType::Restore}));                     // </t1>
   EXPECT_EFFECT_BOUNDS(0, 0, 100, 100, *output, 2);
   EXPECT_TRANSFORM_MATRIX(t1->Matrix(), *output, 1);
-  EXPECT_TRANSFORM_MATRIX(t1->Matrix().Inverse(), *output, 4);
+  EXPECT_TRANSFORM_MATRIX(t1->Matrix().GetCheckedInverse(), *output, 4);
 }
 
 TEST_P(PaintChunksToCcLayerTest, FilterEffectSpaceInversion) {
@@ -459,7 +459,7 @@ TEST_P(PaintChunksToCcLayerTest, FilterEffectSpaceInversion) {
            cc::PaintOpType::Restore}));                     // </t1>
   EXPECT_TRANSFORM_MATRIX(t1->Matrix(), *output, 1);
   EXPECT_EFFECT_BOUNDS(0, 0, 50, 50, *output, 2);
-  EXPECT_TRANSFORM_MATRIX(t1->Matrix().Inverse(), *output, 4);
+  EXPECT_TRANSFORM_MATRIX(t1->Matrix().GetCheckedInverse(), *output, 4);
 }
 
 TEST_P(PaintChunksToCcLayerTest, NonRootLayerSimple) {

@@ -103,9 +103,7 @@ Node CreateSemanticNode(uint32_t id,
 std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
   relative_bounds.bounds = gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
-  relative_bounds.transform =
-      std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
-  relative_bounds.transform->MakeIdentity();
+  relative_bounds.transform = std::make_unique<gfx::Transform>();
   relative_bounds.offset_container_id = -1;
   auto ax_node_data = CreateAXNodeData(
       ax::mojom::Role::kButton, ax::mojom::Action::kFocus,
@@ -342,9 +340,7 @@ TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
 TEST_F(AXTreeConverterTest, FieldMismatch) {
   ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
   relative_bounds.bounds = gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
-  relative_bounds.transform =
-      std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
-  relative_bounds.transform->MakeIdentity();
+  relative_bounds.transform = std::make_unique<gfx::Transform>();
   auto source_node_data = CreateAXNodeData(
       ax::mojom::Role::kHeader, ax::mojom::Action::kSetValue,
       std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
@@ -398,9 +394,7 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
 TEST_F(AXTreeConverterTest, LocationFieldRespectsTypeInvariants) {
   ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
   relative_bounds.bounds = gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
-  relative_bounds.transform =
-      std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
-  relative_bounds.transform->MakeIdentity();
+  relative_bounds.transform = std::make_unique<gfx::Transform>();
   auto source_node_data = CreateAXNodeData(
       ax::mojom::Role::kHeader, ax::mojom::Action::kSetValue,
       std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
@@ -616,9 +610,7 @@ TEST_F(AXTreeConverterTest, TransformUsesDeviceScalingWhenItIsNotZero) {
   node_data.id = 1;
   ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
   relative_bounds.bounds = gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
-  relative_bounds.transform =
-      std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
-  relative_bounds.transform->MakeIdentity();
+  relative_bounds.transform = std::make_unique<gfx::Transform>();
   relative_bounds.offset_container_id = -1;
 
   node_data.relative_bounds = relative_bounds;

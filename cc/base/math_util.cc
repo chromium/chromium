@@ -330,11 +330,9 @@ gfx::RectF MathUtil::ProjectClippedRect(const gfx::Transform& transform,
 gfx::QuadF MathUtil::InverseMapQuadToLocalSpace(
     const gfx::Transform& device_transform,
     const gfx::QuadF& device_quad) {
-  gfx::Transform inverse_device_transform(gfx::Transform::kSkipInitialization);
-  DCHECK(device_transform.IsInvertible());
   DCHECK(device_transform.IsFlat());
-  bool did_invert = device_transform.GetInverse(&inverse_device_transform);
-  DCHECK(did_invert);
+  gfx::Transform inverse_device_transform =
+      device_transform.GetCheckedInverse();
   bool clipped = false;
   gfx::QuadF local_quad =
       MathUtil::MapQuad(inverse_device_transform, device_quad, &clipped);

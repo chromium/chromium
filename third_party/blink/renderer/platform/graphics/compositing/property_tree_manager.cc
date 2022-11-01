@@ -250,9 +250,7 @@ void PropertyTreeManager::SetupRootTransformNode() {
   gfx::Transform to_screen;
   to_screen.Scale(device_scale_factor, device_scale_factor);
   transform_tree_.SetToScreen(cc::kRootPropertyNodeId, to_screen);
-  gfx::Transform from_screen;
-  bool invertible = to_screen.GetInverse(&from_screen);
-  DCHECK(invertible);
+  gfx::Transform from_screen = to_screen.GetCheckedInverse();
   transform_tree_.SetFromScreen(cc::kRootPropertyNodeId, from_screen);
   transform_tree_.set_needs_update(true);
 

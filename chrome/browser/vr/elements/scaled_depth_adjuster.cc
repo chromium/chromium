@@ -36,10 +36,7 @@ bool ScaledDepthAdjuster::OnBeginFrame(const gfx::Transform& head_pose) {
       inherited.PostConcat(anc->LocalTransform());
     }
   }
-  bool success = inherited.GetInverse(&transform_);
-  DCHECK(success);
-  if (!success)
-    return false;
+  transform_ = inherited.GetCheckedInverse();
   gfx::Point3F o = inherited.MapPoint(gfx::Point3F());
   float z = -o.z() + delta_z_;
   transform_.Scale3d(z, z, z);

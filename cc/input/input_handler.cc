@@ -854,14 +854,11 @@ InputHandler::EventListenerTypeForTouchStartOrMoveAt(
   if (out_touch_action) {
     gfx::Transform layer_screen_space_transform =
         layer_impl_with_touch_handler->ScreenSpaceTransform();
-    gfx::Transform inverse_layer_screen_space(
-        gfx::Transform::kSkipInitialization);
-    bool can_be_inversed =
-        layer_screen_space_transform.GetInverse(&inverse_layer_screen_space);
     // Getting here indicates that |layer_impl_with_touch_handler| is non-null,
     // which means that the |hit| in FindClosestMatchingLayer() is true, which
     // indicates that the inverse is available.
-    DCHECK(can_be_inversed);
+    gfx::Transform inverse_layer_screen_space =
+        layer_screen_space_transform.GetCheckedInverse();
     bool clipped = false;
     gfx::Point3F planar_point = MathUtil::ProjectPoint3D(
         inverse_layer_screen_space, device_viewport_point, &clipped);
@@ -1667,14 +1664,10 @@ bool InputHandler::CalculateLocalScrollDeltaAndStartPoint(
   // the scroll hit test in the first place.
   const gfx::Transform screen_space_transform =
       GetScrollTree().ScreenSpaceTransform(scroll_node.id);
-  DCHECK(screen_space_transform.IsInvertible());
-  gfx::Transform inverse_screen_space_transform(
-      gfx::Transform::kSkipInitialization);
-  bool did_invert =
-      screen_space_transform.GetInverse(&inverse_screen_space_transform);
   // TODO(shawnsingh): With the advent of impl-side scrolling for non-root
   // layers, we may need to explicitly handle uninvertible transforms here.
-  DCHECK(did_invert);
+  gfx::Transform inverse_screen_space_transform =
+      screen_space_transform.GetCheckedInverse();
 
   float scale_from_viewport_to_screen_space =
       compositor_delegate_.DeviceScaleFactor();

@@ -193,7 +193,7 @@ gfx::Rect BrowserViewRenderer::ComputeTileRectAndUpdateMemoryPolicy() {
       external_draw_constraints_.transform;
 
   gfx::Rect viewport_rect_for_tile_priority_in_view_space;
-  gfx::Transform screen_to_view(gfx::Transform::kSkipInitialization);
+  gfx::Transform screen_to_view;
   if (transform_for_tile_priority.GetInverse(&screen_to_view)) {
     // Convert from screen space to view space.
     viewport_rect_for_tile_priority_in_view_space =

@@ -240,7 +240,7 @@ gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
   // Calculate projection from the target surface rect to local
   // space. Non-invertible draw transforms means no able to bring clipped rect
   // in target space back to local space, early out without clip.
-  gfx::Transform target_to_surface(gfx::Transform::kSkipInitialization);
+  gfx::Transform target_to_surface;
   if (!draw_transform().GetInverse(&target_to_surface))
     return accumulated_content_rect();
 

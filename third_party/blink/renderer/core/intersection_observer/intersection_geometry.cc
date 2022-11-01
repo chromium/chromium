@@ -379,7 +379,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
           kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
       TransformationMatrix matrix =
           implicit_root_to_target_document_transform.AccumulatedTransform()
-              .Inverse();
+              .InverseOrIdentity();
       intersection_rect_ = PhysicalRect::EnclosingRect(
           matrix.ProjectQuad(gfx::QuadF(gfx::RectF(intersection_rect_)))
               .BoundingBox());

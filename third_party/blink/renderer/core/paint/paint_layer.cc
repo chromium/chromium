@@ -1643,7 +1643,7 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (local_transform_state && layout_object.StyleRef().BackfaceVisibility() ==
                                    EBackfaceVisibility::kHidden) {
     STACK_UNINITIALIZED TransformationMatrix inverted_matrix =
-        local_transform_state->AccumulatedTransform().Inverse();
+        local_transform_state->AccumulatedTransform().InverseOrIdentity();
     // If the z-vector of the matrix is negative, the back is facing towards the
     // viewer. TODO(crbug.com/1359528): Use something like
     // gfx::Transform::IsBackfaceVisible().

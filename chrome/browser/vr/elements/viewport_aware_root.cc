@@ -46,9 +46,8 @@ bool ViewportAwareRoot::OnBeginFrame(const gfx::Transform& head_pose) {
   gfx::Vector3dF look_at = vr::GetForwardVector(head_pose);
   bool changed = AdjustRotationForHeadPose(look_at);
   if (recenter_on_rotate_) {
-    gfx::Transform world_from_head;
-    bool invertable = head_pose.GetInverse(&world_from_head);
-    DCHECK(invertable);  // Pose data has been validated already.
+    // Pose data has been validated already.
+    gfx::Transform world_from_head = head_pose.GetCheckedInverse();
     gfx::Point3F head_pos_in_world_space =
         world_from_head.MapPoint(gfx::Point3F());
     changed = AdjustTranslation(head_pos_in_world_space.x(),

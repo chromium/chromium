@@ -140,7 +140,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       if (other.IsIdentityOr2DTranslation())
         return Matrix().Preserves2dAxisAlignment();
       // TODO(crbug.com/960481): Consider more rare corner cases.
-      return (Matrix().Inverse() * other.Matrix()).Preserves2dAxisAlignment();
+      return (Matrix().InverseOrIdentity() * other.Matrix())
+          .Preserves2dAxisAlignment();
     }
 
    private:

@@ -932,7 +932,7 @@ bool Are2dAxisAligned(const gfx::Transform& a, const gfx::Transform& b) {
     return true;
   }
 
-  gfx::Transform inverse(gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse;
   if (b.GetInverse(&inverse)) {
     inverse *= a;
     return inverse.Preserves2dAxisAlignment();

@@ -915,7 +915,7 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   // For the non-root render pass.
   gfx::Rect damage_rect = render_pass->damage_rect;
   if (!frame_buffer_damage.IsEmpty()) {
-    gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
+    gfx::Transform inverse_transform;
     if (render_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
       // |frame_buffer_damage| is in the root target space. Transform the damage
       // from the root to the non-root space before it's added.

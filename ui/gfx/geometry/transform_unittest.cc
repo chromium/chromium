@@ -1354,20 +1354,30 @@ TEST(XFormTest, IntegerTranslation) {
   EXPECT_FALSE(transform.IsIdentityOrIntegerTranslation());
 }
 
-TEST(XFormTest, verifyMatrixInversion) {
+TEST(XFormTest, Inverse) {
+  {
+    Transform identity;
+    Transform inverse_identity;
+    EXPECT_TRUE(identity.GetInverse(&inverse_identity));
+    EXPECT_EQ(identity, inverse_identity);
+    EXPECT_EQ(identity, identity.InverseOrIdentity());
+  }
+
   {
     // Invert a translation
-    gfx::Transform translation;
+    Transform translation;
     translation.Translate3d(2.0, 3.0, 4.0);
     EXPECT_TRUE(translation.IsInvertible());
 
-    gfx::Transform inverse_translation;
+    Transform inverse_translation;
     bool is_invertible = translation.GetInverse(&inverse_translation);
     EXPECT_TRUE(is_invertible);
     EXPECT_ROW1_EQ(1.0f, 0.0f, 0.0f, -2.0f, inverse_translation);
     EXPECT_ROW2_EQ(0.0f, 1.0f, 0.0f, -3.0f, inverse_translation);
     EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, -4.0f, inverse_translation);
     EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, inverse_translation);
+
+    EXPECT_EQ(inverse_translation, translation.InverseOrIdentity());
 
     // GetInverse with the parameter pointing to itself.
     EXPECT_TRUE(translation.GetInverse(&translation));
@@ -1376,30 +1386,50 @@ TEST(XFormTest, verifyMatrixInversion) {
 
   {
     // Invert a non-uniform scale
-    gfx::Transform scale;
+    Transform scale;
     scale.Scale3d(4.0, 10.0, 100.0);
     EXPECT_TRUE(scale.IsInvertible());
 
-    gfx::Transform inverse_scale;
+    Transform inverse_scale;
     bool is_invertible = scale.GetInverse(&inverse_scale);
     EXPECT_TRUE(is_invertible);
     EXPECT_ROW1_EQ(0.25f, 0.0f, 0.0f, 0.0f, inverse_scale);
     EXPECT_ROW2_EQ(0.0f, 0.1f, 0.0f, 0.0f, inverse_scale);
     EXPECT_ROW3_EQ(0.0f, 0.0f, 0.01f, 0.0f, inverse_scale);
     EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, inverse_scale);
+
+    EXPECT_EQ(inverse_scale, scale.InverseOrIdentity());
+  }
+
+  {
+    Transform m1;
+    m1.RotateAboutZAxis(-30);
+    m1.RotateAboutYAxis(10);
+    m1.RotateAboutXAxis(20);
+    m1.ApplyPerspectiveDepth(100);
+    Transform m2;
+    m2.ApplyPerspectiveDepth(-100);
+    m2.RotateAboutXAxis(-20);
+    m2.RotateAboutYAxis(-10);
+    m2.RotateAboutZAxis(30);
+    Transform inverse_m1, inverse_m2;
+    EXPECT_TRUE(m1.GetInverse(&inverse_m1));
+    EXPECT_TRUE(m2.GetInverse(&inverse_m2));
+    EXPECT_TRANSFORM_NEAR(m1, inverse_m2, 1e-6);
+    EXPECT_TRANSFORM_NEAR(m2, inverse_m1, 1e-6);
   }
 
   {
     // Try to invert a matrix that is not invertible.
     // The inverse() function should reset the output matrix to identity.
-    gfx::Transform uninvertible;
+    Transform uninvertible;
     uninvertible.set_rc(0, 0, 0.f);
     uninvertible.set_rc(1, 1, 0.f);
     uninvertible.set_rc(2, 2, 0.f);
     uninvertible.set_rc(3, 3, 0.f);
     EXPECT_FALSE(uninvertible.IsInvertible());
 
-    gfx::Transform inverse_of_uninvertible;
+    Transform inverse_of_uninvertible;
 
     // Add a scale just to more easily ensure that inverse_of_uninvertible is
     // reset to identity.
@@ -1412,6 +1442,8 @@ TEST(XFormTest, verifyMatrixInversion) {
     EXPECT_ROW2_EQ(0.0f, 1.0f, 0.0f, 0.0f, inverse_of_uninvertible);
     EXPECT_ROW3_EQ(0.0f, 0.0f, 1.0f, 0.0f, inverse_of_uninvertible);
     EXPECT_ROW4_EQ(0.0f, 0.0f, 0.0f, 1.0f, inverse_of_uninvertible);
+
+    EXPECT_EQ(inverse_of_uninvertible, uninvertible.InverseOrIdentity());
   }
 }
 

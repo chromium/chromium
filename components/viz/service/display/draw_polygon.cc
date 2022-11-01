@@ -143,12 +143,7 @@ float DrawPolygon::SignedPointDistance(const gfx::Point3F& point) const {
 // but normal information is no longer needed after sorting.
 void DrawPolygon::ApplyTransformToNormal(const gfx::Transform& transform) {
   // Now we use the inverse transpose of |transform| to transform the normal.
-  gfx::Transform inverse_transform;
-  bool inverted = transform.GetInverse(&inverse_transform);
-  DCHECK(inverted);
-  if (!inverted)
-    return;
-
+  gfx::Transform inverse_transform = transform.GetCheckedInverse();
   inverse_transform.Transpose();
   normal_ = inverse_transform.MapVector(normal_);
 

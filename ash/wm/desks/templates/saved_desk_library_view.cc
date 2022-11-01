@@ -522,17 +522,14 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
 
 absl::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
     const DeskMiniView* mini_view) {
-  gfx::Transform transform = mini_view->layer()->transform();
-  gfx::Transform inversed;
-  if (!transform.GetInverse(&inversed))
-    return absl::nullopt;
-
   gfx::Rect desk_preview_bounds =
       mini_view->desk_preview()->GetBoundsInScreen();
-  gfx::Point desk_preview_origin =
-      inversed.MapPoint(desk_preview_bounds.origin());
-
-  return gfx::Rect(desk_preview_origin, desk_preview_bounds.size());
+  if (absl::optional<gfx::Point> desk_preview_origin =
+          mini_view->layer()->transform().InverseMapPoint(
+              desk_preview_bounds.origin())) {
+    return gfx::Rect(*desk_preview_origin, desk_preview_bounds.size());
+  }
+  return absl::nullopt;
 }
 
 void SavedDeskLibraryView::AddedToWidget() {

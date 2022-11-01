@@ -104,7 +104,7 @@ void GeometryMapperTransformCache::Update(
       plane_root_transform_->to_plane_root.MakeIdentity();
       parent.ApplyToPlaneRoot(plane_root_transform_->to_plane_root);
       plane_root_transform_->to_plane_root.PreConcat(local);
-      plane_root_transform_->from_plane_root = local.Inverse();
+      plane_root_transform_->from_plane_root = local.GetCheckedInverse();
       parent.ApplyFromPlaneRoot(plane_root_transform_->from_plane_root);
       plane_root_transform_->has_animation =
           parent.has_animation_to_plane_root() ||

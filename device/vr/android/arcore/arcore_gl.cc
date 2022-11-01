@@ -577,8 +577,7 @@ void ArCoreGl::RecalculateUvsAndProjection() {
 
   // Also calculate the inverse projection which is needed for converting
   // screen touches to world rays.
-  bool has_inverse = projection_.GetInverse(&inverse_projection_);
-  DCHECK(has_inverse);
+  inverse_projection_ = projection_.GetCheckedInverse();
 
   // VRFieldOfView wants positive angles.
   mojom::VRFieldOfViewPtr field_of_view = mojom::VRFieldOfView::New();

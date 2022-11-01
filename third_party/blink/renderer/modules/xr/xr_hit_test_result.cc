@@ -80,12 +80,8 @@ ScriptPromise XRHitTestResult::createAnchor(ScriptState* script_state,
     return {};
   }
 
-  const TransformationMatrix& mojo_from_space =
-      reference_space_information->mojo_from_space;
-
-  DCHECK(mojo_from_space.IsInvertible());
-
-  auto space_from_mojo = mojo_from_space.Inverse();
+  auto space_from_mojo =
+      reference_space_information->mojo_from_space.GetCheckedInverse();
   auto space_from_anchor =
       space_from_mojo * TransformationMatrix(mojo_from_this_.ToTransform());
 

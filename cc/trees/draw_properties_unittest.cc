@@ -286,7 +286,7 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   gfx::Transform translation_to_anchor;
   translation_to_anchor.Translate(5.0, 0.0);
   gfx::Transform expected_result = translation_to_anchor * layer_transform *
-                                   gfx::InvertAndCheck(translation_to_anchor);
+                                   translation_to_anchor.GetCheckedInverse();
   SetTransformOrigin(layer, gfx::Point3F(5.f, 0.f, 0.f));
   UpdateActiveTreeDrawProperties();
   EXPECT_TRANSFORM_EQ(expected_result, draw_property_utils::DrawTransform(
@@ -299,8 +299,7 @@ TEST_F(DrawPropertiesTest, TransformsForSingleLayer) {
   // current implementation of CalculateDrawProperties does this implicitly, but
   // it is still worth testing to detect accidental regressions.
   expected_result = position_transform * translation_to_anchor *
-                    layer_transform *
-                    gfx::InvertAndCheck(translation_to_anchor);
+                    layer_transform * translation_to_anchor.GetCheckedInverse();
   SetPostTranslation(layer, gfx::Vector2dF(0.f, 1.2f));
   UpdateActiveTreeDrawProperties();
   EXPECT_TRANSFORM_EQ(expected_result, draw_property_utils::DrawTransform(
@@ -454,7 +453,7 @@ TEST_F(DrawPropertiesTest, TransformsForSimpleHierarchy) {
   parent_translation_to_anchor.Translate(2.5, 3.0);
   gfx::Transform parent_composite_transform =
       parent_translation_to_anchor * parent_layer_transform *
-      gfx::InvertAndCheck(parent_translation_to_anchor);
+      parent_translation_to_anchor.GetCheckedInverse();
   SetTransform(parent, parent_layer_transform);
   SetPostTranslation(parent, gfx::Vector2dF());
   UpdateActiveTreeDrawProperties();
@@ -485,7 +484,7 @@ TEST_F(DrawPropertiesTest, TransformsForSingleRenderSurface) {
 
   gfx::Transform parent_composite_transform =
       parent_translation_to_anchor * parent_layer_transform *
-      gfx::InvertAndCheck(parent_translation_to_anchor);
+      parent_translation_to_anchor.GetCheckedInverse();
   gfx::Vector2dF parent_composite_scale =
       gfx::ComputeTransform2dScaleComponents(parent_composite_transform, 1.f);
   gfx::Transform surface_sublayer_transform;
@@ -493,7 +492,7 @@ TEST_F(DrawPropertiesTest, TransformsForSingleRenderSurface) {
                                    parent_composite_scale.y());
   gfx::Transform surface_sublayer_composite_transform =
       parent_composite_transform *
-      gfx::InvertAndCheck(surface_sublayer_transform);
+      surface_sublayer_transform.GetCheckedInverse();
 
   root->SetBounds(gfx::Size(1, 2));
   parent->SetBounds(gfx::Size(100, 120));
@@ -573,7 +572,7 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   layer_transform.Translate(1.0, 1.0);
 
   gfx::Transform A = translation_to_anchor * layer_transform *
-                     gfx::InvertAndCheck(translation_to_anchor);
+                     translation_to_anchor.GetCheckedInverse();
 
   gfx::Vector2dF surface1_parent_transform_scale =
       gfx::ComputeTransform2dScaleComponents(A, 1.f);
@@ -585,7 +584,7 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   gfx::Transform SS1 = surface1_sublayer_transform;
   // S1 = transform to move from render_surface1 pixels to the layer space of
   // the owning layer
-  gfx::Transform S1 = gfx::InvertAndCheck(surface1_sublayer_transform);
+  gfx::Transform S1 = surface1_sublayer_transform.GetCheckedInverse();
 
   gfx::Vector2dF surface2_parent_transform_scale =
       gfx::ComputeTransform2dScaleComponents(SS1 * A, 1.f);
@@ -597,7 +596,7 @@ TEST_F(DrawPropertiesTest, TransformsForRenderSurfaceHierarchy) {
   gfx::Transform SS2 = surface2_sublayer_transform;
   // S2 = transform to move from render_surface2 pixels to the layer space of
   // the owning layer
-  gfx::Transform S2 = gfx::InvertAndCheck(surface2_sublayer_transform);
+  gfx::Transform S2 = surface2_sublayer_transform.GetCheckedInverse();
 
   root->SetBounds(gfx::Size(1, 2));
   parent->SetBounds(gfx::Size(10, 10));
@@ -2034,7 +2033,7 @@ TEST_F(DrawPropertiesDrawRectsTest, DrawRectsFor3dPerspectiveWhenClippedByW) {
 
 static bool ProjectionClips(const gfx::Transform& map_transform,
                             const gfx::RectF& mapped_rect) {
-  gfx::Transform inverse(gfx::InvertAndCheck(map_transform));
+  gfx::Transform inverse = map_transform.GetCheckedInverse();
   bool clipped = false;
   if (!clipped)
     MathUtil::ProjectPoint(inverse, mapped_rect.top_right(), &clipped);

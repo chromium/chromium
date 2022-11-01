@@ -280,13 +280,16 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // This method returns the identity matrix if it is not invertible.
   // Use GetInverse() if you also need to know the invertibility.
-  [[nodiscard]] TransformationMatrix Inverse() const;
+  [[nodiscard]] TransformationMatrix InverseOrIdentity() const;
 
   // If this matrix is invertible, this method sets |result| to the inverse of
   // this matrix and returns true, otherwise sets |result| to identity and
   // returns false. |result| can't be null (but is not a reference to be
   // consistent with gfx::Transform::GetInverse()).
   [[nodiscard]] bool GetInverse(TransformationMatrix* result) const;
+
+  // Same as above except that it assumes success, otherwise DCHECK fails.
+  [[nodiscard]] TransformationMatrix GetCheckedInverse() const;
 
   // decompose the matrix into its component parts
   typedef struct {

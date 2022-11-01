@@ -696,9 +696,7 @@ void TransformTree::SetRootScaleAndTransform(
 
   gfx::Transform root_to_screen;
   root_to_screen.Scale(screen_space_scale.x(), screen_space_scale.y());
-  gfx::Transform root_from_screen;
-  bool invertible = root_to_screen.GetInverse(&root_from_screen);
-  DCHECK(invertible);
+  gfx::Transform root_from_screen = root_to_screen.GetCheckedInverse();
   if (root_to_screen != ToScreen(kRootPropertyNodeId)) {
     SetToScreen(kRootPropertyNodeId, root_to_screen);
     SetFromScreen(kRootPropertyNodeId, root_from_screen);

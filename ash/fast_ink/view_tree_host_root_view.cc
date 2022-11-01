@@ -449,9 +449,8 @@ void ViewTreeHostRootView::SubmitCompositorFrame() {
           buffer_size_, viz::RGBA_8888, is_overlay_candidate_);
   transferable_resource.id = id_generator_.GenerateNextId();
 
-  gfx::Transform buffer_to_target_transform;
-  bool rv = rotate_transform_.GetInverse(&buffer_to_target_transform);
-  DCHECK(rv);
+  gfx::Transform buffer_to_target_transform =
+      rotate_transform_.GetCheckedInverse();
 
   const viz::CompositorRenderPassId kRenderPassId{1};
   auto render_pass = viz::CompositorRenderPass::Create();

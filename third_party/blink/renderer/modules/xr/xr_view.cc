@@ -148,7 +148,7 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
                                                   double canvas_height) {
   // Recompute the inverse projection matrix if needed.
   if (inv_projection_dirty_) {
-    inv_projection_ = projection_matrix_.Inverse();
+    inv_projection_ = projection_matrix_.InverseOrIdentity();
     inv_projection_dirty_ = false;
   }
 
@@ -183,7 +183,7 @@ TransformationMatrix XRViewData::UnprojectPointer(double x,
                           -point_in_view_space.z());
 
   // LookAt matrices are view matrices (inverted), so invert before returning.
-  return inv_pointer.Inverse();
+  return inv_pointer.InverseOrIdentity();
 }
 
 XRRigidTransform* XRView::refSpaceFromView() const {

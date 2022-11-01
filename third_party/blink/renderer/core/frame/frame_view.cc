@@ -131,7 +131,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
         owner_layout_object->PhysicalContentBoxOffset());
     TransformationMatrix matrix =
         parent_frame_to_iframe_content_transform.AccumulatedTransform()
-            .Inverse();
+            .InverseOrIdentity();
     if (geometry.IsIntersecting()) {
       PhysicalRect intersection_rect = PhysicalRect::EnclosingRect(
           matrix

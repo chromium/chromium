@@ -391,9 +391,8 @@ void FastInkHost::SubmitCompositorFrame() {
   target_to_buffer_transform.Scale(1.f / device_scale_factor,
                                    1.f / device_scale_factor);
 
-  gfx::Transform buffer_to_target_transform;
-  bool rv = target_to_buffer_transform.GetInverse(&buffer_to_target_transform);
-  DCHECK(rv);
+  gfx::Transform buffer_to_target_transform =
+      target_to_buffer_transform.GetCheckedInverse();
 
   const viz::CompositorRenderPassId kRenderPassId{1};
   auto render_pass = viz::CompositorRenderPass::Create();

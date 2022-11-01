@@ -82,9 +82,8 @@ CursorView::CursorView(const gfx::Point& initial_location,
 
   // Create transform used to convert cursor controller coordinates to screen
   // coordinates.
-  bool inversible = host()->window_to_buffer_transform().GetInverse(
-      &buffer_to_screen_transform_);
-  DCHECK(inversible);
+  buffer_to_screen_transform_ =
+      host()->window_to_buffer_transform().GetCheckedInverse();
 
   ui::CursorController::GetInstance()->AddCursorObserver(this);
 }

@@ -67,14 +67,14 @@ class GeometryMapperTransformCacheTest : public testing::Test {
 
     EXPECT_EQ(&t0(), cache.plane_root());
     EXPECT_EQ(to_plane_root, cache.to_plane_root());
-    EXPECT_EQ(to_plane_root.Inverse(), cache.from_plane_root());
+    EXPECT_EQ(to_plane_root.InverseOrIdentity(), cache.from_plane_root());
 
     TransformationMatrix actual_to_screen;
     cache.ApplyToScreen(actual_to_screen);
     EXPECT_EQ(to_plane_root, actual_to_screen);
     TransformationMatrix actual_projection_from_screen;
     cache.ApplyProjectionFromScreen(actual_projection_from_screen);
-    EXPECT_EQ(to_plane_root.Inverse(), actual_projection_from_screen);
+    EXPECT_EQ(to_plane_root.InverseOrIdentity(), actual_projection_from_screen);
   }
 
   static void CheckPlaneRootSameAs2dTranslationRoot(
@@ -97,7 +97,7 @@ class GeometryMapperTransformCacheTest : public testing::Test {
     EXPECT_EQ(to_screen, cache.to_screen());
     auto projection_from_screen = to_screen;
     projection_from_screen.FlattenTo2d();
-    projection_from_screen = projection_from_screen.Inverse();
+    projection_from_screen = projection_from_screen.InverseOrIdentity();
     EXPECT_EQ(projection_from_screen, cache.projection_from_screen());
   }
 
@@ -121,11 +121,11 @@ class GeometryMapperTransformCacheTest : public testing::Test {
 
     EXPECT_EQ(&plane_root, cache.plane_root());
     EXPECT_EQ(to_plane_root, cache.to_plane_root());
-    EXPECT_EQ(to_plane_root.Inverse(), cache.from_plane_root());
+    EXPECT_EQ(to_plane_root.InverseOrIdentity(), cache.from_plane_root());
     EXPECT_EQ(to_screen, cache.to_screen());
     auto projection_from_screen = to_screen;
     projection_from_screen.FlattenTo2d();
-    projection_from_screen = projection_from_screen.Inverse();
+    projection_from_screen = projection_from_screen.InverseOrIdentity();
     EXPECT_EQ(projection_from_screen, cache.projection_from_screen());
   }
 

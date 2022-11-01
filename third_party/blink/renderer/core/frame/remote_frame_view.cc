@@ -149,7 +149,7 @@ gfx::Rect RemoteFrameView::ComputeCompositingRect() const {
   owner_layout_object->MapLocalToAncestor(nullptr, local_root_transform_state,
                                           kTraverseDocumentBoundaries);
   TransformationMatrix matrix =
-      local_root_transform_state.AccumulatedTransform().Inverse();
+      local_root_transform_state.AccumulatedTransform().InverseOrIdentity();
   PhysicalRect local_viewport_rect = PhysicalRect::EnclosingRect(
       matrix.ProjectQuad(gfx::QuadF(gfx::RectF(viewport_rect))).BoundingBox());
   gfx::Rect compositing_rect = ToEnclosingRect(local_viewport_rect);

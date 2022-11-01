@@ -786,8 +786,7 @@ gfx::PointF ScrollbarController::GetScrollbarRelativePosition(
     return gfx::PointF(0, 0);
   }
 
-  gfx::Transform inverse_screen_space_transform(
-      gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse_screen_space_transform;
 
   gfx::Transform scaled_screen_space_transform(
       scrollbar->ScreenSpaceTransform());

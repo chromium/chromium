@@ -164,9 +164,10 @@ PhysicalOffset TransformState::MappedPoint() const {
                               ? accumulated_offset_
                               : -accumulated_offset_);
   if (accumulated_transform_) {
-    point = direction_ == kApplyTransformDirection
-                ? accumulated_transform_->MapPoint(point)
-                : accumulated_transform_->Inverse().ProjectPoint(point);
+    point =
+        direction_ == kApplyTransformDirection
+            ? accumulated_transform_->MapPoint(point)
+            : accumulated_transform_->InverseOrIdentity().ProjectPoint(point);
   }
   return PhysicalOffset::FromPointFRound(point);
 }
@@ -182,7 +183,7 @@ gfx::QuadF TransformState::MappedQuad() const {
   if (direction_ == kApplyTransformDirection)
     return accumulated_transform_->MapQuad(quad);
 
-  return accumulated_transform_->Inverse().ProjectQuad(quad);
+  return accumulated_transform_->InverseOrIdentity().ProjectQuad(quad);
 }
 
 const TransformationMatrix& TransformState::AccumulatedTransform() const {
@@ -197,11 +198,12 @@ void TransformState::FlattenWithTransform(const TransformationMatrix& t) {
     if (map_quad_)
       last_planar_quad_ = t.MapQuad(last_planar_quad_);
   } else {
-    TransformationMatrix inverse_transform = t.Inverse();
-    if (map_point_)
-      last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
-    if (map_quad_) {
-      last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);
+    TransformationMatrix inverse_transform;
+    if (t.GetInverse(&inverse_transform)) {
+      if (map_point_)
+        last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
+      if (map_quad_)
+        last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);
     }
   }
 

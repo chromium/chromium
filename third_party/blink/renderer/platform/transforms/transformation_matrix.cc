@@ -691,7 +691,7 @@ bool TransformationMatrix::IsInvertible() const {
   return InternalInverse<true>(nullptr);
 }
 
-TransformationMatrix TransformationMatrix::Inverse() const {
+TransformationMatrix TransformationMatrix::InverseOrIdentity() const {
   TransformationMatrix m;
   InternalInverse<false>(&m);
   return m;
@@ -704,6 +704,13 @@ bool TransformationMatrix::GetInverse(TransformationMatrix* m) const {
 
   m->MakeIdentity();
   return false;
+}
+
+TransformationMatrix TransformationMatrix::GetCheckedInverse() const {
+  TransformationMatrix m;
+  bool invertible = InternalInverse<false>(&m);
+  DCHECK(invertible);
+  return m;
 }
 
 template <bool check_invertibility_only>

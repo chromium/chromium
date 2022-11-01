@@ -47,10 +47,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
   Transform();
   ~Transform();
 
-  // TODO(crbug.com/1359528): This is same as Transform(). Remove this.
-  enum SkipInitialization { kSkipInitialization };
-  explicit Transform(SkipInitialization);
-
   Transform(const Transform& rhs);
   Transform& operator=(const Transform& rhs);
   Transform(Transform&&);
@@ -341,13 +337,23 @@ class GEOMETRY_SKIA_EXPORT Transform {
     return LIKELY(!matrix_) ? axis_2d_.IsInvertible() : matrix_->IsInvertible();
   }
 
+  // If |this| is invertible, inverts |this| and stores the result in
+  // |*transform|, and returns true. Otherwise sets |*transform| to identity
+  // and returns false.
+  [[nodiscard]] bool GetInverse(Transform* transform) const;
+
+  // Same as above except that it assumes success, otherwise DCHECK fails.
+  // This is suitable when the transform is known to be invertible.
+  [[nodiscard]] Transform GetCheckedInverse() const;
+
+  // Same as GetInverse() except that it returns the the inverse of |this| or
+  // identity, instead of a bool. This is suitable when it's good to fallback
+  // to identity silently.
+  [[nodiscard]] Transform InverseOrIdentity() const;
+
   // Returns true if a layer with a forward-facing normal of (0, 0, 1) would
   // have its back side facing frontwards after applying the transform.
   bool IsBackFaceVisible() const;
-
-  // Inverts the transform which is passed in. Returns true if successful, or
-  // sets |transform| to the identify matrix on failure.
-  [[nodiscard]] bool GetInverse(Transform* transform) const;
 
   // Transposes this transform in place.
   void Transpose();

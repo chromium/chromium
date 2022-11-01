@@ -1268,13 +1268,11 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
         // positive scale check.
         if (current_sqs_intersects_occlusion &&
             transform.IsPositiveScaleOrTranslation()) {
-          gfx::Transform reverse_transform;
-          bool is_invertible = transform.GetInverse(&reverse_transform);
           // Scale transform can be inverted by multiplying 1/scale (given
           // scale > 0) and translation transform can be inverted by applying
           // the reversed directional translation. Therefore, |transform| is
           // always invertible.
-          DCHECK(is_invertible);
+          gfx::Transform reverse_transform = transform.GetCheckedInverse();
           DCHECK_LE(occlusion_in_target_space.GetRegionComplexity(),
                     settings_.kMaximumOccluderComplexity);
 

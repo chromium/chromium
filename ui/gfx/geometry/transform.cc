@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -75,7 +76,6 @@ void AxisTransform2dToColMajor(const AxisTransform2d& axis_2d, T a[16]) {
 
 Transform::Transform() = default;
 Transform::~Transform() = default;
-Transform::Transform(SkipInitialization) {}
 Transform::Transform(Transform&&) = default;
 Transform& Transform::operator=(Transform&&) = default;
 
@@ -490,9 +490,9 @@ bool Transform::GetInverse(Transform* transform) const {
     return false;
   }
 
-  if (transform != this) {
+  if (!transform->matrix_)
     transform->matrix_ = std::make_unique<Matrix44>(Matrix44::kUninitialized);
-  }
+
   if (matrix_->GetInverse(*transform->matrix_))
     return true;
 
@@ -500,6 +500,20 @@ bool Transform::GetInverse(Transform* transform) const {
   // out to be un-invertible.
   transform->MakeIdentity();
   return false;
+}
+
+Transform Transform::GetCheckedInverse() const {
+  Transform inverse;
+  if (!GetInverse(&inverse))
+    NOTREACHED() << ToString() << " is not invertible";
+  return inverse;
+}
+
+Transform Transform::InverseOrIdentity() const {
+  Transform inverse;
+  bool invertible = GetInverse(&inverse);
+  DCHECK(invertible || inverse.IsIdentity());
+  return inverse;
 }
 
 bool Transform::Preserves2dAxisAlignment() const {
@@ -732,7 +746,7 @@ absl::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {
       return axis_2d_.InverseMapRect(rect);
   }
 
-  Transform inverse(kSkipInitialization);
+  Transform inverse;
   if (!GetInverse(&inverse))
     return absl::nullopt;
 

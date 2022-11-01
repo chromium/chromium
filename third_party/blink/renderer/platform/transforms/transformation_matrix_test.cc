@@ -473,50 +473,6 @@ TEST(TransformationMatrixTest, ToString) {
             column_major_constructor.ToString());
 }
 
-TEST(TransformationMatrix, IsInvertible) {
-  EXPECT_FALSE(TransformationMatrix::ColMajor(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0)
-                   .IsInvertible());
-  EXPECT_TRUE(TransformationMatrix().IsInvertible());
-  TransformationMatrix t;
-  t.Translate3d(10, 20, 30);
-  EXPECT_TRUE(t.IsInvertible());
-  EXPECT_TRUE(MakeScaleMatrix(1e-8).IsInvertible());
-  EXPECT_FALSE(MakeScaleMatrix(0).IsInvertible());
-  EXPECT_FALSE(
-      MakeScaleMatrix(std::numeric_limits<double>::quiet_NaN()).IsInvertible());
-  EXPECT_FALSE(
-      MakeScaleMatrix(std::numeric_limits<double>::min()).IsInvertible());
-}
-
-TEST(TransformationMatrix, Inverse) {
-  EXPECT_EQ(TransformationMatrix(), MakeScaleMatrix(0).Inverse());
-  EXPECT_EQ(TransformationMatrix(), TransformationMatrix().Inverse());
-
-  auto t1 = MakeTranslationMatrix(-10, 20, -30);
-  auto t2 = MakeTranslationMatrix(10, -20, 30);
-  EXPECT_EQ(t1, t2.Inverse());
-  EXPECT_EQ(t2, t1.Inverse());
-
-  auto s1 = MakeScaleMatrix(2, -4, 0.5);
-  auto s2 = MakeScaleMatrix(0.5, -0.25, 2);
-  EXPECT_EQ(s1, s2.Inverse());
-  EXPECT_EQ(s2, s1.Inverse());
-
-  TransformationMatrix m1;
-  m1.RotateAboutZAxis(-30);
-  m1.RotateAboutYAxis(10);
-  m1.RotateAboutXAxis(20);
-  m1.ApplyPerspectiveDepth(100);
-  TransformationMatrix m2;
-  m2.ApplyPerspectiveDepth(-100);
-  m2.RotateAboutXAxis(-20);
-  m2.RotateAboutYAxis(-10);
-  m2.RotateAboutZAxis(30);
-  EXPECT_TRANSFORMATION_MATRIX(m1, m2.Inverse());
-  EXPECT_TRANSFORMATION_MATRIX(m2, m1.Inverse());
-}
-
 TEST(TransformationMatrixTest, Blend2dXFlipTest) {
   // Test 2D x-flip (crbug.com/797472).
   auto from = TransformationMatrix::Affine(1, 0, 0, 1, 100, 150);

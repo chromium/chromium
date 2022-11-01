@@ -53,20 +53,24 @@ void HitTestingTransformState::ApplyTransform(
 }
 
 void HitTestingTransformState::Flatten() {
-  TransformationMatrix inverse_transform = accumulated_transform_.Inverse();
-  last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
-  last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);
-  last_planar_area_ = inverse_transform.ProjectQuad(last_planar_area_);
+  TransformationMatrix inverse_transform;
+  if (accumulated_transform_.GetInverse(&inverse_transform)) {
+    last_planar_point_ = inverse_transform.ProjectPoint(last_planar_point_);
+    last_planar_quad_ = inverse_transform.ProjectQuad(last_planar_quad_);
+    last_planar_area_ = inverse_transform.ProjectQuad(last_planar_area_);
+  }
 
   accumulated_transform_.MakeIdentity();
 }
 
 gfx::PointF HitTestingTransformState::MappedPoint() const {
-  return accumulated_transform_.Inverse().ProjectPoint(last_planar_point_);
+  return accumulated_transform_.InverseOrIdentity().ProjectPoint(
+      last_planar_point_);
 }
 
 gfx::QuadF HitTestingTransformState::MappedQuad() const {
-  return accumulated_transform_.Inverse().ProjectQuad(last_planar_quad_);
+  return accumulated_transform_.InverseOrIdentity().ProjectQuad(
+      last_planar_quad_);
 }
 
 PhysicalRect HitTestingTransformState::BoundsOfMappedQuad() const {
@@ -80,7 +84,7 @@ PhysicalRect HitTestingTransformState::BoundsOfMappedArea() const {
 PhysicalRect HitTestingTransformState::BoundsOfMappedQuadInternal(
     const gfx::QuadF& q) const {
   gfx::RectF rect =
-      accumulated_transform_.Inverse().ProjectQuad(q).BoundingBox();
+      accumulated_transform_.InverseOrIdentity().ProjectQuad(q).BoundingBox();
   PhysicalOffset offset(LayoutUnit::FromFloatRound(rect.x()),
                         LayoutUnit::FromFloatRound(rect.y()));
   PhysicalSize size(LayoutUnit::FromFloatRound(rect.right()) - offset.left,

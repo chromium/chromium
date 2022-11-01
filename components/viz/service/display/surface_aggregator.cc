@@ -116,7 +116,7 @@ bool CalculateQuadSpaceDamageRect(
     gfx::Rect* quad_space_damage_rect) {
   gfx::Transform quad_to_root_transform =
       target_to_root_transform * quad_to_target_transform;
-  gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse_transform;
   bool inverse_valid = quad_to_root_transform.GetInverse(&inverse_transform);
   if (!inverse_valid)
     return false;
@@ -830,7 +830,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     // might have incompleted copy request, or cached patially drawn render
     // pass.
     if (!RenderPassNeedsFullDamage(resolved_pass)) {
-      gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
+      gfx::Transform inverse_transform;
       if (copy_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
         gfx::Rect damage_rect_in_render_pass_space =
             cc::MathUtil::ProjectEnclosingClippedRect(inverse_transform,
@@ -1444,7 +1444,7 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
     // might have incompleted copy request, or cached patially drawn render
     // pass.
     if (!RenderPassNeedsFullDamage(resolved_pass)) {
-      gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
+      gfx::Transform inverse_transform;
       if (copy_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
         gfx::Rect damage_rect_in_render_pass_space =
             cc::MathUtil::ProjectEnclosingClippedRect(inverse_transform,
@@ -1507,8 +1507,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   // this damage into the local space of the render pass for this purpose.
   gfx::Rect surface_root_rp_damage = resolved_frame.GetSurfaceDamage();
   if (!surface_root_rp_damage.IsEmpty()) {
-    gfx::Transform root_to_target_transform(
-        gfx::Transform::kSkipInitialization);
+    gfx::Transform root_to_target_transform;
     if (target_to_root_transform.GetInverse(&root_to_target_transform)) {
       surface_root_rp_damage = cc::MathUtil::ProjectEnclosingClippedRect(
           root_to_target_transform, surface_root_rp_damage);
@@ -1575,11 +1574,9 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           accumulated_damage_in_child_space.Union(damage_from_parent);
           accumulated_damage_in_child_space.Union(surface_root_rp_damage);
           if (!accumulated_damage_in_child_space.IsEmpty()) {
-            gfx::Transform inverse(gfx::Transform::kSkipInitialization);
-            bool inverted =
-                quad->shared_quad_state->quad_to_target_transform.GetInverse(
-                    &inverse);
-            DCHECK(inverted);
+            gfx::Transform inverse =
+                quad->shared_quad_state->quad_to_target_transform
+                    .GetCheckedInverse();
             inverse.PostScale(SK_Scalar1 / x_scale, SK_Scalar1 / y_scale);
             accumulated_damage_in_child_space =
                 cc::MathUtil::ProjectEnclosingClippedRect(
@@ -1829,9 +1826,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
       // transform.
       damage_rect = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
           root_surface_transform_, damage_rect);
-      gfx::Transform inverse(gfx::Transform::kSkipInitialization);
-      bool inverted = root_surface_transform_.GetInverse(&inverse);
-      DCHECK(inverted);
+      gfx::Transform inverse = root_surface_transform_.GetCheckedInverse();
       damage_rect_surface_space =
           cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(inverse,
                                                                   damage_rect);

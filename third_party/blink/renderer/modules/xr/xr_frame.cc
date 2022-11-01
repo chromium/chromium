@@ -392,11 +392,8 @@ ScriptPromise XRFrame::CreateAnchorFromNonStationarySpace(
     return {};
   }
 
-  const TransformationMatrix& mojo_from_stationary_space =
-      reference_space_information->mojo_from_space;
-
-  DCHECK(mojo_from_stationary_space.IsInvertible());
-  auto stationary_space_from_mojo = mojo_from_stationary_space.Inverse();
+  auto stationary_space_from_mojo =
+      reference_space_information->mojo_from_space.GetCheckedInverse();
 
   // We now have 2 spaces - the dynamic one passed in to create anchor
   // call, and the stationary one. We also have a rigid transform

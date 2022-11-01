@@ -73,9 +73,7 @@ device::mojom::XRViewPtr CreateView(
     gvr::Mat4f eye_mat = gvr_api->GetEyeFromHeadMatrix(eye);
     gfx::Transform eye_from_head;
     device::gvr_utils::GvrMatToTransform(eye_mat, &eye_from_head);
-    gfx::Transform head_from_eye;
-    bool is_invertible = eye_from_head.GetInverse(&head_from_eye);
-    DCHECK(is_invertible);
+    gfx::Transform head_from_eye = eye_from_head.GetCheckedInverse();
 
     view->mojo_from_view = mojo_from_head * head_from_eye;
   }

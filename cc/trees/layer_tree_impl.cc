@@ -2237,8 +2237,7 @@ static bool PointHitsRect(
     float* distance_to_camera) {
   // If the transform is not invertible, then assume that this point doesn't hit
   // this rect.
-  gfx::Transform inverse_local_space_to_screen_space(
-      gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse_local_space_to_screen_space;
   if (!local_space_to_screen_space_transform.GetInverse(
           &inverse_local_space_to_screen_space))
     return false;
@@ -2324,8 +2323,7 @@ static bool PointHitsRegion(const gfx::PointF& screen_space_point,
 
   // If the transform is not invertible, then assume that this point doesn't hit
   // this region.
-  gfx::Transform inverse_screen_space_transform(
-      gfx::Transform::kSkipInitialization);
+  gfx::Transform inverse_screen_space_transform;
   if (!screen_space_transform.GetInverse(&inverse_screen_space_transform))
     return false;
 
