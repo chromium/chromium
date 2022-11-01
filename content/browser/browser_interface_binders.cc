@@ -1216,7 +1216,6 @@ void PopulateBinderMapWithContext(
 
   RenderFrameHost* rfh =
       RenderFrameHost::FromID(host->GetAncestorRenderFrameHostId());
-  CHECK(rfh);
   map->Add<blink::mojom::NotificationService>(BindNotificationService(
       rfh, RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
       host));
