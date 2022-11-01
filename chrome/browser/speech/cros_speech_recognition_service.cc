@@ -129,11 +129,15 @@ void CrosSpeechRecognitionService::CreateAudioSourceFetcherOnIOThread(
     const base::FilePath& binary_path,
     const base::FilePath& languagepack_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  // Cache `is_server_based` since it is used after `options` gets moved.
+  const bool is_server_based = options->is_server_based;
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
           std::move(client), std::move(options), binary_path,
-          languagepack_path));
+          languagepack_path),
+      CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported(),
+      is_server_based);
 }
 
 }  // namespace speech

@@ -33,13 +33,12 @@ class AudioDataS16Converter {
       ChannelLayout channel_layout,
       bool is_multichannel_supported);
 
- private:
-  mojom::AudioDataS16Ptr ConvertAudioBusToAudioDataS16Internal(
-      const AudioBus& audio_bus,
-      int sample_rate,
-      ChannelLayout channel_layout,
-      bool is_multichannel_supported);
+  mojom::AudioDataS16Ptr ConvertToAudioDataS16(const AudioBus& audio_bus,
+                                               int sample_rate,
+                                               ChannelLayout channel_layout,
+                                               bool is_multichannel_supported);
 
+ private:
   // Recreates the temporary audio bus if the frame count or channel count
   // changed and reads the frames from the buffer into the temporary audio bus.
   void CopyBufferToTempAudioBus(const AudioBuffer& buffer);
