@@ -612,11 +612,11 @@ test("web_engine_browsertests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx",
     "//ui/ozone",
@@ -627,7 +627,7 @@ test("web_engine_browsertests") {
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/fonts.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
-    "//build/config/fuchsia/test/test_ui_stack.shard.test-cml",
+    "//build/config/fuchsia/test/gfx_test_ui_stack.shard.test-cml",
     "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
   ]
 

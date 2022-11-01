@@ -1,11 +1,15 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// Used in tests which are hard-coded for the Scenic/GFX API-set.
+// Use test_ui_stack.shard.test-cml when tetsing for Flatland, or when the
+// choice of API-set is not important.
 {
   children: [
     {
       name: "test_ui_stack",
-      url: "fuchsia-pkg://fuchsia.com/flatland-scene-manager-test-ui-stack#meta/test-ui-stack.cm",
+      url: "fuchsia-pkg://fuchsia.com/gfx-scene-manager-test-ui-stack#meta/test-ui-stack.cm",
     },
   ],
   offer: [

@@ -785,7 +785,7 @@ void FrameImpl::ConnectToAccessibilityBridge() {
 }
 
 void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
-  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  auto view_ref_pair = scenic::ViewRefPair::New();
   CreateViewWithViewRef(std::move(view_token),
                         std::move(view_ref_pair.control_ref),
                         std::move(view_ref_pair.view_ref));

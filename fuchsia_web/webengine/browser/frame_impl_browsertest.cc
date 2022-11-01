@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/ui/policy/cpp/fidl.h>
+#include <fuchsia/element/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "fuchsia_web/webengine/test/frame_for_test.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 using testing::_;
 using testing::AllOf;
@@ -103,18 +105,41 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
   return visibility->data;
 }
 
+::fuchsia::ui::views::ViewRef CloneViewRef(
+    const ::fuchsia::ui::views::ViewRef& view_ref) {
+  ::fuchsia::ui::views::ViewRef dup;
+  zx_status_t status =
+      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
+  return dup;
+}
+
 // Verifies that Frames are initially "hidden", changes to "visible" once the
 // View is attached to a Presenter and back to "hidden" when the View is
 // detached from the Presenter.
-// TODO(https://crbug.com/1314086): Re-enable this test when we can make it work
-// with the fake hardware display controller provider used for tests.
-IN_PROC_BROWSER_TEST_F(FrameImplTest, DISABLED_VisibilityState) {
+// TODO(crbug.com/1377994): Re-enable this test on Arm64 when femu is available
+// for that architecture. This test requires Vulkan and Scenic to properly
+// signal the Views visibility.
+#if defined(ARCH_CPU_ARM_FAMILY)
+#define MAYBE_VisibilityState DISABLED_VisibilityState
+#else
+#define MAYBE_VisibilityState VisibilityState
+#endif
+IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_VisibilityState) {
+  // This test uses the `fuchsia.ui.gfx` variant of `Frame.CreateView*()`.
+  ASSERT_EQ(ui::OzonePlatform::GetInstance()->GetPlatformNameForTest(),
+            "scenic");
+
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
                   embedded_test_server()->StartAndReturnHandle());
   GURL page_url(embedded_test_server()->GetURL(kVisibilityPath));
 
   auto frame = FrameForTest::Create(context(), {});
+  frame.ptr().set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status);
+    ADD_FAILURE() << "Frame disconnected.";
+  });
   base::RunLoop().RunUntilIdle();
 
   // Navigate to a page and wait for it to finish loading.
@@ -129,25 +154,35 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, DISABLED_VisibilityState) {
   // Query the document.visibilityState after creating the View, but without it
   // actually "attached" to the view tree.
   auto view_tokens = scenic::ViewTokenPair::New();
-  frame->CreateView(std::move(view_tokens.view_token));
+  auto view_ref_pair = scenic::ViewRefPair::New();
+  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
+                               std::move(view_ref_pair.control_ref),
+                               CloneViewRef(view_ref_pair.view_ref));
+
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetDocumentVisibilityState(frame.ptr().get()), "\"hidden\"");
 
   // Attach the View to a Presenter, the page should be visible.
   auto presenter = base::ComponentContextForProcess()
                        ->svc()
-                       ->Connect<::fuchsia::ui::policy::Presenter>();
-  presenter.set_error_handler(
-      [](zx_status_t) { ADD_FAILURE() << "Presenter disconnected."; });
-  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
-                                  nullptr);
+                       ->Connect<::fuchsia::element::GraphicalPresenter>();
+  presenter.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "GraphicalPresenter disconnected.";
+    ADD_FAILURE();
+  });
+  ::fuchsia::element::ViewSpec view_spec;
+  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
+  view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+  ::fuchsia::element::ViewControllerPtr view_controller;
+  presenter->PresentView(std::move(view_spec), nullptr,
+                         view_controller.NewRequest(),
+                         [](auto result) { EXPECT_FALSE(result.is_err()); });
   frame.navigation_listener().RunUntilTitleEquals("visible");
 
-  // Attach a new View to the Presenter, the page should be hidden again.
-  // This part of the test is a regression test for crbug.com/1141093.
-  auto view_tokens2 = scenic::ViewTokenPair::New();
-  presenter->PresentOrReplaceView(std::move(view_tokens2.view_holder_token),
-                                  nullptr);
+  // Detach the ViewController, causing the View to be detached.
+  // This is a regression test for crbug.com/1141093, verifying that the page
+  // receives a "not visible" event as a result.
+  view_controller->Dismiss();
   frame.navigation_listener().RunUntilTitleEquals("hidden");
 }
 
@@ -916,19 +951,34 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Stop) {
 #define MAYBE_SetPageScale DISABLED_SetPageScale
 #endif
 IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
+  // This test uses the `fuchsia.ui.gfx` variant of `Frame.CreateView*()`.
+  ASSERT_EQ(ui::OzonePlatform::GetInstance()->GetPlatformNameForTest(),
+            "scenic");
+
   auto frame = FrameForTest::Create(context(), {});
 
   auto view_tokens = scenic::ViewTokenPair::New();
-  frame->CreateView(std::move(view_tokens.view_token));
+  auto view_ref_pair = scenic::ViewRefPair::New();
+  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
+                               std::move(view_ref_pair.control_ref),
+                               CloneViewRef(view_ref_pair.view_ref));
 
   // Attach the View to a Presenter, the page should be visible.
   auto presenter = base::ComponentContextForProcess()
                        ->svc()
-                       ->Connect<::fuchsia::ui::policy::Presenter>();
-  presenter.set_error_handler(
-      [](zx_status_t) { ADD_FAILURE() << "Presenter disconnected."; });
-  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
-                                  nullptr);
+                       ->Connect<::fuchsia::element::GraphicalPresenter>();
+  presenter.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "GraphicalPresenter disconnected.";
+    ADD_FAILURE();
+  });
+
+  ::fuchsia::element::ViewSpec view_spec;
+  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
+  view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+  ::fuchsia::element::ViewControllerPtr view_controller;
+  presenter->PresentView(std::move(view_spec), nullptr,
+                         view_controller.NewRequest(),
+                         [](auto result) { EXPECT_FALSE(result.is_err()); });
 
   net::test_server::EmbeddedTestServerHandle test_server_handle;
   ASSERT_TRUE(test_server_handle =
@@ -996,10 +1046,15 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
   auto frame2 = FrameForTest::Create(context(), {});
 
   view_tokens = scenic::ViewTokenPair::New();
-  frame2->CreateView(std::move(view_tokens.view_token));
+  view_ref_pair = scenic::ViewRefPair::New();
+  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
+                               std::move(view_ref_pair.control_ref),
+                               CloneViewRef(view_ref_pair.view_ref));
 
-  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
-                                  nullptr);
+  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
+  view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
+  presenter->PresentView(std::move(view_spec), nullptr,
+                         view_controller.NewRequest(), [](auto) {});
 
   EXPECT_TRUE(LoadUrlAndExpectResponse(frame2.GetNavigationController(),
                                        fuchsia::web::LoadUrlParams(),
