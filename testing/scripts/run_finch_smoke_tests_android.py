@@ -220,6 +220,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     rest_args = super(FinchTestCase, self).rest_args
 
     rest_args.extend([
+      '--webdriver-arg=--disable-build-check',
       '--device-serial',
       self._device.serial,
       '--webdriver-binary',
