@@ -91,17 +91,21 @@ void HTMLConstructionSite::SetAttributes(Element* element,
 }
 
 static bool HasImpliedEndTag(const HTMLStackItem* item) {
-  if (item->NamespaceURI() != html_names::xhtmlNamespaceURI)
-    return false;
-
-  auto tag = item->GetHTMLTag();
-  return tag == html_names::HTMLTag::kDd || tag == html_names::HTMLTag::kDt ||
-         tag == html_names::HTMLTag::kLi ||
-         tag == html_names::HTMLTag::kOption ||
-         tag == html_names::HTMLTag::kOptgroup ||
-         tag == html_names::HTMLTag::kP || tag == html_names::HTMLTag::kRb ||
-         tag == html_names::HTMLTag::kRp || tag == html_names::HTMLTag::kRt ||
-         tag == html_names::HTMLTag::kRTC;
+  switch (item->GetHTMLTag()) {
+    case html_names::HTMLTag::kDd:
+    case html_names::HTMLTag::kDt:
+    case html_names::HTMLTag::kLi:
+    case html_names::HTMLTag::kOption:
+    case html_names::HTMLTag::kOptgroup:
+    case html_names::HTMLTag::kP:
+    case html_names::HTMLTag::kRb:
+    case html_names::HTMLTag::kRp:
+    case html_names::HTMLTag::kRt:
+    case html_names::HTMLTag::kRTC:
+      return item->IsHTMLNamespace();
+    default:
+      return false;
+  }
 }
 
 static bool ShouldUseLengthLimit(const ContainerNode& node) {
