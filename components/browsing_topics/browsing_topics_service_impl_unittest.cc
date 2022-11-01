@@ -50,6 +50,7 @@ namespace {
 // tests.
 constexpr base::TimeDelta kOneTestDay = base::Seconds(1);
 constexpr base::TimeDelta kEpoch = 7 * kOneTestDay;
+constexpr base::TimeDelta kMaxEpochIntroductionDelay = 2 * kOneTestDay;
 
 constexpr base::TimeDelta kCalculatorDelay = base::Milliseconds(1);
 
@@ -168,7 +169,11 @@ class BrowsingTopicsServiceImplTest
         /*enabled_features=*/
         {{blink::features::kBrowsingTopics,
           {{"time_period_per_epoch",
-            base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})}}}},
+            base::StrCat({base::NumberToString(kEpoch.InSeconds()), "s"})},
+           {"browsing_topics_max_epoch_introduction_delay",
+            base::StrCat(
+                {base::NumberToString(kMaxEpochIntroductionDelay.InSeconds()),
+                 "s"})}}}},
         /*disabled_features=*/{});
 
     OverrideHmacKeyForTesting(kTestKey);
@@ -890,7 +895,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch) {
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   {
     std::vector<blink::mojom::EpochTopicPtr> result;
@@ -927,7 +932,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_OneEpoch_Filtered) {
   NavigateToPage(GURL("https://www.foo.com"));
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   std::vector<blink::mojom::EpochTopicPtr> result;
   EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(
@@ -984,7 +989,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   }
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   {
     std::vector<blink::mojom::EpochTopicPtr> result;
@@ -1073,7 +1078,7 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_FourEpochs) {
   }
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   {
     std::vector<blink::mojom::EpochTopicPtr> result;
@@ -1150,7 +1155,7 @@ TEST_F(BrowsingTopicsServiceImplTest,
   }
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   {
     std::vector<blink::mojom::EpochTopicPtr> result;
@@ -1246,8 +1251,8 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_TrackedUsageContext) {
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   // Advance to the time after the epoch switch time.
-  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
-                                    base::Microseconds(1));
+  task_environment()->FastForwardBy(kCalculatorDelay +
+                                    kMaxEpochIntroductionDelay);
 
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
@@ -1284,8 +1289,8 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotObserve) {
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   // Advance to the time after the epoch switch time.
-  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
-                                    base::Microseconds(1));
+  task_environment()->FastForwardBy(kCalculatorDelay +
+                                    kMaxEpochIntroductionDelay);
 
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
@@ -1318,8 +1323,8 @@ TEST_F(BrowsingTopicsServiceImplTest, HandleTopicsWebApi_DoesNotGetTopics) {
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   // Advance to the time after the epoch switch time.
-  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
-                                    base::Microseconds(1));
+  task_environment()->FastForwardBy(kCalculatorDelay +
+                                    kMaxEpochIntroductionDelay);
 
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
@@ -1360,8 +1365,8 @@ TEST_F(
   InitializeBrowsingTopicsService(std::move(mock_calculator_results));
 
   // Advance to the time after the epoch switch time.
-  task_environment()->FastForwardBy(kCalculatorDelay + kEpoch -
-                                    base::Microseconds(1));
+  task_environment()->FastForwardBy(kCalculatorDelay +
+                                    kMaxEpochIntroductionDelay);
 
   EXPECT_EQ(
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).size(),
@@ -1428,7 +1433,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_ZeroAndOneTopic) {
   EXPECT_FALSE(metrics_entries[0].topic2.IsValid());
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   {
     std::vector<blink::mojom::EpochTopicPtr> result;
@@ -1497,7 +1502,7 @@ TEST_F(BrowsingTopicsServiceImplTest, ApiResultUkm_3Topics) {
   NavigateToPage(GURL("https://www.foo.com"));
 
   // Advance to the time after the epoch switch time.
-  task_environment()->AdvanceClock(kEpoch - base::Microseconds(1));
+  task_environment()->AdvanceClock(kMaxEpochIntroductionDelay);
 
   std::vector<blink::mojom::EpochTopicPtr> api_call_result;
   EXPECT_TRUE(browsing_topics_service_->HandleTopicsWebApi(

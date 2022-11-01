@@ -275,8 +275,9 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeNotArrived) {
   state.AddEpoch(CreateTestEpochTopics(kTime1));
   state.UpdateNextScheduledCalculationTime();
 
-  ASSERT_LT(state.CalculateSiteStickyTimeDelta("foo.com") + base::Hours(1),
-            base::Days(7));
+  // The random per-site delay happens to be between (one hour, one day).
+  ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Hours(1));
+  ASSERT_LT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Days(1));
 
   task_environment_->FastForwardBy(base::Hours(1));
   EXPECT_TRUE(state.EpochsForSite(/*top_domain=*/"foo.com").empty());
@@ -289,8 +290,9 @@ TEST_F(BrowsingTopicsStateTest, EpochsForSite_OneEpoch_SwitchTimeArrived) {
   state.AddEpoch(CreateTestEpochTopics(kTime1));
   state.UpdateNextScheduledCalculationTime();
 
-  ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com") + base::Days(1),
-            base::Days(7));
+  // The random per-site delay happens to be between (one hour, one day).
+  ASSERT_GT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Hours(1));
+  ASSERT_LT(state.CalculateSiteStickyTimeDelta("foo.com"), base::Days(1));
 
   task_environment_->FastForwardBy(base::Days(1));
 

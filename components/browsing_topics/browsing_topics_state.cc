@@ -152,17 +152,19 @@ std::vector<const EpochTopics*> BrowsingTopicsState::EpochsForSite(
   DCHECK_GT(kNumberOfEpochsToExpose, 0u);
 
   // Derive a per-user per-site time delta in the range of
-  // [0, kBrowsingTopicsTimePeriodPerEpoch). The latest epoch will be switched
-  // to use when the current time is within `site_sticky_time_delta` apart from
-  // the `next_scheduled_calculation_time_`. This way, each site will see a
+  // [0, `kBrowsingTopicsMaxEpochIntroductionDelay`). The latest epoch will only
+  // be used after `site_sticky_time_delta` has elapsed since the last
+  // calculation finish time (i.e. `next_scheduled_calculation_time_` -
+  // `kBrowsingTopicsTimePeriodPerEpoch`). This way, each site will see a
   // different epoch switch time.
   base::TimeDelta site_sticky_time_delta =
       CalculateSiteStickyTimeDelta(top_domain);
 
   size_t end_epoch_index = 0;
-
-  if (base::Time::Now() + site_sticky_time_delta <
-      next_scheduled_calculation_time_) {
+  if (base::Time::Now() <=
+      next_scheduled_calculation_time_ -
+          blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get() +
+          site_sticky_time_delta) {
     if (epochs_.size() < 2)
       return {};
 
@@ -196,9 +198,25 @@ base::TimeDelta BrowsingTopicsState::CalculateSiteStickyTimeDelta(
   uint64_t epoch_switch_time_decision_hash =
       HashTopDomainForEpochSwitchTimeDecision(hmac_key_, top_domain);
 
+  // Currently the browser can only reasonably support configurations where the
+  // random-over period is less or equal to an epoch, because 1) we only store
+  // one more epoch in addition to the number to expose to sites, and that would
+  // not be sufficient. 2) the calculation finish times (i.e. the actual epoch
+  // delimitation times) for previous epochs aren't stored, so we wouldn't be
+  // able to know when to use a previous epoch (or we'd need to approximate
+  // the delimitation time with the calculation start time, or based on its
+  // position in `epochs_`).
+  DCHECK_LE(blink::features::kBrowsingTopicsMaxEpochIntroductionDelay.Get(),
+            blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
+
+  DCHECK_GT(blink::features::kBrowsingTopicsMaxEpochIntroductionDelay.Get()
+                .InSeconds(),
+            0);
+
   return base::Seconds(
       epoch_switch_time_decision_hash %
-      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get().InSeconds());
+      blink::features::kBrowsingTopicsMaxEpochIntroductionDelay.Get()
+          .InSeconds());
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

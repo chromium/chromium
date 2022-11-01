@@ -993,6 +993,13 @@ const base::FeatureParam<int> kBrowsingTopicsNumberOfTopTopicsPerEpoch{
 // topic instead of one of the top topics.
 const base::FeatureParam<int> kBrowsingTopicsUseRandomTopicProbabilityPercent{
     &kBrowsingTopics, "use_random_topic_probability_percent", 5};
+// Maximum duration between when a epoch is calculated and when a site starts
+// using that new epoch's topics. The time chosen is a per-site random point in
+// time between [calculation time, calculation time + max duration).
+const base::FeatureParam<base::TimeDelta>
+    kBrowsingTopicsMaxEpochIntroductionDelay{
+        &kBrowsingTopics, "browsing_topics_max_epoch_introduction_delay",
+        base::Days(2)};
 // How many epochs (weeks) of API usage data (i.e. topics observations) will be
 // based off for the filtering of topics for a calling context.
 const base::FeatureParam<int>
@@ -1019,9 +1026,10 @@ const base::FeatureParam<int>
     kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad{
         &kBrowsingTopics,
         "max_number_of_api_usage_context_domains_to_store_per_page_load", 30};
-// Encodes the configuration parameters above. Each version number should only
-// be mapped to one configuration set. In practice, this can be guaranteed by
-// always bumping up the version number whenever parameters are updated.
+// Encodes the configuration parameters above. A version number can be used for
+// multiple configurations as long as they are compatible (from both Chrome's
+// and users/websites' perspective). For a configuration that's incompatible
+// with previous ones, a new dedicated version number should be used.
 const base::FeatureParam<int> kBrowsingTopicsConfigVersion{&kBrowsingTopics,
                                                            "config_version", 1};
 // The taxonomy version. This only affects the topics classification that occurs

@@ -438,6 +438,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsNumberOfTopTopicsPerEpoch;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsUseRandomTopicProbabilityPercent;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kBrowsingTopicsMaxEpochIntroductionDelay;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBrowsingTopicsNumberOfEpochsOfObservationDataToUseForFiltering;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
