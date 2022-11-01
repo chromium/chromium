@@ -89,6 +89,9 @@ PRUNE_PATHS = set([
     # Proprietary barcode detection library.
     os.path.join('third_party', 'barhopper'),
 
+    # Internal Chrome Build only for proprietary webref library.
+    os.path.join('components', 'optimization_guide', 'internal', 'third_party'),
+
     # Proprietary DevTools code.
     os.path.join('third_party', 'devtools-frontend-internal'),
 
