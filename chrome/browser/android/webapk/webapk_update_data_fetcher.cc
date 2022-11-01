@@ -176,9 +176,9 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // will treat the manifest with different id as the one of another WebAPK.
   if (base::FeatureList::IsEnabled(webapps::features::kWebApkUniqueId) &&
       !web_manifest_id_.is_empty() && web_manifest_id_ != new_manifest_id) {
-    UMA_HISTOGRAM_BOOLEAN("WebApk.UniqueId.FoundDifferentId.ManifestUrl",
+    UMA_HISTOGRAM_BOOLEAN("WebApk.Update.UniqueIdDifferent.ManifestUrl",
                           web_manifest_url_ == data.manifest_url);
-    UMA_HISTOGRAM_BOOLEAN("WebApk.UniqueId.FoundDifferentId.StartUrl",
+    UMA_HISTOGRAM_BOOLEAN("WebApk.Update.UniqueIdDifferent.StartUrl",
                           start_url_ == data.manifest.start_url);
     return;
   }
