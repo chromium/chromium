@@ -7281,8 +7281,8 @@ bool LayoutBox::HasUnsplittableScrollingOverflow(
     return false;
 
   // In LayoutNG, treat any scrollable container as monolithic.
-  if (engine == kNGFragmentationEngine && StyleRef().IsScrollContainer())
-    return true;
+  if (engine == kNGFragmentationEngine)
+    return IsScrollContainer();
 
   // We will paginate as long as we don't scroll overflow in the pagination
   // direction.

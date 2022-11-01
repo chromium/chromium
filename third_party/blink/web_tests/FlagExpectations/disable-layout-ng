@@ -369,6 +369,7 @@ crbug.com/1078927 external/wpt/css/css-break/table/break-before-expansion-002.ht
 crbug.com/1078927 external/wpt/css/css-break/table/break-before-table-cell.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/break-before-table-cell-child.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/caption-margin-002.html [ Failure ]
+crbug.com/1078927 external/wpt/css/css-break/table/overflow-scroll-section.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/abspos.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/abspos-in-monolithic.tentative.html [ Failure ]
 crbug.com/1078927 external/wpt/css/css-break/table/repeated-section/abspos-uncontained-text.html [ Failure ]
