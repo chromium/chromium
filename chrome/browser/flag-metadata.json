@@ -6152,22 +6152,22 @@
   {
     "name": "shared-highlighting-manager",
     "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com"],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "shared-highlighting-refined-blocklist",
     "owners": ["jeffreycohen", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "shared-highlighting-refined-maxcontextwords",
     "owners": ["wissemgamra", "jeffreycohen", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "shared-highlighting-v2",
     "owners": ["jeffreycohen", "kristipark", "cheickcisse@google.com", "chrome-with-friends-robots@google.com"],
-    "expiry_milestone": 108
+    "expiry_milestone": 111
   },
   {
     "name": "sharing-desktop-screenshots",
