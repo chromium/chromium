@@ -2554,7 +2554,8 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object) {
     node = LayoutTreeBuilderTraversal::FirstLayoutChild(*node);
-    layout_object = node->GetLayoutObject();
+    if (node)
+      layout_object = node->GetLayoutObject();
   }
   if (!layout_object)
     return Response::ServerError("Node does not have a layout object");
