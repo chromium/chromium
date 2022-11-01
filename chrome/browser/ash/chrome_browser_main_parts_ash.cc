@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/camera/camera_general_survey_handler.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -761,6 +762,9 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
       new AudioDevicesPrefHandlerImpl(g_browser_process->local_state()));
 
   audio_survey_handler_ = std::make_unique<AudioSurveyHandler>();
+
+  camera_general_survey_handler_ =
+      std::make_unique<CameraGeneralSurveyHandler>();
 
   content::MediaCaptureDevices::GetInstance()->AddVideoCaptureObserver(
       CrasAudioHandler::Get());

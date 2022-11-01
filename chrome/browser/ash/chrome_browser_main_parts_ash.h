@@ -66,6 +66,7 @@ class ArcKioskAppManager;
 class AudioSurveyHandler;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
+class CameraGeneralSurveyHandler;
 class CrosUsbDetector;
 class DebugdNotificationHandler;
 class DemoModeResourcesRemover;
@@ -282,6 +283,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       quick_pair_delegate_;
 
   std::unique_ptr<AudioSurveyHandler> audio_survey_handler_;
+
+  std::unique_ptr<CameraGeneralSurveyHandler> camera_general_survey_handler_;
 
   std::unique_ptr<ash::memory::ZramWritebackController>
       zram_writeback_controller_;

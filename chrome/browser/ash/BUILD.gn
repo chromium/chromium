@@ -692,6 +692,8 @@ source_set("ash") {
     "bruschetta/bruschetta_terminal_provider.h",
     "bruschetta/bruschetta_util.cc",
     "bruschetta/bruschetta_util.h",
+    "camera/camera_general_survey_handler.cc",
+    "camera/camera_general_survey_handler.h",
     "camera_mic/vm_camera_mic_manager.cc",
     "camera_mic/vm_camera_mic_manager.h",
     "camera_presence_notifier.cc",
