@@ -16,10 +16,10 @@
 #include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -720,12 +720,7 @@ RectF Transform::MapRect(const RectF& rect) const {
     return axis_2d_.MapRect(rect);
   }
 
-  // TODO(crbug.com/1359528): Use local implementation.
-  SkRect src = RectFToSkRect(rect);
-  TransformToFlattenedSkMatrix(*this).mapRect(&src);
-  return RectF(ClampFloatGeometry(src.x()), ClampFloatGeometry(src.y()),
-               ClampFloatGeometry(src.width()),
-               ClampFloatGeometry(src.height()));
+  return MapQuad(QuadF(rect)).BoundingBox();
 }
 
 Rect Transform::MapRect(const Rect& rect) const {
@@ -750,12 +745,7 @@ absl::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {
   if (!GetInverse(&inverse))
     return absl::nullopt;
 
-  // TODO(crbug.com/1359528): Use local implementation and clamp the results.
-  SkRect src = RectFToSkRect(rect);
-  TransformToFlattenedSkMatrix(inverse).mapRect(&src);
-  return RectF(ClampFloatGeometry(src.x()), ClampFloatGeometry(src.y()),
-               ClampFloatGeometry(src.width()),
-               ClampFloatGeometry(src.height()));
+  return inverse.MapQuad(QuadF(rect)).BoundingBox();
 }
 
 absl::optional<Rect> Transform::InverseMapRect(const Rect& rect) const {
@@ -784,6 +774,89 @@ BoxF Transform::MapBox(const BoxF& box) const {
     }
   }
   return bounds;
+}
+
+QuadF Transform::MapQuad(const QuadF& quad) const {
+  return QuadF(MapPoint(quad.p1()), MapPoint(quad.p2()), MapPoint(quad.p3()),
+               MapPoint(quad.p4()));
+}
+
+PointF Transform::ProjectPoint(const PointF& point, bool* clamped) const {
+  // This is basically ray-tracing. We have a point in the destination plane
+  // with z=0, and we cast a ray parallel to the z-axis from that point to find
+  // the z-position at which it intersects the z=0 plane with the transform
+  // applied. Once we have that point we apply the inverse transform to find
+  // the corresponding point in the source space.
+  //
+  // Given a plane with normal Pn, and a ray starting at point R0 and with
+  // direction defined by the vector Rd, we can find the intersection point as
+  // a distance d from R0 in units of Rd by:
+  //
+  // d = -dot (Pn', R0) / dot (Pn', Rd)
+
+  if (clamped)
+    *clamped = false;
+
+  if (LIKELY(!matrix_))
+    return axis_2d_.MapPoint(point);
+
+  if (!std::isnormal(matrix_->rc(2, 2))) {
+    // In this case, the projection plane is parallel to the ray we are trying
+    // to trace, and there is no well-defined value for the projection.
+    if (clamped)
+      *clamped = true;
+    return gfx::PointF();
+  }
+
+  double x = point.x();
+  double y = point.y();
+  double z =
+      -(matrix_->rc(2, 0) * x + matrix_->rc(2, 1) * y + matrix_->rc(2, 3)) /
+      matrix_->rc(2, 2);
+  if (!std::isfinite(z)) {
+    // Same as the previous condition.
+    if (clamped)
+      *clamped = true;
+    return gfx::PointF();
+  }
+
+  double v[4] = {x, y, z, 1};
+  matrix_->MapScalars(v);
+
+  if (v[3] <= 0) {
+    // To represent infinity and ensure the bounding box of ProjectQuad() is
+    // accurate in both float, int and blink::LayoutUnit, we use a large but
+    // not-too-large number here when clamping.
+    constexpr double kBigNumber = 1 << (std::numeric_limits<float>::digits - 1);
+    if (clamped)
+      *clamped = true;
+    return PointF(std::copysign(kBigNumber, v[0]),
+                  std::copysign(kBigNumber, v[1]));
+  }
+
+  if (v[3] != 1) {
+    v[0] /= v[3];
+    v[1] /= v[3];
+  }
+  return PointF(ClampFloatGeometry(v[0]), ClampFloatGeometry(v[1]));
+}
+
+QuadF Transform::ProjectQuad(const QuadF& quad) const {
+  bool clamped1 = false;
+  bool clamped2 = false;
+  bool clamped3 = false;
+  bool clamped4 = false;
+
+  QuadF projected_quad(
+      ProjectPoint(quad.p1(), &clamped1), ProjectPoint(quad.p2(), &clamped2),
+      ProjectPoint(quad.p3(), &clamped3), ProjectPoint(quad.p4(), &clamped4));
+
+  // If all points on the quad had w < 0, then the entire quad would not be
+  // visible to the projected surface.
+  if (clamped1 && clamped2 && clamped3 && clamped4)
+    return QuadF();
+
+  return projected_quad;
 }
 
 absl::optional<DecomposedTransform> Transform::Decompose() const {
@@ -858,13 +931,13 @@ void Transform::RoundToIdentityOrIntegerTranslation() {
   }
 }
 
-Point3F Transform::MapPointInternal(const Matrix44& xform,
+Point3F Transform::MapPointInternal(const Matrix44& matrix,
                                     const Point3F& point) const {
   DCHECK(matrix_);
 
   double p[4] = {point.x(), point.y(), point.z(), 1};
 
-  xform.MapScalars(p);
+  matrix.MapScalars(p);
 
   if (p[3] != 1.0 && std::isnormal(p[3])) {
     float w_inverse = 1.0 / p[3];

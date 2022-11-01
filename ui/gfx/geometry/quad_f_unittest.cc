@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 
@@ -151,6 +152,46 @@ TEST(QuadFTest, IsRectilinear) {
     EXPECT_FALSE((QuadF(a_off, b_off, c_off, d) + v).IsRectilinear());
     EXPECT_TRUE(QuadF(a_off, b_off, c_off, d_off).IsRectilinear());
     EXPECT_TRUE((QuadF(a_off, b_off, c_off, d_off) + v).IsRectilinear());
+  }
+}
+
+TEST(QuadFTest, IsRectilinearForMappedQuad) {
+  const int kNumRectilinear = 8;
+  Transform rectilinear_trans[kNumRectilinear];
+  rectilinear_trans[1].Rotate(90.f);
+  rectilinear_trans[2].Rotate(180.f);
+  rectilinear_trans[3].Rotate(270.f);
+  rectilinear_trans[4].Skew(0.00000000001f, 0.0f);
+  rectilinear_trans[5].Skew(0.0f, 0.00000000001f);
+  rectilinear_trans[6].Scale(0.00001f, 0.00001f);
+  rectilinear_trans[6].Rotate(180.f);
+  rectilinear_trans[7].Scale(100000.f, 100000.f);
+  rectilinear_trans[7].Rotate(180.f);
+
+  gfx::QuadF original(
+      gfx::RectF(0.01010101f, 0.01010101f, 100.01010101f, 100.01010101f));
+
+  for (int i = 0; i < kNumRectilinear; ++i) {
+    gfx::QuadF quad = rectilinear_trans[i].MapQuad(original);
+    EXPECT_TRUE(quad.IsRectilinear()) << "case " << i;
+  }
+
+  const int kNumNonRectilinear = 10;
+  gfx::Transform non_rectilinear_trans[kNumNonRectilinear];
+  non_rectilinear_trans[0].Rotate(359.9999f);
+  non_rectilinear_trans[1].Rotate(0.0000001f);
+  non_rectilinear_trans[2].Rotate(89.9999f);
+  non_rectilinear_trans[3].Rotate(90.00001f);
+  non_rectilinear_trans[4].Rotate(179.9999f);
+  non_rectilinear_trans[5].Rotate(180.00001f);
+  non_rectilinear_trans[6].Rotate(269.9999f);
+  non_rectilinear_trans[7].Rotate(270.0001f);
+  non_rectilinear_trans[8].Skew(0.00001f, 0.0f);
+  non_rectilinear_trans[9].Skew(0.0f, 0.00001f);
+
+  for (int i = 0; i < kNumNonRectilinear; ++i) {
+    gfx::QuadF quad = non_rectilinear_trans[i].MapQuad(original);
+    EXPECT_FALSE(quad.IsRectilinear()) << "case " << i;
   }
 }
 

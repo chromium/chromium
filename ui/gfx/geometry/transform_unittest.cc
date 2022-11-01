@@ -2964,6 +2964,12 @@ TEST(XFormTest, MapRect) {
 
   auto singular = Transform::MakeScale(0.f);
   EXPECT_EQ(RectF(0, 0, 0, 0), singular.MapRect(rect));
+
+  auto negative_scale = Transform::MakeScale(-1, -2);
+  EXPECT_EQ(RectF(-5.f, -13.f, 3.75f, 8.f), negative_scale.MapRect(rect));
+
+  auto rotate = Transform::Make90degRotation();
+  EXPECT_EQ(RectF(-6.5f, 1.25f, 4.f, 3.75f), rotate.MapRect(rect));
 }
 
 TEST(XFormTest, MapIntRect) {
@@ -2986,6 +2992,13 @@ TEST(XFormTest, TransformRectReverse) {
 
   auto singular = Transform::MakeScale(0.f);
   EXPECT_FALSE(singular.InverseMapRect(rect));
+
+  auto negative_scale = Transform::MakeScale(-1, -2);
+  EXPECT_EQ(RectF(-5.f, -3.25f, 3.75f, 2.f),
+            negative_scale.InverseMapRect(rect));
+
+  auto rotate = Transform::Make90degRotation();
+  EXPECT_EQ(RectF(2.5f, -5.f, 4.f, 3.75f), rotate.InverseMapRect(rect));
 }
 
 TEST(XFormTest, InverseMapIntRect) {
@@ -2996,6 +3009,30 @@ TEST(XFormTest, InverseMapIntRect) {
 
   auto singular = Transform::MakeScale(0.f);
   EXPECT_FALSE(singular.InverseMapRect(Rect(1, 2, 3, 4)));
+}
+
+TEST(XFormTest, MapQuad) {
+  auto translation = Transform::MakeTranslation(3.25f, 7.75f);
+  QuadF q(PointF(1.25f, 2.5f), PointF(3.75f, 4.f), PointF(23.f, 45.f),
+          PointF(12.f, 67.f));
+  EXPECT_EQ(QuadF(PointF(4.5f, 10.25f), PointF(7.f, 11.75f),
+                  PointF(26.25f, 52.75f), PointF(15.25f, 74.75f)),
+            translation.MapQuad(q));
+
+  EXPECT_EQ(q, Transform().MapQuad(q));
+
+  auto singular = Transform::MakeScale(0.f);
+  EXPECT_EQ(QuadF(), singular.MapQuad(q));
+
+  auto negative_scale = Transform::MakeScale(-1, -2);
+  EXPECT_EQ(QuadF(PointF(-1.25f, -5.f), PointF(-3.75f, -8.f),
+                  PointF(-23.f, -90.f), PointF(-12.f, -134.f)),
+            negative_scale.MapQuad(q));
+
+  auto rotate = Transform::Make90degRotation();
+  EXPECT_EQ(QuadF(PointF(-2.5f, 1.25f), PointF(-4.f, 3.75f),
+                  PointF(-45.f, 23.f), PointF(-67.f, 12.f)),
+            rotate.MapQuad(q));
 }
 
 TEST(XFormTest, MapBox) {
@@ -3364,6 +3401,126 @@ TEST(XFormTest, ClampOutput) {
                              mv, mv, mv));
     test(Transform::MakeTranslation(mv, mv));
   }
+}
+
+constexpr float kProjectionClampedBigNumber =
+    1 << (std::numeric_limits<float>::digits - 1);
+
+// This test also demonstrates the relationship between ProjectPoint() and
+// MapPoint().
+TEST(XFormTest, ProjectPoint) {
+  Transform transform;
+  PointF p(1.25f, -3.5f);
+  bool clamped = true;
+  EXPECT_EQ(p, transform.ProjectPoint(p));
+  EXPECT_EQ(p, transform.ProjectPoint(p, &clamped));
+  EXPECT_FALSE(clamped);
+  // MapPoint() and ProjectPoint() are the same with a flat transform.
+  EXPECT_EQ(p, transform.MapPoint(p));
+
+  // ProjectPoint with simple 2d transform.
+  transform = Transform::MakeTranslation(10, 20) * Transform::MakeScale(3, 4);
+  clamped = true;
+  gfx::PointF projected = transform.ProjectPoint(p, &clamped);
+  EXPECT_EQ(PointF(13.75f, 6.f), projected);
+  EXPECT_FALSE(clamped);
+  // MapPoint() and ProjectPoint() are the same with a flat transform.
+  EXPECT_EQ(projected, transform.MapPoint(p));
+
+  clamped = true;
+  transform.EnsureFullMatrixForTesting();
+  EXPECT_EQ(projected, transform.ProjectPoint(p, &clamped));
+  EXPECT_FALSE(clamped);
+  EXPECT_EQ(projected, transform.MapPoint(p));
+
+  // Set scale z to 0.
+  transform.set_rc(2, 2, 0);
+  clamped = true;
+  projected = transform.ProjectPoint(p, &clamped);
+  EXPECT_EQ(PointF(), projected);
+  EXPECT_TRUE(clamped);
+  // MapPoint() still produces the original result.
+  EXPECT_EQ(PointF(13.75f, 6.f), transform.MapPoint(p));
+
+  // Normally (except the last case below), t.ProjectPoint() is equivalent to
+  // inverse(flatten(inverse(t))).MapPoint().
+  auto projection_transform = [](const Transform& t) {
+    auto flat = t.GetCheckedInverse();
+    flat.FlattenTo2d();
+    return flat.GetCheckedInverse();
+  };
+
+  transform.MakeIdentity();
+  transform.RotateAboutYAxis(60);
+  clamped = true;
+  projected = transform.ProjectPoint(p, &clamped);
+  EXPECT_EQ(PointF(2.5f, -3.5f), projected);
+  EXPECT_FALSE(clamped);
+  EXPECT_EQ(PointF(0.625f, -3.5f), transform.MapPoint(p));
+
+  EXPECT_EQ(projected, projection_transform(transform).MapPoint(p));
+  EXPECT_EQ(projected, projection_transform(transform).ProjectPoint(p));
+
+  transform.ApplyPerspectiveDepth(10);
+  clamped = true;
+  projected = transform.ProjectPoint(p, &clamped);
+  EXPECT_POINTF_NEAR(PointF(3.19f, -4.47f), projected, 0.01f);
+  EXPECT_FALSE(clamped);
+  EXPECT_EQ(PointF(0.625f, -3.5f), transform.MapPoint(p));
+
+  EXPECT_POINTF_NEAR(projected, projection_transform(transform).MapPoint(p),
+                     1e-5f);
+  EXPECT_POINTF_NEAR(projected, projection_transform(transform).ProjectPoint(p),
+                     1e-5f);
+
+  // With a small perspective, the ray doesn't intersect the destination plane.
+  transform.ApplyPerspectiveDepth(2);
+  clamped = false;
+  projected = transform.ProjectPoint(p, &clamped);
+  EXPECT_TRUE(clamped);
+  EXPECT_EQ(projected.x(), kProjectionClampedBigNumber);
+  EXPECT_EQ(projected.y(), -kProjectionClampedBigNumber);
+  EXPECT_EQ(PointF(0.625f, -3.5f), transform.MapPoint(p));
+  // In this case, MapPoint() returns a point behind the eye.
+  EXPECT_POINTF_NEAR(PointF(-8.36014f, 11.7042f),
+                     projection_transform(transform).MapPoint(p), 1e-5f);
+  EXPECT_POINTF_NEAR(projected, projection_transform(transform).ProjectPoint(p),
+                     1e-5f);
+}
+
+TEST(XFormTest, ProjectQuad) {
+  auto transform = Transform::MakeTranslation(3.25f, 7.75f);
+  QuadF q(PointF(1.25f, 2.5f), PointF(3.75f, 4.f), PointF(23.f, 45.f),
+          PointF(12.f, 67.f));
+  EXPECT_EQ(QuadF(PointF(4.5f, 10.25f), PointF(7.f, 11.75f),
+                  PointF(26.25f, 52.75f), PointF(15.25f, 74.75f)),
+            transform.ProjectQuad(q));
+
+  transform.set_rc(2, 2, 0);
+  EXPECT_EQ(QuadF(), transform.ProjectQuad(q));
+
+  transform.MakeIdentity();
+  transform.RotateAboutYAxis(60);
+  EXPECT_EQ(QuadF(PointF(2.5f, 2.5f), PointF(7.5f, 4.f), PointF(46.f, 45.f),
+                  PointF(24.f, 67.f)),
+            transform.ProjectQuad(q));
+
+  // With a small perspective, all points of |q| are clamped, and the
+  // projected result is an empty quad.
+  transform.ApplyPerspectiveDepth(2);
+  EXPECT_EQ(QuadF(), transform.ProjectQuad(q));
+
+  // Change the quad so that 2 points are clamped.
+  q.set_p1(PointF(-1.25f, -2.5f));
+  q.set_p2(PointF(-3.75f, 4.f));
+  q.set_p3(PointF(23.f, -45.f));
+  QuadF q1 = transform.ProjectQuad(q);
+  EXPECT_POINTF_NEAR(PointF(-1.2f, -1.2f), q1.p1(), 0.01f);
+  EXPECT_POINTF_NEAR(PointF(-1.77f, 0.94f), q1.p2(), 0.01f);
+  EXPECT_EQ(q1.p3().x(), kProjectionClampedBigNumber);
+  EXPECT_EQ(q1.p3().y(), -kProjectionClampedBigNumber);
+  EXPECT_EQ(q1.p4().x(), kProjectionClampedBigNumber);
+  EXPECT_EQ(q1.p4().y(), kProjectionClampedBigNumber);
 }
 
 TEST(XFormTest, ToString) {

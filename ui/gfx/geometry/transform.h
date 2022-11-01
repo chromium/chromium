@@ -23,6 +23,7 @@ class RectF;
 class Point;
 class PointF;
 class Point3F;
+class QuadF;
 class Quaternion;
 class Vector2dF;
 class Vector3dF;
@@ -391,6 +392,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns the point with the transformation applied to |point|, clamped
   // with ClampFloatGeometry().
   [[nodiscard]] Point3F MapPoint(const Point3F& point) const;
+  // Maps [point.x(), point.y(), 0] to [result.x(), result.y(), discarded_z].
   [[nodiscard]] PointF MapPoint(const PointF& point) const;
   [[nodiscard]] Point MapPoint(const Point& point) const;
 
@@ -432,6 +434,36 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // box will be the smallest axis aligned bounding box containing the
   // transformed box, clamped with ClampFloatGeometry().
   [[nodiscard]] BoxF MapBox(const BoxF& box) const;
+
+  // Applies transformation on the given quad by applying the transformation
+  // on each point of the quad.
+  [[nodiscard]] QuadF MapQuad(const QuadF& quad) const;
+
+  // Maps a point on the z=0 plane into a point on the plane with which the
+  // transform applied, by extending a ray perpendicular to the source plane and
+  // computing the local x,y position of the point where that ray intersects
+  // with the destination plane. If such a point exists, sets |*clamped| (if
+  // provided) to false and returns the point. Otherwise sets |*clamped| (if
+  // provided) to true and:
+  // - If the ray is parallel with the destination plane, returns PointF().
+  // - If the opposite ray intersects with the destination plane, returns
+  //   a point containing signed big values (simulating infinities).
+  //
+  // See https://bit.ly/perspective-projection-clamping for an illustration of
+  // clamping with perspective.
+  //
+  // When |this| is invertible and the result |*clamped| is false, this
+  // function is equivalent to:
+  //   inverse(flatten(inverse(this))).MapPoint(point)
+  // and
+  //   MapPoint(Point3F(point.x(), point.y(), unknown_z)) to
+  //   Point3F(result.x(), result.y(), 0).
+  [[nodiscard]] PointF ProjectPoint(const PointF& point,
+                                    bool* clamped = nullptr) const;
+
+  // Projects the four corners of the quad with ProjectPoint(). Returns an
+  // empty quad if all of the vertices are clamped.
+  [[nodiscard]] QuadF ProjectQuad(const QuadF& quad) const;
 
   // Decomposes |this| into |decomp|. Returns nullopt if |this| can't be
   // decomposed. |decomp| must be identity on input.
@@ -518,7 +550,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
             double r3c3);
   Transform(float scale_x, float scale_y, float trans_x, float trans_y);
 
-  Point3F MapPointInternal(const Matrix44& xform, const Point3F& point) const;
+  Point3F MapPointInternal(const Matrix44& matrix, const Point3F& point) const;
 
   Matrix44 GetFullMatrix() const;
   Matrix44& EnsureFullMatrix();

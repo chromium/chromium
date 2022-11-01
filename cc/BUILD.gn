@@ -676,7 +676,6 @@ cc_test("cc_unittests") {
 
   sources = [
     "base/delayed_unique_notifier_unittest.cc",
-    "base/float_quad_unittest.cc",
     "base/histograms_unittest.cc",
     "base/index_rect_unittest.cc",
     "base/list_container_unittest.cc",

@@ -6910,13 +6910,7 @@ class SitePerProcessHitTestDataGenerationBrowserTest
         use_scale_factor ? gfx::ScaleToEnclosingRect(rect, device_scale_factor_,
                                                      device_scale_factor_)
                          : rect;
-    // TODO(crbug.com/1359528): Add gfx::Transform::MapQuad().
-    gfx::PointF p1 = transform.MapPoint(gfx::PointF(scaled_rect.origin()));
-    gfx::PointF p2 = transform.MapPoint(gfx::PointF(scaled_rect.top_right()));
-    gfx::PointF p3 =
-        transform.MapPoint(gfx::PointF(scaled_rect.bottom_right()));
-    gfx::PointF p4 = transform.MapPoint(gfx::PointF(scaled_rect.bottom_left()));
-    return gfx::QuadF(p1, p2, p3, p4);
+    return transform.MapQuad(gfx::QuadF(gfx::RectF(scaled_rect)));
   }
 
   gfx::QuadF TransformRectToQuadF(
