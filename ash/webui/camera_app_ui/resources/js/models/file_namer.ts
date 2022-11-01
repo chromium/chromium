@@ -49,6 +49,27 @@ function timestampToDatetimeName(timestamp: number): string {
       pad(date.getSeconds());
 }
 
+const FILE_NAME_PATTERN = (() => {
+  const timestampRegex = String.raw`\d{8}_\d{6}`;
+  const burstSuffixRegex =
+      String.raw`${BURST_SUFFIX}\d{5}(${BURST_COVER_SUFFIX})?`;
+  const conflictHandlingRegex = String.raw`( \(\d+\))?`;
+  const imageRegex = String.raw`^${IMAGE_PREFIX}${timestampRegex}${
+      conflictHandlingRegex}\.jpg$`;
+  const burstRegex = String.raw`^${IMAGE_PREFIX}${timestampRegex}${
+      burstSuffixRegex}${conflictHandlingRegex}\.jpg$`;
+  const videoRegex = String.raw`^${VIDEO_PREFIX}${timestampRegex}${
+      conflictHandlingRegex}\.(mp4|gif)$`;
+  const docRegex = String.raw`^${DOCUMENT_PREFIX}${timestampRegex}${
+      conflictHandlingRegex}\.(jpg|pdf)$`;
+  return new RegExp([
+    imageRegex,
+    burstRegex,
+    videoRegex,
+    docRegex,
+  ].map((r) => `(${r})`).join('|'));
+})();
+
 /**
  * Filenamer for single camera session.
  */
@@ -132,5 +153,15 @@ export class Filenamer {
    */
   static getMetadataName(imageName: string): string {
     return imageName.replace(/\.[^/.]+$/, '.json');
+  }
+
+  /**
+   * Returns true if the file name matches the format that CCA generates.
+   *
+   * @param fileName Name of the file.
+   * @return True if it matches CCA file naming format.
+   */
+  static isCCAFileFormat(fileName: string): boolean {
+    return FILE_NAME_PATTERN.test(fileName);
   }
 }

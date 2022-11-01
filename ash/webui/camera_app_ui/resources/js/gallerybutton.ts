@@ -160,8 +160,9 @@ export class GalleryButton implements ResultSaver {
       }
     }
 
-    // Rescan file system.
-    const files = await filesystem.getEntries();
+    // Rescan file system. Only select files following CCA naming styles.
+    const files = (await filesystem.getEntries())
+                      .filter((file) => Filenamer.isCCAFileFormat(file.name));
     if (files.length === 0) {
       await this.updateCover(null);
       return;
