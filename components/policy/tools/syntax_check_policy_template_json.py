@@ -1806,7 +1806,8 @@ class PolicyTemplateChecker(object):
     for policy_changes in policy_change_list:
       original_policy = policy_changes['old_policy']
       new_policy = policy_changes['new_policy']
-      new_policy['name'] = policy_changes['policy']
+      if new_policy:
+        new_policy['name'] = policy_changes['policy']
       if original_policy:
         original_policy['name'] = policy_changes['policy']
         (original_released_platforms,
