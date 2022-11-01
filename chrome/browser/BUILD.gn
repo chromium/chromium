@@ -609,6 +609,8 @@ static_library("browser") {
     "history/top_sites_factory.h",
     "history/web_history_service_factory.cc",
     "history/web_history_service_factory.h",
+    "history_clusters/history_clusters_image_fetcher.cc",
+    "history_clusters/history_clusters_image_fetcher.h",
     "history_clusters/history_clusters_metrics_logger.cc",
     "history_clusters/history_clusters_metrics_logger.h",
     "history_clusters/history_clusters_service_factory.cc",

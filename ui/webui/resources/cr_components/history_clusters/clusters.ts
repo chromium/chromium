@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -127,6 +128,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   private headerText_: string;
   private inSidePanel_: boolean;
   private onClustersQueryResultListenerId_: number|null = null;
+  private onClusterImageUpdatedListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
   private onHistoryDeletedListenerId_: number|null = null;
   private onQueryChangedByUserListenerId_: number|null = null;
@@ -160,6 +162,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     this.onClustersQueryResultListenerId_ =
         this.callbackRouter_.onClustersQueryResult.addListener(
             this.onClustersQueryResult_.bind(this));
+    this.onClusterImageUpdatedListenerId_ =
+        this.callbackRouter_.onClusterImageUpdated.addListener(
+            this.onClusterImageUpdated_.bind(this));
     this.onVisitsRemovedListenerId_ =
         this.callbackRouter_.onVisitsRemoved.addListener(
             this.onVisitsRemoved_.bind(this));
@@ -348,6 +353,14 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     if (this.inSidePanel_) {
       this.pageHandler_.showSidePanelUI();
     }
+  }
+
+  /**
+   * Called when an image has become available for `clusterIndex`.
+   */
+  private onClusterImageUpdated_(clusterIndex: number, imageUrl: Url) {
+    // TODO(tommycli): Make deletions handle `clusterIndex` properly.
+    this.set(`result_.clusters.${clusterIndex}.imageUrl`, imageUrl);
   }
 
   /**

@@ -149,10 +149,14 @@ void QueryClustersState::OnGotClusters(
   // than just doing this simple computation on the main thread.
   UpdateUniqueRawLabels(clusters);
 
+  size_t clusters_size = clusters.size();
+
+  bool is_continuation = number_clusters_sent_to_page_ > 0;
   std::move(callback).Run(query_, std::move(clusters),
                           !continuation_params.exhausted_all_visits,
-                          is_continuation_);
-  is_continuation_ = true;
+                          is_continuation);
+
+  number_clusters_sent_to_page_ += clusters_size;
 
   // Log metrics after delivering the results to the page.
   base::TimeDelta service_latency = base::TimeTicks::Now() - query_start_time;

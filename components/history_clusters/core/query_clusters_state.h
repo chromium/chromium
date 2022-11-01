@@ -54,6 +54,10 @@ class QueryClustersState {
   // Returns the current query the state contains.
   const std::string& query() const { return query_; }
 
+  size_t number_clusters_sent_to_page() const {
+    return number_clusters_sent_to_page_;
+  }
+
   // Used to request another batch of clusters of the same query.
   void LoadNextBatchOfClusters(ResultCallback callback);
 
@@ -111,8 +115,9 @@ class QueryClustersState {
   // query for the "next page".
   QueryClustersContinuationParams continuation_params_;
 
-  // True for all 'next-page' responses, but false for the first page.
-  bool is_continuation_ = false;
+  // The number of clusters that have already been sent to the page. This is
+  // updated AFTER the callback for each batch.
+  size_t number_clusters_sent_to_page_ = 0;
 
   // Used only to fast-cancel tasks in case we are destroyed.
   std::unique_ptr<HistoryClustersServiceTaskGetMostRecentClusters>

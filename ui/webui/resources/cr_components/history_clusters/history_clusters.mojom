@@ -141,6 +141,9 @@ struct Cluster {
   // Search queries related to this cluster's visits.
   array<SearchQuery> related_searches;
 
+  // The image URL associated with this cluster.
+  url.mojom.Url? image_url;
+
   // Additional debug string to show. This is not visible in production, and
   // used for development only. Disabled by default, but can be enabled by the
   // 'JourneysUserVisibleDebug' flag.
@@ -224,6 +227,9 @@ interface Page {
   // continuation query params meant to be used in the follow-up request to load
   // older Clusters.
   OnClustersQueryResult(QueryResult result);
+
+  // Called when the browser has found a suitable image for `cluster_index`.
+  OnClusterImageUpdated(int32 cluster_index, url.mojom.Url image_url);
 
   // Called with the set of removed visits when the last accepted call to
   // `RemoveVisits()` succeeds. `removed_visits` will be used to update the UI.

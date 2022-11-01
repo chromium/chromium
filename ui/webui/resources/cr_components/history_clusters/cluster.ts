@@ -9,6 +9,7 @@ import './shared_vars.css.js';
 import './url_visit.js';
 import '../../cr_elements/cr_icons.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -120,6 +121,15 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       visibleVisits_: {
         type: Object,
         computed: `computeVisibleVisits_(cluster.visits.*)`,
+      },
+
+      /**
+       * The cluster's image URL in a form easily passed to cr-auto-img.
+       * Also notifies the outer iron-list of a resize.
+       */
+      imageUrl_: {
+        type: String,
+        computed: `computeImageUrl_(cluster.imageUrl)`,
       },
     };
   }
@@ -334,6 +344,24 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     return this.cluster.visits.filter((visit: URLVisit) => {
       return !visit.hidden;
     });
+  }
+
+  private computeImageUrl_(): string {
+    if (!this.cluster.imageUrl) {
+      return '';
+    }
+
+    // iron-list can't handle our size changing because of loading an image
+    // without an explicit event. But we also can't send this until we have
+    // updated the image property, so send it on the next idle.
+    window.requestIdleCallback(() => {
+      this.dispatchEvent(new CustomEvent('iron-resize', {
+        bubbles: true,
+        composed: true,
+      }));
+    });
+
+    return this.cluster.imageUrl.url;
   }
 
   /**
