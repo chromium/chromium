@@ -78,6 +78,44 @@ def _CheckWebDevStyle(input_api, output_api):
     sys.path = old_sys_path
   return results
 
+def _CheckNoDisallowedJS(input_api, output_api):
+  # Ignore legacy files from the js/ subfolder along with tools/.
+  EXCLUDE_PATH_PREFIXES = [
+    'ui/webui/resources/js/assert.js',
+    'ui/webui/resources/js/dom_automation_controller.js',
+    'ui/webui/resources/js/cr',
+    'ui/webui/resources/js/ios/',
+    'ui/webui/resources/js/load_time_data.m.js',
+    'ui/webui/resources/js/load_time_data_deprecated.js',
+    'ui/webui/resources/js/promise_resolver.js',
+    'ui/webui/resources/js/util.js',
+    'ui/webui/resources/js/util_deprecated.js',
+    'ui/webui/resources/tools/',
+  ]
+
+  normalized_excluded_prefixes = []
+  for path in EXCLUDE_PATH_PREFIXES:
+    normalized_excluded_prefixes.append(input_api.os_path.normpath(path))
+
+  # Also exempt any externs or eslint files, which must be in JS.
+  EXCLUDE_PATH_SUFFIXES = [
+    '_externs.js',
+    '.eslintrc.js',
+  ]
+
+  def allow_js(f):
+    path = f.LocalPath()
+    for prefix in normalized_excluded_prefixes:
+      if path.startswith(prefix):
+        return True
+    for suffix in EXCLUDE_PATH_SUFFIXES:
+      if path.endswith(suffix):
+        return True
+    return False
+
+  from web_dev_style import presubmit_support
+  return presubmit_support.DisallowNewJsFiles(input_api, output_api,
+                                              lambda f: not allow_js(f))
 
 def _CheckJsModulizer(input_api, output_api):
   affected = input_api.AffectedFiles()
@@ -113,6 +151,7 @@ def _CommonChecks(input_api, output_api):
   results += _CheckForTranslations(input_api, output_api)
   results += _CheckSvgsOptimized(input_api, output_api)
   results += _CheckWebDevStyle(input_api, output_api)
+  results += _CheckNoDisallowedJS(input_api, output_api)
   results += _CheckJsModulizer(input_api, output_api)
   results += _CheckGenerateGrd(input_api, output_api)
   results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
