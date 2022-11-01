@@ -39,8 +39,8 @@
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/safe_seed_manager.h"
-#include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_client.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_switches.h"
@@ -52,9 +52,6 @@
 
 namespace variations {
 namespace {
-
-// Maximum age permitted for a variations seed, in days.
-const int kMaxVariationsSeedAgeDays = 30;
 
 // Returns the date that should be used by the VariationsSeedProcessor to do
 // expiry and start date checks.
@@ -556,12 +553,9 @@ bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
     }
     return false;
   }
-
-  const base::TimeDelta seed_age = base::Time::Now() - fetch_time;
-  bool has_seed_expired = seed_age.InDays() > kMaxVariationsSeedAgeDays &&
-                          GetBuildTime() > fetch_time;
+  bool has_seed_expired = HasSeedExpiredSinceTime(fetch_time);
   if (!has_seed_expired)
-    RecordSeedFreshness(seed_age);
+    RecordSeedFreshness(base::Time::Now() - fetch_time);
   RecordSeedExpiry(is_safe_seed, has_seed_expired
                                      ? VariationsSeedExpiry::kExpired
                                      : VariationsSeedExpiry::kNotExpired);
@@ -606,50 +600,36 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
                                 client_filterable_state->policy_restriction);
 
   VariationsSeed seed;
-  bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
-  if (run_in_safe_mode) {
-    if (GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get())) {
-      // TODO(crbug/1261685): The expiry and milestone checks are repeated below
-      // for regular seeds. Refactor this.
-      if (HasSeedExpired(/*is_safe_seed=*/true)) {
-        RecordVariationsSeedUsage(SeedUsage::kExpiredSafeSeedNotUsed);
-        return false;
-      }
-      if (IsSeedForFutureMilestone(/*is_safe_seed=*/true)) {
-        RecordVariationsSeedUsage(
-            SeedUsage::kSafeSeedForFutureMilestoneNotUsed);
-        return false;
-      }
-      RecordVariationsSeedUsage(SeedUsage::kSafeSeedUsed);
-    } else {
-      // If Chrome should run in safe mode but the safe seed was not
-      // successfully loaded, then do not apply a seed. Fall back to client-side
-      // defaults.
-      RecordVariationsSeedUsage(SeedUsage::kUnloadableSafeSeedNotUsed);
-      return false;
-    }
-  }
 
-  std::string seed_data;
-  std::string base64_seed_signature;
-  if (!run_in_safe_mode) {
-    if (GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature)) {
-      if (HasSeedExpired(/*is_safe_seed=*/false)) {
-        RecordVariationsSeedUsage(SeedUsage::kExpiredRegularSeedNotUsed);
-        return false;
-      }
-      if (IsSeedForFutureMilestone(/*is_safe_seed=*/false)) {
-        RecordVariationsSeedUsage(
-            SeedUsage::kRegularSeedForFutureMilestoneNotUsed);
-        return false;
-      }
-      RecordVariationsSeedUsage(SeedUsage::kRegularSeedUsed);
-    } else {
-      // The regular seed was not successfully loaded, so do not apply a seed.
-      // Fall back to client-side defaults.
-      RecordVariationsSeedUsage(SeedUsage::kUnloadableRegularSeedNotUsed);
+  std::string seed_data;              // Only set if not in safe mode.
+  std::string base64_seed_signature;  // Only set if not in safe mode.
+  const bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
+  const bool seed_loaded =
+      run_in_safe_mode
+          ? GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get())
+          : GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature);
+  if (seed_loaded) {
+    if (HasSeedExpired(/*is_safe_seed=*/run_in_safe_mode)) {
+      RecordVariationsSeedUsage(run_in_safe_mode
+                                    ? SeedUsage::kExpiredSafeSeedNotUsed
+                                    : SeedUsage::kExpiredRegularSeedNotUsed);
       return false;
     }
+    if (IsSeedForFutureMilestone(/*is_safe_seed=*/run_in_safe_mode)) {
+      RecordVariationsSeedUsage(
+          run_in_safe_mode ? SeedUsage::kSafeSeedForFutureMilestoneNotUsed
+                           : SeedUsage::kRegularSeedForFutureMilestoneNotUsed);
+      return false;
+    }
+    RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
+                                               : SeedUsage::kRegularSeedUsed);
+  } else {
+    // If Chrome should run in safe mode but the safe seed was not successfully
+    // loaded, then do not apply a seed. Fall back to client-side defaults.
+    RecordVariationsSeedUsage(run_in_safe_mode
+                                  ? SeedUsage::kUnloadableSafeSeedNotUsed
+                                  : SeedUsage::kUnloadableRegularSeedNotUsed);
+    return false;
   }
 
   // Note that passing base::Unretained(this) below is safe because the callback
@@ -727,10 +707,6 @@ void VariationsFieldTrialCreator::LoadSeedFromFile(
 
 VariationsSeedStore* VariationsFieldTrialCreator::GetSeedStore() {
   return seed_store_.get();
-}
-
-base::Time VariationsFieldTrialCreator::GetBuildTime() const {
-  return base::GetBuildTime();
 }
 
 }  // namespace variations

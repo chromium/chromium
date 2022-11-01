@@ -233,9 +233,6 @@ class VariationsFieldTrialCreator {
   // Returns the seed store. Virtual for testing.
   virtual VariationsSeedStore* GetSeedStore();
 
-  // Returns the time at which the binary was built. Virtual for testing.
-  virtual base::Time GetBuildTime() const;
-
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }
 

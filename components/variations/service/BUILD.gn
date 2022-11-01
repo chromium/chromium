@@ -34,6 +34,8 @@ static_library("service") {
     "variations_service.h",
     "variations_service_client.cc",
     "variations_service_client.h",
+    "variations_service_utils.cc",
+    "variations_service_utils.h",
   ]
 
   deps = [
@@ -65,6 +67,7 @@ source_set("unit_tests") {
     "ui_string_overrider_unittest.cc",
     "variations_field_trial_creator_unittest.cc",
     "variations_service_unittest.cc",
+    "variations_service_utils_unittest.cc",
   ]
 
   deps = [
