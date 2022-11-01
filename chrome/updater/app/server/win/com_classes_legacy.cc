@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -356,17 +355,17 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
   // Overrides for IAppWeb.
   IFACEMETHODIMP get_appId(BSTR* app_id) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_currentVersionWeb(IDispatch** current) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_nextVersionWeb(IDispatch** next) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -376,7 +375,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP cancel() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -479,22 +478,22 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   IFACEMETHODIMP launch() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP uninstall() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_serverInstallDataIndex(BSTR* language) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR language) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -538,7 +537,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
                            BSTR brand_code,
                            BSTR language,
                            BSTR ap) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -552,12 +551,12 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP createAllInstalledApps() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_displayLanguage(BSTR* language) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -566,7 +565,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   IFACEMETHODIMP put_parentHWND(ULONG_PTR hwnd) override { return S_OK; }
 
   IFACEMETHODIMP get_length(int* number) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -592,34 +591,34 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
   }
 
   IFACEMETHODIMP download() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP install() override { return S_OK; }
 
   IFACEMETHODIMP pause() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP resume() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP cancel() override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP downloadPackage(BSTR app_id, BSTR package_name) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_currentState(VARIANT* current_state) override {
-    NOTIMPLEMENTED();
+    LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
     return E_NOTIMPL;
   }
 
@@ -651,7 +650,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLine(const WCHAR* cmd_line) {
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchBrowser(DWORD browser_type,
                                                       const WCHAR* url) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -699,7 +698,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
     DWORD* server_proc_id,
     ULONG_PTR* proc_handle,
     ULONG_PTR* stdout_handle) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -742,7 +741,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -1204,12 +1203,12 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
 
 // TODO(crbug.com/1344200): Implement the IDispatch methods.
 STDMETHODIMP PolicyStatusImpl::GetTypeInfoCount(UINT*) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
 STDMETHODIMP PolicyStatusImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -1218,7 +1217,7 @@ STDMETHODIMP PolicyStatusImpl::GetIDsOfNames(REFIID,
                                              UINT,
                                              LCID,
                                              DISPID*) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -1230,7 +1229,7 @@ STDMETHODIMP PolicyStatusImpl::Invoke(DISPID,
                                       VARIANT*,
                                       EXCEPINFO*,
                                       UINT*) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -1308,12 +1307,12 @@ STDMETHODIMP PolicyStatusValueImpl::get_conflictValue(BSTR* conflict_value) {
 
 // TODO(crbug.com/1344200): Implement the IDispatch methods.
 STDMETHODIMP PolicyStatusValueImpl::GetTypeInfoCount(UINT*) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
 STDMETHODIMP PolicyStatusValueImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -1322,7 +1321,7 @@ STDMETHODIMP PolicyStatusValueImpl::GetIDsOfNames(REFIID,
                                                   UINT,
                                                   LCID,
                                                   DISPID*) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
@@ -1334,7 +1333,7 @@ STDMETHODIMP PolicyStatusValueImpl::Invoke(DISPID,
                                            VARIANT*,
                                            EXCEPINFO*,
                                            UINT*) {
-  NOTIMPLEMENTED();
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
   return E_NOTIMPL;
 }
 
