@@ -866,7 +866,7 @@
 <translation id="5767013862801005129">已還原「<ph name="TAB_TITLE" />」分頁</translation>
 <translation id="5776970333778123608">不重要的資料</translation>
 <translation id="5780792035410621042">如要複製密碼，請先在裝置上設定螢幕鎖定功能</translation>
-<translation id="5793665092639000975">使用量：<ph name="SPACE_USED" /> (共 <ph name="SPACE_AVAILABLE" />)</translation>
+<translation id="5793665092639000975">已使用 <ph name="SPACE_AVAILABLE" /> 中的 <ph name="SPACE_USED" /></translation>
 <translation id="5795872532621730126">搜尋和瀏覽</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# 小時前}other{# 小時前}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>

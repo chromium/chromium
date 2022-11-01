@@ -340,6 +340,7 @@
 <translation id="2865888419503095837">פרטי רשת</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2878884018241093801">אין פריטים אחרונים</translation>
+<translation id="2885950158625301909">מידע נוסף</translation>
 <translation id="2891209721153296020">"ביטול הבחירה"</translation>
 <translation id="2894949423239620203">חיבור כבל עשוי להשפיע על הביצועים</translation>
 <translation id="2914580577416829331">צילומי מסך</translation>
@@ -1058,6 +1059,7 @@
 <translation id="6961121602502368900">השתקת הטלפון לא זמינה בפרופיל העבודה</translation>
 <translation id="6961840794482373852">‏מקשי הקיצור Alt + חץ למעלה הוחלפו. כדי לדמות את הפעולה של המקש Page Up, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למעלה.</translation>
 <translation id="696267987219125751">הפריים האוטומטי מושבת במצלמה.</translation>
+<translation id="6964690557625666701">כל הפריטים המוצמדים משייטים במסך</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6972754398087986839">תחילת העבודה</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1370,6 +1372,8 @@
 <translation id="8734991477317290293">ייתכן שהיא מנסה לתעד את ההקשות שלך.</translation>
 <translation id="8735678380411481005">הצבע של התאורה האחורית של המקלדת</translation>
 <translation id="8735953464173050365">צפייה בהגדרות המקלדת. המקלדת שנבחרה היא <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">עליך להעניק גישה למצלמה כדי לאפשר לאפליקציות ולדפי אינטרנט עם הרשאת גישה למצלמה להשתמש במצלמות שמחוברות למכשיר הזה.</translation>
 <translation id="8755498163081687682">אימות הזהות שלך: על מנת להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="875593634123171288">‏צפייה בהגדרות VPN</translation>
