@@ -23,9 +23,19 @@ $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 
 ## Run on an physical device
 
+If ffx has already been set up to use the target device by default,
+or if there is only one discoverable device on the host:
+
 ```bash
 $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --browser=web-engine-shell --out-dir=/path/to/outdir -d
+```
+
+Otherwise, specify the id of the target device:
+
+```bash
+$ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
+--browser=web-engine-shell --out-dir=/path/to/outdir --target-id=[TARGET_ID]
 ```
 
 ## Run on a device that needs packages built from Fuchsia source
@@ -43,7 +53,7 @@ handles launching the package server from the Fuchsia output directory.
 
 ```bash
 $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
---browser=web-engine-shell --out-dir=/path/to/outdir -d --target-id=[::1]:8022
+--browser=web-engine-shell --out-dir=/path/to/outdir --target-id=[::1]:8022
 ```
 
 Note the this requires a remote tunnel to have been set up first.

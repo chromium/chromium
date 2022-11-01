@@ -4,7 +4,7 @@
 
 A new version of scripts for testing on Fuchsia is being developed
 [here](../../build/fuchsia/test/) and the plan is to migrate all use cases
-to these scripts by the end of Q322. The new scripts currently support:
+to these scripts by the end of Q422. The new scripts currently support:
 
 ## Run CFv2 gtest binaries on Fuchsia
 
@@ -44,7 +44,7 @@ Once the emulator is running, you can run tests on this emulator instance by
 adding the command line arguments indicated above:
 
 ```bash
-$ ./build/fuchsia/test/run_test.py [TEST_BINARY] -C [OUTPUT_DIR] -d \
+$ ./build/fuchsia/test/run_test.py [TEST_BINARY] -C [OUTPUT_DIR] \
   --target-id [EMULATOR_NAME]
 ```
 

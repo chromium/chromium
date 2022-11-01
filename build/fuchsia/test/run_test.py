@@ -71,8 +71,8 @@ def main():
     if not runner_args.out_dir:
         raise ValueError('--out-dir must be specified.')
 
-    if runner_args.target_id and not runner_args.device:
-        parser.error('-d is required when --target-id is used')
+    if runner_args.target_id:
+        runner_args.device = True
 
     with ExitStack() as stack:
         if running_unattended():
