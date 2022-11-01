@@ -276,6 +276,7 @@
           ],
           'shards': 12,
           'quickrun_shards': 10,
+          'inverse_quickrun_shards': 24,
         },
       },
       'Mac12 Tests (dbg)': {
@@ -593,6 +594,7 @@
           ],
           'shards': 18,
           'quickrun_shards': 16,
+          'inverse_quickrun_shards': 36,
         },
       },
       'Mac12 Tests (dbg)': {
