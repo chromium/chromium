@@ -21,8 +21,9 @@ LOAD_FLAG(NORMAL, 0)
 // All other caches are used as normal.
 LOAD_FLAG(VALIDATE_CACHE, 1 << 0)
 
-// This is "shift-reload", meaning a "pragma: no-cache" end-to-end fetch. All
-// other caches are used as normal.
+// This is "shift-reload", meaning a "pragma: no-cache" end-to-end fetch.
+// The response is not read from the HTTP cache but is written to the cache,
+// unlike in `DISABLE_CACHE`. All other caches are used as normal.
 LOAD_FLAG(BYPASS_CACHE, 1 << 1)
 
 // This is a back/forward style navigation where the cached content should
@@ -33,8 +34,9 @@ LOAD_FLAG(SKIP_CACHE_VALIDATION, 1 << 2)
 // resource from the cache (or some equivalent local store).
 LOAD_FLAG(ONLY_FROM_CACHE, 1 << 3)
 
-// This is a navigation that will not use the cache at all. It does not
-// impact the HTTP request headers. All other caches are used as normal.
+// This is a request whose response will not be read or written to the HTTP
+// cache. It does not impact the cache-related HTTP request headers. All other
+// caches are used as normal.
 LOAD_FLAG(DISABLE_CACHE, 1 << 4)
 
 // If present, causes dependent network fetches (AIA, CRLs, OCSP) to be
