@@ -53,7 +53,6 @@ _HEADER = '''
 
 config("xnnpack_config") {
   include_dirs = [
-    "//third_party/pthreadpool/src/include",
     "src/deps/clog/include",
     "src/include",
     "src/src",
