@@ -6,6 +6,7 @@ import {ConnectionType, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPrese
 import {TopRightKey as DiagramTopRightKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {KeyboardKeyState} from 'chrome://resources/ash/common/keyboard_key.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../../mock_controller.js';
@@ -193,8 +194,11 @@ export function keyboardTesterTestSuite() {
         'Press Alt + Esc to close the dialog.');
 
     // Alt + Escape should close the tester
-    keyboardTesterElement.dispatchEvent(
-        new KeyboardEvent('keydown', {key: 'Escape', altKey: true}));
+    const keyDownEvent = eventToPromise('keydown', keyboardTesterElement);
+
+    keyboardTesterElement.dispatchEvent(new KeyboardEvent(
+        'keydown', {bubbles: true, key: 'Escape', altKey: true}));
+    await keyDownEvent;
     assertFalse(keyboardTesterElement.isOpen());
   });
 }

@@ -177,8 +177,8 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
 
   constructor() {
     super();
-    this.addEventListener('keydown', this.onKeyDown.bind(this));
-    this.addEventListener('keyup', this.onKeyUp.bind(this));
+    document.addEventListener('keydown', (e) => this.onKeyPress(e));
+    document.addEventListener('keyup', (e) => this.onKeyPress(e));
   }
 
   private computeLayoutIsKnown_(keyboard?: KeyboardInfo): boolean {
@@ -259,17 +259,17 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     this.$.dialog.showModal();
   }
 
-  onKeyUp(e: KeyboardEvent): void {
+  // Prevent the default behavior for keydown/keyup only when the keyboard
+  // tester dialog is opened.
+  onKeyPress(e: KeyboardEvent): void {
+    if (!this.isOpen()) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
-  }
 
-  onKeyDown(e: KeyboardEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // If we receive alt + esc we should close the app
-    if (e.altKey && e.key === 'Escape') {
+    // If we receive alt + esc we should close the tester.
+    if (e.type === 'keydown' && e.altKey && e.key === 'Escape') {
       this.close();
     }
   }
@@ -373,6 +373,9 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
    */
   onKeyEventsResumed(): void {
     console.log('Key events resumed');
+    if (this.isOpen()) {
+      this.$.dialog.focus();
+    }
     this.$.lostFocusToast.hide();
   }
 }
