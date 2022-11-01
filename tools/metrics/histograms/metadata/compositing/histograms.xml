@@ -576,6 +576,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Renderer.CommitHung" units="boolean"
+    expires_after="2023-01-31">
+  <owner>skobes@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records when the renderer compositor thread is hung (14 seconds) waiting to
+    run the commit after the main thread signalled that it is ready to commit.
+  </summary>
+</histogram>
+
 <histogram
     name="Compositing.Renderer.FirstSurfaceActivationUpdateDuration.{Surface}"
     units="ms" expires_after="2023-04-28">
