@@ -93,6 +93,10 @@ HANDLE D3DSharedFence::GetSharedHandle() const {
   return shared_handle_.get();
 }
 
+uint64_t D3DSharedFence::GetFenceValue() const {
+  return fence_value_;
+}
+
 bool D3DSharedFence::IsSameFenceAsHandle(HANDLE shared_handle) const {
   using PFN_COMPARE_OBJECT_HANDLES =
       BOOL(WINAPI*)(HANDLE hFirstObjectHandle, HANDLE hSecondObjectHandle);
@@ -118,9 +122,13 @@ bool D3DSharedFence::IsSameFenceAsHandle(HANDLE shared_handle) const {
   return false;
 }
 
+void D3DSharedFence::Update(uint64_t fence_value) {
+  if (fence_value > fence_value_)
+    fence_value_ = fence_value;
+}
+
 bool D3DSharedFence::WaitD3D11(
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    uint64_t wait_value) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   // Skip wait if passed in device is the same as signaling device.
   if (d3d11_device == d3d11_device_)
     return true;
@@ -149,7 +157,7 @@ bool D3DSharedFence::WaitD3D11(
     return false;
 
   const Microsoft::WRL::ComPtr<ID3D11Fence>& fence = it->second;
-  HRESULT hr = context4->Wait(fence.Get(), wait_value);
+  HRESULT hr = context4->Wait(fence.Get(), fence_value_);
   if (FAILED(hr)) {
     DLOG(ERROR) << "D3D11 fence wait failed: 0x" << std::hex << hr;
     return false;
@@ -157,7 +165,7 @@ bool D3DSharedFence::WaitD3D11(
   return true;
 }
 
-bool D3DSharedFence::SignalD3D11(uint64_t signal_value) {
+bool D3DSharedFence::IncrementAndSignalD3D11() {
   DCHECK(d3d11_device_);
   DCHECK(d3d11_signal_fence_);
 
@@ -166,11 +174,12 @@ bool D3DSharedFence::SignalD3D11(uint64_t signal_value) {
   if (!context4)
     return false;
 
-  HRESULT hr = context4->Signal(d3d11_signal_fence_.Get(), signal_value);
+  HRESULT hr = context4->Signal(d3d11_signal_fence_.Get(), fence_value_ + 1);
   if (FAILED(hr)) {
     DLOG(ERROR) << "D3D11 fence signal failed: 0x" << std::hex << hr;
     return false;
   }
+  fence_value_++;
   return true;
 }
 

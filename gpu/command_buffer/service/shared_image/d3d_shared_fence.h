@@ -23,7 +23,9 @@ namespace gpu {
 class GPU_GLES2_EXPORT D3DSharedFence
     : public base::RefCounted<D3DSharedFence> {
  public:
-  // Create a new ID3D11Fence with initial value 0 on given |d3d11_device|.
+  // Create a new ID3D11Fence with initial value 0 on given |d3d11_device|. The
+  // provided device is considered the owning device for the fence, and is the
+  // device used for signaling the fence.
   static scoped_refptr<D3DSharedFence> CreateForD3D11(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
@@ -38,18 +40,24 @@ class GPU_GLES2_EXPORT D3DSharedFence
   // Return the shared handle for the fence.
   HANDLE GetSharedHandle() const;
 
+  // Returns the fence value that was last known to be signaled on this fence,
+  // and should be used for waiting.
+  uint64_t GetFenceValue() const;
+
   // Returns true if the underlying fence object is the same as |shared_handle|.
   bool IsSameFenceAsHandle(HANDLE shared_handle) const;
+
+  // Updates fence value to |fence_value| provided that it's larger.
+  void Update(uint64_t fence_value);
 
   // Issue a wait for the fence on the immediate context of |d3d11_device| using
   // |wait_value|. The wait is skipped if the passed in device is the same as
   // |d3d11_device_|. Returns true on success.
-  bool WaitD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-                 uint64_t wait_value);
+  bool WaitD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
   // Issue a signal for the fence on the immediate context of |d3d11_device_|
   // using |signal_value|. Returns true on success.
-  bool SignalD3D11(uint64_t signal_value);
+  bool IncrementAndSignalD3D11();
 
  private:
   friend class base::RefCounted<D3DSharedFence>;
@@ -62,6 +70,9 @@ class GPU_GLES2_EXPORT D3DSharedFence
 
   // Owned shared handle corresponding to the fence.
   base::win::ScopedHandle shared_handle_;
+
+  // Value last known to be signaled for this fence to be used for future waits.
+  uint64_t fence_value_ = 0;
 
   // If present, this is the D3D11 device that the fence was created on, and
   // used to signal |d3d11_fence_|.

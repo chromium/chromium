@@ -154,42 +154,6 @@ class GPU_GLES2_EXPORT D3DImageBacking
       scoped_refptr<SharedContextState> context_state) override;
 
  private:
-  // A simple wrapper around a D3DSharedFence and a value that was previously
-  // signaled on the fence. This supports copy semantics so that it can be
-  // stored in |read_fences_| or |write_fence_|.
-  class SignaledFence {
-   public:
-    SignaledFence(scoped_refptr<D3DSharedFence> fence, uint64_t value);
-    SignaledFence(const SignaledFence&);
-    SignaledFence& operator=(const SignaledFence&);
-    ~SignaledFence();
-
-    const D3DSharedFence* fence() const { return fence_.get(); }
-
-    // Issues a wait on the |fence_| using |value_|. Wait is skipped if this
-    // fence is signaled by |device|. Returns true on success.
-    bool WaitD3D11(Microsoft::WRL::ComPtr<ID3D11Device> device) const;
-
-    // Issues a signal for the |fence_| with |value_| + 1 on the D3D11 device
-    // this fence was created with, and increments |value_| only on success.
-    // Returns true on success.
-    bool IncrementAndSignalD3D11();
-
-    // Update fence value from |other| if the underlying fence is the same.
-    // Returns true if the underlying fence was the same and either the value of
-    // this fence was updated to the new value or retained because it was ahead.
-    bool Update(const SignaledFence& other);
-
-#if BUILDFLAG(USE_DAWN)
-    // Wrap shared handle for |fence_| and |value_| in a Dawn fence descriptor.
-    ExternalImageDXGIFenceDescriptor AsDawnFenceDescriptor() const;
-#endif
-
-   private:
-    scoped_refptr<D3DSharedFence> fence_;
-    uint64_t value_ = 0;
-  };
-
 #if BUILDFLAG(USE_DAWN)
   struct DawnExternalImageState {
     DawnExternalImageState();
@@ -234,7 +198,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   bool ValidateBeginAccess(bool write_access) const;
 
-  void EndAccessCommon(absl::optional<SignaledFence> signaled_fence);
+  void EndAccessCommon(scoped_refptr<D3DSharedFence> fence);
 
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
@@ -278,16 +242,16 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   // Fences for previous reads. These will be waited on by the subsequent write,
   // but not by reads.
-  std::vector<SignaledFence> read_fences_;
+  base::flat_set<scoped_refptr<D3DSharedFence>> read_fences_;
 
   // Fence for the previous write. These will be waited on by subsequent reads
   // and/or write.
-  absl::optional<SignaledFence> write_fence_;
+  scoped_refptr<D3DSharedFence> write_fence_;
 
   // Fence used for signaling on this backing's |d3d11_device_|. Lazily created
   // and signaled on first Dawn access, and used on any subsequent D3D11 access.
   // TODO(sunnyps): Support multiple D3D11 devices.
-  absl::optional<SignaledFence> d3d11_device_fence_;
+  scoped_refptr<D3DSharedFence> d3d11_device_fence_;
 };
 
 }  // namespace gpu

@@ -188,49 +188,6 @@ D3DImageBacking::DawnExternalImageState::operator=(DawnExternalImageState&&) =
     default;
 #endif
 
-D3DImageBacking::SignaledFence::SignaledFence(
-    scoped_refptr<D3DSharedFence> fence,
-    uint64_t value)
-    : fence_(std::move(fence)), value_(value) {
-  DCHECK(fence_);
-  DCHECK_NE(value_, UINT64_MAX);
-}
-D3DImageBacking::SignaledFence::SignaledFence(const SignaledFence&) = default;
-D3DImageBacking::SignaledFence& D3DImageBacking::SignaledFence::operator=(
-    const SignaledFence&) = default;
-D3DImageBacking::SignaledFence::~SignaledFence() = default;
-
-bool D3DImageBacking::SignaledFence::WaitD3D11(
-    Microsoft::WRL::ComPtr<ID3D11Device> device) const {
-  // D3DSharedFence::WaitD3D11 skips the wait if the device created this fence.
-  return fence_->WaitD3D11(std::move(device), value_);
-}
-
-bool D3DImageBacking::SignaledFence::IncrementAndSignalD3D11() {
-  if (!fence_->SignalD3D11(value_ + 1)) {
-    DLOG(ERROR) << "D3DSharedFence::Signal failed";
-    return false;
-  }
-  value_++;
-  return true;
-}
-
-bool D3DImageBacking::SignaledFence::Update(const SignaledFence& other) {
-  if (fence_ == other.fence_) {
-    if (value_ < other.value_ && other.value_ != UINT64_MAX)
-      value_ = other.value_;
-    return true;
-  }
-  return false;
-}
-
-#if BUILDFLAG(USE_DAWN)
-ExternalImageDXGIFenceDescriptor
-D3DImageBacking::SignaledFence::AsDawnFenceDescriptor() const {
-  return ExternalImageDXGIFenceDescriptor{fence_->GetSharedHandle(), value_};
-}
-#endif
-
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const Mailbox& mailbox,
@@ -718,12 +675,11 @@ WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
 
   // Create the D3D11 device fence on first Dawn access.
   if (!dxgi_shared_handle_state_->has_keyed_mutex() && !d3d11_device_fence_) {
-    auto fence = D3DSharedFence::CreateForD3D11(d3d11_device_);
-    if (!fence) {
+    d3d11_device_fence_ = D3DSharedFence::CreateForD3D11(d3d11_device_);
+    if (!d3d11_device_fence_) {
       DLOG(ERROR) << "Failed to create D3D11 signal fence";
       return nullptr;
     }
-    d3d11_device_fence_ = SignaledFence(std::move(fence), 0);
     // Make D3D11 device wait for |write_fence_| since we'll replace it below.
     if (write_fence_ && !write_fence_->WaitD3D11(d3d11_device_)) {
       DLOG(ERROR) << "Failed to wait for write fence";
@@ -746,14 +702,17 @@ WGPUTexture D3DImageBacking::BeginAccessDawn(WGPUDevice device,
   std::vector<ExternalImageDXGIFenceDescriptor> wait_fences;
   // Always wait for previous write for both read-only or read-write access.
   // Skip the wait if it's for the fence last signaled by the device.
-  if (write_fence_ && write_fence_->fence() != dawn_signaled_fence)
-    wait_fences.push_back(write_fence_->AsDawnFenceDescriptor());
+  if (write_fence_ && write_fence_.get() != dawn_signaled_fence)
+    wait_fences.push_back(ExternalImageDXGIFenceDescriptor{
+        write_fence_->GetSharedHandle(), write_fence_->GetFenceValue()});
   // Also wait for all previous reads for read-write access.
   if (write_access) {
     for (const auto& read_fence : read_fences_) {
       // Skip the wait if it's for the fence last signaled by the device.
-      if (read_fence.fence() != dawn_signaled_fence)
-        wait_fences.push_back(read_fence.AsDawnFenceDescriptor());
+      if (read_fence != dawn_signaled_fence) {
+        wait_fences.push_back(ExternalImageDXGIFenceDescriptor{
+            read_fence->GetSharedHandle(), read_fence->GetFenceValue()});
+      }
     }
   }
 
@@ -803,7 +762,7 @@ void D3DImageBacking::EndAccessDawn(WGPUDevice device, WGPUTexture texture) {
       ExternalImageDXGIFenceDescriptor descriptor;
       external_image->EndAccess(texture, &descriptor);
 
-      absl::optional<SignaledFence> signaled_fence;
+      scoped_refptr<D3DSharedFence> signaled_fence;
       if (descriptor.fenceHandle != nullptr) {
         scoped_refptr<D3DSharedFence>& cached_fence = it->second.signaled_fence;
         // Try to reuse the last signaled fence if it's the same fence.
@@ -813,12 +772,13 @@ void D3DImageBacking::EndAccessDawn(WGPUDevice device, WGPUTexture texture) {
               D3DSharedFence::CreateFromHandle(descriptor.fenceHandle);
           DCHECK(cached_fence);
         }
-        signaled_fence = SignaledFence(cached_fence, descriptor.fenceValue);
+        cached_fence->Update(descriptor.fenceValue);
+        signaled_fence = cached_fence;
       }
       // Dawn should be using either keyed mutex or fence synchronization.
       DCHECK((dxgi_shared_handle_state_ &&
               dxgi_shared_handle_state_->has_keyed_mutex()) ||
-             signaled_fence.has_value());
+             signaled_fence);
       EndAccessCommon(std::move(signaled_fence));
     } else {
       // Erase from cache if external image is invalid i.e. device was lost.
@@ -848,7 +808,7 @@ bool D3DImageBacking::BeginAccessD3D11(bool write_access) {
   if (write_access) {
     // For read-write access, wait for all previous reads, and reset fences.
     for (const auto& fence : read_fences_) {
-      if (!fence.WaitD3D11(d3d11_device_)) {
+      if (!fence->WaitD3D11(d3d11_device_)) {
         DLOG(ERROR) << "Failed to wait for read fence";
         return false;
       }
@@ -870,7 +830,7 @@ void D3DImageBacking::EndAccessD3D11() {
   // If D3D11 device signaling fence is present, shared handle should be too.
   DCHECK(!d3d11_device_fence_ || dxgi_shared_handle_state_);
 
-  absl::optional<SignaledFence> signaled_fence;
+  scoped_refptr<D3DSharedFence> signaled_fence;
   if (d3d11_device_fence_ && d3d11_device_fence_->IncrementAndSignalD3D11())
     signaled_fence = d3d11_device_fence_;
 
@@ -893,26 +853,16 @@ bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
 }
 
 void D3DImageBacking::EndAccessCommon(
-    absl::optional<SignaledFence> signaled_fence) {
+    scoped_refptr<D3DSharedFence> signaled_fence) {
   if (in_write_access_) {
-    DCHECK(!write_fence_.has_value());
+    DCHECK(!write_fence_);
     DCHECK(read_fences_.empty());
     in_write_access_ = false;
-    if (signaled_fence)
-      write_fence_.emplace(*signaled_fence);
+    write_fence_ = std::move(signaled_fence);
   } else {
     num_readers_--;
-    if (signaled_fence) {
-      // First try to update an existing read fence, otherwise insert a new one.
-      for (auto& fence : read_fences_) {
-        if (fence.Update(*signaled_fence)) {
-          signaled_fence.reset();
-          break;
-        }
-      }
-      if (signaled_fence)
-        read_fences_.emplace_back(*signaled_fence);
-    }
+    if (signaled_fence)
+      read_fences_.insert(std::move(signaled_fence));
   }
 }
 
