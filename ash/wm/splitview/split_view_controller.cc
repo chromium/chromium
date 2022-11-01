@@ -89,7 +89,7 @@ using ::chromeos::WindowStateType;
 constexpr float kFixedPositionRatios[] = {0.f, 0.5f, 1.0f};
 
 // The black scrim starts to fade in when the divider is moved past the two
-// optional positions (kOneThirdPositionRatio, kTwoThirdPositionRatio) and
+// optional positions (kOneThirdSnapRatio, kTwoThirdSnapRatio) and
 // reaches to its maximum opacity (kBlackScrimOpacity) after moving
 // kBlackScrimFadeInRatio of the screen width. See https://crbug.com/827730 for
 // details.
@@ -1179,7 +1179,7 @@ bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
 }
 
 int SplitViewController::GetDefaultDividerPosition() const {
-  return GetDividerPosition(SnapPosition::kPrimary, kDefaultPositionRatio);
+  return GetDividerPosition(SnapPosition::kPrimary, kDefaultSnapRatio);
 }
 
 int SplitViewController::GetDividerPosition(SnapPosition snap_position,
@@ -1659,8 +1659,8 @@ void SplitViewController::OnResizeLoopEnded(aura::Window* window) {
 
   NotifyWindowResized();
 
-  if (divider_position_ < GetDividerEndPosition() * kOneThirdPositionRatio ||
-      divider_position_ > GetDividerEndPosition() * kTwoThirdPositionRatio) {
+  if (divider_position_ < GetDividerEndPosition() * kOneThirdSnapRatio ||
+      divider_position_ > GetDividerEndPosition() * kTwoThirdSnapRatio) {
     // Ending overview will also end clamshell split view.
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kSplitView);
@@ -2163,7 +2163,7 @@ void SplitViewController::UpdateBlackScrim(
   if (!IsLayoutHorizontal(root_window_))
     work_area_bounds.Transpose();
   float opacity = kBlackScrimOpacity;
-  const float ratio = kOneThirdPositionRatio - kBlackScrimFadeInRatio;
+  const float ratio = kOneThirdSnapRatio - kBlackScrimFadeInRatio;
   const int distance = std::min(std::abs(location - work_area_bounds.x()),
                                 std::abs(work_area_bounds.right() - location));
   if (distance > work_area_bounds.width() * ratio) {
@@ -2277,12 +2277,11 @@ SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
     min_right_length = secondary_window_min_size.height();
   }
 
-  if (primary_window_distance < divider_end_position * kOneThirdPositionRatio ||
+  if (primary_window_distance < divider_end_position * kOneThirdSnapRatio ||
       primary_window_distance < min_left_length) {
     return SnapPosition::kPrimary;
   }
-  if (secondary_window_distance <
-          divider_end_position * kOneThirdPositionRatio ||
+  if (secondary_window_distance < divider_end_position * kOneThirdSnapRatio ||
       secondary_window_distance < min_right_length) {
     return SnapPosition::kSecondary;
   }
@@ -2518,10 +2517,10 @@ void SplitViewController::GetDividerOptionalPositionRatios(
       static_cast<float>(min_left_size) / divider_end_position;
   const float min_size_right_ratio =
       static_cast<float>(min_right_size) / divider_end_position;
-  if (min_size_left_ratio <= kOneThirdPositionRatio)
-    out_position_ratios->push_back(kOneThirdPositionRatio);
-  if (min_size_right_ratio <= kOneThirdPositionRatio)
-    out_position_ratios->push_back(kTwoThirdPositionRatio);
+  if (min_size_left_ratio <= kOneThirdSnapRatio)
+    out_position_ratios->push_back(kOneThirdSnapRatio);
+  if (min_size_right_ratio <= kOneThirdSnapRatio)
+    out_position_ratios->push_back(kTwoThirdSnapRatio);
 }
 
 int SplitViewController::GetWindowComponentForResize(aura::Window* window) {

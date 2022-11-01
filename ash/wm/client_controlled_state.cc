@@ -347,7 +347,7 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
                     static_cast<const WindowSnapWMEvent*>(event)->snap_ratio())
               : (is_restoring && window_state->snap_ratio().has_value()
                      ? window_state->snap_ratio().value()
-                     : kDefaultPositionRatio);
+                     : kDefaultSnapRatio);
       gfx::Rect bounds = GetSnappedWindowBoundsInParent(window, next_state_type,
                                                         snap_ratio_to_restore);
       // We don't want Unminimize() to restore the pre-snapped state during the

@@ -43,11 +43,6 @@ class WindowStateDelegate;
 class WindowStateObserver;
 class WMEvent;
 
-// TODO(crbug.com/1323394): Consider moving to a WindowState constants file.
-constexpr float kOneThirdPositionRatio = 0.33f;
-constexpr float kDefaultPositionRatio = 0.5f;
-constexpr float kTwoThirdPositionRatio = 0.67f;
-
 // WindowState manages and defines ash specific window state and
 // behavior. Ash specific per-window state (such as ones that controls
 // window manager behavior) and ash specific window behavior (such as

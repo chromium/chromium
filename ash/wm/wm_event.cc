@@ -4,6 +4,8 @@
 
 #include "ash/wm/wm_event.h"
 
+#include "ash/wm/window_positioning_utils.h"
+
 namespace ash {
 
 WMEvent::WMEvent(WMEventType type) : type_(type) {
@@ -141,13 +143,13 @@ float WindowSnapWMEvent::GetFloatValueForSnapRatio(
     WindowSnapWMEvent::SnapRatio snap_ratio) {
   switch (snap_ratio) {
     case WindowSnapWMEvent::SnapRatio::kOneThirdSnapRatio:
-      return kOneThirdPositionRatio;
+      return kOneThirdSnapRatio;
     case WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio:
-      return kDefaultPositionRatio;
+      return kDefaultSnapRatio;
     case WindowSnapWMEvent::SnapRatio::kTwoThirdSnapRatio:
-      return kTwoThirdPositionRatio;
+      return kTwoThirdSnapRatio;
     default:
-      return kDefaultPositionRatio;
+      return kDefaultSnapRatio;
   }
 }
 

@@ -63,34 +63,41 @@ class TabletModeWindowState : public WindowState::State {
   void set_ignore_wm_events(bool ignore) { ignore_wm_events_ = ignore; }
 
  private:
-  // Updates the window to |new_state_type| and resulting bounds:
+  // Updates the window to `new_state_type` and resulting bounds:
   // Either full screen, maximized centered or minimized. If the state does not
-  // change, only the bounds will be changed. If |animate| is set, the bound
-  // change get animated.
+  // change, only the bounds will be changed. If `animate` is set, the bound
+  // change get animated. If `new_snap_ratio` is set, uses it to update snapped
+  // window bounds.
   void UpdateWindow(WindowState* window_state,
                     chromeos::WindowStateType new_state_type,
-                    bool animate);
+                    bool animate,
+                    absl::optional<float> new_snap_ratio);
 
-  // If |target_state| is PRIMARY/SECONDARY_SNAPPED and the window can be
-  // snapped, returns |target_state|. Otherwise depending on the capabilities
-  // of the window either returns |WindowStateType::kMaximized| or
-  // |WindowStateType::kNormal|.
+  // If `target_state` is PRIMARY/SECONDARY_SNAPPED and the window can be
+  // snapped, returns `target_state`. Otherwise depending on the capabilities
+  // of the window either returns `WindowStateType::kMaximized` or
+  // `WindowStateType::kNormal`.
   chromeos::WindowStateType GetSnappedWindowStateType(
       WindowState* window_state,
       chromeos::WindowStateType target_state);
 
   // Updates the bounds to the maximum possible bounds according to the current
-  // window state. If |animated| is set we animate the change.
-  void UpdateBounds(WindowState* window_state, bool animated);
+  // window state. If `animate` is set we animate the change. If
+  // `new_snap_ratio` is set, uses it to update snapped window bounds.
+  void UpdateBounds(WindowState* window_state,
+                    bool animate,
+                    absl::optional<float> new_snap_ratio);
 
-  // Handles Alt+[ if |snap_position| is
-  // |SplitViewController::SnapPosition::kPrimary|; handles // Alt+] if
-  // |snap_position| is |SplitViewController::SnapPosition::kSecondary|.
+  // Handles Alt+[ if `snap_position` is
+  // `SplitViewController::SnapPosition::kPrimary`; handles // Alt+] if
+  // `snap_position` is `SplitViewController::SnapPosition::kSecondary`.
   void CycleTabletSnap(WindowState* window_state,
                        SplitViewController::SnapPosition snap_position);
 
   // Snap the window in tablet split view if it can be snapped.
-  void DoTabletSnap(WindowState* window_state, WMEventType snap_event_type);
+  void DoTabletSnap(WindowState* window_state,
+                    WMEventType snap_event_type,
+                    absl::optional<float> new_snap_ratio);
 
   // Called by `WM_EVENT_RESTORE`, or a `WM_EVENT_NORMAL` that is restoring.
   // Restores to the state in `window_states`'s restore history.

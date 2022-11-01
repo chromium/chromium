@@ -401,7 +401,7 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
             ? absl::make_optional(WindowSnapWMEvent::GetFloatValueForSnapRatio(
                   static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()))
             : (is_restoring ? window_state->snap_ratio()
-                            : absl::make_optional(kDefaultPositionRatio)));
+                            : absl::make_optional(kDefaultSnapRatio)));
     return;
   }
 

@@ -479,8 +479,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   float FindClosestPositionRatio(float distance, float length);
 
   // Gets the divider optional position ratios. The divider can always be
-  // moved to the positions in |kFixedPositionRatios|. Whether the divider can
-  // be moved to |kOneThirdPositionRatio| or |kTwoThirdPositionRatio| depends
+  // moved to the positions in `kFixedPositionRatios`. Whether the divider can
+  // be moved to `kOneThirdSnapRatio` or `kTwoThirdSnapRatio` depends
   // on the minimum size of current snapped windows.
   void GetDividerOptionalPositionRatios(
       std::vector<float>* out_position_ratios);
@@ -592,8 +592,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   int divider_position_ = -1;
 
   // The closest position ratio of divider among kFixedPositionRatios,
-  // kOneThirdPositionRatio and kTwoThirdPositionRatio based on current
-  // |divider_position_|. Used to update |divider_position_| on work area
+  // kOneThirdSnapRatio and kTwoThirdSnapRatio based on current
+  // `divider_position_`. Used to update `divider_position_` on work area
   // changes.
   float divider_closest_ratio_ = std::numeric_limits<float>::quiet_NaN();
 
