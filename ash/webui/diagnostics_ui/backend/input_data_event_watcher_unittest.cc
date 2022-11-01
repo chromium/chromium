@@ -73,7 +73,6 @@ class FakeWatcher : public InputDataEventWatcher {
   // Test helpers:
   size_t num_events_processed() { return events.size(); }
   const input_event GetCall(int index) { return events[index]; }
-  bool watching() { return this->watching_; }
 
  private:
   std::vector<input_event> events;
@@ -150,8 +149,6 @@ class InputDataEventWatcherTest : public testing::Test {
 // trigger`InputDataEventWatcher::ProcessEvent`.
 TEST_F(InputDataEventWatcherTest, ReadsInputEventsFromFd) {
   watcher()->Start();
-  EXPECT_TRUE(watcher()->watching());
-
   size_t write_count = 0ul;
   for (const auto& event : kFakeKeyCaplPressAndRelease) {
     base::RunLoop run_loop;

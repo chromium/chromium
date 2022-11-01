@@ -55,7 +55,6 @@ class InputDataEventWatcher : public base::MessagePumpForUI::FdWatcher {
   const base::FilePath path_;  // evdev path /dev/input/event{evdev_id_}.
   const int fd_;               // File descriptor being watched.
   const base::ScopedFD input_device_fd_;  // base::ScopedFD to ensure closed.
-  bool watching_ = false;  // Whether we're polling for input on the device.
   base::MessagePumpForUI::FdWatchController controller_;
 };
 

@@ -265,8 +265,8 @@ class FakeInputDataEventWatcher : public InputDataEventWatcher {
   // Only updating boolean instead of watching actual FD. FD watch tested in
   // InputDataEventWatcher unit tests.
   // See: ash/webui/diagnostics_ui/backend/input_data_event_watcher_unittest.cc
-  void DoStart() override { this->watching_ = true; }
-  void DoStop() override { this->watching_ = false; }
+  void DoStart() override {}
+  void DoStop() override {}
 
  private:
   base::WeakPtr<KeyboardInputDataEventWatcher::Dispatcher> dispatcher_;

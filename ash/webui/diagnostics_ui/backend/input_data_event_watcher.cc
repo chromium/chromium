@@ -76,12 +76,10 @@ void InputDataEventWatcher::OnFileCanWriteWithoutBlocking(int fd) {
 void InputDataEventWatcher::DoStart() {
   base::CurrentUIThread::Get()->WatchFileDescriptor(
       fd_, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
-  watching_ = true;
 }
 
 void InputDataEventWatcher::DoStop() {
   controller_.StopWatchingFileDescriptor();
-  watching_ = false;
 }
 
 void InputDataEventWatcher::DoOnFileCanReadWithoutBlocking(int fd) {
