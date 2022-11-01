@@ -174,6 +174,12 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_INITIAL_SERVER_FORCED;
   }
 
+  // Whether this configuration is in initial attestation forced mode per server
+  // request.
+  bool is_mode_initial_attestation_server_forced() const {
+    return mode == MODE_ATTESTATION_INITIAL_SERVER_FORCED;
+  }
+
   // Whether this configuration is in attestation mode per client request.
   bool is_mode_attestation_client() const {
     return mode == MODE_ATTESTATION || mode == MODE_ATTESTATION_LOCAL_FORCED ||
