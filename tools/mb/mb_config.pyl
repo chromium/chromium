@@ -134,7 +134,7 @@
 
     'chromium.angle': {
       'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
-      'fuchsia-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_fuchsia',
+      'fuchsia-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_fuchsia_reclient',
       'ios-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_ios_reclient',
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'mac-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
@@ -1804,8 +1804,8 @@
       'android_without_codecs', 'release_trybot', 'strip_debug_info',
     ],
 
-    'angle_deqp_release_bot_dcheck_always_on_fuchsia': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on', 'fuchsia',
+    'angle_deqp_release_bot_dcheck_always_on_fuchsia_reclient': [
+      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'fuchsia',
     ],
 
     'angle_deqp_release_bot_dcheck_always_on_ios_reclient': [

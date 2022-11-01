@@ -23,7 +23,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_os": "fuchsia",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "ios-angle-builder": {

@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.angle builder group."""
 
 load("//lib/args.star", "args")
-load("//lib/builders.star", "goma", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builders.star", "reclient", "sheriff_rotations", "xcode")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -63,8 +63,6 @@ ci.gpu.linux_builder(
         category = "Fuchsia|Builder|ANGLE",
         short_name = "x64",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.gpu.linux_builder(
