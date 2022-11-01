@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/data_source.h"
+#include "media/base/demuxer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_observer.h"
 #include "media/base/media_tracks.h"
@@ -620,8 +621,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnFirstFrame(base::TimeTicks frame_time);
 
   // Records timing metrics for three UMA metrics: #key.SRC, #key.MSE, and
-  // #key.EME. The SRC and MSE ones are mutually exclusive based on the presence
-  // of |chunk_demuxer_|, while the EME one is only recorded if |is_encrypted_|.
+  // #key.EME. The SRC and MSE ones are mutually exclusive based on
+  // the demuxer type, while the EME one is only recorded if |is_encrypted_|.
   void RecordTimingUMA(const std::string& key, base::TimeDelta elapsed);
 
   // Records the encryption scheme used by the stream |stream_name|. This is
@@ -669,10 +670,14 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Report UMAs when this object instance is destroyed.
   void ReportSessionUMAs() const;
 
-#if BUILDFLAG(ENABLE_FFMPEG)
   // Helper methods for creating demuxers to encapsulate build flags.
+  std::unique_ptr<media::Demuxer> CreateChunkDemuxer();
+
+#if BUILDFLAG(ENABLE_FFMPEG)
   std::unique_ptr<media::Demuxer> CreateFFmpegDemuxer();
 #endif
+
+  absl::optional<media::DemuxerType> GetDemuxerType() const;
 
   WebLocalFrame* const frame_;
 
@@ -799,16 +804,13 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Routes audio playback to either AudioRendererSink or WebAudio.
   scoped_refptr<WebAudioSourceProviderImpl> audio_source_provider_;
 
-  // These two are mutually exclusive:
-  //   |data_source_| is used for regular resource loads.
-  //   |chunk_demuxer_| is used for Media Source resource loads.
-  //
-  // |demuxer_| will contain the appropriate demuxer based on which resource
-  // load strategy we're using.
+  // |demuxer_| holds the the appropriate demuxer based on which resource load
+  // strategy we're using.
+  std::unique_ptr<media::Demuxer> demuxer_;
+
+  // |data_source_| will be null if we're using the ChunkDemuxer.
   MultiBufferDataSource* mb_data_source_ = nullptr;
   std::unique_ptr<media::DataSource> data_source_;
-  std::unique_ptr<media::Demuxer> demuxer_;
-  media::ChunkDemuxer* chunk_demuxer_ = nullptr;
 
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

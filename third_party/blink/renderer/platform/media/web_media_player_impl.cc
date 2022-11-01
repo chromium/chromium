@@ -212,7 +212,7 @@ void DestructionHelper(
     std::unique_ptr<media::MediaLog> media_log,
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
     std::unique_ptr<WebSurfaceLayerBridge> bridge,
-    bool is_chunk_demuxer) {
+    absl::optional<media::DemuxerType> demuxer_type) {
   // We release `bridge` after pipeline stop to ensure layout tests receive
   // painted video frames before test harness exit.
   main_task_runner->DeleteSoon(FROM_HERE, std::move(bridge));
@@ -224,7 +224,7 @@ void DestructionHelper(
 
   // ChunkDemuxer can be deleted on any thread, but other demuxers are bound to
   // the main thread and must be deleted there now that the renderer is gone.
-  if (!is_chunk_demuxer) {
+  if (demuxer_type != media::DemuxerType::kChunkDemuxer) {
     main_task_runner->DeleteSoon(FROM_HERE, std::move(demuxer));
     main_task_runner->DeleteSoon(FROM_HERE, std::move(data_source));
     main_task_runner->DeleteSoon(FROM_HERE, std::move(cdm_context_1));
@@ -650,7 +650,7 @@ WebMediaPlayerImpl::~WebMediaPlayerImpl() {
                      std::move(cdm_context_ref_),
                      std::move(pending_cdm_context_ref_), std::move(media_log_),
                      std::move(renderer_factory_selector_), std::move(bridge_),
-                     !!chunk_demuxer_));
+                     GetDemuxerType()));
 }
 
 WebMediaPlayer::LoadTiming WebMediaPlayerImpl::Load(
@@ -1075,7 +1075,7 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   //      never elided.
   if (paused_ && pipeline_controller_->IsStable() &&
       (paused_time_ == time || (ended_ && time == base::Seconds(Duration()))) &&
-      !chunk_demuxer_) {
+      GetDemuxerType() != media::DemuxerType::kChunkDemuxer) {
     if (old_state == kReadyStateHaveEnoughData) {
       // This will in turn SetReadyState() to signal the demuxer seek, followed
       // by timeChanged() to signal the renderer seek.
@@ -1309,8 +1309,9 @@ double WebMediaPlayerImpl::Duration() const {
   // TimeDelta with potentially reduced precision (limited to Microseconds).
   // ChunkDemuxer returns the full-precision user-specified double. This ensures
   // users can "get" the exact duration they "set".
-  if (chunk_demuxer_)
-    return chunk_demuxer_->GetDuration();
+  if (GetDemuxerType() == media::DemuxerType::kChunkDemuxer) {
+    return static_cast<media::ChunkDemuxer*>(demuxer_.get())->GetDuration();
+  }
 
   base::TimeDelta pipeline_duration = GetPipelineMediaDuration();
   return pipeline_duration == media::kInfiniteDuration
@@ -1622,7 +1623,7 @@ void WebMediaPlayerImpl::OnFFmpegMediaTracksUpdated(
   // For MSE/chunk_demuxer case the media track updates are handled by
   // WebSourceBufferImpl.
   DCHECK(demuxer_.get());
-  DCHECK(!chunk_demuxer_);
+  DCHECK(GetDemuxerType() != media::DemuxerType::kChunkDemuxer);
 
   // Report the media track information to blink. Only the first audio track and
   // the first video track are enabled by default to match blink logic.
@@ -1852,8 +1853,9 @@ void WebMediaPlayerImpl::OnPipelineResumed() {
 }
 
 void WebMediaPlayerImpl::OnChunkDemuxerOpened() {
+  // Note - this can't be CHECK_EQ because |GetDemuxerType| returns an optional
+  CHECK(GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  CHECK_EQ(demuxer_->GetDemuxerType(), media::DemuxerType::kChunkDemuxer);
   client_->MediaSourceOpened(new WebMediaSourceImpl(
       static_cast<media::ChunkDemuxer*>(demuxer_.get())));
 }
@@ -1864,7 +1866,7 @@ void WebMediaPlayerImpl::OnMemoryPressure(
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(
       base::FeatureList::IsEnabled(media::kMemoryPressureBasedSourceBufferGC));
-  DCHECK(chunk_demuxer_);
+  DCHECK(GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
 
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
@@ -1885,15 +1887,17 @@ void WebMediaPlayerImpl::OnMemoryPressure(
        memory_pressure_level ==
            base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  // base::Unretained is safe, since `chunk_demuxer_` is actually owned by
-  // `this` via this->demuxer_. Note the destruction of `chunk_demuxer_` is done
+  // base::Unretained is safe, since `demuxer_` is actually owned by
+  // `this` via this->demuxer_. Note the destruction of `demuxer_` is done
   // from ~WMPI by first hopping to `media_task_runner_` to prevent race with
   // this task.
   media_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&media::ChunkDemuxer::OnMemoryPressure,
-                                base::Unretained(chunk_demuxer_),
-                                base::Seconds(CurrentTime()),
-                                memory_pressure_level, force_instant_gc));
+      FROM_HERE,
+      base::BindOnce(
+          &media::ChunkDemuxer::OnMemoryPressure,
+          base::Unretained(static_cast<media::ChunkDemuxer*>(demuxer_.get())),
+          base::Seconds(CurrentTime()), memory_pressure_level,
+          force_instant_gc));
 }
 
 void WebMediaPlayerImpl::OnFallback(media::PipelineStatus status) {
@@ -2251,7 +2255,7 @@ void WebMediaPlayerImpl::OnProgress() {
 bool WebMediaPlayerImpl::CanPlayThrough() {
   if (!base::FeatureList::IsEnabled(media::kSpecCompliantCanPlayThrough))
     return true;
-  if (chunk_demuxer_)
+  if (GetDemuxerType() == media::DemuxerType::kChunkDemuxer)
     return true;
   if (data_source_ && data_source_->AssumeFullyBuffered())
     return true;
@@ -2925,6 +2929,33 @@ std::unique_ptr<Demuxer> WebMediaPlayerImpl::CreateFFmpegDemuxer() {
 }
 #endif
 
+std::unique_ptr<Demuxer> WebMediaPlayerImpl::CreateChunkDemuxer() {
+  if (base::FeatureList::IsEnabled(media::kMemoryPressureBasedSourceBufferGC)) {
+    // base::Unretained is safe because `this` owns memory_pressure_listener_.
+    // TODO (crbug/1377053): Remove this. It doesn't appear to be used.
+    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+        FROM_HERE, base::BindRepeating(&WebMediaPlayerImpl::OnMemoryPressure,
+                                       base::Unretained(this)));
+  }
+
+  return std::make_unique<media::ChunkDemuxer>(
+      media::BindToCurrentLoop(base::BindOnce(
+          &WebMediaPlayerImpl::OnChunkDemuxerOpened, weak_this_)),
+      media::BindToCurrentLoop(
+          base::BindRepeating(&WebMediaPlayerImpl::OnProgress, weak_this_)),
+      media::BindToCurrentLoop(base::BindRepeating(
+          &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_)),
+      media_log_.get());
+}
+
+absl::optional<media::DemuxerType> WebMediaPlayerImpl::GetDemuxerType() const {
+  // Note: this can't be a ternary expression because the compiler throws a fit
+  // over type conversions.
+  if (demuxer_)
+    return demuxer_->GetDemuxerType();
+  return absl::nullopt;
+}
+
 void WebMediaPlayerImpl::StartPipeline() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
@@ -2959,13 +2990,13 @@ void WebMediaPlayerImpl::StartPipeline() {
 
   // Figure out which demuxer to use.
   if (demuxer_override_) {
-    DCHECK(!chunk_demuxer_);
-
+    // can't use absl::optional with DCHECK_NE.
+    DCHECK(GetDemuxerType() != media::DemuxerType::kChunkDemuxer);
     SetDemuxer(std::move(demuxer_override_));
     // TODO(https://crbug.com/1076267): Should everything else after this block
     // run in the demuxer override case?
   } else if (load_type_ != kLoadTypeMediaSource) {
-    DCHECK(!chunk_demuxer_);
+    DCHECK(GetDemuxerType() != media::DemuxerType::kChunkDemuxer);
     DCHECK(data_source_);
 #if BUILDFLAG(ENABLE_FFMPEG)
     SetDemuxer(CreateFFmpegDemuxer());
@@ -2974,35 +3005,16 @@ void WebMediaPlayerImpl::StartPipeline() {
     return;
 #endif
   } else {
-    DCHECK(!chunk_demuxer_);
+    DCHECK(GetDemuxerType() != media::DemuxerType::kChunkDemuxer);
     DCHECK(!data_source_);
-
-    Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb =
-        media::BindToCurrentLoop(base::BindRepeating(
-            &WebMediaPlayerImpl::OnEncryptedMediaInitData, weak_this_));
-
-    chunk_demuxer_ = new media::ChunkDemuxer(
-        media::BindToCurrentLoop(base::BindOnce(
-            &WebMediaPlayerImpl::OnChunkDemuxerOpened, weak_this_)),
-        media::BindToCurrentLoop(
-            base::BindRepeating(&WebMediaPlayerImpl::OnProgress, weak_this_)),
-        encrypted_media_init_data_cb, media_log_.get());
-    SetDemuxer(std::unique_ptr<Demuxer>(chunk_demuxer_));
-
-    if (base::FeatureList::IsEnabled(
-            media::kMemoryPressureBasedSourceBufferGC)) {
-      // base::Unretained is safe because `this` owns memory_pressure_listener_.
-      memory_pressure_listener_ =
-          std::make_unique<base::MemoryPressureListener>(
-              FROM_HERE,
-              base::BindRepeating(&WebMediaPlayerImpl::OnMemoryPressure,
-                                  base::Unretained(this)));
-    }
+    SetDemuxer(CreateChunkDemuxer());
+    DCHECK(demuxer_);
   }
 
   // If possible attempt to avoid decoder spool up until playback starts.
   auto start_type = media::Pipeline::StartType::kNormal;
-  if (!chunk_demuxer_ && preload_ == media::DataSource::METADATA &&
+  if ((GetDemuxerType() != media::DemuxerType::kChunkDemuxer) &&
+      preload_ == media::DataSource::METADATA &&
       !client_->CouldPlayIfEnoughData() && !IsStreaming()) {
     start_type =
         (has_poster_ ||
@@ -3014,7 +3026,7 @@ void WebMediaPlayerImpl::StartPipeline() {
 
   // TODO(sandersd): FileSystem objects may also be non-static, but due to our
   // caching layer such situations are broken already. http://crbug.com/593159
-  const bool is_static = !chunk_demuxer_;
+  const bool is_static = media::DemuxerType::kChunkDemuxer != GetDemuxerType();
 
   // ... and we're ready to go!
   // TODO(sandersd): On Android, defer Start() if the tab is not visible.
@@ -3495,7 +3507,8 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::PlaybackProperties::New(
           pipeline_metadata_.has_audio, has_video, false, false,
-          !!chunk_demuxer_, is_encrypted_, embedded_media_experience_enabled_,
+          GetDemuxerType() == media::DemuxerType::kChunkDemuxer, is_encrypted_,
+          embedded_media_experience_enabled_,
           media::mojom::MediaStreamType::kNone),
       pipeline_metadata_.natural_size,
       base::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
@@ -3860,7 +3873,7 @@ void WebMediaPlayerImpl::SwitchToLocalRenderer(
 }
 
 void WebMediaPlayerImpl::RecordUnderflowDuration(base::TimeDelta duration) {
-  DCHECK(data_source_ || chunk_demuxer_);
+  DCHECK(data_source_ || GetDemuxerType() == media::DemuxerType::kChunkDemuxer);
 
   if (data_source_)
     UMA_HISTOGRAM_TIMES("Media.UnderflowDuration2.SRC", duration);
@@ -3930,7 +3943,7 @@ void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
 
 void WebMediaPlayerImpl::RecordTimingUMA(const std::string& key,
                                          base::TimeDelta elapsed) {
-  if (chunk_demuxer_)
+  if (GetDemuxerType() == media::DemuxerType::kChunkDemuxer)
     base::UmaHistogramMediumTimes(key + ".MSE", elapsed);
   else
     base::UmaHistogramMediumTimes(key + ".SRC", elapsed);
