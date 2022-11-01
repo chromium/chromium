@@ -4054,7 +4054,9 @@ class NavigationPageLoadMetricsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
+// Flaky. See https://crbug.com/1224780.
+IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest,
+                       DISABLED_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -4067,35 +4069,19 @@ IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
 
   // 1) Navigate to url1.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url1));
-
-  // There is no FirstInputDelay in UMA before the simulated mouse click
-  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 0);
   content::RenderFrameHost* rfh_a = RenderFrameHost();
   content::RenderProcessHost* rfh_a_process = rfh_a->GetProcess();
-
-  // Create a Performance Observer to ensure the renderer receives the click
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-    "waitFirstInput = async () => {"
-     "const observePromise = new Promise(resolve => {"
-       "new PerformanceObserver(e => {"
-         "e.getEntries().forEach(entry => {"
-           "resolve();"
-         "})"
-       "}).observe({type: 'first-input', buffered: true});"
-     "});"
-     "return await observePromise;"
-     "};"
-  ));
 
   // Simulate mouse click. FirstInputDelay won't get updated immediately.
   content::SimulateMouseClickAt(web_contents(), 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(100, 100));
-
-  // Run the Performance Observer
-  EXPECT_TRUE(ExecJs(web_contents(), "waitFirstInput()"));
-
+  // Run arbitrary script and run tasks in the brwoser to ensure the input is
+  // processed in the renderer.
+  EXPECT_TRUE(content::ExecJs(rfh_a, "var foo = 42;"));
+  base::RunLoop().RunUntilIdle();
   content::FetchHistogramsFromChildProcesses();
+  histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 0);
 
   // 2) Immediately navigate to url2.
   if (GetParam() == "CrossSiteRendererInitiated") {
@@ -4107,13 +4093,6 @@ IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
   content::FetchHistogramsFromChildProcesses();
   if (GetParam() != "CrossSiteBrowserInitiated" ||
       rfh_a_process == RenderFrameHost()->GetProcess()) {
-
-    // Let the program wait for 50ms to ensure the First Input Delay
-    // is ready in UMA
-    // TODO(crbug.com/1380108) : replace with test_waiter when it allows multiple page
-    // loads
-    base::PlatformThread::Sleep(base::Milliseconds(50));
-
     // - For "SameSite" case, since the old and new RenderFrame either share a
     // process (with RenderDocument/back-forward cache) or the RenderFrame is
     // reused the metrics update will be sent to the browser during commit and
@@ -4123,7 +4102,6 @@ IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest, FirstInputDelay) {
     // - For "CrossSiteBrowserInitiated" case, if the old and new RenderFrame
     // share a process, the metrics update will be sent to the browser during
     // commit and won't get ignored, successfully updating the histogram.
-
     histogram_tester_->ExpectTotalCount(internal::kHistogramFirstInputDelay, 1);
   } else {
     // Note that in some cases the metrics might flakily get updated in time,
