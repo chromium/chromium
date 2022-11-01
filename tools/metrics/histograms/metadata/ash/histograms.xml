@@ -594,6 +594,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.ExtraSpaceRequiredMB"
+    units="MB" expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    This is recorded if move profile migration is aborted due to the lack of
+    extra space required on disk. The amount of space required to be freed is
+    recorded.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.PosixErrno.{TaskStatus}"
     units="errno" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
