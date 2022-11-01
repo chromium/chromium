@@ -272,6 +272,29 @@ Response WebAuthnHandler::RemoveVirtualAuthenticator(
   return Response::Success();
 }
 
+Response WebAuthnHandler::SetResponseOverrideBits(
+    const String& authenticator_id,
+    Maybe<bool> is_bogus_signature,
+    Maybe<bool> is_bad_uv,
+    Maybe<bool> is_bad_up) {
+  VirtualAuthenticatorManagerImpl* authenticator_manager =
+      AuthenticatorEnvironmentImpl::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(frame_host_->frame_tree_node());
+  if (!authenticator_manager)
+    return Response::ServerError(kVirtualEnvironmentNotEnabled);
+
+  VirtualAuthenticator* authenticator;
+  Response response = FindAuthenticator(authenticator_id, &authenticator);
+  if (!response.IsSuccess())
+    return Response::InvalidParams(kAuthenticatorNotFound);
+
+  authenticator->set_bogus_signature(
+      is_bogus_signature.fromMaybe(/*default_value=*/false));
+  authenticator->set_bad_uv_bit(is_bad_uv.fromMaybe(/*default_value=*/false));
+  authenticator->set_bad_up_bit(is_bad_up.fromMaybe(/*default_value=*/false));
+  return Response::Success();
+}
+
 void WebAuthnHandler::AddCredential(
     const String& authenticator_id,
     std::unique_ptr<WebAuthn::Credential> credential,

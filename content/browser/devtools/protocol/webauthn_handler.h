@@ -34,6 +34,10 @@ class WebAuthnHandler : public DevToolsDomainHandler, public WebAuthn::Backend {
       std::unique_ptr<WebAuthn::VirtualAuthenticatorOptions> options,
       String* out_authenticator_id) override;
   Response RemoveVirtualAuthenticator(const String& authenticator_id) override;
+  Response SetResponseOverrideBits(const String& authenticator_id,
+                                   Maybe<bool> is_bogus_signature,
+                                   Maybe<bool> is_bad_uv,
+                                   Maybe<bool> is_bad_up) override;
   void AddCredential(const String& authenticator_id,
                      std::unique_ptr<protocol::WebAuthn::Credential> credential,
                      std::unique_ptr<AddCredentialCallback> callback) override;

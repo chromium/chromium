@@ -5186,7 +5186,7 @@ crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-a
 crbug.com/1079188 external/wpt/fetch/stale-while-revalidate/revalidate-not-blocked-by-csp.html [ Timeout ]
 
 # the inspector-protocol/media tests only work in the virtual test environment.
-crbug.com/1074129 inspector-protocol/media/media-player.js [ Timeout ]
+crbug.com/1074129 inspector-protocol/media/media-player.js [ Skip Timeout ]
 
 # Sheriff 2020-05-04
 crbug.com/952717 [ Debug ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]

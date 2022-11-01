@@ -1,0 +1,22 @@
+Check that the WebAuthn command setBadUVBit works
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    bit : 1
+    status : OK
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    bit : 0
+    status : OK
+}
+

@@ -1,0 +1,20 @@
+Check that the WebAuthn command setBogusSignature works
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    signature : {
+        0 : 0
+    }
+    status : OK
+}
+

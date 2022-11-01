@@ -102,6 +102,43 @@ async function getCredential(credential, options = {}) {
     return {status: error.toString()};
   }
 }
+
+async function getCredentialSignature() {
+  try {
+    const r = await getCredential({
+      type: "public-key",
+      id: new TextEncoder().encode("cred-1"),
+      transports: ["usb", "ble", "nfc"],
+    });
+    const signature = new Uint8Array(r.attestation.response.signature);
+    return {
+      status: "OK",
+      signature
+    }
+  } catch(error) {
+    return {status: error.toString()};
+  }
+}
+
+async function getFlags(bitNumber) {
+  try {
+    const r = await getCredential({
+      type: "public-key",
+      id: new TextEncoder().encode("cred-1"),
+      transports: ["usb", "ble", "nfc"],
+    });
+    const flags = new Uint8Array(r.attestation.response.authenticatorData)[32];
+    // bitNumber is 0 indexed.
+    const bit = (flags & (1 << bitNumber)) != 0 ? 1 : 0;
+    return {
+      status: "OK",
+      bit
+    }
+  } catch(error) {
+    return {status: error.toString()};
+  }
+}
+
   </script>
 </head>
 <body>

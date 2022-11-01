@@ -76,6 +76,20 @@ class VirtualAuthenticator : public blink::test::mojom::VirtualAuthenticator {
     is_user_verified_ = is_user_verified;
   }
 
+  // If set, overrides the signature in the authenticator response to be zero.
+  // Defaults to false.
+  void set_bogus_signature(bool is_bogus) {
+    state_->ctap2_invalid_signature = is_bogus;
+  }
+
+  // If set, overrides the UV bit in the flags in the authenticator response to
+  // be zero. Defaults to false.
+  void set_bad_uv_bit(bool is_bad_bit) { state_->unset_uv_bit = is_bad_bit; }
+
+  // If set, overrides the UP bit in the flags in the authenticator response to
+  // be zero. Defaults to false.
+  void set_bad_up_bit(bool is_bad_bit) { state_->unset_up_bit = is_bad_bit; }
+
   bool has_resident_key() const { return has_resident_key_; }
 
   device::FidoTransportProtocol transport() const { return state_->transport; }
