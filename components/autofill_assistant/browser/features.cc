@@ -178,5 +178,12 @@ BASE_FEATURE(kAutofillAssistantUseDidFinishNavigation,
              "AutofillAssistantUseDidFinishNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables fast shutdown, where the UI is hidden immediately after tapping the
+// DONE chip. This relies on some assumptions about scripts, so we'll keep this
+// behind a feature flag to have a way to turn it off if necessary.
+BASE_FEATURE(kAutofillAssistantFastShutdown,
+             "AutofillAssistantFastShutdown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace autofill_assistant

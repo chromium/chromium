@@ -26,7 +26,6 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.isScrollbarFadingEnabled;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistantWithParams;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
@@ -51,6 +50,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -94,6 +94,7 @@ import java.util.List;
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AutofillAssistantBottomsheetTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
@@ -121,7 +122,7 @@ public class AutofillAssistantBottomsheetTest {
                                             .setMessage("Hello world!")
                                             .addChoices(Choice.newBuilder().setChip(
                                                     ChipProto.newBuilder()
-                                                            .setType(ChipType.DONE_ACTION)
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
                                                             .setText("Focus element"))))
                          .build());
         // Set viewport resizing and peek mode.
@@ -154,10 +155,10 @@ public class AutofillAssistantBottomsheetTest {
         }
         // First prompt, at this point the sheet is expanded.
         list.add(ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().addChoices(
-                                 Choice.newBuilder().setChip(ChipProto.newBuilder()
-                                                                     .setType(ChipType.DONE_ACTION)
-                                                                     .setText("Collapse"))))
+                         .setPrompt(PromptProto.newBuilder().addChoices(Choice.newBuilder().setChip(
+                                 ChipProto.newBuilder()
+                                         .setType(ChipType.HIGHLIGHTED_ACTION)
+                                         .setText("Collapse"))))
                          .build());
         // Collapse the sheet.
         list.add(ActionProto.newBuilder()
@@ -189,10 +190,10 @@ public class AutofillAssistantBottomsheetTest {
                          .build());
         // Final prompt, the sheet should be expanded again.
         list.add(ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().addChoices(
-                                 Choice.newBuilder().setChip(ChipProto.newBuilder()
-                                                                     .setType(ChipType.DONE_ACTION)
-                                                                     .setText("Done"))))
+                         .setPrompt(PromptProto.newBuilder().addChoices(Choice.newBuilder().setChip(
+                                 ChipProto.newBuilder()
+                                         .setType(ChipType.HIGHLIGHTED_ACTION)
+                                         .setText("Done"))))
                          .build());
 
         return makeScriptWithActionArray(list);
@@ -234,9 +235,9 @@ public class AutofillAssistantBottomsheetTest {
         waitUntilViewMatchesCondition(withText("Hello world!"), not(isDisplayed()));
         checkElementIsCoveredByBottomsheet("bottom", false);
         onView(withText("Expand")).check(matches(not(isDisplayed())));
-        // We tap the element as a way of ending the action without having to manually expand the
+        // We click the element as a way of ending the action without having to manually expand the
         // sheet.
-        tapElement(mTestRule, "touch_area");
+        AutofillAssistantUiTestUtil.clickElementWithJs(mTestRule.getWebContents(), "touch_area");
         checkElementIsCoveredByBottomsheet("bottom", true);
         waitUntilViewMatchesCondition(withText("Hello world!"), isDisplayed());
     }
@@ -258,9 +259,9 @@ public class AutofillAssistantBottomsheetTest {
         waitUntilViewMatchesCondition(withText("Hello world!"), not(isDisplayed()));
         checkElementIsCoveredByBottomsheet("bottom", false);
         onView(withText("Expand")).check(matches(not(isDisplayed())));
-        // We tap the element as a way of ending the action without having to manually expand the
+        // We click the element as a way of ending the action without having to manually expand the
         // sheet.
-        tapElement(mTestRule, "touch_area");
+        AutofillAssistantUiTestUtil.clickElementWithJs(mTestRule.getWebContents(), "touch_area");
         checkElementIsCoveredByBottomsheet("bottom", true);
         waitUntilViewMatchesCondition(withText("Hello world!"), isDisplayed());
     }
@@ -283,9 +284,9 @@ public class AutofillAssistantBottomsheetTest {
         onView(withText("Hello world!")).check(matches(isDisplayingAtLeast(90)));
         onView(withText("Details title")).check(matches(not(isDisplayed())));
         onView(withText("Expand")).check(matches(not(isDisplayed())));
-        // We tap the element as a way of ending the action without having to manually expand the
+        // We click the element as a way of ending the action without having to manually expand the
         // sheet.
-        tapElement(mTestRule, "touch_area");
+        AutofillAssistantUiTestUtil.clickElementWithJs(mTestRule.getWebContents(), "touch_area");
         checkElementIsCoveredByBottomsheet("bottom", true);
         waitUntilViewMatchesCondition(withText("Details title"), isDisplayingAtLeast(90));
     }

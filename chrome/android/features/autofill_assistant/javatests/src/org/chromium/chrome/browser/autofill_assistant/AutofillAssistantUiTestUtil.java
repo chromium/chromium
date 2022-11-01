@@ -626,6 +626,24 @@ class AutofillAssistantUiTestUtil {
         TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(), x, y);
     }
 
+    /**
+     * Similar to {@code tapElement}, but clicks with JS and does not check that the element is
+     * currently visible or in the viewport.
+     */
+    public static void clickElementWithJs(WebContents webContents, String... elementIds)
+            throws Exception {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(webContents,
+                "(function() {"
+                        + " " + getElementSelectorString(elementIds) + ".click();"
+                        + " return [true];"
+                        + "})()");
+        javascriptHelper.waitUntilHasValue();
+        JSONArray result = new JSONArray(javascriptHelper.getJsonResultAndClear());
+        assert result.getBoolean(0);
+    }
+
     /** Scrolls to the specified element on the webpage, if necessary. */
     public static void scrollIntoViewIfNeeded(WebContents webContents, String... elementIds)
             throws Exception {

@@ -372,6 +372,11 @@ void Controller::ShutdownIfNecessary() {
   }
 }
 
+void Controller::EnterBrowseModeForShutdown() {
+  browse_mode_invisible_ = true;
+  EnterState(AutofillAssistantState::BROWSE);
+}
+
 void Controller::ReportNavigationStateChanged() {
   for (auto& listener : navigation_listeners_) {
     listener.OnNavigationStateChanged();

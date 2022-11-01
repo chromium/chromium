@@ -100,6 +100,11 @@ class ExecutionDelegate {
   // Notifies the execution delegate that it should shut down.
   virtual void ShutdownIfNecessary() = 0;
 
+  // Enters the browse mode. This is only intended to be used at the end of a
+  // script. It hides the UI immediately, but allows some clean-up actions to
+  // execute before the controller is actually deleted.
+  virtual void EnterBrowseModeForShutdown() = 0;
+
   // Notifies the execution delegate about a change to the UserData.
   virtual void NotifyUserDataChange(UserDataFieldChange field_change) = 0;
 

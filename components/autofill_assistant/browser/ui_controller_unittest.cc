@@ -1222,4 +1222,98 @@ TEST_F(UiControllerTest, SetCollectUserDataUiState) {
                                             UserDataEventField::SHIPPING_EVENT);
 }
 
+TEST_F(UiControllerTest, TappingDonePerformsFastShutdown) {
+  // Tapping any chip type other than DONE or CLOSE should behave normally.
+  EXPECT_CALL(mock_execution_delegate_, EnterBrowseModeForShutdown).Times(0);
+  for (ChipType chip_type : {UNKNOWN_CHIP_TYPE, HIGHLIGHTED_ACTION,
+                             NORMAL_ACTION, CANCEL_ACTION, FEEDBACK_ACTION}) {
+    UserAction user_action;
+    user_action.chip().type = chip_type;
+    auto user_actions = std::make_unique<std::vector<UserAction>>();
+    user_actions->emplace_back(std::move(user_action));
+
+    EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(1)));
+    ui_controller_->SetUserActions(std::move(user_actions));
+
+    EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(0)));
+    ui_controller_->PerformUserAction(0);
+    EXPECT_FALSE(ui_controller_->IsUiShuttingDown());
+  }
+
+  // Tapping the DONE chip should:
+  // - clear chips (same as when any other chip is tapped)
+  // - go into browse mode
+  UserAction user_action;
+  user_action.chip().type = DONE_ACTION;
+  auto user_actions = std::make_unique<std::vector<UserAction>>();
+  user_actions->emplace_back(std::move(user_action));
+
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(1)));
+  ui_controller_->SetUserActions(std::move(user_actions));
+
+  EXPECT_CALL(mock_execution_delegate_, EnterBrowseModeForShutdown);
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(IsEmpty()));
+  ui_controller_->PerformUserAction(0);
+  EXPECT_TRUE(ui_controller_->IsUiShuttingDown());
+}
+
+TEST_F(UiControllerTest, TappingClosePerformsFastShutdown) {
+  // Same as TappingDonePerformsFastShutdown, just for the CLOSE chip type.
+  UserAction user_action;
+  user_action.chip().type = CLOSE_ACTION;
+  auto user_actions = std::make_unique<std::vector<UserAction>>();
+  user_actions->emplace_back(std::move(user_action));
+  ui_controller_->SetUserActions(std::move(user_actions));
+
+  EXPECT_CALL(mock_execution_delegate_, EnterBrowseModeForShutdown);
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(IsEmpty()));
+  ui_controller_->PerformUserAction(0);
+  EXPECT_TRUE(ui_controller_->IsUiShuttingDown());
+}
+
+TEST_F(UiControllerTest, OnStartResetsShutdownFlag) {
+  // Tapping the DONE chip should start the fast shutdown, but if for some
+  // reason a new script starts with the old ui controller, it should work.
+  UserAction user_action;
+  user_action.chip().type = DONE_ACTION;
+  auto user_actions = std::make_unique<std::vector<UserAction>>();
+  user_actions->emplace_back(std::move(user_action));
+
+  ui_controller_->SetUserActions(std::move(user_actions));
+
+  EXPECT_CALL(mock_execution_delegate_, EnterBrowseModeForShutdown);
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(IsEmpty()));
+  ui_controller_->PerformUserAction(0);
+  EXPECT_TRUE(ui_controller_->IsUiShuttingDown());
+
+  // If another script starts, the flag is cleared.
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(IsEmpty()));
+  ui_controller_->OnStart(trigger_context_);
+  EXPECT_FALSE(ui_controller_->IsUiShuttingDown());
+}
+
+TEST_F(UiControllerTest, DisableFastShutdownWithFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillAssistantFastShutdown);
+
+  // All chip types behave normally.
+  EXPECT_CALL(mock_execution_delegate_, EnterBrowseModeForShutdown).Times(0);
+  for (ChipType chip_type :
+       {UNKNOWN_CHIP_TYPE, HIGHLIGHTED_ACTION, NORMAL_ACTION, CANCEL_ACTION,
+        CLOSE_ACTION, DONE_ACTION, FEEDBACK_ACTION}) {
+    UserAction user_action;
+    user_action.chip().type = chip_type;
+    auto user_actions = std::make_unique<std::vector<UserAction>>();
+    user_actions->emplace_back(std::move(user_action));
+
+    EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(1)));
+    ui_controller_->SetUserActions(std::move(user_actions));
+
+    EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(0)));
+    ui_controller_->PerformUserAction(0);
+    EXPECT_FALSE(ui_controller_->IsUiShuttingDown());
+  }
+}
+
 }  // namespace autofill_assistant

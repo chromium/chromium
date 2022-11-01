@@ -798,7 +798,6 @@ void UiControllerAndroid::UpdateActions(
     const std::vector<UserAction>& user_actions) {
   DCHECK(execution_delegate_);
   DCHECK(ui_delegate_);
-
   JNIEnv* env = AttachCurrentThread();
 
   bool has_close_or_cancel = false;
@@ -893,7 +892,8 @@ void UiControllerAndroid::UpdateActions(
     }
   }
 
-  if (!has_close_or_cancel) {
+  // Special case: don't create a default cancel chip during shutdown.
+  if (!has_close_or_cancel && !ui_delegate_->IsUiShuttingDown()) {
     base::android::ScopedJavaLocalRef<jobject> jcancel_chip;
     if (execution_delegate_->GetState() == AutofillAssistantState::STOPPED ||
         execution_delegate_->GetState() == AutofillAssistantState::TRACKING) {
@@ -910,6 +910,7 @@ void UiControllerAndroid::UpdateActions(
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,
           /* contentDescription= */ nullptr);
     }
+
     if (jcancel_chip) {
       Java_AutofillAssistantUiController_appendChipToList(env, jchips,
                                                           jcancel_chip);

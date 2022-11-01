@@ -199,6 +199,11 @@ class UiDelegate {
   // bottom sheet.
   virtual void OnInputTextFocusChanged(bool is_text_focused) = 0;
 
+  // Returns true during UI shutdown. Should not be used to check whether a
+  // script has ended or not. Generally, this will only return true during
+  // user-initiated shutdown events, such as tapping the last chip in a flow.
+  virtual bool IsUiShuttingDown() const = 0;
+
  protected:
   UiDelegate() = default;
 };

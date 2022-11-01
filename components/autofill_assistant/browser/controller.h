@@ -189,6 +189,7 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldShowOverlay() const override;
   const ClientSettings& GetClientSettings() const override;
   void ShutdownIfNecessary() override;
+  void EnterBrowseModeForShutdown() override;
   void NotifyUserDataChange(UserDataFieldChange field_change) override;
   void GetTouchableArea(std::vector<RectF>* area) const override;
   void GetRestrictedArea(std::vector<RectF>* area) const override;

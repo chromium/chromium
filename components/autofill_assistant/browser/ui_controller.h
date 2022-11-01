@@ -200,6 +200,7 @@ class UiController : public ScriptExecutorUiDelegate,
           start_dom_checks_callback,
       base::OnceCallback<void(const external::Result& result)>
           end_action_callback) override;
+  bool IsUiShuttingDown() const override;
 
   // Overrides ControllerObserver.
   void OnError(const std::string& error_message,
@@ -281,6 +282,7 @@ class UiController : public ScriptExecutorUiDelegate,
   void SetInitialState();
   void SetStoppedState();
   void OnFeedbackSent();
+  void EnterBrowseModeForShutdown();
 
   UserData* GetUserData();
   UserModel* GetUserModel();
@@ -347,6 +349,7 @@ class UiController : public ScriptExecutorUiDelegate,
   bool is_focus_on_bottom_sheet_text_input_ = false;
   bool show_feedback_chip_ = false;
   bool are_chips_visible_ = true;
+  bool is_shutting_down_ = false;
 
   bool tts_enabled_ = false;
   bool disable_scrollbar_fading_ = false;

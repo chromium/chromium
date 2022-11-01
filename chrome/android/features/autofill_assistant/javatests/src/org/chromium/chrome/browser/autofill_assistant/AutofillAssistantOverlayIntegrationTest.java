@@ -40,6 +40,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -47,6 +48,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.BitmapDrawableProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientDimensionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto;
@@ -75,6 +77,7 @@ import java.util.Collections;
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class AutofillAssistantOverlayIntegrationTest {
     private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
@@ -332,15 +335,15 @@ public class AutofillAssistantOverlayIntegrationTest {
     public void testThreeClicksHideAssistant() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
-                         .setPrompt(
-                                 PromptProto.newBuilder()
-                                         .setMessage("Overlay present")
-                                         .addChoices(Choice.newBuilder().setChip(
-                                                 ChipProto.newBuilder()
-                                                         .setType(org.chromium.chrome.browser
-                                                                          .autofill_assistant.proto
-                                                                          .ChipType.DONE_ACTION)
-                                                         .setText("Hide"))))
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Overlay present")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(org.chromium.chrome.browser
+                                                                             .autofill_assistant
+                                                                             .proto.ChipType
+                                                                             .HIGHLIGHTED_ACTION)
+                                                            .setText("Hide"))))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
@@ -381,30 +384,27 @@ public class AutofillAssistantOverlayIntegrationTest {
     public void testOverlayBehaviorSetting() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
-                         .setPrompt(
-                                 PromptProto.newBuilder()
-                                         .setMessage("Overlay present")
-                                         .addChoices(Choice.newBuilder().setChip(
-                                                 ChipProto.newBuilder()
-                                                         .setType(org.chromium.chrome.browser
-                                                                          .autofill_assistant.proto
-                                                                          .ChipType.DONE_ACTION)
-                                                         .setText("Hide"))))
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Overlay present")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Hide"))))
                          .build());
         list.add(ActionProto.newBuilder()
                          .setConfigureUiState(ConfigureUiStateProto.newBuilder().setOverlayBehavior(
                                  OverlayBehavior.HIDDEN))
                          .build());
         list.add(ActionProto.newBuilder()
-                         .setPrompt(
-                                 PromptProto.newBuilder()
-                                         .setMessage("Overlay hidden")
-                                         .addChoices(Choice.newBuilder().setChip(
-                                                 ChipProto.newBuilder()
-                                                         .setType(org.chromium.chrome.browser
-                                                                          .autofill_assistant.proto
-                                                                          .ChipType.DONE_ACTION)
-                                                         .setText("Default"))))
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Overlay hidden")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(org.chromium.chrome.browser
+                                                                             .autofill_assistant
+                                                                             .proto.ChipType
+                                                                             .HIGHLIGHTED_ACTION)
+                                                            .setText("Default"))))
                          .build());
         list.add(ActionProto.newBuilder()
                          .setConfigureUiState(ConfigureUiStateProto.newBuilder().setOverlayBehavior(

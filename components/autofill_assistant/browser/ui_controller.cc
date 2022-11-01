@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -560,7 +561,18 @@ bool UiController::PerformUserAction(int index) {
   }
 
   UserAction user_action = std::move((*user_actions_)[index]);
+
+  if (base::FeatureList::IsEnabled(features::kAutofillAssistantFastShutdown) &&
+      user_action.has_chip() &&
+      (user_action.chip().type == DONE_ACTION ||
+       user_action.chip().type == CLOSE_ACTION)) {
+    // Special case: we assume that tapping the DONE or CLOSE chip signals
+    // script shutdown, and we handle it specially to streamline how this looks.
+    // See also b/233063571 for details.
+    EnterBrowseModeForShutdown();
+  }
   SetUserActions(nullptr);
+
   user_action.RunCallback();
   event_handler_.DispatchEvent(
       {EventProto::kOnUserActionCalled, user_action.identifier()});
@@ -1173,6 +1185,11 @@ void UiController::InitFromParameters(const TriggerContext& trigger_context) {
 }
 
 void UiController::OnStart(const TriggerContext& trigger_context) {
+  // Clean up from previous shutdown state, if set. The main use case for this
+  // are consecutive direct actions.
+  is_shutting_down_ = false;
+  SetUserActions(nullptr);
+
   InitFromParameters(trigger_context);
 
   // |status_message_| may be non-empty due to a trigger script that was run.
@@ -1251,7 +1268,24 @@ void UiController::ExecuteExternalAction(
   NOTREACHED() << "Flows using default UI don't support external actions.";
 }
 
+bool UiController::IsUiShuttingDown() const {
+  return is_shutting_down_;
+}
+
 void UiController::OnInterruptStarted() {}
 void UiController::OnInterruptFinished() {}
+
+void UiController::EnterBrowseModeForShutdown() {
+  DCHECK(!is_shutting_down_) << "should only be called once per flow";
+
+  // This state is necessary to prevent follow-up actions from clearing or
+  // resetting the user actions during shutdown, which would lead to visual
+  // noise.
+  is_shutting_down_ = true;
+
+  // Hide the UI, but don't directly shut down to allow the last actions to
+  // complete.
+  execution_delegate_->EnterBrowseModeForShutdown();
+}
 
 }  // namespace autofill_assistant

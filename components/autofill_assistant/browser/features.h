@@ -19,6 +19,7 @@ BASE_DECLARE_FEATURE(kAutofillAssistantDesktop);
 BASE_DECLARE_FEATURE(kAutofillAssistantDialogOnboarding);
 BASE_DECLARE_FEATURE(kAutofillAssistantDirectActions);
 BASE_DECLARE_FEATURE(kAutofillAssistantDisableProactiveHelpTiedToMSBB);
+BASE_DECLARE_FEATURE(kAutofillAssistantFastShutdown);
 BASE_DECLARE_FEATURE(kAutofillAssistantFeedbackChip);
 BASE_DECLARE_FEATURE(kAutofillAssistantFullJsFlowStackTraces);
 BASE_DECLARE_FEATURE(kAutofillAssistantFullJsSnippetStackTraces);

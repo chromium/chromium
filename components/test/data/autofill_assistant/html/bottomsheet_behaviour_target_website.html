@@ -24,10 +24,10 @@ found in the LICENSE file.
         padding: 0;
       }
       nav {
-        width: 100%;
-        position: fixed;
-        height: 2em;
         background-color: lightgreen;
+        height: 2em;
+        position: fixed;
+        width: 100%;
       }
       .top {
         background-color: lightblue;
@@ -38,10 +38,10 @@ found in the LICENSE file.
         height: 5em;
       }
       .cast {
-        height: 100px;
-        margin: 20px;
         border: 2px solid black;
         border-radius: 15px;
+        height: 100px;
+        margin: 20px;
       }
       .blank {
         height: 100em;
@@ -55,7 +55,7 @@ found in the LICENSE file.
     <div class="blank">Blank</div>
     <div id="bottom" class="bottom">Bottom
       <div>
-        <p id="touch_area" ontouchend="removeTouchArea(event)" onmouseup="removeTouchArea(event)">
+        <p id="touch_area" onclick="removeTouchArea(event)" ontouchend="removeTouchArea(event)" onmouseup="removeTouchArea(event)">
           Touchable Area</p>
         <br>
       </div>
