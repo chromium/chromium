@@ -89,6 +89,17 @@ enum class CheckInstallationVersions {
   kCheckActiveAndSxS = 1,
 };
 
+// Creates an instance of the class specified by `clsid` in a local server.
+template <typename ComInterface>
+HRESULT CreateLocalServer(GUID clsid,
+                          Microsoft::WRL::ComPtr<ComInterface>& server) {
+  // crbug.com/1259178 - there is known race condition between the COM server
+  // shutdown and server start up.
+  ::Sleep(kCreateUpdaterInstanceDelayMs);
+  return ::CoCreateInstance(clsid, nullptr, CLSCTX_LOCAL_SERVER,
+                            IID_PPV_ARGS(&server));
+}
+
 // Returns the root directory where the updater product is installed. This
 // is the parent directory where the versioned directories of the
 // updater instances are.
@@ -779,23 +790,24 @@ void VerifyInterfacesRegistryEntries(UpdaterScope scope) {
 // legacy interfaces are available. Failure to query these interfaces indicates
 // an issue with typelib registration.
 void ExpectInterfacesRegistered(UpdaterScope scope) {
-  {  // IUpdater, IGoogleUpdate3Web and IAppBundleWeb.
+  {
+    // IUpdater, IGoogleUpdate3Web and IAppBundleWeb.
     // The block is necessary so that updater_server goes out of scope and
     // releases the prefs lock before updater_internal_server tries to acquire
     // it to mode-check.
     Microsoft::WRL::ComPtr<IUnknown> updater_server;
-    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+    ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(
         scope == UpdaterScope::kSystem ? __uuidof(UpdaterSystemClass)
                                        : __uuidof(UpdaterUserClass),
-        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_server)));
+        updater_server));
     Microsoft::WRL::ComPtr<IUpdater> updater;
     EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
 
     Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
-    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+    ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(
         scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
                                        : __uuidof(GoogleUpdate3WebUserClass),
-        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_legacy_server)));
+        updater_legacy_server));
     Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
     ASSERT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
     Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
@@ -804,12 +816,13 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
   }
 
-  {  // IUpdaterInternal.
+  {
+    // IUpdaterInternal.
     Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
-    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+    ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(
         scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
                                        : __uuidof(UpdaterInternalUserClass),
-        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
+        updater_internal_server));
     Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
     EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
   }
@@ -878,10 +891,10 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
 void InitializeBundle(UpdaterScope scope,
                       Microsoft::WRL::ComPtr<IAppBundleWeb>& bundle_web) {
   Microsoft::WRL::ComPtr<IGoogleUpdate3Web> update3web;
-  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+  ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(
       scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
                                      : __uuidof(GoogleUpdate3WebUserClass),
-      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&update3web)));
+      update3web));
 
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
@@ -1101,9 +1114,8 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
     return;
 
   Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
-  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass),
-                                              nullptr, CLSCTX_LOCAL_SERVER,
-                                              IID_PPV_ARGS(&process_launcher)));
+  ASSERT_HRESULT_SUCCEEDED(
+      CreateLocalServer(__uuidof(ProcessLauncherClass), process_launcher));
 
   constexpr wchar_t kAppId1[] = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
   constexpr wchar_t kCommandId[] = L"CmdExit0";
@@ -1232,10 +1244,10 @@ void ExpectPolicyStatusValues(
 
 void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
   Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
-  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+  ASSERT_HRESULT_SUCCEEDED(CreateLocalServer(
       scope == UpdaterScope::kSystem ? __uuidof(PolicyStatusSystemClass)
                                      : __uuidof(PolicyStatusUserClass),
-      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&policy_status_server)));
+      policy_status_server));
   Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
   ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
 
