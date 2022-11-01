@@ -2305,19 +2305,6 @@
     "CertVerifierBuiltin": [
         {
             "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeRootStoreUsed"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "windows"
             ],
             "experiments": [

@@ -21,7 +21,9 @@
 #include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/http/transport_security_state.h"
+#include "net/net_buildflags.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
@@ -523,6 +525,17 @@ TEST_F(PKIMetadataComponentInstallerTest, ReconfigureWhenNotInstalled) {
 class PKIMetadataComponentInstallerDisabledTest
     : public PKIMetadataComponentInstallerTest {
   void SetUp() override {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
+      // If ChromeRootStoreUsed feature is enabled by default, PKI metadata
+      // component will always be registered. It is not safe to change the
+      // kChromeRootStoreUsed flag in unit_tests since multiple tests run in
+      // the same process, and GetChromeCertVerifierServiceParams will
+      // globally enforce a single configuration for the lifetime of the
+      // process. Therefore just skip this test if CRS is enabled.
+      GTEST_SKIP();
+    }
+#endif
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features = */ {},
         /* disabled_features = */ {certificate_transparency::features::
