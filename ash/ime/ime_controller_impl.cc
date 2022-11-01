@@ -301,7 +301,7 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
 }
 
 void ImeControllerImpl::OnScreenCaptureStart(
-    const base::RepeatingClosure& stop_callback,
+    base::OnceClosure stop_callback,
     const base::RepeatingClosure& source_callback,
     const std::u16string& screen_capture_status) {
   client_->UpdateCastingState(true);

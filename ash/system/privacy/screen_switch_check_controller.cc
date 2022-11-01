@@ -22,7 +22,7 @@ namespace {
 // callback with the result.
 class CancelCastingDialog : public views::DialogDelegateView {
  public:
-  CancelCastingDialog(base::OnceCallback<void(bool)> callback)
+  explicit CancelCastingDialog(base::OnceCallback<void(bool)> callback)
       : callback_(std::move(callback)) {
     AddChildView(new views::MessageBoxView(
         l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_MESSAGE)));
@@ -87,7 +87,7 @@ void ScreenSwitchCheckController::CanSwitchAwayFromActiveUser(
 }
 
 void ScreenSwitchCheckController::OnScreenCaptureStart(
-    const base::RepeatingClosure& stop_callback,
+    base::OnceClosure stop_callback,
     const base::RepeatingClosure& source_callback,
     const std::u16string& screen_capture_status) {
   has_capture_ = true;
@@ -100,7 +100,7 @@ void ScreenSwitchCheckController::OnScreenCaptureStop() {
 }
 
 void ScreenSwitchCheckController::OnScreenShareStart(
-    const base::RepeatingClosure& stop_callback,
+    base::OnceClosure stop_callback,
     const std::u16string& helper_name) {
   has_share_ = true;
 }

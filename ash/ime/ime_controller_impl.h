@@ -127,7 +127,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
 
   // ScreenCaptureObserver:
   void OnScreenCaptureStart(
-      const base::RepeatingClosure& stop_callback,
+      base::OnceClosure stop_callback,
       const base::RepeatingClosure& source_callback,
       const std::u16string& screen_capture_status) override;
   void OnScreenCaptureStop() override;

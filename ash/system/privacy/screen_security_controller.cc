@@ -143,10 +143,10 @@ void ScreenSecurityController::ChangeSource() {
 }
 
 void ScreenSecurityController::OnScreenCaptureStart(
-    const base::RepeatingClosure& stop_callback,
+    base::OnceClosure stop_callback,
     const base::RepeatingClosure& source_callback,
     const std::u16string& screen_capture_status) {
-  capture_stop_callbacks_.push_back(stop_callback);
+  capture_stop_callbacks_.emplace_back(std::move(stop_callback));
   change_source_callback_ = source_callback;
 
   // We do not want to show the screen capture notification and the chromecast
@@ -167,7 +167,7 @@ void ScreenSecurityController::OnScreenCaptureStop() {
 }
 
 void ScreenSecurityController::OnScreenShareStart(
-    const base::RepeatingClosure& stop_callback,
+    base::OnceClosure stop_callback,
     const std::u16string& helper_name) {
   share_stop_callbacks_.emplace_back(std::move(stop_callback));
 

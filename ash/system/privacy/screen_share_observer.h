@@ -14,16 +14,14 @@ namespace ash {
 class ScreenShareObserver {
  public:
   // Called when screen share is started.
-  // |stop_callback| must be a base::RepeatingCallback so that it can be passed
-  // to all observers.
-  virtual void OnScreenShareStart(const base::RepeatingClosure& stop_callback,
+  virtual void OnScreenShareStart(base::OnceClosure stop_callback,
                                   const std::u16string& helper_name) = 0;
 
   // Called when screen share is stopped.
   virtual void OnScreenShareStop() = 0;
 
  protected:
-  virtual ~ScreenShareObserver() {}
+  virtual ~ScreenShareObserver() = default;
 };
 
 }  // namespace ash
