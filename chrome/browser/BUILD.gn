@@ -34,6 +34,7 @@ import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -8590,5 +8591,16 @@ if (is_android) {
 if (is_chromeos_lacros) {
   proto_library("dlp_policy_event_proto") {
     sources = [ "chromeos/policy/dlp/dlp_policy_event.proto" ]
+  }
+}
+
+if (is_chromeos_ash) {
+  fuzzer_test("nearby_sharing_instantmessaging_stream_parser_fuzzer") {
+    sources = [ "nearby_sharing/instantmessaging/stream_parser_fuzzer.cc" ]
+    deps = [
+      ":browser",
+      "//base",
+      "//third_party/protobuf:protobuf_lite",
+    ]
   }
 }
