@@ -429,3 +429,25 @@ def merge_istanbul_reports(istanbul_coverage_dir, source_dir, output_file):
         '--cwd',
         source_dir,
     ])
+
+
+def generate_coverage_reports(coverage_file_dir, source_dir, output_dir):
+    """Generate a LCOV report.
+
+  Args:
+    coverage_file_dir (str): Directory containing the coverage.json file.
+    source_dir (str): Directory containing the instrumented source code.
+    output_dir (str): Directory to output the reports.
+  """
+    return node.RunNode([
+        coverage_modules.PathToNyc(),
+        'report',
+        '--reporter',
+        'lcov',
+        '--temp-dir',
+        coverage_file_dir,
+        '--cwd',
+        source_dir,
+        '--report-dir',
+        output_dir,
+    ])
