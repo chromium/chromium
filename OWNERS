@@ -23,6 +23,7 @@ per-file .vpython3=tikuta@chromium.org
 per-file .yapfignore=*
 per-file AUTHORS=*
 per-file BUILD.gn=file://build/OWNERS
+per-file CODE_OF_CONDUCT.md=dpranke@google.com
 per-file CODE_OF_CONDUCT.md=benhenry@chromium.org
 per-file CODE_OF_CONDUCT.md=ellyjones@chromium.org
 per-file DEPS=*
