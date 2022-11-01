@@ -11,7 +11,7 @@ pkg_config("config") {
 
 shim_headers("openh264_shim") {
   prefix = "wels/"
-  root_path = "src/codec/api/svc"
+  root_path = "src/codec/api/wels"
   headers = [
     "codec_api.h",
     "codec_app_def.h",

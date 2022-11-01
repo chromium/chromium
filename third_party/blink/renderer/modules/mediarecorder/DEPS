@@ -19,7 +19,7 @@ include_rules = [
     '+third_party/opus',
     "+third_party/libvpx",
     "+third_party/libyuv",
-    "+third_party/openh264/src/codec/api/svc",
+    "+third_party/openh264/src/codec/api/wels",
     "+ui/gfx/geometry",
 ]
 

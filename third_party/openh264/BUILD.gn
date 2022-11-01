@@ -12,7 +12,7 @@ import("//third_party/openh264/openh264_sources.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
   header_dir = "third_party/openh264"
-  flags = [ "OPENH264_API_WELS=0" ]
+  flags = [ "OPENH264_API_WELS=1" ]
 }
 
 # Config shared by all openh264 targets.

@@ -1,6 +1,6 @@
 # Common
 openh264_common_include_dirs = [
-  "//third_party/openh264/src/codec/api/svc",
+  "//third_party/openh264/src/codec/api/wels",
   "//third_party/openh264/src/codec/common/arm",
   "//third_party/openh264/src/codec/common/inc",
   "//third_party/openh264/src/codec/common/src",
@@ -87,7 +87,7 @@ openh264_common_sources_asm_arm64 = [
 
 # Processing
 openh264_processing_include_dirs = [
-  "//third_party/openh264/src/codec/api/svc",
+  "//third_party/openh264/src/codec/api/wels",
   "//third_party/openh264/src/codec/common/arm",
   "//third_party/openh264/src/codec/common/inc",
   "//third_party/openh264/src/codec/common/src",
@@ -164,7 +164,7 @@ openh264_processing_sources_asm_arm64 = [
 
 # Encoder
 openh264_encoder_include_dirs = [
-  "//third_party/openh264/src/codec/api/svc",
+  "//third_party/openh264/src/codec/api/wels",
   "//third_party/openh264/src/codec/common/arm/",
   "//third_party/openh264/src/codec/common/inc",
   "//third_party/openh264/src/codec/common/src",

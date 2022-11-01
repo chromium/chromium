@@ -22,7 +22,7 @@ include_rules = [
   "+third_party/libgav1",
   "+third_party/libvpx",
   "+third_party/libyuv",
-  "+third_party/openh264/src/codec/api/svc",
+  "+third_party/openh264/src/codec/api/wels",
   "+third_party/opus",
   "+third_party/skia",
   "+ui/base/x/x11_user_input_monitor.h",

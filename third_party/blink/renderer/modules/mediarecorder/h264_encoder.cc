@@ -22,8 +22,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/openh264/src/codec/api/svc/codec_app_def.h"
-#include "third_party/openh264/src/codec/api/svc/codec_def.h"
+#include "third_party/openh264/src/codec/api/wels/codec_app_def.h"
+#include "third_party/openh264/src/codec/api/wels/codec_def.h"
 #include "ui/gfx/geometry/size.h"
 
 using media::VideoFrame;

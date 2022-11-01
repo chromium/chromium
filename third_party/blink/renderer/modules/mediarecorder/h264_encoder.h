@@ -14,7 +14,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
-#include "third_party/openh264/src/codec/api/svc/codec_api.h"
+#include "third_party/openh264/src/codec/api/wels/codec_api.h"
 
 namespace blink {
 
