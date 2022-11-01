@@ -215,8 +215,9 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
     "chrome://crashes",
-#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-    // TODO(crbug.com/1380393): Failing on Linux debug builder (time out).
+#if !((BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || defined(ADDRESS_SANITIZER))
+    // TODO(crbug.com/1380393): Failing on Linux debug builder and ASan (time
+    // out).
     "chrome://credits",
 #endif
     "chrome://device-log",
