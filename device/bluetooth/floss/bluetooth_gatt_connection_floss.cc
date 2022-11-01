@@ -48,7 +48,23 @@ void BluetoothGattConnectionFloss::AdapterDeviceDisconnected(
   if (device.address != id_.address)
     return;
 
+  VLOG(2) << "BluetoothGattConnection disconnected for " << device.address;
+
   connected_ = false;
+}
+
+void BluetoothGattConnectionFloss::GattClientConnectionState(
+    GattStatus status,
+    int32_t client_id,
+    bool connected,
+    std::string address) {
+  if (address != id_.address) {
+    return;
+  }
+
+  VLOG(2) << "BluetoothGattConnection state change " << address << ": "
+          << (connected ? "CONNECTED" : "DISCONNECTED");
+  connected_ = connected;
 }
 
 }  // namespace floss

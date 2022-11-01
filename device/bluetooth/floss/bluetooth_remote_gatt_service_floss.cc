@@ -40,7 +40,10 @@ BluetoothRemoteGattServiceFloss::BluetoothRemoteGattServiceFloss(
   }
 }
 
-BluetoothRemoteGattServiceFloss::~BluetoothRemoteGattServiceFloss() = default;
+BluetoothRemoteGattServiceFloss::~BluetoothRemoteGattServiceFloss() {
+  characteristics_.clear();
+  included_services_.clear();
+}
 
 std::string BluetoothRemoteGattServiceFloss::GetIdentifier() const {
   return base::StringPrintf("%s/%d", device_->GetAddress().c_str(),

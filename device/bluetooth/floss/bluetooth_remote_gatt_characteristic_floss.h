@@ -44,7 +44,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   // device::BluetoothRemoteGattCharacteristic overrides.
   const std::vector<uint8_t>& GetValue() const override;
   device::BluetoothRemoteGattService* GetService() const override;
-  bool IsNotifying() const override;
   void ReadRemoteCharacteristic(ValueCallback callback) override;
   void WriteRemoteCharacteristic(
       const std::vector<uint8_t>& value,
@@ -130,9 +129,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   // Characteristic represented by this class. The contents are owned by the
   // |service_| so we keep a pointer to it only here.
   raw_ptr<GattCharacteristic> characteristic_;
-
-  // True if there exists a notify session on this handle.
-  bool has_notify_session_ = false;
 
   // Number of gatt read requests in progress.
   int num_of_reads_in_progress_ = 0;

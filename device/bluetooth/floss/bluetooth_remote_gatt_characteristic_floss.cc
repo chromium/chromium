@@ -43,6 +43,7 @@ BluetoothRemoteGattCharacteristicFloss::BluetoothRemoteGattCharacteristicFloss(
 
 BluetoothRemoteGattCharacteristicFloss::
     ~BluetoothRemoteGattCharacteristicFloss() {
+  descriptors_.clear();
   service_->RemoveObserverForHandle(characteristic_->instance_id);
 }
 
@@ -73,10 +74,6 @@ const std::vector<uint8_t>& BluetoothRemoteGattCharacteristicFloss::GetValue()
 device::BluetoothRemoteGattService*
 BluetoothRemoteGattCharacteristicFloss::GetService() const {
   return static_cast<device::BluetoothRemoteGattService*>(service_.get());
-}
-
-bool BluetoothRemoteGattCharacteristicFloss::IsNotifying() const {
-  return has_notify_session_;
 }
 
 void BluetoothRemoteGattCharacteristicFloss::ReadRemoteCharacteristic(

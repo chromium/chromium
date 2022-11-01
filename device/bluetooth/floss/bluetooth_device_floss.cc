@@ -724,6 +724,9 @@ void BluetoothDeviceFloss::GattSearchComplete(
 
   svc_resolved_ = true;
 
+  // Replace the previous gatt services.
+  gatt_services_.clear();
+
   for (const auto& service : services) {
     BLUETOOTH_LOG(EVENT) << "Adding new remote GATT service for device: "
                          << address_;
