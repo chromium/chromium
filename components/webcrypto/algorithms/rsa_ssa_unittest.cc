@@ -65,6 +65,12 @@ void SwapDictMembers(base::Value::Dict& d, const char* a, const char* b) {
   d.Set(b, std::move(*va));
 }
 
+std::string FlipHexByte(const std::string& hex, size_t index) {
+  auto bytes = HexStringToBytes(hex);
+  bytes[index] ^= 0xff;
+  return base::HexEncode(base::make_span(bytes));
+}
+
 blink::WebCryptoAlgorithm RS256Algorithm() {
   return CreateRsaHashedImportAlgorithm(
       blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
@@ -103,6 +109,27 @@ Status ImportJwkRS256MustFail(const base::Value::Dict& jwk) {
   blink::WebCryptoKey key;
   return ImportKeyJwkFromDict(jwk, RS256Algorithm(), false,
                               blink::kWebCryptoKeyUsageSign, &key);
+}
+
+Status ImportSpkiRS256MustFail(const std::string& spki) {
+  auto spki_bytes = HexStringToBytes(spki);
+  blink::WebCryptoKey key;
+  // Note: SPKI keys can only be used for verification, not signing.
+  Status status =
+      ImportKey(blink::kWebCryptoKeyFormatSpki, spki_bytes, RS256Algorithm(),
+                true, blink::kWebCryptoKeyUsageVerify, &key);
+  CHECK(!status.IsSuccess());
+  return status;
+}
+
+Status ImportPkcs8RS256MustFail(const std::string& pkcs8) {
+  auto pkcs8_bytes = HexStringToBytes(pkcs8);
+  blink::WebCryptoKey key;
+  Status status =
+      ImportKey(blink::kWebCryptoKeyFormatPkcs8, pkcs8_bytes, RS256Algorithm(),
+                true, blink::kWebCryptoKeyUsageSign, &key);
+  CHECK(!status.IsSuccess());
+  return status;
 }
 
 std::vector<uint8_t> ExportPkcs8OrDie(blink::WebCryptoKey key) {
@@ -673,50 +700,6 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyFailures) {
   EXPECT_FALSE(is_match);
 }
 
-TEST_F(WebCryptoRsaSsaTest, SignVerifyKnownAnswer) {
-  // Import the key pair.
-  blink::WebCryptoAlgorithm import_algorithm = CreateRsaHashedImportAlgorithm(
-      blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
-      blink::kWebCryptoAlgorithmIdSha1);
-  blink::WebCryptoKey public_key;
-  blink::WebCryptoKey private_key;
-  ASSERT_NO_FATAL_FAILURE(ImportRsaKeyPair(
-      HexStringToBytes(kPublicKeySpkiDerHex),
-      HexStringToBytes(kPrivateKeyPkcs8DerHex), import_algorithm, false,
-      blink::kWebCryptoKeyUsageVerify, blink::kWebCryptoKeyUsageSign,
-      &public_key, &private_key));
-
-  blink::WebCryptoAlgorithm algorithm =
-      CreateAlgorithm(blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5);
-
-  // Validate the signatures are computed and verified as expected.
-  base::Value::List tests = ReadJsonTestFileAsList("pkcs1v15_sign.json");
-
-  std::vector<uint8_t> signature;
-  for (const auto& test_value : tests) {
-    SCOPED_TRACE(&test_value - &tests[0]);
-
-    ASSERT_TRUE(test_value.is_dict());
-    const base::DictionaryValue* test =
-        &base::Value::AsDictionaryValue(test_value);
-
-    std::vector<uint8_t> test_message =
-        GetBytesFromHexString(test, "message_hex");
-    std::vector<uint8_t> test_signature =
-        GetBytesFromHexString(test, "signature_hex");
-
-    signature.clear();
-    ASSERT_EQ(Status::Success(),
-              Sign(algorithm, private_key, test_message, &signature));
-    EXPECT_BYTES_EQ(test_signature, signature);
-
-    bool is_match = false;
-    ASSERT_EQ(Status::Success(), Verify(algorithm, public_key, test_signature,
-                                        test_message, &is_match));
-    EXPECT_TRUE(is_match);
-  }
-}
-
 // Try importing an RSA-SSA public key with unsupported key usages using SPKI
 // format. RSA-SSA public keys only support the 'verify' usage.
 TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaPublicKeyBadUsage_SPKI) {
@@ -1093,32 +1076,105 @@ TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_Base64UrlInDQ) {
       StatusToString(ImportJwkRS256MustFail(key)));
 }
 
-// Imports invalid JWK/SPKI/PKCS8 data and verifies that it fails as expected.
-TEST_F(WebCryptoRsaSsaTest, ImportInvalidKeyData) {
-  base::Value::List tests = ReadJsonTestFileAsList("bad_rsa_keys.json");
-  for (const auto& test_value : tests) {
-    SCOPED_TRACE(&test_value - &tests[0]);
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidSpki_Empty) {
+  EXPECT_EQ("DataError", StatusToString(ImportSpkiRS256MustFail("")));
+}
 
-    ASSERT_TRUE(test_value.is_dict());
-    const base::DictionaryValue* test =
-        &base::Value::AsDictionaryValue(test_value);
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidSpki_BadDER) {
+  EXPECT_EQ("DataError", StatusToString(ImportSpkiRS256MustFail("618333c4cb")));
+}
 
-    blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
-    std::vector<uint8_t> key_data =
-        GetKeyDataFromJsonTestCase(test, key_format);
-    std::string test_error;
-    ASSERT_TRUE(test->GetString("error", &test_error));
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidSpki_NotRSA) {
+  EXPECT_EQ("DataError",
+            StatusToString(ImportSpkiRS256MustFail(
+                "3059301306072A8648CE3D020106082A8648CE3D030107034200049CB0CF69"
+                "303DAFC761D4E4687B4ECF039E6D34AB964AF80810D8D558A4A8D6F72D5123"
+                "3A1788920A86EE08A1962C79EFA317FB7879E297DAD2146DB995FA1C78")));
+}
 
-    blink::WebCryptoKeyUsageMask usages = blink::kWebCryptoKeyUsageSign;
-    if (key_format == blink::kWebCryptoKeyFormatSpki)
-      usages = blink::kWebCryptoKeyUsageVerify;
-    blink::WebCryptoKey key;
-    Status status = ImportKey(key_format, key_data,
-                              CreateRsaHashedImportAlgorithm(
-                                  blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
-                                  blink::kWebCryptoAlgorithmIdSha256),
-                              true, usages, &key);
-    EXPECT_EQ(test_error, StatusToString(status));
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidSpki_TrailingData) {
+  EXPECT_EQ(
+      "DataError",
+      StatusToString(ImportSpkiRS256MustFail(
+          "30819F300D06092A864886F70D010101050003818D0030818902818100A56E4A0E70"
+          "1017589A5187DC7EA841D156F2EC0E36AD52A44DFEB1E61F7AD991D8C51056FFEDB1"
+          "62B4C0F283A12A88A394DFF526AB7291CBB307CEABFCE0B1DFD5CD9508096D5B2B8B"
+          "6DF5D671EF6377C0921CB23C270A70E2598E6FF89D19F105ACC2D3F0CB35F29280E1"
+          "386B6F64C4EF22E1E1F20D0CE8CFFB2249BD9A2137020301000100000000")));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidPkcs8_Empty) {
+  EXPECT_EQ("DataError", StatusToString(ImportPkcs8RS256MustFail("")));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidPkcs8_BadDER) {
+  EXPECT_EQ("DataError",
+            StatusToString(ImportPkcs8RS256MustFail("618333c4cb")));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidPkcs8_CRTValuesAreZero) {
+  EXPECT_EQ(
+      "DataError",
+      StatusToString(ImportPkcs8RS256MustFail(
+          "30820138020100300D06092A864886F70D0101010500048201223082011E02010002"
+          "818100A56E4A0E701017589A5187DC7EA841D156F2EC0E36AD52A44DFEB1E61F7AD9"
+          "91D8C51056FFEDB162B4C0F283A12A88A394DFF526AB7291CBB307CEABFCE0B1DFD5"
+          "CD9508096D5B2B8B6DF5D671EF6377C0921CB23C270A70E2598E6FF89D19F105ACC2"
+          "D3F0CB35F29280E1386B6F64C4EF22E1E1F20D0CE8CFFB2249BD9A21370203010001"
+          "02818033A5042A90B27D4F5451CA9BBBD0B44771A101AF884340AEF9885F2A4BBE92"
+          "E894A724AC3C568C8F97853AD07C0266C8C6A3CA0929F1E8F11231884429FC4D9AE5"
+          "5FEE896A10CE707C3ED7E734E44727A39574501A532683109C2ABACABA283C31B4BD"
+          "2F53C3EE37E352CEE34F9E503BD80C0622AD79C6DCEE883547C6A3B3250201000201"
+          "00020100020100020100")));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidPkcs8_NotRSA) {
+  EXPECT_EQ("DataError",
+            StatusToString(ImportPkcs8RS256MustFail(
+                "308187020100301306072A8648CE3D020106082A8648CE3D030107046D306B"
+                "02010104201FE33950C5F461124AE992C2BDFDF1C73B1615F571BD567E60D1"
+                "9AA1F48CDF42A144034200047C110C66DCFDA807F6E69E45DDB3C74F69A148"
+                "4D203E8DC5ADA8E9A9DD7CB3C70DF448986E51BDE5D1576F99901F9C2C6A80"
+                "6A47FD907643A72B835597EFC8C6")));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidPkcs8_TrailingData) {
+  EXPECT_EQ(
+      "DataError",
+      StatusToString(ImportPkcs8RS256MustFail(
+          "30820275020100300D06092A864886F70D01010105000482025F3082025B02010002"
+          "818100A56E4A0E701017589A5187DC7EA841D156F2EC0E36AD52A44DFEB1E61F7AD9"
+          "91D8C51056FFEDB162B4C0F283A12A88A394DFF526AB7291CBB307CEABFCE0B1DFD5"
+          "CD9508096D5B2B8B6DF5D671EF6377C0921CB23C270A70E2598E6FF89D19F105ACC2"
+          "D3F0CB35F29280E1386B6F64C4EF22E1E1F20D0CE8CFFB2249BD9A21370203010001"
+          "02818033A5042A90B27D4F5451CA9BBBD0B44771A101AF884340AEF9885F2A4BBE92"
+          "E894A724AC3C568C8F97853AD07C0266C8C6A3CA0929F1E8F11231884429FC4D9AE5"
+          "5FEE896A10CE707C3ED7E734E44727A39574501A532683109C2ABACABA283C31B4BD"
+          "2F53C3EE37E352CEE34F9E503BD80C0622AD79C6DCEE883547C6A3B325024100E7E8"
+          "942720A877517273A356053EA2A1BC0C94AA72D55C6E86296B2DFC967948C0A72CBC"
+          "CCA7EACB35706E09A1DF55A1535BD9B3CC34160B3B6DCD3EDA8E6443024100B69DCA"
+          "1CF7D4D7EC81E75B90FCCA874ABCDE123FD2700180AA90479B6E48DE8D67ED24F9F1"
+          "9D85BA275874F542CD20DC723E6963364A1F9425452B269A6799FD024028FA139386"
+          "55BE1F8A159CBACA5A72EA190C30089E19CD274A556F36C4F6E19F554B34C0777904"
+          "27BBDD8DD3EDE2448328F385D81B30E8E43B2FFFA02786197902401A8B38F398FA71"
+          "2049898D7FB79EE0A77668791299CDFA09EFC0E507ACB21ED74301EF5BFD48BE455E"
+          "AEB6E1678255827580A8E4E8E14151D1510A82A3F2E729024027156ABA4126D24A81"
+          "F3A528CBFB27F56886F840A9F6E86E17A44B94FE9319584B8E22FDDE1E5A2E3BD8AA"
+          "5BA8D8584194EB2190ACF832B847F13A3D24A79F4D00000000")));
+}
+
+TEST_F(WebCryptoRsaSsaTest, ImportInvalidPkcs8_CorruptFields) {
+  const struct {
+    size_t byte;
+    const char* name;
+  } kTestCases[] = {
+      {50, "n"},  {168, "e"},  {175, "d"},  {333, "p"},
+      {373, "q"}, {450, "dp"}, {550, "dq"}, {600, "qi"},
+  };
+  for (const auto& test : kTestCases) {
+    std::string key = FlipHexByte(kPrivateKeyPkcs8DerHex, test.byte);
+    EXPECT_EQ("DataError", StatusToString(ImportPkcs8RS256MustFail(key)))
+        << "byte flip should have invalidated key: " << test.name;
   }
 }
 
