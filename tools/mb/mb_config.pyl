@@ -817,7 +817,6 @@
     },
 
     'internal.chrome.fyi': {
-      'chromeos-amd64-generic-lacros-internal-rel': 'chromeos_amd64-generic_lacros_rel',
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'lacros-arm-generic-chrome-fyi-reclient': 'chromeos_arm-generic_lacros_official_skylab_reclient',
       'linux-autofill-captured-sites-rel': 'release_bot_reclient',
@@ -2042,10 +2041,6 @@
     # the 'is_skylab' arg. Please keep them in sync.
     'chromeos_amd64-generic_lacros_official_skylab': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-
-    'chromeos_amd64-generic_lacros_rel': [
-      'chromeos_amd64-generic-crostoolchain', 'lacros', 'release',
     ],
 
     'chromeos_amd64-generic_lacros_rel_dchecks': [
