@@ -673,8 +673,6 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
       self.feedWrapperViewController;
   self.ntpViewController.overscrollDelegate = self;
   self.ntpViewController.ntpContentDelegate = self;
-  self.ntpViewController.identityDiscButton =
-      [self.headerController identityDiscButton];
 
   self.ntpViewController.headerController = self.headerController;
 

@@ -86,6 +86,11 @@
 @property(nonatomic, strong)
     NSMutableArray<UIViewController*>* viewControllersAboveFeed;
 
+// Identity disc shown in the NTP.
+// TODO(crbug.com/1170995): Remove once the Feed header properly supports
+// ContentSuggestions.
+@property(nonatomic, weak) UIButton* identityDiscButton;
+
 @end
 
 @implementation NewTabPageViewController
@@ -145,6 +150,9 @@
   [self registerNotifications];
 
   [self layoutContentInParentCollectionView];
+
+  self.identityDiscButton = [self.headerController identityDiscButton];
+  DCHECK(self.identityDiscButton);
 }
 
 - (void)viewWillLayoutSubviews {

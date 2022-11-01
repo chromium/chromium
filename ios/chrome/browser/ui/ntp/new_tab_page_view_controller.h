@@ -46,11 +46,7 @@
 // controller.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
-// Identity disc shown in the NTP.
-// TODO(crbug.com/1170995): Remove once the Feed header properly supports
-// ContentSuggestions.
-@property(nonatomic, weak) UIButton* identityDiscButton;
-
+// The view controller representing the content suggestions.
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
 
