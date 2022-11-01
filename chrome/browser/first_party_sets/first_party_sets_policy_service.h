@@ -69,9 +69,8 @@ class FirstPartySetsPolicyService : public KeyedService {
   // First-Party Sets enabled pref changes.
   void OnFirstPartySetsEnabledChanged(bool enabled);
 
-  // Invoke the callback synchronously to resume navigation if the instance is
-  // ready; or stores the callback to be invoked when this service is ready to
-  // do so.
+  // Stores the callback to be invoked when this service is ready to do so. Must
+  // not be called when FPS is not enabled or the service is already ready.
   void RegisterThrottleResumeCallback(base::OnceClosure resume_callback);
 
   // KeyedService:
@@ -90,6 +89,12 @@ class FirstPartySetsPolicyService : public KeyedService {
 
   // Exposes `Init` for use in tests.
   void InitForTesting();
+
+  // Returns true iff the preference and feature are both enabled.
+  bool is_enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return feature_enabled_ && pref_enabled_;
+  }
 
   // Returns true when this instance has received the config thus has been fully
   // initialized.
@@ -148,12 +153,6 @@ class FirstPartySetsPolicyService : public KeyedService {
       const absl::optional<net::SchemefulSite>& top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
-
-  // Returns true iff the preference and feature are both enabled.
-  bool is_enabled() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return feature_enabled_ && pref_enabled_;
-  }
 
   // The remote delegates associated with the profile that created this
   // service.

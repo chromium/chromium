@@ -173,10 +173,8 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
 void FirstPartySetsPolicyService::RegisterThrottleResumeCallback(
     base::OnceClosure resume_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_ready() || !is_enabled()) {
-    std::move(resume_callback).Run();
-    return;
-  }
+  DCHECK(!is_ready());
+  DCHECK(is_enabled());
   on_ready_callbacks_.push_back(std::move(resume_callback));
 }
 

@@ -667,46 +667,31 @@ enum PrefState { kDefault, kDisabled, kEnabled };
 
 class FirstPartySetsPolicyServiceResumeThrottleTest
     : public FirstPartySetsPolicyServiceTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, PrefState>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   FirstPartySetsPolicyServiceResumeThrottleTest() {
-    if (IsFeatureEnabled()) {
-      features_.InitAndEnableFeatureWithParameters(
-          features::kFirstPartySets,
-          {{features::kFirstPartySetsClearSiteDataOnChangedSets.name,
-            IsClearingFeatureEnabled() ? "true" : "false"}});
-    } else {
-      features_.InitAndDisableFeature(features::kFirstPartySets);
-    }
+    features_.InitAndEnableFeatureWithParameters(
+        features::kFirstPartySets,
+        {{features::kFirstPartySetsClearSiteDataOnChangedSets.name,
+          GetParam() ? "true" : "false"}});
   }
 
-  bool IsPrefEnabled() { return GetPrefState() == PrefState::kEnabled; }
-
  private:
-  bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
-  bool IsClearingFeatureEnabled() { return std::get<1>(GetParam()); }
-  PrefState GetPrefState() { return std::get<2>(GetParam()); }
-
   base::test::ScopedFeatureList features_;
 };
 
 // Verify the throttle resume callback is always invoked.
 TEST_P(FirstPartySetsPolicyServiceResumeThrottleTest,
-       MaybeAddNavigationThrottleResumeCallback) {
-  SetEnabledPref(IsPrefEnabled());
+       RegisterThrottleResumeCallback) {
+  SetInvokeCallbacksAsynchronously(true);
+  service()->InitForTesting();
   base::RunLoop run_loop;
   service()->RegisterThrottleResumeCallback(run_loop.QuitClosure());
-  service()->InitForTesting();
   run_loop.Run();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FirstPartySetsPolicyServiceResumeThrottleTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Bool(),
-                       ::testing::Values(PrefState::kDefault,
-                                         PrefState::kDisabled,
-                                         PrefState::kEnabled)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         FirstPartySetsPolicyServiceResumeThrottleTest,
+                         ::testing::Bool());
 
 }  // namespace first_party_sets

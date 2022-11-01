@@ -31,7 +31,7 @@ FirstPartySetsNavigationThrottle::FirstPartySetsNavigationThrottle(
 FirstPartySetsNavigationThrottle::~FirstPartySetsNavigationThrottle() = default;
 
 ThrottleCheckResult FirstPartySetsNavigationThrottle::WillStartRequest() {
-  if (!service_->is_ready()) {
+  if (service_->is_enabled() && !service_->is_ready()) {
     service_->RegisterThrottleResumeCallback(base::BindOnce(
         &FirstPartySetsNavigationThrottle::Resume, weak_factory_.GetWeakPtr()));
     return content::NavigationThrottle::DEFER;
