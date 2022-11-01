@@ -101,6 +101,7 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   struct FlatlandIds {
     fuchsia::ui::composition::ContentId image_id;
     fuchsia::ui::composition::TransformId transform_id;
+    gfx::Size image_size;
   };
 
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);

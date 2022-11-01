@@ -72,6 +72,20 @@ fuchsia::math::SizeU GfxSizeToFuchsiaSize(const gfx::Size& size) {
                               static_cast<uint32_t>(size.height())};
 }
 
+fuchsia::ui::composition::ContentId CreateImage(
+    FlatlandConnection* flatland,
+    fuchsia::ui::composition::BufferCollectionImportToken import_token,
+    const gfx::Size& size,
+    uint32_t vmo_index) {
+  fuchsia::ui::composition::ImageProperties image_properties;
+  image_properties.set_size(GfxSizeToFuchsiaSize(size));
+  const fuchsia::ui::composition::ContentId image_id =
+      flatland->NextContentId();
+  flatland->flatland()->CreateImage(image_id, std::move(import_token),
+                                    vmo_index, std::move(image_properties));
+  return image_id;
+}
+
 }  // namespace
 
 FlatlandSurface::FlatlandSurface(
@@ -303,19 +317,28 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
 
   const auto ids_itr = pixmap_ids_to_flatland_ids_.find(ids);
   if (ids_itr != pixmap_ids_to_flatland_ids_.end()) {
+    // There is a size change in pixmap, we should recreate the image with the
+    // updated size.
+    if (ids_itr->second.image_size != pixmap->GetBufferSize()) {
+      flatland_.flatland()->ReleaseImage(ids_itr->second.image_id);
+      ids_itr->second.image_id =
+          CreateImage(&flatland_, collection->GetFlatlandImportToken(),
+                      pixmap->GetBufferSize(), ids.buffer_index);
+      ids_itr->second.image_size = pixmap->GetBufferSize();
+      if (!is_primary_plane) {
+        flatland_.flatland()->SetContent(ids_itr->second.transform_id,
+                                         ids_itr->second.image_id);
+      }
+    }
     return ids_itr->second;
   }
 
-  // Create Flatland Image.
-  fuchsia::ui::composition::ImageProperties image_properties;
-  image_properties.set_size(GfxSizeToFuchsiaSize(pixmap->GetBufferSize()));
   const fuchsia::ui::composition::ContentId image_id =
-      flatland_.NextContentId();
-  flatland_.flatland()->CreateImage(
-      image_id, collection->GetFlatlandImportToken(), ids.buffer_index,
-      std::move(image_properties));
+      CreateImage(&flatland_, collection->GetFlatlandImportToken(),
+                  pixmap->GetBufferSize(), ids.buffer_index);
 
-  // Create flatland transform for overlays.
+  // Skip creating a transform for the primary plane because
+  // |primary_plane_transform_id_| is used.
   fuchsia::ui::composition::TransformId transform_id = {0};
   if (!is_primary_plane) {
     transform_id = flatland_.NextTransformId();
@@ -323,9 +346,10 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
     flatland_.flatland()->SetContent(transform_id, image_id);
   }
 
-  // Add Flatland ids to |buffer_collection_to_image_id_|.
-  FlatlandSurface::FlatlandIds flatland_ids = {.image_id = image_id,
-                                               .transform_id = transform_id};
+  FlatlandSurface::FlatlandIds flatland_ids = {
+      .image_id = image_id,
+      .transform_id = transform_id,
+      .image_size = (pixmap->GetBufferSize())};
   pixmap_ids_to_flatland_ids_[ids] = flatland_ids;
   collection->AddOnReleasedCallback(
       base::BindOnce(&FlatlandSurface::RemovePixmapResources,
