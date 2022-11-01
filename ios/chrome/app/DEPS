@@ -29,6 +29,7 @@ include_rules = [
   "+components/ukm/ios",
   "+components/unified_consent",
   "+components/url_formatter",
+  "+components/variations",
   "+components/version_info",
   "+components/web_resource",
   "+ios/chrome/browser",

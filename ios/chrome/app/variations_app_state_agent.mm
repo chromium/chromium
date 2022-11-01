@@ -5,17 +5,67 @@
 #import "ios/chrome/app/variations_app_state_agent.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/time/time.h"
+#import "components/variations/service/variations_service_utils.h"
+#import "components/variations/variations_seed_store.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// The NSUserDefault key to store the time the last seed is fetched.
+NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
+
+// Returns the time the last seed is fetched.
+base::Time GetLastVariationsSeedFetchTime() {
+  double date = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:kLastVariationsSeedFetchTimeKey];
+  return base::Time::FromDoubleT(date);
+}
+
+// TODO(crbug.com/1380164): Look at Variations.SeedFreshness metric to see the
+// percentages of launches that has no seed/unexpired seed/expired seed.
+void RecordSeedFreshness(base::Time time) {
+  if (time.is_null()) {
+    // TODO(crbug.com/1380164): Seed doesn't exist. Log metric.
+  } else if (variations::HasSeedExpiredSinceTime(time)) {
+    // TODO(crbug.com/1380164): Seed expired. Log metric.
+  } else {
+    // TODO(crbug.com/1380164): Seed unexpired. Log metric.
+  }
+}
+
+// Retrieves the time the last variations seed is fetched from local state, and
+// stores it into NSUserDefaults. It should be executed every time before the
+// app shuts down, so the value could be used for the next startup, before
+// PrefService is instantiated.
+void SaveFetchTimeOfLatestSeedInLocalState() {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  const base::Time seedDate =
+      variations::VariationsSeedStore::GetLastFetchTimeFromPrefService(
+          localState);
+  if (!seedDate.is_null()) {
+    [[NSUserDefaults standardUserDefaults]
+        setDouble:seedDate.ToDoubleT()
+           forKey:kLastVariationsSeedFetchTimeKey];
+  }
+}
+
+}  // namespace
+
 // TODO(crbug.com/1372180): Implement
 // IOSChromeVariationsSeedFetcherDelegate.
 @interface VariationsAppStateAgent () {
+  // Caches the previous activation level.
+  SceneActivationLevel _previousActivationLevel;
+  // Whether this is the first run of the app since installation.
+  BOOL _firstRun;
   // Whether the variations seed has been fetched.
   BOOL _seedFetched;
   // Whether the extended launch screen is shown.
@@ -29,8 +79,16 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
+    _previousActivationLevel = SceneActivationLevelUnattached;
     _seedFetched = NO;
+    _firstRun = NO;
     _extendedLaunchScreenShown = NO;
+    base::Time lastFetchTime = GetLastVariationsSeedFetchTime();
+    if (lastFetchTime.is_null()) {
+      // No seed in storage, implying first run of the app since installation.
+      _firstRun = YES;
+    }
+    RecordSeedFreshness(lastFetchTime);
     if ([self shouldFetchVariationsSeed]) {
       // TODO(crbug.com/1372180): start seed fetch and a timeout timer.
     }
@@ -49,26 +107,27 @@
       [self.appState queueTransitionToNextInitStage];
     }
   }
-  // Important: do not add code after this block because its purpose is to
-  // clear `self` when not needed anymore.
-  if (previousInitStage == InitStageVariationsSeed) {
-    // Nothing left to do; clean up.
-    [self.appState removeAgent:self];
-  }
   [super appState:appState didTransitionFromInitStage:previousInitStage];
 }
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if ([self shouldFetchVariationsSeed]) {
-    DCHECK_GE(self.appState.initStage, InitStageVariationsSeed);
-    if (!_extendedLaunchScreenShown &&
-        self.appState.initStage == InitStageVariationsSeed &&
-        level > SceneActivationLevelBackground) {
-      [self showExtendedLaunchScreen:sceneState];
-      _extendedLaunchScreenShown = YES;
-    }
+  // If the app would be showing UI before Chrome UI is ready, extend the launch
+  // screen.
+  if (self.appState.initStage == InitStageVariationsSeed &&
+      [self shouldFetchVariationsSeed] &&
+      level > SceneActivationLevelBackground && !_extendedLaunchScreenShown) {
+    [self showExtendedLaunchScreen:sceneState];
+    _extendedLaunchScreenShown = YES;
   }
+  // Saves the fetch time to NSUserDefatuls when the app moves from foreground
+  // to background.
+  if (_previousActivationLevel > SceneActivationLevelBackground &&
+      level == SceneActivationLevelBackground &&
+      self.appState.initStage >= InitStageBrowserObjectsForUI) {
+    SaveFetchTimeOfLatestSeedInLocalState();
+  }
+  _previousActivationLevel = level;
   [super sceneState:sceneState transitionedToActivationLevel:level];
 }
 
@@ -86,8 +145,12 @@
 
 // Returns whether the variations seed should be fetched.
 - (BOOL)shouldFetchVariationsSeed {
-  // TODO(crbug.com/1372180): return whether the app is in first run AND enabled
-  // the "dynamic FRE finching" feature.
+  return _firstRun && [self shouldTurnOnFeature];
+}
+
+// TODO(crbug.com/1372180): Replace this method by actual method that sets up a
+// custom client side experiment and return the value.
+- (BOOL)shouldTurnOnFeature {
   return NO;
 }
 

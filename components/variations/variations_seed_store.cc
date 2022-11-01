@@ -297,7 +297,7 @@ bool VariationsSeedStore::StoreSafeSeed(
 }
 
 base::Time VariationsSeedStore::GetLastFetchTime() const {
-  return local_state_->GetTime(prefs::kVariationsLastFetchTime);
+  return GetLastFetchTimeFromPrefService(local_state_);
 }
 
 base::Time VariationsSeedStore::GetSafeSeedFetchTime() const {
@@ -373,6 +373,12 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kVariationsSafeSeedSessionConsistencyCountry, std::string());
   registry->RegisterStringPref(prefs::kVariationsSafeSeedSignature,
                                std::string());
+}
+
+// static
+base::Time VariationsSeedStore::GetLastFetchTimeFromPrefService(
+    PrefService* prefs) {
+  return prefs->GetTime(prefs::kVariationsLastFetchTime);
 }
 
 // static

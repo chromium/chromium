@@ -117,10 +117,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                              base::Time seed_fetch_time);
 
   // Loads the last fetch time (for the latest seed) that was persisted to the
-  // store.
+  // local state.
   base::Time GetLastFetchTime() const;
 
-  // Returns the time at which the safe seed was fetched.
+  // Returns the time at which the safe seed was persisted to the local state.
   base::Time GetSafeSeedFetchTime() const;
 
   // Records |fetch_time| as the last time at which a seed was fetched
@@ -140,11 +140,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // more efficient to call LoadSeed() prior to calling this method.
   const std::string& GetLatestSerialNumber();
 
+  PrefService* local_state() { return local_state_; }
+  const PrefService* local_state() const { return local_state_; }
+
   // Registers Local State prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  PrefService* local_state() { return local_state_; }
-  const PrefService* local_state() const { return local_state_; }
+  // Loads the last fetch time (for the latest seed) that was persisted to
+  // |local_state|.
+  static base::Time GetLastFetchTimeFromPrefService(PrefService* local_state);
 
   static VerifySignatureResult VerifySeedSignatureForTesting(
       const std::string& seed_bytes,
