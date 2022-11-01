@@ -191,7 +191,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 #endif  // BUILDFLAG(IS_ANDROID)
 
     if (!gpu_memory_buffer_pool_) {
-      int original_frame_id = frame->unique_id();
+      const media::VideoFrame::ID original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       return;
     }
@@ -211,7 +211,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 #endif  // BUILDFLAG(IS_WIN)
 
     if (skip_creating_gpu_memory_buffer) {
-      int original_frame_id = frame->unique_id();
+      media::VideoFrame::ID original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       // If there are any existing MaybeCreateHardwareFrame() calls, we do not
       // want those frames to be placed after the current one, so just drop
@@ -220,7 +220,7 @@ class WebMediaPlayerMS::FrameDeliverer {
       return;
     }
 
-    int original_frame_id = frame->unique_id();
+    const media::VideoFrame::ID original_frame_id = frame->unique_id();
 
     // |gpu_memory_buffer_pool_| deletion is going to be posted to
     // |media_task_runner_|. base::Unretained() usage is fine since
@@ -279,7 +279,7 @@ class WebMediaPlayerMS::FrameDeliverer {
     }
   }
 
-  void EnqueueFrame(int original_frame_id,
+  void EnqueueFrame(media::VideoFrame::ID original_frame_id,
                     scoped_refptr<media::VideoFrame> frame) {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
@@ -1048,7 +1048,7 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrameThenUpdate() {
   return compositor_->GetCurrentFrame();
 }
 
-absl::optional<int> WebMediaPlayerMS::CurrentFrameId() const {
+absl::optional<media::VideoFrame::ID> WebMediaPlayerMS::CurrentFrameId() const {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return compositor_->GetCurrentFrame()->unique_id();

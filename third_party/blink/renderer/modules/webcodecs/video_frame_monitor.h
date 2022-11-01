@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/synchronization/lock.h"
+#include "media/base/video_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -47,16 +48,18 @@ class MODULES_EXPORT VideoFrameMonitor {
 
   // Report that a new frame with ID |frame_id| associated with the source with
   // ID |source_id| is being monitored.
-  void OnOpenFrame(const std::string& source_id, int frame_id);
+  void OnOpenFrame(const std::string& source_id,
+                   media::VideoFrame::ID frame_id);
   // Report that a new frame with ID |frame_id| associated with the source with
   // ID |source_id| is being monitored.
-  void OnCloseFrame(const std::string& source_id, int frame_id);
+  void OnCloseFrame(const std::string& source_id,
+                    media::VideoFrame::ID frame_id);
   // Reports the number of distinct monitored frames associated with
   // |source_id|.
   wtf_size_t NumFrames(const std::string& source_id);
   // Reports the reference count for the frame with ID |frame_id| associated
   // with the source with ID |source_id|.
-  int NumRefs(const std::string& source_id, int frame_id);
+  int NumRefs(const std::string& source_id, media::VideoFrame::ID frame_id);
 
   // Reports true if nothing is being monitored, false otherwise.
   bool IsEmpty();
@@ -74,13 +77,16 @@ class MODULES_EXPORT VideoFrameMonitor {
   // The methods below can be called only when the mutex returned by GetLock()
   // has been acquired. Other than that, they are equivalent to their
   // corresponding non-locked version.
-  void OnOpenFrameLocked(const std::string& source_id, int frame_id)
+  void OnOpenFrameLocked(const std::string& source_id,
+                         media::VideoFrame::ID frame_id)
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
-  void OnCloseFrameLocked(const std::string& source_id, int frame_id)
+  void OnCloseFrameLocked(const std::string& source_id,
+                          media::VideoFrame::ID frame_id)
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
   wtf_size_t NumFramesLocked(const std::string& source_id)
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
-  int NumRefsLocked(const std::string& source_id, int frame_id)
+  int NumRefsLocked(const std::string& source_id,
+                    media::VideoFrame::ID frame_id)
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
 
  private:
@@ -89,10 +95,37 @@ class MODULES_EXPORT VideoFrameMonitor {
   // key: unique ID of a frame.
   // value: reference count for the frame (among objects explicitly tracking
   //        the frame with VideoFrameMonitor).
-  using FrameMap = HashMap<int,
+  struct VideoFrameIDHashArg {
+    static unsigned GetHash(media::VideoFrame::ID key) {
+      static_assert(std::is_same_v<decltype(key.GetUnsafeValue()), uint64_t>);
+      return WTF::HashInt(key.GetUnsafeValue());
+    }
+    static bool Equal(media::VideoFrame::ID a, media::VideoFrame::ID b) {
+      return a == b;
+    }
+    static const bool safe_to_compare_to_empty_or_deleted = true;
+  };
+  struct VideoFrameIDHashTraits
+      : WTF::GenericHashTraits<media::VideoFrame::ID> {
+    static const bool kEmptyValueIsZero = false;
+    static const bool kHasIsEmptyValueFunction = false;
+
+    static media::VideoFrame::ID EmptyValue() {
+      return media::VideoFrame::ID();
+    }
+    static void ConstructDeletedValue(media::VideoFrame::ID& slot, bool) {
+      slot = media::VideoFrame::ID::FromUnsafeValue(
+          std::numeric_limits<media::VideoFrame::ID::underlying_type>::max());
+    }
+    static bool IsDeletedValue(media::VideoFrame::ID value) {
+      return value.GetUnsafeValue() ==
+             std::numeric_limits<media::VideoFrame::ID::underlying_type>::max();
+    }
+  };
+  using FrameMap = HashMap<media::VideoFrame::ID,
                            int,
-                           WTF::IntHash<int>,
-                           WTF::UnsignedWithZeroKeyHashTraits<int>>;
+                           VideoFrameIDHashArg,
+                           VideoFrameIDHashTraits>;
 
   // key: ID of the source of the frames.
   // value: References to frames associated to that source.

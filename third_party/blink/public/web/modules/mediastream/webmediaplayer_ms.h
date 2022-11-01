@@ -130,7 +130,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
              const gfx::Rect& rect,
              cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
-  absl::optional<int> CurrentFrameId() const override;
+  absl::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
   void ResetCanvasCache();
 

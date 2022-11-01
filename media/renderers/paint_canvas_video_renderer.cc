@@ -1846,7 +1846,8 @@ void PaintCanvasVideoRenderer::ResetCache() {
   yuv_cache_.Reset();
 }
 
-PaintCanvasVideoRenderer::Cache::Cache(int frame_id) : frame_id(frame_id) {}
+PaintCanvasVideoRenderer::Cache::Cache(VideoFrame::ID frame_id)
+    : frame_id(frame_id) {}
 
 PaintCanvasVideoRenderer::Cache::~Cache() = default;
 

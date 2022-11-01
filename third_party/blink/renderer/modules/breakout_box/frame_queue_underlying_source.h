@@ -108,7 +108,7 @@ class FrameQueueUnderlyingSource
 
   base::Lock& GetMonitorLock();
 
-  void MaybeMonitorPopFrameId(int frame_id);
+  void MaybeMonitorPopFrameId(media::VideoFrame::ID frame_id);
   void MonitorPopFrameLocked(const NativeFrameType& media_frame)
       EXCLUSIVE_LOCKS_REQUIRED(GetMonitorLock());
   void MonitorPushFrameLocked(const NativeFrameType& media_frame)

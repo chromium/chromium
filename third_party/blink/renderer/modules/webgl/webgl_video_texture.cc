@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_video_texture.h"
 
 #include "build/build_config.h"
-#include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_metadata.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -158,7 +157,7 @@ bool WebGLVideoTexture::releaseVideoImageWEBGL(
 // static
 WebGLVideoFrameUploadMetadata WebGLVideoTexture::CreateVideoFrameUploadMetadata(
     const media::VideoFrame* frame,
-    int already_uploaded_id) {
+    media::VideoFrame::ID already_uploaded_id) {
   DCHECK(frame);
   WebGLVideoFrameUploadMetadata metadata = {};
   if (!RuntimeEnabledFeatures::ExtraWebGLVideoTextureMetadataEnabled())

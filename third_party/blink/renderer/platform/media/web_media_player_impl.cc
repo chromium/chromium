@@ -1493,7 +1493,8 @@ WebMediaPlayerImpl::GetCurrentFrameThenUpdate() {
   return GetCurrentFrameFromCompositor();
 }
 
-absl::optional<int> WebMediaPlayerImpl::CurrentFrameId() const {
+absl::optional<media::VideoFrame::ID> WebMediaPlayerImpl::CurrentFrameId()
+    const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl::GetCurrentFrameID");
 

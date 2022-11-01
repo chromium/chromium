@@ -5,12 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_VIDEO_TEXTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_VIDEO_TEXTURE_H_
 
+#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-
-namespace media {
-class VideoFrame;
-}
 
 namespace blink {
 
@@ -46,7 +43,7 @@ class WebGLVideoTexture final : public WebGLExtension {
   // initialized (skipped = false) if the metadata API is disabled.
   static WebGLVideoFrameUploadMetadata CreateVideoFrameUploadMetadata(
       const media::VideoFrame* frame,
-      int already_uploaded_id);
+      media::VideoFrame::ID already_uploaded_id);
 
  private:
   Member<VideoFrameMetadata> current_frame_metadata_;

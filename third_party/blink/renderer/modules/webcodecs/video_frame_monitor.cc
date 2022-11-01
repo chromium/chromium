@@ -15,13 +15,13 @@ VideoFrameMonitor& VideoFrameMonitor::Instance() {
 }
 
 void VideoFrameMonitor::OnOpenFrame(const std::string& source_id,
-                                    int frame_id) {
+                                    media::VideoFrame::ID frame_id) {
   base::AutoLock locker(GetLock());
   OnOpenFrameLocked(source_id, frame_id);
 }
 
 void VideoFrameMonitor::OnCloseFrame(const std::string& source_id,
-                                     int frame_id) {
+                                     media::VideoFrame::ID frame_id) {
   base::AutoLock locker(GetLock());
   OnCloseFrameLocked(source_id, frame_id);
 }
@@ -31,7 +31,8 @@ wtf_size_t VideoFrameMonitor::NumFrames(const std::string& source_id) {
   return NumFramesLocked(source_id);
 }
 
-int VideoFrameMonitor::NumRefs(const std::string& source_id, int frame_id) {
+int VideoFrameMonitor::NumRefs(const std::string& source_id,
+                               media::VideoFrame::ID frame_id) {
   base::AutoLock locker(GetLock());
   return NumRefsLocked(source_id, frame_id);
 }
@@ -42,7 +43,7 @@ bool VideoFrameMonitor::IsEmpty() {
 }
 
 void VideoFrameMonitor::OnOpenFrameLocked(const std::string& source_id,
-                                          int frame_id) {
+                                          media::VideoFrame::ID frame_id) {
   DCHECK(!source_id.empty());
   lock_.AssertAcquired();
   FrameMap& frame_map = map_[source_id];
@@ -56,7 +57,7 @@ void VideoFrameMonitor::OnOpenFrameLocked(const std::string& source_id,
 }
 
 void VideoFrameMonitor::OnCloseFrameLocked(const std::string& source_id,
-                                           int frame_id) {
+                                           media::VideoFrame::ID frame_id) {
   DCHECK(!source_id.empty());
   lock_.AssertAcquired();
   auto it_source = map_.find(source_id);
@@ -80,7 +81,7 @@ wtf_size_t VideoFrameMonitor::NumFramesLocked(const std::string& source_id) {
 }
 
 int VideoFrameMonitor::NumRefsLocked(const std::string& source_id,
-                                     int frame_id) {
+                                     media::VideoFrame::ID frame_id) {
   DCHECK(!source_id.empty());
   lock_.AssertAcquired();
   auto it = map_.find(source_id);

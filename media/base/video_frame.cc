@@ -8,11 +8,11 @@
 #include <GLES2/gl2ext.h>
 
 #include <algorithm>
+#include <atomic>
 #include <climits>
 #include <numeric>
 #include <utility>
 
-#include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/callback_helpers.h"
@@ -37,7 +37,13 @@ namespace media {
 
 namespace {
 
-// Helper to privide gfx::Rect::Intersect() as an expression.
+VideoFrame::ID GetNextID() {
+  static std::atomic_uint64_t counter(1u);
+  return VideoFrame::ID::FromUnsafeValue(
+      counter.fetch_add(1u, std::memory_order_relaxed));
+}
+
+// Helper to provide gfx::Rect::Intersect() as an expression.
 gfx::Rect Intersection(gfx::Rect a, const gfx::Rect& b) {
   a.Intersect(b);
   return a;
@@ -58,9 +64,6 @@ VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB WrapReleaseMailboxCB(
 }
 
 }  // namespace
-
-// Static constexpr class for generating unique identifiers for each VideoFrame.
-static base::AtomicSequenceNumber g_unique_id_generator;
 
 // static
 std::string VideoFrame::StorageTypeToString(
@@ -1414,7 +1417,7 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
       dmabuf_fds_(base::MakeRefCounted<DmabufHolder>()),
 #endif
       timestamp_(timestamp),
-      unique_id_(g_unique_id_generator.GetNext()) {
+      unique_id_(GetNextID()) {
   DCHECK(IsValidConfigInternal(format(), frame_control_type, coded_size(),
                                visible_rect_, natural_size_));
   DCHECK(visible_rect_ == visible_rect)

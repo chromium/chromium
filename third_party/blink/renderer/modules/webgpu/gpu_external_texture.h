@@ -7,6 +7,7 @@
 
 #include <atomic>
 
+#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
@@ -34,7 +35,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       GPUDevice* device,
       WGPUExternalTexture external_texture,
       scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
-      absl::optional<int> media_video_frame_unique_id);
+      absl::optional<media::VideoFrame::ID> media_video_frame_unique_id);
 
   GPUExternalTexture(const GPUExternalTexture&) = delete;
   GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;
@@ -89,7 +90,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
       const GPUExternalTextureDescriptor* webgpu_desc,
       scoped_refptr<media::VideoFrame> media_video_frame,
       media::PaintCanvasVideoRenderer* video_renderer,
-      absl::optional<int> media_video_frame_unique_id,
+      absl::optional<media::VideoFrame::ID> media_video_frame_unique_id,
       ExceptionState& exception_state);
 
   void setLabelImpl(const String& value) override {
@@ -113,7 +114,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
 
-  absl::optional<int> media_video_frame_unique_id_;
+  absl::optional<media::VideoFrame::ID> media_video_frame_unique_id_;
   WeakMember<HTMLVideoElement> video_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

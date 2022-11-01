@@ -155,7 +155,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // Struct used to keep information about frames pending in
   // |rendering_frame_buffer_|.
   struct PendingFrameInfo {
-    int unique_id;
+    media::VideoFrame::ID unique_id;
     base::TimeDelta timestamp;
     base::TimeTicks reference_time;
     bool is_copy;

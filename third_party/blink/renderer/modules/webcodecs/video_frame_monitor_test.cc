@@ -18,50 +18,65 @@ class VideoFrameMonitorTest : public testing::Test {
   static void SequenceOfOperations(const std::string& source_id) {
     VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
 
-    monitor.OnOpenFrame(source_id, 0);
+    monitor.OnOpenFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(1));
     EXPECT_EQ(monitor.NumFrames(source_id), 1u);
 
-    monitor.OnOpenFrame(source_id, 10);
+    monitor.OnOpenFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(10));
     EXPECT_EQ(monitor.NumFrames(source_id), 2u);
 
-    monitor.OnOpenFrame(source_id, 20);
+    monitor.OnOpenFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(20));
     EXPECT_EQ(monitor.NumFrames(source_id), 3u);
 
-    monitor.OnCloseFrame(source_id, 0);
+    monitor.OnCloseFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(1));
     EXPECT_EQ(monitor.NumFrames(source_id), 2u);
 
-    monitor.OnCloseFrame(source_id, 10);
+    monitor.OnCloseFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(10));
     EXPECT_EQ(monitor.NumFrames(source_id), 1u);
 
-    monitor.OnOpenFrame(source_id, 30);
+    monitor.OnOpenFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(30));
     EXPECT_EQ(monitor.NumFrames(source_id), 2u);
 
-    monitor.OnOpenFrame(source_id, 20);
+    monitor.OnOpenFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(20));
     EXPECT_EQ(monitor.NumFrames(source_id), 2u);
-    EXPECT_EQ(monitor.NumRefs(source_id, 20), 2);
+    EXPECT_EQ(
+        monitor.NumRefs(source_id, media::VideoFrame::ID::FromUnsafeValue(20)),
+        2);
 
     // JS closes one of its VideoFrames with ID 20
-    monitor.OnCloseFrame(source_id, 20);
+    monitor.OnCloseFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(20));
     EXPECT_EQ(monitor.NumFrames(source_id), 2u);
-    EXPECT_EQ(monitor.NumRefs(source_id, 20), 1);
+    EXPECT_EQ(
+        monitor.NumRefs(source_id, media::VideoFrame::ID::FromUnsafeValue(20)),
+        1);
 
     {
       base::AutoLock locker(monitor.GetLock());
-      monitor.OnOpenFrameLocked(source_id, 30);
+      monitor.OnOpenFrameLocked(source_id,
+                                media::VideoFrame::ID::FromUnsafeValue(30));
       EXPECT_EQ(monitor.NumFramesLocked(source_id), 2u);
-      EXPECT_EQ(monitor.NumRefsLocked(source_id, 30), 2);
+      EXPECT_EQ(monitor.NumRefsLocked(
+                    source_id, media::VideoFrame::ID::FromUnsafeValue(30)),
+                2);
 
-      monitor.OnCloseFrameLocked(source_id, 20);
+      monitor.OnCloseFrameLocked(source_id,
+                                 media::VideoFrame::ID::FromUnsafeValue(20));
       EXPECT_EQ(monitor.NumFramesLocked(source_id), 1u);
-      EXPECT_EQ(monitor.NumRefsLocked(source_id, 20), 0);
+      EXPECT_EQ(monitor.NumRefsLocked(
+                    source_id, media::VideoFrame::ID::FromUnsafeValue(20)),
+                0);
 
-      monitor.OnCloseFrameLocked(source_id, 30);
+      monitor.OnCloseFrameLocked(source_id,
+                                 media::VideoFrame::ID::FromUnsafeValue(30));
       EXPECT_EQ(monitor.NumFramesLocked(source_id), 1u);
-      EXPECT_EQ(monitor.NumRefsLocked(source_id, 30), 1);
+      EXPECT_EQ(monitor.NumRefsLocked(
+                    source_id, media::VideoFrame::ID::FromUnsafeValue(30)),
+                1);
     }
 
-    monitor.OnCloseFrame(source_id, 30);
-    EXPECT_EQ(monitor.NumRefs(source_id, 30), 0);
+    monitor.OnCloseFrame(source_id, media::VideoFrame::ID::FromUnsafeValue(30));
+    EXPECT_EQ(
+        monitor.NumRefs(source_id, media::VideoFrame::ID::FromUnsafeValue(30)),
+        0);
     EXPECT_EQ(monitor.NumFrames(source_id), 0u);
   }
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_external_texture.h"
 
-#include "media/base/video_frame.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
@@ -112,7 +111,8 @@ bool IsSameGamutAndGamma(gfx::ColorSpace srcColorSpace,
 struct ExternalTextureSource {
   scoped_refptr<media::VideoFrame> media_video_frame = nullptr;
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
-  absl::optional<int> media_video_frame_unique_id = absl::nullopt;
+  absl::optional<media::VideoFrame::ID> media_video_frame_unique_id =
+      absl::nullopt;
   bool valid = false;
 };
 
@@ -197,7 +197,7 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     const GPUExternalTextureDescriptor* webgpu_desc,
     scoped_refptr<media::VideoFrame> media_video_frame,
     media::PaintCanvasVideoRenderer* video_renderer,
-    absl::optional<int> media_video_frame_unique_id,
+    absl::optional<media::VideoFrame::ID> media_video_frame_unique_id,
     ExceptionState& exception_state) {
   DCHECK(media_video_frame);
 
@@ -502,7 +502,7 @@ GPUExternalTexture::GPUExternalTexture(
     GPUDevice* device,
     WGPUExternalTexture external_texture,
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
-    absl::optional<int> media_video_frame_unique_id)
+    absl::optional<media::VideoFrame::ID> media_video_frame_unique_id)
     : DawnObject<WGPUExternalTexture>(device, external_texture),
       mailbox_texture_(mailbox_texture),
       media_video_frame_unique_id_(media_video_frame_unique_id) {

@@ -22,13 +22,14 @@ namespace blink {
 
 namespace {
 
-int GetFrameId(const scoped_refptr<media::VideoFrame>& video_frame) {
+media::VideoFrame::ID GetFrameId(
+    const scoped_refptr<media::VideoFrame>& video_frame) {
   return video_frame->unique_id();
 }
 
-int GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
+media::VideoFrame::ID GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
   NOTREACHED();
-  return -1;
+  return media::VideoFrame::ID();
 }
 
 }  // namespace
@@ -309,7 +310,9 @@ void FrameQueueUnderlyingSource<
     if (!media_frame.has_value())
       return;
 
-    int frame_id = MustUseMonitor() ? GetFrameId(media_frame.value()) : -1;
+    media::VideoFrame::ID frame_id = MustUseMonitor()
+                                         ? GetFrameId(media_frame.value())
+                                         : media::VideoFrame::ID();
     Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
     // Update the monitor after creating the Blink VideoFrame to avoid
     // temporarily removing the frame from the monitor.
@@ -335,7 +338,7 @@ base::Lock& FrameQueueUnderlyingSource<NativeFrameType>::GetMonitorLock() {
 
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::MaybeMonitorPopFrameId(
-    int frame_id) {
+    media::VideoFrame::ID frame_id) {
   if (!MustUseMonitor())
     return;
   VideoFrameMonitor::Instance().OnCloseFrame(device_id_, frame_id);
@@ -345,7 +348,7 @@ template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::MonitorPopFrameLocked(
     const NativeFrameType& media_frame) {
   DCHECK(MustUseMonitor());
-  int frame_id = GetFrameId(media_frame);
+  media::VideoFrame::ID frame_id = GetFrameId(media_frame);
   // Note: This is GetMonitorLock(), which is required, but the static checker
   // doesn't figure it out.
   VideoFrameMonitor::Instance().GetLock().AssertAcquired();
@@ -356,7 +359,7 @@ template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::MonitorPushFrameLocked(
     const NativeFrameType& media_frame) {
   DCHECK(MustUseMonitor());
-  int frame_id = GetFrameId(media_frame);
+  media::VideoFrame::ID frame_id = GetFrameId(media_frame);
   VideoFrameMonitor::Instance().GetLock().AssertAcquired();
   VideoFrameMonitor::Instance().OnOpenFrameLocked(device_id_, frame_id);
 }
@@ -367,7 +370,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::AnalyzeNewFrameLocked(
     const NativeFrameType& new_frame,
     const absl::optional<NativeFrameType>& oldest_frame) {
   DCHECK(MustUseMonitor());
-  absl::optional<int> oldest_frame_id;
+  absl::optional<media::VideoFrame::ID> oldest_frame_id;
   if (oldest_frame.has_value())
     oldest_frame_id = GetFrameId(oldest_frame.value());
 
@@ -379,7 +382,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::AnalyzeNewFrameLocked(
     return NewFrameAction::kPush;
   }
 
-  int new_frame_id = GetFrameId(new_frame);
+  media::VideoFrame::ID new_frame_id = GetFrameId(new_frame);
   if (monitor.NumRefsLocked(device_id_, new_frame_id) > 0) {
     // The new frame is already in another queue or exposed to JS, so adding
     // it to the queue would not count against the limit.

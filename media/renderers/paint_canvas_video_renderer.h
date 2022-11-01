@@ -202,11 +202,11 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // not keep a reference to the VideoFrame so necessary data is extracted out
   // of it.
   struct Cache {
-    explicit Cache(int frame_id);
+    explicit Cache(VideoFrame::ID frame_id);
     ~Cache();
 
     // VideoFrame::unique_id() of the videoframe used to generate the cache.
-    int frame_id;
+    VideoFrame::ID frame_id;
 
     // A PaintImage that can be used to draw into a PaintCanvas. This is sized
     // to the visible size of the VideoFrame. Its contents are generated lazily.

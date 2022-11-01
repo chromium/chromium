@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "media/base/media_export.h"
+#include "media/base/video_frame.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -44,7 +45,6 @@ class MaskFilterInfo;
 
 namespace media {
 class PaintCanvasVideoRenderer;
-class VideoFrame;
 
 // Specifies what type of data is contained in the mailboxes, as well as how
 // many mailboxes will be present.
@@ -163,7 +163,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   PlaneResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
                                            viz::ResourceFormat resource_format,
                                            const gfx::ColorSpace& color_space,
-                                           int unique_id,
+                                           VideoFrame::ID unique_id,
                                            int plane_index);
   PlaneResource* AllocateResource(const gfx::Size& plane_size,
                                   viz::ResourceFormat format,

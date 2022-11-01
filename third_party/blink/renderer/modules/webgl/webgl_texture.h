@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_TEXTURE_H_
 
 #include "base/time/time.h"
+#include "media/base/video_frame.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,7 +36,7 @@ namespace blink {
 
 // For last-uploaded-frame-metadata API. https://crbug.com/639174
 struct WebGLVideoFrameUploadMetadata {
-  int frame_id = -1;
+  media::VideoFrame::ID frame_id;
   gfx::Rect visible_rect = {};
   base::TimeDelta timestamp = {};
   base::TimeDelta expected_timestamp = {};
@@ -58,7 +59,7 @@ class WebGLTexture : public WebGLSharedPlatform3DObject {
 
   static GLint ComputeLevelCount(GLsizei width, GLsizei height, GLsizei depth);
 
-  int GetLastUploadedVideoFrameId() const {
+  media::VideoFrame::ID GetLastUploadedVideoFrameId() const {
     return last_uploaded_video_frame_metadata_.frame_id;
   }
 

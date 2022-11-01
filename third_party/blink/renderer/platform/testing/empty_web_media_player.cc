@@ -42,7 +42,8 @@ EmptyWebMediaPlayer::GetCurrentFrameThenUpdate() {
   return nullptr;
 }
 
-absl::optional<int> EmptyWebMediaPlayer::CurrentFrameId() const {
+absl::optional<media::VideoFrame::ID> EmptyWebMediaPlayer::CurrentFrameId()
+    const {
   return absl::nullopt;
 }
 

@@ -35,10 +35,11 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
     return frame;
   }
 
-  int CreateAndEnqueueFrame(int max_composition_delay_in_frames) {
+  media::VideoFrame::ID CreateAndEnqueueFrame(
+      int max_composition_delay_in_frames) {
     scoped_refptr<media::VideoFrame> frame =
         CreateFrame(max_composition_delay_in_frames);
-    int unique_id = frame->unique_id();
+    media::VideoFrame::ID unique_id = frame->unique_id();
     algorithm_.EnqueueFrame(std::move(frame));
     return unique_id;
   }
@@ -84,7 +85,7 @@ class LowLatencyVideoRendererAlgorithmTest : public testing::Test {
 
   void StepUntilJustBeforeNextFrameIsRendered(
       base::TimeDelta render_interval,
-      absl::optional<int> expected_id = absl::nullopt) {
+      absl::optional<media::VideoFrame::ID> expected_id = absl::nullopt) {
     // No frame will be rendered until the total render time that has passed is
     // greater than the frame duration of a frame.
     base::TimeTicks start_time = current_render_time_;
@@ -125,7 +126,8 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode60Hz) {
   constexpr int kNumberOfFrames = 100;
   constexpr int kMaxCompositionDelayInFrames = 6;
   for (int i = 0; i < kNumberOfFrames; ++i) {
-    int frame_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    media::VideoFrame::ID frame_id =
+        CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
     size_t frames_dropped = 0u;
     scoped_refptr<media::VideoFrame> rendered_frame =
         RenderAndStep(&frames_dropped);
@@ -151,7 +153,8 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode30Hz) {
       ++expected_frames_dropped;
     }
 
-    int last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    media::VideoFrame::ID last_id =
+        CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
 
     size_t frames_dropped = 0;
     scoped_refptr<media::VideoFrame> rendered_frame =
@@ -202,7 +205,8 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode120Hz) {
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   // Add one initial frame.
-  int last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+  media::VideoFrame::ID last_id =
+      CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
 
   constexpr size_t kNumberOfFrames = 120;
   for (size_t i = 0; i < kNumberOfFrames; ++i) {
@@ -210,7 +214,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode120Hz) {
     scoped_refptr<media::VideoFrame> rendered_frame =
         RenderAndStep(&frames_dropped, kRenderInterval);
     ASSERT_TRUE(rendered_frame);
-    int rendered_frame_id = last_id;
+    media::VideoFrame::ID rendered_frame_id = last_id;
     EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
 
     last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
@@ -231,7 +235,8 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode600Hz) {
   constexpr int kMaxCompositionDelayInFrames = 6;
 
   // Add one initial frame.
-  int last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+  media::VideoFrame::ID last_id =
+      CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
 
   constexpr size_t kNumberOfFrames = 120;
   for (size_t i = 0; i < kNumberOfFrames; ++i) {
@@ -239,7 +244,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalMode600Hz) {
     scoped_refptr<media::VideoFrame> rendered_frame =
         RenderAndStep(&frames_dropped, kRenderInterval);
     ASSERT_TRUE(rendered_frame);
-    int rendered_frame_id = last_id;
+    media::VideoFrame::ID rendered_frame_id = last_id;
     EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
 
     last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
@@ -256,7 +261,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
   // Create an initial queue of 60 frames.
   constexpr int kMaxCompositionDelayInFrames = 6;
   constexpr size_t kInitialQueueSize = 60;
-  int last_id = 0;
+  media::VideoFrame::ID last_id;
   for (size_t i = 0; i < kInitialQueueSize; ++i) {
     last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
   }
@@ -282,7 +287,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, EnterDrainMode60Hz) {
   // Enter drain mode when more than 6 frames are in the queue.
   constexpr int kMaxCompositionDelayInFrames = 6;
   constexpr int kNumberOfFramesSubmitted = kMaxCompositionDelayInFrames + 1;
-  std::queue<int> enqueued_frame_ids;
+  std::queue<media::VideoFrame::ID> enqueued_frame_ids;
   for (int i = 0; i < kNumberOfFramesSubmitted; ++i) {
     enqueued_frame_ids.push(
         CreateAndEnqueueFrame(kMaxCompositionDelayInFrames));
@@ -316,7 +321,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, ExitDrainMode60Hz) {
   // Enter drain mode when more than 6 frames are in the queue.
   constexpr int kMaxCompositionDelayInFrames = 6;
   int number_of_frames_submitted = kMaxCompositionDelayInFrames + 1;
-  std::queue<int> enqueued_frame_ids;
+  std::queue<media::VideoFrame::ID> enqueued_frame_ids;
   for (int i = 0; i < number_of_frames_submitted; ++i) {
     enqueued_frame_ids.push(
         CreateAndEnqueueFrame(kMaxCompositionDelayInFrames));
@@ -367,7 +372,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, EnterDrainMode120Hz) {
   EXPECT_TRUE(RenderAndStep(nullptr, kRenderInterval));
 
   constexpr int kNumberOfFramesSubmitted = kMaxCompositionDelayInFrames + 1;
-  std::queue<int> enqueued_frame_ids;
+  std::queue<media::VideoFrame::ID> enqueued_frame_ids;
   for (int i = 0; i < kNumberOfFramesSubmitted; ++i) {
     enqueued_frame_ids.push(
         CreateAndEnqueueFrame(kMaxCompositionDelayInFrames));
@@ -401,7 +406,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, SteadyStateQueueReduction60Hz) {
   // Create an initial queue of 5 frames.
   constexpr int kMaxCompositionDelayInFrames = 6;
   constexpr size_t kInitialQueueSize = 5;
-  std::queue<int> enqueued_frame_ids;
+  std::queue<media::VideoFrame::ID> enqueued_frame_ids;
   for (size_t i = 0; i < kInitialQueueSize; ++i) {
     enqueued_frame_ids.push(
         CreateAndEnqueueFrame(kMaxCompositionDelayInFrames));
@@ -512,7 +517,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
     scoped_refptr<media::VideoFrame> rendered_frame =
         RenderAndStep(nullptr, kRenderInterval);
     ASSERT_TRUE(rendered_frame);
-    int frame_id_0 = rendered_frame->unique_id();
+    media::VideoFrame::ID frame_id_0 = rendered_frame->unique_id();
     StepUntilJustBeforeNextFrameIsRendered(kRenderInterval,
                                            rendered_frame->unique_id());
 
@@ -525,8 +530,10 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest,
     }
 
     // Enqueue two frames.
-    int frame_id_1 = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
-    int frame_id_2 = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    media::VideoFrame::ID frame_id_1 =
+        CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    media::VideoFrame::ID frame_id_2 =
+        CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
 
     // The first submitted frame should be rendered.
     rendered_frame = RenderAndStep(nullptr, kRenderInterval);
@@ -549,7 +556,8 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch60Hz) {
   constexpr double kDeadlineBeginErrorRate[] = {0.01, 0.03, -0.01, -0.02, 0.02};
   constexpr double kDeadlineEndErrorRate[] = {0.02, -0.03, -0.02, 0.03, 0.01};
   for (int i = 0; i < kNumberOfFrames; ++i) {
-    int frame_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+    media::VideoFrame::ID frame_id =
+        CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
     size_t frames_dropped = 0u;
     scoped_refptr<media::VideoFrame> rendered_frame = RenderWithGlitchAndStep(
         &frames_dropped, kDeadlineBeginErrorRate[i], kDeadlineEndErrorRate[i]);
@@ -570,7 +578,8 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch120Hz) {
   constexpr double kDeadlineEndErrorRate[] = {0.02, -0.03, -0.02, 0.03, 0.01};
 
   // Add one initial frame.
-  int last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
+  media::VideoFrame::ID last_id =
+      CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);
 
   for (size_t i = 0; i < kNumberOfFrames; ++i) {
     size_t frames_dropped = 0;
@@ -578,7 +587,7 @@ TEST_F(LowLatencyVideoRendererAlgorithmTest, NormalModeWithGlitch120Hz) {
         &frames_dropped, kRenderInterval, kDeadlineBeginErrorRate[i],
         kDeadlineEndErrorRate[i]);
     ASSERT_TRUE(rendered_frame);
-    int rendered_frame_id = last_id;
+    media::VideoFrame::ID rendered_frame_id = last_id;
     EXPECT_EQ(rendered_frame->unique_id(), rendered_frame_id);
 
     last_id = CreateAndEnqueueFrame(kMaxCompositionDelayInFrames);

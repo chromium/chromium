@@ -420,7 +420,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   // These frames are queued, pending to be read.
   for (size_t i = 0; i < max_frame_count; ++i) {
     auto video_frame = create_video_frame();
-    int frame_id = video_frame->unique_id();
+    media::VideoFrame::ID frame_id = video_frame->unique_id();
     push_frame_sync(std::move(video_frame));
     EXPECT_EQ(monitor.NumFrames(device_id), i + 1);
     EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 1);
@@ -428,7 +428,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   {
     // Push another video frame with the limit reached.
     auto video_frame = create_video_frame();
-    int frame_id = video_frame->unique_id();
+    media::VideoFrame::ID frame_id = video_frame->unique_id();
     push_frame_sync(std::move(video_frame));
     EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
     EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 1);
@@ -455,7 +455,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
   // that can be replaced.
   {
     auto video_frame = create_video_frame();
-    int frame_id = video_frame->unique_id();
+    media::VideoFrame::ID frame_id = video_frame->unique_id();
     push_frame_sync(std::move(video_frame));
     EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
     EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 0);

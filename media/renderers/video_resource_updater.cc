@@ -42,7 +42,6 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/format_utils.h"
-#include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/half_float_maker.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -326,14 +325,14 @@ class VideoResourceUpdater::PlaneResource {
 
   // Returns true if this resource matches the unique identifiers of another
   // VideoFrame resource.
-  bool Matches(int unique_frame_id, size_t plane_index) {
+  bool Matches(VideoFrame::ID unique_frame_id, size_t plane_index) {
     return has_unique_frame_id_and_plane_index_ &&
            unique_frame_id_ == unique_frame_id && plane_index_ == plane_index;
   }
 
   // Sets the unique identifiers for this resource, may only be called when
   // there is a single reference to the resource (i.e. |ref_count_| == 1).
-  void SetUniqueId(int unique_frame_id, size_t plane_index) {
+  void SetUniqueId(VideoFrame::ID unique_frame_id, size_t plane_index) {
     DCHECK_EQ(ref_count_, 1);
     plane_index_ = plane_index;
     unique_frame_id_ = unique_frame_id;
@@ -363,7 +362,7 @@ class VideoResourceUpdater::PlaneResource {
 
   // These two members are used for identifying the data stored in this
   // resource; they uniquely identify a VideoFrame plane.
-  int unique_frame_id_ = 0;
+  VideoFrame::ID unique_frame_id_;
   size_t plane_index_ = 0u;
   // Indicates if the above two members have been set or not.
   bool has_unique_frame_id_and_plane_index_ = false;
@@ -775,7 +774,7 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     const gfx::Size& resource_size,
     viz::ResourceFormat resource_format,
     const gfx::ColorSpace& color_space,
-    int unique_id,
+    VideoFrame::ID unique_id,
     int plane_index) {
   PlaneResource* recyclable_resource = nullptr;
   for (auto& resource : all_resources_) {
@@ -839,7 +838,7 @@ void VideoResourceUpdater::CopyHardwarePlane(
   constexpr viz::ResourceFormat copy_resource_format =
       viz::ResourceFormat::RGBA_8888;
 
-  const int no_unique_id = 0;
+  const VideoFrame::ID no_unique_id;
   const int no_plane_index = -1;  // Do not recycle referenced textures.
   PlaneResource* plane_resource = RecycleOrAllocateResource(
       output_plane_resource_size, copy_resource_format, resource_color_space,
