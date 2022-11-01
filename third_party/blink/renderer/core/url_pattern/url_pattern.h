@@ -88,6 +88,9 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
                               const URLPattern* left,
                               const URLPattern* right);
 
+  // Used for testing and debugging.
+  String ToString() const;
+
   void Trace(Visitor* visitor) const override;
 
  private:

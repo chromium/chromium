@@ -5,7 +5,11 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 
 #include "base/containers/contains.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -139,9 +143,122 @@ class Negation : public DocumentRulePredicate {
 
 }  // namespace
 
+// Represents a document rule URL pattern predicate:
+// https://wicg.github.io/nav-speculation/speculation-rules.html#document-rule-url-pattern-predicate
+class URLPatternPredicate : public DocumentRulePredicate {
+ public:
+  explicit URLPatternPredicate(HeapVector<Member<URLPattern>> patterns)
+      : patterns_(std::move(patterns)) {}
+  ~URLPatternPredicate() override = default;
+
+  bool Matches(const Element& el) const override {
+    // Let href be the result of running el’s href getter steps.
+    const KURL href = el.HrefURL();
+    // For each pattern of predicate’s patterns:
+    for (const auto& pattern : patterns_) {
+      // Match given pattern and href. If the result is not null, return true.
+      if (pattern->test(/*script_state=*/nullptr,
+                        MakeGarbageCollected<V8URLPatternInput>(href),
+                        ASSERT_NO_EXCEPTION))
+        return true;
+    }
+    return false;
+  }
+
+  String ToString() const override {
+    StringBuilder builder;
+    builder.Append("Href([");
+    for (wtf_size_t i = 0; i < patterns_.size(); i++) {
+      builder.Append(patterns_[i]->ToString());
+      if (i != patterns_.size() - 1)
+        builder.Append(", ");
+    }
+    builder.Append("])");
+    return builder.ReleaseString();
+  }
+
+  Type GetTypeForTesting() const override { return Type::kURLPatterns; }
+
+  HeapVector<Member<URLPattern>> GetURLPatternsForTesting() const override {
+    return patterns_;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(patterns_);
+    DocumentRulePredicate::Trace(visitor);
+  }
+
+ private:
+  HeapVector<Member<URLPattern>> patterns_;
+};
+
+namespace {
+URLPattern* ParseRawPattern(JSONValue* raw_pattern,
+                            const KURL& base_url,
+                            ExceptionState& exception_state) {
+  // If rawPattern is a string, then:
+  if (String raw_string; raw_pattern->AsString(&raw_string)) {
+    // Set pattern to the result of constructing a URLPattern using the
+    // URLPattern(input, baseURL) constructor steps given rawPattern and
+    // serializedBaseURL.
+    V8URLPatternInput* url_pattern_input =
+        MakeGarbageCollected<V8URLPatternInput>(raw_string);
+    return URLPattern::Create(url_pattern_input, base_url, exception_state);
+  }
+  // Otherwise, if rawPattern is a map
+  if (JSONObject* pattern_object = JSONObject::Cast(raw_pattern)) {
+    // Let init be «[ "baseURL" → serializedBaseURL ]», representing a
+    // dictionary of type URLPatternInit.
+    URLPatternInit* init = URLPatternInit::Create();
+    init->setBaseURL(base_url);
+
+    // For each key -> value of rawPattern:
+    for (wtf_size_t i = 0; i < pattern_object->size(); i++) {
+      JSONObject::Entry entry = pattern_object->at(i);
+      String key = entry.first;
+      String value;
+      // If value is not a string
+      if (!entry.second->AsString(&value))
+        return nullptr;
+
+      // Set init[key] to value.
+      if (key == "protocol")
+        init->setProtocol(value);
+      else if (key == "username")
+        init->setUsername(value);
+      else if (key == "password")
+        init->setPassword(value);
+      else if (key == "hostname")
+        init->setHostname(value);
+      else if (key == "port")
+        init->setPort(value);
+      else if (key == "pathname")
+        init->setPathname(value);
+      else if (key == "search")
+        init->setSearch(value);
+      else if (key == "hash")
+        init->setHash(value);
+      else if (key == "baseURL")
+        init->setBaseURL(value);
+      else
+        return nullptr;
+    }
+
+    // Set pattern to the result of constructing a URLPattern using the
+    // URLPattern(input, baseURL) constructor steps given init.
+    V8URLPatternInput* url_pattern_input =
+        MakeGarbageCollected<V8URLPatternInput>(init);
+    return URLPattern::Create(url_pattern_input, exception_state);
+  }
+  return nullptr;
+}
+}  // namespace
+
 // static
-DocumentRulePredicate* DocumentRulePredicate::Parse(JSONObject* input,
-                                                    const KURL& base_url) {
+DocumentRulePredicate* DocumentRulePredicate::Parse(
+    JSONObject* input,
+    const KURL& base_url,
+    ExceptionState& exception_state) {
   // If input is not a map, then return null.
   if (!input)
     return nullptr;
@@ -179,7 +296,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(JSONObject* input,
       JSONObject* raw_clause = JSONObject::Cast(raw_clauses->at(i));
       // Let clause be the result of parsing a document rule predicate given
       // rawClause and baseURL.
-      DocumentRulePredicate* clause = Parse(raw_clause, base_url);
+      DocumentRulePredicate* clause =
+          Parse(raw_clause, base_url, exception_state);
       // If clause is null, then return null.
       if (!clause)
         return nullptr;
@@ -204,7 +322,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(JSONObject* input,
 
     // Let clause be the result of parsing a document rule predicate given
     // rawClause and baseURL.
-    DocumentRulePredicate* clause = Parse(raw_clause, base_url);
+    DocumentRulePredicate* clause =
+        Parse(raw_clause, base_url, exception_state);
 
     // If clause is null, then return null.
     if (!clause)
@@ -216,8 +335,35 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(JSONObject* input,
 
   // If predicateType is "href_matches"
   if (predicate_type == "href_matches") {
-    // TODO(crbug.com/1371522): Implement this.
-    NOTIMPLEMENTED();
+    // Let rawPatterns be input["href_matches"].
+    Vector<JSONValue*> raw_patterns;
+    JSONArray* href_matches = input->GetArray("href_matches");
+    if (href_matches) {
+      for (wtf_size_t i = 0; i < href_matches->size(); i++) {
+        raw_patterns.push_back(href_matches->at(i));
+      }
+    } else {
+      // If rawPatterns is not a list, then set rawPatterns to « rawPatterns ».
+      raw_patterns.push_back(input->Get("href_matches"));
+    }
+    // Let patterns be an empty list.
+    HeapVector<Member<URLPattern>> patterns;
+    // For each rawPattern of rawPatterns:
+    for (JSONValue* raw_pattern : raw_patterns) {
+      URLPattern* pattern =
+          ParseRawPattern(raw_pattern, base_url, exception_state);
+      // If those steps throw, catch the exception and return null.
+      if (exception_state.HadException()) {
+        exception_state.ClearException();
+        return nullptr;
+      }
+      if (!pattern)
+        return nullptr;
+      // Append pattern to patterns.
+      patterns.push_back(pattern);
+    }
+    // Return a document rule URL pattern predicate whose patterns is patterns.
+    return MakeGarbageCollected<URLPatternPredicate>(std::move(patterns));
   }
 
   // If predicateType is "selector_matches"
@@ -237,6 +383,12 @@ DocumentRulePredicate* DocumentRulePredicate::MakeDefaultPredicate() {
 
 HeapVector<Member<DocumentRulePredicate>>
 DocumentRulePredicate::GetSubPredicatesForTesting() const {
+  NOTREACHED();
+  return {};
+}
+
+HeapVector<Member<URLPattern>> DocumentRulePredicate::GetURLPatternsForTesting()
+    const {
   NOTREACHED();
   return {};
 }

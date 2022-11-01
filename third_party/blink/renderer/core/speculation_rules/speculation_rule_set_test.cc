@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -767,6 +769,8 @@ String GetTypeString(DocumentRulePredicate::Type type) {
       return "Or";
     case DocumentRulePredicate::Type::kNot:
       return "Not";
+    case DocumentRulePredicate::Type::kURLPatterns:
+      return "Href";
   }
 }
 
@@ -844,6 +848,105 @@ auto Neg(::testing::Matcher<DocumentRulePredicate> matcher) {
       ConditionMatcher(DocumentRulePredicate::Type::kNot, {matcher}));
 }
 
+class HrefMatcher {
+ public:
+  explicit HrefMatcher(Vector<::testing::Matcher<URLPattern>> pattern_matchers)
+      : pattern_matchers_(std::move(pattern_matchers)) {}
+
+  bool MatchAndExplain(DocumentRulePredicate* predicate,
+                       ::testing::MatchResultListener* listener) const {
+    if (!predicate)
+      return false;
+    return MatchAndExplain(*predicate, listener);
+  }
+
+  bool MatchAndExplain(const DocumentRulePredicate& predicate,
+                       ::testing::MatchResultListener* listener) const {
+    if (predicate.GetTypeForTesting() !=
+            DocumentRulePredicate::Type::kURLPatterns ||
+        predicate.GetURLPatternsForTesting().size() !=
+            pattern_matchers_.size()) {
+      *listener << predicate.ToString();
+      return false;
+    }
+
+    auto patterns = predicate.GetURLPatternsForTesting();
+    ::testing::StringMatchResultListener inner_listener;
+    for (wtf_size_t i = 0; i < pattern_matchers_.size(); i++) {
+      if (!pattern_matchers_[i].MatchAndExplain(*patterns[i],
+                                                &inner_listener)) {
+        *listener << predicate.ToString();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void DescribeTo(::std::ostream* os) const {
+    *os << GetTypeString(DocumentRulePredicate::Type::kURLPatterns) << "([";
+    for (wtf_size_t i = 0; i < pattern_matchers_.size(); i++) {
+      pattern_matchers_[i].DescribeTo(os);
+      if (i != pattern_matchers_.size() - 1)
+        *os << ", ";
+    }
+    *os << "])";
+  }
+
+  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
+
+ private:
+  Vector<::testing::Matcher<URLPattern>> pattern_matchers_;
+};
+
+auto Href(Vector<::testing::Matcher<URLPattern>> pattern_matchers = {}) {
+  return testing::MakePolymorphicMatcher(HrefMatcher(pattern_matchers));
+}
+
+class URLPatternMatcher {
+ public:
+  explicit URLPatternMatcher(String pattern, const KURL& base_url) {
+    auto* url_pattern_input = MakeGarbageCollected<V8URLPatternInput>(pattern);
+    url_pattern_ =
+        URLPattern::Create(url_pattern_input, base_url, ASSERT_NO_EXCEPTION);
+  }
+
+  bool MatchAndExplain(URLPattern* pattern,
+                       ::testing::MatchResultListener* listener) const {
+    if (!pattern)
+      return false;
+    return MatchAndExplain(*pattern, listener);
+  }
+
+  bool MatchAndExplain(const URLPattern& pattern,
+                       ::testing::MatchResultListener* listener) const {
+    using Component = V8URLPatternComponent::Enum;
+    Component components[] = {Component::kProtocol, Component::kUsername,
+                              Component::kPassword, Component::kHostname,
+                              Component::kPort,     Component::kPathname,
+                              Component::kSearch,   Component::kHash};
+    for (auto component : components) {
+      if (URLPattern::compareComponent(V8URLPatternComponent(component),
+                                       url_pattern_, &pattern) != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void DescribeTo(::std::ostream* os) const { *os << url_pattern_->ToString(); }
+
+  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
+
+ private:
+  Persistent<URLPattern> url_pattern_;
+};
+
+auto URLPattern(String pattern,
+                const KURL& base_url = KURL("https://example.com/")) {
+  return ::testing::MakePolymorphicMatcher(
+      URLPatternMatcher(pattern, base_url));
+}
+
 class DocumentRulesTest : public SpeculationRuleSetTest {
  public:
   ~DocumentRulesTest() override = default;
@@ -919,6 +1022,68 @@ TEST_F(DocumentRulesTest, ParseNot) {
                           MatchesPredicate(Neg(Or({And(), Or()})))));
 }
 
+TEST_F(DocumentRulesTest, ParseHref) {
+  auto* rule_set = SpeculationRuleSet::Parse(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": {"href_matches": "/foo#bar"}
+        }, {
+          "source": "document",
+          "where": {"href_matches": {"pathname": "/foo"}}
+        }, {
+          "source": "document",
+          "where": {"href_matches": [
+            {"pathname": "/buzz"},
+            "/fizz",
+            {"hostname": "bar.com"}
+          ]}
+        }, {
+          "source": "document",
+          "where": {"or": [
+            {"href_matches": {"hostname": "foo.com"}},
+            {"not": {"href_matches": {"protocol": "http", "hostname": "*"}}}
+          ]}
+        }]
+      })",
+      KURL("https://example.com/"), execution_context());
+  EXPECT_THAT(
+      rule_set->prefetch_rules(),
+      ElementsAre(
+          MatchesPredicate(Href({URLPattern("/foo#bar")})),
+          MatchesPredicate(Href({URLPattern("/foo")})),
+          MatchesPredicate(Href({URLPattern("/buzz"), URLPattern("/fizz"),
+                                 URLPattern("https://bar.com")})),
+          MatchesPredicate(Or({Href({URLPattern("https://foo.com")}),
+                               Neg(Href({URLPattern("http://*")}))}))));
+}
+
+TEST_F(DocumentRulesTest, ParseHref_AllUrlPatternKeys) {
+  auto* href_matches = CreatePredicate(R"("href_matches": {
+    "username": "",
+    "password": "",
+    "port": "*",
+    "pathname": "/*",
+    "search": "*",
+    "hash": "",
+    "protocol": "https",
+    "hostname": "abc.xyz",
+    "baseURL": "https://example.com"
+  })");
+  EXPECT_THAT(href_matches, Href({URLPattern("https://abc.xyz:*/*\\?*")}));
+}
+
+TEST_F(DocumentRulesTest, HrefMatchesWithBaseURL) {
+  auto* without_base_specified = CreatePredicate(
+      R"("href_matches": {"pathname": "/hello"})", KURL("http://foo.com"));
+  EXPECT_THAT(without_base_specified,
+              Href({URLPattern("http://foo.com/hello")}));
+  auto* with_base_specified = CreatePredicate(
+      R"("href_matches": {"pathname": "hello", "baseURL": "http://bar.com"})",
+      KURL("http://foo.com"));
+  EXPECT_THAT(with_base_specified, Href({URLPattern("http://bar.com/hello")}));
+}
+
 TEST_F(DocumentRulesTest, DropInvalidRules) {
   auto* rule_set = SpeculationRuleSet::Parse(
       R"({"prefetch": [)"
@@ -963,14 +1128,32 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
       // "not" key has invalid object value.
       R"({"source": "document", "where": {"not": {"foo": "bar"}}},)"
 
+      // pattern is not a string or map value.
+      R"({"source": "document", "where": {"href_matches": false}},)"
+
+      // pattern string is invalid.
+      R"({"source": "document", "where": {"href_matches": "::"}},)"
+
+      // pattern object has invalid key.
+      R"({"source": "document", "where": {"href_matches": {"foo": "bar"}}},)"
+
+      // pattern object has invalid value.
+      R"({"source": "document",
+          "where": {"href_matches": {"protocol": "::"}}},)"
+
       // valid document rule.
       R"({"source": "document",
-          "where": {"and": [{"or": []}, {"not": {"and": []}}]}
+          "where": {"and": [
+            {"or": [{"href_matches": "/hello.html"}]},
+            {"not": {"and": [{"href_matches": {"hostname": "world.com"}}]}}
+          ]}
          }]})",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(),
-              ElementsAre(MatchesPredicate(And({Or(), Neg(And())}))));
+              ElementsAre(MatchesPredicate(
+                  And({Or({Href({URLPattern("/hello.html")})}),
+                       Neg(And({Href({URLPattern("https://world.com")})}))}))));
 }
 
 TEST_F(DocumentRulesTest, DefaultPredicate) {
@@ -1034,6 +1217,33 @@ TEST_F(DocumentRulesTest, EvaluateCombinators) {
   auto* not_false = CreatePredicate(R"("not": {"or": []})");
   EXPECT_THAT(not_false, Neg(Or()));
   EXPECT_TRUE(not_false->Matches(*link));
+}
+
+TEST_F(DocumentRulesTest, EvaluateHrefMatches) {
+  DummyPageHolder page_holder;
+  Document& document = page_holder.GetDocument();
+  HTMLAnchorElement* link = MakeGarbageCollected<HTMLAnchorElement>(document);
+  link->setHref("https://foo.com/bar.html?fizz=buzz");
+
+  // No patterns specified, will not match any link.
+  auto* empty = CreatePredicate(R"("href_matches": [])");
+  EXPECT_FALSE(empty->Matches(*link));
+
+  // Single pattern (should match).
+  auto* single =
+      CreatePredicate(R"("href_matches": "https://foo.com/bar.html?*")");
+  EXPECT_TRUE(single->Matches(*link));
+
+  // Two patterns which don't match.
+  auto* double_fail = CreatePredicate(
+      R"("href_matches": ["http://foo.com/*", "https://bar.com/*"])");
+  EXPECT_FALSE(double_fail->Matches(*link));
+
+  // One pattern that matches, one that doesn't - should still pass due to
+  // an implicit or between patterns in a href_matches list.
+  auto* pass_fail = CreatePredicate(
+      R"("href_matches": ["https://foo.com/bar.html?*", "https://bar.com/*"])");
+  EXPECT_TRUE(pass_fail->Matches(*link));
 }
 
 }  // namespace

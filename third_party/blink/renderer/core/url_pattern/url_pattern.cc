@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -475,6 +476,20 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
       return url_pattern::Component::Compare(*left->hash_, *right->hash_);
   }
   NOTREACHED();
+}
+
+String URLPattern::ToString() const {
+  StringBuilder builder;
+  builder.Append("(");
+  Vector<String> components = {protocol(), username(), password(), hostname(),
+                               port(),     pathname(), search(),   hash()};
+  for (wtf_size_t i = 0; i < components.size(); i++) {
+    builder.Append(components[i] == g_empty_string ? " " : components[i]);
+    if (i != components.size() - 1)
+      builder.Append(",");
+  }
+  builder.Append(")");
+  return builder.ReleaseString();
 }
 
 void URLPattern::Trace(Visitor* visitor) const {

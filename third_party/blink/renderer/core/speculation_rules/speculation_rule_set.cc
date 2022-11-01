@@ -8,6 +8,7 @@
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -116,7 +117,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     // predicate given input["where"] and baseURL.
     else {
       document_rule_predicate =
-          DocumentRulePredicate::Parse(input->GetJSONObject("where"), base_url);
+          DocumentRulePredicate::Parse(input->GetJSONObject("where"), base_url,
+                                       IGNORE_EXCEPTION_FOR_TESTING);
     }
     if (!document_rule_predicate)
       return nullptr;
