@@ -20,8 +20,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_contents.h"
@@ -145,9 +143,7 @@ const Extension* PlatformAppBrowserTest::InstallHostedApp() {
 
 const Extension* PlatformAppBrowserTest::InstallAndLaunchPlatformApp(
     const char* name) {
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
 
   const Extension* extension = InstallPlatformApp(name);
 
