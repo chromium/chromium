@@ -2868,6 +2868,8 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       }
       element_animations->RestartAnimationOnCompositor();
     }
+
+    data->RemoveAnchorScrollData();
   }
 
   DetachPrecedingPseudoElements(performing_reattach);
@@ -8196,6 +8198,19 @@ CSSToggleMap* Element::GetToggleMap() {
 
 CSSToggleMap& Element::EnsureToggleMap() {
   return EnsureElementRareData().EnsureToggleMap(this);
+}
+
+AnchorScrollData& Element::EnsureAnchorScrollData() {
+  return EnsureElementRareData().EnsureAnchorScrollData(this);
+}
+
+void Element::RemoveAnchorScrollData() {
+  if (HasRareData())
+    GetElementRareData()->RemoveAnchorScrollData();
+}
+
+AnchorScrollData* Element::GetAnchorScrollData() const {
+  return HasRareData() ? GetElementRareData()->GetAnchorScrollData() : nullptr;
 }
 
 }  // namespace blink

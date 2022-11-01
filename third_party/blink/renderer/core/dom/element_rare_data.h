@@ -53,6 +53,7 @@
 
 namespace blink {
 
+class AnchorScrollData;
 class ContainerQueryData;
 class Element;
 class HTMLElement;
@@ -276,6 +277,10 @@ class ElementRareData final : public NodeRareData {
   CSSToggleMap* GetToggleMap() const { return toggle_map_.Get(); }
   CSSToggleMap& EnsureToggleMap(Element* owner_element);
 
+  AnchorScrollData* GetAnchorScrollData() const { return anchor_scroll_data_; }
+  void RemoveAnchorScrollData() { anchor_scroll_data_ = nullptr; }
+  AnchorScrollData& EnsureAnchorScrollData(Element*);
+
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
   void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
   void ClearFocusgroupFlags() { focusgroup_flags_ = FocusgroupFlags::kNone; }
@@ -392,6 +397,7 @@ class ElementRareData final : public NodeRareData {
   Member<ResizeObserverSize> last_intrinsic_size_;
   Member<PopupData> popup_data_;
   Member<CSSToggleMap> toggle_map_;
+  Member<AnchorScrollData> anchor_scroll_data_;
 
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
   HasInvalidationFlags has_invalidation_flags_;

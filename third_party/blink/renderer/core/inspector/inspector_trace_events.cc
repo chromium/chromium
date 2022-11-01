@@ -763,6 +763,7 @@ const char kSvgChanged[] = "SVG changed";
 const char kScrollbarChanged[] = "Scrollbar changed";
 const char kDisplayLock[] = "Display lock";
 const char kDevtools[] = "Inspected by devtools";
+const char kAnchorPositioning[] = "Anchor positioning";
 }  // namespace layout_invalidation_reason
 
 void inspector_layout_invalidation_tracking_event::Data(

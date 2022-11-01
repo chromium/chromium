@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -308,30 +309,6 @@ void PaintLayer::UpdateLayerPositionRecursive() {
     // Sticky position constraints and ancestor overflow scroller affect
     // the sticky layer position, so we need to update it again here.
     UpdateLayerPosition();
-  }
-
-  if (LayoutBox* box = DynamicTo<LayoutBox>(GetLayoutObject());
-      box && box->AnchorScrollContainer()) {
-    LayoutBox::AnchorScrollData anchor_scroll_data =
-        box->ComputeAnchorScrollData();
-    DCHECK(anchor_scroll_data.inner_most_scroll_container_layer);
-
-    bool needs_paint_property_update = false;
-    for (const PaintLayer* scroller_layer =
-             anchor_scroll_data.inner_most_scroll_container_layer;
-         ; scroller_layer = scroller_layer->ContainingScrollContainerLayer()) {
-      DCHECK(scroller_layer);
-      bool is_new_entry =
-          scroller_layer->GetScrollableArea()->AddAnchorPositionedLayer(this);
-      if (!is_new_entry)
-        break;
-      needs_paint_property_update = true;
-      if (scroller_layer ==
-          anchor_scroll_data.outer_most_scroll_container_layer)
-        break;
-    }
-    if (needs_paint_property_update)
-      box->SetNeedsPaintPropertyUpdate();
   }
 
   // Display-locked elements always have a PaintLayer, meaning that the
@@ -817,7 +794,6 @@ void PaintLayer::ScrollContainerStatusChanged() {
   for (auto* layer = this; layer; layer = layer->Parent()) {
     if (auto* scrollable_area = layer->GetScrollableArea()) {
       scrollable_area->InvalidateAllStickyConstraints();
-      scrollable_area->InvalidateAllAnchorPositionedLayers();
     }
   }
 
@@ -1058,8 +1034,8 @@ static inline const PaintLayer* AccumulateOffsetTowardsAncestor(
   } else if (layer->GetLayoutObject().IsInFlowPositioned()) {
     location += layer->GetLayoutObject().OffsetForInFlowPosition();
   } else if (layer->GetLayoutObject().IsBox() &&
-             layer->GetLayoutBox()->AnchorScrollObject()) {
-    location += layer->GetLayoutBox()->ComputeAnchorScrollOffset();
+             layer->GetLayoutBox()->HasAnchorScrollTranslation()) {
+    location += layer->GetLayoutBox()->AnchorScrollTranslationOffset();
   }
   location -=
       PhysicalOffset(containing_layer->PixelSnappedScrolledContentOffset());

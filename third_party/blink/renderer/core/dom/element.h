@@ -66,6 +66,7 @@ class Vector2dF;
 namespace blink {
 
 class AccessibleNode;
+class AnchorScrollData;
 class AriaNotificationOptions;
 class Attr;
 class Attribute;
@@ -1167,6 +1168,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RemovePopupData();
   PopupData* EnsurePopupData();
   PopupData* GetPopupData() const;
+
+  AnchorScrollData& EnsureAnchorScrollData();
+  void RemoveAnchorScrollData();
+  AnchorScrollData* GetAnchorScrollData() const;
 
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }

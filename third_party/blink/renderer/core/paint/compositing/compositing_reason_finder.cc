@@ -248,7 +248,7 @@ CompositingReasons CompositingReasonsForScrollDependentPosition(
         reasons |= CompositingReason::kFixedPosition;
     }
 
-    if (box->AnchorScrollContainer())
+    if (box->HasAnchorScrollTranslation())
       reasons |= CompositingReason::kAnchorScroll;
   }
 

@@ -355,6 +355,13 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
 
   if ((IsOutOfFlowPositioned() || IsRelPositioned()) && Parent())
     DisallowDeferredShapingIfNegativePositioned();
+
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    if (IsOutOfFlowPositioned() && StyleRef().AnchorScroll())
+      element->EnsureAnchorScrollData();
+    else
+      element->RemoveAnchorScrollData();
+  }
 }
 
 void LayoutBoxModelObject::InsertedIntoTree() {
@@ -1056,8 +1063,8 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
             To<LayoutBox>(offset_parent_object)->PhysicalLocation();
       }
     } else if (UNLIKELY(IsBox() &&
-                        To<LayoutBox>(this)->AnchorScrollContainer())) {
-      reference_point += To<LayoutBox>(this)->ComputeAnchorScrollOffset();
+                        To<LayoutBox>(this)->HasAnchorScrollTranslation())) {
+      reference_point += To<LayoutBox>(this)->AnchorScrollTranslationOffset();
     }
 
     if (offset_parent_object->IsLayoutInline()) {

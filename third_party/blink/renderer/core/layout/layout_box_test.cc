@@ -2005,41 +2005,6 @@ TEST_P(LayoutBoxTest, HitTestResizerStackedWithTextAreaChild) {
       GetDocument().getElementById("textarea")));
 }
 
-TEST_P(LayoutBoxTest, AnchorScrollObject) {
-  // LayoutBox::AnchorScrollObject() calculation is NG-only.
-  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
-    return;
-
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
-  SetBodyInnerHTML(R"HTML(
-    <div style="position: relative">
-      <div>
-        Lorem ipsum
-        <span id="anchor" style="anchor-name: --a1">anchor</span>
-        dolor sit amet
-      </div>
-      <div id="anchored" style="position: absolute; anchor-scroll: --a1">
-        anchored
-      </div>
-      <div id="no-anchor" style="position: absolute; anchor-scroll: --b1">
-        anchor not found
-      </div>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  const LayoutBox* anchored =
-      To<LayoutBox>(GetLayoutObjectByElementId("anchored"));
-  EXPECT_EQ(anchored->AnchorScrollObject(),
-            GetLayoutObjectByElementId("anchor"));
-
-  const LayoutBox* anchor_not_found =
-      To<LayoutBox>(GetLayoutObjectByElementId("no-anchor"));
-  EXPECT_FALSE(anchor_not_found->AnchorScrollObject());
-}
-
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

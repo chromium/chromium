@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
@@ -466,7 +467,7 @@ static bool NeedsStickyTranslation(const LayoutObject& object) {
 
 static bool NeedsAnchorScrollTranslation(const LayoutObject& object) {
   if (const LayoutBox* box = DynamicTo<LayoutBox>(object))
-    return box->AnchorScrollContainer();
+    return box->HasAnchorScrollTranslation();
   return false;
 }
 
@@ -774,11 +775,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsAnchorScrollTranslation(object_)) {
       const auto& box = To<LayoutBox>(object_);
-      LayoutBox::AnchorScrollData anchor_scroll_data =
-          box.ComputeAnchorScrollData();
+      const AnchorScrollData& anchor_scroll_data =
+          *To<Element>(box.GetNode())->GetAnchorScrollData();
       gfx::Vector2dF translation_offset =
-          -anchor_scroll_data.accumulated_scroll_offset;
+          -anchor_scroll_data.AccumulatedScrollOffset();
       TransformPaintPropertyNode::State state{translation_offset};
+
+      // TODO(crbug.com/1309178): We should disable composited scrolling if the
+      // snapshot's scrollers do not match the current scrollers.
 
       DCHECK(full_context_.direct_compositing_reasons &
              CompositingReason::kAnchorScroll);
@@ -798,14 +802,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
 
       scoped_refptr<const TransformPaintPropertyNode>
           inner_most_scroll_container =
-              anchor_scroll_data.inner_most_scroll_container_layer
+              anchor_scroll_data.ScrollContainerLayers()
+                  .front()
                   ->GetLayoutObject()
                   .FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation();
       scoped_refptr<const TransformPaintPropertyNode>
           outer_most_scroll_container =
-              anchor_scroll_data.outer_most_scroll_container_layer
+              anchor_scroll_data.ScrollContainerLayers()
+                  .back()
                   ->GetLayoutObject()
                   .FirstFragment()
                   .PaintProperties()
@@ -814,7 +820,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
           TransformPaintPropertyNode::AnchorScrollContainersData>(
           std::move(inner_most_scroll_container),
           std::move(outer_most_scroll_container),
-          anchor_scroll_data.accumulated_scroll_origin);
+          anchor_scroll_data.AccumulatedScrollOrigin());
 
       OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
           *context_.current.transform, std::move(state)));

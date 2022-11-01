@@ -48,18 +48,23 @@
 </div>
 
 <script>
-// Move both the anchor and the anchored elements into the visible area of the
-// scroller.
-scroller.scrollTop = 300;
-scroller.scrollLeft = 1300;
+promise_setup(async () => {
+  // Move both the anchor and the anchored elements into the visible area of the
+  // scroller. This also runs layout to setup an empty anchor-scroll snapshot.
+  scroller.scrollTop = 300;
+  scroller.scrollLeft = 1300;
 
-test(() => {
+  // Ensure up-to-date anchor-scroll snapshot.
+  await new Promise(resolve => requestAnimationFrame(resolve));
+});
+
+promise_test(async () => {
   let rect = anchored.getBoundingClientRect();
   assert_equals(rect.x, 200);
   assert_equals(rect.y, 100);
 }, 'Element.getBoundingClientRect() returns the actual rendered location');
 
-test(() => {
+promise_test(async () => {
   let range = document.createRange();
   let text = anchored.firstChild;
   range.setStart(text, 0);
@@ -69,7 +74,7 @@ test(() => {
   assert_equals(rect.y, 100);
 }, 'Range.getBoundingClientRect() returns the actual rendered location');
 
-test(() => {
+promise_test(async () => {
   assert_equals(anchored.offsetLeft, 200);
   assert_equals(anchored.offsetTop, 100);
 }, 'Element.offset* return adjusted offsets');

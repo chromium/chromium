@@ -81,7 +81,6 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   void Trace(Visitor* visitor) const;
 
   HeapLinkedHashSet<Member<PaintLayer>> sticky_layers_;
-  HeapHashSet<Member<PaintLayer>> anchor_positioned_layers_;
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
@@ -527,11 +526,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
   void InvalidateAllStickyConstraints();
   void InvalidatePaintForStickyDescendants();
-
-  // Returns true if the layer is not already added.
-  bool AddAnchorPositionedLayer(PaintLayer*);
-  void InvalidateAllAnchorPositionedLayers();
-  void InvalidatePaintForAnchorPositionedLayers();
 
   uint32_t GetNonCompositedMainThreadScrollingReasons() {
     return non_composited_main_thread_scrolling_reasons_;

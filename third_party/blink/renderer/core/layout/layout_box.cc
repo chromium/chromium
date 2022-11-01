@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
@@ -3214,8 +3215,8 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
     offset += To<LayoutInline>(o)->OffsetForInFlowPositionedInline(*this);
   }
 
-  if (AnchorScrollObject())
-    offset += ComputeAnchorScrollOffset();
+  if (HasAnchorScrollTranslation())
+    offset += AnchorScrollTranslationOffset();
 
   return offset;
 }
@@ -3849,8 +3850,8 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     // LayoutObject::setStyle, the relative position flag on the LayoutObject
     // has been cleared, so use the one on the style().
     container_offset += OffsetForInFlowPosition();
-  } else if (UNLIKELY(AnchorScrollObject())) {
-    container_offset += ComputeAnchorScrollOffset();
+  } else if (UNLIKELY(HasAnchorScrollTranslation())) {
+    container_offset += AnchorScrollTranslationOffset();
   }
 
   if (skip_info.FilterSkipped()) {
@@ -8148,69 +8149,20 @@ PhysicalRect LayoutBox::ComputeStickyConstrainingRect() const {
   return constraining_rect;
 }
 
-const LayoutObject* LayoutBox::AnchorScrollObject() const {
-  if (!StyleRef().AnchorScroll())
-    return nullptr;
-
-  if (StyleRef().GetPosition() != EPosition::kAbsolute &&
-      StyleRef().GetPosition() != EPosition::kFixed) {
-    return nullptr;
+bool LayoutBox::HasAnchorScrollTranslation() const {
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    return element->GetAnchorScrollData() &&
+           element->GetAnchorScrollData()->HasTranslation();
   }
-
-  NGPhysicalFragmentList containing_block_fragments =
-      ContainingBlock()->PhysicalFragments();
-  if (containing_block_fragments.IsEmpty())
-    return nullptr;
-
-  // TODO(crbug.com/1309178): Fix it when the containing block is fragmented.
-  const NGPhysicalAnchorQuery* anchor_query =
-      containing_block_fragments.front().AnchorQuery();
-  if (!anchor_query)
-    return nullptr;
-
-  if (const NGPhysicalFragment* fragment =
-          anchor_query->Fragment(StyleRef().AnchorScroll())) {
-    return fragment->GetLayoutObject();
-  }
-  return nullptr;
+  return false;
 }
 
-const LayoutBox* LayoutBox::AnchorScrollContainer() const {
-  if (const LayoutObject* object = AnchorScrollObject()) {
-    const LayoutBox* scroller = object->ContainingScrollContainer();
-    if (scroller != ContainingScrollContainer())
-      return scroller;
+PhysicalOffset LayoutBox::AnchorScrollTranslationOffset() const {
+  if (Element* element = DynamicTo<Element>(GetNode())) {
+    if (AnchorScrollData* data = element->GetAnchorScrollData())
+      return data->TranslationAsPhysicalOffset();
   }
-  return nullptr;
-}
-
-LayoutBox::AnchorScrollData LayoutBox::ComputeAnchorScrollData() const {
-  if (!AnchorScrollContainer())
-    return AnchorScrollData();
-
-  const PaintLayer* inner_most_scroll_container_layer =
-      AnchorScrollContainer()->Layer();
-  const PaintLayer* outer_most_scroll_container_layer =
-      inner_most_scroll_container_layer;
-  gfx::Vector2dF accumulated_scroll_offset(0, 0);
-  gfx::Vector2d accumulated_scroll_origin(0, 0);
-  for (const PaintLayer* layer = inner_most_scroll_container_layer; layer;
-       layer = layer->ContainingScrollContainerLayer()) {
-    if (layer == Layer()->ContainingScrollContainerLayer())
-      break;
-    accumulated_scroll_offset += layer->GetScrollableArea()->GetScrollOffset();
-    accumulated_scroll_origin +=
-        layer->GetScrollableArea()->ScrollOrigin().OffsetFromOrigin();
-    outer_most_scroll_container_layer = layer;
-  }
-
-  return {inner_most_scroll_container_layer, outer_most_scroll_container_layer,
-          accumulated_scroll_offset, accumulated_scroll_origin};
-}
-
-PhysicalOffset LayoutBox::ComputeAnchorScrollOffset() const {
-  return -PhysicalOffset::FromVector2dFFloor(
-      ComputeAnchorScrollData().accumulated_scroll_offset);
+  return PhysicalOffset();
 }
 
 }  // namespace blink
