@@ -1401,6 +1401,39 @@
       },
       {
         "args": [
+          "--board=eve",
+          "--flash"
+        ],
+        "experiment_percentage": 5,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "lacros_cq_tast_tests_eve eve",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_type": "eve",
+              "os": "ChromeOS"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "lacros_cq_tast_tests_eve",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_cq_tast_tests_eve/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        },
+        "variant_id": "eve"
+      },
+      {
+        "args": [
           "--board=amd64-generic",
           "--use-vm"
         ],
@@ -1485,6 +1518,39 @@
         },
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "trigger_script": {
+          "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
+        },
+        "variant_id": "jacuzzi"
+      },
+      {
+        "args": [
+          "--board=jacuzzi",
+          "--flash"
+        ],
+        "experiment_percentage": 5,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "lacros_cq_tast_tests_jacuzzi jacuzzi",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_type": "jacuzzi",
+              "os": "ChromeOS"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "lacros_cq_tast_tests_jacuzzi",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_cq_tast_tests_jacuzzi/",
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         },

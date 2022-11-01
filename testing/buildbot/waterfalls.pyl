@@ -1438,7 +1438,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_device_arm_tests',
+          'gtest_tests': 'lacros_device_arm_tests_rel',
         },
         'os_type': 'chromeos'
       },

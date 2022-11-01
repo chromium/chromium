@@ -99,6 +99,42 @@ if (is_chromeos_device) {
     tast_disabled_tests = tast_disabled_tests_from_lacros_all
   }
 
+  # This target is run in lacros CQ builder in addition to lacros_all_tast_tests
+  # on eve board
+  lacros_tast_tests("lacros_cq_tast_tests_eve") {
+    # To disable a specific test, comment out the test and
+    # add the bug number.Please do not just delete it.
+    tast_tests = [
+      "a11y.Smoke.lacros",
+      "dlp.DataLeakPreventionRulesListClipboardOmni.lacros",
+      "feedback.SysInfoPII.third_party_site_on_lacros",
+      "inputs.SpellCheckRemoveWords.lacros",
+      "policy.AutoOpenAllowedForURLs.lacros",
+      "policy.ManagedBookmarks.lacros",
+      "policy.PasswordManagerEnabled.lacros",
+      "policy.SafeBrowsingProtectionLevel.lacros",
+      "ui.NotificationClosePerf.clear_all_lacros",
+    ]
+  }
+
+  # This target is run in lacros CQ builder in addition to lacros_all_tast_tests
+  # on jacuzzi board
+  lacros_tast_tests("lacros_cq_tast_tests_jacuzzi") {
+    # To disable a specific test, comment out the test and
+    # add the bug number.Please do not just delete it.
+    tast_tests = [
+      "apps.LacrosWebApps",
+      "example.Touch.lacros",
+      "holdingspace.Download.lacros_pause_and_resume",
+      "policy.AllowCrossOriginAuthPrompt.lacros",
+      "policy.BasicAuthOverHTTPEnabled",
+      "policy.NotificationsAllowedForUrls.lacros",
+      "policy.PrintingBackgroundGraphicsDefault.lacros",
+      "ui.DragTabInTabletPerf.lacros",
+      "wmp.OverviewDragWindowToNewDesk.lacros",
+    ]
+  }
+
   lacros_tast_tests("lacros_fyi_tast_tests") {
     tast_tests = [
       "lacros.AppLauncherLaunch",
