@@ -232,13 +232,6 @@ try_.builder(
         "ci/chromeos-kevin-rel",
     ],
     main_list_view = "try",
-    tryjob = try_.job(
-        location_filters = [
-            "build/chromeos/.+",
-            "build/config/chromeos/.*",
-            "chromeos/CHROMEOS_LKGM",
-        ],
-    ),
     execution_timeout = 6 * time.hour,
 )
 
