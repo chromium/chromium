@@ -14,8 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
@@ -55,7 +53,7 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
     content::RunMessageLoop();
   }
 
-  // Implements the content::NotificationObserver interface.
+  // Implements the AppWindowGeometryCache::Observer interface.
   void OnGeometryCacheChanged(const std::string& extension_id,
                               const std::string& window_id,
                               const gfx::Rect& bounds) override {
@@ -221,10 +219,6 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   // continue running.
   ExtensionTestMessageListener launched_listener("Launched",
                                                  ReplyBehavior::kWillReply);
-
-  content::WindowedNotificationObserver app_loaded_observer(
-      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-      content::NotificationService::AllSources());
 
   const extensions::Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("platform_apps").AppendASCII("window_api"));
