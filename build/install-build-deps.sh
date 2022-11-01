@@ -97,19 +97,20 @@ fi
 
 distro_codename=$(lsb_release --codename --short)
 distro_id=$(lsb_release --id --short)
-# TODO(crbug.com/1199405): Remove 14.04 (trusty) and 16.04 (xenial).
-supported_codenames="(trusty|xenial|bionic|disco|eoan|focal|groovy|jammy)"
+# TODO(crbug.com/1199405): Remove 16.04 (xenial).
+supported_codenames="(xenial|bionic|disco|eoan|focal|groovy|jammy)"
 supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
   if [[ ! $distro_codename =~ $supported_codenames &&
         ! $distro_id =~ $supported_ids ]]; then
     echo -e "ERROR: The only supported distros are\n" \
-      "\tUbuntu 14.04 LTS (trusty with EoL April 2022)\n" \
       "\tUbuntu 16.04 LTS (xenial with EoL April 2024)\n" \
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
-      "\tUbuntu 20.04 LTS (focal with Eol April 2030)\n" \
+      "\tUbuntu 20.04 LTS (focal with EoL April 2030)\n" \
+      "\tUbuntu 19.04 (disco)\n" \
+      "\tUbuntu 19.10 (eoan)\n" \
       "\tUbuntu 20.10 (groovy)\n" \
-      "\tUbuntu 22.04 LTS (jammy with Eol April 2032)\n" \
+      "\tUbuntu 22.04 LTS (jammy with EoL April 2032)\n" \
       "\tDebian 10 (buster) or later" >&2
     exit 1
   fi
@@ -156,6 +157,7 @@ dev_list="\
   devscripts
   fakeroot
   flex
+  fuse
   git-core
   gperf
   libasound2-dev
@@ -317,6 +319,7 @@ lib32_list="linux-libc-dev:i386 libpci3:i386"
 
 # 32-bit libraries needed for a 32-bit build
 lib32_list="$lib32_list
+  fuse:i386
   libasound2:i386
   libatk-bridge2.0-0:i386
   libatk1.0-0:i386
@@ -432,14 +435,6 @@ else
 fi
 
 case $distro_codename in
-  trusty)
-    backwards_compatible_list+=" \
-      libgbm-dev-lts-trusty
-      libgl1-mesa-dev-lts-trusty
-      libgl1-mesa-glx-lts-trusty:i386
-      libgles2-mesa-dev-lts-trusty
-      mesa-common-dev-lts-trusty"
-    ;;
   xenial)
     backwards_compatible_list+=" \
       libgbm-dev-lts-xenial
@@ -455,12 +450,8 @@ arm_list="libc6-dev-armhf-cross
           linux-libc-dev-armhf-cross
           g++-arm-linux-gnueabihf"
 
-# Work around for dependency issue Ubuntu/Trusty: http://crbug.com/435056
+# Work around for dependency issue Ubuntu: http://crbug.com/435056
 case $distro_codename in
-  trusty)
-    arm_list+=" g++-4.8-multilib-arm-linux-gnueabihf
-                gcc-4.8-multilib-arm-linux-gnueabihf"
-    ;;
   xenial|bionic)
     arm_list+=" g++-5-multilib-arm-linux-gnueabihf
                 gcc-5-multilib-arm-linux-gnueabihf
@@ -615,7 +606,7 @@ fi
 # that are part of v8 need to be compiled with -m32 which means
 # that basic multilib support is needed.
 if file -L /sbin/init | grep -q 'ELF 64-bit'; then
-  # gcc-multilib conflicts with the arm cross compiler (at least in trusty) but
+  # gcc-multilib conflicts with the arm cross compiler but
   # g++-X.Y-multilib gives us the 32-bit support that we need. Find out the
   # appropriate value of X and Y by seeing what version the current
   # distribution's g++-multilib package depends on.
