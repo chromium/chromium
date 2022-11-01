@@ -109,6 +109,25 @@
   dynamic_rule_test(async (t, assert_width) => {
     let element = insertElement();
 
+    // Flush style and create the animation with play pending.
+    getComputedStyle(element).animation;
+
+    let anim = element.getAnimations()[0];
+    assert_true(anim.pending, "The animation is in play pending");
+
+    // Switch to scroll timeline for a pending animation.
+    scroller1.style.scrollTimelineName = 'timeline';
+    element.style.animationTimeline = 'timeline';
+
+    await anim.ready;
+    assert_false(anim.pending, "The animation is not pending");
+
+    await assert_width(element, '120px');
+  }, 'Switching pending animation from document to scroll timelines');
+
+  dynamic_rule_test(async (t, assert_width) => {
+    let element = insertElement();
+
     // Note: #scroller1 is at 20%, and #scroller2 is at 40%.
     scroller1.style.scrollTimelineName = 'timeline1';
     scroller2.style.scrollTimelineName = 'timeline2';

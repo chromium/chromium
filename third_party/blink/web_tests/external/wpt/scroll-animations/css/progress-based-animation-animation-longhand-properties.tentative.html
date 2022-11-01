@@ -83,14 +83,6 @@ promise_test(async t => {
   assert_equals(getComputedStyle(target).translate, '100px');
 }, 'animation-duration: 0s');
 
-promise_test(async t => {
-  let [target, scroller] = createTargetAndScroller(t);
-  target.style.animation = 'infinite linear anim scroll(nearest)';
-
-  await scrollTop(scroller, 25); // [0, 100].
-  assert_equals(getComputedStyle(target).translate, '100px');
-}, 'animation-duration: infinite');
-
 
 // ------------------------------
 // Test animation-iteration-count

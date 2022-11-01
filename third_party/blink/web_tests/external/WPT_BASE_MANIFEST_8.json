@@ -343265,6 +343265,10 @@
      "94921fc16abafe13059f47a35de95dced18b4d3a",
      []
     ],
+    "hidden_document-expected.txt": [
+     "e1aa609fd0bc1762d52304ac7b3bfef10d406b5a",
+     []
+    ],
     "lock-basic-expected.txt": [
      "0a3c4c2a0662122db8123acc6d7470138589f5cc",
      []
@@ -343351,7 +343355,7 @@
     ],
     "css": {
      "progress-based-animation-animation-longhand-properties.tentative-expected.txt": [
-      "47ffd93da0dfd558eba8c1ca23d8950a1dcf93a8",
+      "4d8df9e04544df189228d845af60dbbcb1f0203a",
       []
      ],
      "scroll-timeline-default-iframe-ref.html": [
@@ -548205,7 +548209,7 @@
       ]
      ],
      "progress-based-animation-animation-longhand-properties.tentative.html": [
-      "50fca18630371e5fc72b3a651b72ee00e5beac1a",
+      "a956fe41f8644b6f306bff0403d114ff86573e78",
       [
        null,
        {}
@@ -548233,7 +548237,7 @@
       ]
      ],
      "scroll-timeline-axis-writing-mode.html": [
-      "90c79a3cdfb03f68564d826137bd7941514b2f83",
+      "90912bfc2270558d4810cd3a183d666c2118c32f",
       [
        null,
        {}
@@ -548247,7 +548251,7 @@
       ]
      ],
      "scroll-timeline-dynamic.tentative.html": [
-      "49e22e39afc91fa58b813ea3d142614f56cf21de",
+      "b78f15c0b7f8b457ae1866e346b022708a9b3443",
       [
        null,
        {}
