@@ -8,8 +8,38 @@
 #include "base/atomicops.h"
 #include "base/threading/platform_thread.h"
 
+#include <dlfcn.h>
+
 namespace base {
 namespace internal {
+
+static void (*gRecordReplayBeginPassThroughEventsFn)();
+
+static void RecordReplayBeginPassThroughEvents() {
+  if (!gRecordReplayBeginPassThroughEventsFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayBeginPassThroughEvents");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayBeginPassThroughEventsFn = reinterpret_cast<void(*)()>(fnptr);
+  }
+
+  gRecordReplayBeginPassThroughEventsFn();
+}
+
+static void (*gRecordReplayEndPassThroughEventsFn)();
+
+static void RecordReplayEndPassThroughEvents() {
+  if (!gRecordReplayEndPassThroughEventsFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayEndPassThroughEvents");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayEndPassThroughEventsFn = reinterpret_cast<void(*)()>(fnptr);
+  }
+
+  gRecordReplayEndPassThroughEventsFn();
+}
 
 bool NeedsLazyInstance(subtle::AtomicWord* state) {
   // Try to create the instance, if we're the first, will go from 0 to
@@ -29,6 +59,10 @@ bool NeedsLazyInstance(subtle::AtomicWord* state) {
   // the associated data (buf_). Pairing Release_Store is in
   // CompleteLazyInstance().
   if (subtle::Acquire_Load(state) == kLazyInstanceStateCreating) {
+    // Don't interact with the recording while we get the current time or sleep
+    // in non-deterministic ways.
+    RecordReplayBeginPassThroughEvents();
+
     const base::TimeTicks start = base::TimeTicks::Now();
     do {
       const base::TimeDelta elapsed = base::TimeTicks::Now() - start;
@@ -41,6 +75,8 @@ bool NeedsLazyInstance(subtle::AtomicWord* state) {
       else
         PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
     } while (subtle::Acquire_Load(state) == kLazyInstanceStateCreating);
+
+    RecordReplayEndPassThroughEvents();
   }
   // Someone else created the instance.
   return false;
