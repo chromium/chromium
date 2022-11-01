@@ -724,8 +724,8 @@
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '106.0.5249.112',
-      'cros_img': 'octopus-release/R106-15054.98.0',
+      'cros_chrome_version': '107.0.5304.92',
+      'cros_img': 'octopus-release/R107-15117.86.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_STABLE',
