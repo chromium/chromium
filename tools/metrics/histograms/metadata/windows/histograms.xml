@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.MakeChromeDefaultDirectly.Result"
-    enum="DefaultDirectAttemptResult" expires_after="M109">
+    enum="DefaultDirectAttemptResult" expires_after="M112">
   <owner>robliao@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>
