@@ -90,7 +90,7 @@ const gfx::ImageSkia GetImageForSignalStrength(int signal_strength) {
   return gfx::CanvasImageSource::MakeImageSkia<
       network_icon::SignalStrengthImageSource>(
       network_icon::BARS, gfx::kGoogleBlue500, kTetherSignalIconSize,
-      normalized_signal_strength);
+      normalized_signal_strength, 5);
 }
 
 }  // namespace
