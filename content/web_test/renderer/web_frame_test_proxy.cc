@@ -351,11 +351,6 @@ void WebFrameTestProxy::DidAddMessageToConsole(
       level = "MESSAGE";
   }
   std::string console_message(std::string("CONSOLE ") + level + ": ");
-  // Console messages shouldn't be included in the expected output for
-  // web-platform-tests because they may create non-determinism not
-  // intended by the test author. They are still included in the stderr
-  // output for debug purposes.
-  bool dump_to_stderr = test_runner()->IsWebPlatformTestsMode();
   if (!message.text.IsEmpty()) {
     std::string new_message;
     new_message = message.text.Utf8();
@@ -368,11 +363,13 @@ void WebFrameTestProxy::DidAddMessageToConsole(
   }
   console_message += "\n";
 
-  if (dump_to_stderr) {
-    test_runner()->PrintMessageToStderr(console_message);
-  } else {
+  // Console messages shouldn't be included in the expected output for
+  // web-platform-tests because they may create non-determinism not
+  // intended by the test author. They are still included in the stderr
+  // output for debugging purposes.
+  test_runner()->PrintMessageToStderr(console_message);
+  if (!test_runner()->IsWebPlatformTestsMode())
     test_runner()->PrintMessage(console_message);
-  }
 }
 
 void WebFrameTestProxy::DidStartLoading() {
