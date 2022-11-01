@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/frame/header_view.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -24,6 +23,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -157,7 +157,7 @@ class NonClientFrameViewAsh::OverlayView : public views::View,
                                            public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(OverlayView);
-  explicit OverlayView(HeaderView* header_view);
+  explicit OverlayView(chromeos::HeaderView* header_view);
   OverlayView(const OverlayView&) = delete;
   OverlayView& operator=(const OverlayView&) = delete;
   ~OverlayView() override;
@@ -170,10 +170,11 @@ class NonClientFrameViewAsh::OverlayView : public views::View,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  HeaderView* header_view_;
+  chromeos::HeaderView* header_view_;
 };
 
-NonClientFrameViewAsh::OverlayView::OverlayView(HeaderView* header_view)
+NonClientFrameViewAsh::OverlayView::OverlayView(
+    chromeos::HeaderView* header_view)
     : header_view_(header_view) {
   AddChildView(header_view);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -213,7 +214,7 @@ END_METADATA
 
 NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
     : frame_(frame),
-      header_view_(new HeaderView(frame, this)),
+      header_view_(new chromeos::HeaderView(frame, this)),
       overlay_view_(new OverlayView(header_view_)),
       frame_context_menu_controller_(
           std::make_unique<FrameContextMenuController>(frame, this)) {
@@ -279,7 +280,7 @@ void NonClientFrameViewAsh::SetCaptionButtonModel(
   header_view_->UpdateCaptionButtons();
 }
 
-HeaderView* NonClientFrameViewAsh::GetHeaderView() {
+chromeos::HeaderView* NonClientFrameViewAsh::GetHeaderView() {
   return header_view_;
 }
 

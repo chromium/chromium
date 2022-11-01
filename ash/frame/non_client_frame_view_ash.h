@@ -9,10 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/frame/frame_context_menu_controller.h"
-#include "ash/frame/header_view.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -71,7 +71,7 @@ class ASH_EXPORT NonClientFrameViewAsh
   void SetFrameColors(SkColor active_frame_color, SkColor inactive_frame_color);
 
   // Get the view of the header.
-  HeaderView* GetHeaderView();
+  chromeos::HeaderView* GetHeaderView();
 
   // Calculate the client bounds for given window bounds.
   gfx::Rect GetClientBoundsForWindowBounds(
@@ -160,7 +160,7 @@ class ASH_EXPORT NonClientFrameViewAsh
   views::Widget* const frame_;
 
   // View which contains the title and window controls.
-  HeaderView* header_view_ = nullptr;
+  chromeos::HeaderView* header_view_ = nullptr;
 
   OverlayView* overlay_view_ = nullptr;
 

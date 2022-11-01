@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
@@ -43,6 +42,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -1398,7 +1398,7 @@ void ClientControlledShellSurface::UpdateFrameWidth() {
     float dsf_to_default_dsf = device_scale_factor / scale_;
     width = base::ClampRound(shadow_bounds_->width() * dsf_to_default_dsf);
   }
-  static_cast<ash::HeaderView*>(GetFrameView()->GetHeaderView())
+  static_cast<chromeos::HeaderView*>(GetFrameView()->GetHeaderView())
       ->SetWidthInPixels(width);
 }
 

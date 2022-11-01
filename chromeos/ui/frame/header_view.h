@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_FRAME_HEADER_VIEW_H_
-#define ASH_FRAME_HEADER_VIEW_H_
+#ifndef CHROMEOS_UI_FRAME_HEADER_VIEW_H_
+#define CHROMEOS_UI_FRAME_HEADER_VIEW_H_
 
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "ash/ash_export.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
@@ -20,11 +21,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
-class DefaultFrameHeader;
-class FrameCaptionButtonContainerView;
-}
-
 namespace gfx {
 class ImageSkia;
 }
@@ -34,18 +30,20 @@ class FrameCaptionButton;
 class ImageView;
 class Widget;
 class NonClientFrameView;
-}
+}  // namespace views
 
-namespace ash {
+namespace chromeos {
+
+class DefaultFrameHeader;
+class FrameCaptionButtonContainerView;
 
 enum class FrameBackButtonState;
 
 // View which paints the frame header (title, caption buttons...). It slides off
 // and on screen in immersive fullscreen.
-class ASH_EXPORT HeaderView
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) HeaderView
     : public views::View,
       public chromeos::ImmersiveFullscreenControllerDelegate,
-      public TabletModeObserver,
       public aura::WindowObserver,
       public display::DisplayObserver {
  public:
@@ -100,10 +98,6 @@ class ASH_EXPORT HeaderView
   void ChildPreferredSizeChanged(views::View* child) override;
   bool IsDrawn() const override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
-
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -113,6 +107,7 @@ class ASH_EXPORT HeaderView
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
@@ -195,6 +190,6 @@ class ASH_EXPORT HeaderView
       window_observation_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_FRAME_HEADER_VIEW_H_
+#endif  // CHROMEOS_UI_FRAME_HEADER_VIEW_H_

@@ -8,7 +8,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/frame/header_view.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -32,6 +31,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -97,7 +97,7 @@ class NonClientFrameViewAshTestWidgetDelegate
     return non_client_frame_view_;
   }
 
-  HeaderView* header_view() const {
+  chromeos::HeaderView* header_view() const {
     return non_client_frame_view_->header_view_;
   }
 
@@ -416,7 +416,7 @@ TEST_F(NonClientFrameViewAshTest, HeaderVisibilityInFullscreen) {
   std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
-  HeaderView* header_view = non_client_frame_view->GetHeaderView();
+  chromeos::HeaderView* header_view = non_client_frame_view->GetHeaderView();
   EXPECT_FALSE(header_view->in_immersive_mode());
   EXPECT_TRUE(header_view->GetVisible());
   widget->SetFullscreen(true);
@@ -510,7 +510,7 @@ TEST_F(NonClientFrameViewAshTest, BackButton) {
       delegate->non_client_frame_view();
   non_client_frame_view->SetCaptionButtonModel(std::move(model));
 
-  HeaderView* header_view = non_client_frame_view->GetHeaderView();
+  chromeos::HeaderView* header_view = non_client_frame_view->GetHeaderView();
   EXPECT_FALSE(header_view->GetBackButton());
   model_ptr->SetVisible(views::CAPTION_BUTTON_ICON_BACK, true);
   non_client_frame_view->SizeConstraintsChanged();
@@ -593,7 +593,7 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
       delegate->non_client_frame_view();
   non_client_frame_view->SetCaptionButtonModel(std::move(model));
 
-  HeaderView* header_view = non_client_frame_view->GetHeaderView();
+  chromeos::HeaderView* header_view = non_client_frame_view->GetHeaderView();
   FrameCaptionButtonContainerView::TestApi test_api(
       header_view->caption_button_container());
 
@@ -680,14 +680,14 @@ TEST_F(NonClientFrameViewAshTest, WideFrame) {
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
-  HeaderView* header_view = non_client_frame_view->GetHeaderView();
+  chromeos::HeaderView* header_view = non_client_frame_view->GetHeaderView();
   widget->Maximize();
 
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
   wide_frame_view->GetWidget()->Show();
 
-  HeaderView* wide_header_view = wide_frame_view->header_view();
+  chromeos::HeaderView* wide_header_view = wide_frame_view->header_view();
   display::Screen* screen = display::Screen::GetScreen();
 
   const gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();
@@ -760,7 +760,7 @@ TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
   wide_frame_view->GetWidget()->Show();
-  HeaderView* header_view = wide_frame_view->header_view();
+  chromeos::HeaderView* header_view = wide_frame_view->header_view();
   FrameCaptionButtonContainerView::TestApi test_api(
       header_view->caption_button_container());
 
@@ -952,7 +952,7 @@ TEST_P(NonClientFrameViewAshFrameColorTest, WideFrameInitialColor) {
 
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
-  HeaderView* wide_header_view = wide_frame_view->header_view();
+  chromeos::HeaderView* wide_header_view = wide_frame_view->header_view();
   DefaultFrameHeader* header = wide_header_view->GetFrameHeader();
   EXPECT_EQ(new_active_color, header->active_frame_color_for_testing());
   EXPECT_EQ(new_inactive_color, header->inactive_frame_color_for_testing());

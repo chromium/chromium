@@ -34,6 +34,8 @@ source_set("frame") {
     "frame_header.h",
     "frame_utils.cc",
     "frame_utils.h",
+    "header_view.cc",
+    "header_view.h",
     "highlight_border_overlay.cc",
     "highlight_border_overlay.h",
     "immersive/immersive_context.cc",

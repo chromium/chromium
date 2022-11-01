@@ -16,6 +16,7 @@
 
 namespace chromeos {
 class ImmersiveFullscreenController;
+class HeaderView;
 }
 
 namespace views {
@@ -23,7 +24,6 @@ class Widget;
 }
 
 namespace ash {
-class HeaderView;
 
 // WideFrameView is used for the case where the widget's maximzed/fullscreen
 // doesn't cover the entire workarea/display area but the caption frame should
@@ -57,7 +57,7 @@ class ASH_EXPORT WideFrameView
   void SetCaptionButtonModel(
       std::unique_ptr<chromeos::CaptionButtonModel> mode);
 
-  HeaderView* header_view() { return header_view_; }
+  chromeos::HeaderView* header_view() { return header_view_; }
 
  private:
   static gfx::Rect GetFrameBounds(views::Widget* target);
@@ -85,7 +85,7 @@ class ASH_EXPORT WideFrameView
   bool ShouldShowContextMenu(views::View* source,
                              const gfx::Point& screen_coords_point) override;
 
-  HeaderView* GetTargetHeaderView();
+  chromeos::HeaderView* GetTargetHeaderView();
 
   // The target widget this frame will control.
   views::Widget* target_;
@@ -94,7 +94,7 @@ class ASH_EXPORT WideFrameView
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  HeaderView* header_view_ = nullptr;
+  chromeos::HeaderView* header_view_ = nullptr;
 
   std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
 

@@ -538,8 +538,6 @@ component("ash") {
     "focus_cycler.h",
     "frame/frame_context_menu_controller.cc",
     "frame/frame_context_menu_controller.h",
-    "frame/header_view.cc",
-    "frame/header_view.h",
     "frame/non_client_frame_view_ash.cc",
     "frame/non_client_frame_view_ash.h",
     "frame/snap_controller_impl.cc",

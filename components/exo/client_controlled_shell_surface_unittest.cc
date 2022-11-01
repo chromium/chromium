@@ -5,7 +5,6 @@
 #include "components/exo/client_controlled_shell_surface.h"
 
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/wide_frame_view.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
@@ -41,6 +40,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/header_view.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -1436,7 +1436,7 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
       static_cast<ash::NonClientFrameViewAsh*>(
           shell_surface->GetWidget()->non_client_view()->frame_view());
   chromeos::FrameCaptionButtonContainerView* container =
-      static_cast<ash::HeaderView*>(frame_view->GetHeaderView())
+      static_cast<chromeos::HeaderView*>(frame_view->GetHeaderView())
           ->caption_button_container();
 
   // Visible

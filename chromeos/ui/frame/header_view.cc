@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/frame/header_view.h"
+#include "chromeos/ui/frame/header_view.h"
 
 #include <memory>
+#include <vector>
 
-#include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/window_state.h"
 #include "base/auto_reset.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -19,11 +19,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
-namespace ash {
+namespace chromeos {
 
 using ::chromeos::DefaultFrameHeader;
 using ::chromeos::kFrameActiveColorKey;
@@ -35,7 +36,8 @@ using ::chromeos::kFrameInactiveColorKey;
 // as caption buttons.
 class HeaderView::HeaderContentView : public views::View {
  public:
-  HeaderContentView(HeaderView* header_view) : header_view_(header_view) {}
+  explicit HeaderContentView(HeaderView* header_view)
+      : header_view_(header_view) {}
 
   HeaderContentView(const HeaderContentView&) = delete;
   HeaderContentView& operator=(const HeaderContentView&) = delete;
@@ -84,12 +86,11 @@ void HeaderView::Init() {
 
   aura::Window* window = target_widget_->GetNativeWindow();
   window_observation_.Observe(window);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 HeaderView::~HeaderView() {
-  if (Shell::Get()->tablet_mode_controller())
-    Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
+  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 void HeaderView::SchedulePaintForTitle() {
@@ -182,25 +183,6 @@ bool HeaderView::IsDrawn() const {
   return views::View::IsDrawn();
 }
 
-void HeaderView::OnTabletModeStarted() {
-  UpdateCaptionButtonsVisibility();
-  caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
-  parent()->Layout();
-  if (target_widget_ &&
-      Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
-          target_widget_)) {
-    target_widget_->non_client_view()->Layout();
-  }
-}
-
-void HeaderView::OnTabletModeEnded() {
-  UpdateCaptionButtonsVisibility();
-  caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
-  parent()->Layout();
-  if (target_widget_)
-    target_widget_->non_client_view()->Layout();
-}
-
 void HeaderView::OnWindowPropertyChanged(aura::Window* window,
                                          const void* key,
                                          intptr_t old) {
@@ -241,6 +223,30 @@ void HeaderView::OnDisplayMetricsChanged(const display::Display& display,
   if ((changed_metrics & chromeos::TabletState::DISPLAY_METRIC_ROTATION) &&
       frame_header_) {
     frame_header_->LayoutHeader();
+  }
+}
+
+void HeaderView::OnDisplayTabletStateChanged(display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInTabletMode:
+      UpdateCaptionButtonsVisibility();
+      caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
+      parent()->Layout();
+      if (target_widget_) {
+        target_widget_->non_client_view()->Layout();
+      }
+      break;
+    case display::TabletState::kInClamshellMode:
+      UpdateCaptionButtonsVisibility();
+      caption_button_container_->UpdateCaptionButtonState(true /*=animate*/);
+      parent()->Layout();
+      if (target_widget_)
+        target_widget_->non_client_view()->Layout();
+      break;
+    case display::TabletState::kEnteringTabletMode:
+      break;
+    case display::TabletState::kExitingTabletMode:
+      break;
   }
 }
 
@@ -373,4 +379,4 @@ void HeaderView::UpdateCaptionButtonsVisibility() {
 BEGIN_METADATA(HeaderView, views::View)
 END_METADATA
 
-}  // namespace ash
+}  // namespace chromeos
