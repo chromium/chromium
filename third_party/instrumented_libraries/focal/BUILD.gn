@@ -52,6 +52,7 @@ group("locally_built") {
     ":librtmp1",
     ":libsasl2-2",
     ":libsecret",
+    ":libssl1.1",
     ":libtasn1-6",
     ":libudev1",
     ":libunity9",
@@ -642,6 +643,10 @@ instrumented_library("libsecret") {
     "--disable-introspection",
   ]
   pre_build = "scripts/pre-build/autoreconf.sh"
+}
+
+instrumented_library("libssl1.1") {
+  build_method = "debian"
 }
 
 instrumented_library("libtasn1-3") {

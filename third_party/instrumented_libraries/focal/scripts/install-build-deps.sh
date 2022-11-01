@@ -53,6 +53,7 @@ libldap-2.4-2 \
 libmicrohttpd \
 libpng1.6 \
 libsasl2-2 \
+libssl1.1 \
 libunity \
 libx11 \
 libxau \
