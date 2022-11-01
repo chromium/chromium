@@ -13,7 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_month_view.h"
@@ -2039,7 +2039,7 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
   views::FocusManager* message_center_focus_manager() {
     return GetPrimaryUnifiedSystemTray()
         ->message_center_bubble()
-        ->message_center_view()
+        ->notification_center_view()
         ->GetFocusManager();
   }
 

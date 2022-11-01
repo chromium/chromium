@@ -10,7 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -80,8 +80,8 @@ class UnifiedMessageCenterBubbleTest
     message_center::MessageCenter::Get()->RemoveAllNotifications(
         /*by_user=*/true, MessageCenter::RemoveType::ALL);
     GetMessageCenterBubble()
-        ->message_center_view()
-        ->message_list_view()
+        ->notification_center_view()
+        ->notification_list_view()
         ->ResetBounds();
   }
 
@@ -104,7 +104,7 @@ class UnifiedMessageCenterBubbleTest
   }
 
   bool IsMessageCenterCollapsed() {
-    return GetMessageCenterBubble()->message_center_view()->collapsed();
+    return GetMessageCenterBubble()->notification_center_view()->collapsed();
   }
 
   bool IsQuickSettingsCollapsed() {
@@ -146,13 +146,13 @@ class UnifiedMessageCenterBubbleTest
 
   views::View* GetFirstMessageCenterFocusable() {
     return GetMessageCenterBubble()
-        ->message_center_view()
+        ->notification_center_view()
         ->GetFirstFocusableChild();
   }
 
   views::View* GetLastMessageCenterFocusable() {
     return GetMessageCenterBubble()
-        ->message_center_view()
+        ->notification_center_view()
         ->GetLastFocusableChild();
   }
 
@@ -345,8 +345,9 @@ TEST_P(UnifiedMessageCenterBubbleTest, BubbleBounds) {
     ASSERT_FALSE(GetMessageCenterBubble()->IsMessageCenterCollapsed());
 
     // Add enough notifications so that the scroll bar is visible.
-    while (
-        !GetMessageCenterBubble()->message_center_view()->IsScrollBarVisible())
+    while (!GetMessageCenterBubble()
+                ->notification_center_view()
+                ->IsScrollBarVisible())
       AddNotification();
 
     // The message center bubble should be positioned above the system tray

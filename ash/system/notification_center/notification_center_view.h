@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_CENTER_VIEW_H_
-#define ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_CENTER_VIEW_H_
+#ifndef ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_VIEW_H_
+#define ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/message_center/message_center_scroll_bar.h"
-#include "ash/system/message_center/unified_message_list_view.h"
+#include "ash/system/notification_center/notification_list_view.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/background.h"
@@ -36,12 +36,15 @@ class UnifiedMessageCenterBubble;
 class UnifiedSystemTrayModel;
 class UnifiedSystemTrayView;
 
-// Note: This enum represents the current animation state for
-// UnifiedMessageCenterView. There is an equivalent animation state enum in
-// the child UnifiedMessageListView. The animations for these two views can
-// occur simultaneously or independently, so states for both views are tracked
-// separately.
-enum class UnifiedMessageCenterAnimationState {
+// TODO(b:252887883): Clean up old animation code once the new clear all
+// animation is implemented.
+
+// Note: This enum represents the current animation
+// state for `NotificationCenterView`. There is an equivalent animation state
+// enum in the child `NotificationListView`. The animations for these two views
+// can occur simultaneously or independently, so states for both views are
+// tracked separately.
+enum class NotificationCenterAnimationState {
   // No animation is running.
   IDLE,
 
@@ -51,27 +54,28 @@ enum class UnifiedMessageCenterAnimationState {
 
   // Animating collapsing the entire message center. Runs after the user
   // dismisses the last notification and during the clear all animation.
-  // TODO(tengs): This animation is not yet implemented.
   COLLAPSE,
 };
 
 // Manages scrolling of notification list.
-class ASH_EXPORT UnifiedMessageCenterView
+class ASH_EXPORT NotificationCenterView
     : public views::View,
       public MessageCenterScrollBar::Observer,
       public views::FocusChangeListener,
       public gfx::AnimationDelegate {
  public:
-  UnifiedMessageCenterView(UnifiedSystemTrayView* parent,
-                           scoped_refptr<UnifiedSystemTrayModel> model,
-                           UnifiedMessageCenterBubble* bubble);
+  METADATA_HEADER(NotificationCenterView);
 
-  UnifiedMessageCenterView(const UnifiedMessageCenterView&) = delete;
-  UnifiedMessageCenterView& operator=(const UnifiedMessageCenterView&) = delete;
+  NotificationCenterView(UnifiedSystemTrayView* parent,
+                         scoped_refptr<UnifiedSystemTrayModel> model,
+                         UnifiedMessageCenterBubble* bubble);
 
-  ~UnifiedMessageCenterView() override;
+  NotificationCenterView(const NotificationCenterView&) = delete;
+  NotificationCenterView& operator=(const NotificationCenterView&) = delete;
 
-  // Initializes the `UnifiedMessageListView` with existing notifications.
+  ~NotificationCenterView() override;
+
+  // Initializes the `NotificationListView` with existing notifications.
   // Should be called after ctor.
   void Init();
 
@@ -83,27 +87,27 @@ class ASH_EXPORT UnifiedMessageCenterView
   // Sets the maximum height that the view can take.
   // TODO(tengs): The layout of this view is heavily dependant on this max
   // height (equal to the height of the entire tray), but we should refactor and
-  // consolidate this function with SetAvailableHeight().
+  // consolidate this function with `SetAvailableHeight()`.
   void SetMaxHeight(int max_height);
 
   // Sets the height available to the message center view. This is the remaining
   // height after counting the system menu, which may be expanded or collapsed.
   void SetAvailableHeight(int available_height);
 
-  // Called from UnifiedMessageListView when the preferred size is changed.
+  // Called from `NotificationListView` when the preferred size is changed.
   void ListPreferredSizeChanged();
 
-  // Called from the UnifiedMessageListView after a notification is dismissed by
+  // Called from the `NotificationListView` after a notification is dismissed by
   // the user and the slide animation is finished.
   void OnNotificationSlidOut();
 
-  // Configures MessageView to forward scroll events. Called from
-  // UnifiedMessageListView.
+  // Configures `MessageView` to forward scroll events. Called from
+  // `NotificationListView`.
   void ConfigureMessageView(message_center::MessageView* message_view);
 
-  // Count number of notifications that are still in the MessageCenter that are
-  // above visible area. NOTE: views may be in the view hierarchy, but no longer
-  // in the message center.
+  // Count number of notifications that are still in the `MessageCenter` that
+  // are above visible area. NOTE: views may be in the view hierarchy, but no
+  // longer in the message center.
   std::vector<message_center::Notification*> GetStackedNotifications() const;
 
   // Count the number of notifications that are not visible in the scrollable
@@ -143,7 +147,6 @@ class ASH_EXPORT UnifiedMessageCenterView
   void RemovedFromWidget() override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
 
   // MessageCenterScrollBar::Observer:
   void OnMessageCenterScrolled() override;
@@ -157,14 +160,16 @@ class ASH_EXPORT UnifiedMessageCenterView
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  UnifiedMessageListView* message_list_view() { return message_list_view_; }
+  NotificationListView* notification_list_view() {
+    return notification_list_view_;
+  }
   bool collapsed() { return collapsed_; }
 
  private:
-  friend class UnifiedMessageCenterViewTest;
+  friend class NotificationCenterViewTest;
   friend class UnifiedMessageCenterBubbleTest;
 
-  // Starts the animation to hide the notification stacking bar.
+  // Starts the animation to hide the `StackedNotificationBar`.
   void StartHideStackingBarAnimation();
 
   // Starts the animation to collapse the message center.
@@ -192,7 +197,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   StackedNotificationBar* const notification_bar_;
   views::ScrollBar* scroll_bar_;
   views::ScrollView* const scroller_;
-  UnifiedMessageListView* const message_list_view_;
+  NotificationListView* const notification_list_view_;
 
   // Position from the bottom of scroll contents in dip.
   int last_scroll_position_from_bottom_;
@@ -208,8 +213,8 @@ class ASH_EXPORT UnifiedMessageCenterView
   bool collapsed_ = false;
 
   // Tracks the current animation state.
-  UnifiedMessageCenterAnimationState animation_state_ =
-      UnifiedMessageCenterAnimationState::IDLE;
+  NotificationCenterAnimationState animation_state_ =
+      NotificationCenterAnimationState::IDLE;
   const std::unique_ptr<gfx::LinearAnimation> animation_;
 
   const std::unique_ptr<views::FocusSearch> focus_search_;
@@ -219,4 +224,4 @@ class ASH_EXPORT UnifiedMessageCenterView
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_CENTER_VIEW_H_
+#endif  // ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_CENTER_VIEW_H_

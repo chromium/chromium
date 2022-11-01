@@ -12,7 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
-#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/detailed_view_controller.h"

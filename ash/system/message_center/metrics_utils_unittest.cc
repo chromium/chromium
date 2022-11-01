@@ -7,8 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/message_center/unified_message_center_view.h"
-#include "ash/system/message_center/unified_message_list_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
+#include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -184,8 +184,8 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
   views::View* GetNotificationViewFromMessageCenter(const std::string& id) {
     return GetPrimaryUnifiedSystemTray()
         ->message_center_bubble()
-        ->message_center_view()
-        ->message_list_view()
+        ->notification_center_view()
+        ->notification_list_view()
         ->GetMessageViewForNotificationId(id);
   }
 

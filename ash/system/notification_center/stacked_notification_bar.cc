@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/message_center/stacked_notification_bar.h"
+#include "ash/system/notification_center/stacked_notification_bar.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -43,7 +43,7 @@ class StackingBarLabelButton : public PillButton {
 
   StackingBarLabelButton(PressedCallback callback,
                          const std::u16string& text,
-                         UnifiedMessageCenterView* message_center_view)
+                         NotificationCenterView* notification_center_view)
       : PillButton(
             std::move(callback),
             text,
@@ -53,7 +53,7 @@ class StackingBarLabelButton : public PillButton {
             /*use_light_colors=*/!features::IsNotificationsRefreshEnabled(),
             /*rounded_highlight_path=*/
             features::IsNotificationsRefreshEnabled()),
-        message_center_view_(message_center_view) {
+        notification_center_view_(notification_center_view) {
     const SkColor bg_color =
         features::IsNotificationsRefreshEnabled()
             ? gfx::kPlaceholderColor
@@ -70,12 +70,12 @@ class StackingBarLabelButton : public PillButton {
 
   // PillButton:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override {
-    if (message_center_view_->collapsed() && HasFocus())
-      message_center_view_->FocusOut(reverse);
+    if (notification_center_view_->collapsed() && HasFocus())
+      notification_center_view_->FocusOut(reverse);
   }
 
  private:
-  UnifiedMessageCenterView* message_center_view_;
+  NotificationCenterView* notification_center_view_;
 };
 
 BEGIN_METADATA(StackingBarLabelButton, PillButton)
@@ -241,24 +241,24 @@ class StackedNotificationBar::StackedNotificationBarIcon
 };
 
 StackedNotificationBar::StackedNotificationBar(
-    UnifiedMessageCenterView* message_center_view)
-    : message_center_view_(message_center_view),
+    NotificationCenterView* notification_center_view)
+    : notification_center_view_(notification_center_view),
       notification_icons_container_(
           AddChildView(std::make_unique<views::View>())),
       count_label_(AddChildView(std::make_unique<views::Label>())),
       spacer_(AddChildView(std::make_unique<views::View>())),
       clear_all_button_(AddChildView(std::make_unique<StackingBarLabelButton>(
-          base::BindRepeating(&UnifiedMessageCenterView::ClearAllNotifications,
-                              base::Unretained(message_center_view_)),
+          base::BindRepeating(&NotificationCenterView::ClearAllNotifications,
+                              base::Unretained(notification_center_view_)),
           l10n_util::GetStringUTF16(
               IDS_ASH_MESSAGE_CENTER_CLEAR_ALL_BUTTON_LABEL),
-          message_center_view))),
+          notification_center_view))),
       expand_all_button_(AddChildView(std::make_unique<StackingBarLabelButton>(
-          base::BindRepeating(&UnifiedMessageCenterView::ExpandMessageCenter,
-                              base::Unretained(message_center_view_)),
+          base::BindRepeating(&NotificationCenterView::ExpandMessageCenter,
+                              base::Unretained(notification_center_view_)),
           l10n_util::GetStringUTF16(
               IDS_ASH_MESSAGE_CENTER_EXPAND_ALL_NOTIFICATIONS_BUTTON_LABEL),
-          message_center_view))),
+          notification_center_view))),
       layout_manager_(SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
           features::IsNotificationsRefreshEnabled() ? kNotificationBarPadding
@@ -336,7 +336,7 @@ bool StackedNotificationBar::Update(
 }
 
 void StackedNotificationBar::SetAnimationState(
-    UnifiedMessageCenterAnimationState animation_state) {
+    NotificationCenterAnimationState animation_state) {
   animation_state_ = animation_state;
   UpdateVisibility();
 }
@@ -559,15 +559,15 @@ void StackedNotificationBar::UpdateVisibility() {
     clear_all_button_->SetVisible(show_clear_all);
 
   switch (animation_state_) {
-    case UnifiedMessageCenterAnimationState::IDLE:
+    case NotificationCenterAnimationState::IDLE:
       SetVisible(
           (stacked_notification_count_ && total_notification_count_ > 1) ||
           show_clear_all || expand_all_button_->GetVisible());
       break;
-    case UnifiedMessageCenterAnimationState::HIDE_STACKING_BAR:
+    case NotificationCenterAnimationState::HIDE_STACKING_BAR:
       SetVisible(true);
       break;
-    case UnifiedMessageCenterAnimationState::COLLAPSE:
+    case NotificationCenterAnimationState::COLLAPSE:
       SetVisible(
           (stacked_notification_count_ && total_notification_count_ > 1) ||
           show_clear_all || expand_all_button_->GetVisible());
@@ -580,7 +580,8 @@ void StackedNotificationBar::OnNotificationAdded(const std::string& id) {
   // know the position where it may have been added.
   notification_icons_container_->RemoveAllChildViews();
   stacked_notification_count_ = 0;
-  UpdateStackedNotifications(message_center_view_->GetStackedNotifications());
+  UpdateStackedNotifications(
+      notification_center_view_->GetStackedNotifications());
 }
 
 void StackedNotificationBar::OnNotificationRemoved(const std::string& id,

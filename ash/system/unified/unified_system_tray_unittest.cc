@@ -13,7 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
-#include "ash/system/message_center/unified_message_center_view.h"
+#include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
@@ -281,7 +281,7 @@ TEST_P(UnifiedSystemTrayTest, FocusMessageCenter) {
   tray->ShowBubble();
 
   auto* message_center_view =
-      tray->message_center_bubble()->message_center_view();
+      tray->message_center_bubble()->notification_center_view();
   auto* focus_manager = message_center_view->GetFocusManager();
 
   AddNotification();
@@ -323,7 +323,7 @@ TEST_P(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
   tray->ShowBubble();
 
   auto* message_center_bubble = tray->message_center_bubble();
-  auto* message_center_view = message_center_bubble->message_center_view();
+  auto* message_center_view = message_center_bubble->notification_center_view();
 
   AddNotification();
   AddNotification();
@@ -501,7 +501,7 @@ TEST_P(UnifiedSystemTrayTest, CalendarGoesToMainView) {
 
   // Ensure message center is collapsed when Calendar is not being shown.
   auto* message_center_view =
-      tray->message_center_bubble()->message_center_view();
+      tray->message_center_bubble()->notification_center_view();
   EXPECT_FALSE(tray->IsShowingCalendarView());
   EXPECT_TRUE(message_center_view->collapsed());
 

@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
-#define ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
+#ifndef ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_LIST_VIEW_H_
+#define ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -29,25 +29,26 @@ class Notification;
 
 namespace ash {
 
-class UnifiedMessageCenterView;
+class NotificationCenterView;
 class UnifiedSystemTrayModel;
 
 // Manages list of notifications. The class doesn't know about the ScrollView
-// it's enclosed. This class is used only from UnifiedMessageCenterView.
-class ASH_EXPORT UnifiedMessageListView
+// it's enclosed. This class is used only from NotificationCenterView.
+class ASH_EXPORT NotificationListView
     : public views::View,
       public message_center::MessageCenterObserver,
       public message_center::NotificationViewController,
       public message_center::MessageView::Observer,
       public views::AnimationDelegateViews {
  public:
+  METADATA_HEADER(NotificationListView);
+
   // |message_center_view| can be null in unit tests.
-  UnifiedMessageListView(UnifiedMessageCenterView* message_center_view,
-                         scoped_refptr<UnifiedSystemTrayModel> model);
-  UnifiedMessageListView(const UnifiedMessageListView& other) = delete;
-  UnifiedMessageListView& operator=(const UnifiedMessageListView& other) =
-      delete;
-  ~UnifiedMessageListView() override;
+  NotificationListView(NotificationCenterView* message_center_view,
+                       scoped_refptr<UnifiedSystemTrayModel> model);
+  NotificationListView(const NotificationListView& other) = delete;
+  NotificationListView& operator=(const NotificationListView& other) = delete;
+  ~NotificationListView() override;
 
   // Initializes the view with existing notifications. Should be called right
   // after ctor.
@@ -122,7 +123,6 @@ class ASH_EXPORT UnifiedMessageListView
   void PreferredSizeChanged() override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  const char* GetClassName() const override;
 
   // message_center::NotificationViewController:
   void AnimateResize() override;
@@ -171,13 +171,13 @@ class ASH_EXPORT UnifiedMessageListView
       const;
 
  private:
-  friend class UnifiedMessageCenterViewTest;
-  friend class UnifiedMessageListViewTest;
+  friend class NotificationCenterViewTest;
+  friend class NotificationListViewTest;
   friend class UnifiedMessageCenterBubbleTest;
   class Background;
   class MessageViewContainer;
 
-  // UnifiedMessageListView always runs a single animation at one time. When
+  // NotificationListView always runs a single animation at one time. When
   // `state_` is IDLE, `animation_->is_animating()` is always false and vice
   // versa.
   enum class State {
@@ -207,7 +207,7 @@ class ASH_EXPORT UnifiedMessageListView
   const MessageViewContainer* GetNotificationById(const std::string& id) const;
   MessageViewContainer* GetNotificationById(const std::string& id) {
     return const_cast<MessageViewContainer*>(
-        static_cast<const UnifiedMessageListView*>(this)->GetNotificationById(
+        static_cast<const NotificationListView*>(this)->GetNotificationById(
             id));
   }
 
@@ -249,7 +249,7 @@ class ASH_EXPORT UnifiedMessageListView
   // Updates the state between each Clear All animation phase.
   void UpdateClearAllAnimation();
 
-  UnifiedMessageCenterView* const message_center_view_;
+  NotificationCenterView* const message_center_view_;
   scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Non-null during State::EXPAND_OR_COLLAPSE. Keeps track of the
@@ -265,7 +265,7 @@ class ASH_EXPORT UnifiedMessageListView
   // ClearAllWithAnimation().
   bool ignore_notification_remove_ = false;
 
-  // Manages notification closing animation. UnifiedMessageListView does not use
+  // Manages notification closing animation. `NotificationListView` does not use
   // implicit animation.
   const std::unique_ptr<gfx::LinearAnimation> animation_;
 
@@ -274,15 +274,15 @@ class ASH_EXPORT UnifiedMessageListView
 
   State state_ = State::IDLE;
 
-  // The height the UnifiedMessageListView starts animating from. If not
+  // The height the `NotificationListView` starts animating from. If not
   // animating, it's ignored.
   int start_height_ = 0;
 
-  // The final height of the UnifiedMessageListView. If not animating, it's same
+  // The final height of `the NotificationListView`. If not animating, it's same
   // as height().
   int target_height_ = 0;
 
-  // True if the UnifiedMessageListView is currently deleting notifications
+  // True if the `NotificationListView` is currently deleting notifications
   // marked for removal. This check is needed to prevent re-entrancing issues
   // (e.g. crbug.com/933327) caused by the View destructor.
   bool is_deleting_removed_notifications_ = false;
@@ -301,4 +301,4 @@ class ASH_EXPORT UnifiedMessageListView
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
+#endif  // ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_LIST_VIEW_H_
