@@ -9356,6 +9356,21 @@
             ]
         }
     ],
+    "RemoveIOSPowerEventNotifications": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RemoveIOSPowerEventNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
