@@ -513,9 +513,6 @@ as required builders.
 * [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-ml""))
   * Experiment percentage: 5.0
 
-* [mac-rel-inverse-fyi](https://ci.chromium.org/p/chromium/builders/try/mac-rel-inverse-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-rel-inverse-fyi"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac-rel-inverse-fyi""))
-  * Experiment percentage: 100.0
-
 * [mac12-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac12-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac12-arm64-rel""))
   * Experiment percentage: 100.0
 
