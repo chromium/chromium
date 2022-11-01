@@ -42,6 +42,19 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   return nullptr;
 }
 
+// Returns the PaintLayer of the scroll container of an anchor-positioned |box|.
+const PaintLayer* ContainingScrollContainerLayerForAnchorScroll(
+    const LayoutBox* box) {
+  // Normally, |scroller_layer| is the result. There's only one special case
+  // where |box| is fixed-positioned and |scroller_layer| is the LayoutView,
+  // then |box| doesn't actually scroll with |scroller_layer|, and null should
+  // be returned.
+  bool is_fixed_to_view = false;
+  const PaintLayer* scroller_layer =
+      box->Layer()->ContainingScrollContainerLayer(&is_fixed_to_view);
+  return is_fixed_to_view ? nullptr : scroller_layer;
+}
+
 }  // namespace
 
 AnchorScrollData::AnchorScrollData(Element* element)
@@ -65,11 +78,11 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
     const PaintLayer* starting_layer =
         anchor->ContainingScrollContainer()->Layer();
     const PaintLayer* bounding_layer =
-        owner_->GetLayoutBox()->Layer()->ContainingScrollContainerLayer();
+        ContainingScrollContainerLayerForAnchorScroll(owner_->GetLayoutBox());
     for (const PaintLayer* layer = starting_layer; layer != bounding_layer;
          layer = layer->ContainingScrollContainerLayer()) {
-      // |bounding_layer| must be an ancestor of |starting_layer|, so we'll
-      // never reach a null layer here.
+      // |bounding_layer| must be either null (for fixed-positioned |owner_|) or
+      // an ancestor of |starting_layer|, so we'll never have a null layer here.
       DCHECK(layer);
       new_scroll_container_layers.push_back(layer);
       new_accumulated_scroll_offset +=
