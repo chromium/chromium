@@ -206,6 +206,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void OnNativeViewHierarchyWillChange() override;
   void OnNativeViewHierarchyChanged() override;
   std::string GetName() const override;
+  base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 
   // Calls |callback| with the newly created NativeWidget whenever a
   // NativeWidget is created.
@@ -291,6 +292,9 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   std::unique_ptr<ZoomFocusMonitor> zoom_focus_monitor_;
   // Held while this widget is active if it's a child.
   std::unique_ptr<Widget::PaintAsActiveLock> parent_key_lock_;
+  // The following factory is used to provide references to the NativeWidgetMac
+  // instance.
+  base::WeakPtrFactory<NativeWidgetMac> weak_factory{this};
 };
 
 }  // namespace views

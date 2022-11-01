@@ -947,6 +947,10 @@ std::string NativeWidgetAura::GetName() const {
   return window_ ? window_->GetName() : std::string();
 }
 
+base::WeakPtr<internal::NativeWidgetPrivate> NativeWidgetAura::GetWeakPtr() {
+  return weak_factory.GetWeakPtr();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, aura::WindowDelegate implementation:
 

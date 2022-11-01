@@ -191,7 +191,7 @@ Widget::~Widget() {
   if (widget_delegate_)
     widget_delegate_->WidgetDestroying();
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
-    delete native_widget_;
+    owned_native_widget_.reset();
     DCHECK(native_widget_destroyed_);
   } else if (ownership_ == InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
     // TODO(crbug.com/937381): Revert to DCHECK once we figure out the reason.
@@ -422,7 +422,12 @@ void Widget::Init(InitParams params) {
         std::make_unique<SublevelManager>(this, params.sublevel);
   }
 
-  native_widget_ = CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
+  internal::NativeWidgetPrivate* native_widget_raw_ptr =
+      CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
+  native_widget_ = native_widget_raw_ptr->GetWeakPtr();
+  if (params.ownership == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
+    owned_native_widget_ = base::WrapUnique(native_widget_raw_ptr);
+  }
   root_view_.reset(CreateRootView());
 
   // Copy the elements of params that will be used after it is moved.
@@ -1197,11 +1202,11 @@ void Widget::LayerTreeChanged() {
 }
 
 const NativeWidget* Widget::native_widget() const {
-  return native_widget_;
+  return native_widget_.get();
 }
 
 NativeWidget* Widget::native_widget() {
-  return native_widget_;
+  return native_widget_.get();
 }
 
 void Widget::SetCapture(View* view) {

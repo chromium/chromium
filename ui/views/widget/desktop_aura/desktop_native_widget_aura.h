@@ -117,6 +117,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
     native_widget_delegate_ = delegate;
   }
 
+  base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
+
  protected:
   // internal::NativeWidgetPrivate:
   void InitNativeWidget(Widget::InitParams params) override;
@@ -353,7 +355,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // See DesktopWindowTreeHost::ShouldUseDesktopNativeCursorManager().
   bool use_desktop_native_cursor_manager_ = false;
 
-  // The following factory is used for calls to close to run drop callback.
+  // The following factory is used to provide references to the
+  // DesktopNativeWidgetAura instance and used for calls to close to run drop
+  // callback.
   base::WeakPtrFactory<DesktopNativeWidgetAura> weak_ptr_factory_{this};
 };
 

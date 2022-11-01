@@ -969,16 +969,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   NativeWidget* native_widget();
 
   internal::NativeWidgetPrivate* native_widget_private() {
-    return native_widget_;
-  }
-  const internal::NativeWidgetPrivate* native_widget_private() const {
-    return native_widget_;
+    return native_widget_.get();
   }
 
-  // Sets the NativeWidget. The original NativeWidget may need to be cleaned up
-  // by the caller of this method.
-  void SetNativeWidgetForTesting(internal::NativeWidgetPrivate* native_widget) {
-    native_widget_ = native_widget;
+  const internal::NativeWidgetPrivate* native_widget_private() const {
+    return native_widget_.get();
   }
 
   // Sets capture to the specified view. This makes it so that all mouse, touch
@@ -1242,8 +1237,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
-  raw_ptr<internal::NativeWidgetPrivate, DanglingUntriaged> native_widget_ =
-      nullptr;
+  base::WeakPtr<internal::NativeWidgetPrivate> native_widget_ = nullptr;
+
+  // This unique pointer is only set when WIDGET_OWNS_NATIVE_WIDGET so that we
+  // can destroy the NativeWidget. Except for managing lifetime for
+  // WIDGET_OWNS_NATIVE_WIDGET, the NativeWidget should always be referenced
+  // through the |native_widget_| weak ptr.
+  std::unique_ptr<internal::NativeWidgetPrivate> owned_native_widget_;
 
   base::ObserverList<WidgetObserver> observers_;
 

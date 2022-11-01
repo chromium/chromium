@@ -241,6 +241,8 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // Returns an internal name that matches the name of the associated Widget.
   virtual std::string GetName() const = 0;
 
+  virtual base::WeakPtr<NativeWidgetPrivate> GetWeakPtr() = 0;
+
   // Overridden from NativeWidget:
   internal::NativeWidgetPrivate* AsNativeWidgetPrivate() override;
 };

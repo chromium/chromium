@@ -417,6 +417,11 @@ void DesktopNativeWidgetAura::OnDesktopWindowTreeHostDestroyed(
   event_client_.reset();
 }
 
+base::WeakPtr<internal::NativeWidgetPrivate>
+DesktopNativeWidgetAura::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
     ax::mojom::Event event_type) {
   if (!GetWidget() || !GetWidget()->GetRootView())

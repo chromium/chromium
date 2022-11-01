@@ -894,6 +894,10 @@ std::string NativeWidgetMac::GetName() const {
   return name_;
 }
 
+base::WeakPtr<internal::NativeWidgetPrivate> NativeWidgetMac::GetWeakPtr() {
+  return weak_factory.GetWeakPtr();
+}
+
 // static
 void NativeWidgetMac::SetInitNativeWidgetCallback(
     base::RepeatingCallback<void(NativeWidgetMac*)> callback) {

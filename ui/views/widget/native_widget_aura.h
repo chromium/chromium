@@ -169,6 +169,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   void OnNativeViewHierarchyWillChange() override;
   void OnNativeViewHierarchyChanged() override;
   std::string GetName() const override;
+  base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 
   // aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override;
@@ -272,6 +273,19 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // The following factory is used for calls to close the NativeWidgetAura
   // instance.
   base::WeakPtrFactory<NativeWidgetAura> close_widget_factory_{this};
+
+  // The following factory is used to provide references to the NativeWidgetAura
+  // instance. We need a separate factory from the |close_widget_factory_|
+  // because the close widget factory is currently used to ensure that the
+  // CloseNow task is only posted once. We check whether there are any weak
+  // pointers from close_widget_factory_| before posting
+  // the CloseNow task, so we can't have any other weak pointers for this to
+  // work properly. CloseNow can destroy the aura::Window
+  // which will not destroy the NativeWidget if WIDGET_OWNS_NATIVE_WIDGET, and
+  // we need to make sure we do not attempt to destroy the aura::Window twice.
+  // TODO(1346381): The two factories can be combined if the
+  // WIDGET_OWNS_NATIVE_WIDGET is removed.
+  base::WeakPtrFactory<NativeWidgetAura> weak_factory{this};
 };
 
 }  // namespace views

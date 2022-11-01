@@ -1037,23 +1037,14 @@ class WidgetWithDestroyedNativeWidgetTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
     widget_->Show();
-    native_widget_ = widget_->native_widget_private();
-    widget_->SetNativeWidgetForTesting(nullptr);
-  }
-
-  void TearDown() override {
-    ViewsTestBase::TearDown();
-    // Add the NativeWidget back to be destroyed. We should be able to directly
-    // tell the NativeWidget to be destroyed if we decouple the lifetime of
-    // Widget and NativeWidget.
-    widget_->SetNativeWidgetForTesting(native_widget_);
+    widget_->Close();
+    RunPendingMessages();
   }
 
   Widget* widget() { return widget_.get(); }
 
  private:
   std::unique_ptr<Widget> widget_;
-  internal::NativeWidgetPrivate* native_widget_;
 };
 
 TEST_F(WidgetWithDestroyedNativeWidgetTest, Activate) {
