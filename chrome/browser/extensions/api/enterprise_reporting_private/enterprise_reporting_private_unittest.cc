@@ -441,7 +441,8 @@ class EnterpriseReportingPrivateGetContextInfoTest
   }
 
   bool BuiltInDnsClientPlatformDefault() {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
     return true;
 #else
     return false;
@@ -912,7 +913,7 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
 
  protected:
   void SetUp() override {
-    ExtensionApiUnittest::SetUp();
+    EnterpriseReportingPrivateGetContextInfoTest::SetUp();
     HRESULT hr = CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
                                   IID_PPV_ARGS(&firewall_policy_));
     EXPECT_FALSE(FAILED(hr));

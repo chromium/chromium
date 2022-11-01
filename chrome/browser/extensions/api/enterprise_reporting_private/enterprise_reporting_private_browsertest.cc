@@ -283,7 +283,8 @@ class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
   }
 
   bool BuiltInDnsClientPlatformDefault() {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
     return true;
 #else
     return false;
