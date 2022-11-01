@@ -225,6 +225,10 @@ function simulateAccountStorageUser(passwordManager: TestPasswordManagerProxy) {
   flush();
 }
 
+/**
+ * Helper function which creates a password section with the given lists and
+ * waits for queued tasks to finish.
+ */
 async function createPasswordsSection(
     elementFactory: PasswordSectionElementFactory,
     passwordManager: TestPasswordManagerProxy,
@@ -237,8 +241,6 @@ async function createPasswordsSection(
   await flushTasks();
   return passwordsSection;
 }
-
-
 
 // TODO(crbug.com/1260310): Split into multiple test suits.
 suite('PasswordsSection', function() {
