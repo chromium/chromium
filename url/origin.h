@@ -311,6 +311,13 @@ class COMPONENT_EXPORT(URL) Origin {
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const;
   static Origin FromJavaObject(
       const base::android::JavaRef<jobject>& java_origin);
+  static jlong CreateNative(JNIEnv* env,
+                            const base::android::JavaRef<jstring>& java_scheme,
+                            const base::android::JavaRef<jstring>& java_host,
+                            uint16_t port,
+                            bool is_opaque,
+                            uint64_t tokenHighBits,
+                            uint64_t tokenLowBits);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   void WriteIntoTrace(perfetto::TracedValue context) const;

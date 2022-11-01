@@ -32,6 +32,7 @@ import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -115,8 +116,6 @@ public class ExternalNavigationDelegateImplTest {
         }
     }
 
-    private static class MockOrigin extends Origin {};
-
     public void maybeSetAndGetRequestMetadata(ExternalNavigationDelegateImpl delegate,
             Intent intent, boolean hasUserGesture, boolean isRendererInitiated,
             Origin initiatorOrigin) {
@@ -140,6 +139,7 @@ public class ExternalNavigationDelegateImplTest {
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         doReturn(mMockWindowAndroid).when(mMockTab).getWindowAndroid();
         mExternalNavigationDelegateImpl = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> new ExternalNavigationDelegateImpl(mMockTab));
@@ -177,7 +177,7 @@ public class ExternalNavigationDelegateImplTest {
         maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, true, false, null);
         maybeSetAndGetRequestMetadata(mExternalNavigationDelegateImpl, intent, false, true, null);
         maybeSetAndGetRequestMetadata(
-                mExternalNavigationDelegateImpl, intent, false, false, new MockOrigin());
+                mExternalNavigationDelegateImpl, intent, false, false, Origin.createOpaqueOrigin());
     }
 
     @Test

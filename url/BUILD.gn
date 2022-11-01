@@ -139,10 +139,10 @@ if (is_android || is_robolectric) {
     sources = [ "android/origin_android.cc" ]
 
     deps = [
+      ":gurl_android",
       ":url",
       ":url_jni_headers",
       "//base",
-      "//url/mojom:url_mojom_origin",
     ]
   }
 }
@@ -173,11 +173,14 @@ if (is_android) {
   android_library("origin_java") {
     sources = [ "android/java/src/org/chromium/url/Origin.java" ]
     deps = [
+      ":gurl_java",
       "//base:jni_java",
+      "//build/android:build_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/mojom/base:base_java",
       "//url/mojom:url_mojom_origin_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }
 
@@ -284,24 +287,30 @@ fuzzer_test("gurl_fuzzer") {
 }
 
 if (is_android) {
-  source_set("gurl_android_test_helper") {
+  source_set("android_test_helper") {
     testonly = true
-    sources = [ "android/gurl_java_test_helper.cc" ]
+    sources = [
+      "android/gurl_java_test_helper.cc",
+      "android/origin_java_test_helper.cc",
+    ]
     deps = [
       ":gurl_android",
-      ":gurl_j_test_jni_headers",
+      ":j_test_jni_headers",
+      ":origin_android",
       ":url",
       "//base/test:test_support",
-      "//testing/gtest",
     ]
   }
 
-  android_library("gurl_android_test_helper_java") {
+  android_library("android_test_helper_java") {
     testonly = true
-    sources =
-        [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
+    sources = [
+      "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java",
+      "android/javatests/src/org/chromium/url/OriginJavaTestHelper.java",
+    ]
     deps = [
       ":gurl_java",
+      ":origin_java",
       "//base:base_java_test_support",
       "//base:jni_java",
     ]
@@ -325,20 +334,23 @@ if (is_android) {
     ]
   }
 
-  android_library("gurl_java_unit_tests") {
+  android_library("url_java_unit_tests") {
     testonly = true
     sources = [
       "android/javatests/src/org/chromium/url/GURLJavaTest.java",
       "android/javatests/src/org/chromium/url/JUnitTestGURLsTest.java",
+      "android/javatests/src/org/chromium/url/OriginJavaTest.java",
     ]
     deps = [
-      ":gurl_android_test_helper_java",
+      ":android_test_helper_java",
       ":gurl_java",
       ":gurl_junit_test_support",
+      ":origin_java",
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",
       "//content/public/test/android:content_java_test_support",
+      "//mojo/public/mojom/base:base_java",
       "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_core_core_java",
@@ -346,16 +358,19 @@ if (is_android) {
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//url/mojom:url_mojom_gurl_java",
+      "//url/mojom:url_mojom_origin_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   # See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we
   # can't put 'java' in the name here.
-  generate_jni("gurl_j_test_jni_headers") {
+  generate_jni("j_test_jni_headers") {
     testonly = true
-    sources =
-        [ "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java" ]
+    sources = [
+      "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java",
+      "android/javatests/src/org/chromium/url/OriginJavaTestHelper.java",
+    ]
   }
 
   robolectric_library("gurl_junit_tests") {

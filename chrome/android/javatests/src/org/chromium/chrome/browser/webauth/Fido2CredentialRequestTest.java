@@ -315,45 +315,6 @@ public class Fido2CredentialRequestTest {
                 long nativeInternalAuthenticator, byte[][] matchingCredentials) {}
     }
 
-    private static class MockOrigin extends Origin {
-        private final String mScheme;
-        private final String mHost;
-        private final int mPort;
-
-        public MockOrigin(GURL url) {
-            mScheme = url.getScheme();
-            mHost = url.getHost();
-            String portStr = url.getPort();
-            mPort = portStr.isEmpty() ? 443 : Integer.parseInt(portStr);
-        }
-
-        public MockOrigin(String scheme, String host, int port) {
-            mScheme = scheme;
-            mHost = host;
-            mPort = port;
-        }
-
-        @Override
-        public String getScheme() {
-            return mScheme;
-        }
-
-        @Override
-        public String getHost() {
-            return mHost;
-        }
-
-        @Override
-        public int getPort() {
-            return mPort;
-        }
-
-        @Override
-        public boolean isOpaque() {
-            return false;
-        }
-    }
-
     private static class MockBrowserBridge extends WebAuthnBrowserBridge {
         private byte[] mSelectedCredentialId;
         private List<WebAuthnCredentialDetails> mExpectedCredentialList;
@@ -434,7 +395,7 @@ public class Fido2CredentialRequestTest {
 
         @Override
         public Origin getLastCommittedOrigin() {
-            return new MockOrigin(mLastUrl);
+            return Origin.create(mLastUrl);
         }
 
         public void setLastCommittedURL(GURL url) {
@@ -460,7 +421,7 @@ public class Fido2CredentialRequestTest {
         String url = mTestServer.getURLWithHostName(
                 "subdomain.example.test", "/content/test/data/android/authenticator.html");
         GURL gurl = new GURL(url);
-        mOrigin = new MockOrigin(gurl);
+        mOrigin = Origin.create(gurl);
         sActivityTestRule.loadUrl(url);
         mFrameHost = new MockAuthenticatorRenderFrameHost();
         mFrameHost.setLastCommittedURL(gurl);
@@ -503,7 +464,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testConvertOriginToString_defaultPortRemoved() {
-        MockOrigin origin = new MockOrigin("https", "www.example.com", 443);
+        Origin origin = Origin.create(new GURL("https://www.example.com:443"));
         String parsedOrigin = mRequest.convertOriginToString(origin);
         Assert.assertEquals(parsedOrigin, "https://www.example.com/");
     }

@@ -6,59 +6,109 @@ package org.chromium.url;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-
-import java.nio.ByteBuffer;
+import org.chromium.base.annotations.NativeMethods;
 
 /** An origin is either a (scheme, host, port) tuple or is opaque. */
 @JNINamespace("url")
 public class Origin {
-    // The internal representation of the origin that should never be used directly.
-    private final org.chromium.url.internal.mojom.Origin mInternal;
+    private final String mScheme;
+    private final String mHost;
+    private final short mPort;
+
+    private final boolean mIsOpaque;
+
+    // Serialization of the Unguessable Token. Do not use directly.
+    private final long mTokenHighBits;
+    private final long mTokenLowBits;
 
     /**
-     * This convenience constructor provides a way to wrap
-     * `org.chromium.url.internal.mojom.Origin`s, which are provided by Mojo-generated
-     * code but not intended for direct use (see crbug.com/1156866).
+     * Constructs an opaque origin.
+     */
+    public static Origin createOpaqueOrigin() {
+        return OriginJni.get().createOpaque();
+    }
+
+    /**
+     * See origin.h for many warnings about this method.
      *
-     * @return An `Origin` providing user-friendly access to the origin represented by
-     *         `mojoOrigin`.
+     * Constructs an Origin from a GURL.
+     */
+    public static Origin create(GURL gurl) {
+        return OriginJni.get().createFromGURL(gurl);
+    }
+
+    /**
+     * Parses a mojo Origin into a Java analogue of the c++ Origin class.
+     *
+     * `org.chromium.url.internal.mojom.Origin`s, are provided by Mojo-generated code but not
+     * intended for direct use (see crbug.com/1156866).
+     *
+     * @return A Java equivalent of the c++ Origin represented by the provided mojo Origin.
      */
     public Origin(org.chromium.url.internal.mojom.Origin mojoOrigin) {
-        mInternal = mojoOrigin;
+        mScheme = mojoOrigin.scheme;
+        mHost = mojoOrigin.host;
+        mPort = mojoOrigin.port;
+        if (mojoOrigin.nonceIfOpaque != null) {
+            mIsOpaque = true;
+            mTokenHighBits = mojoOrigin.nonceIfOpaque.high;
+            mTokenLowBits = mojoOrigin.nonceIfOpaque.low;
+        } else {
+            mIsOpaque = false;
+            mTokenHighBits = 0;
+            mTokenLowBits = 0;
+        }
+    }
+
+    @CalledByNative
+    private Origin(String scheme, String host, short port, boolean isOpaque, long tokenHighBits,
+            long tokenLowBits) {
+        mScheme = scheme;
+        mHost = host;
+        mPort = port;
+        mIsOpaque = isOpaque;
+        mTokenHighBits = tokenHighBits;
+        mTokenLowBits = tokenLowBits;
     }
 
     /** @return The scheme of the origin. Returns an empty string for an opaque origin. */
     public String getScheme() {
-        return !isOpaque() ? mInternal.scheme : "";
+        return !isOpaque() ? mScheme : "";
     }
 
     /** @return The host of the origin. Returns an empty string for an opaque origin. */
     public String getHost() {
-        return !isOpaque() ? mInternal.host : "";
+        return !isOpaque() ? mHost : "";
     }
 
     /** @return The port of the origin. Returns 0 for an opaque origin. */
     public int getPort() {
-        return !isOpaque() ? Short.toUnsignedInt(mInternal.port) : 0;
+        return !isOpaque() ? Short.toUnsignedInt(mPort) : 0;
     }
 
     /** @return Whether the origin is opaque. */
     public boolean isOpaque() {
-        return mInternal.nonceIfOpaque != null;
-    }
-
-    /** Protected constructor, used for testing purposes only. */
-    protected Origin() {
-        mInternal = null;
+        return mIsOpaque;
     }
 
     @CalledByNative
-    private static ByteBuffer serialize(Origin origin) {
-        return origin.mInternal.serialize();
+    private long toNativeOrigin() {
+        return OriginJni.get().createNative(
+                mScheme, mHost, mPort, mIsOpaque, mTokenHighBits, mTokenLowBits);
     }
 
-    @CalledByNative
-    private Origin(ByteBuffer byteBuffer) {
-        mInternal = org.chromium.url.internal.mojom.Origin.deserialize(byteBuffer);
+    @NativeMethods
+    interface Natives {
+        /** Constructs a new Opaque origin. */
+        Origin createOpaque();
+
+        /** Constructs an Origin from a GURL. */
+        Origin createFromGURL(GURL gurl);
+
+        /**
+         * Reconstructs the native Origin for this Java Origin, returning its native pointer.
+         */
+        long createNative(String scheme, String host, short port, boolean isOpaque,
+                long tokenHighBits, long tokenLowBits);
     }
 }

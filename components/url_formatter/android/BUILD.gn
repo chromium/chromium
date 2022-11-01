@@ -38,7 +38,7 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
-    "//url:gurl_android_test_helper_java",
+    "//url:android_test_helper_java",
     "//url:gurl_java",
   ]
 }

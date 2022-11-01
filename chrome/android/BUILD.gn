@@ -1486,9 +1486,9 @@ if (current_toolchain == default_toolchain) {
       "//ui/android:ui_full_java",
       "//ui/android:ui_java_test_support",
       "//url:gurl_java",
-      "//url:gurl_java_unit_tests",
       "//url:gurl_junit_test_support",
       "//url:origin_java",
+      "//url:url_java_unit_tests",
     ]
 
     sources += share_unit_device_javatest_java_sources
@@ -2465,8 +2465,9 @@ if (current_toolchain == default_toolchain) {
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/junit",
-      "//url:gurl_android_test_helper_java",
+      "//url:android_test_helper_java",
       "//url:gurl_java",
+      "//url:origin_java",
     ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -2494,8 +2495,8 @@ if (current_toolchain == default_toolchain) {
       "//components/sync:test_support",
       "//content/test:test_support",
       "//net:test_support",
+      "//url:android_test_helper",
       "//url:gurl_android",
-      "//url:gurl_android_test_helper",
     ]
   }
 
