@@ -1300,6 +1300,8 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
       return out << "excessiveReportingOrigins";
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return out << "prohibitedByBrowserPolicy";
+    case StorableSource::Result::kSuccessNoised:
+      return out << "successNoised";
   }
 }
 

@@ -4316,6 +4316,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.SourceStoredStatus"
     enum="ConversionStorageSourceStatus" expires_after="M117">
+  <obsolete>
+    Replaced with Conversions.SourceStoredStatus2 due to enum value change,
+    November 2022.
+  </obsolete>
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often sources are stored successfully or rejected and why.
+    Recorded once for each source event processed by the attribution storage
+    layer.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SourceStoredStatus2"
+    enum="ConversionStorageSourceStatus" expires_after="M117">
   <owner>anthonygarant@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>

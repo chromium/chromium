@@ -305,6 +305,8 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
 
   switch (result) {
     case StorableSource::Result::kSuccess:
+    // TODO(linnan): Consider displaying source noised in internals UI.
+    case StorableSource::Result::kSuccessNoised:
       return;
     case StorableSource::Result::kInternalError:
       attributability = Attributability::kInternalError;

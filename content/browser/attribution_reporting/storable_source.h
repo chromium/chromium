@@ -24,7 +24,8 @@ class CONTENT_EXPORT StorableSource {
     kInsufficientUniqueDestinationCapacity = 3,
     kExcessiveReportingOrigins = 4,
     kProhibitedByBrowserPolicy = 5,
-    kMaxValue = kProhibitedByBrowserPolicy,
+    kSuccessNoised = 6,
+    kMaxValue = kSuccessNoised,
   };
 
   StorableSource(CommonSourceInfo common_info,

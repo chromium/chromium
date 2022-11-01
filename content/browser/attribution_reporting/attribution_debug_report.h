@@ -25,10 +25,12 @@ class CONTENT_EXPORT AttributionDebugReport {
  public:
   enum class DataType {
     kSourceDestinationLimit,
+    kSourceNoised,
   };
 
   static absl::optional<AttributionDebugReport> Create(
       const StorableSource& source,
+      bool is_debug_cookie_set,
       const AttributionStorage::StoreSourceResult& result);
 
   ~AttributionDebugReport();

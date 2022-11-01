@@ -161,9 +161,9 @@ bool IsStorageKeySessionOnly(
 
 void RecordStoreSourceStatus(AttributionStorage::StoreSourceResult result) {
   static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kProhibitedByBrowserPolicy,
-                "Bump version of Conversions.SourceStoredStatus histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus",
+                    StorableSource::Result::kSuccessNoised,
+                "Bump version of Conversions.SourceStoredStatus2 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus2",
                                 result.status);
 }
 
@@ -480,17 +480,19 @@ void AttributionManagerImpl::HandleSource(StorableSource source) {
 
 void AttributionManagerImpl::StoreSource(
     StorableSource source,
-    absl::optional<uint64_t> cleared_debug_key) {
+    absl::optional<uint64_t> cleared_debug_key,
+    bool is_debug_cookie_set) {
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
       .WithArgs(source)
       .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
                            weak_factory_.GetWeakPtr(), std::move(source),
-                           cleared_debug_key));
+                           cleared_debug_key, is_debug_cookie_set));
 }
 
 void AttributionManagerImpl::OnSourceStored(
     StorableSource source,
     absl::optional<uint64_t> cleared_debug_key,
+    bool is_debug_cookie_set,
     AttributionStorage::StoreSourceResult result) {
   RecordStoreSourceStatus(result);
 
@@ -501,8 +503,7 @@ void AttributionManagerImpl::OnSourceStored(
 
   NotifySourcesChanged();
 
-  if (source.debug_reporting())
-    MaybeSendVerboseDebugReport(std::move(source), result);
+  MaybeSendVerboseDebugReport(source, is_debug_cookie_set, result);
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
@@ -595,7 +596,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
             if (!allowed) {
               this->OnSourceStored(
                   std::move(source),
-                  /*cleared_debug_key=*/absl::nullopt,
+                  /*cleared_debug_key=*/absl::nullopt, is_debug_cookie_set,
                   AttributionStorage::StoreSourceResult(
                       StorableSource::Result::kProhibitedByBrowserPolicy));
               return;
@@ -607,7 +608,8 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
               common_info.ClearDebugKey();
             }
 
-            this->StoreSource(std::move(source), cleared_debug_key);
+            this->StoreSource(std::move(source), cleared_debug_key,
+                              is_debug_cookie_set);
           },
 
           [&](AttributionTrigger trigger) {
@@ -986,10 +988,11 @@ void AttributionManagerImpl::NotifyFailedSourceRegistration(
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
-    StorableSource source,
-    AttributionStorage::StoreSourceResult result) {
+    const StorableSource& source,
+    bool is_debug_cookie_set,
+    const AttributionStorage::StoreSourceResult& result) {
   if (absl::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(source, result)) {
+          AttributionDebugReport::Create(source, is_debug_cookie_set, result)) {
     report_sender_->SendReport(std::move(*debug_report));
   }
 }

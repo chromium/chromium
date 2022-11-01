@@ -155,7 +155,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
   void StoreSource(StorableSource source,
-                   absl::optional<uint64_t> cleared_debug_key);
+                   absl::optional<uint64_t> cleared_debug_key,
+                   bool is_debug_cookie_set);
   void StoreTrigger(AttributionTrigger trigger,
                     absl::optional<uint64_t> cleared_debug_key);
 
@@ -188,6 +189,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void OnSourceStored(StorableSource source,
                       absl::optional<uint64_t> cleared_debug_key,
+                      bool is_debug_cookie_set,
                       AttributionStorage::StoreSourceResult result);
   void OnReportStored(AttributionTrigger trigger,
                       absl::optional<uint64_t> cleared_debug_key,
@@ -202,8 +204,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   bool IsReportAllowed(const AttributionReport&) const;
 
   void MaybeSendVerboseDebugReport(
-      StorableSource source,
-      AttributionStorage::StoreSourceResult result);
+      const StorableSource& source,
+      bool is_debug_cookie_set,
+      const AttributionStorage::StoreSourceResult& result);
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;

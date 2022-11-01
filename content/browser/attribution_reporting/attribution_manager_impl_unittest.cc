@@ -1056,7 +1056,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build());
   task_environment_.RunUntilIdle();
-  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus",
+  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus2",
                                 StorableSource::Result::kSuccess, 1);
 }
 

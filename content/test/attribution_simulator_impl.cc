@@ -372,6 +372,7 @@ class AttributionEventHandler : public AttributionObserver {
     std::ostringstream reason;
     switch (result) {
       case StorableSource::Result::kSuccess:
+      case StorableSource::Result::kSuccessNoised:
         return;
       case StorableSource::Result::kInternalError:
       case StorableSource::Result::kInsufficientSourceCapacity:

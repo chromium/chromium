@@ -932,7 +932,9 @@ TEST_F(AttributionStorageTest,
 
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{});
-  storage()->StoreSource(TestAggregatableSourceProvider().GetBuilder().Build());
+  AttributionStorage::StoreSourceResult result = storage()->StoreSource(
+      TestAggregatableSourceProvider().GetBuilder().Build());
+  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
@@ -1316,7 +1318,9 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   delegate()->set_randomized_response(
       std::vector<AttributionStorageDelegate::FakeReport>{
           {.trigger_data = 7, .report_time = fake_report_time}});
-  storage()->StoreSource(builder.Build());
+  AttributionStorage::StoreSourceResult result =
+      storage()->StoreSource(builder.Build());
+  EXPECT_EQ(result.status, StorableSource::Result::kSuccessNoised);
   delegate()->set_randomized_response(absl::nullopt);
 
   base::Time trigger_time = base::Time::Now();
@@ -1407,7 +1411,9 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsMinFakeReportTime) {
     delegate()->set_randomized_response(test_case.randomized_response);
 
     auto result = storage()->StoreSource(SourceBuilder().Build());
-    EXPECT_EQ(result.status, StorableSource::Result::kSuccess);
+    EXPECT_EQ(result.status, test_case.randomized_response
+                                 ? StorableSource::Result::kSuccessNoised
+                                 : StorableSource::Result::kSuccess);
     EXPECT_EQ(result.min_fake_report_time, test_case.expected);
   }
 }

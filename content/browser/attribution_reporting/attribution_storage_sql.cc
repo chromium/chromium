@@ -627,8 +627,11 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   if (!transaction.Commit())
     return StoreSourceResult(StorableSource::Result::kInternalError);
 
-  return StoreSourceResult(StorableSource::Result::kSuccess,
-                           min_fake_report_time);
+  return StoreSourceResult(
+      attribution_logic == StoredSource::AttributionLogic::kTruthfully
+          ? StorableSource::Result::kSuccess
+          : StorableSource::Result::kSuccessNoised,
+      min_fake_report_time);
 }
 
 // Checks whether a new report is allowed to be stored for the given source

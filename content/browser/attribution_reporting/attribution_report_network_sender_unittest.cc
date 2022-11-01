@@ -905,7 +905,8 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   absl::optional<AttributionDebugReport> report =
       AttributionDebugReport::Create(
-          SourceBuilder().Build(),
+          SourceBuilder().SetDebugReporting(true).Build(),
+          /*is_debug_cookie_set=*/false,
           AttributionStorage::StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
