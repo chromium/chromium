@@ -55,8 +55,10 @@ ASH_EXPORT aura::Window* GetActiveDeskContainerForRoot(aura::Window* root);
 
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window);
 
-// If |context| is a descendent window of a desk container, return that desk
-// container, otherwise return nullptr.
+// If `context` is a descendent window of a desk container, return that desk
+// container, otherwise return nullptr. Note that this will return nullptr if
+// `context` is a descendent of the float container, even if it is associated
+// with a desk container.
 ASH_EXPORT aura::Window* GetDeskContainerForContext(aura::Window* context);
 
 // Returns true if the DesksBar widget should be created in overview mode.

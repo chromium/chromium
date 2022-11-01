@@ -599,7 +599,8 @@ void FloatController::FloatImpl(aura::Window* window) {
   auto* desk_controller = DesksController::Get();
   // Get the active desk where the window belongs to before moving it to float
   // container.
-  DCHECK(desks_util::BelongsToActiveDesk(window));
+  DCHECK(desks_util::IsActiveDeskContainer(
+      desks_util::GetDeskContainerForContext(window)));
   const Desk* desk = desk_controller->GetTargetActiveDesk();
   auto* previously_floated_window = FindFloatedWindowOfDesk(desk);
   // Add floated window to `floated_window_info_map_`.

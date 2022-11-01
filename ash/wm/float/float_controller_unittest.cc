@@ -315,6 +315,17 @@ TEST_F(WindowFloatTest, OneFloatWindowPerDeskLogic) {
   EXPECT_TRUE(WindowState::Get(window_2.get())->IsFloated());
 }
 
+// Tests that `desks_util::BelongsToActiveDesk()` works as intended.
+TEST_F(WindowFloatTest, BelongsToActiveDesk) {
+  NewDesk();
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  EXPECT_TRUE(desks_util::BelongsToActiveDesk(window.get()));
+
+  ActivateDesk(DesksController::Get()->desks()[1].get());
+  EXPECT_FALSE(desks_util::BelongsToActiveDesk(window.get()));
+}
+
 // Test Desk removal for floating window.
 TEST_F(WindowFloatTest, FloatWindowWithDeskRemoval) {
   auto* desks_controller = DesksController::Get();

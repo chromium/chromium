@@ -12,6 +12,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -111,6 +112,16 @@ aura::Window* GetActiveDeskContainerForRoot(aura::Window* root) {
 
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window) {
   DCHECK(window);
+
+  // A floated window may be associated with a desk, but they would be parented
+  // to the float container.
+  auto* window_state = WindowState::Get(window);
+  if (window_state && window_state->IsFloated()) {
+    auto* desk =
+        Shell::Get()->float_controller()->FindDeskOfFloatedWindow(window);
+    DCHECK(desk);
+    return desk->is_active();
+  }
 
   const int active_desk_id = GetActiveDeskContainerId();
   aura::Window* desk_container = GetDeskContainerForContext(window);
