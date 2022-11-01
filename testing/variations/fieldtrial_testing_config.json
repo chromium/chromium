@@ -2843,20 +2843,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220926",
+                    "name": "Enabled_20221031",
                     "params": {
+                        "compile-in-parallel": "true",
+                        "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
+                        "inline-script-timeout": "5ms",
                         "long-parser-budget": "50ms",
-                        "num-yields-with-default-budget": "2"
+                        "num-yields-with-default-budget": "2",
+                        "preload-processing-mode": "immediate"
                     },
                     "enable_features": [
                         "BatchImageDecoding",
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
+                        "PrecompileInlineScripts",
                         "PrefetchFontLookupTables",
                         "SplitCompositorTask",
+                        "ThreadedPreloadScanner",
                         "TimedHTMLParserBudget"
+                    ],
+                    "disable_features": [
+                        "PretokenizeCSS"
                     ]
                 }
             ]
@@ -2865,18 +2874,21 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220926",
+                    "name": "Enabled_20221031",
                     "params": {
-                        "default-parser-budget": "10ms",
+                        "compile-in-parallel": "true",
+                        "compile-strategy": "eager",
+                        "default-parser-budget": "20ms",
+                        "inline-script-timeout": "5ms",
                         "long-parser-budget": "500ms",
-                        "num-yields-with-default-budget": "6",
+                        "num-yields-with-default-budget": "2",
+                        "preload-processing-mode": "immediate",
                         "prewarm_cursive": "false",
                         "prewarm_fantasy": "false",
                         "prewarm_fixed": "false",
@@ -2887,11 +2899,14 @@
                     "enable_features": [
                         "DecodeScriptSourceOffThread",
                         "OptimizeDataUrls",
+                        "PrecompileInlineScripts",
                         "PrewarmDefaultFontFamilies",
+                        "ThreadedPreloadScanner",
                         "TimedHTMLParserBudget"
                     ],
                     "disable_features": [
-                        "EstablishGpuChannelAsync"
+                        "EstablishGpuChannelAsync",
+                        "PretokenizeCSS"
                     ]
                 }
             ]
@@ -2902,18 +2917,27 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220929",
+                    "name": "Enabled_20221031",
                     "params": {
+                        "compile-in-parallel": "true",
+                        "compile-strategy": "eager",
                         "default-parser-budget": "10ms",
+                        "inline-script-timeout": "5ms",
                         "long-parser-budget": "50ms",
-                        "num-yields-with-default-budget": "2"
+                        "num-yields-with-default-budget": "2",
+                        "preload-processing-mode": "immediate"
                     },
                     "enable_features": [
                         "DecodeScriptSourceOffThread",
                         "EstablishGpuChannelAsync",
                         "OptimizeDataUrls",
+                        "PrecompileInlineScripts",
                         "PrefetchFontLookupTables",
+                        "ThreadedPreloadScanner",
                         "TimedHTMLParserBudget"
+                    ],
+                    "disable_features": [
+                        "PretokenizeCSS"
                     ]
                 }
             ]
@@ -8522,35 +8546,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PermuteTLSExtensions"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrecompileInlineScripts": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Eager_20221010",
-                    "params": {
-                        "compile-strategy": "eager",
-                        "inline-script-timeout": "5ms",
-                        "preload-processing-mode": "immediate"
-                    },
-                    "enable_features": [
-                        "AvoidEarlyExtensionScriptContextCreation",
-                        "PrecompileInlineScripts",
-                        "PretokenizeCSS",
-                        "ThreadedPreloadScanner"
                     ]
                 }
             ]
