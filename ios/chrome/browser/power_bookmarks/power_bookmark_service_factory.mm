@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 
+#import "base/task/thread_pool.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -42,7 +43,11 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(state);
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
       ios::BookmarkModelFactory::GetInstance()->GetForBrowserState(
-          chrome_state));
+          chrome_state),
+      state->GetStatePath().AppendASCII("power_bookmarks"),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 }
 
 web::BrowserState* PowerBookmarkServiceFactory::GetBrowserStateToUse(

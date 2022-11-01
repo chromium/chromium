@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("storage") {
+  sources = [
+    "empty_power_bookmark_database.cc",
+    "empty_power_bookmark_database.h",
+    "power_bookmark_backend.cc",
+    "power_bookmark_backend.h",
+    "power_bookmark_database.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/power_bookmarks/core:powers",
+    "//sql",
+    "//third_party/sqlite",
+    "//url",
+  ]
+}

@@ -6,23 +6,80 @@
 
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/power_bookmarks/core/power_bookmark_data_provider.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/power_bookmarks/core/powers/power.h"
+#include "components/power_bookmarks/core/powers/power_overview.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace power_bookmarks {
 
-PowerBookmarkService::PowerBookmarkService(BookmarkModel* model)
-    : model_(model) {
+PowerBookmarkService::PowerBookmarkService(
+    BookmarkModel* model,
+    const base::FilePath& database_dir,
+    scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
+    : model_(model), backend_task_runner_(backend_task_runner) {
   if (model_)
     model_->AddObserver(this);
+
+  backend_ = base::SequenceBound<PowerBookmarkBackend>(backend_task_runner_,
+                                                       database_dir);
+  backend_.AsyncCall(&PowerBookmarkBackend::Init);
 }
 
 PowerBookmarkService::~PowerBookmarkService() {
   if (model_)
     model_->RemoveObserver(this);
+
+  backend_.AsyncCall(&PowerBookmarkBackend::Shutdown);
+  backend_task_runner_ = nullptr;
+}
+
+void PowerBookmarkService::GetPowersForURL(const GURL& url,
+                                           PowersCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::GetPowersForURL)
+      .WithArgs(url)
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::GetPowerOverviewsForType(
+    const PowerType& power_type,
+    PowerOverviewsCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::GetPowerOverviewsForType)
+      .WithArgs(power_type)
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::CreatePower(std::unique_ptr<Power> power,
+                                       SuccessCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::CreatePower)
+      .WithArgs(std::move(power))
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::UpdatePower(std::unique_ptr<Power> power,
+                                       SuccessCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::UpdatePower)
+      .WithArgs(std::move(power))
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::DeletePower(const base::GUID& guid,
+                                       SuccessCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::DeletePower)
+      .WithArgs(guid)
+      .Then(std::move(callback));
+}
+
+void PowerBookmarkService::DeletePowersForURL(const GURL& url,
+                                              SuccessCallback callback) {
+  backend_.AsyncCall(&PowerBookmarkBackend::DeletePowersForURL)
+      .WithArgs(url)
+      .Then(std::move(callback));
 }
 
 void PowerBookmarkService::AddDataProvider(

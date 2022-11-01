@@ -4,9 +4,13 @@
 
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 
+#include "base/files/file_path.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
+#include "content/public/browser/browser_context.h"
 
 // static
 power_bookmarks::PowerBookmarkService*
@@ -33,5 +37,9 @@ PowerBookmarkServiceFactory::~PowerBookmarkServiceFactory() = default;
 KeyedService* PowerBookmarkServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new power_bookmarks::PowerBookmarkService(
-      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context));
+      BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
+      context->GetPath().AppendASCII("power_bookmarks"),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 }

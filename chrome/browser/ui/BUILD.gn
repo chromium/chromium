@@ -5302,6 +5302,7 @@ static_library("ui") {
       "//components/payments/content:utils",
       "//components/payments/core",
       "//components/power_bookmarks/core:core",
+      "//components/power_bookmarks/storage",
       "//components/qr_code_generator",
       "//components/reading_list/features:flags",
       "//components/services/app_service/public/cpp:intents",

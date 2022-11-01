@@ -1,0 +1,16 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.power_bookmarks";
+
+option optimize_for = LITE_RUNTIME;
+
+package power_bookmarks;
+
+message PowerSpecifics {
+  optional string placeholder = 1;
+}

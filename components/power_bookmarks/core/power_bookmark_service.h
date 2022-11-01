@@ -7,18 +7,68 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/guid.h"
+#include "base/threading/sequence_bound.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/power_bookmarks/core/power_bookmark_data_provider.h"
+#include "components/power_bookmarks/core/proto/save_specifics.pb.h"
+
+namespace bookmarks {
+class BookmarkModel;
+class BaseBookmarkModelObserver;
+}  // namespace bookmarks
 
 namespace power_bookmarks {
+
+class Power;
+class PowerOverview;
+class PowerBookmarkDataProvider;
+class PowerBookmarkBackend;
+
+using PowersCallback =
+    base::OnceCallback<void(std::vector<std::unique_ptr<Power>> powers)>;
+using PowerOverviewsCallback = base::OnceCallback<void(
+    std::vector<std::unique_ptr<PowerOverview>> power_overviews)>;
+using SuccessCallback = base::OnceCallback<void(bool success)>;
 
 class PowerBookmarkService : public KeyedService,
                              public bookmarks::BaseBookmarkModelObserver {
  public:
-  explicit PowerBookmarkService(bookmarks::BookmarkModel* model);
+  PowerBookmarkService(
+      bookmarks::BookmarkModel* model,
+      const base::FilePath& database_dir,
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+  PowerBookmarkService(const PowerBookmarkService&) = delete;
+  PowerBookmarkService& operator=(const PowerBookmarkService&) = delete;
+
   ~PowerBookmarkService() override;
+
+  // Returns a vector of Powers for the given `url` through the given
+  // `callback`.
+  void GetPowersForURL(const GURL& url, PowersCallback callback);
+
+  // Returns a vector of PowerOverviews for the given `power_type` through the
+  // given `callback`.
+  void GetPowerOverviewsForType(const PowerType& power_type,
+                                PowerOverviewsCallback callback);
+
+  // Create the given `power` in the database. If it already exists, then it
+  // will be updated. Success of the operation is returned through the given
+  // `callback`.
+  void CreatePower(std::unique_ptr<Power> power, SuccessCallback callback);
+  // Update the given `power` in the database. If it doesn't exist, then it
+  // will be created instead. Success of the operation is returned through the
+  // given `callback`.
+  void UpdatePower(std::unique_ptr<Power> power, SuccessCallback callback);
+  // Delete the given `guid` in the database, if it exists. Success of the
+  // operation is returned through the given `callback`.
+  // TODO(crbug.com/1378793): Encapsulate the storage key if possible.
+  void DeletePower(const base::GUID& guid, SuccessCallback callback);
+  // Delete all powers for the given `url`. Success of the operation is
+  // returned through the given `callback`.
+  void DeletePowersForURL(const GURL& url, SuccessCallback callback);
 
   // Allow features to receive notification when a bookmark node is created to
   // add extra information. The `data_provider` can be removed with the remove
@@ -35,6 +85,8 @@ class PowerBookmarkService : public KeyedService,
 
  private:
   bookmarks::BookmarkModel* model_;
+  base::SequenceBound<PowerBookmarkBackend> backend_;
+  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   std::vector<PowerBookmarkDataProvider*> data_providers_;
 };
