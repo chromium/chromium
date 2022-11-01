@@ -10,6 +10,7 @@ import("//ipc/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("features.gni")
 if (is_mac) {
@@ -728,4 +729,13 @@ if (is_mac) {
 
     sources = [ _file ]
   }
+}
+
+fuzzer_test("content_input_actions_parser_fuzzer") {
+  sources = [ "input/actions_parser_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//content/public/common",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
