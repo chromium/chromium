@@ -3768,10 +3768,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kRelatedSearchesAlternateUx,
          kRelatedSearchesAlternateUxVariations,
          "RelatedSearchesAlternateUx")},
-    {"related-searches-simplified-ux",
-     flag_descriptions::kRelatedSearchesSimplifiedUxName,
-     flag_descriptions::kRelatedSearchesSimplifiedUxDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRelatedSearchesSimplifiedUx)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

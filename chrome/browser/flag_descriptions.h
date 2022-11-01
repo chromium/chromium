@@ -2252,9 +2252,6 @@ extern const char kRelatedSearchesAlternateUxDescription[];
 extern const char kRelatedSearchesInBarName[];
 extern const char kRelatedSearchesInBarDescription[];
 
-extern const char kRelatedSearchesSimplifiedUxName[];
-extern const char kRelatedSearchesSimplifiedUxDescription[];
-
 extern const char kRelatedSearchesUiName[];
 extern const char kRelatedSearchesUiDescription[];
 

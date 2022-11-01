@@ -128,7 +128,6 @@ BASE_DECLARE_FEATURE(kReaderModeInCCT);
 BASE_DECLARE_FEATURE(kRelatedSearches);
 BASE_DECLARE_FEATURE(kRelatedSearchesAlternateUx);
 BASE_DECLARE_FEATURE(kRelatedSearchesInBar);
-BASE_DECLARE_FEATURE(kRelatedSearchesSimplifiedUx);
 BASE_DECLARE_FEATURE(kRelatedSearchesUi);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaults);
 BASE_DECLARE_FEATURE(kRequestDesktopSiteDefaultsControl);

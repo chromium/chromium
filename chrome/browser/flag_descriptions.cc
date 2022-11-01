@@ -3925,12 +3925,6 @@ const char kRelatedSearchesInBarDescription[] =
     "Enables showing related searches suggestions in a carousel in the "
     "peeking bar of the bottom sheet on Android.";
 
-const char kRelatedSearchesSimplifiedUxName[] =
-    "Enables showing Related Searches in a simplified user experience.";
-const char kRelatedSearchesSimplifiedUxDescription[] =
-    "Enables showing related searches with a simplified form of the normal "
-    "user experience treatment.";
-
 const char kRelatedSearchesUiName[] =
     "Forces showing of the Related Searches UI on Android";
 const char kRelatedSearchesUiDescription[] =

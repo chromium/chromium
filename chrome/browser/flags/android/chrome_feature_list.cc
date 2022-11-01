@@ -278,7 +278,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearches,
     &kRelatedSearchesAlternateUx,
     &kRelatedSearchesInBar,
-    &kRelatedSearchesSimplifiedUx,
     &kRelatedSearchesUi,
     &kRequestDesktopSiteDefaults,
     &kRequestDesktopSiteDefaultsControl,
@@ -906,10 +905,6 @@ BASE_FEATURE(kRelatedSearchesAlternateUx,
 BASE_FEATURE(kRelatedSearchesInBar,
              "RelatedSearchesInBar",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRelatedSearchesSimplifiedUx,
-             "RelatedSearchesSimplifiedUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRelatedSearchesUi,
              "RelatedSearchesUi",
