@@ -658,18 +658,10 @@ void ArcAppQueueRestoreHandler::LaunchAppWindow(const std::string& app_id,
   }
 
   if (app_restore_data->intent) {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->LaunchAppWithIntent(app_id, app_restore_data->event_flag.value(),
-                                 app_restore_data->intent->Clone(),
-                                 apps::LaunchSource::kFromFullRestore,
-                                 std::move(window_info), base::DoNothing());
-    } else {
-      proxy->LaunchAppWithIntent(
-          app_id, app_restore_data->event_flag.value(),
-          apps::ConvertIntentToMojomIntent(app_restore_data->intent),
-          apps::mojom::LaunchSource::kFromFullRestore,
-          ConvertWindowInfoToMojomWindowInfo(window_info), {});
-    }
+    proxy->LaunchAppWithIntent(app_id, app_restore_data->event_flag.value(),
+                               app_restore_data->intent->Clone(),
+                               apps::LaunchSource::kFromFullRestore,
+                               std::move(window_info), base::DoNothing());
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       proxy->Launch(app_id, app_restore_data->event_flag.value(),

@@ -397,49 +397,6 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
       });
 }
 
-void AppServiceProxyBase::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource mojom_launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
-  CHECK(intent);
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, event_flags, &intent, mojom_launch_source, &window_info,
-                 callback = std::move(callback)](
-                    const apps::AppUpdate& update) mutable {
-          if (MaybeShowLaunchPreventionDialog(update)) {
-            if (callback)
-              std::move(callback).Run(/*success=*/false);
-            return;
-          }
-
-          apps::LaunchSource launch_source =
-              ConvertMojomLaunchSourceToLaunchSource(mojom_launch_source);
-          // TODO(crbug/1117655): File manager records metrics for apps it
-          // launched. So we only record launches from other places. We should
-          // eventually move those metrics here, after AppService supports all
-          // app types launched by file manager.
-          if (launch_source != apps::LaunchSource::kFromFileManager) {
-            RecordAppLaunch(update.AppId(), launch_source);
-          }
-          RecordAppPlatformMetrics(profile_, update, launch_source,
-                                   apps::LaunchContainer::kLaunchContainerNone);
-
-          app_service_->LaunchAppWithIntent(
-              ConvertAppTypeToMojomAppType(update.AppType()), update.AppId(),
-              event_flags, std::move(intent), mojom_launch_source,
-              std::move(window_info), std::move(callback));
-
-          PerformPostLaunchTasks(launch_source);
-        });
-  } else if (callback) {
-    std::move(callback).Run(/*success=*/false);
-  }
-}
-
 void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,
                                            int32_t event_flags,
                                            GURL url,

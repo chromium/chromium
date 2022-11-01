@@ -24,7 +24,6 @@
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/layout.h"
@@ -163,22 +162,12 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
     return;
   }
   // The app that this intent points to is able to handle it, launch it.
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        actions_[index].app_id, ui::EF_NONE,
-        CreateIntent(std::move(actions_[index].action_intent),
-                     std::move(actions_[index].activity)),
-        apps::LaunchSource::kFromSmartTextContextMenu,
-        std::make_unique<apps::WindowInfo>(display.id()), base::DoNothing());
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        actions_[index].app_id, ui::EF_NONE,
-        apps::ConvertIntentToMojomIntent(
-            CreateIntent(std::move(actions_[index].action_intent),
-                         std::move(actions_[index].activity))),
-        apps::mojom::LaunchSource::kFromSmartTextContextMenu,
-        apps::MakeWindowInfo(display.id()), {});
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+      actions_[index].app_id, ui::EF_NONE,
+      CreateIntent(std::move(actions_[index].action_intent),
+                   std::move(actions_[index].activity)),
+      apps::LaunchSource::kFromSmartTextContextMenu,
+      std::make_unique<apps::WindowInfo>(display.id()), base::DoNothing());
 }
 
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(

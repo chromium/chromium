@@ -123,13 +123,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
                            LaunchCallback callback) override;
-  void LaunchAppWithIntent(
-      const std::string& app_id,
-      int32_t event_flags,
-      apps::mojom::IntentPtr intent,
-      apps::mojom::LaunchSource launch_source,
-      apps::mojom::WindowInfoPtr window_info,
-      apps::mojom::Publisher::LaunchAppWithIntentCallback callback) override;
 
   base::WeakPtr<AppServiceProxyAsh> GetWeakPtr();
 
@@ -248,16 +241,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                     WindowInfoPtr window_info,
                                     LaunchCallback callback,
                                     bool is_allowed);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void LaunchAppWithMojoIntentIfAllowed(
-      const std::string& app_id,
-      int32_t event_flags,
-      apps::mojom::IntentPtr intent,
-      apps::mojom::LaunchSource launch_source,
-      apps::mojom::WindowInfoPtr window_info,
-      apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
-      bool is_allowed);
 
   SubscriberCrosapi* crosapi_subscriber_ = nullptr;
 

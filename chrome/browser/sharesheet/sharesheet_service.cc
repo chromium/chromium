@@ -19,7 +19,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -390,23 +389,13 @@ void SharesheetService::OnReadyToShowBubble(
 
 void SharesheetService::LaunchApp(const std::u16string& target_name,
                                   apps::IntentPtr intent) {
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    app_service_proxy_->LaunchAppWithIntent(
-        base::UTF16ToUTF8(target_name),
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true),
-        std::move(intent), apps::LaunchSource::kFromSharesheet,
-        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
-        base::DoNothing());
-  } else {
-    app_service_proxy_->LaunchAppWithIntent(
-        base::UTF16ToUTF8(target_name),
-        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                            /*prefer_container=*/true),
-        apps::ConvertIntentToMojomIntent(intent),
-        apps::mojom::LaunchSource::kFromSharesheet,
-        apps::MakeWindowInfo(display::kDefaultDisplayId), {});
-  }
+  app_service_proxy_->LaunchAppWithIntent(
+      base::UTF16ToUTF8(target_name),
+      apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                          /*prefer_container=*/true),
+      std::move(intent), apps::LaunchSource::kFromSharesheet,
+      std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
+      base::DoNothing());
 }
 
 SharesheetServiceDelegator* SharesheetService::GetOrCreateDelegator(

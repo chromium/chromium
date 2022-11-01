@@ -121,17 +121,9 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   Observe(nullptr);
 
   if (launch_intent_) {
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      proxy->LaunchAppWithIntent(
-          app_id_, ui::EF_NONE, std::move(launch_intent_), launch_source_,
-          std::make_unique<apps::WindowInfo>(display_id_), base::DoNothing());
-    } else {
-      proxy->LaunchAppWithIntent(
-          app_id_, ui::EF_NONE,
-          apps::ConvertIntentToMojomIntent(launch_intent_),
-          apps::ConvertLaunchSourceToMojomLaunchSource(launch_source_),
-          apps::MakeWindowInfo(display_id_), {});
-    }
+    proxy->LaunchAppWithIntent(
+        app_id_, ui::EF_NONE, std::move(launch_intent_), launch_source_,
+        std::make_unique<apps::WindowInfo>(display_id_), base::DoNothing());
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       proxy->Launch(app_id_, ui::EF_NONE, launch_source_,

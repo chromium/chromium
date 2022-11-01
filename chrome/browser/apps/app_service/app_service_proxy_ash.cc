@@ -327,28 +327,6 @@ void AppServiceProxyAsh::LaunchAppWithIntent(const std::string& app_id,
   }
 }
 
-void AppServiceProxyAsh::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
-  apps::IntentPtr intent_copy = apps::ConvertMojomIntentToIntent(intent);
-  base::OnceCallback launch_callback = base::BindOnce(
-      &AppServiceProxyAsh::LaunchAppWithMojoIntentIfAllowed,
-      weak_ptr_factory_.GetWeakPtr(), app_id, event_flags, std::move(intent),
-      std::move(launch_source), std::move(window_info), std::move(callback));
-
-  policy::DlpFilesController* files_controller = GetDlpFilesController();
-  if (files_controller) {
-    files_controller->CheckIfLaunchAllowed(app_id, std::move(intent_copy),
-                                           std::move(launch_callback));
-  } else {
-    std::move(launch_callback).Run(/*is_allowed=*/true);
-  }
-}
-
 base::WeakPtr<AppServiceProxyAsh> AppServiceProxyAsh::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -713,23 +691,6 @@ void AppServiceProxyAsh::LaunchAppWithIntentIfAllowed(
     bool is_allowed) {
   if (!is_allowed) {
     std::move(callback).Run(LaunchResult(State::FAILED));
-    return;
-  }
-  AppServiceProxyBase::LaunchAppWithIntent(
-      app_id, event_flags, std::move(intent), std::move(launch_source),
-      std::move(window_info), std::move(callback));
-}
-
-void AppServiceProxyAsh::LaunchAppWithMojoIntentIfAllowed(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
-    bool is_allowed) {
-  if (!is_allowed) {
-    std::move(callback).Run(/*success=*/false);
     return;
   }
   AppServiceProxyBase::LaunchAppWithIntent(

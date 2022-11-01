@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/channel_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/version_info/channel.h"
@@ -173,34 +172,17 @@ void ChromeMediaAppUIDelegate::EditInPhotosImpl(
   intent->extras = {
       std::make_pair(kPhotosKeepOpenExtraName, kPhotosKeepOpenExtraValue)};
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    proxy->LaunchAppWithIntent(
-        arc::kGooglePhotosAppId, ui::EF_NONE, std::move(intent),
-        apps::LaunchSource::kFromOtherApp, nullptr,
-        base::BindOnce(
-            [](base::OnceCallback<void()> callback,
-               base::WeakPtr<content::WebContents> web_contents,
-               apps::LaunchResult&& result) {
-              if (result.state == apps::State::SUCCESS && web_contents) {
-                web_contents->Close();
-              }
-              std::move(callback).Run();
-            },
-            std::move(edit_in_photos_callback), web_contents->GetWeakPtr()));
-  } else {
-    proxy->LaunchAppWithIntent(
-        arc::kGooglePhotosAppId, ui::EF_NONE,
-        apps::ConvertIntentToMojomIntent(intent),
-        apps::mojom::LaunchSource::kFromOtherApp, nullptr,
-        base::BindOnce(
-            [](base::OnceCallback<void()> callback,
-               base::WeakPtr<content::WebContents> web_contents,
-               bool launch_success) {
-              if (launch_success && web_contents) {
-                web_contents->Close();
-              }
-              std::move(callback).Run();
-            },
-            std::move(edit_in_photos_callback), web_contents->GetWeakPtr()));
-  }
+  proxy->LaunchAppWithIntent(
+      arc::kGooglePhotosAppId, ui::EF_NONE, std::move(intent),
+      apps::LaunchSource::kFromOtherApp, nullptr,
+      base::BindOnce(
+          [](base::OnceCallback<void()> callback,
+             base::WeakPtr<content::WebContents> web_contents,
+             apps::LaunchResult&& result) {
+            if (result.state == apps::State::SUCCESS && web_contents) {
+              web_contents->Close();
+            }
+            std::move(callback).Run();
+          },
+          std::move(edit_in_photos_callback), web_contents->GetWeakPtr()));
 }
