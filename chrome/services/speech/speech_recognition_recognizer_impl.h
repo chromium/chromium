@@ -107,8 +107,9 @@ class SpeechRecognitionRecognizerImpl
  private:
   void OnLanguageChanged(const std::string& language) final;
 
-  void ChangeLanguage(const std::string& language,
-                      scoped_refptr<base::SequencedTaskRunner> main_sequence);
+  void ResetSodaWithNewLanguage(base::FilePath config_path,
+                                speech::LanguageCode language_code,
+                                bool config_exists);
   void RecordDuration();
 
   // Called as a response to sending a SpeechRecognitionEvent to the client
