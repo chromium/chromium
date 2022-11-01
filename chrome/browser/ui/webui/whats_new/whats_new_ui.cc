@@ -9,8 +9,6 @@
 #include "base/version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -67,7 +65,6 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = CreateWhatsNewUIHtmlSource(profile_);
   content::WebUIDataSource::Add(profile_, source);
   web_ui->AddMessageHandler(std::make_unique<WhatsNewHandler>());
-  TryShowHatsSurveyWithTimeout();
 }
 
 // static
@@ -97,21 +94,6 @@ void WhatsNewUI::CreateBrowserCommandHandler(
   };
   command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);
-}
-
-void WhatsNewUI::TryShowHatsSurveyWithTimeout() {
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()),
-                                        /* create_if_necessary = */ true);
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerWhatsNew, web_ui()->GetWebContents(),
-        features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
-            .InMilliseconds(),
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        /*require_same_origin=*/true);
-  }
 }
 
 WhatsNewUI::~WhatsNewUI() = default;

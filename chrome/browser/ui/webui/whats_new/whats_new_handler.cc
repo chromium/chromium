@@ -12,7 +12,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -41,4 +44,21 @@ void WhatsNewHandler::HandleInitialize(const base::Value::List& args) {
       whats_new::IsRemoteContentDisabled()
           ? base::Value()
           : base::Value(whats_new::GetServerURL(true).spec()));
+  TryShowHatsSurveyWithTimeout();
+}
+
+void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()),
+                                        /* create_if_necessary = */ true);
+  if (!hats_service)
+    return;
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerWhatsNew, web_ui()->GetWebContents(),
+      features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
+          .InMilliseconds(),
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/{},
+      /*require_same_origin=*/true);
 }
