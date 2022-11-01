@@ -152,7 +152,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
       [[TestVariationsSeedFetcher alloc] initWithCommandLineArgsForTesting:@[]];
   fetcher.delegate = delegate;
   [fetcher startSeedFetch];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   EXPECT_OCMOCK_VERIFY(delegate);
 }
 
@@ -183,7 +183,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   TestVariationsSeedFetcher* fetcher = [[TestVariationsSeedFetcher alloc]
       initWithCommandLineArgsForTesting:@[ argument ]];
   [fetcher startSeedFetch];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   EXPECT_OCMOCK_VERIFY(mockURLSession);
 }
 
@@ -207,12 +207,12 @@ TEST_F(IOSChromeVariationsSeedFetcherTest, testHTTPResponseError) {
   fetcher.delegate = delegate;
   fetcher.startTimeOfOngoingSeedRequest = [NSDate now];
   [fetcher onSeedRequestCompletedWithData:nil response:responseOk error:error];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
   EXPECT_EQ(fetcher.startTimeOfOngoingSeedRequest, nil);
   fetcher.startTimeOfOngoingSeedRequest = [NSDate now];
   [fetcher onSeedRequestCompletedWithData:nil response:responseError error:nil];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
   EXPECT_EQ(fetcher.startTimeOfOngoingSeedRequest, nil);
   EXPECT_OCMOCK_VERIFY(delegate);
@@ -245,7 +245,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   [fetcherWithSeed onSeedRequestCompletedWithData:nil
                                          response:response
                                             error:nil];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   EXPECT_EQ([fetcherWithSeed startTimeOfOngoingSeedRequest], nil);
   EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], expectedSeed);
   EXPECT_OCMOCK_VERIFY(delegate);
@@ -272,7 +272,7 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   [fetcherWithSeed onSeedRequestCompletedWithData:nil
                                          response:response
                                             error:nil];
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   EXPECT_EQ([fetcherWithSeed startTimeOfOngoingSeedRequest], nil);
   EXPECT_EQ([IOSChromeVariationsSeedStore popSeed], nil);
   EXPECT_OCMOCK_VERIFY(delegate);
