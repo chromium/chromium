@@ -738,7 +738,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
-      r'\b(absl|std)::any\b',
+      r'/\b(absl|std)::any\b',
       (
         'absl::any / std::any are not safe to use in a component build.',
       ),
@@ -756,9 +756,70 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
+      (
+        r'/\b(?:'
+        r'std::linear_congruential_engine|std::mersenne_twister_engine|'
+        r'std::subtract_with_carry_engine|std::discard_block_engine|'
+        r'std::independent_bits_engine|std::shuffle_order_engine|'
+        r'std::minstd_rand0|std::minstd_rand|'
+        r'std::mt19937|std::mt19937_64|'
+        r'std::ranlux24_base|std::ranlux48_base|std::ranlux24|std::ranlux48|'
+        r'std::knuth_b|'
+        r'std::default_random_engine|'
+        r'std::random_device'
+        r')\b'
+      ),
+      (
+        'STL random number engines and generators are banned. Use the ',
+        'helpers in base/rand_util.h instead, e.g. base::RandBytes() or ',
+        'base::RandomBitGenerator.'
+      ),
+      True,
+      [
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # Various tools which build outside of Chrome.
+        r'testing/libfuzzer',
+        r'tools/android/io_benchmark/',
+        # Fuzzers are allowed to use standard library random number generators
+        # since fuzzing speed + reproducibility is important.
+        r'tools/ipc_fuzzer/',
+        r'.+_fuzzer\.cc$',
+        r'.+_fuzzertest\.cc$',
+        # TODO(https://crbug.com/1380528): These are all unsanctioned uses of
+        # the standard library's random number generators, and should be
+        # migrated to the //base equivalent.
+        r'ash/ambient/model/ambient_topic_queue\.cc',
+        r'base/allocator/partition_allocator/partition_alloc_unittest\.cc',
+        r'base/ranges/algorithm_unittest\.cc',
+        r'base/test/launcher/test_launcher\.cc',
+        r'cc/metrics/video_playback_roughness_reporter_unittest\.cc',
+        r'chrome/browser/apps/app_service/metrics/website_metrics\.cc',
+        r'chrome/browser/ash/power/auto_screen_brightness/monotone_cubic_spline_unittest\.cc',
+        r'chrome/browser/ash/printing/zeroconf_printer_detector_unittest\.cc',
+        r'chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl_unittest\.cc',
+        r'chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter_unittest\.cc',
+        r'chrome/browser/privacy_budget/mesa_distribution_unittest\.cc',
+        r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
+        r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
+        r'chrome/browser/win/conflicts/module_blocklist_cache_util_unittest\.cc',
+        r'chrome/chrome_cleaner/logging/detailed_info_sampler\.cc',
+        r'chromeos/ash/components/memory/userspace_swap/swap_storage_unittest\.cc',
+        r'chromeos/ash/components/memory/userspace_swap/userspace_swap\.cc',
+        r'components/metrics/metrics_state_manager\.cc',
+        r'components/omnibox/browser/history_quick_provider_performance_unittest\.cc',
+        r'components/zucchini/disassembler_elf_unittest\.cc',
+        r'content/browser/webid/federated_auth_request_impl\.cc',
+        r'content/browser/webid/federated_auth_request_impl\.cc',
+        r'media/cast/test/utility/udp_proxy\.h',
+        r'sql/recover_module/module_unittest\.cc',
+      ],
+    ),
+    BanRule(
       r'/\babsl::bind_front\b',
       (
-        'absl::bind_front is banned. Use base::Bind instead.',
+        'absl::bind_front is banned. Use base::BindOnce() or '
+        'base::BindRepeating() instead.',
       ),
       True,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
@@ -799,8 +860,9 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
     BanRule(
       r'/\babsl::(Insecure)?BitGen\b',
       (
-        'Abseil random number generators are banned. Use base/rand_util.h',
-        'instead.',
+        'absl random number generators are banned. Use the helpers in '
+        'base/rand_util.h instead, e.g. base::RandBytes() or ',
+        'base::RandomBitGenerator.'
       ),
       True,
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.

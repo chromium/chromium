@@ -2799,6 +2799,48 @@ class BannedTypeCheckTest(unittest.TestCase):
     self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
     self.assertFalse('some/cpp/comment/file.cc' in results[1].message)
 
+  def testBannedCppRandomFunctions(self):
+    banned_rngs = [
+        'absl::BitGen',
+        'absl::InsecureBitGen',
+        'std::linear_congruential_engine',
+        'std::mersenne_twister_engine',
+        'std::subtract_with_carry_engine',
+        'std::discard_block_engine',
+        'std::independent_bits_engine',
+        'std::shuffle_order_engine',
+        'std::minstd_rand0',
+        'std::minstd_rand',
+        'std::mt19937',
+        'std::mt19937_64',
+        'std::ranlux24_base',
+        'std::ranlux48_base',
+        'std::ranlux24',
+        'std::ranlux48',
+        'std::knuth_b',
+        'std::default_random_engine',
+        'std::random_device',
+    ]
+    for banned_rng in banned_rngs:
+      input_api = MockInputApi()
+      input_api.files = [
+        MockFile('some/cpp/problematic/file.cc',
+                 [f'{banned_rng} engine;']),
+        MockFile('third_party/blink/problematic/file.cc',
+                 [f'{banned_rng} engine;']),
+        MockFile('third_party/ok/file.cc',
+                 [f'{banned_rng} engine;']),
+      ]
+      results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
+      self.assertEqual(1, len(results), banned_rng)
+      self.assertTrue('some/cpp/problematic/file.cc' in results[0].message,
+                      banned_rng)
+      self.assertTrue(
+          'third_party/blink/problematic/file.cc' in results[0].message,
+          banned_rng)
+      self.assertFalse(
+          'third_party/ok/file.cc' in results[0].message, banned_rng)
+
   def testBannedIosObjcFunctions(self):
     input_api = MockInputApi()
     input_api.files = [
