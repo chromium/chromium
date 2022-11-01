@@ -4550,7 +4550,7 @@
 <translation id="5339031667684712858">已移除的網站</translation>
 <translation id="5340638867532133571">允許網站安裝付款處理常式 (建議)</translation>
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會遭到封鎖)</translation>
-<translation id="5342091991439452114">PIN 至少需有 <ph name="MINIMUM" /> 碼</translation>
+<translation id="5342091991439452114">PIN 碼至少需有 <ph name="MINIMUM" /> 碼</translation>
 <translation id="5344036115151554031">正在還原 Linux</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="534449933710420173">未命名的資料夾</translation>
@@ -6590,7 +6590,7 @@
 <translation id="7341834142292923918">需要這個網站的存取權限</translation>
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
-<translation id="7345706641791090287">確認您的密碼</translation>
+<translation id="7345706641791090287">確認你的密碼</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347452120014970266">這會清除 <ph name="ORIGIN_NAME" /> 儲存的所有資料和 Cookie，以及該網站所安裝的應用程式資料和 Cookie</translation>
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，接著再輸入你的指令或搜尋項目。</translation>
