@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -148,10 +149,11 @@ void ServiceWatcherImpl::OnRecordUpdate(
     return;
   }
 
+  if (!base::Contains(services_, record->name()))
+    return;
+
   DCHECK(record->type() == net::dns_protocol::kTypeSRV ||
          record->type() == net::dns_protocol::kTypeTXT);
-  DCHECK(services_.find(record->name()) != services_.end());
-
   if (record->type() == net::dns_protocol::kTypeSRV) {
     if (update == net::MDnsListener::RECORD_REMOVED)
       RemoveSRV(record->name());
