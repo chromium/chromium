@@ -1192,11 +1192,13 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     case UnmaskAuthFlowType::kNone:
       flow_type = AutofillMetrics::VirtualCardUnmaskFlowType::kUnspecified;
       break;
-    case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kFido:
     case UnmaskAuthFlowType::kCvcThenFido:
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
       NOTREACHED();
+      ABSL_FALLTHROUGH_INTENDED;
+    case UnmaskAuthFlowType::kCvc:
+      // TODO(crbug/1370329): Add a flow type for the CVC flow for metrics.
       Reset();
       return;
   }
