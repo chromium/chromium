@@ -61,8 +61,16 @@ std::string NormalizeLanguageCode(std::string language) {
   // For every language other than "zh" (Chinese), return only the language
   // and strip the locale. Image descriptions don't changed based on locale,
   // but zh-CN and zh-TW use different character sets.
-  if (tokens.size() == 1 || language_only != "zh")
+  if (tokens.size() == 1 || language_only != "zh") {
+    // For the case of Hebrew, Chrome uses "he" but vss uses "iw" internally.
+    // For Norwegian, vss uses "no" for all variants.
+    if (language_only == "he") {
+      return "iw";
+    } else if (language_only == "nb" || language_only == "nn") {
+      return "no";
+    }
     return language_only;
+  }
 
   // Normalize the locale to uppercase.
   std::string locale_only = base::ToUpperASCII(tokens[1]);
@@ -454,7 +462,8 @@ Annotator::Annotator(
       api_key_(std::move(api_key)),
       batch_size_(batch_size),
       min_ocr_confidence_(min_ocr_confidence),
-      server_languages_({"de", "en", "es", "fr", "hi", "it"}) {
+      server_languages_({"cs", "de", "en", "es", "fi", "fr", "hi", "hr", "id",
+                         "it", "iw", "nl", "no", "pt", "ru", "sv", "tr"}) {
   server_request_timer_ = std::make_unique<base::RepeatingTimer>(
       FROM_HERE, throttle,
       base::BindRepeating(&Annotator::SendRequestBatchToServer,
