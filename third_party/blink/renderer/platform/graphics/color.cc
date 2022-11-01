@@ -361,9 +361,6 @@ float Color::HueInterpolation(float value1,
         value1 += 360.0f;
       DCHECK(-360.0f < value2 - value1 && value2 - value1 <= 0.f);
       break;
-    case Color::HueInterpolationMethod::kSpecified:
-      // No fixup performed.
-      break;
   }
   return AngleToUnitCircleDegrees(blink::Blend(value2, value1, percentage));
 }
@@ -1215,9 +1212,6 @@ String Color::ColorInterpolationSpaceToString(
         break;
       case Color::HueInterpolationMethod::kLonger:
         result.Append(" longer hue");
-        break;
-      case Color::HueInterpolationMethod::kSpecified:
-        result.Append(" specified hue");
         break;
       // Shorter is the default value and does not get serialized
       case Color::HueInterpolationMethod::kShorter:

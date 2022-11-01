@@ -230,8 +230,6 @@ TEST(BlinkColor, HueInterpolation) {
         return "kIncreasing";
       case Color::HueInterpolationMethod::kDecreasing:
         return "kDecreasing";
-      case Color::HueInterpolationMethod::kSpecified:
-        return "kSpecified";
     }
   };
 
@@ -248,9 +246,6 @@ TEST(BlinkColor, HueInterpolation) {
       {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kDecreasing, 60.0f},
       {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kDecreasing, 330.0f},
       {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kDecreasing, 357.0f},
-      {60.0f, 330.0f, 0.0f, Color::HueInterpolationMethod::kSpecified, 60.0f},
-      {60.0f, 330.0f, 1.0f, Color::HueInterpolationMethod::kSpecified, 330.0f},
-      {60.0f, 330.0f, 0.7f, Color::HueInterpolationMethod::kSpecified, 249.0f},
       {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kShorter, 60.0f},
       {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kShorter, 90.0f},
       {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kShorter, 81.0f},
@@ -263,9 +258,6 @@ TEST(BlinkColor, HueInterpolation) {
       {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kDecreasing, 60.0f},
       {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kDecreasing, 90.0f},
       {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kDecreasing, 189.0f},
-      {60.0f, 90.0f, 0.0f, Color::HueInterpolationMethod::kSpecified, 60.0f},
-      {60.0f, 90.0f, 1.0f, Color::HueInterpolationMethod::kSpecified, 90.0f},
-      {60.0f, 90.0f, 0.7f, Color::HueInterpolationMethod::kSpecified, 81.0f},
   };
 
   for (auto& hue_test : hue_tests) {

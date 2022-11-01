@@ -1717,8 +1717,6 @@ static bool ConsumeColorInterpolationSpace(
         read_hue = Color::HueInterpolationMethod::kDecreasing;
       else if (ConsumeIdent<CSSValueID::kIncreasing>(args))
         read_hue = Color::HueInterpolationMethod::kIncreasing;
-      else if (ConsumeIdent<CSSValueID::kSpecified>(args))
-        read_hue = Color::HueInterpolationMethod::kSpecified;
       if (read_hue) {
         if (!ConsumeIdent<CSSValueID::kHue>(args))
           return false;
@@ -1744,7 +1742,8 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
   CSSParserTokenRange args = ConsumeFunction(range);
   // First argument is the colorspace
   Color::ColorInterpolationSpace color_space;
-  Color::HueInterpolationMethod hue_interpolation_method;
+  Color::HueInterpolationMethod hue_interpolation_method =
+      Color::HueInterpolationMethod::kShorter;
   if (!ConsumeColorInterpolationSpace(args, color_space,
                                       hue_interpolation_method))
     return nullptr;
@@ -2645,7 +2644,8 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenRange& args,
   // [ [ circle | ellipse] || <size-keyword> ]] ]
 
   Color::ColorInterpolationSpace color_space;
-  Color::HueInterpolationMethod hue_interpolation_method;
+  Color::HueInterpolationMethod hue_interpolation_method =
+      Color::HueInterpolationMethod::kShorter;
   bool has_color_space = ConsumeColorInterpolationSpace(
       args, color_space, hue_interpolation_method);
 
@@ -2748,7 +2748,8 @@ static CSSValue* ConsumeLinearGradient(
   // [ in <color-space>? || [ <angle> | to <side-or-corner> ]?]
   bool expect_comma = true;
   Color::ColorInterpolationSpace color_space;
-  Color::HueInterpolationMethod hue_interpolation_method;
+  Color::HueInterpolationMethod hue_interpolation_method =
+      Color::HueInterpolationMethod::kShorter;
   bool has_color_space = ConsumeColorInterpolationSpace(
       args, color_space, hue_interpolation_method);
 
@@ -2805,7 +2806,8 @@ static CSSValue* ConsumeConicGradient(CSSParserTokenRange& args,
                                       const CSSParserContext& context,
                                       cssvalue::CSSGradientRepeat repeating) {
   Color::ColorInterpolationSpace color_space;
-  Color::HueInterpolationMethod hue_interpolation_method;
+  Color::HueInterpolationMethod hue_interpolation_method =
+      Color::HueInterpolationMethod::kShorter;
   bool has_color_space = ConsumeColorInterpolationSpace(
       args, color_space, hue_interpolation_method);
 

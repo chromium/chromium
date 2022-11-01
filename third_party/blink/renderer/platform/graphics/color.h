@@ -206,7 +206,6 @@ class PLATFORM_EXPORT Color {
     kLonger,
     kIncreasing,
     kDecreasing,
-    kSpecified,
   };
 
   // Creates a color with the Color-Mix method in CSS Color 5. This will produce

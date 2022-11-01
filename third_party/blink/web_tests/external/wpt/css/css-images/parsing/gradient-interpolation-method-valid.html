@@ -75,7 +75,7 @@ function test_each_interpolation_method(gradientFunction, specifiers) {
     }
 
     for (const colorSpace of [ "hsl", "hwb", "lch", "oklch" ]) {
-        for (const hueInterpolationMethod of [ "", " shorter hue", " longer hue", " increasing hue", " decreasing hue", " specified hue" ]) {
+        for (const hueInterpolationMethod of [ "", " shorter hue", " longer hue", " increasing hue", " decreasing hue" ]) {
             const colorInterpolationMethod = `${colorSpace}${hueInterpolationMethod}`
             const colorInterpolationMethodResult = hueInterpolationMethod == " shorter hue" ? colorSpace : colorInterpolationMethod
 

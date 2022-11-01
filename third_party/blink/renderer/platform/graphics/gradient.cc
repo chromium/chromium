@@ -29,6 +29,7 @@
 
 #include <algorithm>
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -86,6 +87,14 @@ void Gradient::SortStopsIfNecessary() const {
   std::stable_sort(stops_.begin(), stops_.end(), CompareStops);
 }
 
+bool Gradient::HasNonLegacyColor() const {
+  for (const auto& stop : stops_) {
+    if (!stop.color.IsLegacyColor())
+      return true;
+  }
+  return false;
+}
+
 // Collect sorted stop position and color information into the pos and colors
 // buffers, ensuring stops at both 0.0 and 1.0.
 // TODO(fmalita): theoretically Skia should provide the same 0.0/1.0 padding
@@ -129,6 +138,71 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
   }
 }
 
+SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
+  using sk_colorspace = SkGradientShader::Interpolation::ColorSpace;
+  using sk_hue_method = SkGradientShader::Interpolation::HueMethod;
+  SkGradientShader::Interpolation sk_interpolation;
+
+  switch (color_space_interpolation_space_) {
+    case Color::ColorInterpolationSpace::kXYZD65:
+    case Color::ColorInterpolationSpace::kXYZD50:
+    case Color::ColorInterpolationSpace::kSRGBLinear:
+      sk_interpolation.fColorSpace = sk_colorspace::kSRGBLinear;
+      break;
+    case Color::ColorInterpolationSpace::kLab:
+      sk_interpolation.fColorSpace = sk_colorspace::kLab;
+      break;
+    case Color::ColorInterpolationSpace::kOklab:
+      sk_interpolation.fColorSpace = sk_colorspace::kOKLab;
+      break;
+    case Color::ColorInterpolationSpace::kLch:
+      sk_interpolation.fColorSpace = sk_colorspace::kLCH;
+      break;
+    case Color::ColorInterpolationSpace::kOklch:
+      sk_interpolation.fColorSpace = sk_colorspace::kOKLCH;
+      break;
+    case Color::ColorInterpolationSpace::kSRGB:
+      sk_interpolation.fColorSpace = sk_colorspace::kSRGB;
+      break;
+    case Color::ColorInterpolationSpace::kHSL:
+      sk_interpolation.fColorSpace = sk_colorspace::kHSL;
+      break;
+    case Color::ColorInterpolationSpace::kHWB:
+      sk_interpolation.fColorSpace = sk_colorspace::kHWB;
+      break;
+    case Color::ColorInterpolationSpace::kNone:
+      if (HasNonLegacyColor()) {
+        // If no colorspace is provided and the gradient is not entirely
+        // composed of legacy colors, Oklab is the default interpolation space.
+        sk_interpolation.fColorSpace = sk_colorspace::kOKLab;
+      } else {
+        // TODO(crbug.com/1379462): This should be kSRGB.
+        sk_interpolation.fColorSpace = sk_colorspace::kDestination;
+      }
+  }
+
+  switch (hue_interpolation_method_) {
+    case Color::HueInterpolationMethod::kLonger:
+      sk_interpolation.fHueMethod = sk_hue_method::kLonger;
+      break;
+    case Color::HueInterpolationMethod::kIncreasing:
+      sk_interpolation.fHueMethod = sk_hue_method::kIncreasing;
+      break;
+    case Color::HueInterpolationMethod::kDecreasing:
+      sk_interpolation.fHueMethod = sk_hue_method::kDecreasing;
+      break;
+    default:
+      sk_interpolation.fHueMethod = sk_hue_method::kShorter;
+  }
+
+  sk_interpolation.fInPremul =
+      (color_interpolation_ == ColorInterpolation::kPremultiplied)
+          ? SkGradientShader::Interpolation::InPremul::kYes
+          : SkGradientShader::Interpolation::InPremul::kNo;
+
+  return sk_interpolation;
+}
+
 sk_sp<PaintShader> Gradient::CreateShaderInternal(
     const SkMatrix& local_matrix) {
   SortStopsIfNecessary();
@@ -162,12 +236,8 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
           SkColor(color), DarkModeFilter::ElementRole::kBackground);
     }
   }
-
-  uint32_t flags = color_interpolation_ == ColorInterpolation::kPremultiplied
-                       ? SkGradientShader::kInterpolateColorsInPremul_Flag
-                       : 0;
-  sk_sp<PaintShader> shader =
-      CreateShader(colors, pos, tile, flags, local_matrix, colors.back());
+  sk_sp<PaintShader> shader = CreateShader(
+      colors, pos, tile, ResolveSkInterpolation(), local_matrix, colors.back());
   DCHECK(shader);
 
   return shader;
@@ -221,7 +291,7 @@ class LinearGradient final : public Gradient {
   sk_sp<PaintShader> CreateShader(const ColorBuffer& colors,
                                   const OffsetBuffer& pos,
                                   SkTileMode tile_mode,
-                                  uint32_t flags,
+                                  SkGradientShader::Interpolation interpolation,
                                   const SkMatrix& local_matrix,
                                   SkColor fallback_color) const override {
     if (GetDegenerateHandling() == DegenerateHandling::kDisallow &&
@@ -238,7 +308,8 @@ class LinearGradient final : public Gradient {
       colors4f.push_back(SkColor4f::FromColor(color));
     return PaintShader::MakeLinearGradient(
         pts, colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
-        tile_mode, flags, &local_matrix, SkColor4f::FromColor(fallback_color));
+        tile_mode, interpolation, 0 /* flags */, &local_matrix,
+        SkColor4f::FromColor(fallback_color));
   }
 
  private:
@@ -270,7 +341,7 @@ class RadialGradient final : public Gradient {
   sk_sp<PaintShader> CreateShader(const ColorBuffer& colors,
                                   const OffsetBuffer& pos,
                                   SkTileMode tile_mode,
-                                  uint32_t flags,
+                                  SkGradientShader::Interpolation interpolation,
                                   const SkMatrix& local_matrix,
                                   SkColor fallback_color) const override {
     const SkMatrix* matrix = &local_matrix;
@@ -303,7 +374,8 @@ class RadialGradient final : public Gradient {
     return PaintShader::MakeTwoPointConicalGradient(
         FloatPointToSkPoint(p0_), radius0, FloatPointToSkPoint(p1_), radius1,
         colors4f.data(), pos.data(), static_cast<int>(colors4f.size()),
-        tile_mode, flags, matrix, SkColor4f::FromColor(fallback_color));
+        tile_mode, interpolation, 0 /* flags */, matrix,
+        SkColor4f::FromColor(fallback_color));
   }
 
  private:
@@ -336,7 +408,7 @@ class ConicGradient final : public Gradient {
   sk_sp<PaintShader> CreateShader(const ColorBuffer& colors,
                                   const OffsetBuffer& pos,
                                   SkTileMode tile_mode,
-                                  uint32_t flags,
+                                  SkGradientShader::Interpolation interpolation,
                                   const SkMatrix& local_matrix,
                                   SkColor fallback_color) const override {
     if (GetDegenerateHandling() == DegenerateHandling::kDisallow &&
@@ -364,7 +436,8 @@ class ConicGradient final : public Gradient {
     return PaintShader::MakeSweepGradient(
         position_.x(), position_.y(), colors4f.data(), pos.data(),
         static_cast<int>(colors4f.size()), tile_mode, start_angle_, end_angle_,
-        flags, matrix, SkColor4f::FromColor(fallback_color));
+        interpolation, 0 /* flags */, matrix,
+        SkColor4f::FromColor(fallback_color));
   }
 
  private:

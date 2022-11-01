@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/gfx/geometry/size_f.h"
 
 class SkShader;
@@ -62,6 +63,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       const SkScalar* pos,
       int count,
       SkTileMode mode,
+      SkGradientShader::Interpolation interpolation = DefaultInterpolation(),
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
       SkColor4f fallback_color = SkColors::kTransparent);
@@ -73,6 +75,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       const SkScalar pos[],
       int color_count,
       SkTileMode mode,
+      SkGradientShader::Interpolation interpolation = DefaultInterpolation(),
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
       SkColor4f fallback_color = SkColors::kTransparent);
@@ -86,6 +89,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       const SkScalar pos[],
       int color_count,
       SkTileMode mode,
+      SkGradientShader::Interpolation interpolation = DefaultInterpolation(),
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
       SkColor4f fallback_color = SkColors::kTransparent);
@@ -99,6 +103,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       SkTileMode mode,
       SkScalar start_degrees,
       SkScalar end_degrees,
+      SkGradientShader::Interpolation interpolation = DefaultInterpolation(),
       uint32_t flags = 0,
       const SkMatrix* local_matrix = nullptr,
       SkColor4f fallback_color = SkColors::kTransparent);
@@ -183,6 +188,11 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, PaintRecordShaderSerialization);
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, RecordShadersCached);
 
+  static SkGradientShader::Interpolation DefaultInterpolation() {
+    SkGradientShader::Interpolation default_interpolation;
+    return default_interpolation;
+  }
+
   explicit PaintShader(Type type);
 
   bool GetClampedRasterizationTileRect(const SkMatrix& ctm,
@@ -231,6 +241,9 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
                              int count);
   void SetMatrixAndTiling(const SkMatrix* matrix, SkTileMode tx, SkTileMode ty);
   void SetFlagsAndFallback(uint32_t flags, SkColor4f fallback_color);
+  void SetGradientInterpolation(SkGradientShader::Interpolation interpolation) {
+    gradient_interpolation_ = interpolation;
+  }
 
   Type shader_type_ = Type::kShaderCount;
 
@@ -262,6 +275,8 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   std::vector<SkColor4f> colors_;
   std::vector<SkScalar> positions_;
+
+  SkGradientShader::Interpolation gradient_interpolation_;
 
   // Cached intermediates, for Paint objects that may not be thread-safe
   sk_sp<SkPicture> sk_cached_picture_;
