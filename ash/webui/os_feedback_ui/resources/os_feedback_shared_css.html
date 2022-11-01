@@ -198,7 +198,11 @@
       --cr-checkbox-ripple-size: 32px;
     }
 
-    :host-context(.focus-outline-visible) cr-checkbox:focus-within {
+    :host-context(.focus-outline-visible) cr-checkbox {
+      --cr-checkbox-ripple-ring: none;
+    }
+
+    :host-context(.focus-outline-visible) cr-checkbox:focus {
       --cr-checkbox-ripple-ring: 2px solid var(--cros-focus-ring-color);
     }
   </style>
