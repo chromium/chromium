@@ -351,6 +351,9 @@ inline constexpr int kErrorDMRegistrationFailed = 33;
 
 inline constexpr int kErrorFailedToInstallLegacyUpdater = 34;
 
+// A Mojo remote was unexpectedly disconnected.
+inline constexpr int kErrorMojoDisconnect = 35;
+
 inline constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.

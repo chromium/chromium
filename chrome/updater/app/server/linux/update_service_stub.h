@@ -25,6 +25,29 @@ class UpdateServiceStub : public mojom::UpdateService {
 
   // updater::mojom::UpdateService
   void GetVersion(GetVersionCallback callback) override;
+  void FetchPolicies(FetchPoliciesCallback callback) override;
+  void RegisterApp(mojom::RegistrationRequestPtr request,
+                   RegisterAppCallback callback) override;
+  void GetAppStates(GetAppStatesCallback callback) override;
+  void RunPeriodicTasks(RunPeriodicTasksCallback callback) override;
+  void UpdateAll(UpdateAllCallback callback) override;
+  void Update(const std::string& app_id,
+              const std::string& install_data_index,
+              UpdateService::Priority priority,
+              UpdateService::PolicySameVersionUpdate policy_same_version_update,
+              UpdateCallback callback) override;
+  void Install(mojom::RegistrationRequestPtr registration,
+               const std::string& client_install_data,
+               const std::string& install_data_index,
+               UpdateService::Priority priority,
+               InstallCallback callback) override;
+  void CancelInstalls(const std::string& app_id) override;
+  void RunInstaller(const std::string& app_id,
+                    const ::base::FilePath& installer_path,
+                    const std::string& install_args,
+                    const std::string& install_data,
+                    const std::string& install_settings,
+                    RunInstallerCallback callback) override;
 
  private:
   mojo::Receiver<updater::mojom::UpdateService> receiver_;

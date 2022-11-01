@@ -822,7 +822,12 @@ if (is_win || is_mac || is_linux) {
     }
 
     if (is_linux) {
-      sources += [ "test/integration_tests_linux.cc" ]
+      sources += [
+        "app/server/linux/rpc_unittests.cc",
+        "test/integration_tests_linux.cc",
+      ]
+
+      deps += [ "//chrome/updater/app/server/linux/mojom" ]
     }
   }
 

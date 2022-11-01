@@ -8,14 +8,20 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
+#include "chrome/updater/app/server/linux/mojom/updater_service.mojom-forward.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace base {
+class FilePath;
+class Version;
+}  // namespace base
 
 namespace updater {
 
 class UpdateServiceProxyImpl;
+enum class UpdaterScope;
+struct RegistrationRequest;
 
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceProxy : public UpdateService {
