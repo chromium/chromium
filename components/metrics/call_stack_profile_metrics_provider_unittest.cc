@@ -8,10 +8,16 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "execution_context.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
+
+using ::testing::Eq;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 // This test fixture enables the feature that
 // CallStackProfileMetricsProvider depends on to report a profile.
@@ -291,5 +297,167 @@ TEST_F(CallStackProfileMetricsProviderTest, CpuProfileNotProvidedWithoutFinch) {
   EXPECT_EQ(SampledProfile::PERIODIC_HEAP_COLLECTION,
             uma_proto.sampled_profile(1).trigger_event());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+
+// Sets |call_stack_profile| up enough to pass WasMinimallySuccessful()
+void MakeMinimallySuccessfulCallStackProfile(
+    CallStackProfile* call_stack_profile) {
+  CallStackProfile::Stack* stack = call_stack_profile->add_stack();
+  CallStackProfile::Location* frame = stack->add_frame();
+  frame->set_address(123);
+  frame->set_module_id_index(1);
+  frame = stack->add_frame();
+  frame->set_address(456);
+  frame->set_module_id_index(0);
+}
+
+// Makes a minimally successful SampledProfile and sends it to ReceiveProfile.
+void RecieveProfile(metrics::Process process, metrics::Thread thread) {
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+  profile.set_process(process);
+  profile.set_thread(thread);
+  MakeMinimallySuccessfulCallStackProfile(profile.mutable_call_stack_profile());
+  CallStackProfileMetricsProvider::ReceiveProfile(base::TimeTicks::Now(),
+                                                  profile);
+}
+
+// Makes a minimally successful SampledProfile and sends it to
+// ReceiveSerializedProfile.
+void ReceiveSerializedProfile(metrics::Process process,
+                              metrics::Thread thread) {
+  SampledProfile profile;
+  profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+  profile.set_process(process);
+  profile.set_thread(thread);
+  MakeMinimallySuccessfulCallStackProfile(profile.mutable_call_stack_profile());
+  std::string serialized_profile;
+  profile.SerializeToString(&serialized_profile);
+  CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+      base::TimeTicks::Now(), /*is_heap_profile=*/false,
+      std::move(serialized_profile));
+}
+
+}  // namespace
+
+// Checks that profiles which have been received but not send out are listed
+// as successfully collected.
+TEST_F(CallStackProfileMetricsProviderTest,
+       SuccessfullyCollectedOnReceivedNotSent) {
+  CallStackProfileMetricsProvider provider;
+  provider.OnRecordingEnabled();
+  RecieveProfile(metrics::GPU_PROCESS, metrics::IO_THREAD);
+  ReceiveSerializedProfile(metrics::GPU_PROCESS, metrics::MAIN_THREAD);
+
+  EXPECT_THAT(
+      CallStackProfileMetricsProvider::GetSuccessfullyCollectedCounts(),
+      UnorderedElementsAre(
+          Pair(Eq(metrics::GPU_PROCESS),
+               UnorderedElementsAre(Pair(Eq(metrics::IO_THREAD), Eq(1)),
+                                    Pair(Eq(metrics::MAIN_THREAD), Eq(1))))));
+}
+
+// Checks that profiles which have been send out are listed as successfully
+// collected.
+TEST_F(CallStackProfileMetricsProviderTest, SuccessfullyCollectedOnSent) {
+  CallStackProfileMetricsProvider provider;
+  provider.OnRecordingEnabled();
+  RecieveProfile(metrics::GPU_PROCESS, metrics::IO_THREAD);
+  ReceiveSerializedProfile(metrics::BROWSER_PROCESS, metrics::IO_THREAD);
+
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  EXPECT_EQ(2, uma_proto.sampled_profile().size());
+
+  EXPECT_THAT(
+      CallStackProfileMetricsProvider::GetSuccessfullyCollectedCounts(),
+      UnorderedElementsAre(
+          Pair(Eq(metrics::GPU_PROCESS),
+               UnorderedElementsAre(Pair(Eq(metrics::IO_THREAD), Eq(1)))),
+          Pair(Eq(metrics::BROWSER_PROCESS),
+               UnorderedElementsAre(Pair(Eq(metrics::IO_THREAD), Eq(1))))));
+}
+
+// Checks that profiles which are send and profiles which are unsent are
+// correctly summed together.
+TEST_F(CallStackProfileMetricsProviderTest,
+       SuccessfullyCollectedMixedSentUnsent) {
+  CallStackProfileMetricsProvider provider;
+  provider.OnRecordingEnabled();
+  RecieveProfile(metrics::GPU_PROCESS, metrics::IO_THREAD);
+  ReceiveSerializedProfile(metrics::BROWSER_PROCESS, metrics::IO_THREAD);
+
+  // Send the first 2 metrics.
+  ChromeUserMetricsExtension uma_proto;
+  provider.ProvideCurrentSessionData(&uma_proto);
+  EXPECT_EQ(2, uma_proto.sampled_profile().size());
+
+  RecieveProfile(metrics::GPU_PROCESS, metrics::IO_THREAD);
+  ReceiveSerializedProfile(metrics::BROWSER_PROCESS, metrics::MAIN_THREAD);
+
+  EXPECT_THAT(
+      CallStackProfileMetricsProvider::GetSuccessfullyCollectedCounts(),
+      UnorderedElementsAre(
+          Pair(Eq(metrics::GPU_PROCESS),
+               UnorderedElementsAre(Pair(Eq(metrics::IO_THREAD), Eq(2)))),
+          Pair(Eq(metrics::BROWSER_PROCESS),
+               UnorderedElementsAre(Pair(Eq(metrics::IO_THREAD), Eq(1)),
+                                    Pair(Eq(metrics::MAIN_THREAD), Eq(1))))));
+}
+
+// Checks that "unsuccessful" profiles (profiles with 1 or no stack) are not
+// counted.
+TEST_F(CallStackProfileMetricsProviderTest,
+       SuccessfullyCollectedIgnoresUnsuccessful) {
+  CallStackProfileMetricsProvider provider;
+  provider.OnRecordingEnabled();
+  RecieveProfile(metrics::GPU_PROCESS, metrics::IO_THREAD);
+  ReceiveSerializedProfile(metrics::GPU_PROCESS, metrics::IO_THREAD);
+
+  {
+    SampledProfile no_stack_profile;
+    no_stack_profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+    no_stack_profile.set_process(metrics::BROWSER_PROCESS);
+    no_stack_profile.set_thread(metrics::MAIN_THREAD);
+    CallStackProfileMetricsProvider::ReceiveProfile(base::TimeTicks::Now(),
+                                                    no_stack_profile);
+    std::string serialized_no_stack_profile;
+    no_stack_profile.SerializeToString(&serialized_no_stack_profile);
+    CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+        base::TimeTicks::Now(), /*is_heap_profile=*/false,
+        std::move(serialized_no_stack_profile));
+  }
+
+  {
+    SampledProfile one_frame_profile;
+    one_frame_profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+    one_frame_profile.set_process(metrics::BROWSER_PROCESS);
+    one_frame_profile.set_thread(metrics::MAIN_THREAD);
+    CallStackProfile::Stack* stack =
+        one_frame_profile.mutable_call_stack_profile()->add_stack();
+    CallStackProfile::Location* frame = stack->add_frame();
+    frame->set_address(123);
+    frame->set_module_id_index(1);
+    CallStackProfileMetricsProvider::ReceiveProfile(base::TimeTicks::Now(),
+                                                    one_frame_profile);
+    std::string serialized_one_frame_profile;
+    one_frame_profile.SerializeToString(&serialized_one_frame_profile);
+    CallStackProfileMetricsProvider::ReceiveSerializedProfile(
+        base::TimeTicks::Now(), /*is_heap_profile=*/false,
+        std::move(serialized_one_frame_profile));
+  }
+
+  // All the BROWSER_PROCESS profiles were unsuccessful, so only the GPU_PROCESS
+  // profiles should be counted.
+
+  EXPECT_THAT(CallStackProfileMetricsProvider::GetSuccessfullyCollectedCounts(),
+              UnorderedElementsAre(Pair(
+                  Eq(metrics::GPU_PROCESS),
+                  UnorderedElementsAre(Pair(Eq(metrics::IO_THREAD), Eq(2))))));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace metrics

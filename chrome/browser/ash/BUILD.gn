@@ -904,6 +904,8 @@ source_set("ash") {
     "dbus/mojo_connection_service_provider.h",
     "dbus/printers_service_provider.cc",
     "dbus/printers_service_provider.h",
+    "dbus/profiler_status_service_provider.cc",
+    "dbus/profiler_status_service_provider.h",
     "dbus/proxy_resolution_service_provider.cc",
     "dbus/proxy_resolution_service_provider.h",
     "dbus/screen_lock_service_provider.cc",

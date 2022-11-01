@@ -882,6 +882,7 @@ action("dbus_service_files") {
     "../ash/dbus/org.chromium.MojoConnectionService.conf",
     "../ash/dbus/org.chromium.NetworkProxyService.conf",
     "../ash/dbus/org.chromium.PrintersService.conf",
+    "../ash/dbus/org.chromium.ProfilerStatusService.conf",
     "../ash/dbus/org.chromium.ScreenLockService.conf",
     "../ash/dbus/org.chromium.SmbFsService.conf",
     "../ash/dbus/org.chromium.VirtualFileRequestService.conf",
