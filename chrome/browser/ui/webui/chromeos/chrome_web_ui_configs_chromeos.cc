@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/ash/drive_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/network_ui.h"
 #include "chrome/browser/ui/webui/ash/notification_tester/notification_tester_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #if !defined(OFFICIAL_BUILD)
@@ -61,6 +62,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::NetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());

@@ -1023,8 +1023,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::MultideviceInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIMultiDeviceSetupHost)
     return &NewWebUI<ash::multidevice_setup::MultiDeviceSetupDialogUI>;
-  if (url.host_piece() == chrome::kChromeUINetworkHost)
-    return &NewWebUI<ash::NetworkUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {
     if (ash::ProfileHelper::IsSigninProfile(profile)) {
       return &NewWebUI<chromeos::OobeUI>;
