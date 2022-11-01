@@ -171,7 +171,7 @@ def main(raw_args):
 
     debug_tags = args.debug_tags
     if not debug_tags and args.verbose:
-      debug_tags = 'init'
+      debug_tags = 'time,init'
 
     inst = avd_config.CreateInstance()
     inst.Start(read_only=args.read_only,

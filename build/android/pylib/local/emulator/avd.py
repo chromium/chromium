@@ -279,8 +279,18 @@ class AvdConfig:
                         *self._config.system_image_name.split(';'))
 
   @property
+  def _root_ini_path(self):
+    """The <avd_name>.ini file."""
+    return os.path.join(self._avd_home, '%s.ini' % self._config.avd_name)
+
+  @property
   def _config_ini_path(self):
+    """The config.ini file under _avd_dir."""
     return os.path.join(self._avd_dir, 'config.ini')
+
+  @property
+  def _features_ini_path(self):
+    return os.path.join(self._emulator_home, 'advancedFeatures.ini')
 
   def Create(self,
              force=False,
@@ -345,20 +355,15 @@ class AvdConfig:
       logging.info('Modifying AVD configuration.')
 
       # Clear out any previous configuration or state from this AVD.
-      root_ini = os.path.join(android_avd_home,
-                              '%s.ini' % self._config.avd_name)
-      features_ini = os.path.join(self._emulator_home, 'advancedFeatures.ini')
-      avd_dir = self._avd_dir
+      with ini.update_ini_file(self._root_ini_path) as r_ini_contents:
+        r_ini_contents['path.rel'] = 'avd/%s.avd' % self._config.avd_name
 
-      with ini.update_ini_file(root_ini) as root_ini_contents:
-        root_ini_contents['path.rel'] = 'avd/%s.avd' % self._config.avd_name
-
-      with ini.update_ini_file(features_ini) as features_ini_contents:
+      with ini.update_ini_file(self._features_ini_path) as f_ini_contents:
         # features_ini file will not be refreshed by avdmanager during
         # creation. So explicitly clear its content to exclude any leftover
         # from previous creation.
-        features_ini_contents.clear()
-        features_ini_contents.update(self.avd_settings.advanced_features)
+        f_ini_contents.clear()
+        f_ini_contents.update(self.avd_settings.advanced_features)
 
       with ini.update_ini_file(self._config_ini_path) as config_ini_contents:
         # Update avd_properties first so that they won't override settings
@@ -383,7 +388,7 @@ class AvdConfig:
 
         config_ini_contents['hw.sdCard'] = 'yes'
         if self.avd_settings.sdcard.size:
-          sdcard_path = os.path.join(avd_dir, _SDCARD_NAME)
+          sdcard_path = os.path.join(self._avd_dir, _SDCARD_NAME)
           mksdcard_path = os.path.join(os.path.dirname(self._emulator_path),
                                        'mksdcard')
           cmd_helper.RunCmd([
@@ -421,7 +426,7 @@ class AvdConfig:
       instance = _AvdInstance(self._emulator_path, self._emulator_home,
                               self._config)
       # Enable debug for snapshot when it is set to True
-      debug_tags = 'init,snapshot' if snapshot else None
+      debug_tags = 'time,init,snapshot' if snapshot else None
       # Installing privileged apks requires modifying the system
       # image.
       writable_system = bool(privileged_apk_tuples)
@@ -473,7 +478,7 @@ class AvdConfig:
       # operation in some circumstances (beyond the obvious -read-only ones),
       # and there seems to be no mechanism by which it gets closed or deleted.
       # See https://bit.ly/2pWQTH7 for context.
-      multiInstanceLockFile = os.path.join(avd_dir, 'multiinstance.lock')
+      multiInstanceLockFile = os.path.join(self._avd_dir, 'multiinstance.lock')
       if os.path.exists(multiInstanceLockFile):
         os.unlink(multiInstanceLockFile)
 
@@ -485,17 +490,19 @@ class AvdConfig:
           'install_mode':
           'copy',
           'data': [{
-              'dir': os.path.relpath(avd_dir, self._emulator_home)
+              'dir': os.path.relpath(self._avd_dir, self._emulator_home)
           }, {
-              'file': os.path.relpath(root_ini, self._emulator_home)
+              'file':
+              os.path.relpath(self._root_ini_path, self._emulator_home)
           }, {
-              'file': os.path.relpath(features_ini, self._emulator_home)
+              'file':
+              os.path.relpath(self._features_ini_path, self._emulator_home)
           }],
       }
 
       logging.info('Creating AVD CIPD package.')
-      logging.debug('ensure file content: %s',
-                    json.dumps(package_def_content, indent=2))
+      logging.info('ensure file content: %s',
+                   json.dumps(package_def_content, indent=2))
 
       with tempfile_ext.TemporaryFileName(suffix='.json') as package_def_path:
         with open(package_def_path, 'w') as package_def_file:
@@ -664,6 +671,11 @@ class AvdConfig:
      * Emulator instance can be booted correctly.
      * The snapshot can be loaded successfully.
     """
+    # Update the absolute avd path in root_ini file
+    with ini.update_ini_file(self._root_ini_path) as r_ini_contents:
+      r_ini_contents['path'] = self._avd_dir
+
+    # Update hardware settings.
     config_files = [self._config_ini_path]
     # The file hardware.ini within each snapshot need to be updated as well.
     hw_ini_glob_pattern = os.path.join(self._avd_dir, 'snapshots', '*',
