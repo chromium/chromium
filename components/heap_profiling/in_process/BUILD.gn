@@ -20,6 +20,7 @@ source_set("in_process") {
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
       "//components/services/heap_profiling/public/cpp:cpp",
+      "//components/variations",
       "//components/version_info",
     ]
   }
@@ -41,6 +42,7 @@ source_set("unit_tests") {
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
+      "//components/variations",
       "//components/version_info",
       "//mojo/public/cpp/bindings",
     ]

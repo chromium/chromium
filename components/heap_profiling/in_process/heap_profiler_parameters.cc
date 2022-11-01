@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_value_converter.h"
@@ -15,6 +16,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_params.h"
+#include "components/variations/variations_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace heap_profiling {
@@ -164,9 +166,15 @@ HeapProfilerParameters GetHeapProfilerParametersForProcess(
 
   HeapProfilerParameters params = kDefaultHeapProfilerParameters;
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking) ||
+      !base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
+    params.is_supported = false;
+    return params;
+  }
+
   // By default only the browser process is supported.
-  params.is_supported = base::FeatureList::IsEnabled(kHeapProfilerReporting) &&
-                        process_type == Process::kBrowser;
+  params.is_supported = (process_type == Process::kBrowser);
 
   // Override with field trial parameters if any are set.
   if (!params.UpdateFromJSON(kDefaultParameters.Get())) {
