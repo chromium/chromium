@@ -120,7 +120,13 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   EXPECT_TRUE(IsWebGLEnabled(contents));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, HomepageLocation) {
+// TODO(crbug.com/1378338): Re-enable this flaky test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HomepageLocation DISABLED_HomepageLocation
+#else
+#define MAYBE_HomepageLocation HomepageLocation
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
   // Verifies that the homepage can be configured with policies.
   // Set a default, and check that the home button navigates there.
   browser()->profile()->GetPrefs()->SetString(prefs::kHomePage,
