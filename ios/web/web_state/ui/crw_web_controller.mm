@@ -491,12 +491,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     }];
   }
 
-  if (@available(iOS 16.0, *)) {
-    if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
-      [observers addEntriesFromDictionary:@{
-        @"fullscreenState" : @"fullscreenStateDidChange"
-      }];
-    }
+  if (web::features::IsFullscreenAPIEnabled()) {
+    [observers addEntriesFromDictionary:@{
+      @"fullscreenState" : @"fullscreenStateDidChange"
+    }];
   }
 
   return observers;

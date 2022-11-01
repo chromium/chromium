@@ -81,6 +81,9 @@ bool IsMediaPermissionsControlEnabled();
 // error pages.
 bool IsLoadSimulatedRequestAPIEnabled();
 
+// When true, the fullscreen API should be used to enable fullscreen mode.
+bool IsFullscreenAPIEnabled();
+
 }  // namespace features
 }  // namespace web
 

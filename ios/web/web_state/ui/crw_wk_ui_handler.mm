@@ -97,19 +97,17 @@ enum class PermissionRequest {
       break;
   }
   base::UmaHistogramEnumeration(kPermissionRequestsHistogram, request);
-  if (@available(iOS 16.0, *)) {
-    if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
-      __weak __typeof(self) weakSelf = self;
-      [webView closeAllMediaPresentationsWithCompletionHandler:^{
-        web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
-        if (webStateImpl) {
-          web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
-              webStateImpl);
-        }
-        decisionHandler(WKPermissionDecisionPrompt);
-      }];
-      return;
-    }
+  if (web::features::IsFullscreenAPIEnabled()) {
+    __weak __typeof(self) weakSelf = self;
+    [webView closeAllMediaPresentationsWithCompletionHandler:^{
+      web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
+      if (webStateImpl) {
+        web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
+            webStateImpl);
+      }
+      decisionHandler(WKPermissionDecisionPrompt);
+    }];
+    return;
   }
 
   web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(

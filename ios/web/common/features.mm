@@ -87,5 +87,12 @@ bool IsLoadSimulatedRequestAPIEnabled() {
   return false;
 }
 
+bool IsFullscreenAPIEnabled() {
+  if (@available(iOS 16.0, *)) {
+    return base::FeatureList::IsEnabled(kEnableFullscreenAPI);
+  }
+  return false;
+}
+
 }  // namespace features
 }  // namespace web
