@@ -81,11 +81,8 @@
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
 # Flaking frequently on Fuchsia and nobody has triaged why.
 crbug.com/1288217 [ fuchsia ] Maps_maps [ Failure ]
-
-# Flaking frequently on Mac Nvidia.
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

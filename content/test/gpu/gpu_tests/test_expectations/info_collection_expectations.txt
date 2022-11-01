@@ -84,12 +84,8 @@
 # Incorrectly reporting SCALING instead of DIRECT on Win10 w/ UHD 630 GPUs.
 crbug.com/1079393 [ win intel-0x3e92 ] InfoCollection_direct_composition [ Failure ]
 
-# NVIDIA bots need 456.38+ drivers to use SOFTWARE overlays.
-
 # InfoCollection_basic is flaky on Fuchsia.
 crbug.com/1154597 [ fuchsia ] InfoCollection_basic [ RetryOnFailure ]
-
-# Flakes on Linux Release
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

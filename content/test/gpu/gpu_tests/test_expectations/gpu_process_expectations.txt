@@ -121,17 +121,7 @@ crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
 crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 
-# Flakey/slow tests using clang_rt.
-
-# Flaky Vulkan Loader Timeout
-
-# Flakey on Lacros FYI bot
-
 crbug.com/1321145 [ fuchsia fuchsia-board-qemu-x64 ] * [ Failure ]
-
-# Flaking on Linux FYI Release
-
-
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

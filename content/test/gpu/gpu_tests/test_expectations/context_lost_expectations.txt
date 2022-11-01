@@ -150,19 +150,11 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Flaking on Windows / Intel
-
 # Flaking on Mac / Linux
 crbug.com/1284424 [ mac ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ RetryOnFailure ]
 
-# Flaking on Nexus 5X
-
 # Flakily not getting WebGL blocked on context loss
 crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
-
-# Flaky for LaCrOS
-
-# Flaky on Fuchsia
 
 # Failing on android N5
 crbug.com/1340755 [ android android-nexus-5 no-passthrough ] ContextLost_WebGL2UnpackImageHeight [ Failure ]

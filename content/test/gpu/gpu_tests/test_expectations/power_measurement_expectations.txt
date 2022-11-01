@@ -94,8 +94,6 @@ crbug.com/1074402 [ win10 intel-0x5912 ] Video_720_MP4_Underlay_Fullscreen [ Fai
 #crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4_Fullscreen [ RetryOnFailure ]
 #crbug.com/941163 [ win10 intel-0x5912 ] Video_720_MP4_Underlay_Fullscreen [ RetryOnFailure ]
 
-# Flaky on Win10 UHD 630
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

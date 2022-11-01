@@ -196,8 +196,6 @@ crbug.com/1151767 [ win10 amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 # Flakes on linux-rel.
 crbug.com/1216377 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 
-# New flakes seen on Nexus 5X bot.
-
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1345777 [ android ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas* [ Skip ]
 crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]

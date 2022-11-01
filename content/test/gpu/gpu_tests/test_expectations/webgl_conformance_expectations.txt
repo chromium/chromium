@@ -278,13 +278,9 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Fails on Android Nvidia Tegra driver version 343, passes on 361
-# We don't have tags for specific driver version so just fail all.
-
 # ========================
 # Conformance expectations
 # ========================
-# Fails on all platforms
 
 # The validating command decoder suppressions here will not be fixed.
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
@@ -318,13 +314,10 @@ crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-i
 
 crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
-
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
-
-# Win / AMD / Passthrough command decoder / D3D11
 
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
@@ -379,16 +372,10 @@ crbug.com/1359408 [ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/webg
 # Possible HLSL compiler bug.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
-# Win / AMD D3D11 (default) failures
-
-# Win / AMD D3D9 failures
-
 # Win / AMD RX 5500 XT failures
 crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
 crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
 crbug.com/1152602 [ win amd-0x7340 angle-d3d11 ] conformance/canvas/drawingbuffer-static-canvas-test.html [ RetryOnFailure ]
-
-# Win / D3D9 failures
 
 # The functions test have been persistently flaky on D3D9
 crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
@@ -404,8 +391,6 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conditionals.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_matrix_combine.html [ Failure ]
 
-# Vulkan / Win (32-bit) / Passthrough command decoder
-
 # win10 / angle-d3d11 / Passthrough command decoder failures.
 crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1378372 [ win10 angle-d3d11 passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
@@ -419,12 +404,8 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
-# Flaky on Win / Passthrough command decoder (both GL and D3D11 backends)
-
 # Fail when ANGLE GLES3 is requested for OOPR and SkiaRenderer.
 crbug.com/1336736 [ win angle-d3d11 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
-
-
 
 ####################
 # Mac failures     #
@@ -443,8 +424,6 @@ crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-de
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
-# Mac Intel ANGLE and native OpenGL
-
 # Mac Retina NVidia failures / flakes
 crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
 crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/glsl/bugs/gl-fragcoord-multisampling-bug.html [ Skip ]
@@ -458,8 +437,6 @@ crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/sample
 
 # Mac / Passthrough command decoder / Metal
 crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
-
-# Mac / Passthrough command decoder / Metal / Intel
 
 # Mac / M1 / OpenGL
 crbug.com/1130703 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
@@ -507,7 +484,6 @@ crbug.com/angleproject/5038 [ android no-passthrough ] conformance/extensions/ex
 crbug.com/1165751 [ android-marshmallow ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 
-
 # Also flaky on nexus9 non-webview (bug=834933) but can't specify both.
 crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
 
@@ -534,7 +510,6 @@ crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/misc/struct-equals
 crbug.com/478572 [ android android-nexus-5 ] deqp/data/gles2/shaders/linkage.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAttribPointerBadArgs.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
-
 
 crbug.com/1357064 [ android android-nexus-5 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1359027 [ android android-nexus-5 ] conformance/attribs/gl-enable-vertex-attrib.html [ Failure ]
@@ -658,8 +633,6 @@ crbug.com/1185344 [ linux display-server-wayland intel angle-disabled ] WebglExt
 crbug.com/angleproject/5038 [ linux intel display-server-wayland no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 crbug.com/1357064 [ linux intel display-server-wayland no-passthrough ] conformance/rendering/blending.html [ Failure ]
-
-# Flaky tests on Android Nexus 5
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

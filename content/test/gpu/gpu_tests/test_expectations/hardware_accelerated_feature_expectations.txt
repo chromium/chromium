@@ -81,8 +81,6 @@
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-# Flakes on Linux Release
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

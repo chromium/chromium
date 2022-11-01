@@ -271,8 +271,6 @@ crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiu
 # Fails on Nexus 5 - old hardware, won't fix.
 crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
 
-# Flakes on Nexus 5X.
-
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
 
@@ -291,9 +289,6 @@ crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorke
 # Producing blank images on Macmini and Macbook Pro
 crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
-# Producing incorrect image on Win10 Intel HD 630 and UHD 630 w/ 26.20.100.6912
-# or later drivers.
-
 # Times out on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
@@ -301,8 +296,6 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation rend
 # TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
 # always run on Windows RS3 or above.
 crbug.com/1066979 [ win ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
-
-# Failure on win10 capturing a VideoFrame from unaccelerated OffscreenCanvas clears the source canvas
 
 # Flakes on gpu-fyi-try-chromeos-kevin and fuchsia-x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
@@ -324,20 +317,6 @@ crbug.com/1097752 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCan
 # Fails on Fuchsia emulators
 crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
-# Flaky blank output on ChromeOS
-
-# Flakes on Mac dual-GPU
-
-# Failures on Mac FYI arm64 Release (Apple DTK)
-
-# Flaky timeout on Linux Intel
-
-# Flakily crashes on Lacros-like Linux configuration.
-
-# Flaky on Pixel 4
-
-# Pixel tests failing to create SwapChains on SkiaRenderer/Vulkan
-
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
 
@@ -348,12 +327,8 @@ crbug.com/1297636 [ mac ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_BackgroundImage [ Skip ]
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock renderer-skia-vulkan ] Pixel_SolidColorBackground [ Skip ]
 
-# Failures in fuchsia-chrome browser
-
 # Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
 crbug.com/1213542 [ renderer-skia-gl linux nvidia-0x2184 passthrough ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
-
-# Flaky on Pixel 4 Android WebView
 
 # Flaky failures on Win10 AMD RX 5500 XT
 crbug.com/1288134 [ win10 amd-0x7340 renderer-skia-gl ] Pixel_DirectComposition_Video_VP9_YUY2 [ Failure ]
@@ -375,10 +350,6 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
 crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
 
-# Flaky incorrect rendering on Windows Nvidia 1660
-
-# Green images produced on Mac FYI Release (Apple M1)
-
 # Vulkan Swiftshader WebGPU interop - flipped destination image
 crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUCopyExternalImage* [ Failure ]
 
@@ -392,23 +363,10 @@ crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUI
 # Vulkan Swiftshader WebGPU interop - missing source image
 crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
-# Flakes on Android
-
-
-# Flaking on Linux FYI Release (AMD RX 5500 XT)
-
-# Flakes on Mac Release (Intel)
-
-# Flakes on Mac (Nvidia)
-
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
 # Pixel_VideoStreamFromWebGL* tests sporadically fail on Linux FYI Release (NVIDIA) bot
 crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
-
-# Currently expected to fail on non-rooted devices since minidump collection
-# does not work yet, meaning that we can't verify that we crashed exactly once
-# as expected.
 
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]

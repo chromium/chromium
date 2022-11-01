@@ -251,8 +251,6 @@ crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
-# Flaky timeouts on multiple platforms - at least Linux/Mac/Win
-
 ####################
 # Win failures     #
 ####################
@@ -277,15 +275,12 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shader
 
 # Win / AMD
 
-
 # Recently many tests have become flaky on this configuration, returning
 # (72, 72, 72) when reading back pixels, rather than the expected values.
 # Going to try to skip the individual failing tests, rather than adding a
 # wildcard flaky suppression for all of the tests.
 crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
-
-# AMD texture handling has become flaky.
 
 # Failing on AMD RX 5500 XT
 crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
@@ -388,8 +383,6 @@ crbug.com/angleproject/7397 [ mac passthrough angle-metal apple-angle-metal-rend
 
 crbug.com/angleproject/4242 [ mac passthrough angle-opengl ] conformance2/glsl3/matrix-row-major-dynamic-indexing.html [ Failure ]
 
-# Flakes heavily on many OpenGL configurations
-
 # Regressed in 10.13, still fails in 10.14
 crbug.com/774827 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/fborender/resize_03.html [ Failure ]
 crbug.com/774827 [ mojave nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
@@ -445,7 +438,6 @@ crbug.com/1086194 [ mac nvidia-0xfe9 ] conformance/textures/canvas_sub_rectangle
 
 crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
 
-
 # Mac AMD Retina
 # AMD Radeon HD 8870M (1002:6821)
 # TODO(kbr): uncomment the following two exepectations after test
@@ -466,10 +458,6 @@ crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ 
 crbug.com/636648 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_01.html [ RetryOnFailure ]
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
-
-
-
-
 
 crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_00.html [ Failure ]
 crbug.com/1278935 [ monterey amd renderer-skia-gl angle-opengl ] deqp/functional/gles3/texturespecification/teximage3d_pbo_2d_array_01.html [ Failure ]
@@ -572,8 +560,6 @@ crbug.com/angleproject/4417 [ linux no-passthrough ] conformance2/rendering/fram
 # Driver tag doesn't work on the passthrough command decoder because the detected driver version is ANGLE's version.
 crbug.com/1081978 [ linux intel angle-opengl passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
 
-# Linux INTEL
-
 # Linux NVIDIA
 crbug.com/angleproject/5783 [ linux nvidia angle-opengl passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
@@ -633,11 +619,7 @@ crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conform
 crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
-
-
-
 crbug.com/1239079 [ android no-passthrough ] conformance2/transform_feedback/too-small-buffers.html [ Failure ]
-
 
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
 crbug.com/angleproject/3685 [ android angle-opengles ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
@@ -649,7 +631,6 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 #####################
 
 crbug.com/1215700 [ chromeos no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
-
 
 crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1210240 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
@@ -743,7 +724,6 @@ crbug.com/1286099 [ chromeos chromeos-board-kevin passthrough ] conformance2/ren
 crbug.com/1374291 [ chromeos chromeos-board-kevin passthrough ] conformance2/textures/video/tex-3d-rgba8-rgba-unsigned_byte.html [ Failure ]
 
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
-
 
 crbug.com/1373277 [ chromeos chromeos-board-kevin ] conformance2/textures/video/tex-3d-srgb8-rgb-unsigned_byte.html [ Failure ]
 
