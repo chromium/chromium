@@ -1,0 +1,12 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+declare_args() {
+  # This enables building WebNN with XNNPACK. It is currently only available on
+  # x64 CPU because XNNPACK is only built for that.
+  # See //third_party/xnnpack/BUILD.gn
+  build_webnn_with_xnnpack =
+      (is_win || is_linux || is_chromeos || is_android) && current_cpu == "x64"
+}

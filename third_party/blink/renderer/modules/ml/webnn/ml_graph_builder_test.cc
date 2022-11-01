@@ -1,7 +1,8 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
+
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 
 #include <algorithm>
 #include <memory>
@@ -9,34 +10,20 @@
 
 #include "base/numerics/checked_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -49,11 +36,9 @@ class MLGraphBuilderTest : public testing::Test {
   ~MLGraphBuilderTest() override = default;
 };
 
-MLGraphBuilder* CreateMLGraphBuilder(V8TestingScope& scope) {
+MLGraphBuilder* CreateMLGraphBuilder(V8TestingScope& scope,
+                                     MLContextOptions* options) {
   auto* ml = MakeGarbageCollected<ML>(scope.GetExecutionContext());
-  auto* options = MLContextOptions::Create();
-  options->setDevicePreference(V8MLDevicePreference::Enum::kAuto);
-  options->setPowerPreference(V8MLPowerPreference::Enum::kAuto);
   auto* context = MakeGarbageCollected<MLContext>(
       options->devicePreference(), options->powerPreference(),
       options->modelFormat(), options->numThreads(), ml);
@@ -297,12 +282,11 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
   }
 }
 
-MLOperand* BuildConv2d(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    const MLOperand* input,
-    const MLOperand* filter,
-    const MLConv2dOptions* options = MLConv2dOptions::Create()) {
+MLOperand* BuildConv2d(V8TestingScope& scope,
+                       MLGraphBuilder* builder,
+                       const MLOperand* input,
+                       const MLOperand* filter,
+                       const MLConv2dOptions* options) {
   auto* output =
       builder->conv2d(input, filter, options, scope.GetExceptionState());
   EXPECT_NE(output, nullptr);
@@ -941,14 +925,11 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
   }
 }
 
-enum class Pool2dKind { kAverage, kMax };
-
-MLOperand* BuildPool2d(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    Pool2dKind kind,
-    const MLOperand* input,
-    const MLPool2dOptions* options = MLPool2dOptions::Create()) {
+MLOperand* BuildPool2d(V8TestingScope& scope,
+                       MLGraphBuilder* builder,
+                       Pool2dKind kind,
+                       const MLOperand* input,
+                       const MLPool2dOptions* options) {
   MLOperand* output = nullptr;
   switch (kind) {
     case Pool2dKind::kAverage:
@@ -1478,7 +1459,7 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      MLGraphBuilder* builder,
                      const MLOperand* a,
                      const MLOperand* b,
-                     const MLGemmOptions* options = MLGemmOptions::Create()) {
+                     const MLGemmOptions* options) {
   auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
   EXPECT_NE(output, nullptr);
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
@@ -1720,8 +1701,6 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
   }
 }
 
-enum class ElementWiseBinaryKind { kAdd, kSub, kMul, kDiv, kMin, kMax };
-
 MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   MLGraphBuilder* builder,
                                   ElementWiseBinaryKind kind,
@@ -1936,11 +1915,10 @@ TEST_F(MLGraphBuilderTest, ReshapeTest) {
   }
 }
 
-MLOperand* BuildClamp(
-    V8TestingScope& scope,
-    MLGraphBuilder* builder,
-    const MLOperand* input,
-    const MLClampOptions* options = MLClampOptions::Create()) {
+MLOperand* BuildClamp(V8TestingScope& scope,
+                      MLGraphBuilder* builder,
+                      const MLOperand* input,
+                      const MLClampOptions* options) {
   auto* output = builder->clamp(input, options, scope.GetExceptionState());
   EXPECT_NE(output, nullptr);
   EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
