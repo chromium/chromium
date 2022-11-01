@@ -860,6 +860,9 @@ def get_devices(args):
 
 
 def main():
+    # This environment fix is needed on windows as codec is trying
+    # to encode in cp1252 rather than utf-8 and throwing errors.
+    os.environ['PYTHONUTF8'] = '1'
     adapter = WPTAdapter()
     return adapter.run_test()
 
