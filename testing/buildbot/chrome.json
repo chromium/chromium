@@ -1328,14 +1328,13 @@
               "pool": "chrome.tests"
             }
           ],
-          "hard_timeout": 7200,
           "idempotent": false,
           "io_timeout": 3600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
-        "test": "chrome_all_tast_tests_with_lacros",
-        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests_with_lacros/",
+        "test": "chrome_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
         "trigger_script": {
           "script": "//testing/trigger_scripts/chromeos_device_trigger.py"
         }

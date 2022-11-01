@@ -98,7 +98,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests_with_lacros',
+          'gtest_tests': 'chromeos_device_gtests',
         },
         'swarming': {
           'dimension_sets': [

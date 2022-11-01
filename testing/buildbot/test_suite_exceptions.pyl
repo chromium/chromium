@@ -1213,16 +1213,6 @@
       'chromeos-octopus-chrome',
     ],
   },
-  'chrome_all_tast_tests_with_lacros': {
-    'modifications': {
-      'chromeos-eve-chrome': {
-        'swarming': {
-          # Increased timeout to 2 hours due to shard timeout.
-          'hard_timeout': 7200,
-        }
-      },
-    },
-  },
   'chrome_java_test_pagecontroller_tests': {
     'modifications': {
       'android-pie-arm64-rel': {
