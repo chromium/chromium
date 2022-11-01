@@ -489,6 +489,16 @@ public class FeedSurfaceMediator
 
             @Override
             public void onScrolled(RecyclerView v, int dx, int dy) {
+                int headerPosition = mCoordinator.getFeedHeaderPosition();
+                int toolbarHeight = mCoordinator.getToolbarHeight();
+
+                // When the distance from the header to the top is bigger than the toolbar height,
+                // it hasn't yet reached the position where it should be fixed/sticky,
+                // so the sticky header is kept hidden. Show it otherwise.
+                boolean isHeaderOutOfView = headerPosition < toolbarHeight;
+                mSectionHeaderModel.set(SectionHeaderListProperties.STICKY_HEADER_VISIBLILITY_KEY,
+                        isHeaderOutOfView);
+
                 if (mSnapScrollHelper != null) {
                     mSnapScrollHelper.handleScroll();
                 }

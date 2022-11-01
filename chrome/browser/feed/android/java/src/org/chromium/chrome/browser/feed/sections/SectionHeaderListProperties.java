@@ -64,6 +64,7 @@ public class SectionHeaderListProperties {
                 .with(SECTION_HEADERS_KEY, new PropertyListModel<>())
                 .with(INDICATOR_VIEW_VISIBILITY_KEY, ViewVisibility.INVISIBLE)
                 .with(TOOLBAR_HEIGHT_PX, toolbarHeight)
+                .with(STICKY_HEADER_VISIBLILITY_KEY, false)
                 .build();
     }
 }

@@ -11,8 +11,10 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
+  <!-- We set the main content of the sticky header clickable to prevent clicking on feed cards
+       underneath the sticky header, while still allowing for the rest of the feed to be interact-able. -->
   <RelativeLayout
       android:id="@+id/main_content"
       android:layout_width="match_parent"
@@ -21,9 +23,12 @@ found in the LICENSE file.
       android:orientation="horizontal"
       android:gravity="center_vertical"
       android:layoutDirection="locale"
-      android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2" >
+      android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2"
+      android:background="@macro/toolbar_background_primary"
+      android:clickable="true"
+      android:focusable="true">
 
-    <ImageView
+  <ImageView
         android:id="@+id/section_status_indicator"
         android:layout_width="@dimen/feed_header_icon_size"
         android:layout_height="@dimen/feed_header_icon_size"
@@ -69,4 +74,11 @@ found in the LICENSE file.
         app:menuMaxWidth="@dimen/feed_header_menu_max_width"
         app:tint="@null" />
   </RelativeLayout>
+  <ImageView
+      android:id="@+id/sticky_header_hairline"
+      android:src="@drawable/toolbar_hairline"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:scaleType="fitXY"
+      android:importantForAccessibility="no" />
 </org.chromium.chrome.browser.feed.sections.StickySectionHeaderView>

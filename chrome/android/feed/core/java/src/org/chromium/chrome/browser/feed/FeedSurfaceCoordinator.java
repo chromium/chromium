@@ -112,6 +112,7 @@ public class FeedSurfaceCoordinator
     private boolean mIsActive;
     private int mHeaderCount;
     private int mSectionHeaderIndex;
+    private int mToolbarHeight;
 
     // Used when Feed is enabled.
     private @Nullable Profile mProfile;
@@ -296,6 +297,7 @@ public class FeedSurfaceCoordinator
         mEmbeddingSurfaceCreatedTimeNs = embeddingSurfaceCreatedTimeNs;
         mWebFeedHasContent = false;
         mSectionHeaderIndex = 0;
+        mToolbarHeight = toolbarHeight;
 
         Resources resources = mActivity.getResources();
 
@@ -344,6 +346,7 @@ public class FeedSurfaceCoordinator
                     (StickySectionHeaderView) LayoutInflater.from(mActivity).inflate(
                             R.layout.new_tab_page_multi_sticky_feed_header, null, false);
             mRootView.addView(mStickySectionHeaderView);
+
             mStickySectionHeaderModelChangeProcessor = PropertyModelChangeProcessor.create(
                     mSectionHeaderModel, mStickySectionHeaderView, binder);
             mStickySectionHeaderListModelChangeProcessor = new ListModelChangeProcessor<>(
@@ -368,6 +371,20 @@ public class FeedSurfaceCoordinator
 
         // Creates streams, initiates content changes.
         mMediator.updateContent();
+    }
+
+    /**
+     * TODO(b/241271058): update toolbar height by calling delegate instead of passing it as a
+     * parameter.
+     */
+    public int getToolbarHeight() {
+        return mToolbarHeight;
+    }
+
+    /** @return the position of the in-feed header. */
+    public int getFeedHeaderPosition() {
+        return mScrollableContainerDelegate.getTopPositionRelativeToContainerView(
+                mSectionHeaderView);
     }
 
     @Override
