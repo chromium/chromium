@@ -1050,7 +1050,7 @@
       },
       'linux-chromeos-rel': {
         'swarming': {
-          'shards': 20,
+          'shards': 60,
           'quickrun_shards': 40,
           'dimension_sets': [
             {
