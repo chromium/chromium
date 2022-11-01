@@ -70,6 +70,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -4079,6 +4080,10 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
       EXPECT_EQ(browser->tab_strip_model()->count(), 2);
       EXPECT_TRUE(browser->tab_strip_model()->IsTabPinned(0));
       EXPECT_FALSE(browser->tab_strip_model()->IsTabPinned(1));
+
+      EXPECT_TRUE(web_app::WebAppTabHelper::FromWebContents(
+                      browser->tab_strip_model()->GetWebContentsAt(0))
+                      ->is_pinned_home_tab());
       app_checked = true;
     }
   }

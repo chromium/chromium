@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -497,6 +498,12 @@ void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   // tabbed browser window (e.g. via "Open in Chrome" menu item), it is still
   // considered "appy".
   WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
+
+  if (registrar().IsTabbedWindowModeEnabled(app_id()) &&
+      IsPinnedHomeTabUrl(registrar(), app_id(),
+                         contents->GetLastCommittedURL())) {
+    WebAppTabHelper::FromWebContents(contents)->set_is_pinned_home_tab(true);
+  }
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
