@@ -15,6 +15,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device.h"
 
 namespace ash {
 
@@ -40,13 +42,20 @@ namespace shortcut_ui {
 AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
     : ash_accelerator_configuration_(
           Shell::Get()->ash_accelerator_configuration()) {
+  // Observe connected keyboard events.
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
+
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
       base::BindRepeating(
           &AcceleratorConfigurationProvider::OnAcceleratorsUpdated,
           weak_ptr_factory_.GetWeakPtr()));
+
+  UpdateKeyboards();
 }
 
-AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() = default;
+AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
+}
 
 void AcceleratorConfigurationProvider::IsMutable(
     ash::mojom::AcceleratorSource source,
@@ -85,6 +94,13 @@ void AcceleratorConfigurationProvider::GetAccelerators(
   std::move(callback).Run(std::move(accelerator_config));
 }
 
+void AcceleratorConfigurationProvider::OnInputDeviceConfigurationChanged(
+    uint8_t input_device_types) {
+  if (input_device_types & (ui::InputDeviceEventObserver::kKeyboard)) {
+    UpdateKeyboards();
+  }
+}
+
 void AcceleratorConfigurationProvider::BindInterface(
     mojo::PendingReceiver<
         shortcut_customization::mojom::AcceleratorConfigurationProvider>
@@ -100,6 +116,14 @@ mojom::AcceleratorType AcceleratorConfigurationProvider::GetAcceleratorType(
     return mojom::AcceleratorType::kDeprecated;
   }
   return mojom::AcceleratorType::kDefault;
+}
+
+void AcceleratorConfigurationProvider::UpdateKeyboards() {
+  ui::DeviceDataManager* device_data_manager =
+      ui::DeviceDataManager::GetInstance();
+  DCHECK(device_data_manager);
+
+  connected_keyboards_ = device_data_manager->GetKeyboardDevices();
 }
 
 void AcceleratorConfigurationProvider::OnAcceleratorsUpdated(

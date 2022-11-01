@@ -23,6 +23,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
 
 namespace ash {
 
@@ -48,6 +50,13 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
       expected_info.has_key_event == actual_info.has_key_event;
   return type_equals && accelerator_equals && locked_equals &&
          key_display_equals && has_key_event_equals;
+}
+
+void CompareInputDevices(const ui::InputDevice& expected,
+                         const ui::InputDevice& actual) {
+  EXPECT_EQ(expected.type, actual.type);
+  EXPECT_EQ(expected.id, actual.id);
+  EXPECT_EQ(expected.name, actual.name);
 }
 
 void ExpectAllAcceleratorsEqual(
@@ -128,6 +137,10 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
                                               expected));
   }
 
+  const std::vector<ui::InputDevice>& GetConnectedKeyboards() {
+    return provider_->connected_keyboards_;
+  }
+
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
 };
 
@@ -206,6 +219,24 @@ TEST_F(AcceleratorConfigurationProviderTest, GetAcceleratorConfigAsh) {
 
   GetAshConfigAndExpectEquals(test_data);
   base::RunLoop().RunUntilIdle();
+}
+
+// TODO(jimmyxgong): Update test to check accelerators sent via Mojo.
+TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
+  const std::vector<ui::InputDevice>& devices = GetConnectedKeyboards();
+  EXPECT_TRUE(devices.empty());
+
+  ui::InputDevice expected_test_keyboard(
+      1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "Keyboard");
+
+  std::vector<ui::InputDevice> keyboard_devices;
+  keyboard_devices.push_back(expected_test_keyboard);
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
+
+  const std::vector<ui::InputDevice>& actual_devices = GetConnectedKeyboards();
+  EXPECT_EQ(1u, actual_devices.size());
+  CompareInputDevices(expected_test_keyboard, actual_devices[0]);
 }
 
 }  // namespace shortcut_ui

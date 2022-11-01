@@ -12,12 +12,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "ui/events/devices/input_device.h"
+#include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {
 namespace shortcut_ui {
 
 class AcceleratorConfigurationProvider
-    : shortcut_customization::mojom::AcceleratorConfigurationProvider {
+    : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
+      public ui::InputDeviceEventObserver {
  public:
   using AcceleratorConfigurationMap =
       base::flat_map<mojom::AcceleratorSource,
@@ -40,6 +43,9 @@ class AcceleratorConfigurationProvider
                  IsMutableCallback callback) override;
   void GetAccelerators(GetAcceleratorsCallback callback) override;
 
+  // ui::InputDeviceEventObserver:
+  void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
+
   void BindInterface(
       mojo::PendingReceiver<
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
@@ -53,10 +59,15 @@ class AcceleratorConfigurationProvider
 
   mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator);
 
+  void UpdateKeyboards();
+
   std::vector<AcceleratorInfo> accelerator_infos_;
 
   std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
       id_to_accelerator_info_;
+
+  // Stores all connected keyboards.
+  std::vector<ui::InputDevice> connected_keyboards_;
 
   mojo::Receiver<
       shortcut_customization::mojom::AcceleratorConfigurationProvider>
