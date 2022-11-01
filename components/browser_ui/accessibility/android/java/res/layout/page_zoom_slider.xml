@@ -11,6 +11,7 @@
     android:layout_height="wrap_content"
     android:elevation="@dimen/page_zoom_view_elevation"
     android:gravity="center"
+    android:maxWidth="@dimen/page_zoom_view_max_width"
     android:orientation="horizontal" >
 
     <org.chromium.ui.widget.ChromeImageButton

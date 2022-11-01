@@ -13,4 +13,5 @@ found in the LICENSE file.
     <dimen name="page_zoom_view_level_padding">12dp</dimen>
     <dimen name="page_zoom_view_elevation">4dp</dimen>
     <dimen name="page_zoom_view_corner_radius">44dp</dimen>
+    <dimen name="page_zoom_view_max_width">300dp</dimen>
 </resources>
