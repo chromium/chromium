@@ -831,12 +831,14 @@ class StorageTest
       // so we need to wait for all queues to destruct.
       task_environment_.RunUntilIdle();
     }
+    // Key has already been loaded, no need to redo it next time
+    // (unless explicitly requested).
     expect_to_need_key_ = false;
     // Make sure all memory is deallocated.
-    ASSERT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
+    EXPECT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
-    ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
+    EXPECT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
     // Handle and reject INIT_RESUME (optionally), in case the storage is
     // recreated.
     EXPECT_CALL(set_mock_uploader_expectations_,
@@ -2057,18 +2059,29 @@ TEST_P(StorageTest, WriteAttemptWithRecordsSheddingSuccess) {
 
   // Reserve the remaining space to have none available and trigger Records
   // Shedding
-  uint64_t temp_used = options_.disk_space_resource()->GetUsed();
-  uint64_t temp_total = options_.disk_space_resource()->GetTotal();
-  uint64_t to_reserve = temp_total - temp_used;
+  const uint64_t temp_used = options_.disk_space_resource()->GetUsed();
+  const uint64_t temp_total = options_.disk_space_resource()->GetTotal();
+  const uint64_t to_reserve = temp_total - temp_used;
   options_.disk_space_resource()->Reserve(to_reserve);
 
   // Write records on a higher priority queue to see if records shedding has any
   // effect.
-  const Status write_result_immediate = WriteString(IMMEDIATE, kData[2]);
-  if (!base::FeatureList::IsEnabled(kReportingStorageDegradationFeature)) {
-    ASSERT_FALSE(write_result_immediate.ok());
+  if (base::FeatureList::IsEnabled(kReportingStorageDegradationFeature)) {
+    // Write and expect immediate upload.
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              return TestUploader::SetUp(IMMEDIATE, &waiter, this)
+                  .Required(0, kData[2])
+                  .Complete();
+            }))
+        .RetiresOnSaturation();
+    WriteStringOrDie(IMMEDIATE, kData[2]);
   } else {
-    ASSERT_OK(write_result_immediate) << write_result_immediate;
+    const Status write_result_immediate = WriteString(IMMEDIATE, kData[2]);
+    ASSERT_FALSE(write_result_immediate.ok());
   }
 
   // Discard the space reserved
@@ -2078,27 +2091,55 @@ TEST_P(StorageTest, WriteAttemptWithRecordsSheddingSuccess) {
 // Test Security queue cant_shed_records option
 TEST_P(StorageTest, RecordsSheddingSecurityCantShedRecords) {
   // The test will try to write this amount of records.
-  static constexpr size_t kAmountOfBigRecords = 10;
+  static constexpr size_t kAmountOfBigRecords = 3u;
 
   CreateTestStorageOrDie(BuildTestStorageOptions());
 
-  // This writes enough records to create `kAmountOfBigRecords` files in each
-  // queue: FAST_BATCH and MANUAL_BATCH
+  // This writes enough records to create `kAmountOfBigRecords` files in
+  // SECURITY queue that does not permit shedding.
   for (size_t i = 0; i < kAmountOfBigRecords; i++) {
+    // Write and expect immediate uploads.
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, i, this](UploaderInterface::UploadReason reason) {
+              auto uploader = TestUploader::SetUp(SECURITY, &waiter, this);
+              for (size_t j = 0; j <= i; j++) {
+                uploader.Required(j, xBigData);
+              }
+              return uploader.Complete();
+            }))
+        .RetiresOnSaturation();
     WriteStringOrDie(SECURITY, xBigData);
   }
 
   // Reserve the remaining space to have none available and trigger Records
-  // Shedding
+  // Shedding.
   const uint64_t temp_used = options_.disk_space_resource()->GetUsed();
   const uint64_t temp_total = options_.disk_space_resource()->GetTotal();
   const uint64_t to_reserve = temp_total - temp_used;
   options_.disk_space_resource()->Reserve(to_reserve);
 
   // Write records on a higher priority queue to see if records shedding has no
-  // effect.
-  const Status write_result = WriteString(SECURITY, xBigData);
-  ASSERT_FALSE(write_result.ok());
+  // effect. Expect upload even with failure, since there are other records in
+  // the queue.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(set_mock_uploader_expectations_,
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
+        .WillOnce(
+            Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
+              auto uploader = TestUploader::SetUp(SECURITY, &waiter, this);
+              for (size_t j = 0; j < kAmountOfBigRecords; j++) {
+                uploader.Required(j, xBigData);
+              }
+              return uploader.Complete();
+            }))
+        .RetiresOnSaturation();
+    const Status write_result = WriteString(SECURITY, xBigData);
+    ASSERT_FALSE(write_result.ok());
+  }
 
   // Discard the space reserved
   options_.disk_space_resource()->Discard(to_reserve);

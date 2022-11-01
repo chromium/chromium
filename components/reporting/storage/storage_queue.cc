@@ -150,7 +150,7 @@ StorageQueue::StorageQueue(
     scoped_refptr<EncryptionModuleInterface> encryption_module,
     scoped_refptr<CompressionModule> compression_module)
     : base::RefCountedDeleteOnSequence<StorageQueue>(sequenced_task_runner),
-      sequenced_task_runner_(std::move(sequenced_task_runner)),
+      sequenced_task_runner_(sequenced_task_runner),
       low_priority_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
       options_(options),
@@ -995,12 +995,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   }
 
   void UploadingCompleted(Status status) {
-    if (!storage_queue_) {
-      Response(Status(error::UNAVAILABLE, "StorageQueue shut down"));
-      return;
-    }
-    DCHECK_CALLED_ON_VALID_SEQUENCE(
-        storage_queue_->storage_queue_sequence_checker_);
+    // Release all files.
+    files_.clear();
+    current_file_ = files_.end();
     // If uploader was created, notify it about completion.
     if (uploader_) {
       uploader_->Completed(status);
@@ -1008,7 +1005,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     // If retry delay is specified, check back after the delay.
     // If the status was error, or if any events are still there,
     // retry the upload.
-    if (!storage_queue_->options_.upload_retry_delay().is_zero()) {
+    if (storage_queue_ &&
+        !storage_queue_->options_.upload_retry_delay().is_zero()) {
       ScheduleAfter(storage_queue_->options_.upload_retry_delay(),
                     base::BindOnce(
                         &StorageQueue::CheckBackUpload, storage_queue_, status,
@@ -1018,7 +1016,10 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
   void OnCompletion(const Status& status) override {
     if (!storage_queue_) {
-      std::move(completion_cb_).Run(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      std::move(completion_cb_)
+          .Run(Status(error::UNAVAILABLE, "StorageQueue shut down"));
+      files_.clear();
+      current_file_ = files_.end();
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -1027,6 +1028,8 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     if (!files_.empty()) {
       const auto count = --(storage_queue_->active_read_operations_);
       DCHECK_GE(count, 0);
+      files_.clear();
+      current_file_ = files_.end();
     }
     // Respond with the result.
     std::move(completion_cb_).Run(status);
@@ -2048,16 +2051,16 @@ Status StorageQueue::SingleFile::Open(bool read_only) {
 }
 
 void StorageQueue::SingleFile::Close() {
-  if (!handle_) {
-    // TODO(b/157943192): Restart auto-closing timer.
-    return;
-  }
-  handle_.reset();
   is_readonly_ = absl::nullopt;
   if (buffer_) {
     buffer_.reset();
     memory_resource_->Discard(buffer_size_);
   }
+  if (!handle_) {
+    // TODO(b/157943192): Restart auto-closing timer.
+    return;
+  }
+  handle_.reset();
 }
 
 void StorageQueue::SingleFile::DeleteWarnIfFailed() {
@@ -2088,16 +2091,19 @@ StatusOr<base::StringPiece> StorageQueue::SingleFile::Read(
     // Empty file, return EOF right away.
     return Status(error::OUT_OF_RANGE, "End of file");
   }
-  buffer_size_ = std::min(max_buffer_size, RoundUpToFrameSize(size_));
   // If no buffer yet, allocate.
   // TODO(b/157943192): Add buffer management - consider adding an UMA for
   // tracking the average + peak memory the Storage module is consuming.
   if (!buffer_) {
+    const auto buffer_size =
+        std::min(max_buffer_size, RoundUpToFrameSize(size_));
     // Register with resource management.
-    if (!memory_resource_->Reserve(buffer_size_)) {
+    if (!memory_resource_->Reserve(buffer_size)) {
       return Status(error::RESOURCE_EXHAUSTED,
                     "Not enough memory for the read buffer");
     }
+    // Commit memory reservation.
+    buffer_size_ = buffer_size;
     buffer_ = std::make_unique<char[]>(buffer_size_);
     data_start_ = data_end_ = 0;
     file_position_ = 0;

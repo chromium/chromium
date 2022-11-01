@@ -135,10 +135,10 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
   void TearDown() override {
     ResetTestStorageQueue();
     // Make sure all memory is deallocated.
-    ASSERT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
+    EXPECT_THAT(options_.memory_resource()->GetUsed(), Eq(0u));
     // Make sure all disk is not reserved (files remain, but Storage is not
     // responsible for them anymore).
-    ASSERT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
+    EXPECT_THAT(options_.disk_space_resource()->GetUsed(), Eq(0u));
   }
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {

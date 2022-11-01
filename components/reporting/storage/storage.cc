@@ -66,12 +66,13 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   // Factory method.
   static void AsyncProvideUploader(
       Priority priority,
-      Storage* storage,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+      scoped_refptr<EncryptionModuleInterface> encryption_module,
       UploaderInterface::UploadReason reason,
       UploaderInterfaceResultCb start_uploader_cb) {
-    storage->async_start_upload_cb_.Run(
+    async_start_upload_cb.Run(
         (/*need_encryption_key=*/EncryptionModuleInterface::is_enabled() &&
-         storage->encryption_module_->need_encryption_key())
+         encryption_module->need_encryption_key())
             ? UploaderInterface::UploadReason::KEY_DELIVERY
             : reason,
         base::BindOnce(&QueueUploaderInterface::WrapInstantiatedUploader,
@@ -696,10 +697,11 @@ void Storage::Create(
         StorageQueue::Create(
             /*options=*/queue_options.second,
             // Note: the callback below belongs to the Queue and does not
-            // outlive Storage.
+            // outlive Storage, so it cannot refer to `storage_` itself!
             base::BindRepeating(&QueueUploaderInterface::AsyncProvideUploader,
                                 /*priority=*/queue_options.first,
-                                base::Unretained(storage_.get())),
+                                storage_->async_start_upload_cb_,
+                                storage_->encryption_module_),
             storage_->encryption_module_, storage_->compression_module_,
             base::BindOnce(&StorageInitContext::ScheduleAddQueue,
                            base::Unretained(this),
