@@ -9,8 +9,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -74,7 +72,6 @@ public class MainActivity
     private static final String SHARED_PREF_CLOSE_POSITION = "ClosePosition";
     private static final String SHARED_PREF_COLOR = "Color";
     private static final String SHARED_PREF_HEIGHT = "Height";
-    private static final String SHARED_PREF_PACKAGE = "Package";
     private static final String SHARED_PREF_PROGRESS = "Progress";
     private static final String SHARED_PREF_RESIZABLE = "Resizable";
     private static final String SHARED_PREF_SITES = "Sites";
@@ -120,6 +117,7 @@ public class MainActivity
     private TextView mPcctInitialHeightLabel;
     private SeekBar mPcctInitialHeightSlider;
     private SharedPreferences mSharedPref;
+    private CustomTabsPackageHelper mCustomTabsPackageHelper;
     private @Px int mMaxHeight;
     private @Px int mInitialHeight;
 
@@ -186,6 +184,7 @@ public class MainActivity
         setContentView(R.layout.main);
         mSharedPref = getPreferences(Context.MODE_PRIVATE);
         mMediaPlayer = MediaPlayer.create(this, R.raw.amazing_grace);
+        mCustomTabsPackageHelper = new CustomTabsPackageHelper(this, mSharedPref);
         initializeUrlEditTextView();
         initializePackageSpinner();
         initializeColorSpinner();
@@ -206,7 +205,7 @@ public class MainActivity
         if (stringSet != null) {
             for (String site : stringSet) {
                 // We use prefixes with numbers on the StringSet in order to track the ordering
-                if (site.substring(0, 1).equals("1")) {
+                if (site.charAt(0) == '1') {
                     recent = site.substring(1);
                 } else {
                     urlsDropdown.add(site.substring(1));
@@ -214,48 +213,20 @@ public class MainActivity
             }
         }
 
-        mEditUrl = (AutoCompleteTextView) findViewById(R.id.autocomplete_url);
+        mEditUrl = findViewById(R.id.autocomplete_url);
         mEditUrl.setText(urlsDropdown.size() > 0 ? recent : DEFAULT_URL);
         mEditUrl.requestFocus();
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, urlsDropdown);
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urlsDropdown);
         mEditUrl.setAdapter(adapter);
-        mEditUrl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditUrl.showDropDown();
-            }
-        });
+        mEditUrl.setOnClickListener(v -> mEditUrl.showDropDown());
     }
 
     private void initializePackageSpinner() {
-        int prefIndex = 0;
-        Spinner packageSpinner = (Spinner) findViewById(R.id.package_spinner);
-        Intent activityIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"));
-        PackageManager pm = getPackageManager();
-        List<ResolveInfo> resolvedActivityList = pm.queryIntentActivities(
-                activityIntent, PackageManager.MATCH_ALL);
-        // TODO(1369795) Consider refactoring into separate class
-        // Adds queried packages to list, puts last used package at 0 position if applicable
-        List<Pair<String, String>> packagesSupportingCustomTabs = new ArrayList<>();
-        for (ResolveInfo info : resolvedActivityList) {
-            Intent serviceIntent = new Intent();
-            serviceIntent.setAction("android.support.customtabs.action.CustomTabsService");
-            serviceIntent.setPackage(info.activityInfo.packageName);
-            if (pm.resolveService(serviceIntent, 0) != null) {
-                String label = info.loadLabel(pm).toString();
-                String packageName = info.activityInfo.packageName;
-                Pair appPair = Pair.create(label, packageName);
-
-                if (TextUtils.equals(label, mSharedPref.getString("Package", ""))) {
-                    packagesSupportingCustomTabs.add(0, appPair);
-                } else {
-                    packagesSupportingCustomTabs.add(appPair);
-                }
-            }
-        }
-
-        final ArrayAdapter<Pair<String, String>> adapter = new ArrayAdapter<Pair<String, String>>(
+        Spinner packageSpinner = findViewById(R.id.package_spinner);
+        List<Pair<String, String>> packagesSupportingCustomTabs =
+                mCustomTabsPackageHelper.getCustomTabsSupportingPackages();
+        ArrayAdapter<Pair<String, String>> adapter = new ArrayAdapter<>(
                 this, 0, packagesSupportingCustomTabs) {
 
             @Override
@@ -533,9 +504,7 @@ public class MainActivity
 
         mConnection = new ServiceConnection(this);
         boolean ok = CustomTabsClient.bindCustomTabsService(this, mPackageNameToBind, mConnection);
-        SharedPreferences.Editor editor = mSharedPref.edit();
-        editor.putString(SHARED_PREF_PACKAGE, mPackageTitle);
-        editor.apply();
+        mCustomTabsPackageHelper.saveLastUsedPackage(mPackageTitle);
         if (ok) {
             mConnectButton.setEnabled(false);
             mWarmupButton.setEnabled(true);

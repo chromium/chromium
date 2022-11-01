@@ -73,6 +73,7 @@ android_apk("custom_tabs_client_example_apk") {
   sources = [
     "src/java/org/chromium/customtabsclient/BottomBarManager.java",
     "src/java/org/chromium/customtabsclient/BrowserActionsReceiver.java",
+    "src/java/org/chromium/customtabsclient/CustomTabsPackageHelper.java",
     "src/java/org/chromium/customtabsclient/MainActivity.java",
     "src/java/org/chromium/customtabsclient/SessionHelper.java",
     "src/java/org/chromium/customtabsclient/shared/CustomTabsHelper.java",
