@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
@@ -19,10 +20,11 @@ namespace ash::app_restore {
 
 // ArcAppSingleRestoreHandler class restore single ARC app with ghost window
 // directly.
-class ArcAppSingleRestoreHandler {
+class ArcAppSingleRestoreHandler
+    : public full_restore::ArcGhostWindowHandler::Observer {
  public:
   ArcAppSingleRestoreHandler();
-  ~ArcAppSingleRestoreHandler();
+  ~ArcAppSingleRestoreHandler() override;
 
   ArcAppSingleRestoreHandler(const ArcAppSingleRestoreHandler&) = delete;
   ArcAppSingleRestoreHandler& operator=(const ArcAppSingleRestoreHandler&) =
@@ -40,8 +42,11 @@ class ArcAppSingleRestoreHandler {
 
   void OnShelfReady();
 
-  // Expected receive app status update from AppRestoreArcTaskHandler.
-  void OnAppStatesUpdate(const std::string& app_id);
+  // full_restore::ArcGhostWindowHandler::Observer:
+  void OnWindowCloseRequested(int window_id) override;
+  void OnAppStatesUpdate(const std::string& app_id,
+                         bool ready,
+                         bool need_fixup) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcAppSingleRestoreHandlerTest,
@@ -57,12 +62,18 @@ class ArcAppSingleRestoreHandler {
 
   Profile* profile_;
   absl::optional<std::string> app_id_;
+  bool is_cancelled = false;
 
   int32_t event_flags_;
+  int32_t window_id_;
   apps::WindowInfoPtr window_info_;
 
   bool is_shelf_ready_ = false;
   base::OnceClosure not_ready_callback_;
+
+  base::ScopedObservation<full_restore::ArcGhostWindowHandler,
+                          full_restore::ArcGhostWindowHandler::Observer>
+      observation_{this};
 
   base::WeakPtrFactory<ArcAppSingleRestoreHandler> weak_ptr_factory_{this};
 };

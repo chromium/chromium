@@ -24,7 +24,9 @@ bool IsAppReadyForLaunch(Profile* profile, const std::string& app_id) {
 }  // namespace
 namespace ash::app_restore {
 
-ArcAppSingleRestoreHandler::ArcAppSingleRestoreHandler() = default;
+ArcAppSingleRestoreHandler::ArcAppSingleRestoreHandler() {
+  observation_.Observe(full_restore::ArcGhostWindowHandler::Get());
+}
 
 ArcAppSingleRestoreHandler::~ArcAppSingleRestoreHandler() = default;
 
@@ -79,6 +81,7 @@ void ArcAppSingleRestoreHandler::LaunchGhostWindowWithApp(
   if (window_info->window_id == -1) {
     window_info->window_id = ::app_restore::CreateArcSessionId();
   }
+  window_id_ = window_info->window_id;
 
   // Save the launch parameters for send launch request when app ready.
   window_info_ = std::make_unique<apps::WindowInfo>();
@@ -122,12 +125,20 @@ void ArcAppSingleRestoreHandler::OnShelfReady() {
   is_shelf_ready_ = true;
 }
 
-void ArcAppSingleRestoreHandler::OnAppStatesUpdate(const std::string& app_id) {
+void ArcAppSingleRestoreHandler::OnWindowCloseRequested(int window_id) {
+  if (window_id != window_id_)
+    return;
+  is_cancelled = true;
+}
+
+void ArcAppSingleRestoreHandler::OnAppStatesUpdate(const std::string& app_id,
+                                                   bool ready,
+                                                   bool need_fixup) {
   if (!app_id_ || app_id_.value() != app_id)
     return;
   // Update ARC app states immediately, since the app states may already
   // changed from original state.
-  if (IsAppReadyForLaunch(profile_, app_id))
+  if (!is_cancelled && ready && !need_fixup)
     SendAppLaunchRequestToARC();
 }
 
