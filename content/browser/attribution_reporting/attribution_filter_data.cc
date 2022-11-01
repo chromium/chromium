@@ -23,33 +23,25 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
-constexpr char kFilterSourceType[] = "source_type";
-
 }  // namespace
 
 // static
 absl::optional<AttributionFilterData>
-AttributionFilterData::DeserializeSourceFilterData(
-    const std::string& string,
-    AttributionSourceType source_type) {
+AttributionFilterData::DeserializeSourceFilterData(const std::string& string) {
   proto::AttributionFilterData msg;
   if (!msg.ParseFromString(string))
     return absl::nullopt;
 
   FilterValues::container_type filter_values;
-  filter_values.reserve(msg.filter_values().size() + 1);
-
-  // Add the auto-generated filter first so that it is retained instead of any
-  // existing filter of the same name in `msg`, which should only be possible
-  // with database corruption (extremely unlikely) or deliberate modification of
-  // the DB. This approach works because `base::flat_map` uses a stable
-  // sort/unique when being constructed from an existing container.
-  filter_values.emplace_back(
-      kFilterSourceType,
-      std::vector<std::string>{AttributionSourceTypeToString(source_type)});
+  filter_values.reserve(msg.filter_values().size());
 
   for (google::protobuf::MapPair<std::string, proto::AttributionFilterValues>&
            entry : *msg.mutable_filter_values()) {
+    // Serialized source filter data can only contain this key due to DB
+    // corruption or deliberate modification.
+    if (entry.first == kSourceTypeFilterKey)
+      continue;
+
     google::protobuf::RepeatedPtrField<std::string>* values =
         entry.second.mutable_values();
 
@@ -59,18 +51,16 @@ AttributionFilterData::DeserializeSourceFilterData(
                                  std::make_move_iterator(values->end())));
   }
 
-  return FromFilterValues(std::move(filter_values),
-                          /*extra_filters_allowed=*/1);
+  return FromFilterValues(std::move(filter_values));
 }
 
 // static
 absl::optional<AttributionFilterData>
 AttributionFilterData::FromSourceFilterValues(FilterValues&& filter_values) {
   absl::optional<AttributionFilterData> result =
-      FromFilterValues(std::move(filter_values),
-                       /*extra_filters_allowed=*/0);
+      FromFilterValues(std::move(filter_values));
 
-  if (!result || result->filter_values_.contains(kFilterSourceType))
+  if (!result || result->filter_values_.contains(kSourceTypeFilterKey))
     return absl::nullopt;
 
   return result;
@@ -79,8 +69,7 @@ AttributionFilterData::FromSourceFilterValues(FilterValues&& filter_values) {
 // static
 absl::optional<AttributionFilterData>
 AttributionFilterData::FromTriggerFilterValues(FilterValues&& filter_values) {
-  return FromFilterValues(std::move(filter_values),
-                          /*extra_filters_allowed=*/0);
+  return FromFilterValues(std::move(filter_values));
 }
 
 // static
@@ -98,7 +87,7 @@ AttributionFilterData::FromSourceJSON(base::Value* input_value) {
   if (num_filters > blink::kMaxAttributionFiltersPerSource)
     return base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys);
 
-  if (dict->contains(kFilterSourceType)) {
+  if (dict->contains(kSourceTypeFilterKey)) {
     return base::unexpected(
         SourceRegistrationError::kFilterDataHasSourceTypeKey);
   }
@@ -154,19 +143,16 @@ AttributionFilterData AttributionFilterData::ForSourceType(
 
   AttributionFilterData::FilterValues filter_values;
   filter_values.reserve(1);
-  filter_values.emplace(kFilterSourceType, std::move(values));
+  filter_values.emplace(kSourceTypeFilterKey, std::move(values));
 
   return AttributionFilterData(std::move(filter_values));
 }
 
 // static
 absl::optional<AttributionFilterData> AttributionFilterData::FromFilterValues(
-    FilterValues&& filter_values,
-    size_t extra_filters_allowed) {
-  if (filter_values.size() >
-      blink::kMaxAttributionFiltersPerSource + extra_filters_allowed) {
+    FilterValues&& filter_values) {
+  if (filter_values.size() > blink::kMaxAttributionFiltersPerSource)
     return absl::nullopt;
-  }
 
   for (const auto& [filter, values] : filter_values) {
     if (filter.size() > blink::kMaxBytesPerAttributionFilterString)
@@ -209,7 +195,7 @@ AttributionFilterData& AttributionFilterData::operator=(
     AttributionFilterData&&) = default;
 
 std::string AttributionFilterData::Serialize() const {
-  DCHECK(!filter_values_.contains(kFilterSourceType));
+  DCHECK(!filter_values_.contains(kSourceTypeFilterKey));
 
   proto::AttributionFilterData msg;
 

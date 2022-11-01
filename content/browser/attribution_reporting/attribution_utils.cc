@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
@@ -125,6 +126,7 @@ std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
 }
 
 bool AttributionFilterDataMatch(const AttributionFilterData& source,
+                                AttributionSourceType source_type,
                                 const AttributionFilterData& trigger,
                                 bool negated) {
   // A filter is considered matched if the filter key is only present either on
@@ -137,6 +139,16 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
   // sufficient by the API definition).
   return base::ranges::all_of(
       trigger.filter_values(), [&](const auto& trigger_filter) {
+        if (trigger_filter.first ==
+            AttributionFilterData::kSourceTypeFilterKey) {
+          bool has_intersection = base::ranges::any_of(
+              trigger_filter.second, [&](const std::string& value) {
+                return value == AttributionSourceTypeToString(source_type);
+              });
+
+          return negated != has_intersection;
+        }
+
         auto source_filter = source.filter_values().find(trigger_filter.first);
         if (source_filter == source.filter_values().end())
           return true;
@@ -145,9 +157,8 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
         // unique value itself. This means:
         //  - x:[] match x:[] is false when negated, and true otherwise.
         //  - x:[1,2,3] match x:[] is true when negated, and false otherwise.
-        if (trigger_filter.second.empty()) {
+        if (trigger_filter.second.empty())
           return negated != source_filter->second.empty();
-        }
 
         bool has_intersection = base::ranges::any_of(
             trigger_filter.second, [&](const std::string& value) {
@@ -160,18 +171,14 @@ bool AttributionFilterDataMatch(const AttributionFilterData& source,
 }
 
 bool AttributionFiltersMatch(const AttributionFilterData& source_filter_data,
+                             AttributionSourceType source_type,
                              const AttributionFilterData& trigger_filters,
                              const AttributionFilterData& trigger_not_filters) {
-  if (!AttributionFilterDataMatch(source_filter_data, trigger_filters)) {
-    return false;
-  }
-
-  if (!AttributionFilterDataMatch(source_filter_data, trigger_not_filters,
-                                  /*negated=*/true)) {
-    return false;
-  }
-
-  return true;
+  return AttributionFilterDataMatch(source_filter_data, source_type,
+                                    trigger_filters) &&
+         AttributionFilterDataMatch(source_filter_data, source_type,
+                                    trigger_not_filters,
+                                    /*negated=*/true);
 }
 
 }  // namespace content

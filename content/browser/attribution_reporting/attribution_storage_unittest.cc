@@ -102,6 +102,7 @@ class AttributionStorageTest : public testing::Test {
         conversion.event_triggers(),
         [&](const AttributionTrigger::EventTriggerData& event_trigger) {
           return AttributionFiltersMatch(source.common_info().filter_data(),
+                                         source.common_info().source_type(),
                                          event_trigger.filters,
                                          event_trigger.not_filters);
         });
@@ -184,9 +185,9 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(CommonSourceInfoIs(
-                  SourceBuilder().SetDefaultFilterData().BuildCommonInfo())));
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(CommonSourceInfoIs(SourceBuilder().BuildCommonInfo())));
 }
 
 TEST_F(AttributionStorageTest,
@@ -289,8 +290,8 @@ TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  AttributionReport expected_report = GetExpectedEventLevelReport(
-      SourceBuilder().SetDefaultFilterData().BuildStored(), conversion);
+  AttributionReport expected_report =
+      GetExpectedEventLevelReport(SourceBuilder().BuildStored(), conversion);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -405,8 +406,8 @@ TEST_F(AttributionStorageTest,
   auto conversion = DefaultTrigger();
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
-  AttributionReport expected_report = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData().BuildStored(), conversion);
+  AttributionReport expected_report =
+      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -439,8 +440,8 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  AttributionReport expected_report = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData().BuildStored(), conversion);
+  AttributionReport expected_report =
+      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
 
   // Verify it was the first impression that converted.
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
@@ -463,8 +464,8 @@ TEST_F(
   builder.SetSourceEventId(10);
   storage()->StoreSource(builder.Build());
 
-  AttributionReport third_expected_conversion = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData().BuildStored(), conversion);
+  AttributionReport third_expected_conversion =
+      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
@@ -772,8 +773,8 @@ TEST_F(AttributionStorageTest, ClearDataRangeBetweenEvents) {
 
   task_environment_.FastForwardBy(base::Days(1));
 
-  const AttributionReport expected_report = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData().BuildStored(), conversion);
+  const AttributionReport expected_report =
+      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
@@ -890,9 +891,8 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                 AttributionTrigger::AggregatableResult::kExcessiveAttributions),
             ReplacedEventLevelReportIs(absl::nullopt)));
 
-  const auto source = source_builder.SetDefaultFilterData()
-                          .SetAggregatableBudgetConsumed(5)
-                          .BuildStored();
+  const auto source =
+      source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
   auto contributions =
       DefaultAggregatableHistogramContributions(/*histogram_values=*/{5});
   ASSERT_THAT(contributions, SizeIs(1));
@@ -979,8 +979,8 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kExcessiveAttributions,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  const AttributionReport expected_report = GetExpectedEventLevelReport(
-      builder.SetDefaultFilterData().BuildStored(), conversion);
+  const AttributionReport expected_report =
+      GetExpectedEventLevelReport(builder.BuildStored(), conversion);
 
   task_environment_.FastForwardBy(kReportDelay);
 
@@ -1014,8 +1014,7 @@ TEST_F(AttributionStorageTest,
             MaybeCreateAndStoreAggregatableReport(trigger));
 
   const AttributionReport expected_report = GetExpectedAggregatableReport(
-      builder.SetDefaultFilterData()
-          .SetSourceEventId(5)
+      builder.SetSourceEventId(5)
           .SetAttributionLogic(StoredSource::AttributionLogic::kNever)
           .SetPriority(0)
           .SetAggregatableBudgetConsumed(1)
@@ -1327,7 +1326,6 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           AttributionInfoBuilder(
               builder
                   .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-                  .SetDefaultFilterData()
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
                   .BuildStored())
@@ -1366,7 +1364,6 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
           AttributionInfoBuilder(
               builder
                   .SetAttributionLogic(StoredSource::AttributionLogic::kFalsely)
-                  .SetDefaultFilterData()
                   .SetAggregatableBudgetConsumed(1)
                   .SetActiveState(StoredSource::ActiveState::
                                       kReachedEventLevelAttributionLimit)
@@ -2508,11 +2505,9 @@ TEST_F(AttributionStorageTest, SourceFilterData_RoundTrips) {
 
   EXPECT_THAT(
       storage()->GetActiveSources(),
-      ElementsAre(SourceFilterDataIs(AttributionFilterData::CreateForTesting(
-                      {{"source_type", {"navigation"}}})),
+      ElementsAre(SourceFilterDataIs(AttributionFilterData()),
                   SourceFilterDataIs(AttributionFilterData::CreateForTesting({
                       {"abc", {"x", "y"}},
-                      {"source_type", {"event"}},
                   }))));
 }
 
@@ -2747,9 +2742,8 @@ TEST_F(AttributionStorageTest, AggregatableAttribution_ReportsScheduled) {
             NewAggregatableReportIs(Optional(AggregatableAttributionDataIs(
                 AggregatableHistogramContributionsAre(contributions))))));
 
-  const auto source = source_builder.SetDefaultFilterData()
-                          .SetAggregatableBudgetConsumed(5)
-                          .BuildStored();
+  const auto source =
+      source_builder.SetAggregatableBudgetConsumed(5).BuildStored();
   auto expected_event_level_report =
       GetExpectedEventLevelReport(source, trigger);
   auto expected_aggregatable_report =

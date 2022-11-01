@@ -7,6 +7,7 @@
 #include <string>
 
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -45,11 +46,13 @@ TEST(AttributionUtilsTest, EmptyOrMissingAttributionFilters) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.match_expected,
               AttributionFilterDataMatch(test_case.source_filter_data,
+                                         AttributionSourceType::kNavigation,
                                          test_case.trigger_filter_data))
         << test_case.description;
 
     EXPECT_EQ(test_case.match_expected,
               AttributionFilterDataMatch(test_case.source_filter_data,
+                                         AttributionSourceType::kNavigation,
                                          test_case.trigger_filter_data,
                                          /*negated=*/true))
         << test_case.description << " with negation";
@@ -114,6 +117,7 @@ TEST(AttributionUtilsTest, AttributionFilterDataMatch) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.match_expected,
               AttributionFilterDataMatch(test_case.source_filter_data,
+                                         AttributionSourceType::kNavigation,
                                          test_case.trigger_filter_data))
         << test_case.description;
   }
@@ -191,9 +195,97 @@ TEST(AttributionUtilsTest, NegatedAttributionFilterDataMatch) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(test_case.match_expected,
               AttributionFilterDataMatch(test_case.source_filter_data,
+                                         AttributionSourceType::kNavigation,
                                          test_case.trigger_filter_data,
                                          /*negated=*/true))
         << test_case.description << " with negation";
+  }
+}
+
+TEST(AttributionUtilsTest, AttributionFilterDataMatch_SourceType) {
+  const struct {
+    const char* description;
+    AttributionSourceType source_type;
+    AttributionFilterData trigger_filters;
+    bool negated;
+    bool match_expected;
+  } kTestCases[] = {
+      {
+          .description = "empty-filters",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData(),
+          .negated = false,
+          .match_expected = true,
+      },
+      {
+          .description = "empty-filters-negated",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData(),
+          .negated = true,
+          .match_expected = true,
+      },
+      {
+          .description = "empty-filter-values",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData::CreateForTesting({
+              {AttributionFilterData::kSourceTypeFilterKey, {}},
+          }),
+          .negated = false,
+          .match_expected = false,
+      },
+      {
+          .description = "empty-filter-values-negated",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData::CreateForTesting({
+              {AttributionFilterData::kSourceTypeFilterKey, {}},
+          }),
+          .negated = true,
+          .match_expected = true,
+      },
+      {
+          .description = "same-source-type",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData::CreateForTesting({
+              {AttributionFilterData::kSourceTypeFilterKey, {"navigation"}},
+          }),
+          .negated = false,
+          .match_expected = true,
+      },
+      {
+          .description = "same-source-type-negated",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData::CreateForTesting({
+              {AttributionFilterData::kSourceTypeFilterKey, {"navigation"}},
+          }),
+          .negated = true,
+          .match_expected = false,
+      },
+      {
+          .description = "other-source-type",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData::CreateForTesting({
+              {AttributionFilterData::kSourceTypeFilterKey, {"event"}},
+          }),
+          .negated = false,
+          .match_expected = false,
+      },
+      {
+          .description = "other-source-type-negated",
+          .source_type = AttributionSourceType::kNavigation,
+          .trigger_filters = AttributionFilterData::CreateForTesting({
+              {AttributionFilterData::kSourceTypeFilterKey, {"event"}},
+          }),
+          .negated = true,
+          .match_expected = true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.match_expected,
+              AttributionFilterDataMatch(
+                  AttributionFilterData(), test_case.source_type,
+                  test_case.trigger_filters, test_case.negated))
+        << test_case.description;
   }
 }
 

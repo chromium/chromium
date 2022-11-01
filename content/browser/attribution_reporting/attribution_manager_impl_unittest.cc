@@ -342,8 +342,7 @@ TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
   attribution_manager_->HandleSource(builder.Build());
 
   EXPECT_THAT(StoredSources(),
-              ElementsAre(CommonSourceInfoIs(
-                  builder.SetDefaultFilterData().BuildCommonInfo())));
+              ElementsAre(CommonSourceInfoIs(builder.BuildCommonInfo())));
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
@@ -365,10 +364,9 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   attribution_manager_->HandleTrigger(conversion);
 
   AttributionReport expected_report =
-      ReportBuilder(
-          AttributionInfoBuilder(builder.SetDefaultFilterData().BuildStored())
-              .SetTime(base::Time::Now())
-              .Build())
+      ReportBuilder(AttributionInfoBuilder(builder.BuildStored())
+                        .SetTime(base::Time::Now())
+                        .Build())
           .SetTriggerData(5)
           .SetReportTime(base::Time::Now() + kFirstReportingWindow)
           .Build();

@@ -498,11 +498,6 @@ SourceBuilder& SourceBuilder::SetFilterData(AttributionFilterData filter_data) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetDefaultFilterData() {
-  filter_data_ = AttributionFilterData::ForSourceType(source_type_);
-  return *this;
-}
-
 SourceBuilder& SourceBuilder::SetDebugKey(absl::optional<uint64_t> debug_key) {
   debug_key_ = debug_key;
   return *this;

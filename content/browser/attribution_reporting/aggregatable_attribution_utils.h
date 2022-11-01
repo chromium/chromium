@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,6 +30,7 @@ class AttributionReport;
 CONTENT_EXPORT std::vector<AggregatableHistogramContribution>
 CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
+    AttributionSourceType,
     const AttributionAggregationKeys& keys,
     const std::vector<AttributionAggregatableTriggerData>&
         aggregatable_trigger_data,

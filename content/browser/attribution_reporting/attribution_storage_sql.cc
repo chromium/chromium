@@ -335,7 +335,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
 
   absl::optional<AttributionFilterData> filter_data =
       AttributionFilterData::DeserializeSourceFilterData(
-          statement.ColumnString(col++), *source_type);
+          statement.ColumnString(col++));
   if (!filter_data)
     return absl::nullopt;
 
@@ -817,6 +817,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
   const bool top_level_filters_match = AttributionFiltersMatch(
       source_to_attribute->source.common_info().filter_data(),
+      source_to_attribute->source.common_info().source_type(),
       trigger.filters(), trigger.not_filters());
 
   AttributionInfo attribution_info(std::move(source_to_attribute->source),
@@ -1032,7 +1033,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   auto event_trigger = base::ranges::find_if(
       trigger.event_triggers(),
       [&](const AttributionTrigger::EventTriggerData& event_trigger) {
-        return AttributionFiltersMatch(common_info.filter_data(),
+        return AttributionFiltersMatch(common_info.filter_data(), source_type,
                                        event_trigger.filters,
                                        event_trigger.not_filters);
       });
@@ -2656,6 +2657,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
           attribution_info.source.common_info().filter_data(),
+          attribution_info.source.common_info().source_type(),
           attribution_info.source.common_info().aggregation_keys(),
           trigger.aggregatable_trigger_data(), trigger.aggregatable_values());
   if (contributions.empty())
