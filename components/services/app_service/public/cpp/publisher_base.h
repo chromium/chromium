@@ -58,14 +58,6 @@ class PublisherBase : public apps::mojom::Publisher {
   mojo::Receiver<apps::mojom::Publisher>& receiver() { return receiver_; }
 
  private:
-  // apps::mojom::Publisher overrides.
-  // DEPRECATED. Prefer passing the files in an Intent through
-  // LaunchAppWithIntent.
-  // TODO(crbug.com/1264164): Remove this method.
-  void LaunchAppWithFiles(const std::string& app_id,
-                          int32_t event_flags,
-                          apps::mojom::LaunchSource launch_source,
-                          apps::mojom::FilePathsPtr file_paths) override;
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,

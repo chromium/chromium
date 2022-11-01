@@ -706,25 +706,6 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
   LaunchImpl(std::move(params));
 }
 
-void ExtensionAppsBase::LaunchAppWithFiles(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::FilePathsPtr file_paths) {
-  const auto* extension = MaybeGetExtension(app_id);
-  AppLaunchParams params(
-      app_id,
-      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
-                                     extension),
-      ui::DispositionFromEventFlags(event_flags),
-      ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      display::kDefaultDisplayId);
-  for (const auto& file_path : file_paths->file_paths) {
-    params.launch_files.push_back(file_path);
-  }
-  LaunchImpl(std::move(params));
-}
-
 void ExtensionAppsBase::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,

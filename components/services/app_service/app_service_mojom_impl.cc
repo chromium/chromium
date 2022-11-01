@@ -91,20 +91,6 @@ void AppServiceMojomImpl::Launch(apps::mojom::AppType app_type,
   iter->second->Launch(app_id, event_flags, launch_source,
                        std::move(window_info));
 }
-void AppServiceMojomImpl::LaunchAppWithFiles(
-    apps::mojom::AppType app_type,
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::FilePathsPtr file_paths) {
-  CHECK(file_paths);
-  auto iter = publishers_.find(app_type);
-  if (iter == publishers_.end()) {
-    return;
-  }
-  iter->second->LaunchAppWithFiles(app_id, event_flags, launch_source,
-                                   std::move(file_paths));
-}
 
 void AppServiceMojomImpl::LaunchAppWithIntent(
     apps::mojom::AppType app_type,

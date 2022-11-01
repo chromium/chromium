@@ -293,22 +293,6 @@ void WebAppsCrosapi::LaunchAppWithIntent(
   std::move(callback).Run(/*success=*/true);
 }
 
-void WebAppsCrosapi::LaunchAppWithFiles(const std::string& app_id,
-                                        int32_t event_flags,
-                                        apps::mojom::LaunchSource launch_source,
-                                        apps::mojom::FilePathsPtr file_paths) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    return;
-  }
-
-  auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      proxy_, app_id, event_flags,
-      ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      display::kInvalidDisplayId);
-  params->intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
-  controller_->Launch(std::move(params), base::DoNothing());
-}
-
 void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                   apps::mojom::MenuType menu_type,
                                   int64_t display_id,

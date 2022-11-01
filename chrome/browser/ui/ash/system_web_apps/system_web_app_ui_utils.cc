@@ -163,15 +163,8 @@ void LaunchSystemWebAppAsync(Profile* profile,
   if (!params.launch_paths.empty()) {
     DCHECK(!params.url.has_value())
         << "Launch URL can't be used with launch_paths.";
-    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-      app_service->LaunchAppWithFiles(
-          *app_id, event_flags, params.launch_source, params.launch_paths);
-    } else {
-      app_service->LaunchAppWithFiles(
-          *app_id, event_flags,
-          apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-          apps::mojom::FilePaths::New(params.launch_paths));
-    }
+    app_service->LaunchAppWithFiles(*app_id, event_flags, params.launch_source,
+                                    params.launch_paths);
     return;
   }
 

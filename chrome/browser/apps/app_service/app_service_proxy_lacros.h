@@ -135,12 +135,6 @@ class AppServiceProxyLacros : public KeyedService,
                           int32_t event_flags,
                           LaunchSource launch_source,
                           std::vector<base::FilePath> file_paths);
-  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
-  // interface.
-  void LaunchAppWithFiles(const std::string& app_id,
-                          int32_t event_flags,
-                          apps::mojom::LaunchSource launch_source,
-                          apps::mojom::FilePathsPtr file_paths);
 
   // Launches an app for the given |app_id|, passing |intent| to the app.
   // |event_flags| provides additional context about the action which launch the

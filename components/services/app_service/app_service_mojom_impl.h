@@ -54,11 +54,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService {
               int32_t event_flags,
               apps::mojom::LaunchSource launch_source,
               apps::mojom::WindowInfoPtr window_info) override;
-  void LaunchAppWithFiles(apps::mojom::AppType app_type,
-                          const std::string& app_id,
-                          int32_t event_flags,
-                          apps::mojom::LaunchSource launch_source,
-                          apps::mojom::FilePathsPtr file_paths) override;
   void LaunchAppWithIntent(apps::mojom::AppType app_type,
                            const std::string& app_id,
                            int32_t event_flags,

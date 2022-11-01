@@ -37,17 +37,6 @@ interface AppService {
       LaunchSource launch_source,
       WindowInfo? window_info);
 
-  // Launches an app with |app_id| and |file_path|.
-  // DEPRECATED. Prefer passing the files in an Intent through
-  // LaunchAppWithIntent.
-  // TODO(crbug.com/1264164): Remove this method.
-  LaunchAppWithFiles(
-      AppType app_type,
-      string app_id,
-      int32 event_flags,
-      LaunchSource launch_source,
-      FilePaths file_paths);
-
   // Launches an app with |app_id| and Chrome OS generic |intent| irrespective
   // of app platform. Returns whether the app was successfully launched.
   LaunchAppWithIntent(
@@ -127,17 +116,6 @@ interface Publisher {
       int32 event_flags,
       LaunchSource launch_source,
       WindowInfo? window_info);
-
-  // Launches an app identified by |app_id| and |file_path|, parameterised by
-  // |event_flags|.
-  // DEPRECATED. Prefer passing the files in an Intent through
-  // LaunchAppWithIntent.
-  // TODO(crbug.com/1264164): Remove this method.
-  LaunchAppWithFiles(
-      string app_id,
-      int32 event_flags,
-      LaunchSource launch_source,
-      FilePaths file_paths);
 
   // Launches an app identified by |app_id|, with |intent| as a parameter.
   // |event_flags| contains launch options (e.g. window disposition).

@@ -175,16 +175,6 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
   ProxyLaunch(std::move(params));
 }
 
-void AppServiceProxyLacros::LaunchAppWithFiles(
-    const std::string& app_id,
-    int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::FilePathsPtr file_paths) {
-  LaunchAppWithFiles(app_id, event_flags,
-                     ConvertMojomLaunchSourceToLaunchSource(launch_source),
-                     ConvertMojomFilePathsToFilePaths(std::move(file_paths)));
-}
-
 void AppServiceProxyLacros::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,
