@@ -46,11 +46,15 @@ BackgroundSyncDelegateImpl::BackgroundSyncEventKeepAliveImpl::
                                content::BrowserThread::DeleteOnUIThread>(
       new ScopedKeepAlive(KeepAliveOrigin::BACKGROUND_SYNC,
                           KeepAliveRestartOption::DISABLED));
-  profile_keepalive_ =
-      std::unique_ptr<ScopedProfileKeepAlive,
-                      content::BrowserThread::DeleteOnUIThread>(
-          new ScopedProfileKeepAlive(profile,
-                                     ProfileKeepAliveOrigin::kBackgroundSync));
+  if (!profile->IsOffTheRecord()) {
+    // TODO(crbug.com/1153922): Remove this guard when OTR profiles become
+    // refcounted and support ScopedProfileKeepAlive.
+    profile_keepalive_ =
+        std::unique_ptr<ScopedProfileKeepAlive,
+                        content::BrowserThread::DeleteOnUIThread>(
+            new ScopedProfileKeepAlive(
+                profile, ProfileKeepAliveOrigin::kBackgroundSync));
+  }
 }
 
 BackgroundSyncDelegateImpl::BackgroundSyncEventKeepAliveImpl::
