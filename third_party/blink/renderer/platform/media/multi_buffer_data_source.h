@@ -63,7 +63,7 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   void Initialize(InitializeCB init_cb);
 
   // Adjusts the buffering algorithm based on the given preload value.
-  void SetPreload(media::DataSource::Preload preload);
+  void SetPreload(media::DataSource::Preload preload) override;
 
   // Returns true if the media resource has a single origin, false otherwise.
   // Only valid to call after Initialize() has completed.

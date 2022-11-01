@@ -72,6 +72,10 @@ class MEDIA_EXPORT DataSource {
 
   // By default this just returns GetSize().
   virtual int64_t GetMemoryUsage();
+
+  // Adjusts the buffering algorithm (if there is one) based on the given
+  // preload value.
+  virtual void SetPreload(media::DataSource::Preload preload);
 };
 
 }  // namespace media

@@ -1218,8 +1218,8 @@ void WebMediaPlayerImpl::SetPreload(WebMediaPlayer::Preload preload) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   preload_ = static_cast<media::DataSource::Preload>(preload);
-  if (mb_data_source_)
-    mb_data_source_->SetPreload(preload_);
+  if (data_source_)
+    data_source_->SetPreload(preload_);
 }
 
 bool WebMediaPlayerImpl::HasVideo() const {
@@ -2764,10 +2764,8 @@ void WebMediaPlayerImpl::DataSourceInitialized(bool success) {
   }
 
   // No point in preloading data as we'll probably just throw it away anyways.
-  if (IsStreaming() && preload_ > media::DataSource::METADATA &&
-      mb_data_source_) {
-    mb_data_source_->SetPreload(media::DataSource::METADATA);
-  }
+  if (IsStreaming() && preload_ > media::DataSource::METADATA)
+    data_source_->SetPreload(media::DataSource::METADATA);
 
   StartPipeline();
 }
