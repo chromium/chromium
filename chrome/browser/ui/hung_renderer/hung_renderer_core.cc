@@ -79,8 +79,8 @@ std::vector<content::WebContents*> GetHungWebContentsList(
     return IsWebContentsHung(web_contents, hung_process) &&
            !web_contents->IsCrashed();
   };
-  std::copy_if(AllTabContentses().begin(), AllTabContentses().end(),
-               std::back_inserter(result), is_hung);
+  base::ranges::copy_if(AllTabContentses(), std::back_inserter(result),
+                        is_hung);
 
   // Move |hung_web_contents| to the front.  It might be missing from the
   // initial |results| when it hasn't yet committed a navigation into the hung

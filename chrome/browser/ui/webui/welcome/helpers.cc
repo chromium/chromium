@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -245,17 +246,14 @@ bool HasModulesToShow(Profile* profile) {
 
 std::string FilterModules(const std::string& requested_modules,
                           const std::vector<std::string>& available_modules) {
-  std::vector<std::string> requested_list = base::SplitString(
-      requested_modules, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::vector<std::string> filtered_modules;
-
-  std::copy_if(requested_list.begin(), requested_list.end(),
-               std::back_inserter(filtered_modules),
-               [available_modules](std::string module) {
-                 return !module.empty() &&
-                        base::Contains(available_modules, module);
-               });
-
+  base::ranges::copy_if(
+      base::SplitString(requested_modules, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY),
+      std::back_inserter(filtered_modules),
+      [&available_modules](const std::string& module) {
+        return !module.empty() && base::Contains(available_modules, module);
+      });
   return base::JoinString(filtered_modules, ",");
 }
 

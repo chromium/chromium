@@ -13,6 +13,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -313,9 +314,8 @@ void PopulateInfoMapWithBookmarks(
   // Process the bookmarks and optionally trim them if we have too many.
   std::vector<UrlAndTitle> result_bookmarks;
   if (untrimmed_bookmarks.size() > kMaxBookmarks) {
-    std::copy_if(
-        untrimmed_bookmarks.begin(), untrimmed_bookmarks.end(),
-        std::back_inserter(result_bookmarks),
+    base::ranges::copy_if(
+        untrimmed_bookmarks, std::back_inserter(result_bookmarks),
         [&engagement_map](const UrlAndTitle& entry) {
           auto it = engagement_map.find(entry.url.DeprecatedGetOriginAsURL());
           double score = it == engagement_map.end() ? 0 : it->second;

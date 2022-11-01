@@ -458,8 +458,8 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
   // Do not call ListUserDesktopContents again (but with filter) to avoid
   // excess work inside it. Just reuse non-filtered desktop_contents.
   // We need both of them (desktop_contents and shortcuts) later.
-  std::copy_if(desktop_contents.begin(), desktop_contents.end(),
-               std::inserter(shortcuts, shortcuts.begin()), filter);
+  base::ranges::copy_if(desktop_contents,
+                        std::inserter(shortcuts, shortcuts.begin()), filter);
 
   if (params.old_profile_name != params.profile_name || params.single_profile) {
     RenameChromeDesktopShortcutForProfile(

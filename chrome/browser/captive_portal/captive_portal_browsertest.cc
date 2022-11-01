@@ -340,12 +340,10 @@ FailLoadsAfterLoginObserver::FailLoadsAfterLoginObserver()
     : waiting_for_navigation_(false) {
   registrar_.Add(this, content::NOTIFICATION_LOAD_STOP,
                  content::NotificationService::AllSources());
-  std::copy_if(
-      AllTabContentses().begin(), AllTabContentses().end(),
+  base::ranges::copy_if(
+      AllTabContentses(),
       std::inserter(tabs_needing_navigation_, tabs_needing_navigation_.end()),
-      [](content::WebContents* web_contents) {
-        return web_contents->IsLoading();
-      });
+      &content::WebContents::IsLoading);
 }
 
 FailLoadsAfterLoginObserver::~FailLoadsAfterLoginObserver() {

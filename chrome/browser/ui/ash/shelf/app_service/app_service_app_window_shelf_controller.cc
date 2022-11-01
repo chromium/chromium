@@ -524,9 +524,8 @@ AppWindowBase* AppServiceAppWindowShelfController::GetAppWindow(
 
 std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {
   std::vector<aura::Window*> arc_windows;
-  std::copy_if(window_list_.begin(), window_list_.end(),
-               std::inserter(arc_windows, arc_windows.end()),
-               [](aura::Window* w) { return ash::IsArcWindow(w); });
+  base::ranges::copy_if(window_list_, std::back_inserter(arc_windows),
+                        &ash::IsArcWindow);
   return arc_windows;
 }
 

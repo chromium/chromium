@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <ostream>
@@ -30,6 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/task/single_thread_task_runner.h"
@@ -567,12 +567,13 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
   // the install success rate.
   std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
       results_to_report;
-  std::copy_if(install_results.begin(), install_results.end(),
-               std::inserter(results_to_report, results_to_report.end()),
-               [](const auto& url_and_result) {
-                 return url_and_result.second.code !=
-                        webapps::InstallResultCode::kSuccessAlreadyInstalled;
-               });
+  base::ranges::copy_if(
+      install_results,
+      std::inserter(results_to_report, results_to_report.end()),
+      [](const auto& url_and_result) {
+        return url_and_result.second.code !=
+               webapps::InstallResultCode::kSuccessAlreadyInstalled;
+      });
 
   for (const auto& url_and_result : results_to_report) {
     // Record aggregate result.

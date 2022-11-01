@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -21,6 +20,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
@@ -634,10 +634,10 @@ void ArcInputMethodManagerService::SyncEnabledImesInArc() {
 
   // Filter out non ARC IME ids.
   std::set<std::string> new_arc_enabled_ime_ids;
-  std::copy_if(
-      new_enabled_ime_ids.begin(), new_enabled_ime_ids.end(),
+  base::ranges::copy_if(
+      new_enabled_ime_ids,
       std::inserter(new_arc_enabled_ime_ids, new_arc_enabled_ime_ids.end()),
-      [](const auto& id) { return ash::extension_ime_util::IsArcIME(id); });
+      &ash::extension_ime_util::IsArcIME);
 
   // TODO(yhanada|yusukes): Instead of observing ImeMenuListChanged(), it's
   // probably better to just observe the pref (and not disabling ones still

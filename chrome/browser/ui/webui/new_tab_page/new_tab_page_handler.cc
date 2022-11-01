@@ -22,6 +22,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -713,12 +714,11 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   }
 
   // Second, append Finch order for modules _not_ ordered by drag&drop.
-  std::vector<std::string> finch_module_ids = ntp_features::GetModulesOrder();
-  std::copy_if(finch_module_ids.begin(), finch_module_ids.end(),
-               std::back_inserter(module_ids),
-               [&module_ids](const std::string& id) {
-                 return !base::Contains(module_ids, id);
-               });
+  base::ranges::copy_if(ntp_features::GetModulesOrder(),
+                        std::back_inserter(module_ids),
+                        [&module_ids](const std::string& id) {
+                          return !base::Contains(module_ids, id);
+                        });
 
   std::move(callback).Run(std::move(module_ids));
 }

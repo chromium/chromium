@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/sharing_hub/fake_sharing_hub_bubble_controller.h"
@@ -35,9 +36,8 @@ std::vector<views::View*> DescendantsMatchingPredicate(
   std::vector<views::View*> result;
 
   EnumerateDescendants(root, descendants);
-  std::copy_if(descendants.begin(), descendants.end(),
-               std::back_inserter(result),
-               [=](views::View* view) { return predicate.Run(view); });
+  base::ranges::copy_if(descendants, std::back_inserter(result),
+                        [=](views::View* view) { return predicate.Run(view); });
   return result;
 }
 

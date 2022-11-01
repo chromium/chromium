@@ -95,11 +95,10 @@ net::DohProviderEntry::List ProvidersForCountry(
     const net::DohProviderEntry::List& providers,
     int country_id) {
   net::DohProviderEntry::List local_providers;
-  std::copy_if(providers.begin(), providers.end(),
-               std::back_inserter(local_providers),
-               [country_id](const auto* entry) {
-                 return EntryIsForCountry(entry, country_id);
-               });
+  base::ranges::copy_if(providers, std::back_inserter(local_providers),
+                        [country_id](const auto* entry) {
+                          return EntryIsForCountry(entry, country_id);
+                        });
   return local_providers;
 }
 

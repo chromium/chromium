@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
-#include <algorithm>
-
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
@@ -18,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -586,11 +585,12 @@ void ScreenLocker::ShowErrorMessage(int error_msg_id,
 user_manager::UserList ScreenLocker::GetUsersToShow() const {
   user_manager::UserList users_to_show;
   // Filter out Managed Guest Session users as they should not appear on the UI.
-  std::copy_if(users_.begin(), users_.end(), std::back_inserter(users_to_show),
-               [](const user_manager::User* user) -> bool {
-                 return user->GetType() !=
-                        user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT;
-               });
+  base::ranges::copy_if(
+      users_, std::back_inserter(users_to_show),
+      [](const user_manager::User* user) {
+        return user->GetType() !=
+               user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT;
+      });
   return users_to_show;
 }
 

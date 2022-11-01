@@ -4,13 +4,13 @@
 
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,11 +25,8 @@ void GetAccountsNotDenylisted(
   std::vector<account_manager::Account> result;
   // Copy all accounts into result, except for those denylisted.
   for (const auto& path_and_list_pair : accounts_map) {
-    const std::vector<account_manager::Account>& list =
-        path_and_list_pair.second;
-
-    std::copy_if(
-        list.begin(), list.end(), std::back_inserter(result),
+    base::ranges::copy_if(
+        path_and_list_pair.second, std::back_inserter(result),
         [&denylisted_gaia_ids](const account_manager::Account& account) {
           return !denylisted_gaia_ids.contains(account.key.id());
         });
