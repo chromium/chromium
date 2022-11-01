@@ -18,8 +18,7 @@
 #include "media/base/tuneable.h"
 #include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -105,7 +104,7 @@ class PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
 
   int64_t GetMemoryUsage() override;
 
-  GURL GetUrlAfterRedirects() const;
+  GURL GetUrlAfterRedirects() const override;
 
   // media::DataSource implementation.
   // Called from demuxer thread.

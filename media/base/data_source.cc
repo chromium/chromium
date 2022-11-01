@@ -22,4 +22,8 @@ int64_t DataSource::GetMemoryUsage() {
 
 void DataSource::SetPreload(media::DataSource::Preload preload) {}
 
+GURL DataSource::GetUrlAfterRedirects() const {
+  return GURL();
+}
+
 }  // namespace media

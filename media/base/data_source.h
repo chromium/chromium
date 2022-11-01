@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "media/base/media_export.h"
+#include "url/gurl.h"
 
 namespace media {
 
@@ -76,6 +77,10 @@ class MEDIA_EXPORT DataSource {
   // Adjusts the buffering algorithm (if there is one) based on the given
   // preload value.
   virtual void SetPreload(media::DataSource::Preload preload);
+
+  // Gets the url for this data source, if it exists. By default this returns
+  // an empty GURL.
+  virtual GURL GetUrlAfterRedirects() const;
 };
 
 }  // namespace media
