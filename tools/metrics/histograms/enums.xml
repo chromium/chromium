@@ -57457,6 +57457,7 @@ from previous Chrome versions.
   <int value="-2075807193" label="enable-webusb-on-any-origin"/>
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
   <int value="-2075607807" label="CSSOverflowForReplacedElements:disabled"/>
+  <int value="-2074936999" label="AutoDisableAccessibilityV2:disabled"/>
   <int value="-2074080173" label="NightLight:disabled"/>
   <int value="-2073402331"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
@@ -61791,6 +61792,7 @@ from previous Chrome versions.
   <int value="474743272" label="material-design-ink-drop"/>
   <int value="475858648"
       label="OverlayScrollbarFlashAfterAnyScrollUpdate:disabled"/>
+  <int value="476814335" label="AutoDisableAccessibilityV2:enabled"/>
   <int value="477796416" label="ReleaseNotes:enabled"/>
   <int value="477967119" label="enable-unified-media-pipeline"/>
   <int value="478380451" label="BlockMigratedDefaultChromeAppSync:disabled"/>

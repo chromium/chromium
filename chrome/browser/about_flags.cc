@@ -6612,6 +6612,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAutoDisableAccessibility)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-auto-disable-accessibility-v2",
+     flag_descriptions::kEnableAutoDisableAccessibilityV2Name,
+     flag_descriptions::kEnableAutoDisableAccessibilityV2Description,
+     kOsAndroid, FEATURE_VALUE_TYPE(features::kAutoDisableAccessibilityV2)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"cct-incognito", flag_descriptions::kCCTIncognitoName,
      flag_descriptions::kCCTIncognitoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTIncognito)},

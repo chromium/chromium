@@ -1745,6 +1745,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-auto-disable-accessibility-v2",
+    "owners": [ "jacklynch@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-autofill-credit-card-authentication",
     "owners": [ "jsaul@google.com", "siyua" ],
     "expiry_milestone": 112
