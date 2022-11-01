@@ -6,7 +6,6 @@
  * @fileoverview 'cr-slider' is a slider component used to select a number from
  * a continuous or discrete range of numbers.
  */
-import '../../js/cr.m.js';
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
 
