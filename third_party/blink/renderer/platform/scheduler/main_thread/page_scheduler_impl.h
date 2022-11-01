@@ -59,6 +59,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   ~PageSchedulerImpl() override;
 
   // PageScheduler implementation:
+  void Shutdown() override;
   void OnTitleOrFaviconUpdated() override;
   void SetPageVisible(bool page_visible) override;
   void SetPageFrozen(bool) override;
@@ -71,6 +72,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool IsInBackForwardCache() const override {
     return is_stored_in_back_forward_cache_;
   }
+  void Trace(Visitor* visitor) const override;
+
   bool has_ipc_detection_enabled() { return has_ipc_detection_enabled_; }
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
@@ -266,7 +269,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
   MainThreadSchedulerImpl* main_thread_scheduler_;
-  Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
+  Member<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   PageVisibilityState page_visibility_;
   base::TimeTicks page_visibility_changed_time_;

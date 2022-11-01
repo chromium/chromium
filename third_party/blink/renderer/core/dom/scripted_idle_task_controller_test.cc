@@ -93,9 +93,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
     return scripted_idle_scheduler_->TaskRunner();
   }
 
-  PageScheduler* GetPageScheduler() const override {
-    return page_scheduler_.get();
-  }
+  PageScheduler* GetPageScheduler() const override { return page_scheduler_; }
   AgentGroupScheduler* GetAgentGroupScheduler() override {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
@@ -174,7 +172,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
 
  private:
   MockScriptedIdleTaskControllerScheduler* scripted_idle_scheduler_;
-  std::unique_ptr<PageScheduler> page_scheduler_;
+  Persistent<PageScheduler> page_scheduler_;
   base::WeakPtrFactory<FrameScheduler> weak_ptr_factory_{this};
 };
 

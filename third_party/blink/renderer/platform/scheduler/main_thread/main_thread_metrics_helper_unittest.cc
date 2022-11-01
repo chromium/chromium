@@ -126,7 +126,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kMainFrameVisibleService:
         builder.SetFrameType(FrameScheduler::FrameType::kMainFrame)
-            .SetPageScheduler(playing_view_.get())
+            .SetPageScheduler(playing_view_)
             .SetIsFrameVisible(true);
         break;
       case FrameStatus::kMainFrameHidden:
@@ -135,7 +135,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kMainFrameHiddenService:
         builder.SetFrameType(FrameScheduler::FrameType::kMainFrame)
-            .SetPageScheduler(playing_view_.get());
+            .SetPageScheduler(playing_view_);
         break;
       case FrameStatus::kMainFrameBackground:
         builder.SetFrameType(FrameScheduler::FrameType::kMainFrame);
@@ -146,7 +146,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kMainFrameBackgroundExemptOther:
         builder.SetFrameType(FrameScheduler::FrameType::kMainFrame)
-            .SetPageScheduler(throtting_exempt_view_.get());
+            .SetPageScheduler(throtting_exempt_view_);
         break;
       case FrameStatus::kSameOriginVisible:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
@@ -155,7 +155,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kSameOriginVisibleService:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetPageScheduler(playing_view_.get())
+            .SetPageScheduler(playing_view_)
             .SetIsFrameVisible(true);
         break;
       case FrameStatus::kSameOriginHidden:
@@ -164,7 +164,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kSameOriginHiddenService:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetPageScheduler(playing_view_.get());
+            .SetPageScheduler(playing_view_);
         break;
       case FrameStatus::kSameOriginBackground:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe);
@@ -175,7 +175,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
         break;
       case FrameStatus::kSameOriginBackgroundExemptOther:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
-            .SetPageScheduler(throtting_exempt_view_.get());
+            .SetPageScheduler(throtting_exempt_view_);
         break;
       case FrameStatus::kCrossOriginVisible:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
@@ -186,7 +186,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
       case FrameStatus::kCrossOriginVisibleService:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
             .SetIsCrossOriginToNearestMainFrame(true)
-            .SetPageScheduler(playing_view_.get())
+            .SetPageScheduler(playing_view_)
             .SetIsFrameVisible(true);
         break;
       case FrameStatus::kCrossOriginHidden:
@@ -197,7 +197,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
       case FrameStatus::kCrossOriginHiddenService:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
             .SetIsCrossOriginToNearestMainFrame(true)
-            .SetPageScheduler(playing_view_.get());
+            .SetPageScheduler(playing_view_);
         break;
       case FrameStatus::kCrossOriginBackground:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
@@ -211,7 +211,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
       case FrameStatus::kCrossOriginBackgroundExemptOther:
         builder.SetFrameType(FrameScheduler::FrameType::kSubframe)
             .SetIsCrossOriginToNearestMainFrame(true)
-            .SetPageScheduler(throtting_exempt_view_.get());
+            .SetPageScheduler(throtting_exempt_view_);
         break;
       case FrameStatus::kCount:
         NOTREACHED();
@@ -225,9 +225,9 @@ class MainThreadMetricsHelperTest : public testing::Test {
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   MainThreadMetricsHelper* metrics_helper_;  // NOT OWNED
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<FakePageScheduler> playing_view_ =
+  Persistent<FakePageScheduler> playing_view_ =
       FakePageScheduler::Builder().SetIsAudioPlaying(true).Build();
-  std::unique_ptr<FakePageScheduler> throtting_exempt_view_ =
+  Persistent<FakePageScheduler> throtting_exempt_view_ =
       FakePageScheduler::Builder().SetIsThrottlingExempt(true).Build();
 };
 

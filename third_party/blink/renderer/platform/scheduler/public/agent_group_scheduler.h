@@ -32,8 +32,7 @@ class BLINK_PLATFORM_EXPORT AgentGroupScheduler
 
   // Creates a new PageScheduler for a given Page. Must be called from the
   // associated WebThread.
-  virtual std::unique_ptr<PageScheduler> CreatePageScheduler(
-      PageScheduler::Delegate*) = 0;
+  virtual PageScheduler* CreatePageScheduler(PageScheduler::Delegate*) = 0;
 
   virtual void BindInterfaceBroker(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>

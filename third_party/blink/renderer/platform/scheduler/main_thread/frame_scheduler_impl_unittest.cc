@@ -67,15 +67,12 @@ constexpr auto kShortDelay = base::Milliseconds(10);
 
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
-std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
+PageSchedulerImpl* CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
     MainThreadSchedulerImpl* scheduler,
     AgentGroupScheduler& agent_group_scheduler) {
-  std::unique_ptr<PageScheduler> page_scheduler =
-      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate);
-  std::unique_ptr<PageSchedulerImpl> page_scheduler_impl(
-      static_cast<PageSchedulerImpl*>(page_scheduler.release()));
-  return page_scheduler_impl;
+  return static_cast<PageSchedulerImpl*>(
+      agent_group_scheduler.CreatePageScheduler(page_scheduler_delegate));
 }
 
 // This is a wrapper around PageSchedulerImpl::CreateFrameScheduler, that
@@ -230,10 +227,10 @@ class FrameSchedulerImplTest : public testing::Test {
         CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
     frame_scheduler_delegate_ = std::make_unique<
         testing::StrictMock<FrameSchedulerDelegateForTesting>>();
-    frame_scheduler_ = CreateFrameScheduler(
-        page_scheduler_.get(), frame_scheduler_delegate_.get(),
-        /*is_in_embedded_frame_tree=*/false,
-        FrameScheduler::FrameType::kSubframe);
+    frame_scheduler_ =
+        CreateFrameScheduler(page_scheduler_, frame_scheduler_delegate_.get(),
+                             /*is_in_embedded_frame_tree=*/false,
+                             FrameScheduler::FrameType::kSubframe);
   }
 
   void ResetFrameScheduler(bool is_in_embedded_frame_tree,
@@ -241,7 +238,7 @@ class FrameSchedulerImplTest : public testing::Test {
     auto new_delegate_ = std::make_unique<
         testing::StrictMock<FrameSchedulerDelegateForTesting>>();
     frame_scheduler_ =
-        CreateFrameScheduler(page_scheduler_.get(), new_delegate_.get(),
+        CreateFrameScheduler(page_scheduler_, new_delegate_.get(),
                              is_in_embedded_frame_tree, frame_type);
     frame_scheduler_delegate_ = std::move(new_delegate_);
   }
@@ -261,7 +258,9 @@ class FrameSchedulerImplTest : public testing::Test {
   void TearDown() override {
     throttleable_task_queue_.reset();
     frame_scheduler_.reset();
-    page_scheduler_.reset();
+    if (page_scheduler_)
+      page_scheduler_->Shutdown();
+    page_scheduler_ = nullptr;
     agent_group_scheduler_ = nullptr;
     scheduler_->Shutdown();
     scheduler_.reset();
@@ -497,7 +496,7 @@ class FrameSchedulerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
-  std::unique_ptr<PageSchedulerImpl> page_scheduler_;
+  Persistent<PageSchedulerImpl> page_scheduler_;
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_;
   std::unique_ptr<testing::StrictMock<FrameSchedulerDelegateForTesting>>
       frame_scheduler_delegate_;
@@ -1587,7 +1586,7 @@ TEST_F(LowPrioritySubFrameExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kLowPriority);
 
   frame_scheduler_ =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+      CreateFrameScheduler(page_scheduler_, nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kMainFrame);
 
@@ -1630,7 +1629,7 @@ TEST_F(LowPrioritySubFrameThrottleableTaskExperimentTest,
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_ =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+      CreateFrameScheduler(page_scheduler_, nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kMainFrame);
 
@@ -1672,7 +1671,7 @@ TEST_F(LowPriorityThrottleableTaskExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_ =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+      CreateFrameScheduler(page_scheduler_, nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kMainFrame);
 
@@ -1950,7 +1949,8 @@ TEST_F(FrameSchedulerImplTest, ContentCaptureHasIdleTaskQueue) {
 TEST_F(FrameSchedulerImplTest, ComputePriorityForDetachedFrame) {
   auto task_queue = GetTaskQueue(TaskType::kJavascriptTimerDelayedLowNesting);
   // Just check that it does not crash.
-  page_scheduler_.reset();
+  page_scheduler_->Shutdown();
+  page_scheduler_ = nullptr;
   frame_scheduler_->ComputePriority(task_queue.get());
 }
 
@@ -2389,11 +2389,11 @@ TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
   MockMainThreadScheduler mock_main_thread_scheduler{task_environment_};
   AgentGroupScheduler* agent_group_scheduler =
       mock_main_thread_scheduler.CreateAgentGroupScheduler();
-  std::unique_ptr<PageSchedulerImpl> page_scheduler = CreatePageScheduler(
+  PageSchedulerImpl* page_scheduler = CreatePageScheduler(
       nullptr, &mock_main_thread_scheduler, *agent_group_scheduler);
 
   std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler.get(), nullptr,
+      CreateFrameScheduler(page_scheduler, nullptr,
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kMainFrame);
 
@@ -2403,6 +2403,7 @@ TEST_F(FrameSchedulerImplTest, ReportFMPAndFCPForMainFrames) {
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
 
   main_frame_scheduler = nullptr;
+  page_scheduler->Shutdown();
   page_scheduler = nullptr;
   agent_group_scheduler = nullptr;
   mock_main_thread_scheduler.Shutdown();
@@ -2412,13 +2413,13 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
   MockMainThreadScheduler mock_main_thread_scheduler{task_environment_};
   AgentGroupScheduler* agent_group_scheduler =
       mock_main_thread_scheduler.CreateAgentGroupScheduler();
-  std::unique_ptr<PageSchedulerImpl> page_scheduler = CreatePageScheduler(
+  PageSchedulerImpl* page_scheduler = CreatePageScheduler(
       nullptr, &mock_main_thread_scheduler, *agent_group_scheduler);
 
   // Test for direct subframes.
   {
     std::unique_ptr<FrameSchedulerImpl> subframe_scheduler =
-        CreateFrameScheduler(page_scheduler.get(), nullptr,
+        CreateFrameScheduler(page_scheduler, nullptr,
                              /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe);
 
@@ -2430,7 +2431,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
   // Now test for embedded main frames.
   {
     std::unique_ptr<FrameSchedulerImpl> subframe_scheduler =
-        CreateFrameScheduler(page_scheduler.get(), nullptr,
+        CreateFrameScheduler(page_scheduler, nullptr,
                              /*is_in_embedded_frame_tree=*/true,
                              FrameScheduler::FrameType::kMainFrame);
 
@@ -2439,6 +2440,7 @@ TEST_F(FrameSchedulerImplTest, DontReportFMPAndFCPForSubframes) {
     subframe_scheduler->OnFirstMeaningfulPaint();
   }
 
+  page_scheduler->Shutdown();
   page_scheduler = nullptr;
   agent_group_scheduler = nullptr;
   mock_main_thread_scheduler.Shutdown();
@@ -2797,8 +2799,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // Create a FrameScheduler that is same-origin with the main frame, and an
   // associated throttled TaskRunner.
   std::unique_ptr<FrameSchedulerImpl> other_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
+      CreateFrameScheduler(page_scheduler_, frame_scheduler_delegate_.get(),
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   ASSERT_FALSE(other_frame_scheduler->IsCrossOriginToNearestMainFrame());
@@ -2852,10 +2853,10 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
       GetTaskRunner();
   // |other_task_runner| is throttled. It belongs to a different frame on the
   // same page.
-  const auto other_frame_scheduler = CreateFrameScheduler(
-      page_scheduler_.get(), frame_scheduler_delegate_.get(),
-      /*is_in_embedded_frame_tree=*/false,
-      FrameScheduler::FrameType::kSubframe);
+  const auto other_frame_scheduler =
+      CreateFrameScheduler(page_scheduler_, frame_scheduler_delegate_.get(),
+                           /*is_in_embedded_frame_tree=*/false,
+                           FrameScheduler::FrameType::kSubframe);
   const scoped_refptr<base::SingleThreadTaskRunner> other_task_runner =
       GetTaskRunner(other_frame_scheduler.get());
 
@@ -2980,8 +2981,7 @@ TEST_P(FrameSchedulerImplTestWithIntensiveWakeUpThrottling,
   // Create a new FrameScheduler that remains cross-origin with the main frame
   // throughout the test.
   std::unique_ptr<FrameSchedulerImpl> cross_origin_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
+      CreateFrameScheduler(page_scheduler_, frame_scheduler_delegate_.get(),
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   cross_origin_frame_scheduler->SetCrossOriginToNearestMainFrame(true);
@@ -3255,8 +3255,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
        VisibleCrossOriginFrameThrottling) {
   std::unique_ptr<FrameSchedulerImpl> cross_origin_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
+      CreateFrameScheduler(page_scheduler_, frame_scheduler_delegate_.get(),
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);
@@ -3290,8 +3289,7 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
 TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
        HiddenCrossOriginFrameThrottling) {
   std::unique_ptr<FrameSchedulerImpl> cross_origin_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
+      CreateFrameScheduler(page_scheduler_, frame_scheduler_delegate_.get(),
                            /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);

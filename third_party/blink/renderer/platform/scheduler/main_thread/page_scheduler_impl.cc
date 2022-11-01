@@ -192,12 +192,16 @@ PageSchedulerImpl::PageSchedulerImpl(
       &PageSchedulerImpl::DoFreezePage, base::Unretained(this)));
 }
 
-PageSchedulerImpl::~PageSchedulerImpl() {
+PageSchedulerImpl::~PageSchedulerImpl() = default;
+
+void PageSchedulerImpl::Shutdown() {
+  weak_factory_.InvalidateWeakPtrs();
   // TODO(alexclarke): Find out why we can't rely on the web view outliving the
   // frame.
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler->DetachFromPageScheduler();
   }
+  frame_schedulers_.clear();
   main_thread_scheduler_->RemovePageScheduler(this);
 }
 
@@ -351,6 +355,11 @@ bool PageSchedulerImpl::IsOrdinary() const {
 
 void PageSchedulerImpl::SetIsMainFrameLocal(bool is_local) {
   is_main_frame_local_ = is_local;
+}
+
+void PageSchedulerImpl::Trace(Visitor* visitor) const {
+  PageScheduler::Trace(visitor);
+  visitor->Trace(agent_group_scheduler_);
 }
 
 void PageSchedulerImpl::RegisterFrameSchedulerImpl(
