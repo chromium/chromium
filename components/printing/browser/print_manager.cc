@@ -42,6 +42,11 @@ void PrintManager::DidPrintDocument(mojom::DidPrintDocumentParamsPtr params,
   std::move(callback).Run(false);
 }
 
+void PrintManager::IsPrintingEnabled(IsPrintingEnabledCallback callback) {
+  // Assume printing is enabled by default.
+  std::move(callback).Run(true);
+}
+
 void PrintManager::ShowInvalidPrinterSettingsError() {}
 
 void PrintManager::PrintingFailed(int32_t cookie,

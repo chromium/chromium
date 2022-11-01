@@ -269,7 +269,7 @@ class PrintRenderFrameHelper
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
                          PrintFrameContentCallback callback) override;
   void PrintingDone(bool success) override;
-  void SetPrintingEnabled(bool enabled) override;
+  void ConnectToPdfRenderer() override;
   void PrintNodeUnderContextMenu() override;
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   void SnapshotForContentAnalysis(
@@ -477,8 +477,6 @@ class PrintRenderFrameHelper
   gfx::Rect printer_printable_area_;
   bool is_print_ready_metafile_sent_ = false;
   bool ignore_css_margins_ = false;
-
-  bool is_printing_enabled_ = true;
 
   // Let the browser process know of a printing failure. Only set to false when
   // the failure came from the browser in the first place.

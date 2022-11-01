@@ -197,10 +197,7 @@ PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
   DCHECK(queue_);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  printing_enabled_.Init(
-      prefs::kPrintingEnabled, profile->GetPrefs(),
-      base::BindRepeating(&PrintViewManagerBase::UpdatePrintingEnabled,
-                          weak_ptr_factory_.GetWeakPtr()));
+  printing_enabled_.Init(prefs::kPrintingEnabled, profile->GetPrefs());
 }
 
 PrintViewManagerBase::~PrintViewManagerBase() {
@@ -414,14 +411,6 @@ void PrintViewManagerBase::ScriptedPrintReply(
   std::move(callback).Run(std::move(params));
 }
 
-void PrintViewManagerBase::UpdatePrintingEnabled() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      [this](content::RenderFrameHost* rfh) {
-        SendPrintingEnabled(printing_enabled_.GetValue(), rfh);
-      });
-}
-
 void PrintViewManagerBase::NavigationStopped() {
   // Cancel the current job, wait for the worker to finish.
   TerminatePrintJob(true);
@@ -616,6 +605,12 @@ void PrintViewManagerBase::UpdatePrintSettings(
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+void PrintViewManagerBase::IsPrintingEnabled(
+    IsPrintingEnabledCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(printing_enabled_.GetValue());
+}
+
 void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                                          ScriptedPrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -701,13 +696,10 @@ void PrintViewManagerBase::RenderFrameHostStateChanged(
     content::RenderFrameHost::LifecycleState /*old_state*/,
     content::RenderFrameHost::LifecycleState new_state) {
   if (new_state == content::RenderFrameHost::LifecycleState::kActive &&
-      render_frame_host->GetProcess()->IsPdf()) {
-    SendPrintingEnabled(printing_enabled_.GetValue(), render_frame_host);
+      render_frame_host->GetProcess()->IsPdf() &&
+      !render_frame_host->GetMainFrame()->GetParentOrOuterDocument()) {
+    GetPrintRenderFrame(render_frame_host)->ConnectToPdfRenderer();
   }
-}
-
-void PrintViewManagerBase::DidStartLoading() {
-  UpdatePrintingEnabled();
 }
 
 void PrintViewManagerBase::RenderFrameDeleted(
@@ -1054,14 +1046,6 @@ void PrintViewManagerBase::ReleasePrinterQuery() {
   if (!printer_query)
     return;
   printer_query->StopWorker();
-}
-
-void PrintViewManagerBase::SendPrintingEnabled(bool enabled,
-                                               content::RenderFrameHost* rfh) {
-  if (rfh->IsRenderFrameLive() &&
-      !rfh->GetMainFrame()->GetParentOrOuterDocument()) {
-    GetPrintRenderFrame(rfh)->SetPrintingEnabled(enabled);
-  }
 }
 
 void PrintViewManagerBase::CompletePrintNow(content::RenderFrameHost* rfh) {

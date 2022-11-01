@@ -332,8 +332,11 @@ interface PrintRenderFrame {
   PrintFrameContent(PrintFrameContentParams params)
       => (int32 document_cookie, DidPrintContentParams params);
 
-  // Tells the RenderFrame whether printing is enabled or not.
-  SetPrintingEnabled(bool enabled);
+  // Message with no arguments and no reply that is used to simply ensure the
+  // communication channel between the browser and renderer exists. Without the
+  // connection, PrintViewManager cannot correctly keep track of associated PDF
+  // renderers. See crbug.com/1251431 for context.
+  ConnectToPdfRenderer();
 
   // Tells the RenderFrame that printing is done so it can clean up.
   PrintingDone(bool success);
@@ -357,7 +360,7 @@ interface PrintManagerHost {
   // rendered pages according to the specified settings.
   DidGetPrintedPagesCount(int32 cookie, uint32 number_pages);
 
-  // Request the default print settings.
+  // Requests the default print settings.
   [Sync]
   GetDefaultPrintSettings() => (PrintParams default_settings);
 
@@ -370,7 +373,11 @@ interface PrintManagerHost {
   [Sync]
   DidPrintDocument(DidPrintDocumentParams params) => (bool completed);
 
-  // Request the print settings from the user. This step is about showing
+  // Asks the browser whether printing is enabled or not.
+  [Sync]
+  IsPrintingEnabled() => (bool printing_enabled);
+
+  // Requests the print settings from the user. This step is about showing
   // UI to the user to select the final print settings.
   [Sync]
   ScriptedPrint(ScriptedPrintParams params) => (PrintPagesParams settings);
@@ -381,7 +388,7 @@ interface PrintManagerHost {
   // Tells the browser printing failed.
   PrintingFailed(int32 cookie, PrintFailureReason reason);
 
-  // Update the current print settings with new |job_settings|.
+  // Updates the current print settings with new |job_settings|.
   [EnableIf=enable_print_preview, Sync]
   UpdatePrintSettings(
       int32 cookie,

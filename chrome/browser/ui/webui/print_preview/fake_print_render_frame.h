@@ -39,7 +39,7 @@ class FakePrintRenderFrame : public mojom::PrintRenderFrame {
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
                          PrintFrameContentCallback callback) override;
   void PrintingDone(bool success) override;
-  void SetPrintingEnabled(bool enabled) override;
+  void ConnectToPdfRenderer() override;
   void PrintNodeUnderContextMenu() override;
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   void SnapshotForContentAnalysis(

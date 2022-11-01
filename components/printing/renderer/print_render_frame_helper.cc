@@ -1250,7 +1250,12 @@ PrintRenderFrameHelper::GetPrintManagerHost() {
 bool PrintRenderFrameHelper::IsScriptInitiatedPrintAllowed(
     blink::WebLocalFrame* frame,
     bool user_initiated) {
-  if (!is_printing_enabled_ || !delegate_->IsScriptedPrintEnabled())
+  if (!delegate_->IsScriptedPrintEnabled())
+    return false;
+
+  bool printing_enabled = false;
+  GetPrintManagerHost()->IsPrintingEnabled(&printing_enabled);
+  if (!printing_enabled)
     return false;
 
   // If preview is enabled, then the print dialog is tab modal, and the user
@@ -1623,9 +1628,8 @@ void PrintRenderFrameHelper::PrintingDone(bool success) {
   DidFinishPrinting(success ? OK : FAIL_PRINT);
 }
 
-void PrintRenderFrameHelper::SetPrintingEnabled(bool enabled) {
-  ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
-  is_printing_enabled_ = enabled;
+void PrintRenderFrameHelper::ConnectToPdfRenderer() {
+  // Deliberately do nothing.
 }
 
 void PrintRenderFrameHelper::PrintNodeUnderContextMenu() {

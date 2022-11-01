@@ -314,6 +314,9 @@ class TestPrintManagerHost
     std::move(callback).Run(true);
     is_printed_ = true;
   }
+  void IsPrintingEnabled(IsPrintingEnabledCallback callback) override {
+    std::move(callback).Run(is_printing_enabled_);
+  }
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override {
     printing::mojom::PrintParamsPtr params =
@@ -458,6 +461,8 @@ class TestPrintManagerHost
     run_loop.Run();
   }
 
+  void SetPrintingEnabled(bool enabled) { is_printing_enabled_ = enabled; }
+
   // Call with |response| set to true if the user wants to print.
   // False if the user decides to cancel.
   void SetPrintDialogUserResponse(bool response) {
@@ -500,6 +505,7 @@ class TestPrintManagerHost
   raw_ptr<FakePrintPreviewUI> preview_ui_;
 #endif
   base::OnceClosure quit_closure_;
+  bool is_printing_enabled_ = true;
   // True to simulate user clicking print. False to cancel.
   bool print_dialog_user_response_ = true;
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
@@ -1150,13 +1156,11 @@ class PrintRenderFrameHelperPreviewTest
 
 TEST_F(PrintRenderFrameHelperPreviewTest, BlockScriptInitiatedPrinting) {
   LoadHTML(kHelloWorldHTML);
-  PrintRenderFrameHelper* print_render_frame_helper =
-      GetPrintRenderFrameHelper();
-  print_render_frame_helper->SetPrintingEnabled(false);
+  print_manager()->SetPrintingEnabled(false);
   PrintWithJavaScript();
   VerifyPreviewRequest(false);
 
-  print_render_frame_helper->SetPrintingEnabled(true);
+  print_manager()->SetPrintingEnabled(true);
   PrintWithJavaScript();
   VerifyPreviewRequest(true);
 

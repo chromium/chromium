@@ -51,7 +51,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -506,68 +505,6 @@ class KillPrintRenderFrame
  private:
   const raw_ptr<content::RenderProcessHost> rph_;
   mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
-};
-
-class SetPrintingEnabledInterceptor
-    : public mojom::PrintRenderFrameInterceptorForTesting {
- public:
-  SetPrintingEnabledInterceptor() = default;
-  ~SetPrintingEnabledInterceptor() override = default;
-
-  SetPrintingEnabledInterceptor(const SetPrintingEnabledInterceptor&) = delete;
-  SetPrintingEnabledInterceptor& operator=(
-      const SetPrintingEnabledInterceptor&) = delete;
-
-  mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED();
-    return nullptr;
-  }
-
-  void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host) {
-    render_frame_host->GetRemoteAssociatedInterfaces()
-        ->OverrideBinderForTesting(
-            mojom::PrintRenderFrame::Name_,
-            base::BindRepeating(&SetPrintingEnabledInterceptor::BindReceiver,
-                                base::Unretained(this)));
-  }
-
-  void BindReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
-        std::move(handle)));
-  }
-
-  MOCK_METHOD1(SetPrintingEnabled, void(bool));
-
- private:
-  mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
-};
-
-// Wrapper around `SetPrintingEnabledInterceptor` that performs the interception
-// for the first subframe created.
-class SubframeSetPrintingEnabledInterceptor
-    : public content::WebContentsObserver {
- public:
-  explicit SubframeSetPrintingEnabledInterceptor(
-      content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-  ~SubframeSetPrintingEnabledInterceptor() override = default;
-
-  // content::WebContentsObserver:
-  void RenderFrameCreated(
-      content::RenderFrameHost* render_frame_host) override {
-    if (intercepting_)
-      return;
-
-    intercepting_ = true;
-    interceptor_.OverrideBinderForTesting(render_frame_host);
-  }
-
-  bool intercepting() const { return intercepting_; }
-  SetPrintingEnabledInterceptor& interceptor() { return interceptor_; }
-
- private:
-  bool intercepting_ = false;
-  SetPrintingEnabledInterceptor interceptor_;
 };
 
 }  // namespace
@@ -2100,40 +2037,6 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
   print_preview_observer.WaitUntilPreviewIsReady();
 }
 
-IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoExtraSetPrintingEnabledCalls) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  SetPrintingEnabledInterceptor main_frame_interceptor;
-  main_frame_interceptor.OverrideBinderForTesting(
-      web_contents->GetPrimaryMainFrame());
-
-  // Clear `print_render_frames_` to use the overridden binder.
-  auto* print_view_manager =
-      TestPrintViewManager::FromWebContents(web_contents);
-  ASSERT_TRUE(print_view_manager);
-  print_view_manager->ClearPrintRenderFramesForTesting();
-
-  // SetPrintingEnabled() should be called only once per navigation.
-  EXPECT_CALL(main_frame_interceptor, SetPrintingEnabled(_)).Times(2);
-
-  // Navigate to an initial page.
-  const GURL kDomainAUrl(
-      embedded_test_server()->GetURL("a.com", "/printing/test1.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kDomainAUrl));
-
-  // Navigate to a different site to a page with iframes. The subframe for the
-  // `kDomainAUrl` page should not ever get a SetPrintingEnabled() call.
-  SubframeSetPrintingEnabledInterceptor subframe_interceptor(web_contents);
-  EXPECT_CALL(subframe_interceptor.interceptor(), SetPrintingEnabled(_))
-      .Times(0);
-
-  const GURL kDomainBUrl(embedded_test_server()->GetURL(
-      "b.com", "/printing/content_with_same_site_iframe.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kDomainBUrl));
-  EXPECT_TRUE(subframe_interceptor.intercepting());
-}
-
 class PrintPrerenderBrowserTest : public PrintBrowserTest {
  public:
   PrintPrerenderBrowserTest()
@@ -2214,51 +2117,6 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   EXPECT_EQ(false, content::EvalJs(prerender_host, "firedBeforePrint"));
   EXPECT_EQ(false, content::EvalJs(prerender_host, "firedAfterPrint"));
   EXPECT_EQ(1u, console_observer.messages().size());
-}
-
-IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
-                       SetPrintingEnabledShouldNotBeCalledInPrerendering) {
-  SetPrintingEnabledInterceptor interceptor;
-  interceptor.OverrideBinderForTesting(web_contents()->GetPrimaryMainFrame());
-
-  // Clear `print_render_frames_` to use the overridden binder.
-  auto* print_view_manager =
-      TestPrintViewManager::FromWebContents(web_contents());
-  ASSERT_TRUE(print_view_manager);
-  print_view_manager->ClearPrintRenderFramesForTesting();
-
-  // SetPrintingEnabled() should be called third times from the initial page
-  // loading, triggering UpdatePrintingEnabled() through changing
-  // kPrintingEnabled prefs, and activating the prerender page.
-  EXPECT_CALL(interceptor, SetPrintingEnabled(_)).Times(3);
-
-  // Navigate to an initial page.
-  const GURL kEmptyUrl(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kEmptyUrl));
-
-  // Start a prerender.
-  GURL kPrerenderUrl =
-      embedded_test_server()->GetURL("/printing/prerendering.html");
-  int host_id = prerender_helper_.AddPrerender(kPrerenderUrl);
-  content::RenderFrameHost* prerender_rfh =
-      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
-  SetPrintingEnabledInterceptor prerendered_interceptor;
-  prerendered_interceptor.OverrideBinderForTesting(prerender_rfh);
-  // SetPrintingEnabled() is not called when prerendering HTML (non-PDF)
-  // content.
-  EXPECT_CALL(prerendered_interceptor, SetPrintingEnabled(_)).Times(0);
-
-  // Trigger to call PrintViewManagerBase::UpdatePrintingEnabled() to check if
-  // SetPrintingEnabled() is not called in prerendering.
-  content::BrowserContext* context = web_contents()->GetBrowserContext();
-  ASSERT_TRUE(context);
-  PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  prefs->SetBoolean(prefs::kPrintingEnabled, false);
-
-  // Activate the prerender.
-  prerender_helper_.NavigatePrimaryPage(kPrerenderUrl);
-
-  base::RunLoop().RunUntilIdle();
 }
 
 class PrintFencedFrameBrowserTest
@@ -2377,51 +2235,6 @@ IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest, ScriptedPrint) {
 
 IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest, DocumentExecCommand) {
   RunPrintTest("document.execCommand('print');");
-}
-
-IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest,
-                       SetPrintingEnabledShouldNotBeCalledInFencedFrame) {
-  // Only test the MPArch version of the fenced frame.
-  if (!fenced_frame_test_helper())
-    return;
-
-  SetPrintingEnabledInterceptor interceptor;
-  interceptor.OverrideBinderForTesting(web_contents()->GetPrimaryMainFrame());
-
-  // Clear `print_render_frames_` to use the overridden binder.
-  auto* print_view_manager =
-      TestPrintViewManager::FromWebContents(web_contents());
-  ASSERT_TRUE(print_view_manager);
-  print_view_manager->ClearPrintRenderFramesForTesting();
-
-  // SetPrintingEnabled() should be called twice from the initial page loading
-  // and triggering UpdatePrintingEnabled() through changing kPrintingEnabled
-  // prefs.
-  EXPECT_CALL(interceptor, SetPrintingEnabled(_)).Times(2);
-
-  // Navigate to an initial page.
-  const GURL kEmptyUrl(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kEmptyUrl));
-
-  // Create a fenced frame.
-  GURL kFencedFrameUrl =
-      embedded_test_server()->GetURL("/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper()->CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
-  ASSERT_TRUE(fenced_frame_host);
-
-  // The fenced frame should not call SetPrintingEnabled().
-  SetPrintingEnabledInterceptor fenced_frame_interceptor;
-  fenced_frame_interceptor.OverrideBinderForTesting(fenced_frame_host);
-  EXPECT_CALL(fenced_frame_interceptor, SetPrintingEnabled(_)).Times(0);
-
-  // Trigger to call PrintViewManagerBase::UpdatePrintingEnabled() to check if
-  // SetPrintingEnabled() is not called on the fenced frame.
-  content::BrowserContext* context = web_contents()->GetBrowserContext();
-  ASSERT_TRUE(context);
-  PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  prefs->SetBoolean(prefs::kPrintingEnabled, false);
 }
 
 INSTANTIATE_TEST_SUITE_P(

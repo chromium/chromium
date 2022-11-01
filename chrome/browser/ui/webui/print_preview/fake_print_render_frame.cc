@@ -47,7 +47,7 @@ void FakePrintRenderFrame::PrintFrameContent(
 
 void FakePrintRenderFrame::PrintingDone(bool success) {}
 
-void FakePrintRenderFrame::SetPrintingEnabled(bool enabled) {}
+void FakePrintRenderFrame::ConnectToPdfRenderer() {}
 
 void FakePrintRenderFrame::PrintNodeUnderContextMenu() {}
 

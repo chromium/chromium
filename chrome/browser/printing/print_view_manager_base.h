@@ -87,9 +87,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                   mojom::PrintPagesParamsPtr print_pages_params,
                   print_to_pdf::PdfPrintJob::PrintToPdfCallback callback);
 
-  // Whether printing is enabled or not.
-  void UpdatePrintingEnabled();
-
 // Notifies the print view manager that the system dialog has been cancelled
 // after being opened from Print Preview.
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -118,6 +115,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                            base::Value::Dict job_settings,
                            UpdatePrintSettingsCallback callback) override;
 #endif
+  void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;
   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
@@ -215,7 +213,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
       content::RenderFrameHost* render_frame_host,
       content::RenderFrameHost::LifecycleState /*old_state*/,
       content::RenderFrameHost::LifecycleState new_state) override;
-  void DidStartLoading() override;
 
   // Cancels the print job.
   void NavigationStopped() override;
@@ -302,9 +299,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 
   // Release the PrinterQuery associated with our `cookie_`.
   void ReleasePrinterQuery();
-
-  // Notifies `rfh` about whether printing is `enabled`.
-  void SendPrintingEnabled(bool enabled, content::RenderFrameHost* rfh);
 
   // Prints the document by calling the `PrintRequestedPages()` renderer API and
   // notifies observers. This should only be called by `PrintNow()` or
