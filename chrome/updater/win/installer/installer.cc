@@ -313,7 +313,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
              : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
 }
 
-ProcessExitResult WMain(HMODULE module) {
+ProcessExitResult InstallerMain(HMODULE module) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
 
@@ -444,6 +444,13 @@ ProcessExitResult WMain(HMODULE module) {
   }
 
   return exit_code;
+}
+
+ProcessExitResult WMain(HMODULE module) {
+  const updater::ProcessExitResult result = InstallerMain(module);
+  VLOG(1) << "Metainstaller WMain returned: " << result.exit_code
+          << ", Windows error: " << result.windows_error;
+  return result;
 }
 
 }  // namespace updater
