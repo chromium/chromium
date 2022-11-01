@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Չափսը՝ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">համադրություն՝ <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Միջին խոլորձագույն</translation>
+<translation id="1928535370180099152">ընդգծել նախորդ նիշը</translation>
 <translation id="1928932365747995741">Նախորդ խմբագրելի տեքստային դաշտ չկա</translation>
 <translation id="1964135212174907577">Հաջորդ առարկան</translation>
 <translation id="1966649499058910679">Ընդգծել բառը, երբ այն հնչեցվում է</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Միացնել/անջատել հնչեցումը</translation>
 <translation id="2390264819538553347">Առաջ անցնելու համար սեղմեք Enter: Հետ գնալու համար սեղմեք Backspace:</translation>
 <translation id="2398579267367951220">Մուտքագրեք տեքստը, որն անհրաժեշտ է գտնել էջում։ Սեղմեք Enter ստեղնը՝ որոնման արդյունքներին անցնելու համար, վեր կամ վար սլաքով ստեղները՝ արդյունքները դիտելու համար: Շարունակեք մուտքագրել տեքստը՝ որոնման հարցումը փոխելու համար: Չեղարկելու համար սեղմեք Escape ստեղնը:</translation>
+<translation id="2407047351320112166">ընդգծել հաջորդ նիշը</translation>
 <translation id="240709722712693803">Կապտամանուշակագույն</translation>
 <translation id="2410298923485357543">Օգտագործել բնական ձայնը, երբ սարքը միացած է ինտերնետին</translation>
 <translation id="2416512023405990736">Չնշված նշավանդակ</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Ձևաթղթի նախորդ դաշտը</translation>
 <translation id="3393605254399152980">Քաշեք մեկ մատով՝ հնչեցնելու տարրերը, որոնց հպում եք</translation>
 <translation id="3406283310380167331">Ցույց տալ ձևերի ցանկը</translation>
+<translation id="3407726812456125464">Հնչեցնել ընտրված տեքստը</translation>
 <translation id="3414400929511680526">Սառցե կապույտ</translation>
 <translation id="3418936350470374046">Ներքևում վանդակ չկա</translation>
 <translation id="3419269701801640163">տեղադրել</translation>

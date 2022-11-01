@@ -240,6 +240,7 @@
 <translation id="121384500095351701">Датотекава не може да се преземе безбедно</translation>
 <translation id="1215411991991485844">Додадена е нова апликација во заднина</translation>
 <translation id="1216542092748365687">Отстрани отпечаток</translation>
+<translation id="1216891999012841486">Дознајте повеќе за поправањето грешки на ажурирања</translation>
 <translation id="1217114730239853757">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за ChromeOS Flex? Ако сакате, притиснете на копчето за празно место.</translation>
 <translation id="1217483152325416304">Вашите локални податоци наскоро ќе бидат избришани</translation>
 <translation id="1217668622537098248">Врати се на лев клик после дејството</translation>
@@ -1957,6 +1958,7 @@
 <translation id="274318651891194348">Се пребарува тастатура</translation>
 <translation id="2743301740238894839">Започни</translation>
 <translation id="2743387203779672305">Копирај на клип-табла</translation>
+<translation id="274362947316498129">Апликација се обидува да пристапи до <ph name="DEVICE_NAME" />. Исклучете го прекинувачот за приватност на <ph name="DEVICE_NAME" /> за да дозволите пристап.</translation>
 <translation id="2745080116229976798">Квалификувана подреденост на Microsoft</translation>
 <translation id="2747266560080989517">Датотекава содржи чувствителни или опасни содржини. Побарајте од сопственикот да ја поправи.</translation>
 <translation id="2749756011735116528">Најави се на <ph name="PRODUCT_NAME" />…</translation>
@@ -3130,6 +3132,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851428669031642514">Вчитај небезбедни скрипти</translation>
 <translation id="3852215160863921508">Помош при внесување</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> е вклучена</translation>
 <translation id="3854599674806204102">Изберете опција</translation>
 <translation id="3854967233147778866">Понудувај превод на веб-сајтовите на други јазици</translation>
 <translation id="3854976556788175030">Излезната фиока е полна</translation>
@@ -3463,6 +3466,7 @@
 <translation id="4163560723127662357">Непозната тастатура</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> не припаѓа на важечка организација. Контактирајте со администраторот. Ако сте администратор, може да ја поставите вашата организација на: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> се обидува да пристапи до <ph name="DEVICE_NAME" />. Исклучете го прекинувачот за приватност на <ph name="DEVICE_NAME" /> за да дозволите пристап.</translation>
 <translation id="4167393659000039775">Google не одговара за никаква загуба на податоците, а <ph name="DEVICE_OS" /> можеби нема да работи на несертифицирани уреди. Дознајте повеќе на g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Сајтовите обично користат JavaScript за прикажување интерактивни функции како што се видеоигрите или формуларите на интернет</translation>
 <translation id="4168015872538332605">Некои поставки кои припаѓаат на <ph name="PRIMARY_EMAIL" /> се споделуваат со вас. Тие поставки влијаат врз вашата сметка само кога користите повеќе пријавувања.</translation>
@@ -3926,6 +3930,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> наиде на грешка</translation>
 <translation id="4610637590575890427">Дали мислевте да одите на <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Достапна е интернет-врска</translation>
+<translation id="4612841084470706111">Дајте пристап до сите побарани сајтови.</translation>
 <translation id="4613144866899789710">Се откажува инсталацијата на Linux…</translation>
 <translation id="4613271546271159013">Наставка ја смени страницата што се прикажува при отворање нова картичка.</translation>
 <translation id="4615586811063744755">нема избрано колаче</translation>
@@ -4999,6 +5004,7 @@
 <translation id="5632059346822207074">Побарана е дозвола. Притиснете Ctrl + „Напред“ за да одговорите</translation>
 <translation id="5632566673632479864">Вашата сметка <ph name="EMAIL" /> веќе не е дозволена како примарна сметка. Бидејќи <ph name="DOMAIN" /> управува со сметкава, обележувачите, историјата, лозинките и другите поставки ќе се избришат од уредов.</translation>
 <translation id="5632592977009207922">Се презема, уште <ph name="PERCENT_REMAINING" /> %</translation>
+<translation id="5633149627228920745">Дознајте повеќе за барањата на системот</translation>
 <translation id="563371367637259496">Мобилна</translation>
 <translation id="5634446357546764049">Погледнете спомени за вашите неодамнешни патувања и друго</translation>
 <translation id="5635312199252507107">Дозволи на конкретни сајтови</translation>
@@ -5692,6 +5698,7 @@
 <translation id="6291949900244949761">Прашај кога некој сајт сака да пристапи до USB-уредите (препорачано)</translation>
 <translation id="6291953229176937411">&amp;Прикажи во Наоѓач</translation>
 <translation id="6292699686837272722">Картичките ќе се собираат, но ќе имаат средна ширина</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> е исклучена</translation>
 <translation id="6294759976468837022">Брзина на автоматско скенирање</translation>
 <translation id="6295158916970320988">Сите локации</translation>
 <translation id="6295855836753816081">Се зачувува…</translation>
@@ -8354,6 +8361,7 @@
 <translation id="8785622406424941542">Пенкало</translation>
 <translation id="8786824282808281903">Кога детето ќе ја види иконава, отпечаток може да се користи за идентификација или за одобрување купувања.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Неименувана група - 1 картичка}one{Неименувана група - # картичка}other{Неименувана група - # картички}}</translation>
+<translation id="8791157330927639737">Дознајте повеќе за ажурирање</translation>
 <translation id="8791534160414513928">Испратете барање „Не следи“ со сообраќајот на прелистување</translation>
 <translation id="879413103056696865">Додека е вклучена точката на пристап, вашиот <ph name="PHONE_NAME" /> ќе:</translation>
 <translation id="8795916974678578410">Нов прозорец</translation>
@@ -8509,6 +8517,7 @@
 <translation id="8940081510938872932">Компјутерот во моментов прави премногу работи. Обидете се повторно подоцна.</translation>
 <translation id="8940381019874223173">Од вашите „Фотографии на Google“</translation>
 <translation id="8941173171815156065">Отповикај ја дозволата „<ph name="PERMISSION" />“</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> е исклучена</translation>
 <translation id="894191600409472540">Создајте силни лозинки</translation>
 <translation id="894360074127026135">Меѓународно покачување на Netscape</translation>
 <translation id="8944099748578356325">Ја троши батеријата побрзо (во моментов <ph name="BATTERY_PERCENTAGE" />%)</translation>

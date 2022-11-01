@@ -410,6 +410,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1388253969141979417">Được phép sử dụng micrô</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> sẽ khởi động lại khi cập nhật xong.</translation>
 <translation id="1389601498324964367">Bộ nhớ được quản lý theo hạn mức</translation>
+<translation id="1390113502208199250">Bạn sẽ phải đặt lại thiết bị này về trạng thái ban đầu để sử dụng các tính năng của Bản nâng cấp Chrome Education.</translation>
 <translation id="139013308650923562">Cho phép sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
 <translation id="1390548061267426325">Mở dưới dạng thẻ thông thường</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> không được phép in bằng <ph name="PRINTER_NAME" />. Vui lòng liên hệ với quản trị viên của bạn.</translation>
@@ -480,6 +481,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1436784010935106834">Đã xóa</translation>
 <translation id="1437986450143295708">Mô tả chi tiết về vấn đề</translation>
 <translation id="1439671507542716852">hỗ trợ dài hạn</translation>
+<translation id="1440090277117135316">Đã hoàn tất việc đăng ký học</translation>
 <translation id="144283815522798837">Đã chọn <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Đặt vé Kerberos đang hoạt động</translation>
 <translation id="1444628761356461360">Cài đặt này do chủ sở hữu thiết bị, <ph name="OWNER_EMAIL" /> quản lý.</translation>
@@ -2413,6 +2415,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Thẻ mới ở bên trái</translation>
 <translation id="3177909033752230686">Ngôn ngữ trang:</translation>
+<translation id="3177914167275935955">Thiết bị của bạn có Bản nâng cấp Chrome Education, nhưng tên người dùng của bạn chưa liên kết với một tài khoản Google for Education. Vui lòng truy cập vào g.co/workspace/edusignup trên thiết bị phụ để tạo tài khoản Google for Education.</translation>
 <translation id="3179982752812949580">Phông chữ</translation>
 <translation id="3181954750937456830">Duyệt web an toàn (bảo vệ bạn cũng như thiết bị của bạn khỏi các trang web nguy hiểm)</translation>
 <translation id="3182749001423093222">Kiểm tra chính tả</translation>
@@ -4086,6 +4089,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4762489666082647806">Màu con trỏ</translation>
 <translation id="4762718786438001384">Dung lượng đĩa của thiết bị quá thấp</translation>
 <translation id="4763408175235639573">Các cookie sau đã được cài đặt khi bạn xem trang này</translation>
+<translation id="4763757134413542119"><ph name="USER_EMAIL" /> không phải là tài khoản Google for Education hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập vào: g.co/workspace/edusignup</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Thiết bị này sẽ được lưu trong 1 tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {MONTHS} tháng và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="4765582662863429759">Cho phép Android Messages chuyển tiếp tin nhắn văn bản từ điện thoại sang Chromebook</translation>
 <translation id="4766598565665644999">Tất cả tiện ích đều có thể đọc và thay đổi <ph name="HOST" /></translation>
@@ -4747,6 +4751,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5407167491482639988">Khó hiểu</translation>
 <translation id="5408750356094797285">Thu phóng: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Từ Tài khoản Google của bạn</translation>
+<translation id="5411022484772257615">Không thể hoàn tất quy trình đăng ký học</translation>
 <translation id="5413640305322530561">Tìm hiểu thêm về dữ liệu sử dụng và chẩn đoán</translation>
 <translation id="5414198321558177633">Đang làm mới danh sách hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="5414566801737831689">Đọc biểu tượng của các trang web bạn truy cập</translation>
@@ -5533,6 +5538,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6129953537138746214">Dấu cách</translation>
 <translation id="6130692320435119637">Thêm mạng Wi-Fi</translation>
 <translation id="6130887916931372608">Nút bàn phím</translation>
+<translation id="6132714462430777655">Bỏ qua quy trình đăng ký học?</translation>
 <translation id="6135823405800500595">Hãy đảm bảo điện thoại của bạn đang ở gần, đã mở khoá và đã bật Bluetooth và Wi-Fi</translation>
 <translation id="6135826623269483856">Không được phép quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="6136114942382973861">Đóng thanh tệp đã tải xuống</translation>
@@ -6755,6 +6761,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7310598146671372464">Không đăng nhập được. Máy chủ không hỗ trợ loại mã hóa Kerberos đã chỉ định. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="7311089766378749632">Yêu cầu đọc và thay đổi <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
+<translation id="7317831949569936035">Đăng ký học</translation>
 <translation id="7320213904474460808">Đặt mạng mặc định</translation>
 <translation id="7321545336522791733">Máy chủ không truy cập được</translation>
 <translation id="7323315405936922211">Kích thước vùng con trỏ</translation>

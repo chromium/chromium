@@ -4054,7 +4054,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4733793249294335256">Lokacija</translation>
 <translation id="473546211690256853">Ovim računom upravlja <ph name="DOMAIN" /></translation>
 <translation id="4735506354605317060">Zaokruži pokazivač</translation>
-<translation id="4735793370946506039">Saznajte više o poboljšanom sigurnom pregledavanju.</translation>
+<translation id="4735793370946506039">Saznajte više o poboljšanom Sigurnom pregledanju</translation>
 <translation id="4735803855089279419">Sistem nije uspio odrediti identifikatore uređaja za ovaj uređaj.</translation>
 <translation id="4736292055110123391">Sinhronizirajte oznake, lozinke, historije i drugo na svim svojim uređajima</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
@@ -4083,7 +4083,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{Ovaj uređaj će biti sačuvan 1 mjesec i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}one{Ovaj uređaj će biti sačuvan {MONTHS} mjesec i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}few{Ovaj uređaj će biti sačuvan {MONTHS} mjeseca i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}other{Ovaj uređaj će biti sačuvan {MONTHS} mjeseci i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}}</translation>
 <translation id="4765582662863429759">Omogućava aplikaciji Android Messages da šalje SMS-ove s vašeg telefona na vaš Chromebook</translation>
 <translation id="4766598565665644999">Sve ekstenzije mogu čitati i mijenjati <ph name="HOST" /></translation>
-<translation id="4767427586072640478">Saznajte više o onemogućenim proširenjima.</translation>
+<translation id="4767427586072640478">Saznajte više o onemogućenim ekstenzijama.</translation>
 <translation id="4768332406694066911">Imate potvrde ovih organizacija koje vas identificiraju</translation>
 <translation id="4770119228883592393">Zatraženo je odobrenje. Pritisnite ⌘ + Option + strelica nadolje da odgovorite</translation>
 <translation id="4773112038801431077">Nadogradite Linux</translation>

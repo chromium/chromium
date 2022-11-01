@@ -36,6 +36,7 @@
 <translation id="1058479211578257048">Enregistrement des cartes en cours…</translation>
 <translation id="1060320201901229167">Enveloppe Kaku nᵒ 5</translation>
 <translation id="10614374240317010">Jamais enregistré</translation>
+<translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Favoris d'ordinateur de bureau</translation>
 <translation id="1068672505746868501">Ne jamais traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070853536588271387">Véhicules hybrides et alternatifs</translation>
@@ -51,6 +52,7 @@
 <translation id="1100782917270858593">Bouton de reprise de votre exploration, appuyez sur Entrée pour reprendre votre exploration et consulter l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="1101672080107056897">Action en cas d'erreur</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
+<translation id="1108464073729874771">A3 x 4</translation>
 <translation id="1110994991967754504">Sélectionner une autorisation pour <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antiquités et objets de collection</translation>
 <translation id="1113869188872983271">&amp;Annuler la réorganisation</translation>
@@ -93,6 +95,7 @@
 <translation id="121201262018556460">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat contenant une clé faible. Il est possible qu'un pirate ait compromis la clé privée. Il est donc possible que le serveur auquel vous avez accédé ne soit pas celui que vous croyez, et que vous soyez en train de communiquer avec un pirate informatique.</translation>
 <translation id="1219129156119358924">Sécurité du système</translation>
 <translation id="1222060260947439312">Plateau de droite</translation>
+<translation id="1224330468394120478">A3 x 6</translation>
 <translation id="1225570101506606926">Billard</translation>
 <translation id="1225607422885279949">Google trouvera des rabais pour vous</translation>
 <translation id="1227224963052638717">Règle inconnue.</translation>
@@ -401,6 +404,7 @@
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1946849748901605102">12 po x 15 po</translation>
 <translation id="1947454675006758438">Agrafe en haut à droite</translation>
+<translation id="1954847915560574887">A3 x 3</translation>
 <translation id="1956486093533522234">Trouvez, sécurisez ou effacez les données de votre appareil</translation>
 <translation id="1958218078413065209">Votre pointage le plus élevé est <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Aidez-nous à améliorer la sécurité pour tout le monde sur Internet en envoyant <ph name="BEGIN_WHITEPAPER_LINK" />les URL de certaines pages que vous visitez, certaines données système et certains contenus des pages en question<ph name="END_WHITEPAPER_LINK" /> à Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politique de confidentialité<ph name="END_PRIVACY_PAGE_LINK" /></translation>
@@ -469,6 +473,7 @@
 <translation id="2122719317867821810">Cette politique fonctionne comme prévu, mais notez qu'une valeur conflictuelle a été définie ailleurs et que cette politique la remplace.</translation>
 <translation id="2126374524350484896">Outil de conversion en PDF :</translation>
 <translation id="2130448033692577677">Les modèles que vous avez indiqués pourraient ne pas être appliqués si la politique DnsOverHttpsMode n'est pas définie.</translation>
+<translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2135799067377889518">Vêtements pour hommes</translation>
 <translation id="213826338245044447">Favoris d'appareil mobile</translation>
 <translation id="214556005048008348">Annuler le paiement</translation>
@@ -706,6 +711,7 @@
 <translation id="277499241957683684">Enregistrement d'appareil manquant.</translation>
 <translation id="2775884851269838147">Première page imprimée</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">La connexion a été réinitialisée.</translation>
 <translation id="2791176355335562114">Payer plus rapidement la prochaine fois</translation>
 <translation id="2792012897584536778">Les administrateurs de cet appareil ont configuré des certificats de sécurité qui leur permettent de voir le contenu des sites Web que vous visitez.</translation>
@@ -760,6 +766,7 @@
 <translation id="2949183777371959169">Ignorée parce que la machine n'a pas été inscrite au moyen de la gestion infonuagique du navigateur Chrome.</translation>
 <translation id="2951588413176968965">Ma boîte aux lettres</translation>
 <translation id="2952820037279740115">Fermer toutes les fenêtres de navigation privée</translation>
+<translation id="2952904171810469095">A2 x 5</translation>
 <translation id="295526156371527179">Avertissement : Cette politique n'a pas été fusionnée comme dictionnaire, tel que cela est spécifié par la politique, car il ne s'agit pas d'un dictionnaire.</translation>
 <translation id="2955913368246107853">Fermer la barre de recherche</translation>
 <translation id="2958544468932521864">Cricket</translation>
@@ -890,6 +897,7 @@
 <translation id="3303176609391916566">30 po x 42 po</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé</translation>
 <translation id="3304073249511302126">recherche d'appareils Bluetooth</translation>
+<translation id="3304777285002411338">A2 x 3</translation>
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Le Gestionnaire de mots de passe vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
 <translation id="3308738399950580893">Annonces</translation>
@@ -904,6 +912,7 @@
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3342366525167526994">Art corporel</translation>
 <translation id="3345782426586609320">Yeux</translation>
+<translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Modifier les paramètres du mandataire...</translation>
 <translation id="3359565626472459400">Mariage</translation>
 <translation id="3360103848165129075">Feuille du module de traitement du paiement</translation>
@@ -991,6 +1000,7 @@
 <translation id="3567901620846335314">100 mm x 150 mm</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
+<translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3576616784287504635">Une page intégrée à <ph name="SITE" /> indique</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577902790357386792">Gymnastique</translation>
@@ -1108,6 +1118,7 @@
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> a installé des extensions offrant des fonctions supplémentaires. Les extensions ont accès à certaines de vos données.</translation>
 <translation id="3832522519263485449">Perforation multiple à gauche</translation>
 <translation id="3835233591525155343">Votre utilisation de l'appareil</translation>
+<translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer un document Google</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3853684360927654006">Calculateur de niveau de sécurité du mot de passe</translation>
@@ -1194,6 +1205,7 @@
 <translation id="4114146879518089587">Continuer sur le site</translation>
 <translation id="4116663294526079822">Toujours autoriser pour ce site</translation>
 <translation id="4116701314593212016">JIS B7</translation>
+<translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">La portée de la règle n'est pas prise en charge.</translation>
 <translation id="4121428309786185360">Expire le</translation>
 <translation id="4123572138124678573">Triple perforation en bas</translation>
@@ -1257,6 +1269,7 @@
 <translation id="4235360514405112390">Valide</translation>
 <translation id="4250431568374086873">Votre connexion à ce site n'est pas totalement sécurisée</translation>
 <translation id="4250680216510889253">Non</translation>
+<translation id="4250716950689692560">A4 x 4</translation>
 <translation id="4253168017788158739">Remarque</translation>
 <translation id="425582637250725228">Il est possible que les modifications que vous avez effectuées ne soient pas enregistrées.</translation>
 <translation id="425869179292622354">Augmenter la sécurité avec une carte virtuelle?</translation>
@@ -1315,6 +1328,7 @@
 <translation id="4372948949327679948">Valeur <ph name="VALUE_TYPE" /> attendue.</translation>
 <translation id="4377125064752653719">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur a été révoqué par son émetteur, ce qui signifie qu'on ne peut plus faire confiance au certificat présenté par le serveur. Il est donc possible que vous communiquiez avec un pirate informatique.</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
+<translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4386413576162606861">Jeux de rôle</translation>
 <translation id="4390472908992056574">Bord</translation>
 <translation id="4393632246160856858">Produits de soin pour les ongles</translation>
@@ -1391,6 +1405,7 @@
 <translation id="4622292761762557753">Transférer quand même</translation>
 <translation id="4627675673814409125">Cette politique ne peut pas être réglée au niveau du profil Chrome et elle sera ignorée.</translation>
 <translation id="4628948037717959914">Photo</translation>
+<translation id="4629370161347991046">A4 x 6</translation>
 <translation id="4631649115723685955">Avec remise en argent</translation>
 <translation id="4636930964841734540">Renseignements</translation>
 <translation id="4638670630777875591">Navigation privée dans Chromium</translation>
@@ -1560,6 +1575,7 @@
 <translation id="5031870354684148875">À propos de Google Traduction</translation>
 <translation id="503498442187459473">L'hôte <ph name="HOST" /> veut utiliser votre appareil photo et votre microphone</translation>
 <translation id="5035135400558156732">Jardinage</translation>
+<translation id="503574301575803523">SRA3</translation>
 <translation id="5039762155821394373">Taille de police</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
@@ -1641,6 +1657,7 @@
 <translation id="5229588705416009823">Jeux massivement multijoueurs</translation>
 <translation id="5230733896359313003">Adresse de livraison</translation>
 <translation id="5230815978613972521">B8</translation>
+<translation id="523149107733989821">A4 Extra</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5239623327352565343">Accès à la position autorisé</translation>
 <translation id="5242889659037569123">Bagages et accessoires de voyage</translation>
@@ -1701,6 +1718,7 @@
 <translation id="5363309033720083897">Port série autorisé par votre administrateur</translation>
 <translation id="5363713372507812442">Rechercher des explorations</translation>
 <translation id="5371425731340848620">Mettre à jour la carte</translation>
+<translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">« Votre horloge est en retard », « Votre horloge est en avance » ou « &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt; »</translation>
 <translation id="5379027395132364855">Bouton Créer une présentation, appuyez sur Entrée pour rapidement créer une présentation Google dans Présentations</translation>
 <translation id="5385857628869214740">Humour</translation>
@@ -1870,6 +1888,7 @@
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5838278095973806738">Nous vous déconseillons d'entrer des données sensibles sur ce site (par exemple, des mots de passe ou des cartes de crédit), car elles pourraient être volées par des pirates.</translation>
 <translation id="5851548754964597211">Liste d'onglets</translation>
+<translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5862579898803147654">Empileur 8</translation>
 <translation id="5863847714970149516">La page suivante peut engendrer des frais</translation>
@@ -1993,6 +2012,7 @@
 <translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6177531123306197852">Enveloppe C2</translation>
 <translation id="6180316780098470077">Intervalle entre les nouveaux essais</translation>
+<translation id="6182972682129119950">A4 x 5</translation>
 <translation id="61877208875190028">Vêtements pour femmes</translation>
 <translation id="6194209731893739467">Vous pouvez voir tous vos produits suivis en cliquant ici</translation>
 <translation id="6195371403461054755">Géologie</translation>
@@ -2076,10 +2096,12 @@
 <translation id="6404511346730675251">Modifier le favori</translation>
 <translation id="6405181733356710802">Continuer vers <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" /></translation>
+<translation id="6411107829285739505">A4 x 8</translation>
 <translation id="6415778972515849510">Chromium peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
 <translation id="6425092077175753609">Matériel</translation>
 <translation id="6427730057873428458">Pli fenêtre</translation>
 <translation id="6428450836711225518">Vérifier votre numéro de téléphone</translation>
+<translation id="6429267199680088961">Onglet A4</translation>
 <translation id="643051589346665201">Modifier le mot de passe Google</translation>
 <translation id="6431119592588449664">Le rapport a été téléversé</translation>
 <translation id="6433490469411711332">Modifier les coordonnées</translation>
@@ -2091,6 +2113,7 @@
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6450212216969386944">Enveloppe Chou nᵒ 40</translation>
 <translation id="6451458296329894277">Confirmer le nouvel envoi du formulaire</translation>
+<translation id="6452889436791091116">ISO ID-1</translation>
 <translation id="6456955391422100996">Annonce supprimée.</translation>
 <translation id="6457206614190510200">Agrafage à cheval</translation>
 <translation id="6457455098507772300">Les alertes de réduction s'affichent sous forme de notifications en fenêtre contextuelle sur votre bureau</translation>
@@ -2187,6 +2210,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer une carte 3D de votre environnement et faire le suivi de la position de l'appareil photo</translation>
 <translation id="6718612893943028815">Utiliser la caméra?</translation>
 <translation id="6721678857435001674">Voir la marque et le modèle de votre clé de sécurité</translation>
+<translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>
 <translation id="674375294223700098">Erreur inconnue de certificat de serveur.</translation>
@@ -2226,6 +2250,7 @@
 <translation id="6846340164947227603">Utiliser un numéro de carte virtuelle…</translation>
 <translation id="6852204201400771460">Actualiser l'application?</translation>
 <translation id="6857776781123259569">Gérer les mots de passe…</translation>
+<translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6864189428899665393">267 mm x 389 mm</translation>
 <translation id="686485648936420384">Ressources pour les consommateurs</translation>
 <translation id="6865412394715372076">Cette carte ne peut pas être vérifiée pour le moment</translation>
@@ -2260,6 +2285,7 @@
 <translation id="6946722113367118030">Pensif</translation>
 <translation id="6948051842255602737">Partie terminée, votre pointage est de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Pour voir les exigences et les modes de ramassage, sélectionnez une adresse</translation>
+<translation id="6948874830249067134">A1 x 3</translation>
 <translation id="6949872517221025916">Réinitialiser votre mot de passe</translation>
 <translation id="6950684638814147129">Erreur lors de l'analyse de la valeur JSON : <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Tout réinitialiser</translation>
@@ -2313,6 +2339,7 @@
 <translation id="7068733155164172741">Entrez le code à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="70705239631109039">Votre connexion n'est pas parfaitement sécurisée</translation>
 <translation id="7075452647191940183">La taille de la requête est trop grande</translation>
+<translation id="7078665357168027058">RA3</translation>
 <translation id="7079718277001814089">Ce site contient des logiciels malveillants</translation>
 <translation id="7081308185095828845">Cette fonctionnalité n'est pas offerte pour votre appareil.</translation>
 <translation id="7083258188081898530">Bac 9</translation>
@@ -2376,6 +2403,7 @@
 <translation id="7238585580608191973">Empreintes digitales SHA-256</translation>
 <translation id="7240120331469437312">Autre nom de l'objet du certificat</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondance}one{# correspondance}other{# correspondances}}</translation>
 <translation id="724691107663265825">Le site Web vers lequel vous naviguez contient un logiciel malveillant</translation>
 <translation id="724975217298816891">Afin de mettre à jour les détails de votre carte, entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" />. Après confirmation, les détails de votre carte seront partagés avec ce site.</translation>
@@ -2467,6 +2495,7 @@ Détails supplémentaires :
 <translation id="7445762425076701745">Il n'est pas possible de valider entièrement l'identité du serveur auquel vous êtes connecté. Le nom utilisé pour cette connexion n'est valide que sur votre réseau et aucune autorité de certification externe ne peut en vérifier la propriété. Certaines autorités de certification délivrent tout de même des certificats pour ces types de noms. Par conséquent, nous ne sommes pas en mesure de vérifier que vous êtes connecté au site voulu et non à un site malveillant.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>
 <translation id="7455133967321480974">Utiliser le paramètre global par défaut (« Bloquer »)</translation>
+<translation id="745640750744109667">A0 x 3</translation>
 <translation id="7460618730930299168">Le contenu présenté est différent de celui que vous aviez sélectionné. Continuer?</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="7463075493919226237">Football australien</translation>
@@ -2481,7 +2510,7 @@ Détails supplémentaires :
 <translation id="7489473601138133813">Ressources et planification de carrière</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Communiquez avec le propriétaire du site pour corriger le problème.</translation>
 <translation id="7497998058912824456">Bouton Créer un document, appuyez sur la touche Entrée pour rapidement créer un document Google</translation>
-<translation id="7501663406926337752">Le site que vous allez ouvrir est signalé par votre organisation</translation>
+<translation id="7501663406926337752">Le site que vous essayez d'ouvrir est signalé par votre organisation</translation>
 <translation id="7501853161948120656">Ressources pédagogiques</translation>
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />n'enregistre pas<ph name="END_EMPHASIS" /> les informations suivantes :
         <ph name="BEGIN_LIST" />
@@ -2537,6 +2566,7 @@ Détails supplémentaires :
 <translation id="7591288787774558753">Partager le contenu confidentiel?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> souhaite utiliser les témoins et les données relatives aux sites sur <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Le certificat du serveur ne respecte pas les restrictions de noms.</translation>
+<translation id="7592749602347161287">A5 Extra</translation>
 <translation id="7598391785903975535">Moins de <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ne parvient pas à traiter la demande pour le moment.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
@@ -2725,6 +2755,7 @@ Détails supplémentaires :
 <translation id="8092254339843485299">6 po x 8 po</translation>
 <translation id="8092774999298748321">Mauve foncé</translation>
 <translation id="8094917007353911263">Le réseau que vous utilisez peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> .</translation>
+<translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Les cartes non valides ont été supprimées</translation>
 <translation id="8100666323495101203">Votre organisation a identifié <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> comme un site susceptible d'enfreindre une politique. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -2883,6 +2914,7 @@ Détails supplémentaires :
 <translation id="8539500321752640291">Accorder les deux autorisations?</translation>
 <translation id="8541158209346794904">Appareil Bluetooth</translation>
 <translation id="8542014550340843547">Triple agrafe en bas</translation>
+<translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Vous pouvez <ph name="BEGIN_ERROR_LINK" />signaler un problème de détection<ph name="END_ERROR_LINK" /> ou, si vous comprenez les risques pour votre sécurité, <ph name="BEGIN_LINK" />consultez ce site dangereux<ph name="END_LINK" />.</translation>
 <translation id="854892890027593466">Enveloppe C6/C5</translation>
 <translation id="8553387990086529628">Destinations touristiques</translation>
@@ -2951,6 +2983,7 @@ Détails supplémentaires :
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> est votre code pour <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Ajouter cet onglet aux favoris</translation>
 <translation id="8751426954251315517">Veuillez réessayer la prochaine fois</translation>
+<translation id="8755125092386286553">A4 x 9</translation>
 <translation id="8757526089434340176">Offre Google Pay</translation>
 <translation id="8758885506338294482">Compétitions de jeux vidéo</translation>
 <translation id="8759274551635299824">Cette carte a expiré</translation>
@@ -3017,6 +3050,7 @@ Détails supplémentaires :
 <translation id="893332455753468063">Ajouter un nom</translation>
 <translation id="8942355029279167844">Votre administrateur a autorisé <ph name="APP_NAME" /> à collecter des données de diagnostic afin d'améliorer l'expérience du produit. Pour en savoir plus, consultez la page <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Vert lime</translation>
+<translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Justice et gouvernement</translation>
 <translation id="8957210676456822347">Autorisation du portail captif</translation>
 <translation id="8962950042226115166">Site suspect</translation>

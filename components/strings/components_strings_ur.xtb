@@ -1374,6 +1374,7 @@
 <translation id="4509074745930862522">‏<ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google ترجمے سے اس صفحے کا ترجمہ کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="4514308731478712184">صارف کا تجربہ آف کریں</translation>
 <translation id="4515275063822566619">‏کارڈز اور پتے Chrome اور آپ کے Google اکاؤنٹ (<ph name="ACCOUNT_EMAIL" />) کی جانب سے ہیں۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں ان کا نظم کر سکتے ہیں۔</translation>
+<translation id="4520048001084013693">منتظم کی پالیسی کے تحت اس فائل کو ڈاؤن لوڈ کرنا مسدود ہے</translation>
 <translation id="4521157617044179198">‎<ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)‎</translation>
 <translation id="4521280267704259211">‏Monarch لفافہ</translation>
 <translation id="4521916730539354575">بایاں ٹرے</translation>
@@ -2366,6 +2367,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="7129409597930077180">اس پتے پر ترسیل نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
+<translation id="7130775116821607281">اپ لوڈ کرنا مسدود ہے</translation>
 <translation id="7132939140423847331">آپ کے منتظم نے اس ڈیٹا کے کاپی کیے جانے پر پابندی لگائی ہے۔</translation>
 <translation id="7135130955892390533">اسٹیٹس دکھائیں</translation>
 <translation id="7138472120740807366">ڈیلیوری کا طریقہ</translation>
@@ -2596,6 +2598,7 @@
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7659327900411729175">‏Kaku 8 لفافہ</translation>
 <translation id="7659878911471462949">خوشی کے آنسو</translation>
+<translation id="766014026101194726">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کو اپ لوڈ کرنا مسدود ہے}other{منتظم کی پالیسی کے تحت، # فائلز کو اپ لوڈ کرنا مسدود ہے}}</translation>
 <translation id="7662298039739062396">ترتیب کو ایک ایکسٹینشن سے کنٹرول کیا جاتا ہے</translation>
 <translation id="7663736086183791259">سرٹیفیکیٹ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">پوشیدگی وضع میں اجازت نہیں ہے</translation>
@@ -2690,6 +2693,7 @@
 <translation id="7939744324936979484">لوک موسیقی اور روایتی موسیقی</translation>
 <translation id="7941628148012649605">‏Chou 4 لفافہ</translation>
 <translation id="7942349550061667556">سرخ</translation>
+<translation id="7943397946612013052">ڈاؤن لوڈ کرنا مسدود ہے</translation>
 <translation id="7943893128817522649">سائٹ خودکار طور پر متعدد فائلز ڈاؤن لوڈ کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="7947285636476623132">اپنا اختتامی سال چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی خصوصیات کے بارے میں جاننے کیلئے Tab، پھر Enter دبائیں</translation>

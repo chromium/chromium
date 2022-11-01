@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Пребарајте ${searchPhrase} во Chrome</translation>
 <translation id="1242044645101871359">Најавете се повторно</translation>
 <translation id="1254117744268754948">Одбери Папка</translation>
+<translation id="1254424942107648268">Најдете претходно</translation>
 <translation id="1258491128795710625">Што има ново</translation>
 <translation id="1265739287306757398">Дознајте како</translation>
 <translation id="1272079795634619415">Запри</translation>
@@ -187,6 +188,7 @@
 <translation id="2473876017985765807">Веќе зачувавте лозинка за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не е избрано</translation>
 <translation id="2482878487686419369">Известувања</translation>
+<translation id="2496626742194544812">Одете на првата картичка</translation>
 <translation id="2500374554657206846">Опции за зачувување лозинка</translation>
 <translation id="2523363575747517183">Веб-сајтов постојано се обидува да отвори друга апликација.</translation>
 <translation id="2529021024822217800">Отвори ги сите</translation>
@@ -202,6 +204,7 @@
 <translation id="2647269890314209800">Колачиња во употреба</translation>
 <translation id="2648803196158606475">Избриши ги прочитаните</translation>
 <translation id="2653659639078652383">Испрати</translation>
+<translation id="2664621323652615289">Запри</translation>
 <translation id="2671426118752779020">Може да ги користите лозинките што сте ги зачувале во „Управникот со лозинки на Google“ во други апликации на вашиот iPhone.</translation>
 <translation id="2690858294534178585">Камерата е во употреба</translation>
 <translation id="2691653761409724435">Не се достапни офлајн</translation>
@@ -360,6 +363,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понудувај да го преведеш сајтов</translation>
 <translation id="3810973564298564668">Управувај</translation>
+<translation id="3818293389945649617">Најдете следно</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="3835964409414434850">Оди на следната картичка</translation>
 <translation id="385051799172605136">Назад</translation>
@@ -391,6 +395,7 @@
 <translation id="4049507953662678203">Проверете дали имате мрежна врска и обидете се повторно.</translation>
 <translation id="4063300985191096908">Оди на активноста</translation>
 <translation id="408404951701638773">Сега е полесно да се дојде до лентата за пребарување</translation>
+<translation id="4092655288299341041">Прикажи помош</translation>
 <translation id="4108998448622696017">Открива опасни настани и ве предупредува кога ќе се случат.</translation>
 <translation id="411254640334432676">Преземањето не успеа.</translation>
 <translation id="4112644173421521737">Пребарај</translation>
@@ -783,6 +788,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6859944681507688231">За да скенирате QR-код или кредитна картичка, овозможете ја камерата од поставки.</translation>
 <translation id="6867369562105931222">лозинка</translation>
 <translation id="6869389390665537774">Може да ги гледате страниците што сте ги посетиле или да ги избришете од историјата</translation>
+<translation id="687135068089457384">Прикажете ги поставките</translation>
 <translation id="6873263987691478642">Поделен приказ</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="6888009575607455378">Дали сигурно сакате да ги отфрлите промените?</translation>
@@ -889,11 +895,13 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7807060072011926525">Обезбедено од Google</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>
 <translation id="7840771868269352570">Ставките ќе се отстранат.</translation>
+<translation id="7845466610722898">Прикажете го списокот за читање</translation>
 <translation id="784551991304901159">За да ги видите содржините, изберете „Вклучи“ од менито</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7856733331829174190">Не може да се преземе</translation>
 <translation id="785938070103630874">Отворете лозинки, начини на плаќање или адреси и друго</translation>
 <translation id="7859704718976024901">Историја на прелистувањето</translation>
+<translation id="7879275349003161544">Прикажете ги преземањата</translation>
 <translation id="7884694604461143138">Историја на пребарување (број на најдени ставки: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">За да ја заштити вашата приватност, Chrome нема автоматски да го пополнува ова поле.</translation>
 <translation id="7911190106180361398">Вашата организација не дозволува да синхронизирате сѐ.</translation>
@@ -1006,6 +1014,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8741995161408053644">Вашата сметка на Google можеби има други форми од историјата на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Вашите картички ќе ги најдете тука</translation>
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
+<translation id="8763613688786959833">Одете на последната картичка</translation>
 <translation id="8764015330924122850">Престани со следење на <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Неважечка URL-адреса</translation>
 <translation id="8787968206789828143">Пребарувајте на интернет</translation>

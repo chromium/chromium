@@ -42,6 +42,7 @@
 <translation id="1229222343402087523">Претражите фразу ${searchPhrase} у Chrome-у</translation>
 <translation id="1242044645101871359">Пријавите се поново</translation>
 <translation id="1254117744268754948">Избор директоријума</translation>
+<translation id="1254424942107648268">Проналази претходно</translation>
 <translation id="1258491128795710625">Шта је ново</translation>
 <translation id="1265739287306757398">Сазнајте како</translation>
 <translation id="1272079795634619415">Заустави</translation>
@@ -187,6 +188,7 @@
 <translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Није изабрано</translation>
 <translation id="2482878487686419369">Обавештења</translation>
+<translation id="2496626742194544812">Иде на прву картицу</translation>
 <translation id="2500374554657206846">Опције за чување лозинке</translation>
 <translation id="2523363575747517183">Овај веб-сајт непрекидно покушава да отвори другу апликацију.</translation>
 <translation id="2529021024822217800">Отвори све</translation>
@@ -202,6 +204,7 @@
 <translation id="2647269890314209800">Колачићи у употреби</translation>
 <translation id="2648803196158606475">Избриши прочитано</translation>
 <translation id="2653659639078652383">Пошаљи</translation>
+<translation id="2664621323652615289">Заустави</translation>
 <translation id="2671426118752779020">Можете да користите лозинке које сте сачували у Google менаџеру лозинки у другим апликацијама на iPhone-у.</translation>
 <translation id="2690858294534178585">Камера се користи</translation>
 <translation id="2691653761409724435">Није доступно офлајн</translation>
@@ -356,6 +359,7 @@
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понуди превод овог сајта</translation>
 <translation id="3810973564298564668">Управљај</translation>
+<translation id="3818293389945649617">Проналази следеће</translation>
 <translation id="3819183753496523827">Офлајн сте. Проверите интернет везу и пробајте поново.</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назив</translation>
@@ -385,6 +389,7 @@
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
 <translation id="4063300985191096908">Иди на фид</translation>
 <translation id="408404951701638773">Трака за претрагу је сада доступнија</translation>
+<translation id="4092655288299341041">Приказује помоћ</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="411254640334432676">Преузимање није успело.</translation>
 <translation id="4112644173421521737">Претражи</translation>
@@ -770,6 +775,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6859944681507688231">Да бисте скенирали QR кôд или кредитну картицу, омогућите камеру у подешавањима.</translation>
 <translation id="6867369562105931222">лозинка</translation>
 <translation id="6869389390665537774">Можете да видите странице које сте посетили или да их обришете из историје</translation>
+<translation id="687135068089457384">Приказује подешавања</translation>
 <translation id="6873263987691478642">Подељени приказ</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтова, преузимања и додатака за које се зна да су штетни.</translation>
 <translation id="6888009575607455378">Желите ли стварно да одбаците промене?</translation>
@@ -875,11 +881,13 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7807060072011926525">Пружа Google</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>
 <translation id="7840771868269352570">Ставке које сте изабрали ће бити уклоњене.</translation>
+<translation id="7845466610722898">Приказује листу за читање</translation>
 <translation id="784551991304901159">Да бисте видели садржај, изаберите Укључи у менију</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7856733331829174190">Преузимање није успело</translation>
 <translation id="785938070103630874">Отворите лозинке, начине плаћања или адресу и друго</translation>
 <translation id="7859704718976024901">Историја прегледања</translation>
+<translation id="7879275349003161544">Приказује преузимања</translation>
 <translation id="7884694604461143138">Историја претраге (пронађено је <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Ради заштите приватности Chrome неће аутоматски попуњавати ово поље.</translation>
 <translation id="7911190106180361398">Организација не дозвољава да синхронизујете све.</translation>
@@ -991,6 +999,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8741995161408053644">Google налог има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Овде ћете пронаћи картице</translation>
 <translation id="8756969031206844760">Желите ли да ажурирате лозинку?</translation>
+<translation id="8763613688786959833">Иде на последњу картицу</translation>
 <translation id="8764015330924122850">Опозовите праћење: <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">Неважећи URL</translation>
 <translation id="8787968206789828143">Претражите на вебу</translation>

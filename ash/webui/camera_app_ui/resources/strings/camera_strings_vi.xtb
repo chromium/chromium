@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Không thể xuất <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Độ phân giải của ảnh</translation>
 <translation id="1925845977604399247">Truy cập Thư viện</translation>
+<translation id="199526504800285197">Quá trình quay video đã dừng</translation>
+<translation id="1995951722691075581">Quá trình quay video đã dừng vì thiết bị sắp hết dung lượng lưu trữ. Để quay thêm video, bạn cần giải phóng dung lượng trên thiết bị.</translation>
 <translation id="2022953316617983419">Mã QR</translation>
 <translation id="2036868001356139588">Thời lượng bộ hẹn giờ</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Quét mã vạch</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
+<translation id="4060608699153044055">Bạn không thể quay video vì thiết bị sắp hết dung lượng lưu trữ. Để bắt đầu quay video, bạn cần giải phóng dung lượng trên thiết bị.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Tạm dừng quay</translation>
 <translation id="4121305183798804752">Đã phát hiện tài liệu</translation>
@@ -91,6 +94,7 @@
 <translation id="4445542136948522167">Dừng chụp ảnh</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixel</translation>
 <translation id="4570032796877367747">Máy ảnh mặt trước</translation>
+<translation id="4598556348158889687">Quản lý bộ nhớ</translation>
 <translation id="4620818268515773682">Bật/tắt micrô. Chế độ tắt tiếng đang tắt</translation>
 <translation id="4628948037717959914">Ảnh</translation>
 <translation id="4649291346448517080">Không thể lưu tệp</translation>
@@ -160,6 +164,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="7748344063862150053">Góc trên cùng bên phải của tài liệu</translation>
 <translation id="7933675232020478311">Đang di chuyển theo hướng xuống dưới và sang phải</translation>
 <translation id="7983668134180549431">Phát hiện thấy văn bản.</translation>
+<translation id="8079255378695216066">Không thể bắt đầu quay video</translation>
 <translation id="8120146556401698679">Xoay, nghiêng, thu phóng</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8145038249676204903">Chuyển sang chụp ảnh</translation>

@@ -42,6 +42,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1229222343402087523">Pesquise ${searchPhrase} no Chrome</translation>
 <translation id="1242044645101871359">Inicie sessão novamente</translation>
 <translation id="1254117744268754948">Escolher Pasta</translation>
+<translation id="1254424942107648268">Encontrar anterior</translation>
 <translation id="1258491128795710625">Novidades</translation>
 <translation id="1265739287306757398">Saiba como</translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -187,6 +188,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2473876017985765807">Já guardou uma palavra-passe para <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Não selecionado</translation>
 <translation id="2482878487686419369">Notificações</translation>
+<translation id="2496626742194544812">Ir para o primeiro separador</translation>
 <translation id="2500374554657206846">Opções para Guardar palavra-passe</translation>
 <translation id="2523363575747517183">Este Website está a tentar repetidamente abrir outra aplicação.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
@@ -202,6 +204,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2647269890314209800">Cookies em utilização</translation>
 <translation id="2648803196158606475">Eliminar lidas</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2664621323652615289">Parar</translation>
 <translation id="2671426118752779020">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe da Google noutras apps no seu iPhone.</translation>
 <translation id="2690858294534178585">A câmara está a ser utilizada</translation>
 <translation id="2691653761409724435">Não disponível offline</translation>
@@ -356,6 +359,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Propor tradução deste site</translation>
 <translation id="3810973564298564668">Administrar</translation>
+<translation id="3818293389945649617">Encontrar seguinte</translation>
 <translation id="3819183753496523827">Está offline. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -385,6 +389,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
 <translation id="4063300985191096908">Aceder ao feed</translation>
 <translation id="408404951701638773">Agora é mais fácil aceder à barra de pesquisa</translation>
+<translation id="4092655288299341041">Mostrar ajuda</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="411254640334432676">A transferência falhou.</translation>
 <translation id="4112644173421521737">Pesquisar</translation>
@@ -770,6 +775,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6859944681507688231">Para ler um código QR ou um cartão de crédito, ative a câmara nas definições.</translation>
 <translation id="6867369562105931222">palavra-passe</translation>
 <translation id="6869389390665537774">Pode ver as páginas que visitou ou limpá-las do seu histórico.</translation>
+<translation id="687135068089457384">Mostrar definições</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6882836635272038266">Proteção padrão contra Websites, transferências e extensões identificados como perigosos.</translation>
 <translation id="6888009575607455378">Tem a certeza de que pretende rejeitar as alterações?</translation>
@@ -875,11 +881,13 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7807060072011926525">Disponibilizados pela Google</translation>
 <translation id="7839985698273989086">Página offline</translation>
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
+<translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
+<translation id="7879275349003161544">Mostrar transferências</translation>
 <translation id="7884694604461143138">Histórico de pesquisas (<ph name="COUNT" /> encontrado[s])</translation>
 <translation id="7887198238286927132">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente este campo.</translation>
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
@@ -991,6 +999,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8741995161408053644">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="8750037785291841318">Os seus separadores serão apresentados aqui</translation>
 <translation id="8756969031206844760">Pretende atualizar a palavra-passe?</translation>
+<translation id="8763613688786959833">Ir para o último separador</translation>
 <translation id="8764015330924122850">Deixar de seguir <ph name="DOMAIN_NAME" /></translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8787968206789828143">Pesquise na Web</translation>

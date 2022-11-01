@@ -150,6 +150,7 @@
 <translation id="1914424852593176649">גודל <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">צירוף המקשים <ph name="DOT" /></translation>
 <translation id="1923956950274750765">סחלב בינוני</translation>
+<translation id="1928535370180099152">הדגשת התו הקודם</translation>
 <translation id="1928932365747995741">אין שדה טקסט קודם הניתן לעריכה</translation>
 <translation id="1964135212174907577">האובייקט הבא</translation>
 <translation id="1966649499058910679">הדגשה של כל מילה בזמן שהיא נאמרת</translation>
@@ -203,6 +204,7 @@
 <translation id="2381733276052567791">הפעלה וכיבוי של דיבור</translation>
 <translation id="2390264819538553347">‏כדי להתקדם יש להקיש על Enter וכדי לחזור יש להקיש על backspace.</translation>
 <translation id="2398579267367951220">‏יש להקליד כדי לחפש בדף. יש להקיש על Enter כדי לעבור אל התוצאה ועל מקשי החיצים למעלה ולמטה כדי לדפדף בתוצאות. אפשר להמשיך להקליד כדי לשנות את החיפוש או להקיש על Esc כדי לבטל.</translation>
+<translation id="2407047351320112166">הדגשת התו הבא</translation>
 <translation id="240709722712693803">סיגל</translation>
 <translation id="2410298923485357543">שימוש בקול טבעי כשהמכשיר מחובר לאינטרנט</translation>
 <translation id="2416512023405990736">תיבת סימון שלא סומנה</translation>
@@ -382,6 +384,7 @@
 <translation id="3389259863310851658">שדה קודם בטופס</translation>
 <translation id="3393605254399152980">גוררים עם אצבע אחת כדי לשמוע את שם הפריט שבו נוגעים</translation>
 <translation id="3406283310380167331">הצגת רשימת הטפסים</translation>
+<translation id="3407726812456125464">האזנה לטקסט שנבחר</translation>
 <translation id="3414400929511680526">תכלת אליס</translation>
 <translation id="3418936350470374046">אין תא למטה</translation>
 <translation id="3419269701801640163">הדבקה</translation>

@@ -3685,6 +3685,7 @@
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{모두 열기(O)}=1{북마크 열기(O)}other{{COUNT}개 모두 열기(O)}}</translation>
 <translation id="4397372003838952832">비밀번호를 기억하지 않아도 됩니다. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
+<translation id="4397844455100743910">액세스 요청에 관해 자세히 알아봅니다.</translation>
 <translation id="439817266247065935">기기가 제대로 종료되지 않았습니다. Linux 앱을 사용하려면 Linux를 다시 시작하세요.</translation>
 <translation id="4400367121200150367">비밀번호를 저장하지 않는 사이트가 표시됩니다.</translation>
 <translation id="4400632832271803360">맨 윗 줄 키의 동작을 전환하려면 런처 키를 길게 누르세요.</translation>
@@ -4053,6 +4054,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4733793249294335256">위치</translation>
 <translation id="473546211690256853">이 계정은 <ph name="DOMAIN" />에서 관리합니다.</translation>
 <translation id="4735506354605317060">원 포인터</translation>
+<translation id="4735793370946506039">향상된 세이프 브라우징에 관해 자세히 알아봅니다.</translation>
 <translation id="4735803855089279419">시스템에서 이 기기의 기기 식별자를 확인하지 못했습니다.</translation>
 <translation id="4736292055110123391">북마크, 비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
 <translation id="473775607612524610">업데이트</translation>
@@ -4081,6 +4083,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4765524037138975789">{MONTHS,plural, =1{기기는 한 달 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {MONTHS}개월 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
 <translation id="4765582662863429759">Android 메시지가 휴대전화의 문자 메시지를 Chromebook으로 전달하도록 허용합니다.</translation>
 <translation id="4766598565665644999">모든 확장 프로그램이 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
+<translation id="4767427586072640478">사용 중지된 확장 프로그램에 관해 자세히 알아봅니다.</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4773112038801431077">Linux 업그레이드</translation>

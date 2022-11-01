@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Taille : <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Accord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orchidée moyen</translation>
+<translation id="1928535370180099152">mettre en évidence le caractère précédent</translation>
 <translation id="1928932365747995741">Aucun champ de texte modifiable précédent</translation>
 <translation id="1964135212174907577">Objet suivant</translation>
 <translation id="1966649499058910679">Mettre chaque mot en surbrillance lorsqu'il est prononcé</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Activez ou désactivez la reconnaissance vocale</translation>
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée; pour retourner à la page précédente, appuyez sur Retour arrière.</translation>
 <translation id="2398579267367951220">Tapez pour rechercher du texte dans la page. Appuyez sur Entrée pour accéder aux résultats, ou sur les flèches vers le haut ou le bas pour passer d'un résultat à l'autre; continuez à écrire pour modifier la recherche; ou appuyez sur Échap pour annuler la recherche.</translation>
+<translation id="2407047351320112166">mettre en évidence le caractère suivant</translation>
 <translation id="240709722712693803">Bleu violet</translation>
 <translation id="2410298923485357543">Utiliser la voix naturelle lorsque l'appareil est connecté à Internet</translation>
 <translation id="2416512023405990736">Une case décochée</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Champ de formulaire précédent</translation>
 <translation id="3393605254399152980">Faites glisser un doigt pour entendre l'élément que vous touchez</translation>
 <translation id="3406283310380167331">Afficher la liste des formulaires</translation>
+<translation id="3407726812456125464">Écouter le texte sélectionné</translation>
 <translation id="3414400929511680526">Bleu Alice</translation>
 <translation id="3418936350470374046">Aucune cellule en dessous</translation>
 <translation id="3419269701801640163">coller</translation>

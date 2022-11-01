@@ -31,6 +31,8 @@
 <translation id="1862930711583847113">Unable to export <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Photo resolution</translation>
 <translation id="1925845977604399247">Go to Gallery</translation>
+<translation id="199526504800285197">Recording has been stopped</translation>
+<translation id="1995951722691075581">Your recording stopped because of low device storage space. To record more videos, you need to free up space on your device.</translation>
 <translation id="2022953316617983419">QR code</translation>
 <translation id="2036868001356139588">Timer duration</translation>
 <translation id="2050339315714019657">Portrait</translation>
@@ -78,6 +80,7 @@
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan barcode</translation>
 <translation id="3892148308691398805">Copy text</translation>
+<translation id="4060608699153044055">You can't record because of low device storage space. To start recording, you need to free up space on your device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pause recording</translation>
 <translation id="4121305183798804752">Document detected</translation>
@@ -91,6 +94,7 @@
 <translation id="4445542136948522167">Stop taking photo</translation>
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
 <translation id="4570032796877367747">Front camera</translation>
+<translation id="4598556348158889687">Storage management</translation>
 <translation id="4620818268515773682">Toggle microphone mute. Mute is off</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4649291346448517080">Unable to save the file</translation>
@@ -160,6 +164,7 @@ If your feedback is about image or video quality, please attach a sample photo o
 <translation id="7748344063862150053">Document top-right corner</translation>
 <translation id="7933675232020478311">Moving in bottom-right direction</translation>
 <translation id="7983668134180549431">Text detected.</translation>
+<translation id="8079255378695216066">Can’t start recording</translation>
 <translation id="8120146556401698679">Pan tilt zoom</translation>
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8145038249676204903">Switch to take photo</translation>

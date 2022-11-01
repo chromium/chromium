@@ -629,6 +629,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nezdařilo se – autorizace selhala</translation>
 <translation id="7103252855940681301">Zařízení <ph name="INDEX" /> z <ph name="COUNT" /> s názvem <ph name="NAME" />.</translation>
+<translation id="7130438335435247835">Název přístupového bodu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>

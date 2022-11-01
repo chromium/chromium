@@ -1939,6 +1939,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="274318651891194348">Zoeken naar toetsenbord</translation>
 <translation id="2743301740238894839">Starten</translation>
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
+<translation id="274362947316498129">Een app probeert toegang te krijgen tot <ph name="DEVICE_NAME" />. Zet de privacyschakelaar voor <ph name="DEVICE_NAME" /> uit om toegang te geven.</translation>
 <translation id="2745080116229976798">Gekwalificeerde ondergeschiktheid van Microsoft</translation>
 <translation id="2747266560080989517">Dit bestand bevat gevoelige of gevaarlijke content. Vraag de eigenaar om dit op te lossen.</translation>
 <translation id="2749756011735116528">Inloggen op <ph name="PRODUCT_NAME" /></translation>
@@ -3111,6 +3112,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="385051799172605136">Terug</translation>
 <translation id="3851428669031642514">Onveilige scripts laden</translation>
 <translation id="3852215160863921508">Invoerondersteuning</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> is aangezet</translation>
 <translation id="3854599674806204102">Kies een optie</translation>
 <translation id="3854967233147778866">Aanbieden websites in andere talen te vertalen</translation>
 <translation id="3854976556788175030">De uitvoerlade is vol</translation>
@@ -3443,6 +3445,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4163560723127662357">Onbekend toetsenbord</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> hoort niet bij een geldige organisatie Neem contact op met je beheerder. Als je een beheerder bent, kun je je organisatie instellen door naar g.co/ChromeEnterpriseAccount te gaan.</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" /> probeert toegang te krijgen tot <ph name="DEVICE_NAME" />. Zet de privacyschakelaar voor <ph name="DEVICE_NAME" /> uit om toegang te geven.</translation>
 <translation id="4167393659000039775">Google is niet verantwoordelijk voor verlies van gegevens. <ph name="DEVICE_OS" /> werkt misschien niet op niet-gecertificeerde modellen. Bekijk meer informatie op g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Sites gebruiken JavaScript vaak om interactieve functies weer te geven, zoals videogames of webformulieren</translation>
 <translation id="4168015872538332605">Sommige instellingen die bij <ph name="PRIMARY_EMAIL" /> horen, worden met je gedeeld. Deze instellingen beïnvloeden je account alleen wanneer toegang tot meerdere accounts wordt gebruikt.</translation>
@@ -3905,6 +3908,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4610162781778310380">Er is een fout opgetreden in <ph name="PLUGIN_NAME" /></translation>
 <translation id="4610637590575890427">Wilde je naar <ph name="SITE" /> gaan?</translation>
 <translation id="4611114513649582138">Gegevensverbinding beschikbaar</translation>
+<translation id="4612841084470706111">Toegang geven tot alle gevraagde sites.</translation>
 <translation id="4613144866899789710">Linux-installatie annuleren…</translation>
 <translation id="4613271546271159013">Een extensie heeft de pagina gewijzigd die je ziet als je een nieuw tabblad opent.</translation>
 <translation id="4615586811063744755">geen cookie geselecteerd</translation>
@@ -5663,6 +5667,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6291949900244949761">Goedkeuring vragen wanneer een site toegang wil hebben tot USB-apparaten (aanbevolen)</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>
 <translation id="6292699686837272722">Tabbladen krimpen tot een gemiddelde breedte</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> is uitgezet</translation>
 <translation id="6294759976468837022">Snelheid voor automatisch scannen</translation>
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
@@ -8472,6 +8477,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8940081510938872932">Je computer voert op dit moment te veel acties tegelijk uit. Probeer het later opnieuw.</translation>
 <translation id="8940381019874223173">Uit je Google Foto's</translation>
 <translation id="8941173171815156065">Het recht '<ph name="PERMISSION" />' intrekken</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> staat uit</translation>
 <translation id="894191600409472540">Maak sterke wachtwoorden</translation>
 <translation id="894360074127026135">Internationale Netscape-step-up</translation>
 <translation id="8944099748578356325">De batterij sneller gebruiken (momenteel <ph name="BATTERY_PERCENTAGE" />%)</translation>

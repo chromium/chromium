@@ -1938,6 +1938,7 @@
 <translation id="274318651891194348">കീബോർഡ് തിരയുന്നു</translation>
 <translation id="2743301740238894839">ആരംഭിക്കുക</translation>
 <translation id="2743387203779672305">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
+<translation id="274362947316498129">ഒരു ആപ്പ് <ph name="DEVICE_NAME" /> ആക്‌സസ് ചെയ്യാൻ ശ്രമിക്കുന്നു. ആക്‌സസ് നൽകാൻ <ph name="DEVICE_NAME" /> സ്വകാര്യതാ സ്വിച്ച് ഓഫാക്കുക.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">ഈ ഫയലിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ അപകടകരമായതോ ആയ ഉള്ളടക്കം അടങ്ങിയിരിക്കുന്നു. പരിഹരിക്കാൻ അതിന്റെ ഉടമയോട് ആവശ്യപ്പെടുക.</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> എന്നതിലേയ്‍ക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -3110,6 +3111,7 @@
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3851428669031642514">സുരക്ഷിതമല്ലാത്ത സ്‌ക്രിപ്‌റ്റുകൾ ലോഡ് ചെയ്യുക</translation>
 <translation id="3852215160863921508">ഇൻപുട്ട് സഹായം</translation>
+<translation id="3853549894831560772"><ph name="DEVICE_NAME" /> ഓണാക്കി</translation>
 <translation id="3854599674806204102">ഒരു ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="3854967233147778866">വെബ്‌സൈറ്റുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യുന്നു</translation>
 <translation id="3854976556788175030">ഔട്ട്പുട്ട് ട്രേ നിറഞ്ഞിരിക്കുന്നു</translation>
@@ -3442,6 +3444,7 @@
 <translation id="4163560723127662357">അജ്ഞാത കീബോർഡ്</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> സാധുവായ ഒരു സ്ഥാപനത്തിൽ ഉൾപ്പെടുന്നതല്ല. നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക. നിങ്ങൾ ഒരു അഡ്മിൻ ആണെങ്കിൽ ഇവിടെ സന്ദർശിച്ച് നിങ്ങളുടെ സ്ഥാപനം സജ്ജീകരിക്കാനാകും: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
+<translation id="4167212649627589331"><ph name="APP_NAME" />, <ph name="DEVICE_NAME" /> ആക്‌സസ് ചെയ്യാൻ ശ്രമിക്കുന്നു. ആക്‌സസ് നൽകാൻ <ph name="DEVICE_NAME" /> സ്വകാര്യതാ സ്വിച്ച് ഓഫാക്കുക.</translation>
 <translation id="4167393659000039775">ഏതെങ്കിലും തരത്തിലുള്ള ഡാറ്റാ നഷ്‌ടത്തിന് Google ഉത്തരവാദിയായിരിക്കില്ല, അംഗീകൃതമല്ലാത്ത മോഡലുകളിൽ <ph name="DEVICE_OS" /> പ്രവർത്തിച്ചേക്കില്ല. g.co/flex/InstallGuide -ൽ കൂടുതലറിയുക.</translation>
 <translation id="4167686856635546851">വീഡിയോ ഗെയിമുകളോ വെബ് ഫോമുകളോ പോലുള്ള ഇന്ററാക്‌റ്റീവ് ഫീച്ചറുകൾ കാണിക്കാൻ സൈറ്റുകൾ സാധാരണയായി JavaScript ഉപയോഗിക്കാറുണ്ട്</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-ന് സ്വന്തമായ ചില ക്രമീകരണങ്ങൾ നിങ്ങളുമായി പങ്കിടുന്നു. ഒന്നിലധികം സൈൻ ഇന്നുകൾ ഉപയോഗിക്കുമ്പോൾ മാത്രം ഈ ക്രമീകരണങ്ങൾ നിങ്ങളുടെ അക്കൗണ്ടിനെ ബാധിക്കുന്നു.</translation>
@@ -3904,6 +3907,7 @@
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" />-ന് ഒരു പിശക് നേരിട്ടു</translation>
 <translation id="4610637590575890427"><ph name="SITE" /> -ലേക്ക് പോകണമെന്നാണോ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="4611114513649582138">ഡാറ്റാ കണക്ഷൻ ലഭ്യമാണ്</translation>
+<translation id="4612841084470706111">അഭ്യർത്ഥിച്ച എല്ലാ സൈറ്റുകൾക്കും അനുമതി നൽകുക.</translation>
 <translation id="4613144866899789710">Linux ഇൻസ്‌റ്റലേഷൻ റദ്ദാക്കുന്നു...</translation>
 <translation id="4613271546271159013">ഒരു വിപുലീകരണം, നിങ്ങൾ പുതിയ ടാബ് തുറക്കുമ്പോൾ കാണിക്കേണ്ട പേജ് മാറ്റി.</translation>
 <translation id="4615586811063744755">കുക്കികളൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
@@ -5669,6 +5673,7 @@
 <translation id="6291949900244949761">USB ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യാൻ ഒരു സൈറ്റ് താൽപ്പര്യപ്പെടുമ്പോൾ ചോദിക്കുക (ശുപാർശ ചെയ്‌തത്)</translation>
 <translation id="6291953229176937411">&amp;ഫൈന്‍‌ഡറില്‍ കാണിക്കുക</translation>
 <translation id="6292699686837272722">ടാബുകൾ ഇടത്തരം വീതിയാക്കി ഉള്ളിലേക്ക് ചുരുക്കുന്നു</translation>
+<translation id="6293862149782163840"><ph name="DEVICE_NAME" /> ഓഫാക്കി</translation>
 <translation id="6294759976468837022">സ്വയമേവയുള്ള സ്‌കാൻ ചെയ്യൽ വേഗത</translation>
 <translation id="6295158916970320988">എല്ലാ സൈറ്റുകളും</translation>
 <translation id="6295855836753816081">സംരക്ഷിക്കുന്നു...</translation>
@@ -8479,6 +8484,7 @@
 <translation id="8940081510938872932">നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഇപ്പോൾ വളരെയധികം കാര്യങ്ങൾ ചെയ്യുന്നു.  പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8940381019874223173">നിങ്ങളുടെ Google Photos-ൽ നിന്ന്</translation>
 <translation id="8941173171815156065">'<ph name="PERMISSION" />' എന്ന അനുമതി റദ്ദാക്കുക</translation>
+<translation id="8941688920560496412"><ph name="DEVICE_NAME" /> ഓഫാണ്</translation>
 <translation id="894191600409472540">ശക്തമായ പാസ്‌വേഡുകൾ സൃഷ്‌ടിക്കുക</translation>
 <translation id="894360074127026135">നെറ്റ്‌സ്‌കേപ്പ് അന്തര്‍‌ദ്ദേശീയ സ്റ്റെപ്പ്-അപ്പ്</translation>
 <translation id="8944099748578356325">കൂടുതൽ വേഗത്തിൽ ബാറ്ററി ഉപയോഗിക്കുക (നിലവിൽ <ph name="BATTERY_PERCENTAGE" />%)</translation>

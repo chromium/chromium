@@ -1954,6 +1954,7 @@
 <translation id="274318651891194348">Αναζήτηση για πληκτρολόγιο</translation>
 <translation id="2743301740238894839">Έναρξη</translation>
 <translation id="2743387203779672305">Αντιγραφή στο πρόχειρο</translation>
+<translation id="274362947316498129">Μια εφαρμογή προσπαθεί να αποκτήσει πρόσβαση στη συσκευή <ph name="DEVICE_NAME" />. Απενεργοποιήστε τον διακόπτη απορρήτου της συσκευής <ph name="DEVICE_NAME" /> για να επιτρέψετε την πρόσβαση.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">Αυτό το αρχείο έχει ευαίσθητο ή επικίνδυνο περιεχόμενο. Ζητήστε από τον κάτοχο να το διορθώσει.</translation>
 <translation id="2749756011735116528">Συνδεθείτε στο <ph name="PRODUCT_NAME" /></translation>
@@ -3126,6 +3127,7 @@
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3851428669031642514">Φόρτωση μη ασφαλών σεναρίων</translation>
 <translation id="3852215160863921508">Βοήθεια εισαγωγής</translation>
+<translation id="3853549894831560772">Η συσκευή <ph name="DEVICE_NAME" /> ενεργοποιήθηκε</translation>
 <translation id="3854599674806204102">Ορίστε μια επιλογή</translation>
 <translation id="3854967233147778866">Παρέχει τη δυνατότητα μετάφρασης ιστοτόπων σε άλλες γλώσσες.</translation>
 <translation id="3854976556788175030">Ο δίσκος εξόδου είναι πλήρης</translation>
@@ -3459,6 +3461,7 @@
 <translation id="4163560723127662357">Άγνωστο πληκτρολόγιο</translation>
 <translation id="4165942112764990069">Ο χρήστης <ph name="USER_EMAIL" /> δεν ανήκει σε έγκυρο οργανισμό. Επικοινωνήστε με τον διαχειριστή σας. Εάν είστε διαχειριστής, μπορείτε να ρυθμίσετε τον οργανισμό σας από τη διεύθυνση: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
+<translation id="4167212649627589331">Η εφαρμογή <ph name="APP_NAME" /> προσπαθεί να αποκτήσει πρόσβαση στη συσκευή <ph name="DEVICE_NAME" />. Απενεργοποιήστε τον διακόπτη απορρήτου της συσκευής <ph name="DEVICE_NAME" /> για να επιτρέψετε την πρόσβαση.</translation>
 <translation id="4167393659000039775">Η Google δεν φέρει καμία ευθύνη για τυχόν απώλεια δεδομένων και το <ph name="DEVICE_OS" /> ενδέχεται να μην λειτουργεί σε μη πιστοποιημένα μοντέλα. Μάθετε περισσότερα στη διεύθυνση g.co/flex/InstallGuide.</translation>
 <translation id="4167686856635546851">Οι ιστότοποι χρησιμοποιούν συνήθως JavaScript για την προβολή διαδραστικών λειτουργιών, όπως βιντεοπαιχνίδια ή φόρμες ιστού.</translation>
 <translation id="4168015872538332605">Ορισμένες ρυθμίσεις που ανήκουν στον χρήστη <ph name="PRIMARY_EMAIL" /> κοινοποιούνται σε εσάς. Αυτές οι ρυθμίσεις επηρεάζουν το λογαριασμό σας μόνο κατά τη χρήση πολλαπλών συνδέσεων.</translation>
@@ -3922,6 +3925,7 @@
 <translation id="4610162781778310380">Η προσθήκη <ph name="PLUGIN_NAME" /> παρουσίασε κάποιο σφάλμα</translation>
 <translation id="4610637590575890427">Μήπως θέλετε να μεταβείτε στο <ph name="SITE" />;</translation>
 <translation id="4611114513649582138">Διαθέσιμα δεδομένα σύνδεσης</translation>
+<translation id="4612841084470706111">Παραχώρηση πρόσβασης σε όλους τους ιστοτόπους που ζητούνται.</translation>
 <translation id="4613144866899789710">Ακύρωση εγκατάστασης Linux…</translation>
 <translation id="4613271546271159013">Κάποια επέκταση άλλαξε το περιεχόμενο της σελίδας όταν ανοίγετε μια νέα καρτέλα.</translation>
 <translation id="4615586811063744755">δεν έχουν επιλεγεί cookie</translation>
@@ -5686,6 +5690,7 @@
 <translation id="6291949900244949761">Να γίνεται ερώτηση όταν κάποιος ιστότοπος θέλει να αποκτήσει πρόσβαση σε συσκευές USB (συνιστάται)</translation>
 <translation id="6291953229176937411">&amp;Εμφάνιση στο Finder</translation>
 <translation id="6292699686837272722">Σμίκρυνση καρτελών σε μεσαίο πλάτος</translation>
+<translation id="6293862149782163840">Η συσκευή <ph name="DEVICE_NAME" /> απενεργοποιήθηκε</translation>
 <translation id="6294759976468837022">Ταχύτητα αυτόματης σάρωσης</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
 <translation id="6295855836753816081">Αποθήκευση…</translation>
@@ -8495,6 +8500,7 @@
 <translation id="8940081510938872932">Αυτήν τη στιγμή, ο υπολογιστής σας εκτελεί πολλές εργασίες. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="8940381019874223173">Από τις Φωτογραφίες σας Google</translation>
 <translation id="8941173171815156065">Ανάκληση της άδειας "<ph name="PERMISSION" />"</translation>
+<translation id="8941688920560496412">Η συσκευή <ph name="DEVICE_NAME" /> είναι απενεργοποιημένη</translation>
 <translation id="894191600409472540">Δημιουργήστε ισχυρούς κωδικούς πρόσβασης</translation>
 <translation id="894360074127026135">Netscape International Step-Up</translation>
 <translation id="8944099748578356325">Χρησιμοποιεί τη μπαταρία πιο γρήγορα (αυτήν τη στιγμή <ph name="BATTERY_PERCENTAGE" />%)</translation>

@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">Veľkosť <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Stredne sýta cyklámenová</translation>
+<translation id="1928535370180099152">zvýrazniť predchádzajúci znak</translation>
 <translation id="1928932365747995741">Žiadne predchádzajúce upraviteľné textové pole</translation>
 <translation id="1964135212174907577">Ďalší objekt</translation>
 <translation id="1966649499058910679">Zvýrazňovať jednotivé vyslovené slová</translation>
@@ -204,6 +205,7 @@
 <translation id="2381733276052567791">Zapnúť alebo vypnúť hlasovú odozvu</translation>
 <translation id="2390264819538553347">Ak chcete pokračovať, stlačte Enter. Vrátite sa pomocou klávesa Backspace.</translation>
 <translation id="2398579267367951220">Zadaním výrazu vyhľadajte požadovanú stránku. Stlačením klávesa Enter prejdete na výsledok, šípkou nahor alebo nadol prehľadáte výsledky, klávesom Escape zrušíte zobrazenie a ak chcete vyhľadávanie zmeniť, pokračujte v písaní.</translation>
+<translation id="2407047351320112166">zvýrazniť ďalší znak</translation>
 <translation id="240709722712693803">Modrofialová</translation>
 <translation id="2410298923485357543">Keď je zariadenie online, používajte prirodzený hlas</translation>
 <translation id="2416512023405990736">Nezačiarknuté políčko</translation>
@@ -383,6 +385,7 @@
 <translation id="3389259863310851658">Predchádzajúce pole formulára</translation>
 <translation id="3393605254399152980">Ak chcete, aby sa vyslovila položka, na ktorú ste klepli, presuňte po nej jeden prst</translation>
 <translation id="3406283310380167331">Zobraziť zoznam formulárov</translation>
+<translation id="3407726812456125464">Vypočuť si vybraný text</translation>
 <translation id="3414400929511680526">Alicina modrá</translation>
 <translation id="3418936350470374046">Žiadna bunka nižšie</translation>
 <translation id="3419269701801640163">prilepiť</translation>

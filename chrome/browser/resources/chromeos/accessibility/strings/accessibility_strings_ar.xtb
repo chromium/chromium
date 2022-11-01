@@ -151,6 +151,7 @@
 <translation id="1914424852593176649">حجم <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">الوَتر <ph name="DOT" /></translation>
 <translation id="1923956950274750765">أرجواني خفيف متوسط</translation>
+<translation id="1928535370180099152">تمييز الحرف السابق</translation>
 <translation id="1928932365747995741">ليس هناك حقل نص سابق قابل للتعديل.</translation>
 <translation id="1964135212174907577">الكائن التالي</translation>
 <translation id="1966649499058910679">تمييز كل كلمة أثناء نطقها
@@ -205,6 +206,7 @@
 <translation id="2381733276052567791">تفعيل ميزة تحويل النص إلى كلام أو إيقافها</translation>
 <translation id="2390264819538553347">‏للتقدم، اضغط على Enter، وللرجوع للخلف، اضغط على Backspace.</translation>
 <translation id="2398579267367951220">‏اكتب للبحث في الصفحة. اضغط على enter للحصول على النتيجة سريعًا، أو اضغط على السهم المتّجه للأسفل أو للأعلى لتصفّح النتائج، أو استمر بالكتابة لتغيير البحث، أو اضغط على escape للإلغاء.</translation>
+<translation id="2407047351320112166">تمييز الحرف التالي</translation>
 <translation id="240709722712693803">بنفسجي مزرق</translation>
 <translation id="2410298923485357543">استخدام صوت طبيعي عند اتصال الجهاز بالإنترنت</translation>
 <translation id="2416512023405990736">مربع اختيار غير محدد</translation>
@@ -384,6 +386,7 @@
 <translation id="3389259863310851658">حقل النموذج السابق</translation>
 <translation id="3393605254399152980">السحب بإصبع واحد لسماع التعليقات عند لمس الشاشة</translation>
 <translation id="3406283310380167331">عرض قائمة النماذج</translation>
+<translation id="3407726812456125464">الاستماع إلى النص المحدَّد</translation>
 <translation id="3414400929511680526">أزرق أليس</translation>
 <translation id="3418936350470374046">ليست هناك خلية أدناه.</translation>
 <translation id="3419269701801640163">لصق</translation>
