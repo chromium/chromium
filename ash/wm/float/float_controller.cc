@@ -370,8 +370,28 @@ void FloatController::OnFlingOrSwipeForTablet(aura::Window* floated_window,
     magnetism_corner = MagnetismCorner::kBottomRight;
   }
 
+  MagnetismCorner original_corner = floated_window_info->magnetism_corner();
   floated_window_info->set_magnetism_corner(magnetism_corner);
-  floated_window_info->MaybeTuckWindow(left);
+  // If the window was flung to the closest edge from `original_corner` then
+  // tuck the window, otherwise magnetize it.
+  switch (original_corner) {
+    case MagnetismCorner::kTopLeft:
+    case MagnetismCorner::kBottomLeft:
+      if (left) {
+        floated_window_info->MaybeTuckWindow(true);
+        return;
+      }
+      break;
+    case MagnetismCorner::kTopRight:
+    case MagnetismCorner::kBottomRight:
+      if (!left) {
+        floated_window_info->MaybeTuckWindow(false);
+        return;
+      }
+      break;
+  }
+  UpdateWindowBoundsForTablet(floated_window,
+                              WindowState::BoundsChangeAnimationType::kAnimate);
 }
 
 const Desk* FloatController::FindDeskOfFloatedWindow(

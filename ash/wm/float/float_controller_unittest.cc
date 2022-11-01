@@ -1177,6 +1177,36 @@ TEST_F(TabletWindowFloatTest, TuckWindowRight) {
   CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomRight);
 }
 
+// Tests that the window gets tucked to the closer edge and corner based on the
+// fling velocity.
+TEST_F(TabletWindowFloatTest, TuckToMagnetismCorner) {
+  UpdateDisplay("1600x1000");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Create a floated window in the bottom right.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  CheckMagnetized(window.get(), FloatController::MagnetismCorner::kBottomRight);
+
+  auto* float_controller = Shell::Get()->float_controller();
+
+  // Fling the window left and up. Test that it does not tuck but magnetizes to
+  // the top left.
+  FlingWindow(window.get(), /*left=*/true, /*up=*/true);
+  ASSERT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopLeft);
+
+  // Fling the window left and down. Now the window should tuck in the bottom
+  // left.
+  FlingWindow(window.get(), /*left=*/true, /*up=*/false);
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  const gfx::Rect work_area = WorkAreaInsets::ForWindow(window->GetRootWindow())
+                                  ->user_work_area_bounds();
+  const int padding = chromeos::wm::kFloatedWindowPaddingDp;
+  EXPECT_EQ(gfx::Point(0, work_area.bottom() - padding),
+            window->bounds().bottom_right());
+}
+
 TEST_F(TabletWindowFloatTest, UntuckExtendedHitBounds) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
