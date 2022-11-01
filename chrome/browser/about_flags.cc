@@ -2412,14 +2412,6 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLensOnQuickActionSearchWidgetOnTablet[] = {
-    {"enableCameraAssistedSearchOnTabletWidget", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kLensOnQuickActionSearchWidgetVariations[] = {
-        {"(on Tablet)", kLensOnQuickActionSearchWidgetOnTablet,
-         std::size(kLensOnQuickActionSearchWidgetOnTablet), nullptr}};
-
 const FeatureEntry::FeatureParam kLensCameraAssistedSearchLensButtonStart[] = {
     {"searchBoxStartVariantForLensCameraAssistedSearch", "true"}};
 
@@ -7418,14 +7410,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kLensCameraAssistedSearch,
                                     kLensCameraAssistedSearchVariations,
                                     "LensCameraAssistedSearch")},
-
-    {"lens-on-quick-action-search-widget",
-     flag_descriptions::kLensOnQuickActionSearchWidgetName,
-     flag_descriptions::kLensOnQuickActionSearchWidgetDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kLensOnQuickActionSearchWidget,
-         kLensOnQuickActionSearchWidgetVariations,
-         "LensOnQuickActionSearchWidget")},
 
     {"enable-iph", flag_descriptions::kEnableIphName,
      flag_descriptions::kEnableIphDescription, kOsAndroid,

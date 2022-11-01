@@ -4952,7 +4952,6 @@
                     "name": "Enabled_081722",
                     "params": {
                         "enableCameraAssistedSearchOnTablet": "true",
-                        "enableCameraAssistedSearchOnTabletWidget": "true",
                         "enableContextMenuSearchOnTablet": "true"
                     },
                     "enable_features": [

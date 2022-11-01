@@ -4461,11 +4461,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "lens-on-quick-action-search-widget",
-    "owners": [ "juanmojica@google.com", "schechter@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 107
-  },
-  {
     "name": "lightweight-reactions-android",
     "owners": [ "gujen", "sophey", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 110
