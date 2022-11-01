@@ -465,34 +465,25 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   // created by VideoFramePool.
   DmabufVideoFramePool* pool = client_->GetVideoFramePool();
   if (pool) {
-    // TODO(andrescj): the call to PickDecoderOutputFormat() should have already
-    // initialized the frame pool, so this call to Initialize() is redundant.
-    // However, we still have to get the GpuBufferLayout to find out the
-    // modifier that we need to give to the driver. We should add a
-    // GetGpuBufferLayout() method to DmabufVideoFramePool to query that without
-    // having to re-initialize the pool.
-    CroStatus::Or<GpuBufferLayout> status_or_layout = pool->Initialize(
-        fourcc, adjusted_size, visible_rect,
-        aspect_ratio_.GetNaturalSize(visible_rect), num_output_frames_,
-        /*use_protected=*/false);
-    if (!status_or_layout.has_value()) {
-      VLOGF(1) << "Failed to setup format to VFPool";
-      return std::move(status_or_layout).error().code();
-    }
-    const GpuBufferLayout layout = std::move(status_or_layout).value();
-    if (layout.size() != adjusted_size) {
-      VLOGF(1) << "The size adjusted by VFPool is different from one "
-               << "adjusted by a video driver. fourcc: " << fourcc.ToString()
-               << ", (video driver v.s. VFPool) " << adjusted_size.ToString()
-               << " != " << layout.size().ToString();
+    absl::optional<GpuBufferLayout> layout = pool->GetGpuBufferLayout();
+    if (!layout.has_value()) {
+      VLOGF(1) << "Failed to get format from VFPool";
       return CroStatus::Codes::kFailedToChangeResolution;
     }
 
-    VLOGF(1) << "buffer modifier: " << std::hex << layout.modifier();
-    if (layout.modifier() &&
-        layout.modifier() != gfx::NativePixmapHandle::kNoModifier) {
+    if (layout->size() != adjusted_size) {
+      VLOGF(1) << "The size adjusted by VFPool is different from one "
+               << "adjusted by a video driver. fourcc: " << fourcc.ToString()
+               << ", (video driver v.s. VFPool) " << adjusted_size.ToString()
+               << " != " << layout->size().ToString();
+      return CroStatus::Codes::kFailedToChangeResolution;
+    }
+
+    VLOGF(1) << "buffer modifier: " << std::hex << layout->modifier();
+    if (layout->modifier() &&
+        layout->modifier() != gfx::NativePixmapHandle::kNoModifier) {
       absl::optional<struct v4l2_format> modifier_format =
-          output_queue_->SetModifierFormat(layout.modifier(), picked_size);
+          output_queue_->SetModifierFormat(layout->modifier(), picked_size);
       if (!modifier_format)
         return CroStatus::Codes::kFailedToChangeResolution;
 

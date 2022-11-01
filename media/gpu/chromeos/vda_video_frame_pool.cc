@@ -180,6 +180,12 @@ void VdaVideoFramePool::ReleaseAllFrames() {
   // NOREACHED() for now in order to prevent a DCHECK when this occurs.
 }
 
+absl::optional<GpuBufferLayout> VdaVideoFramePool::GetGpuBufferLayout() {
+  DVLOGF(3);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+  return layout_;
+}
+
 void VdaVideoFramePool::CallFrameAvailableCbIfNeeded() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);

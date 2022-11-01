@@ -47,7 +47,6 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // DmabufVideoFramePool implementation.
   PlatformVideoFramePool* AsPlatformVideoFramePool() override;
-
   CroStatus::Or<GpuBufferLayout> Initialize(const Fourcc& fourcc,
                                             const gfx::Size& coded_size,
                                             const gfx::Rect& visible_rect,
@@ -59,6 +58,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
+  absl::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
   // Returns the original frame of a wrapped frame. We need this method to
   // determine whether the frame returned by GetFrame() is the same one after

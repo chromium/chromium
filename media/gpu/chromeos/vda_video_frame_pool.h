@@ -72,6 +72,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
   void ReleaseAllFrames() override;
+  absl::optional<GpuBufferLayout> GetGpuBufferLayout() override;
 
  private:
   // Update the layout of the buffers. |vda_| calls this as

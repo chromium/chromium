@@ -288,6 +288,12 @@ void PlatformVideoFramePool::ReleaseAllFrames() {
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
+absl::optional<GpuBufferLayout> PlatformVideoFramePool::GetGpuBufferLayout() {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
+  base::AutoLock auto_lock(lock_);
+  return frame_layout_;
+}
+
 // static
 void PlatformVideoFramePool::OnFrameReleasedThunk(
     absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,

@@ -69,6 +69,7 @@ class MockVideoFramePool : public DmabufVideoFramePool {
   MOCK_METHOD0(IsExhausted, bool());
   MOCK_METHOD1(NotifyWhenFrameAvailable, void(base::OnceClosure));
   MOCK_METHOD0(ReleaseAllFrames, void());
+  MOCK_METHOD0(GetGpuBufferLayout, absl::optional<GpuBufferLayout>());
 
   bool IsFakeVideoFramePool() override { return true; }
 };

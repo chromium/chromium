@@ -24,10 +24,10 @@ namespace media {
 class PlatformVideoFramePool;
 
 // Interface for allocating and managing DMA-buf VideoFrame. The client should
-// set a task runner first, and guarantee both GetFrame() and the destructor are
-// executed on this task runner.
-// Note: other public methods might be called at different thread. The
-// implementation must be thread-safe.
+// set a task runner first via set_parent_task_runner(), and guarantee that
+// Initialize(), GetFrame(), GetGpuBufferLayout() and the destructor are
+// executed on this task runner. Note: other public methods might be called at
+// different thread. The implementation must be thread-safe.
 class MEDIA_GPU_EXPORT DmabufVideoFramePool {
  public:
   using DmabufId = const std::vector<base::ScopedFD>*;
@@ -93,6 +93,10 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // which will cause new ones to be allocated. This method must be called on
   // |parent_task_runner_| because it may invalidate weak ptrs.
   virtual void ReleaseAllFrames() = 0;
+
+  // Detailed information of the allocated GpuBufferLayout. Only valid after a
+  // successful Initialize() call, otherwise returns absl::nullopt.
+  virtual absl::optional<GpuBufferLayout> GetGpuBufferLayout() = 0;
 
   // Returns true if and only if the pool is a mock pool used for testing.
   virtual bool IsFakeVideoFramePool();
