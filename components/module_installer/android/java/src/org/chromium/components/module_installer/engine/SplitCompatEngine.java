@@ -90,25 +90,27 @@ class SplitCompatEngine implements InstallEngine {
 
     private SplitInstallStateUpdatedListener getStatusUpdateListener() {
         return state -> {
-            if (state.moduleNames().size() != 1) {
-                throw new UnsupportedOperationException("Only one module supported.");
-            }
+            assert !state.moduleNames().isEmpty();
 
             int status = state.status();
-            String moduleName = state.moduleNames().get(0);
+            List<String> modules = state.moduleNames();
 
-            switch (status) {
-                case SplitInstallSessionStatus.INSTALLED:
-                    mFacade.updateCrashKeys();
-                    notifyListeners(moduleName, true);
-                    break;
-                case SplitInstallSessionStatus.FAILED:
-                    notifyListeners(moduleName, false);
-                    mFacade.getLogger().logStatusFailure(moduleName, state.errorCode());
-                    break;
+            if (status == SplitInstallSessionStatus.INSTALLED) {
+                mFacade.updateCrashKeys();
             }
 
-            mFacade.getLogger().logStatus(moduleName, status);
+            for (String moduleName : modules) {
+                switch (status) {
+                    case SplitInstallSessionStatus.INSTALLED:
+                        notifyListeners(moduleName, true);
+                        break;
+                    case SplitInstallSessionStatus.FAILED:
+                        notifyListeners(moduleName, false);
+                        mFacade.getLogger().logStatusFailure(moduleName, state.errorCode());
+                        break;
+                }
+                mFacade.getLogger().logStatus(moduleName, status);
+            }
         };
     }
 
@@ -118,6 +120,7 @@ class SplitCompatEngine implements InstallEngine {
         }
 
         sSessions.remove(moduleName);
+
         unregisterUpdateListener();
     }
 

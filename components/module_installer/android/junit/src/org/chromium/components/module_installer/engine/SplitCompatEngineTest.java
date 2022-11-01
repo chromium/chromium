@@ -209,82 +209,74 @@ public class SplitCompatEngineTest {
         verify(mLogger, times(2)).logRequestStart(moduleName);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void whenInstallingWithMoreThanOneModule_verifyException() {
-        // Arrange.
-        String moduleName = "whenInstallingWithMoreThanOneModule_verifyException";
-        InstallListener listener = mock(InstallListener.class);
-
-        // Mock SplitInstallSessionState.
-        SplitInstallSessionState state = mock(SplitInstallSessionState.class);
-        doReturn(Arrays.asList("m1", "m2")).when(state).moduleNames();
-
-        ArgumentCaptor<SplitInstallStateUpdatedListener> arg =
-                ArgumentCaptor.forClass(SplitInstallStateUpdatedListener.class);
-
-        // Act & Assert.
-        mInstaller.install(moduleName, listener);
-        verify(mManager).registerListener(arg.capture());
-        arg.getValue().onStateUpdate(state);
-    }
-
     @Test
     public void whenInstalled_verifyListenerAndLogger() {
         // Arrange.
-        String moduleName = "whenInstalled_verifyListenerAndLogger";
+        String moduleName1 = "whenInstalled_verifyListenerAndLogger1";
+        String moduleName2 = "whenInstalled_verifyListenerAndLogger2";
         Integer status = SplitInstallSessionStatus.INSTALLED;
-        InstallListener listener = mock(InstallListener.class);
+        InstallListener listener1 = mock(InstallListener.class);
+        InstallListener listener2 = mock(InstallListener.class);
 
         // Mock SplitInstallSessionState.
         SplitInstallSessionState state = mock(SplitInstallSessionState.class);
         doReturn(status).when(state).status();
-        doReturn(Arrays.asList(moduleName)).when(state).moduleNames();
+        doReturn(Arrays.asList(moduleName1, moduleName2)).when(state).moduleNames();
 
-        InOrder inOrder = inOrder(listener, mManager, mLogger, mInstallerFacade);
+        InOrder inOrder = inOrder(listener1, listener2, mManager, mLogger, mInstallerFacade);
         ArgumentCaptor<SplitInstallStateUpdatedListener> arg =
                 ArgumentCaptor.forClass(SplitInstallStateUpdatedListener.class);
 
         // Act.
-        mInstaller.install(moduleName, listener);
+        mInstaller.install(moduleName1, listener1);
+        mInstaller.install(moduleName2, listener2);
         verify(mManager).registerListener(arg.capture());
         arg.getValue().onStateUpdate(state);
 
         // Assert.
         inOrder.verify(mInstallerFacade, times(1)).updateCrashKeys();
-        inOrder.verify(listener, times(1)).onComplete(true);
+        inOrder.verify(listener1, times(1)).onComplete(true);
+        inOrder.verify(mLogger, times(1)).logStatus(moduleName1, status);
+        inOrder.verify(listener2, times(1)).onComplete(true);
         inOrder.verify(mManager, times(1)).unregisterListener(any());
-        inOrder.verify(mLogger, times(1)).logStatus(moduleName, status);
+        inOrder.verify(mLogger, times(1)).logStatus(moduleName2, status);
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void whenFailureToInstall_verifyListenerAndLogger() {
         // Arrange.
-        String moduleName = "whenFailureToInstall_verifyListenerAndLogger";
+        String moduleName1 = "whenFailureToInstall_verifyListenerAndLogger1";
+        String moduleName2 = "whenFailureToInstall_verifyListenerAndLogger2";
         Integer status = SplitInstallSessionStatus.FAILED;
         Integer errorCode = SplitInstallErrorCode.NO_ERROR;
-        InstallListener listener = mock(InstallListener.class);
+        InstallListener listener1 = mock(InstallListener.class);
+        InstallListener listener2 = mock(InstallListener.class);
 
         // Mock SplitInstallSessionState.
         SplitInstallSessionState state = mock(SplitInstallSessionState.class);
         doReturn(status).when(state).status();
         doReturn(errorCode).when(state).errorCode();
-        doReturn(Arrays.asList(moduleName)).when(state).moduleNames();
+        doReturn(Arrays.asList(moduleName1, moduleName2)).when(state).moduleNames();
 
-        InOrder inOrder = inOrder(listener, mLogger, mManager);
+        InOrder inOrder = inOrder(listener1, listener2, mLogger, mManager);
         ArgumentCaptor<SplitInstallStateUpdatedListener> arg =
                 ArgumentCaptor.forClass(SplitInstallStateUpdatedListener.class);
 
         // Act.
-        mInstaller.install(moduleName, listener);
+        mInstaller.install(moduleName1, listener1);
+        mInstaller.install(moduleName2, listener2);
         verify(mManager).registerListener(arg.capture());
         arg.getValue().onStateUpdate(state);
 
         // Assert.
-        inOrder.verify(listener, times(1)).onComplete(false);
+        inOrder.verify(listener1, times(1)).onComplete(false);
+        inOrder.verify(mLogger, times(1)).logStatusFailure(moduleName1, errorCode);
+        inOrder.verify(mLogger, times(1)).logStatus(moduleName1, status);
+        inOrder.verify(listener2, times(1)).onComplete(false);
         inOrder.verify(mManager, times(1)).unregisterListener(any());
-        inOrder.verify(mLogger, times(1)).logStatusFailure(moduleName, errorCode);
-        inOrder.verify(mLogger, times(1)).logStatus(moduleName, status);
+        inOrder.verify(mLogger, times(1)).logStatusFailure(moduleName2, errorCode);
+        inOrder.verify(mLogger, times(1)).logStatus(moduleName2, status);
         inOrder.verifyNoMoreInteractions();
     }
 
