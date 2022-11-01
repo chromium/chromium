@@ -395,8 +395,40 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathType::kLocal,
                 base::FilePath(FILE_PATH_LITERAL("/dev/foo")),
                 HandleType::kFile, UserAction::kOpen));
+#elif BUILDFLAG(IS_WIN)
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("c:\\Program Files")),
+                HandleType::kDirectory, UserAction::kOpen));
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_UNCPath) {
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          base::FilePath(FILE_PATH_LITERAL("\\\\127.0.0.1\\c:\\Program Files")),
+          HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          base::FilePath(FILE_PATH_LITERAL("\\\\127.0.0.1\\c:\\foo\\bar")),
+          HandleType::kDirectory, UserAction::kOpen));
+
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          base::FilePath(FILE_PATH_LITERAL("\\\\localhost\\c:\\Program Files")),
+          HandleType::kDirectory, UserAction::kOpen));
+}
+#endif
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_DangerousFile) {

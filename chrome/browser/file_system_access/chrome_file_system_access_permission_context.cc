@@ -62,6 +62,10 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/shlwapi.h"
+#endif
+
 namespace features {
 BASE_FEATURE(kFileSystemAccessPersistentPermissions,
              "kFileSystemAccessPersistentPermissions",
@@ -269,6 +273,12 @@ bool ShouldBlockAccessToPath(const base::FilePath& check_path,
                              HandleType handle_type) {
   DCHECK(!check_path.empty());
   DCHECK(check_path.IsAbsolute());
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, UNC paths are rejected to avoid bypassing the block list.
+  if (PathIsUNC(check_path.value().c_str()))
+    return true;
+#endif
 
   base::FilePath nearest_ancestor;
   int nearest_ancestor_path_key = kNoBasePathKey;
