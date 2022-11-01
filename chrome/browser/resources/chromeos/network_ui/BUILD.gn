@@ -119,7 +119,10 @@ js_library("network_state_ui") {
 }
 
 js_library("network_ui_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
+  ]
 }
 
 html_to_js("web_components") {

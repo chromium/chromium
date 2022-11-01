@@ -22,5 +22,8 @@ js_library("query_tiles_internals") {
 }
 
 js_library("query_tiles_internals_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
+  ]
 }

@@ -27,7 +27,7 @@ js_library("set_time_dialog") {
 }
 
 js_library("set_time_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [ "//ui/webui/resources/js:cr_deprecated" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 

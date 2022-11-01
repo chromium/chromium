@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from '//resources/js/cr.m.js';
+import {addSingletonGetter} from '//resources/js/cr_deprecated.js';
 import {CrosNetworkConfig, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 /** @interface */

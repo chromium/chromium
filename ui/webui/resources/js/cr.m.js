@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview This file is not auto-generated from cr.js, because it's a
- * special case. cr.js holds a lot of functionality that is unnecessary in the
- * JS Module world, and auto-generating cr.m.js would require adding a lot of
- * logic in js_modulizer.py only to address the cr.js case, which is not worth
- * it.
- */
 import {assert} from './assert.js';
 import {PromiseResolver} from './promise_resolver.js';
 
@@ -26,20 +19,6 @@ let uidCounter = 1;
  */
 function createUid() {
   return uidCounter++;
-}
-
-/**
- * Adds a {@code getInstance} static method that always return the same
- * instance object. Do not use in new code; does not work with TypeScript.
- * @param {!Function} ctor The constructor for the class to add the static
- *     method to.
- * TODO (rbpotter): Remove this once all callers have been moved to
- * cr_deprecated.
- */
-export function addSingletonGetter(ctor) {
-  ctor.getInstance = function() {
-    return ctor.instance_ || (ctor.instance_ = new ctor());
-  };
 }
 
 /**

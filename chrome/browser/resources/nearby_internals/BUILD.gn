@@ -144,13 +144,14 @@ js_library("nearby_logs_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
 js_library("nearby_prefs_browser_proxy") {
   deps = [
     ":types",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -158,6 +159,7 @@ js_library("nearby_http_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -182,6 +184,7 @@ js_library("nearby_ui_trigger_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -229,6 +232,7 @@ js_library("nearby_contact_browser_proxy") {
   deps = [
     ":types",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

@@ -33,7 +33,7 @@ js_library("account_manager_error_app") {
 }
 
 js_library("account_manager_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [ "//ui/webui/resources/js:cr_deprecated" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 

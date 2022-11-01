@@ -8,7 +8,8 @@
  * in chrome/.
  */
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 
 import {ScanCompleteAction} from './scanning_app_types.js';
 

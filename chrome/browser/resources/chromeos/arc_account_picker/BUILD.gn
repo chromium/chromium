@@ -72,7 +72,10 @@ js_library("arc_account_picker_app") {
 }
 
 js_library("arc_account_picker_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
+  ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 

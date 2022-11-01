@@ -20,6 +20,8 @@ js_library("trusted_annotator_library") {
     "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
     "//ash/webui/projector_app/resources/common:message_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
   externs_list = [ "../../common/projector_app.externs.js" ]
 }

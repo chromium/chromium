@@ -31,5 +31,8 @@ js_library("add_smb_share_dialog") {
 }
 
 js_library("smb_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
+  ]
 }

@@ -11,7 +11,8 @@ import 'chrome://resources/js/ios/web_ui.js';
 import './status_box.js';
 import './policy_table.js';
 
-import {addSingletonGetter, addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$} from 'chrome://resources/js/util.js';

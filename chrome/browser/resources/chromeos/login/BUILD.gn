@@ -381,6 +381,7 @@ js_library("cr_ui.m") {
   deps = [
     ":display_manager.m",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":modulize" ]

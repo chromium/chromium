@@ -41,7 +41,7 @@ js_library("fake_mojo_service") {
 js_library("mojo_api") {
   deps = [
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 
@@ -57,6 +57,7 @@ js_library("multidevice_setup") {
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

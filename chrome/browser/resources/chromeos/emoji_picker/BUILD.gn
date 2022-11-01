@@ -209,7 +209,7 @@ js_library("emoji_picker") {
 js_library("emoji_picker_api_proxy") {
   deps = [
     "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:cr_deprecated",
   ]
 }
 

@@ -7,7 +7,8 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import {addSingletonGetter, addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr_deprecated.js';
 import {$} from 'chrome://resources/js/util.js';
 
 /**
