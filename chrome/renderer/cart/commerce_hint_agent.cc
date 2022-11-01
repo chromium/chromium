@@ -744,6 +744,30 @@ const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
   return button_texts;
 }
 
+bool CommerceHintAgent::IsAddToCartButton(blink::WebElement& element) {
+  // Find the first non-null, non-empty element and terminates anytime an
+  // element with wrong size is found.
+  std::string button_text;
+  while (!element.IsNull()) {
+    gfx::Size client_size = element.GetClientSize();
+    if (!commerce_heuristics::IsAddToCartButtonSpec(client_size.height(),
+                                                    client_size.width())) {
+      return false;
+    }
+    base::TrimWhitespaceASCII(element.TextContent().Ascii(), base::TRIM_ALL,
+                              &button_text);
+    if (!button_text.empty())
+      break;
+    element = element.ParentNode().To<blink::WebElement>();
+  }
+  if (element.IsNull() ||
+      !commerce_heuristics::IsAddToCartButtonTag(element.TagName().Ascii()) ||
+      !commerce_heuristics::IsAddToCartButtonText(button_text)) {
+    return false;
+  }
+  return true;
+}
+
 void CommerceHintAgent::MaybeExtractProducts() {
   // TODO(crbug/1241582): Add a test for rate control based on whether the
   // histogram is recorded.
@@ -911,6 +935,15 @@ void CommerceHintAgent::OnProductsExtracted(absl::optional<base::Value> results,
   DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
 }
 
+bool CommerceHintAgent::ShouldUseDOMBasedHeuristics() {
+  if (!should_use_dom_heuristics_.has_value()) {
+    const GURL& url(render_frame()->GetWebFrame()->GetDocument().Url());
+    should_use_dom_heuristics_ =
+        commerce_heuristics::ShouldUseDOMBasedHeuristics(url);
+  }
+  return should_use_dom_heuristics_.value();
+}
+
 void CommerceHintAgent::OnDestruct() {
   delete this;
 }
@@ -938,9 +971,15 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   // DidStartNavigation(). Some sites use GET requests though, so special-case
   // them here.
   GURL request_url = request.Url();
-  if (request.HttpMethod().Equals("POST") ||
-      request_url.DomainIs(kEbayDomain) ||
-      url.DomainIs(kElectronicExpressDomain)) {
+  bool add_to_cart_active = true;
+  if (ShouldUseDOMBasedHeuristics()) {
+    add_to_cart_active = base::Time::Now() - add_to_cart_focus_time_ <
+                         commerce::kAddToCartButtonActiveTime.Get();
+  }
+  if ((request.HttpMethod().Equals("POST") ||
+       request_url.DomainIs(kEbayDomain) ||
+       url.DomainIs(kElectronicExpressDomain)) &&
+      add_to_cart_active) {
     bool is_add_to_cart = DetectAddToCart(render_frame(), request);
     OnWillSendRequest(render_frame(), is_add_to_cart);
   }
@@ -964,6 +1003,7 @@ void CommerceHintAgent::DidStartNavigation(
     absl::optional<blink::WebNavigationType> navigation_type) {
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
+  should_use_dom_heuristics_.reset();
   has_finished_loading_ = false;
   starting_url_ = url;
   mojo::Remote<mojom::CommerceHintObserver> observer =
@@ -1006,6 +1046,7 @@ void CommerceHintAgent::DidCommitProvisionalLoad(
   if (!starting_url_.is_valid())
     return;
   DCHECK(starting_url_.SchemeIsHTTPOrHTTPS());
+  should_use_dom_heuristics_.reset();
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame());
   if (!commerce::kOptimizeRendererSignal.Get()) {
@@ -1061,6 +1102,7 @@ void CommerceHintAgent::DidFinishLoad() {
   // Don't do anything for subframes.
   if (frame->Parent())
     return;
+  should_use_dom_heuristics_.reset();
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIs(url::kHttpsScheme))
     return;
@@ -1165,6 +1207,23 @@ void CommerceHintAgent::OnMainFrameIntersectionChanged(
            << intersect_rect.y() << " " << intersect_rect.width() << " "
            << intersect_rect.height();
   ExtractCartFromCurrentFrame();
+}
+
+void CommerceHintAgent::FocusedElementChanged(
+    const blink::WebElement& focused_element) {
+  if (!should_skip_.has_value() || should_skip_.value()) {
+    return;
+  }
+  if (!ShouldUseDOMBasedHeuristics()) {
+    return;
+  }
+  base::Time before_check = base::Time::Now();
+  blink::WebElement element = focused_element;
+  if (IsAddToCartButton(element)) {
+    add_to_cart_focus_time_ = base::Time::Now();
+  }
+  base::UmaHistogramMicrosecondsTimes("Commerce.Carts.AddToCartButtonDetection",
+                                      base::Time::Now() - before_check);
 }
 
 bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,

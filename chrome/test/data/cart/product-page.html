@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<title>product-page.html</title>
+<style>
+  .add-to-cart-button {
+    height: 50px;
+    width: 500px;
+  }
+</style>
+<body>
+  <script>
+    function focusElement(id) {
+      const element = document.getElementById(id);
+      if (element !== null) {
+        element.focus();
+      }
+    }
+  </script>
+  <button id="buttonOne" class="add-to-cart-button"> Add to cart </button>
+  <button id="buttonTwo" class="button"> Checkout </button>
+</body>

@@ -936,6 +936,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "chrome-cart-dom-based-heuristics",
+    "owners": [ "yuezhanggg", "wychen"],
+    "expiry_milestone": 112
+  },
+  {
     "name": "chrome-labs",
     "owners": ["elainechien", "robliao"],
     "expiry_milestone": 112

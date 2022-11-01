@@ -13,4 +13,9 @@ const char kCommercePriceTrackingDescription[] =
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 
+const char kChromeCartDomBasedHeuristicsName[] =
+    "ChromeCart DOM-based heuristics";
+const char kChromeCartDomBasedHeuristicsDescription[] =
+    "Enable DOM-based heuristics for ChromeCart.";
+
 }  // namespace commerce::flag_descriptions

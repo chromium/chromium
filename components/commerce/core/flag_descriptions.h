@@ -16,6 +16,9 @@ extern const char kCommercePriceTrackingDescription[];
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
 
+extern const char kChromeCartDomBasedHeuristicsName[];
+extern const char kChromeCartDomBasedHeuristicsDescription[];
+
 }  // namespace commerce::flag_descriptions
 
 #endif  // COMPONENTS_COMMERCE_CORE_FLAG_DESCRIPTIONS_H_

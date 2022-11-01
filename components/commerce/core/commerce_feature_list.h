@@ -88,6 +88,9 @@ BASE_DECLARE_FEATURE(kMerchantWidePromotion);
 // Feature flag for Code-based RBD.
 BASE_DECLARE_FEATURE(kCodeBasedRBD);
 
+// Feature flag for DOM-based heuristics for ChromeCart.
+BASE_DECLARE_FEATURE(kChromeCartDomBasedHeuristics);
+
 // Shopping list update interval.
 constexpr base::FeatureParam<base::TimeDelta>
     kShoppingListBookmarkpdateIntervalParam(
@@ -192,6 +195,31 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
       // Empty JSON string.
       ""
 };
+
+// The following are Feature parameters for DOM-based heuristics for ChromeCart.
+constexpr base::FeatureParam<std::string> kAddToCartButtonTextPattern{
+    &kChromeCartDomBasedHeuristics, "add-to-cart-text-pattern",
+    "(add(ed|ing)?( \\w+)* (to (shopping )?(cart|bag|basket))|(for "
+    "shipping))|(^add$)|(buy now)"};
+
+constexpr base::FeatureParam<std::string> kAddToCartButtonTagPattern{
+    &kChromeCartDomBasedHeuristics, "add-to-cart-tag-pattern",
+    "BUTTON, INPUT, A, SPAN"};
+
+constexpr base::FeatureParam<int> kAddToCartButtonWidthLimit{
+    &kChromeCartDomBasedHeuristics, "add-to-cart-button-width", 700};
+
+constexpr base::FeatureParam<int> kAddToCartButtonHeightLimit{
+    &kChromeCartDomBasedHeuristics, "add-to-cart-button-height", 100};
+
+constexpr base::FeatureParam<base::TimeDelta> kAddToCartButtonActiveTime{
+    &kChromeCartDomBasedHeuristics, "add-to-cart-button-active-time",
+    base::Seconds(5)};
+
+constexpr base::FeatureParam<std::string> kSkipHeuristicsDomainPattern{
+    &kChromeCartDomBasedHeuristics, "skip-heuristics-domain-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
 
 // The following are Feature params for Discount user consent v2.
 // This indicates the Discount Consent v2 variation on the NTP Cart module.

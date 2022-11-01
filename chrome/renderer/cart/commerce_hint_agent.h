@@ -57,6 +57,8 @@ class CommerceHintAgent
                                          const GURL& request_url);
   static const std::vector<std::string> ExtractButtonTexts(
       const blink::WebFormElement& form);
+  // Whether the |element| is (or is within) an AddToCart button.
+  static bool IsAddToCartButton(blink::WebElement& element);
 
  private:
   void MaybeExtractProducts();
@@ -68,15 +70,18 @@ class CommerceHintAgent
       const std::string& cart_extraction_script);
   void OnProductsExtracted(absl::optional<base::Value> results,
                            base::TimeTicks start_time);
+  bool ShouldUseDOMBasedHeuristics();
 
   GURL starting_url_;
   bool has_finished_loading_{false};
   int extraction_count_{0};
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
-  absl::optional<bool> should_skip_;
   bool extraction_script_initialized_{false};
+  absl::optional<bool> should_skip_;
+  absl::optional<bool> should_use_dom_heuristics_;
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+  base::Time add_to_cart_focus_time_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   // content::RenderFrameObserver overrides
@@ -90,6 +95,7 @@ class CommerceHintAgent
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
+  void FocusedElementChanged(const blink::WebElement& focused_element) override;
 
   // Callbacks with business logics for handling navigation-related observer
   // calls. These callbacks are triggered when navigation-related signals are

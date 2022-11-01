@@ -6147,6 +6147,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpChromeCartModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"chrome-cart-dom-based-heuristics",
+     commerce::flag_descriptions::kChromeCartDomBasedHeuristicsName,
+     commerce::flag_descriptions::kChromeCartDomBasedHeuristicsDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(commerce::kChromeCartDomBasedHeuristics)},
+
     {"ntp-comprehensive-theme-realbox",
      flag_descriptions::kNtpComprehensiveThemeRealboxName,
      flag_descriptions::kNtpComprehensiveThemeRealboxDescription, kOsDesktop,

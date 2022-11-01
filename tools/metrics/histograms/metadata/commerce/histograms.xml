@@ -41,6 +41,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
       summary="Tabs between 1 and 90 days since last usage."/>
 </variants>
 
+<histogram name="Commerce.Carts.AddToCartButtonDetection" units="ms"
+    expires_after="2023-06-30">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records how long it takes to decide if a focused element is an AddToCart
+    button. This is recorded everytime an element is focused on an eligible
+    website when the DOM-based heuristic is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Carts.ExtractionElapsedTime" units="ms"
     expires_after="2023-03-19">
   <owner>wychen@chromium.org</owner>

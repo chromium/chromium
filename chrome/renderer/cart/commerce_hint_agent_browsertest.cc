@@ -166,6 +166,8 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     return nullptr;
   if (request.relative_url == "/cart-in-portal.html")
     return nullptr;
+  if (request.relative_url == "/product-page.html")
+    return nullptr;
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content("dummy");
@@ -1695,5 +1697,162 @@ IN_PROC_BROWSER_TEST_F(CommerceHintFeatureDefaultWithGeoTest, EnableWithGeo) {
 #endif
 }
 #endif
+
+class CommerceHintDOMBasedHeuristicsTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{
+#if !BUILDFLAG(IS_ANDROID)
+             ntp_features::kNtpChromeCartModule,
+#else
+             commerce::kCommerceHintAndroid,
+#endif
+             {}},
+         {commerce::kChromeCartDomBasedHeuristics,
+          {{"add-to-cart-button-active-time", "2s"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
+                       DetectionRequiresAddToCartActive) {
+  NavigateToURL("https://www.guitarcenter.com/product-page.html");
+  // AddToCart requests without active AddToCart button focus.
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kEmptyExpected);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
+
+  // Focus on an AddToCart button and then send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonOne\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
+                       DetectionInactiveForWrongButton) {
+  NavigateToURL("https://www.guitarcenter.com/product-page.html");
+
+  // Focus on a non-AddToCart button and then send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonTwo\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kEmptyExpected);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+
+  // Focus on an AddToCart button and then send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonOne\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 2);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
+                       AddToCartActiveExpires) {
+  NavigateToURL("https://www.guitarcenter.com/product-page.html");
+
+  // Focus on an AddToCart button, but wait until it's no longer active and then
+  // send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonOne\")"));
+  base::PlatformThread::Sleep(base::Seconds(2));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kEmptyExpected);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
+
+  // Focus on an AddToCart button and then send AddToCart requests.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonTwo\")"));
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonOne\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 3);
+}
+
+class CommerceHintDOMBasedHeuristicsSkipTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{
+#if !BUILDFLAG(IS_ANDROID)
+             ntp_features::kNtpChromeCartModule,
+#else
+             commerce::kCommerceHintAndroid,
+#endif
+             {}},
+         {commerce::kChromeCartDomBasedHeuristics,
+          {{"skip-heuristics-domain-pattern", "guitarcenter"},
+           {"add-to-cart-button-active-time", "0s"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsSkipTest,
+                       SkipDOMBasedHeuristics) {
+  // Send AddToCart requests on a skipped domain without active AddToCart
+  // button.
+  NavigateToURL("https://www.guitarcenter.com/product-page.html");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
+
+  // Send AddToCart requests on a skipped domain after focusing on a invalid
+  // AddToCart button.
+  EXPECT_EQ(nullptr,
+            content::EvalJs(web_contents(), "focusElement(\"buttonTwo\")"));
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 2);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 0);
+
+  // Send AddToCart requests on a non-skipped domain without active AddToCart
+  // button.
+  NavigateToURL("https://www.example.com/product-page.html");
+  SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
+
+#if !BUILDFLAG(IS_ANDROID)
+  WaitForCartCount(kExpectedExampleFallbackCart);
+#endif
+  WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 2);
+  WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 0);
+}
 
 }  // namespace

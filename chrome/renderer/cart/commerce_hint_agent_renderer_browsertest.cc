@@ -61,4 +61,65 @@ TEST_F(CommerceHintAgentRendererTest, ExtractButtonTexts) {
   }
 }
 
+TEST_F(CommerceHintAgentRendererTest, IsAddToCartButton) {
+  const char* html = R"HTML(
+    <style>
+      .add-to-cart-button {
+        height: 50px;
+        width: 500px;
+      }
+    </style>
+    <body>
+      <!-- Correct Buttons -->
+      <button class="add-to-cart-button correct-button"> Add to cart </button>
+
+      <button class="add-to-cart-button">
+        <div class="correct-button">  </div>
+        Add to cart
+      </button>
+
+      <!-- Wrong Buttons -->
+      <button class="add-to-cart-button wrong-button"> Add to cat </button>
+
+      <button class="add-to-cart-button wrong-button"> Add to   cart </button>
+
+      <button style="height: 50px; width: 1000px" class="wrong-button">
+        Add to cart
+      </button>
+
+      <div class="add-to-cart-button wrong-button"> Add to cart </div>
+
+      <button class="add-to-cart-button">
+        <button class="wrong-button"> Test </button>
+        Add to cart
+      </button>
+
+      <button style="height: 200px; width: 500px">
+        <button class="wrong-button"> </button>
+        Add to cart
+      </button>
+    </body>
+  )HTML";
+
+  LoadHTML(html);
+
+  auto correct_buttons = GetMainFrame()->GetDocument().QuerySelectorAll(
+      blink::WebString("*[class='correct-button']"));
+  EXPECT_GT(correct_buttons.size(), 0u);
+  for (auto& element : correct_buttons) {
+    EXPECT_TRUE(cart::CommerceHintAgent::IsAddToCartButton(element));
+  }
+
+  auto wrong_buttons = GetMainFrame()->GetDocument().QuerySelectorAll(
+      blink::WebString("*[class='wrong-button']"));
+  EXPECT_GT(wrong_buttons.size(), 0u);
+  for (auto& element : wrong_buttons) {
+    EXPECT_FALSE(cart::CommerceHintAgent::IsAddToCartButton(element));
+  }
+
+  blink::WebElement empty_element = blink::WebElement();
+  EXPECT_TRUE(empty_element.IsNull());
+  EXPECT_FALSE(cart::CommerceHintAgent::IsAddToCartButton(empty_element));
+}
+
 }  // namespace
