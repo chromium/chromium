@@ -318,7 +318,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1373329
   "peripherals.LaunchAppFromSettings.scan",
   "policy.AllowedLanguages",
-  "terminal.Crosh",
 
   # https://crbug.com/1374943
   "hwsec.CrossVersionLogin",
