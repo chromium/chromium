@@ -319,6 +319,20 @@ void FlossGattClient::ConfigureMTU(ResponseCallback<Void> callback,
                        remote_device, mtu);
 }
 
+void FlossGattClient::UpdateConnectionParameters(
+    ResponseCallback<Void> callback,
+    const std::string& remote_device,
+    const int32_t min_interval,
+    const int32_t max_interval,
+    const int32_t latency,
+    const int32_t timeout,
+    const uint16_t min_ce_len,
+    const uint16_t max_ce_len) {
+  CallGattMethod<Void>(std::move(callback), gatt::kConnectionParameterUpdate,
+                       client_id_, remote_device, min_interval, max_interval,
+                       latency, timeout, min_ce_len, max_ce_len);
+}
+
 void FlossGattClient::Init(dbus::Bus* bus,
                            const std::string& service_name,
                            const int adapter_index) {

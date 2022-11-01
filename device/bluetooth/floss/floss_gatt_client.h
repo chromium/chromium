@@ -313,6 +313,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient : public FlossDBusClient,
                             const std::string& remote_device,
                             const int32_t mtu);
 
+  // Update the connection parameters for the given device.
+  virtual void UpdateConnectionParameters(ResponseCallback<Void> callback,
+                                          const std::string& remote_device,
+                                          const int32_t min_interval,
+                                          const int32_t max_interval,
+                                          const int32_t latency,
+                                          const int32_t timeout,
+                                          const uint16_t min_ce_len,
+                                          const uint16_t max_ce_len);
+
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,

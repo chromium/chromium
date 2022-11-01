@@ -131,6 +131,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void GattSearchComplete(std::string address,
                           const std::vector<GattService>& services,
                           GattStatus status) override;
+  void GattConnectionUpdated(std::string address,
+                             int32_t interval,
+                             int32_t latency,
+                             int32_t timeout,
+                             GattStatus status) override;
 
   // Returns the adapter which owns this device instance.
   BluetoothAdapterFloss* adapter() const {
@@ -159,12 +164,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   void TriggerInitDevicePropertiesCallback();
   void OnConnectGatt(DBusResult<Void> ret);
+  void OnSetConnectionLatency(base::OnceClosure callback,
+                              ErrorCallback error_callback,
+                              DBusResult<Void> ret);
 
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
 
   absl::optional<base::OnceClosure> pending_callback_on_init_props_ =
       absl::nullopt;
+
+  // Callbacks for a pending |SetConnectionLatency|.
+  absl::optional<std::pair<base::OnceClosure, ErrorCallback>>
+      pending_set_connection_latency_ = absl::nullopt;
 
   // Number of pending device properties to initialize
   int num_pending_properties_ = 0;

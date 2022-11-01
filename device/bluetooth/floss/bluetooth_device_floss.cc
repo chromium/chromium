@@ -29,6 +29,21 @@ namespace floss {
 
 namespace {
 
+// Connection intervals for LE connections.
+// The unit for connection interval values are in multiples of 1.25ms.
+const int32_t kMinConnectionIntervalLow = 6;
+const int32_t kMaxConnectionIntervalLow = 6;
+const int32_t kMinConnectionIntervalMedium = 40;
+const int32_t kMaxConnectionIntervalMedium = 56;
+const int32_t kMinConnectionIntervalHigh = 80;
+const int32_t kMaxConnectionIntervalHigh = 100;
+
+// Default connection latency for LE connections.
+const int32_t kDefaultConnectionLatency = 0;
+
+// Link supervision timeout for LE connections.
+const int32_t kDefaultConnectionTimeout = 2000;
+
 void OnCreateBond(DBusResult<bool> ret) {
   if (ret.has_value() && !*ret) {
     BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
@@ -184,7 +199,59 @@ void BluetoothDeviceFloss::SetConnectionLatency(
     ConnectionLatency connection_latency,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  int32_t min_connection_interval = kMinConnectionIntervalMedium;
+  int32_t max_connection_interval = kMaxConnectionIntervalMedium;
+
+  switch (connection_latency) {
+    case ConnectionLatency::CONNECTION_LATENCY_LOW:
+      min_connection_interval = kMinConnectionIntervalLow;
+      max_connection_interval = kMaxConnectionIntervalLow;
+      break;
+    case ConnectionLatency::CONNECTION_LATENCY_MEDIUM:
+      min_connection_interval = kMinConnectionIntervalMedium;
+      max_connection_interval = kMaxConnectionIntervalMedium;
+      break;
+    case ConnectionLatency::CONNECTION_LATENCY_HIGH:
+      min_connection_interval = kMinConnectionIntervalHigh;
+      max_connection_interval = kMaxConnectionIntervalHigh;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  BLUETOOTH_LOG(EVENT) << "Setting LE connection parameters: min="
+                       << min_connection_interval
+                       << ", max=" << max_connection_interval;
+
+  FlossDBusManager::Get()->GetGattClient()->UpdateConnectionParameters(
+      base::BindOnce(&BluetoothDeviceFloss::OnSetConnectionLatency,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)),
+      GetAddress(), min_connection_interval, max_connection_interval,
+      kDefaultConnectionLatency, kDefaultConnectionTimeout,
+      /*min_ce_len=*/min_connection_interval * 2,
+      /*max_ce_len=*/max_connection_interval * 2);
+}
+
+void BluetoothDeviceFloss::OnSetConnectionLatency(base::OnceClosure callback,
+                                                  ErrorCallback error_callback,
+                                                  DBusResult<Void> ret) {
+  if (!ret.has_value()) {
+    std::move(error_callback).Run();
+    return;
+  }
+
+  // If we already had a pending call, fail it.
+  if (pending_set_connection_latency_.has_value()) {
+    auto& [pending_cb, pending_error_cb] =
+        pending_set_connection_latency_.value();
+    std::move(pending_error_cb).Run();
+    pending_set_connection_latency_ = absl::nullopt;
+  }
+
+  pending_set_connection_latency_ =
+      std::make_pair(std::move(callback), std::move(error_callback));
 }
 
 void BluetoothDeviceFloss::Connect(
@@ -673,6 +740,30 @@ void BluetoothDeviceFloss::GattSearchComplete(
   }
 
   adapter()->NotifyGattServicesDiscovered(this);
+}
+
+void BluetoothDeviceFloss::GattConnectionUpdated(std::string address,
+                                                 int32_t interval,
+                                                 int32_t latency,
+                                                 int32_t timeout,
+                                                 GattStatus status) {
+  if (address != GetAddress())
+    return;
+
+  VLOG(1) << "Gatt connection updated on " << GetAddress()
+          << " with status=" << static_cast<uint32_t>(status);
+
+  if (pending_set_connection_latency_.has_value()) {
+    auto& [pending_cb, pending_error_cb] =
+        pending_set_connection_latency_.value();
+    if (status == GattStatus::kSuccess) {
+      std::move(pending_cb).Run();
+    } else {
+      std::move(pending_error_cb).Run();
+    }
+
+    pending_set_connection_latency_ = absl::nullopt;
+  }
 }
 
 }  // namespace floss
